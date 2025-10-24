@@ -34,7 +34,7 @@ from app.schemas.document import (
 from app.services import document_service
 from app.services.storage_service import get_storage_service
 
-router = APIRouter(prefix="/documents", tags=["documents"])
+router = APIRouter(prefix="/deals/{deal_id}", tags=["documents"])
 
 
 # ============================================================================
@@ -56,10 +56,10 @@ def create_folder(
     """
     try:
         folder = document_service.create_folder(
-            folder_data=folder_data,
+            db=db,
+            payload=folder_data,
             deal_id=deal_id,
-            user=current_user,
-            db=db
+            current_user=current_user,
         )
         return folder
     except ValueError as e:
@@ -194,10 +194,10 @@ async def upload_document(
     """
     try:
         document = await document_service.upload_document(
+            db=db,
             file=file,
             deal_id=deal_id,
-            user=current_user,
-            db=db,
+            current_user=current_user,
             folder_id=folder_id
         )
         return document
