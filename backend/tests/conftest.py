@@ -38,6 +38,7 @@ from app.db.session import get_db  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models.user import User, UserRole  # noqa: E402
 from app.models.organization import Organization  # noqa: E402
+from app.models.document import Document, Folder, DocumentPermission, DocumentAccessLog  # noqa: E402, F401
 
 # Clear the settings cache to ensure test configuration is used
 get_settings.cache_clear()

@@ -9,8 +9,6 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
-
 # revision identifiers, used by Alembic.
 revision: str = 'd37ed4cd3013'
 down_revision: Union[str, None] = '8dcb6880a52b'
@@ -22,12 +20,12 @@ def upgrade() -> None:
     # Create folders table
     op.create_table(
         'folders',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
+        sa.Column('id', sa.String(length=36), primary_key=True),
         sa.Column('name', sa.String(255), nullable=False),
         sa.Column('deal_id', sa.String(36), nullable=False),
-        sa.Column('parent_folder_id', postgresql.UUID(as_uuid=True), nullable=True),
-        sa.Column('organization_id', postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column('created_by', postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column('parent_folder_id', sa.String(length=36), nullable=True),
+        sa.Column('organization_id', sa.String(length=36), nullable=False),
+        sa.Column('created_by', sa.String(length=36), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
         sa.ForeignKeyConstraint(['parent_folder_id'], ['folders.id']),
@@ -41,17 +39,17 @@ def upgrade() -> None:
     # Create documents table
     op.create_table(
         'documents',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
+        sa.Column('id', sa.String(length=36), primary_key=True),
         sa.Column('name', sa.String(255), nullable=False),
         sa.Column('file_key', sa.String(500), nullable=False, unique=True),
         sa.Column('file_size', sa.BigInteger, nullable=False),
         sa.Column('file_type', sa.String(100), nullable=False),
         sa.Column('deal_id', sa.String(36), nullable=False),
-        sa.Column('folder_id', postgresql.UUID(as_uuid=True), nullable=True),
-        sa.Column('organization_id', postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column('uploaded_by', postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column('folder_id', sa.String(length=36), nullable=True),
+        sa.Column('organization_id', sa.String(length=36), nullable=False),
+        sa.Column('uploaded_by', sa.String(length=36), nullable=False),
         sa.Column('version', sa.Integer, default=1, nullable=False),
-        sa.Column('parent_document_id', postgresql.UUID(as_uuid=True), nullable=True),
+        sa.Column('parent_document_id', sa.String(length=36), nullable=True),
         sa.Column('archived_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
@@ -70,13 +68,13 @@ def upgrade() -> None:
     # Create document_permissions table
     op.create_table(
         'document_permissions',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
-        sa.Column('document_id', postgresql.UUID(as_uuid=True), nullable=True),
-        sa.Column('folder_id', postgresql.UUID(as_uuid=True), nullable=True),
-        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column('id', sa.String(length=36), primary_key=True),
+        sa.Column('document_id', sa.String(length=36), nullable=True),
+        sa.Column('folder_id', sa.String(length=36), nullable=True),
+        sa.Column('user_id', sa.String(length=36), nullable=False),
         sa.Column('permission_level', sa.String(20), nullable=False),
-        sa.Column('organization_id', postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column('granted_by', postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column('organization_id', sa.String(length=36), nullable=False),
+        sa.Column('granted_by', sa.String(length=36), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.ForeignKeyConstraint(['document_id'], ['documents.id']),
         sa.ForeignKeyConstraint(['folder_id'], ['folders.id']),
@@ -96,13 +94,13 @@ def upgrade() -> None:
     # Create document_access_logs table
     op.create_table(
         'document_access_logs',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
-        sa.Column('document_id', postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column('id', sa.String(length=36), primary_key=True),
+        sa.Column('document_id', sa.String(length=36), nullable=False),
+        sa.Column('user_id', sa.String(length=36), nullable=False),
         sa.Column('action', sa.String(50), nullable=False),
         sa.Column('ip_address', sa.String(45), nullable=True),
         sa.Column('user_agent', sa.String(500), nullable=True),
-        sa.Column('organization_id', postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column('organization_id', sa.String(length=36), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.ForeignKeyConstraint(['document_id'], ['documents.id']),
         sa.ForeignKeyConstraint(['user_id'], ['users.id']),
