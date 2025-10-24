@@ -69,6 +69,7 @@ def upgrade() -> None:
         sa.Column('is_active', sa.Boolean(), nullable=False, server_default='true'),
         sa.Column('role', sa.String(length=32), nullable=False, server_default='solo'),
         sa.Column('organization_id', postgresql.UUID(as_uuid=True), nullable=True),
+        sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
     )
 
     # Create indexes

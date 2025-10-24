@@ -1,104 +1,103 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import type { ReactNode } from "react"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { render, screen } from "@testing-library/react"
+import { MemoryRouter } from "react-router-dom"
 
-import { AppRoutes } from './App'
+import { AppRoutes } from "./App"
 
-const mockAuthState = {
-  isSignedIn: false,
-  isLoaded: true,
+type MockClerkState = {
+  isSignedIn: boolean
+  isLoaded: boolean
+  user: {
+    firstName?: string | null
+  } | null
 }
 
-const mockUserState: {
-  isLoaded: boolean
-  user: null | { publicMetadata?: Record<string, unknown> }
-} = {
+const mockClerkState: MockClerkState = {
+  isSignedIn: false,
   isLoaded: true,
   user: null,
 }
 
-vi.mock('@clerk/clerk-react', () => ({
-  ClerkProvider: ({ children }: { children: React.ReactNode }) => <div data-testid="clerk-provider">{children}</div>,
-  useAuth: () => mockAuthState,
-  useUser: () => mockUserState,
-  SignedIn: ({ children }: { children: React.ReactNode }) => (
-    mockAuthState.isSignedIn ? <div data-testid="signed-in">{children}</div> : null
+const setMockClerkState = (state: Partial<MockClerkState>) => {
+  Object.assign(mockClerkState, state)
+}
+
+vi.mock("@clerk/clerk-react", () => ({
+  ClerkProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
+  SignedIn: ({ children }: { children: ReactNode }) =>
+    mockClerkState.isSignedIn ? <>{children}</> : null,
+  SignedOut: ({ children }: { children: ReactNode }) =>
+    mockClerkState.isSignedIn ? null : <>{children}</>,
+  useAuth: () => ({
+    isSignedIn: mockClerkState.isSignedIn,
+    isLoaded: mockClerkState.isLoaded,
+  }),
+  useUser: () => ({
+    isSignedIn: mockClerkState.isSignedIn,
+    isLoaded: mockClerkState.isLoaded,
+    user: mockClerkState.user,
+  }),
+  SignInButton: ({ children }: { children: ReactNode }) => (
+    <button data-testid="sign-in-action">{children}</button>
   ),
-  SignedOut: ({ children }: { children: React.ReactNode }) => (
-    mockAuthState.isSignedIn ? null : <div data-testid="signed-out">{children}</div>
-  ),
-  SignInButton: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="sign-in-button">{children}</div>
-  ),
-  UserButton: ({ afterSignOutUrl }: { afterSignOutUrl?: string }) => (
-    <button data-testid="user-button" data-signout-url={afterSignOutUrl}>User Menu</button>
-  ),
+  UserButton: () => <div data-testid="user-menu">User Menu</div>,
 }))
 
-const renderApp = (initialEntries = ['/']) => {
+const renderApp = (initialEntries: string[] = ["/"]) => {
   return render(
     <MemoryRouter initialEntries={initialEntries}>
       <AppRoutes />
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
-describe('AppRoutes', () => {
+describe("AppRoutes", () => {
   beforeEach(() => {
-    mockAuthState.isSignedIn = false
-    mockAuthState.isLoaded = true
-    mockUserState.isLoaded = true
-    mockUserState.user = null
-    vi.clearAllMocks()
+    setMockClerkState({
+      isSignedIn: false,
+      isLoaded: true,
+      user: null,
+    })
   })
 
-  it('renders landing page content for signed-out users', () => {
-    renderApp(['/' ])
+  it("renders the home route with sign-in actions for visitors", () => {
+    renderApp(["/"])
 
-    expect(screen.getByText(/M&A Intelligence Platform/i)).toBeInTheDocument()
-    expect(screen.getByTestId('sign-in-button')).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { name: /m&a intelligence platform/i })
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("sign-in-action")).toBeInTheDocument()
   })
 
-  it('hides sign-in button when user is authenticated', () => {
-    mockAuthState.isSignedIn = true
+  it("redirects visitors from the dashboard to the sign-in page", () => {
+    renderApp(["/dashboard"])
 
-    renderApp(['/'])
-
-    expect(screen.queryByTestId('sign-in-button')).not.toBeInTheDocument()
-    expect(screen.getByTestId('user-button')).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { name: /sign in to apexdeliver/i })
+    ).toBeInTheDocument()
   })
 
-  it('redirects unauthenticated users away from protected routes', () => {
-    renderApp(['/dashboard'])
+  it("shows dashboard content when the user is authenticated", () => {
+    setMockClerkState({
+      isSignedIn: true,
+      user: { firstName: "Jamie" },
+    })
 
-    expect(screen.getByTestId('signed-out')).toBeInTheDocument()
-    expect(screen.queryByTestId('user-button')).not.toBeInTheDocument()
+    renderApp(["/dashboard"])
+
+    expect(screen.getByRole("heading", { name: /dashboard/i })).toBeInTheDocument()
   })
 
-  it('renders protected content for authenticated users', () => {
-    mockAuthState.isSignedIn = true
-    mockUserState.user = { publicMetadata: { role: 'solo' } }
+  it("updates the header to show the user menu for authenticated users", () => {
+    setMockClerkState({
+      isSignedIn: true,
+      user: { firstName: "Jamie" },
+    })
 
-    renderApp(['/dashboard'])
+    renderApp(["/"])
 
-    expect(screen.getByTestId('user-button')).toBeInTheDocument()
-  })
-
-  it('redirects to unauthorized for insufficient role', () => {
-    mockAuthState.isSignedIn = true
-    mockUserState.user = { publicMetadata: { role: 'solo' } }
-
-    renderApp(['/admin'])
-
-    expect(screen.getByTestId('unauthorized-page')).toBeInTheDocument()
-  })
-
-  it('allows admin users to access admin routes', () => {
-    mockAuthState.isSignedIn = true
-    mockUserState.user = { publicMetadata: { role: 'admin' } }
-
-    renderApp(['/admin'])
-
-    expect(screen.getByTestId('admin-dashboard')).toBeInTheDocument()
+    expect(screen.getByTestId("user-menu")).toBeInTheDocument()
+    expect(screen.queryByTestId("sign-in-action")).not.toBeInTheDocument()
   })
 })

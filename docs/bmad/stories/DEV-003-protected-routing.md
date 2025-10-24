@@ -1,55 +1,57 @@
 # Story: Expand Protected Routing & Feature Areas
 
 **Story ID**: DEV-003  
-**Status**: Complete  
-**Related PRD Sections**: 3.1 User & Organization Management, 3.2 Deal Flow & Pipeline Management, 4.1 Master Admin Portal  
+**Status**: Ready to Start  
+**Related PRD Sections**: 3.1 User & Organization Management, 3.2 Deal Flow & Pipeline Management  
 **Related Technical Spec Sections**: 2.1 Frontend Architecture, 4.3 Authentication & Authorization
 
-## Problem Statement
-The Vite/React frontend already authenticated users via Clerk, but core feature areas (dashboard, deal pipeline, admin portal) were still rendered through a single unprotected shell. Navigation links were static, breadcrumbs absent, and unauthenticated visitors could hit deep links without a clear redirect path. Admin-only surfaces lacked guardrails which blocked RBAC work.
+---
 
-## Implementation Summary
-- Introduced a reusable `<ProtectedRoute>` wrapper that checks Clerk auth state, shows a loading spinner, redirects unauthenticated users to `/sign-in`, and enforces role-based access (`admin` guard for admin routes).
-- Added `<ProtectedLayout>` which wraps protected sections with the new role-aware `<NavigationMenu>` and hierarchical `<Breadcrumbs>` component.
-- Built out dashboard, deals, and admin page placeholders (overview/profile/subscription/settings, pipeline/new/details/documents, admin dashboard/users/organizations/analytics) so every major route renders meaningful scaffolding.
-- Implemented an accessible landing page, custom sign-in surface, and `/unauthorized` page for failed role checks; navigation links now carry `aria-current="page"` to support keyboard users.
-- Hardened Clerk mocks across unit and integration tests to keep vitest deterministic (stubbing `getToken`, providing SignedIn/SignedOut fallbacks, etc.).
+## Problem Statement
+
+With core authentication in place (DEV-002), the remaining feature areas still allow direct access without guardrails. Deals and admin surfaces need explicit `SignedIn`/`SignedOut` handling, loading feedback, and role awareness before RBAC work can proceed.
+
+---
+
+## Goals
+
+1. Introduce a reusable protected-route primitive that can apply loading, redirect, and role checks.
+2. Gate `/dashboard/*`, `/deals/*`, and `/admin/*` with the new guard.
+3. Provide shared navigation and breadcrumbs across protected routes.
+4. Cover the flow with Vitest suites (unit + integration) using Clerk mocks.
+
+---
 
 ## Deliverables
-- `src/components/auth/ProtectedRoute.tsx` (role-aware guard)  
-- `src/components/auth/AuthErrorBoundary.tsx`, `src/components/common/LoadingSpinner.tsx`  
-- `src/components/layout/NavigationMenu.tsx`, `src/components/layout/Breadcrumbs.tsx`  
-- `src/layouts/ProtectedLayout.tsx` / `PublicLayout`  
-- Dashboard/deals/admin page sets under `src/pages/...` plus `src/pages/UnauthorizedPage.tsx`  
-- Router refactor in `src/App.tsx` exporting reusable `AppRoutes`
 
-## Testing
-Following TDD, tests were written/updated before implementation. Final vitest run:
+- `src/components/auth/ProtectedRoute.tsx`
+- `src/layouts/ProtectedLayout.tsx`
+- `src/components/layout/NavigationMenu.tsx`
+- `src/components/layout/Breadcrumbs.tsx`
+- Route scaffolds for dashboard, deals, and admin areas
+- Vitest coverage for redirects, role enforcement, navigation, and breadcrumbs
 
-```
-npm test
-```
+---
 
-Results: **43/43** tests passing (unit + integration). Key suites:
-- `ProtectedRoute.test.tsx` – redirect, spinner, role enforcement
-- `NavigationMenu.test.tsx` – role-based visibility & aria-current handling
-- `Breadcrumbs.test.tsx` – dynamic breadcrumb generation & slug formatting
-- `App.test.tsx` / `tests/integration/routing.test.tsx` – end-to-end navigation and redirects
+## Test Plan (Draft)
 
-## Acceptance Criteria
-- [x] All protected feature routes require authentication; unauthenticated visitors are redirected to `/sign-in`
-- [x] Navigation menu shows appropriate links based on user role; admin portal only visible to `admin`
-- [x] Breadcrumbs display correct navigation paths for top-level and nested routes
-- [x] Loading spinner presented while Clerk auth state is resolving
-- [x] Auth error boundary surfaces authentication errors gracefully
-- [x] Integration tests confirm redirects and unauthorized handling
+- `ProtectedRoute.test.tsx`: redirects visitors, allows authenticated access, handles role mismatches.
+- `NavigationMenu.test.tsx`: hides admin links for non-admin roles, marks the active route.
+- `Breadcrumbs.test.tsx`: builds readable paths for nested routes.
+- `tests/integration/routing.test.tsx`: end-to-end navigation across public and protected areas.
 
-## Follow-Up
-- DEV-005 (RBAC) can now consume the stored user roles to hide/disable component-level functionality.
-- DEV-006 (deal pipeline Kanban) can drop into the protected `/deals/pipeline` shell with DnD features.
-- Once backend `/api/auth/me` is live, hook `useCurrentUser` into the layout for richer header context.
+---
 
-## Evidence
-- Vitest: `43 passed, 0 failed`  
-- Screenshots/recordings: see QA artifact bundle `artifacts/dev-003-routing/` (uploaded to shared drive)  
-- Story status updated in BMAD tracker and progress log.
+## Status Notes
+
+- DEV-002 finalised the shared `RootLayout`, base routing, and authentication tests.
+- Clerk mocks are centralised in the existing test helpers.
+- No code for DEV-003 has been merged yet; this story is queued next.
+
+---
+
+## Next Steps
+
+1. Finalise the TDD harness (fill in TBD asserts inside scaffolded tests).
+2. Implement the guard + layout pieces iteratively, keeping tests green.
+3. Update documentation and BMAD tracker once routes are protected.

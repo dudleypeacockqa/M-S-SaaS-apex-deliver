@@ -1,0 +1,20 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest --run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.2 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+ [32m✓[39m src/components/auth/ProtectedRoute.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 88[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthErrorBoundary.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 292[2mms[22m[39m
+ [32m✓[39m src/components/layout/Breadcrumbs.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 324[2mms[22m[39m
+ [32m✓[39m src/features/auth/Auth.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 302[2mms[22m[39m
+ [32m✓[39m src/components/layout/NavigationMenu.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 386[2mms[22m[39m
+ [32m✓[39m src/tests/integration/routing.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 356[2mms[22m[39m
+ [32m✓[39m src/App.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 358[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m7 passed[39m[22m[90m (7)[39m
+[2m      Tests [22m [1m[32m29 passed[39m[22m[90m (29)[39m
+[2m   Start at [22m 14:57:18
+[2m   Duration [22m 2.55s[2m (transform 1.04s, setup 1.84s, collect 2.38s, tests 2.11s, environment 8.90s, prepare 110ms)[22m
+

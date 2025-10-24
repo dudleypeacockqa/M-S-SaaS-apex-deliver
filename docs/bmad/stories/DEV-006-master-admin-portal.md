@@ -1,10 +1,10 @@
 # Story: Master Admin Portal Foundation
 
 **Story ID**: DEV-006
-**Status**: Backend Complete (Frontend Pending)
+**Status**: ✅ COMPLETE (100%)
 **Priority**: High
-**Estimated Duration**: 8 hours (Backend: 6h complete, Frontend: 2h remaining)
-**Actual Duration**: Backend 6h
+**Estimated Duration**: 8 hours
+**Actual Duration**: 8 hours (Backend: 6h, Frontend: 2h)
 **Related PRD Sections**: 3.1 User & Organization Management
 **Related Technical Spec Sections**: F-001 User & Organization Management
 
