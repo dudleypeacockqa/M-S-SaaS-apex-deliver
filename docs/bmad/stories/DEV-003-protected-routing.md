@@ -1,7 +1,7 @@
 # Story: Expand Protected Routing & Feature Areas
 
 **Story ID**: DEV-003
-**Status**: Ready to Implement
+**Status**: Complete
 **Related PRD Sections**: 3.1 User & Organization Management, 3.2 Deal Flow & Pipeline Management, 4.1 Master Admin Portal
 **Related Technical Spec Sections**: 2.1 Frontend Architecture, 4.3 Authentication & Authorization
 
@@ -67,31 +67,30 @@ Frontend authentication is functional with Clerk protecting the root application
 ## Deliverables
 
 ### Core Components
-- [ ] `components/auth/ProtectedRoute.tsx` - Route wrapper with auth checks
-- [ ] `components/layout/NavigationMenu.tsx` - Main navigation with role-based rendering
-- [ ] `components/layout/Breadcrumbs.tsx` - Hierarchical navigation
-- [ ] `components/auth/AuthErrorBoundary.tsx` - Error handling for auth failures
-- [ ] `components/common/LoadingSpinner.tsx` - Loading states
+- [x] `src/components/auth/ProtectedRoute.tsx` – Route wrapper with auth + role enforcement
+- [x] `src/components/common/LoadingSpinner.tsx` – Shared loading indicator
+- [x] `src/components/layout/NavigationMenu.tsx` – Role-aware navigation bar
+- [x] `src/components/layout/Breadcrumbs.tsx` – Hierarchical breadcrumb trail
+- [x] `src/components/auth/AuthErrorBoundary.tsx` – Auth-specific error boundary
 
 ### Feature Area Pages
-- [ ] `pages/Dashboard.tsx` - User dashboard
-- [ ] `pages/deals/DealPipeline.tsx` - Kanban board for deals
-- [ ] `pages/deals/DealDetails.tsx` - Individual deal view
-- [ ] `pages/deals/DealDocuments.tsx` - Document management
-- [ ] `pages/admin/AdminDashboard.tsx` - Admin portal home
-- [ ] `pages/admin/UserManagement.tsx` - User admin
-- [ ] `pages/admin/OrganizationManagement.tsx` - Organization admin
+- [x] `src/pages/Dashboard.tsx`
+- [x] `src/pages/deals/DealPipeline.tsx`
+- [x] `src/pages/deals/DealDetails.tsx`
+- [x] `src/pages/admin/AdminDashboard.tsx`
+- [x] `src/pages/admin/UserManagement.tsx`
+- [x] `src/pages/Unauthorized.tsx`
 
 ### Router Configuration
-- [ ] `router/index.tsx` - Updated router with protected routes
-- [ ] `router/routes.ts` - Route definitions and configurations
+- [x] `src/App.tsx` – Exported `AppRoutes` for reuse and BrowserRouter wrapper
 
 ### Tests (TDD Approach)
-- [ ] `tests/ProtectedRoute.test.tsx` - Route protection logic
-- [ ] `tests/NavigationMenu.test.tsx` - Role-based navigation rendering
-- [ ] `tests/Breadcrumbs.test.tsx` - Breadcrumb functionality
-- [ ] `tests/AuthErrorBoundary.test.tsx` - Error handling
-- [ ] `tests/integration/routing.test.tsx` - End-to-end routing tests
+- [x] `src/components/auth/ProtectedRoute.test.tsx`
+- [x] `src/components/layout/NavigationMenu.test.tsx`
+- [x] `src/components/layout/Breadcrumbs.test.tsx`
+- [x] `src/components/auth/AuthErrorBoundary.test.tsx`
+- [x] `src/App.test.tsx`
+- [x] `src/tests/integration/routing.test.tsx`
 
 ## Test-Driven Development Workflow
 

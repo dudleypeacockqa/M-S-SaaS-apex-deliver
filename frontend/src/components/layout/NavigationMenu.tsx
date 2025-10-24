@@ -101,3 +101,4 @@ export const NavigationMenu: React.FC = () => {
     </nav>
   )
 }
+

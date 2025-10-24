@@ -1,23 +1,16 @@
-import { NavigationMenu } from '../components/layout/NavigationMenu'
-import { Breadcrumbs } from '../components/layout/Breadcrumbs'
-
 /**
  * Dashboard Page
  *
  * User dashboard home - shows overview of deals, recent activity, and quick actions.
  * Protected route - requires authentication.
+ * Layout (NavigationMenu + Breadcrumbs) provided by AppLayout wrapper.
  */
 export const Dashboard = () => {
   return (
-    <div style={{ minHeight: '100vh', background: '#f9fafb' }}>
-      <NavigationMenu />
-      <Breadcrumbs />
-
-      <main style={{ padding: '2rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <h1 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '1rem', color: '#111' }}>
-            Dashboard
-          </h1>
+    <div>
+      <h1 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '1rem', color: '#111' }}>
+        Dashboard
+      </h1>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginTop: '2rem' }}>
             {/* Overview Card */}
@@ -90,8 +83,6 @@ export const Dashboard = () => {
               </button>
             </div>
           </div>
-        </div>
-      </main>
     </div>
   )
 }

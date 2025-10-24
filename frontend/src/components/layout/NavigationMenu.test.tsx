@@ -92,3 +92,4 @@ describe('NavigationMenu Component', () => {
     expect(screen.getByTestId('user-button')).toBeInTheDocument()
   })
 })
+

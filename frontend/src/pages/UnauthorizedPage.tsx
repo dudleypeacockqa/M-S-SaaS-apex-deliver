@@ -9,7 +9,7 @@ export const UnauthorizedPage: React.FC = () => {
   const state = location.state as UnauthorizedState | undefined
 
   return (
-    <section
+    <section data-testid="unauthorized-page"
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -53,3 +53,4 @@ export const UnauthorizedPage: React.FC = () => {
     </section>
   )
 }
+

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 import { AuthErrorBoundary } from './components/auth/AuthErrorBoundary'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
+import { AppLayout } from './components/layout/AppLayout'
 import { Dashboard } from './pages/Dashboard'
 import { DealPipeline } from './pages/deals/DealPipeline'
 import { DealDetails } from './pages/deals/DealDetails'
@@ -98,11 +99,11 @@ function LandingPage() {
 export const AppRoutes: React.FC = () => (
   <Routes>
     <Route path="/" element={<LandingPage />} />
-    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-    <Route path="/deals" element={<ProtectedRoute><DealPipeline /></ProtectedRoute>} />
-    <Route path="/deals/:dealId" element={<ProtectedRoute><DealDetails /></ProtectedRoute>} />
-    <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
-    <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><UserManagement /></ProtectedRoute>} />
+    <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+    <Route path="/deals" element={<ProtectedRoute><AppLayout><DealPipeline /></AppLayout></ProtectedRoute>} />
+    <Route path="/deals/:dealId" element={<ProtectedRoute><AppLayout><DealDetails /></AppLayout></ProtectedRoute>} />
+    <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AppLayout><AdminDashboard /></AppLayout></ProtectedRoute>} />
+    <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><AppLayout><UserManagement /></AppLayout></ProtectedRoute>} />
     <Route path="/unauthorized" element={<Unauthorized />} />
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>

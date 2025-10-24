@@ -1,96 +1,77 @@
 import { Link, useLocation } from 'react-router-dom'
 
-/**
- * Breadcrumbs Component
- *
- * Displays hierarchical navigation breadcrumbs based on current route.
- * Automatically generates breadcrumb trail from URL segments.
- */
+const LABEL_MAP: Record<string, string> = {
+  dashboard: 'Dashboard',
+  deals: 'Deals',
+  pipeline: 'Pipeline',
+  admin: 'Admin',
+  users: 'Users',
+  organizations: 'Organizations',
+  analytics: 'Analytics',
+  documents: 'Documents',
+  subscription: 'Subscription',
+  settings: 'Settings',
+  profile: 'Profile',
+}
+
+const prettifySegment = (segment: string): string => {
+  if (LABEL_MAP[segment]) {
+    return LABEL_MAP[segment]
+  }
+  if (/^\d+$/.test(segment)) {
+    return segment
+  }
+  return segment
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+}
+
 export const Breadcrumbs: React.FC = () => {
   const location = useLocation()
+  const segments = location.pathname.split('/').filter(Boolean)
 
-  // Parse pathname into breadcrumb segments
-  const pathSegments = location.pathname.split('/').filter(Boolean)
-
-  // Map segment names to human-readable labels
-  const segmentLabels: Record<string, string> = {
-    dashboard: 'Dashboard',
-    deals: 'Deals',
-    admin: 'Admin',
-    users: 'Users',
-    organizations: 'Organizations',
-    documents: 'Documents'
-  }
-
-  // Build breadcrumb items
-  const breadcrumbItems = [
-    { label: 'Home', path: '/' },
-    ...pathSegments.map((segment, index) => {
-      const path = '/' + pathSegments.slice(0, index + 1).join('/')
-      const label = segmentLabels[segment] || segment
-      return { label, path }
-    })
-  ]
-
-  // Don't show breadcrumbs on root path
-  if (pathSegments.length === 0) {
+  if (segments.length === 0) {
     return null
   }
 
+  const crumbs = segments.map((segment, index) => {
+    const path = '/' + segments.slice(0, index + 1).join('/')
+    const label = prettifySegment(segment)
+    return { label, path, isCurrent: index === segments.length - 1 }
+  })
+
   return (
-    <nav
-      role="navigation"
-      aria-label="breadcrumb"
-      style={{
-        padding: '1rem 2rem',
-        background: '#f9fafb',
-        borderBottom: '1px solid #e5e7eb'
-      }}
-    >
+    <nav aria-label="Breadcrumb" style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0' }}>
       <ol
         style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '0.75rem 1.5rem',
           listStyle: 'none',
-          padding: 0,
-          margin: 0,
           display: 'flex',
           gap: '0.5rem',
-          alignItems: 'center',
-          flexWrap: 'wrap'
+          flexWrap: 'wrap',
+          color: '#64748b',
         }}
       >
-        {breadcrumbItems.map((item, index) => {
-          const isLast = index === breadcrumbItems.length - 1
-
-          return (
-            <li key={item.path} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              {index > 0 && (
-                <span style={{ color: '#9ca3af' }}>/</span>
-              )}
-              {isLast ? (
-                <span style={{ color: '#667eea', fontWeight: '600' }}>
-                  {item.label}
-                </span>
-              ) : (
-                <Link
-                  to={item.path}
-                  style={{
-                    color: '#6b7280',
-                    textDecoration: 'none',
-                    transition: 'color 0.2s'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = '#667eea'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = '#6b7280'
-                  }}
-                >
-                  {item.label}
-                </Link>
-              )}
-            </li>
-          )
-        })}
+        <li>
+          <Link to="/" style={{ color: '#64748b', textDecoration: 'none' }}>
+            Home
+          </Link>
+        </li>
+        {crumbs.map((crumb) => (
+          <li key={crumb.path} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span aria-hidden="true">/</span>
+            {crumb.isCurrent ? (
+              <span style={{ color: '#4f46e5', fontWeight: 600 }}>{crumb.label}</span>
+            ) : (
+              <Link to={crumb.path} style={{ color: '#64748b', textDecoration: 'none' }}>
+                {crumb.label}
+              </Link>
+            )}
+          </li>
+        ))}
       </ol>
     </nav>
   )
