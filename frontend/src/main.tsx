@@ -1,10 +1,22 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import './index.css'
+import React from "react"
+import ReactDOM from "react-dom/client"
+import { ClerkProvider } from "@clerk/clerk-react"
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+import App from "./App"
+import "./index.css"
+
+const publishableKey =
+  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ??
+  (import.meta.env.MODE === "test" ? "test-clerk-publishable-key" : undefined)
+
+if (!publishableKey) {
+  throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable")
+}
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+    <ClerkProvider publishableKey={publishableKey}>
+      <App />
+    </ClerkProvider>
+  </React.StrictMode>
 )
