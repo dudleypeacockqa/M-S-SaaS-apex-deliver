@@ -1,64 +1,31 @@
 import { useParams } from 'react-router-dom'
-import { NavigationMenu } from '../../components/layout/NavigationMenu'
-import { Breadcrumbs } from '../../components/layout/Breadcrumbs'
 
-/**
- * DealDetails Page
- *
- * Individual deal view with financial metrics, documents, and activity timeline.
- * Protected route - requires authentication.
- */
-export const DealDetails = () => {
-  const { dealId } = useParams<{ dealId: string }>()
+export const DealDetails: React.FC = () => {
+  const { dealId } = useParams()
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f9fafb' }}>
-      <NavigationMenu />
-      <Breadcrumbs />
+    <section data-testid="deal-details" style={{ display: 'grid', gap: '1.5rem' }}>
+      <header>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 700 }}>Deal {dealId}</h1>
+        <p style={{ color: '#64748b', marginTop: '0.5rem' }}>
+          Comprehensive overview, diligence materials, and activity feed for this transaction.
+        </p>
+      </header>
 
-      <main style={{ padding: '2rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <h1 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '0.5rem', color: '#111' }}>
-            Deal {dealId}
-          </h1>
-          <p style={{ color: '#6b7280', marginBottom: '2rem' }}>
-            Detailed view coming soon
-          </p>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
-            {/* Main Content */}
-            <div style={{ background: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>
-                Deal Overview
-              </h2>
-              <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                Deal details, financial metrics, and analysis will be displayed here.
-              </p>
-            </div>
-
-            {/* Sidebar */}
-            <div style={{ background: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <h2 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>
-                Quick Info
-              </h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem' }}>
-                <div>
-                  <div style={{ color: '#6b7280' }}>Stage</div>
-                  <div style={{ fontWeight: '600' }}>Evaluation</div>
-                </div>
-                <div>
-                  <div style={{ color: '#6b7280' }}>Deal Size</div>
-                  <div style={{ fontWeight: '600' }}>TBD</div>
-                </div>
-                <div>
-                  <div style={{ color: '#6b7280' }}>Status</div>
-                  <div style={{ fontWeight: '600' }}>Active</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+      <article
+        style={{
+          background: 'white',
+          borderRadius: '12px',
+          padding: '1.5rem',
+          boxShadow: '0 12px 24px rgba(15, 23, 42, 0.06)',
+        }}
+      >
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Summary</h2>
+        <p style={{ color: '#475569', marginTop: '0.75rem', lineHeight: 1.6 }}>
+          Key metrics, latest updates, and open actions will appear here once the backend services are
+          connected.
+        </p>
+      </article>
+    </section>
   )
 }

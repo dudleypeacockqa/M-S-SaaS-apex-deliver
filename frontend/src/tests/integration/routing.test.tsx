@@ -1,146 +1,115 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import App from '../../App'
 
-// Mock Clerk state
-let mockIsSignedIn = false
-let mockIsLoaded = true
-let mockUser = { publicMetadata: { role: 'solo' } }
+import { AppRoutes } from '../../App'
+
+const mockAuthState = {
+  isSignedIn: false,
+  isLoaded: true,
+}
+
+const mockUserState: {
+  isLoaded: boolean
+  user: null | { publicMetadata?: Record<string, unknown> }
+} = {
+  isLoaded: true,
+  user: null,
+}
 
 vi.mock('@clerk/clerk-react', () => ({
-  ClerkProvider: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="clerk-provider">{children}</div>
+  ClerkProvider: ({ children }: { children: React.ReactNode }) => <div data-testid="clerk-provider">{children}</div>,
+  useAuth: () => mockAuthState,
+  useUser: () => mockUserState,
+  SignedIn: ({ children }: { children: React.ReactNode }) => (
+    mockAuthState.isSignedIn ? <div data-testid="signed-in">{children}</div> : null
   ),
-  useAuth: vi.fn(() => ({
-    isSignedIn: mockIsSignedIn,
-    isLoaded: mockIsLoaded,
-  })),
-  useUser: vi.fn(() => ({
-    isLoaded: mockIsLoaded,
-    user: mockUser
-  })),
-  SignedIn: ({ children }: { children: React.ReactNode }) => {
-    return mockIsSignedIn ? <div data-testid="signed-in">{children}</div> : null
-  },
-  SignedOut: ({ children }: { children: React.ReactNode }) => {
-    return !mockIsSignedIn ? <div data-testid="signed-out">{children}</div> : null
-  },
+  SignedOut: ({ children }: { children: React.ReactNode }) => (
+    mockAuthState.isSignedIn ? null : <div data-testid="signed-out">{children}</div>
+  ),
   SignInButton: ({ children }: { children: React.ReactNode }) => (
-    <button data-testid="sign-in-button">{children}</button>
+    <div data-testid="sign-in-button">{children}</div>
   ),
   UserButton: ({ afterSignOutUrl }: { afterSignOutUrl?: string }) => (
-    <button data-testid="user-button" data-signout-url={afterSignOutUrl}>
-      User Menu
-    </button>
+    <button data-testid="user-button" data-signout-url={afterSignOutUrl}>User Menu</button>
   ),
 }))
 
-// Mock BrowserRouter to avoid nesting with MemoryRouter
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom')
-  return {
-    ...actual,
-    BrowserRouter: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  }
-})
+const renderRoutes = (initialEntries: string[]) =>
+  render(
+    <MemoryRouter initialEntries={initialEntries}>
+      <AppRoutes />
+    </MemoryRouter>,
+  )
 
 describe('Integration: Routing Flow', () => {
   beforeEach(() => {
-    mockIsSignedIn = false
-    mockIsLoaded = true
-    mockUser = { publicMetadata: { role: 'solo' } }
+    mockAuthState.isSignedIn = false
+    mockAuthState.isLoaded = true
+    mockUserState.isLoaded = true
+    mockUserState.user = null
     vi.clearAllMocks()
   })
 
-  it('should display landing page on root route', () => {
-    render(
-      <MemoryRouter initialEntries={['/']}>
-        <App />
-      </MemoryRouter>
-    )
+  it('displays landing page on root route', () => {
+    renderRoutes(['/'])
 
     expect(screen.getByText(/M&A Intelligence Platform/i)).toBeInTheDocument()
+    expect(screen.getByTestId('sign-in-button')).toBeInTheDocument()
   })
 
-  it('should redirect unauthenticated users from protected routes', async () => {
-    mockIsSignedIn = false
+  it('redirects unauthenticated users away from protected routes', async () => {
+    renderRoutes(['/dashboard'])
 
-    render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <App />
-      </MemoryRouter>
-    )
-
-    // Should not see dashboard content when unauthenticated
     await waitFor(() => {
-      expect(screen.queryByTestId('dashboard')).not.toBeInTheDocument()
+      expect(screen.getByTestId('signed-out')).toBeInTheDocument()
     })
   })
 
-  it('should allow authenticated users to access dashboard', () => {
-    mockIsSignedIn = true
+  it('allows authenticated users to access dashboard', () => {
+    mockAuthState.isSignedIn = true
+    mockUserState.user = { publicMetadata: { role: 'solo' } }
 
-    render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <App />
-      </MemoryRouter>
-    )
+    renderRoutes(['/dashboard'])
 
     expect(screen.getByTestId('user-button')).toBeInTheDocument()
   })
 
-  it('should navigate between protected routes when authenticated', async () => {
-    mockIsSignedIn = true
+  it('navigates between protected routes when authenticated', async () => {
+    mockAuthState.isSignedIn = true
+    mockUserState.user = { publicMetadata: { role: 'solo' } }
 
-    const { rerender } = render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <App />
-      </MemoryRouter>
-    )
-
+    const { rerender } = renderRoutes(['/dashboard'])
     expect(screen.getByTestId('user-button')).toBeInTheDocument()
 
-    // Navigate to deals
     rerender(
       <MemoryRouter initialEntries={['/deals']}>
-        <App />
-      </MemoryRouter>
+        <AppRoutes />
+      </MemoryRouter>,
     )
 
-    // Should see deals page
     await waitFor(() => {
       expect(screen.getByTestId('user-button')).toBeInTheDocument()
     })
   })
 
-  it('should block admin routes for non-admin users', async () => {
-    mockIsSignedIn = true
-    mockUser = { publicMetadata: { role: 'solo' } }
+  it('redirects non-admin users from admin routes', async () => {
+    mockAuthState.isSignedIn = true
+    mockUserState.user = { publicMetadata: { role: 'solo' } }
 
-    render(
-      <MemoryRouter initialEntries={['/admin']}>
-        <App />
-      </MemoryRouter>
-    )
+    renderRoutes(['/admin'])
 
-    // Should not see admin content
     await waitFor(() => {
-      expect(screen.queryByTestId('admin-dashboard')).not.toBeInTheDocument()
+      expect(screen.getByTestId('unauthorized-page')).toBeInTheDocument()
     })
   })
 
-  it('should allow admin users to access admin routes', () => {
-    mockIsSignedIn = true
-    mockUser = { publicMetadata: { role: 'admin' } }
+  it('allows admin users to access admin routes', () => {
+    mockAuthState.isSignedIn = true
+    mockUserState.user = { publicMetadata: { role: 'admin' } }
 
-    render(
-      <MemoryRouter initialEntries={['/admin']}>
-        <App />
-      </MemoryRouter>
-    )
+    renderRoutes(['/admin'])
 
-    // Should see admin content or at least not be redirected
     expect(screen.getByTestId('user-button')).toBeInTheDocument()
   })
 })

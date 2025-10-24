@@ -28,7 +28,7 @@ vi.mock('@clerk/clerk-react', () => ({
     mockAuthState.isSignedIn ? null : <div data-testid="signed-out">{children}</div>
   ),
   SignInButton: ({ children }: { children: React.ReactNode }) => (
-    <button data-testid="sign-in-button">{children}</button>
+    <div data-testid="sign-in-button">{children}</div>
   ),
   UserButton: ({ afterSignOutUrl }: { afterSignOutUrl?: string }) => (
     <button data-testid="user-button" data-signout-url={afterSignOutUrl}>User Menu</button>
