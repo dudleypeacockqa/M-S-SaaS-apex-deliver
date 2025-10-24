@@ -10,9 +10,9 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import declarative_base
 
 from app.core.config import settings
+from app.db.base import Base  # Import Base from db.base
 
 # Convert postgres:// to postgresql+asyncpg:// for async support
 database_url = str(settings.database_url).replace(
@@ -36,9 +36,6 @@ AsyncSessionLocal = async_sessionmaker(
     autocommit=False,
     autoflush=False,
 )
-
-# Declarative base for models
-Base = declarative_base()
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
