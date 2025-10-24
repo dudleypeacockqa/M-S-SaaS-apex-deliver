@@ -6,7 +6,8 @@ import { ProtectedRoute } from './ProtectedRoute'
 // Mock Clerk state (using object for reactivity)
 const mockClerkState = {
   isSignedIn: false,
-  isLoaded: true
+  isLoaded: true,
+  user: null as any,
 }
 
 // Create mock function that reads from mockClerkState
@@ -15,8 +16,14 @@ const mockUseAuth = vi.fn(() => ({
   isLoaded: mockClerkState.isLoaded
 }))
 
+const mockUseUser = vi.fn(() => ({
+  isLoaded: mockClerkState.isLoaded,
+  user: mockClerkState.user
+}))
+
 vi.mock('@clerk/clerk-react', () => ({
   useAuth: () => mockUseAuth(),
+  useUser: () => mockUseUser(),
 }))
 
 // Test component for protected routes
@@ -119,6 +126,11 @@ describe('ProtectedRoute Component', () => {
 
   it('should handle role-based access control', () => {
     mockClerkState.isSignedIn = true
+    mockClerkState.user = {
+      publicMetadata: {
+        role: 'admin'
+      }
+    }
 
     render(
       <MemoryRouter initialEntries={["/admin"]}>
@@ -135,8 +147,37 @@ describe('ProtectedRoute Component', () => {
       </MemoryRouter>
     )
 
-    // For now, should render (we'll implement role checking later)
+    // User has admin role, should see admin content
     expect(screen.getByTestId('admin-content')).toBeInTheDocument()
+  })
+
+  it('should redirect to unauthorized when user lacks required role', () => {
+    mockClerkState.isSignedIn = true
+    mockClerkState.user = {
+      publicMetadata: {
+        role: 'solo'
+      }
+    }
+
+    render(
+      <MemoryRouter initialEntries={["/admin"]}>
+        <Routes>
+          <Route path="/unauthorized" element={<div data-testid="unauthorized-page">Unauthorized</div>} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <div data-testid="admin-content">Admin Content</div>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    // User is 'solo', not 'admin', should be redirected to unauthorized
+    expect(screen.getByTestId('unauthorized-page')).toBeInTheDocument()
+    expect(screen.queryByTestId('admin-content')).not.toBeInTheDocument()
   })
 
   it('should pass additional props to children', () => {

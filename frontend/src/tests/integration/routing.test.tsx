@@ -16,7 +16,10 @@ vi.mock('@clerk/clerk-react', () => ({
     isSignedIn: mockIsSignedIn,
     isLoaded: mockIsLoaded,
   })),
-  useUser: vi.fn(() => ({ user: mockUser })),
+  useUser: vi.fn(() => ({
+    isLoaded: mockIsLoaded,
+    user: mockUser
+  })),
   SignedIn: ({ children }: { children: React.ReactNode }) => {
     return mockIsSignedIn ? <div data-testid="signed-in">{children}</div> : null
   },
@@ -32,6 +35,15 @@ vi.mock('@clerk/clerk-react', () => ({
     </button>
   ),
 }))
+
+// Mock BrowserRouter to avoid nesting with MemoryRouter
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom')
+  return {
+    ...actual,
+    BrowserRouter: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  }
+})
 
 describe('Integration: Routing Flow', () => {
   beforeEach(() => {

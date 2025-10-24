@@ -1,56 +1,71 @@
-import { useAuth } from '@clerk/clerk-react'
-import { Navigate } from 'react-router-dom'
+import type { ReactNode } from 'react'
+import { useAuth, useUser } from '@clerk/clerk-react'
+import { Navigate, useLocation } from 'react-router-dom'
+
 import { LoadingSpinner } from '../common/LoadingSpinner'
 
-interface ProtectedRouteProps {
-  children: React.ReactNode
-  requiredRole?: string
+export type UserRole = 'solo' | 'growth' | 'enterprise' | 'admin'
+
+export interface ProtectedRouteProps {
+  children: ReactNode
+  requiredRole?: UserRole | UserRole[]
 }
 
-/**
- * ProtectedRoute Component
- *
- * Wraps routes that require authentication. Redirects unauthenticated users to sign-in.
- * Optionally enforces role-based access control.
- *
- * @param children - The protected content to render
- * @param requiredRole - Optional role requirement (e.g., 'admin')
- */
+const resolveRole = (role: unknown): UserRole => {
+  if (role === 'growth' || role === 'enterprise' || role === 'admin') {
+    return role
+  }
+  return 'solo'
+}
+
+const hasRequiredRole = (userRole: UserRole, requirement?: UserRole | UserRole[]): boolean => {
+  if (!requirement) {
+    return true
+  }
+  if (Array.isArray(requirement)) {
+    return requirement.includes(userRole)
+  }
+  return userRole === requirement
+}
+
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
-  requiredRole
+  requiredRole,
 }) => {
-  const { isSignedIn, isLoaded } = useAuth()
+  const { isLoaded, isSignedIn } = useAuth()
+  const { user } = useUser()
+  const location = useLocation()
 
-  // Show loading spinner while authentication state is being determined
   if (!isLoaded) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh'
-      }}>
-        <LoadingSpinner />
+      <div
+        style={{
+          minHeight: '60vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <LoadingSpinner size="lg" />
       </div>
     )
   }
 
-  // Redirect to home page if user is not signed in
   if (!isSignedIn) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/sign-in" replace state={{ from: location.pathname }} />
   }
 
-  // TODO: Implement role-based access control when user role is available
-  // For now, allow all authenticated users
-  if (requiredRole) {
-    // Future implementation:
-    // const { user } = useUser()
-    // if (user?.publicMetadata?.role !== requiredRole) {
-    //   return <Navigate to="/unauthorized" replace />
-    // }
+  const userRole = resolveRole(user?.publicMetadata?.role)
+
+  if (!hasRequiredRole(userRole, requiredRole)) {
+    return (
+      <Navigate
+        to="/unauthorized"
+        replace
+        state={{ from: location.pathname, requiredRole }}
+      />
+    )
   }
 
-  // Render protected content for authenticated users
   return <>{children}</>
 }
