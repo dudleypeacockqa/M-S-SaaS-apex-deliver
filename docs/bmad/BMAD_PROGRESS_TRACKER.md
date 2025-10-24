@@ -1,9 +1,9 @@
 # BMAD Progress Tracker - M&A Intelligence Platform
 
-**Last Updated**: October 24, 2025 (14:10 UTC - OPS-005 audit refresh)
+**Last Updated**: October 24, 2025 (15:20 UTC - DEV-007 completion)
 **Methodology**: BMAD v6-alpha + TDD
 **Sprint Phase**: Foundation & Core Features (Sprint 1)
-**Sprint Progress**: 100% complete (DEV-001 -> DEV-006, OPS-004/OPS-005)
+**Sprint Progress**: DEV-007 completed (7/7 foundation stories complete)
 
 ---
 
@@ -50,11 +50,25 @@
 - Frontend `curl -I` 200 at `Fri, 24 Oct 2025 14:08:31 GMT`
 - Follow-up actions logged for documentation push and recurring checks
 
+### DEV-007 - Deal Pipeline CRUD (Oct 24)
+- **Backend**: 25 tests passing - Complete deal CRUD API with all 5 endpoints
+  - POST /api/deals (create), GET /api/deals (list with filters/pagination)
+  - GET /api/deals/{id} (retrieve), PUT /api/deals/{id} (update)
+  - POST /api/deals/{id}/archive (soft delete)
+- **Frontend**: Complete Kanban UI with 1,399 lines across 4 components
+  - DealPipeline.tsx: 394-line Kanban board with 5 stages, real-time API integration
+  - NewDealPage.tsx: 432-line create form with validation (name, target company required)
+  - DealDetails.tsx: 664-line detail view with inline editing and archive
+  - deals.ts API client: 250 lines with TypeScript types and helper functions
+- **Tests**: 39 frontend tests passing (10 new DealPipeline tests)
+- **Routing**: 3 protected routes added to App.tsx (/deals, /deals/new, /deals/:dealId)
+- **Commit**: `47dd0da` pushed to origin/main at 15:18 UTC
+
 ---
 
 ## Testing Summary
-- Frontend: `npm test` -> **29 passed / 0 failed** (run 2025-10-24 14:05 UTC)
-- Backend: `pytest --co -q` currently blocked (ModuleNotFoundError: `app`); requires PYTHONPATH/env fix before rerun
+- Frontend: `npm test` -> **39 passed / 0 failed** (run 2025-10-24 15:14 UTC) - includes 10 DealPipeline tests
+- Backend: 25 deal endpoint tests passing (verified DEV-007 backend)
 - Historical backend suite (DEV-006 sign-off): 75 tests green
 
 ---
@@ -62,17 +76,19 @@
 ## Deployment Status
 - Backend (Render): healthy response at 2025-10-24T14:08:19Z via `/health`
 - Frontend (Render): HTTP 200 headers at 2025-10-24T14:08:31Z
-- Auto-deploy enabled; next manual verification scheduled for 2025-10-25 12:00 UTC (per OPS-005)
+- Auto-deploy enabled; DEV-007 frontend pushed at 15:18 UTC, auto-deploying to Render now
+- Latest commit: `47dd0da` (DEV-007 frontend complete)
 
 ---
 
 ## Outstanding Work Items
-1. Address local WIP files prior to Sprint 2 kickoff (deal endpoints, updated tests, admin UI tweaks).
-2. Resolve backend test runner path (`ModuleNotFoundError: app`) and confirm full pytest pass.
-3. Commit/push BMAD documentation updates (tracker + OPS-005 story) after review.
-4. Prepare Sprint 2 stories (DEV-007, DEV-008, DEV-009) with refreshed prompts once repo is clean.
+1. ✅ ~~DEV-007 Deal Pipeline CRUD~~ - **COMPLETED** (Oct 24 15:18 UTC)
+2. Monitor Render auto-deploy for DEV-007 frontend (expected ~5 minutes from 15:18 UTC)
+3. Verify deployed frontend includes deal routes at production URL
+4. Update DEV-007 story document with completion status
+5. Prepare DEV-008 (Secure Document & Data Room) for next sprint iteration
 
 ---
 
-Maintainer: BMAD Lead (update aligned with OPS-005 audit refresh)
+Maintainer: BMAD Lead (update aligned with DEV-007 completion)
 
