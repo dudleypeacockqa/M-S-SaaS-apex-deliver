@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
 
 from app.models import User, Organization
-from app.services.user_service import create_user
+from app.services.user_service import create_user_from_clerk
 
 
 # ============================================================================
