@@ -1,20 +1,7 @@
-"""SQLAlchemy session management."""
-from collections.abc import Iterator
+"""Database session management - imports from core.database for lazy init."""
+from __future__ import annotations
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+# Re-export from core.database for backward compatibility
+from app.core.database import SessionLocal, engine, get_db, init_engine
 
-from app.core.config import settings
-
-engine = create_engine(settings.database_url, future=True)
-SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
-
-
-def get_db() -> Iterator[Session]:
-    """Yield a transactional database session."""
-
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+__all__ = ["engine", "SessionLocal", "get_db", "init_engine"]

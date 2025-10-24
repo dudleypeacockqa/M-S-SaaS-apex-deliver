@@ -1,67 +1,53 @@
-"""Database connection and session management."""
+"""Database connection and session management with lazy initialization."""
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator
-from typing import Any
+from collections.abc import Iterator
 
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import settings
-from app.db.base import Base  # Import Base from db.base
+from app.db.base import Base
 
-# Convert postgres:// to postgresql+asyncpg:// for async support
-database_url = str(settings.database_url).replace(
-    "postgresql://", "postgresql+asyncpg://"
-)
-
-# Create async engine
-engine: AsyncEngine = create_async_engine(
-    database_url,
-    echo=settings.debug,
-    pool_pre_ping=True,
-    pool_size=5,
-    max_overflow=10,
-)
-
-# Create async session factory
-AsyncSessionLocal = async_sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-    autocommit=False,
-    autoflush=False,
-)
+# Module-level variables (lazy initialization to allow test config override)
+engine = None
+SessionLocal = None
 
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
+def init_engine():
+    """Initialize database engine (lazy).
+
+    This allows tests to override settings before engine creation.
     """
-    Dependency for getting async database sessions.
-
-    Yields:
-        AsyncSession: Database session for the request.
-    """
-    async with AsyncSessionLocal() as session:
-        try:
-            yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
-        finally:
-            await session.close()
+    global engine, SessionLocal
+    if engine is None:
+        connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
+        engine = create_engine(settings.database_url, future=True, connect_args=connect_args)
+        SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+    return engine
 
 
-async def init_db() -> None:
-    """Initialize database tables (for development only)."""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+def get_db() -> Iterator[Session]:
+    """Provide a transactional database session."""
+    init_engine()  # Ensure engine is initialized before use
+    db = SessionLocal()
+    try:
+        yield db
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
 
 
-async def close_db() -> None:
-    """Close database connections."""
-    await engine.dispose()
+def init_db() -> None:
+    """Create database tables when running in development/debug mode."""
+    init_engine()
+    Base.metadata.create_all(bind=engine)
+
+
+def close_db() -> None:
+    """Dispose of the engine."""
+    if engine:
+        engine.dispose()

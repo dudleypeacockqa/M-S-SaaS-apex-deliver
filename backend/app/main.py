@@ -18,10 +18,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan events."""
     # Startup
     if settings.debug:
-        await init_db()  # Create tables in development
+        init_db()  # Create tables in development
     yield
     # Shutdown
-    await close_db()
+    close_db()
 
 
 def create_application() -> FastAPI:

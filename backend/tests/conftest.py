@@ -10,17 +10,24 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # Configure environment before importing application modules
-os.environ.setdefault("DATABASE_URL", "sqlite:///./test_app.db")
-os.environ.setdefault("CLERK_SECRET_KEY", "test_clerk_secret")
-os.environ.setdefault("CLERK_PUBLISHABLE_KEY", "test_clerk_pk")
-os.environ.setdefault("CLERK_WEBHOOK_SECRET", "test_webhook_secret")
-os.environ.setdefault("SECRET_KEY", "test_api_secret")
+# Force override all settings for test environment
+os.environ["ENVIRONMENT"] = "test"
+os.environ["DATABASE_URL"] = "sqlite:///./test_app.db"
+os.environ["CLERK_SECRET_KEY"] = "test_clerk_secret"
+os.environ["CLERK_PUBLISHABLE_KEY"] = "test_clerk_pk"
+os.environ["CLERK_WEBHOOK_SECRET"] = "test_webhook_secret"
+os.environ["CLERK_JWT_ALGORITHM"] = "HS256"
+os.environ["SECRET_KEY"] = "test_api_secret"
+os.environ["DEBUG"] = "false"  # Disable init_db() in lifespan during tests
 
-from app.core.config import settings  # noqa: E402
+from app.core.config import get_settings, settings  # noqa: E402
 from app.db import session as session_module  # noqa: E402
 from app.db.base import Base  # noqa: E402
 from app.db.session import get_db  # noqa: E402
 from app.main import app  # noqa: E402
+
+# Clear the settings cache to ensure test configuration is used
+get_settings.cache_clear()
 
 
 @pytest.fixture(scope="session")

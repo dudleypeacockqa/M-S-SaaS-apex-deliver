@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from app.core.security import verify_webhook_signature
@@ -33,16 +33,25 @@ async def handle_clerk_webhook(request: Request, db: Session = Depends(get_db)) 
     event_type: str = payload.get("type", "")
     data: dict = payload.get("data") or {}
 
-    if event_type == "user.created":
-        user_service.create_user_from_clerk(db, data)
-    elif event_type == "user.updated":
-        try:
-            user_service.update_user_from_clerk(db, data["id"], data)
-        except ValueError:
+    if event_type in {"user.created", "user.updated", "user.deleted"}:
+        clerk_user_id = data.get("id")
+        if not clerk_user_id:
+            raise HTTPException(status_code=500, detail="Clerk webhook payload missing user id")
+
+        if event_type == "user.created":
             user_service.create_user_from_clerk(db, data)
-    elif event_type == "user.deleted":
-        user_service.delete_user(db, data.get("id", ""))
+        elif event_type == "user.updated":
+            try:
+                user_service.update_user_from_clerk(db, clerk_user_id, data)
+            except ValueError:
+                user_service.create_user_from_clerk(db, data)
+        else:
+            user_service.delete_user(db, clerk_user_id)
     elif event_type in {"session.created", "session.ended"}:
-        user_service.update_last_login(db, data.get("user_id", ""), _parse_datetime(data.get("last_active_at")))
+        user_service.update_last_login(
+            db,
+            data.get("user_id", ""),
+            _parse_datetime(data.get("last_active_at")),
+        )
 
     return {"status": "processed"}

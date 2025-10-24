@@ -38,7 +38,8 @@ def decode_clerk_jwt(token: str) -> Dict[str, Any]:
         raise AuthError(detail="Clerk secret key is not configured")
 
     try:
-        return jwt.decode(token, secret, algorithms=[settings.algorithm])
+        return jwt.decode(token, secret, algorithms=[settings.clerk_jwt_algorithm])
     except JWTError as exc:  # pragma: no cover - jose provides detailed message
         raise AuthError(detail="Invalid authentication token") from exc
+
 

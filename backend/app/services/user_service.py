@@ -44,14 +44,19 @@ def _extract_organization_id(data: dict[str, Any]) -> Optional[str]:
 def create_user_from_clerk(db: Session, clerk_data: dict[str, Any]) -> User:
     """Create or update a user from Clerk webhook payload."""
 
-    existing = get_user_by_clerk_id(db, clerk_data["id"])
+    # Handle missing or invalid data
+    clerk_id = clerk_data.get("id")
+    if not clerk_id:
+        raise ValueError("Clerk webhook data missing required 'id' field")
+
+    existing = get_user_by_clerk_id(db, clerk_id)
     if existing:
-        return update_user_from_clerk(db, clerk_data["id"], clerk_data)
+        return update_user_from_clerk(db, clerk_id, clerk_data)
 
     email = _extract_email(clerk_data)
     role = _extract_role(clerk_data) or UserRole.solo
     user = User(
-        clerk_user_id=clerk_data["id"],
+        clerk_user_id=clerk_id,
         email=email or "",
         first_name=clerk_data.get("first_name"),
         last_name=clerk_data.get("last_name"),
