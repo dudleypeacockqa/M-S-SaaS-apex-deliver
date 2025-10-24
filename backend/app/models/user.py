@@ -19,6 +19,26 @@ class UserRole(str, enum.Enum):
     admin = "admin"
 
 
+def get_role_level(role: UserRole) -> int:
+    """
+    Get numeric permission level for a role.
+    Higher numbers indicate more permissions.
+
+    Args:
+        role: The UserRole to get level for
+
+    Returns:
+        Integer permission level (1-4)
+    """
+    role_levels = {
+        UserRole.solo: 1,
+        UserRole.growth: 2,
+        UserRole.enterprise: 3,
+        UserRole.admin: 4,
+    }
+    return role_levels.get(role, 0)
+
+
 class User(Base):
     """Application user synchronized from Clerk."""
 
