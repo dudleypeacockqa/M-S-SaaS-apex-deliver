@@ -52,7 +52,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   if (!isSignedIn) {
-    return <Navigate to="/sign-in" replace state={{ from: location.pathname }} />
+    return <Navigate to="/" replace state={{ from: location.pathname }} />
   }
 
   const userRole = resolveRole(user?.publicMetadata?.role)
