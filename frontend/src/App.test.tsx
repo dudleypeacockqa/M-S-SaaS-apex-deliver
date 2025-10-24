@@ -1,18 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
+import { render, screen } from '@testing-library/react'
 import App from './App'
 
-// Mock Clerk components
+// Mock Clerk state - use a getter function so it's evaluated at render time
+const mockClerkState = {
+  isSignedIn: false,
+}
+
 vi.mock('@clerk/clerk-react', () => ({
   ClerkProvider: ({ children }: { children: React.ReactNode }) => <div data-testid="clerk-provider">{children}</div>,
   SignedIn: ({ children }: { children: React.ReactNode }) => {
-    const isSignedIn = vi.mocked(useAuth).mockReturnValue({ isSignedIn: true } as any)
-    return isSignedIn ? <div data-testid="signed-in">{children}</div> : null
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (mockClerkState as any).isSignedIn ? <div data-testid="signed-in">{children}</div> : null
   },
   SignedOut: ({ children }: { children: React.ReactNode }) => {
-    const isSignedIn = vi.mocked(useAuth).mockReturnValue({ isSignedIn: false } as any)
-    return !isSignedIn ? <div data-testid="signed-out">{children}</div> : null
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return !(mockClerkState as any).isSignedIn ? <div data-testid="signed-out">{children}</div> : null
   },
   SignInButton: ({ children }: { children: React.ReactNode }) => (
     <button data-testid="sign-in-button">{children}</button>
@@ -20,14 +23,12 @@ vi.mock('@clerk/clerk-react', () => ({
   UserButton: ({ afterSignOutUrl }: { afterSignOutUrl?: string }) => (
     <button data-testid="user-button" data-signout-url={afterSignOutUrl}>User Menu</button>
   ),
-  useAuth: vi.fn(),
+  useAuth: () => ({ isSignedIn: mockClerkState.isSignedIn }),
 }))
-
-// Import useAuth after mocking
-import { useAuth } from '@clerk/clerk-react'
 
 describe('App Component', () => {
   beforeEach(() => {
+    mockClerkState.isSignedIn = false // Reset to unauthenticated
     vi.clearAllMocks()
   })
 
@@ -37,7 +38,7 @@ describe('App Component', () => {
   })
 
   it('displays landing page for unauthenticated users', () => {
-    vi.mocked(useAuth).mockReturnValue({ isSignedIn: false } as any)
+    mockClerkState.isSignedIn = false
 
     render(<App />)
 
@@ -46,7 +47,7 @@ describe('App Component', () => {
   })
 
   it('shows sign-in button for unauthenticated users', () => {
-    vi.mocked(useAuth).mockReturnValue({ isSignedIn: false } as any)
+    mockClerkState.isSignedIn = false
 
     render(<App />)
 
@@ -69,6 +70,10 @@ describe('App Component', () => {
 })
 
 describe('Landing Page', () => {
+  beforeEach(() => {
+    mockClerkState.isSignedIn = false
+  })
+
   it('displays main heading', () => {
     render(<App />)
 
@@ -83,8 +88,12 @@ describe('Landing Page', () => {
 })
 
 describe('Authentication Flow', () => {
+  beforeEach(() => {
+    mockClerkState.isSignedIn = false
+  })
+
   it('shows UserButton when signed in', () => {
-    vi.mocked(useAuth).mockReturnValue({ isSignedIn: true } as any)
+    mockClerkState.isSignedIn = true
 
     render(<App />)
 
@@ -92,7 +101,7 @@ describe('Authentication Flow', () => {
   })
 
   it('does not show sign-in button when signed in', () => {
-    vi.mocked(useAuth).mockReturnValue({ isSignedIn: true } as any)
+    mockClerkState.isSignedIn = true
 
     render(<App />)
 
