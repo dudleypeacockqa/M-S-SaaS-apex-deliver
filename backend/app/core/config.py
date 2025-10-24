@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     clerk_publishable_key: str
     clerk_secret_key: str
     clerk_webhook_secret: str = ""
+    clerk_jwt_algorithm: str = "RS256"  # Clerk uses RS256 for JWT signing
 
     # Security
     secret_key: str
