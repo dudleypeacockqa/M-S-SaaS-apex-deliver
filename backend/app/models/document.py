@@ -11,11 +11,11 @@ from sqlalchemy import (
     Index,
     CheckConstraint,
 )
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.db.base import Base
+from app.db.types import GUID
 
 
 class Folder(Base):
@@ -23,14 +23,14 @@ class Folder(Base):
 
     __tablename__ = "folders"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
     name = Column(String(255), nullable=False)
-    deal_id = Column(UUID(as_uuid=True), ForeignKey("deals.id"), nullable=False)
-    parent_folder_id = Column(UUID(as_uuid=True), ForeignKey("folders.id"), nullable=True)
+    deal_id = Column(GUID(), ForeignKey("deals.id"), nullable=False)
+    parent_folder_id = Column(GUID(), ForeignKey("folders.id"), nullable=True)
     organization_id = Column(
-        UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
+        GUID(), ForeignKey("organizations.id"), nullable=False
     )
-    created_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    created_by = Column(GUID(), ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -62,20 +62,20 @@ class Document(Base):
 
     __tablename__ = "documents"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
     name = Column(String(255), nullable=False)  # Original filename
     file_key = Column(String(500), nullable=False, unique=True)  # Storage key
     file_size = Column(BigInteger, nullable=False)  # Bytes
     file_type = Column(String(100), nullable=False)  # MIME type
-    deal_id = Column(UUID(as_uuid=True), ForeignKey("deals.id"), nullable=False)
-    folder_id = Column(UUID(as_uuid=True), ForeignKey("folders.id"), nullable=True)
+    deal_id = Column(GUID(), ForeignKey("deals.id"), nullable=False)
+    folder_id = Column(GUID(), ForeignKey("folders.id"), nullable=True)
     organization_id = Column(
-        UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
+        GUID(), ForeignKey("organizations.id"), nullable=False
     )
-    uploaded_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    uploaded_by = Column(GUID(), ForeignKey("users.id"), nullable=False)
     version = Column(Integer, default=1, nullable=False)
     parent_document_id = Column(
-        UUID(as_uuid=True), ForeignKey("documents.id"), nullable=True
+        GUID(), ForeignKey("documents.id"), nullable=True
     )
     archived_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -86,14 +86,19 @@ class Document(Base):
     folder = relationship("Folder", back_populates="documents")
     organization = relationship("Organization")
     uploader = relationship("User", foreign_keys=[uploaded_by])
+    # Version control: parent document has many versions (children)
     versions = relationship(
         "Document",
         back_populates="parent_document",
         cascade="all, delete-orphan",
-        remote_side=[id],
+        foreign_keys=[parent_document_id],
     )
+    # Version control: child version references parent document
     parent_document = relationship(
-        "Document", back_populates="versions", remote_side=[parent_document_id]
+        "Document",
+        back_populates="versions",
+        remote_side=[id],
+        foreign_keys=[parent_document_id],
     )
     permissions = relationship(
         "DocumentPermission", back_populates="document", cascade="all, delete-orphan"
@@ -120,17 +125,17 @@ class DocumentPermission(Base):
 
     __tablename__ = "document_permissions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    document_id = Column(UUID(as_uuid=True), ForeignKey("documents.id"), nullable=True)
-    folder_id = Column(UUID(as_uuid=True), ForeignKey("folders.id"), nullable=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
+    document_id = Column(GUID(), ForeignKey("documents.id"), nullable=True)
+    folder_id = Column(GUID(), ForeignKey("folders.id"), nullable=True)
+    user_id = Column(GUID(), ForeignKey("users.id"), nullable=False)
     permission_level = Column(
         String(20), nullable=False
     )  # viewer, editor, owner
     organization_id = Column(
-        UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
+        GUID(), ForeignKey("organizations.id"), nullable=False
     )
-    granted_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    granted_by = Column(GUID(), ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
@@ -164,14 +169,14 @@ class DocumentAccessLog(Base):
 
     __tablename__ = "document_access_logs"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    document_id = Column(UUID(as_uuid=True), ForeignKey("documents.id"), nullable=False)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
+    document_id = Column(GUID(), ForeignKey("documents.id"), nullable=False)
+    user_id = Column(GUID(), ForeignKey("users.id"), nullable=False)
     action = Column(String(50), nullable=False)  # view, download, upload, delete
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(String(500), nullable=True)
     organization_id = Column(
-        UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
+        GUID(), ForeignKey("organizations.id"), nullable=False
     )
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
