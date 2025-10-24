@@ -35,6 +35,19 @@ Thumbs.db
 coverage/
 htmlcov/
 .pytest_cache/
+.coverage
+test_results.txt
+
+# Ignore test databases
+*.db
+test_*.db
+
+# Ignore TypeScript build info
+*.tsbuildinfo
+
+# Ignore generated Vite files
+vite.config.js
+vite.config.d.ts
 
 # Ignore local file storage
 uploads/
