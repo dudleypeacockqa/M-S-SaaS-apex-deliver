@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import App from './App'
 
 // Mock Clerk state - use a getter function so it's evaluated at render time
@@ -26,6 +27,15 @@ vi.mock('@clerk/clerk-react', () => ({
   useAuth: () => ({ isSignedIn: mockClerkState.isSignedIn }),
 }))
 
+// Helper to render App with MemoryRouter
+const renderApp = (initialEntries = ['/']) => {
+  return render(
+    <MemoryRouter initialEntries={initialEntries}>
+      <App />
+    </MemoryRouter>
+  )
+}
+
 describe('App Component', () => {
   beforeEach(() => {
     mockClerkState.isSignedIn = false // Reset to unauthenticated
@@ -33,14 +43,14 @@ describe('App Component', () => {
   })
 
   it('renders without crashing', () => {
-    render(<App />)
+    renderApp()
     expect(screen.getByTestId('clerk-provider')).toBeInTheDocument()
   })
 
   it('displays landing page for unauthenticated users', () => {
     mockClerkState.isSignedIn = false
 
-    render(<App />)
+    renderApp()
 
     expect(screen.getByText(/M&A Intelligence Platform/i)).toBeInTheDocument()
     expect(screen.getByText(/Enterprise-grade M&A deal management/i)).toBeInTheDocument()
@@ -49,21 +59,21 @@ describe('App Component', () => {
   it('shows sign-in button for unauthenticated users', () => {
     mockClerkState.isSignedIn = false
 
-    render(<App />)
+    renderApp()
 
     expect(screen.getByTestId('sign-in-button')).toBeInTheDocument()
   })
 
   it('renders dashboard route', () => {
     // This test verifies the routing setup exists
-    render(<App />)
+    renderApp()
 
     // The app should render with BrowserRouter
     expect(screen.getByTestId('clerk-provider')).toBeInTheDocument()
   })
 
   it('wraps app with ClerkProvider', () => {
-    render(<App />)
+    renderApp()
 
     expect(screen.getByTestId('clerk-provider')).toBeInTheDocument()
   })
@@ -75,13 +85,13 @@ describe('Landing Page', () => {
   })
 
   it('displays main heading', () => {
-    render(<App />)
+    renderApp()
 
     expect(screen.getByText('M&A Intelligence Platform')).toBeInTheDocument()
   })
 
   it('displays description text', () => {
-    render(<App />)
+    renderApp()
 
     expect(screen.getByText(/Enterprise-grade M&A deal management/i)).toBeInTheDocument()
   })
@@ -95,7 +105,7 @@ describe('Authentication Flow', () => {
   it('shows UserButton when signed in', () => {
     mockClerkState.isSignedIn = true
 
-    render(<App />)
+    renderApp()
 
     expect(screen.getByTestId('user-button')).toBeInTheDocument()
   })
@@ -103,7 +113,7 @@ describe('Authentication Flow', () => {
   it('does not show sign-in button when signed in', () => {
     mockClerkState.isSignedIn = true
 
-    render(<App />)
+    renderApp()
 
     expect(screen.queryByTestId('sign-in-button')).not.toBeInTheDocument()
   })

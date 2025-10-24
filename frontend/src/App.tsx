@@ -1,5 +1,12 @@
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { AuthErrorBoundary } from './components/auth/AuthErrorBoundary'
+import { ProtectedRoute } from './components/auth/ProtectedRoute'
+import { Dashboard } from './pages/Dashboard'
+import { DealPipeline } from './pages/deals/DealPipeline'
+import { DealDetails } from './pages/deals/DealDetails'
+import { AdminDashboard } from './pages/admin/AdminDashboard'
+import { UserManagement } from './pages/admin/UserManagement'
 
 // Import Clerk publishable key from environment
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -52,9 +59,9 @@ function LandingPage() {
         </div>
       </SignedOut>
       <SignedIn>
-        <div style={{ 
-          background: 'white', 
-          padding: '2rem', 
+        <div style={{
+          background: 'white',
+          padding: '2rem',
           borderRadius: '8px',
           boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
           color: '#333',
@@ -62,52 +69,22 @@ function LandingPage() {
         }}>
           <p style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>✅ You're signed in!</p>
           <UserButton afterSignOutUrl="/" />
-        </div>
-      </SignedIn>
-    </div>
-  )
-}
-
-// Dashboard component (protected route)
-function Dashboard() {
-  return (
-    <div style={{ 
-      minHeight: '100vh', 
-      padding: '2rem',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
-    }}>
-      <header style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '2rem',
-        padding: '1rem',
-        background: '#f8f9fa',
-        borderRadius: '8px'
-      }}>
-        <h1 style={{ margin: 0 }}>Dashboard</h1>
-        <UserButton afterSignOutUrl="/" />
-      </header>
-      <main>
-        <div style={{
-          background: 'white',
-          padding: '2rem',
-          borderRadius: '8px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          <h2>Welcome to your M&A Intelligence Platform</h2>
-          <p>This is a protected route. Only authenticated users can see this.</p>
-          <div style={{ marginTop: '2rem' }}>
-            <h3>Next Steps:</h3>
-            <ul>
-              <li>✅ Frontend authentication working (DEV-002 Complete)</li>
-              <li>🔄 Protected routing (DEV-003 - In Progress)</li>
-              <li>⏳ Backend Clerk sync (DEV-004 - Planned)</li>
-              <li>⏳ RBAC implementation (DEV-005 - Planned)</li>
-            </ul>
+          <div style={{ marginTop: '1rem' }}>
+            <a
+              href="/dashboard"
+              style={{
+                color: '#667eea',
+                textDecoration: 'none',
+                fontWeight: '600',
+                display: 'inline-block',
+                marginTop: '0.5rem'
+              }}
+            >
+              Go to Dashboard →
+            </a>
           </div>
         </div>
-      </main>
+      </SignedIn>
     </div>
   )
 }
@@ -116,20 +93,63 @@ function Dashboard() {
 function App() {
   return (
     <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route 
-            path="/dashboard" 
-            element={
-              <SignedIn>
-                <Dashboard />
-              </SignedIn>
-            } 
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthErrorBoundary>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+
+            {/* Protected Routes - Dashboard */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected Routes - Deals */}
+            <Route
+              path="/deals"
+              element={
+                <ProtectedRoute>
+                  <DealPipeline />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/deals/:dealId"
+              element={
+                <ProtectedRoute>
+                  <DealDetails />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected Routes - Admin (requires admin role) */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <UserManagement />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Catch-all redirect to home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+      </AuthErrorBoundary>
     </ClerkProvider>
   )
 }
