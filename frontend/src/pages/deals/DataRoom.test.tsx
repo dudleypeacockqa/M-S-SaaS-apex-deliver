@@ -41,7 +41,7 @@ const renderDataRoom = () => {
   );
 };
 
-describe.skip('DataRoom - Folder Management', () => {
+describe('DataRoom - Folder Management', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Default mock responses
@@ -208,7 +208,7 @@ describe('DataRoom - Document Operations', () => {
     });
   });
 
-  it.skip('should display upload button', async () => {
+  it('should display upload button', async () => {
     renderDataRoom();
 
     await waitFor(() => {
