@@ -21,13 +21,13 @@ const TestComponent = () => <div data-testid="protected-content">Protected Conte
 
 describe('ProtectedRoute Component', () => {
   beforeEach(() => {
-    mockIsSignedIn = false
-    mockIsLoaded = true
+    mockClerkState.isSignedIn = false
+    mockClerkState.isLoaded = true
     vi.clearAllMocks()
   })
 
   it('should redirect to sign-in when user is not authenticated', async () => {
-    mockIsSignedIn = false
+    mockClerkState.isSignedIn = false
 
     render(
       <MemoryRouter initialEntries={["/protected"]}>
@@ -50,7 +50,7 @@ describe('ProtectedRoute Component', () => {
   })
 
   it('should render children when user is authenticated', () => {
-    mockIsSignedIn = true
+    mockClerkState.isSignedIn = true
 
     render(
       <MemoryRouter initialEntries={["/protected"]}>
@@ -71,8 +71,8 @@ describe('ProtectedRoute Component', () => {
   })
 
   it('should show loading spinner during auth check', () => {
-    mockIsLoaded = false
-    mockIsSignedIn = false
+    mockClerkState.isLoaded = false
+    mockClerkState.isSignedIn = false
 
     render(
       <MemoryRouter initialEntries={["/protected"]}>
@@ -93,8 +93,8 @@ describe('ProtectedRoute Component', () => {
   })
 
   it('should not render children when loading', () => {
-    mockIsLoaded = false
-    mockIsSignedIn = true
+    mockClerkState.isLoaded = false
+    mockClerkState.isSignedIn = true
 
     render(
       <MemoryRouter initialEntries={["/protected"]}>
@@ -115,7 +115,7 @@ describe('ProtectedRoute Component', () => {
   })
 
   it('should handle role-based access control', () => {
-    mockIsSignedIn = true
+    mockClerkState.isSignedIn = true
 
     render(
       <MemoryRouter initialEntries={["/protected"]}>
@@ -137,7 +137,7 @@ describe('ProtectedRoute Component', () => {
   })
 
   it('should pass additional props to children', () => {
-    mockIsSignedIn = true
+    mockClerkState.isSignedIn = true
 
     render(
       <MemoryRouter initialEntries={["/protected"]}>
@@ -159,8 +159,8 @@ describe('ProtectedRoute Component', () => {
   })
 
   it('should handle authentication state changes', async () => {
-    mockIsSignedIn = false
-    mockIsLoaded = true
+    mockClerkState.isSignedIn = false
+    mockClerkState.isLoaded = true
 
     const { rerender } = render(
       <MemoryRouter initialEntries={["/protected"]}>
@@ -180,7 +180,7 @@ describe('ProtectedRoute Component', () => {
     expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument()
 
     // Simulate user signing in
-    mockIsSignedIn = true
+    mockClerkState.isSignedIn = true
 
     rerender(
       <MemoryRouter initialEntries={["/protected"]}>
@@ -203,7 +203,7 @@ describe('ProtectedRoute Component', () => {
   })
 
   it('should work with nested routes', () => {
-    mockIsSignedIn = true
+    mockClerkState.isSignedIn = true
 
     render(
       <MemoryRouter initialEntries={["/protected"]}>
