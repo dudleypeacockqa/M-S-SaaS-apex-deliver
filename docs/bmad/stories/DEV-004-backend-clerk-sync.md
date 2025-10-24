@@ -32,13 +32,13 @@ Frontend authentication is operational via Clerk, but the FastAPI backend lacks 
 - Ensure tests mock external calls (Clerk JWKS fetch, webhook payloads) to remain deterministic offline.
 
 ## Deliverables
-- [x] Dependency alignment for Clerk SDK (pydantic 2.8.2, httpx 0.27.0, requests 2.32.3).
-- SQLAlchemy model, Pydantic schemas, and Alembic migration for `User`.
-- Webhook router (`backend/app/api/webhooks/clerk.py`) with signature verification.
-- Auth dependency (`backend/app/api/dependencies/auth.py`) plus supporting utilities in `backend/app/core/security.py`.
-- User service providing create, update, delete, and lookup helpers.
-- Pytest coverage for webhook + auth middleware.
-- Updates to `.env.example`, BMAD tracker, and technical specifications reflecting backend auth.
+- [x] Dependency alignment for Clerk SDK (pydantic 2.8.2, httpx 0.27.0, requests 2.32.3, pytest-cov 4.1.0)
+- [x] SQLAlchemy model, Pydantic schemas, and Alembic migration for `User`
+- [x] Webhook router (`backend/app/api/webhooks/clerk.py`) with signature verification
+- [x] Auth dependency (`backend/app/api/dependencies/auth.py`) plus supporting utilities in `backend/app/core/security.py`
+- [x] User service providing create, update, delete, and lookup helpers
+- [x] Pytest coverage for webhook + auth middleware (20 tests, 100% pass rate)
+- [x] Updates to `.env.example`, BMAD tracker, and technical specifications reflecting backend auth
 
 ## Risks & Mitigations
 - **Risk**: External JWKS calls fail during runtime.  
@@ -53,6 +53,10 @@ Frontend authentication is operational via Clerk, but the FastAPI backend lacks 
 - DEV-006: Wire protected backend endpoints for deal pipeline data leveraging the auth layer.
 
 ## Current Progress
-- [x] Verified backend requirements install after resolving version conflicts.
-- [ ] Implement webhook route, auth dependency, and persistence logic.
-- [ ] Add backend pytest coverage; current suite collects 0 tests (needs scaffolding).
+- [x] Verified backend requirements install after resolving version conflicts
+- [x] Implemented webhook route with signature verification (5 event types supported)
+- [x] Implemented auth dependency with JWT verification
+- [x] Implemented user persistence logic with create/update/delete/lookup
+- [x] Added comprehensive pytest coverage (20 tests, 100% pass rate)
+- [x] Fixed configuration issues (CORS, JWT algorithm, environment handling)
+- [x] Story complete and ready for deployment

@@ -1,7 +1,8 @@
 """Application configuration powered by Pydantic settings."""
 from functools import lru_cache
+from typing import Any
 
-from pydantic import Field
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -28,12 +29,15 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 
-    # CORS - comma-separated string of allowed origins
-    cors_origins: str = "http://localhost:5173,http://localhost:3000"
+    # CORS - will be converted to list after init
+    cors_origins: Any = "http://localhost:5173,http://localhost:3000"
 
-    def get_cors_origins_list(self) -> list[str]:
-        """Parse CORS origins string to list."""
-        return [origin.strip() for origin in self.cors_origins.split(",")]
+    @model_validator(mode="after")
+    def parse_cors_origins(self) -> "Settings":
+        """Convert cors_origins from string to list if needed."""
+        if isinstance(self.cors_origins, str):
+            self.cors_origins = [origin.strip() for origin in self.cors_origins.split(",")]
+        return self
 
     # API Keys
     openai_api_key: str = ""

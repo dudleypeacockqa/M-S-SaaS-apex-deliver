@@ -32,12 +32,27 @@ def upgrade() -> None:
         'organizations', 'users'  # Drop old users table too
     ]
 
+    # Note: CASCADE is PostgreSQL-specific, SQLite will fail silently if table doesn't exist
     for table in old_tables:
-        op.execute(f'DROP TABLE IF EXISTS {table} CASCADE')
+        try:
+            op.execute(f'DROP TABLE IF EXISTS {table} CASCADE')
+        except Exception:
+            # SQLite doesn't support CASCADE, try without it
+            try:
+                op.execute(f'DROP TABLE IF EXISTS {table}')
+            except Exception:
+                # Table doesn't exist or can't be dropped, continue
+                pass
 
-    # Drop old enum types
-    op.execute('DROP TYPE IF EXISTS "UserRole" CASCADE')
-    op.execute('DROP TYPE IF EXISTS "userrole" CASCADE')
+    # Drop old enum types (PostgreSQL only, will fail silently on SQLite)
+    try:
+        op.execute('DROP TYPE IF EXISTS "UserRole" CASCADE')
+    except Exception:
+        pass
+    try:
+        op.execute('DROP TYPE IF EXISTS "userrole" CASCADE')
+    except Exception:
+        pass
 
     # Create new users table for M&A platform
     op.create_table(
