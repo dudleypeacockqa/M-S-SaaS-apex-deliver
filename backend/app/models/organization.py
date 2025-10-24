@@ -18,6 +18,7 @@ class Organization(Base):
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name = Column(String(255), nullable=False)
     slug = Column(String(100), unique=True, nullable=False, index=True)
+    subscription_tier = Column(String(50), default="starter", nullable=False)  # starter, professional, enterprise, community
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(
