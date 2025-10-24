@@ -134,6 +134,7 @@ describe('DealDetails', () => {
   });
 
   it('should enter edit mode when Edit button is clicked', async () => {
+    const user = userEvent.setup();
     vi.mocked(dealsApi.getDeal).mockResolvedValue(mockDeal);
 
     renderDealDetails();
@@ -143,15 +144,18 @@ describe('DealDetails', () => {
     });
 
     const editButton = screen.getByText('Edit Deal');
-    editButton.click();
+    await user.click(editButton);
 
     // Should show Save and Cancel buttons in edit mode
-    expect(screen.getByText('Save Changes')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Save Changes')).toBeInTheDocument();
+    });
     expect(screen.getByText('Cancel')).toBeInTheDocument();
     expect(screen.queryByText('Edit Deal')).not.toBeInTheDocument();
   });
 
   it('should call updateDeal API when saving changes', async () => {
+    const user = userEvent.setup();
     vi.mocked(dealsApi.getDeal).mockResolvedValue(mockDeal);
     vi.mocked(dealsApi.updateDeal).mockResolvedValue({
       ...mockDeal,
@@ -165,15 +169,15 @@ describe('DealDetails', () => {
     });
 
     const editButton = screen.getByText('Edit Deal');
-    editButton.click();
+    await user.click(editButton);
 
-    // Change name field
-    const nameInput = screen.getByDisplayValue('Acme Corp Acquisition');
-    nameInput.focus();
-    nameInput.blur();
+    // Wait for edit mode
+    await waitFor(() => {
+      expect(screen.getByText('Save Changes')).toBeInTheDocument();
+    });
 
     const saveButton = screen.getByText('Save Changes');
-    saveButton.click();
+    await user.click(saveButton);
 
     await waitFor(() => {
       expect(dealsApi.updateDeal).toHaveBeenCalledWith('deal-123', expect.any(Object));

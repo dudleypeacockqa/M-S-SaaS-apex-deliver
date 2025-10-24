@@ -90,11 +90,11 @@ export const DealDetails: React.FC = () => {
       const updates = {
         ...(editFormData.name && { name: editFormData.name }),
         ...(editFormData.target_company && { target_company: editFormData.target_company }),
-        ...(editFormData.industry !== undefined && { industry: editFormData.industry }),
-        ...(editFormData.deal_size !== undefined && { deal_size: editFormData.deal_size }),
+        ...(editFormData.industry !== undefined && { industry: editFormData.industry || undefined }),
+        ...(editFormData.deal_size !== undefined && { deal_size: editFormData.deal_size || undefined }),
         ...(editFormData.currency && { currency: editFormData.currency }),
         ...(editFormData.stage && { stage: editFormData.stage }),
-        ...(editFormData.description !== undefined && { description: editFormData.description }),
+        ...(editFormData.description !== undefined && { description: editFormData.description || undefined }),
       };
 
       const updatedDeal = await updateDeal(dealId, updates);
@@ -226,7 +226,7 @@ export const DealDetails: React.FC = () => {
           >
             Back to Pipeline
           </button>
-          {!isEditing && (
+          {!isEditing && !deal.archived_at && (
             <>
               <button
                 onClick={handleEditClick}
