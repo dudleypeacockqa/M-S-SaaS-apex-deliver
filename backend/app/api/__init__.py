@@ -10,3 +10,4 @@ api_router.include_router(clerk.router)
 api_router.include_router(admin.router)
 api_router.include_router(deals.router)
 api_router.include_router(documents.router)
+
