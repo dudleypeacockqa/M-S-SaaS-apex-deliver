@@ -1,231 +1,111 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import { MemoryRouter, Routes, Route } from 'react-router-dom'
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { ProtectedRoute } from './ProtectedRoute'
 
-// Mock Clerk state (using object for reactivity)
-const mockClerkState = {
+const mockAuthState = {
+  isLoaded: true,
   isSignedIn: false,
-  isLoaded: true
 }
 
-// Create mock function that reads from mockClerkState
-const mockUseAuth = vi.fn(() => ({
-  isSignedIn: mockClerkState.isSignedIn,
-  isLoaded: mockClerkState.isLoaded
-}))
+const mockUserState = {
+  isLoaded: true,
+  user: null as { publicMetadata?: { role?: string } } | null,
+}
 
 vi.mock('@clerk/clerk-react', () => ({
-  useAuth: () => mockUseAuth(),
+  useAuth: () => mockAuthState,
+  useUser: () => mockUserState,
 }))
 
-// Test component for protected routes
-const TestComponent = () => <div data-testid="protected-content">Protected Content</div>
+const ProtectedScreen = () => <div data-testid="protected">Protected</div>
+const AdminScreen = () => <div data-testid="admin">Admin</div>
+const SignInScreen = () => <div data-testid="sign-in">Sign in</div>
+const UnauthorizedScreen = () => <div data-testid="unauthorized">Unauthorized</div>
 
-describe('ProtectedRoute Component', () => {
+const renderWithRouter = (initialPath: string, element: React.ReactNode) =>
+  render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <Routes>
+        <Route path="/sign-in" element={<SignInScreen />} />
+        <Route path="/unauthorized" element={<UnauthorizedScreen />} />
+        <Route path="/protected" element={element} />
+      </Routes>
+    </MemoryRouter>,
+  )
+
+describe('ProtectedRoute', () => {
   beforeEach(() => {
-    mockClerkState.isSignedIn = false
-    mockClerkState.isLoaded = true
-    vi.clearAllMocks()
+    mockAuthState.isLoaded = true
+    mockAuthState.isSignedIn = false
+    mockUserState.user = { publicMetadata: { role: 'solo' } }
   })
 
-  it('should redirect to sign-in when user is not authenticated', async () => {
-    mockClerkState.isSignedIn = false
-
-    render(
-      <MemoryRouter initialEntries={["/protected"]}>
-        <Routes>
-          <Route path="/" element={<div data-testid="home">Home</div>} />
-          <Route
-            path="/protected"
-            element={
-              <ProtectedRoute>
-                <TestComponent />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </MemoryRouter>
+  it('redirects unauthenticated users to /sign-in', async () => {
+    renderWithRouter(
+      '/protected',
+      <ProtectedRoute>
+        <ProtectedScreen />
+      </ProtectedRoute>,
     )
 
-    // Should not see protected content
-    expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument()
+    expect(await screen.findByTestId('sign-in')).toBeInTheDocument()
+    expect(screen.queryByTestId('protected')).not.toBeInTheDocument()
   })
 
-  it('should render children when user is authenticated', () => {
-    mockClerkState.isSignedIn = true
+  it('renders protected content when authenticated', () => {
+    mockAuthState.isSignedIn = true
 
-    render(
-      <MemoryRouter initialEntries={["/protected"]}>
-        <Routes>
-          <Route
-            path="/protected"
-            element={
-              <ProtectedRoute>
-                <TestComponent />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </MemoryRouter>
+    renderWithRouter(
+      '/protected',
+      <ProtectedRoute>
+        <ProtectedScreen />
+      </ProtectedRoute>,
     )
 
-    expect(screen.getByTestId('protected-content')).toBeInTheDocument()
+    expect(screen.getByTestId('protected')).toBeInTheDocument()
   })
 
-  it('should show loading spinner during auth check', () => {
-    mockClerkState.isLoaded = false
-    mockClerkState.isSignedIn = false
+  it('shows a loading spinner while auth state is loading', () => {
+    mockAuthState.isLoaded = false
 
-    render(
-      <MemoryRouter initialEntries={["/protected"]}>
-        <Routes>
-          <Route
-            path="/protected"
-            element={
-              <ProtectedRoute>
-                <TestComponent />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </MemoryRouter>
+    renderWithRouter(
+      '/protected',
+      <ProtectedRoute>
+        <ProtectedScreen />
+      </ProtectedRoute>,
     )
 
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument()
   })
 
-  it('should not render children when loading', () => {
-    mockClerkState.isLoaded = false
-    mockClerkState.isSignedIn = true
+  it('redirects to /unauthorized when user lacks required role', async () => {
+    mockAuthState.isSignedIn = true
+    mockUserState.user = { publicMetadata: { role: 'solo' } }
 
-    render(
-      <MemoryRouter initialEntries={["/protected"]}>
-        <Routes>
-          <Route
-            path="/protected"
-            element={
-              <ProtectedRoute>
-                <TestComponent />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </MemoryRouter>
+    renderWithRouter(
+      '/protected',
+      <ProtectedRoute requiredRole="admin">
+        <AdminScreen />
+      </ProtectedRoute>,
     )
 
-    expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument()
+    expect(await screen.findByTestId('unauthorized')).toBeInTheDocument()
+    expect(screen.queryByTestId('admin')).not.toBeInTheDocument()
   })
 
-  it('should handle role-based access control', () => {
-    mockClerkState.isSignedIn = true
+  it('allows access when user has required role', () => {
+    mockAuthState.isSignedIn = true
+    mockUserState.user = { publicMetadata: { role: 'admin' } }
 
-    render(
-      <MemoryRouter initialEntries={["/admin"]}>
-        <Routes>
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <div data-testid="admin-content">Admin Content</div>
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </MemoryRouter>
+    renderWithRouter(
+      '/protected',
+      <ProtectedRoute requiredRole="admin">
+        <AdminScreen />
+      </ProtectedRoute>,
     )
 
-    // For now, should render (we'll implement role checking later)
-    expect(screen.getByTestId('admin-content')).toBeInTheDocument()
-  })
-
-  it('should pass additional props to children', () => {
-    mockClerkState.isSignedIn = true
-
-    render(
-      <MemoryRouter initialEntries={["/protected"]}>
-        <Routes>
-          <Route
-            path="/protected"
-            element={
-              <ProtectedRoute>
-                <div data-testid="custom-prop" data-custom="value">Content</div>
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </MemoryRouter>
-    )
-
-    const element = screen.getByTestId('custom-prop')
-    expect(element).toHaveAttribute('data-custom', 'value')
-  })
-
-  it('should handle authentication state changes', () => {
-    // Test that when user is signed out, content is not rendered
-    mockClerkState.isSignedIn = false
-    mockClerkState.isLoaded = true
-
-    const { unmount } = render(
-      <MemoryRouter initialEntries={["/protected"]}>
-        <Routes>
-          <Route path="/" element={<div data-testid="home">Home</div>} />
-          <Route
-            path="/protected"
-            element={
-              <ProtectedRoute>
-                <TestComponent />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </MemoryRouter>
-    )
-
-    expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument()
-    unmount()
-
-    // Now test with user signed in
-    mockClerkState.isSignedIn = true
-
-    render(
-      <MemoryRouter initialEntries={["/protected"]}>
-        <Routes>
-          <Route
-            path="/protected"
-            element={
-              <ProtectedRoute>
-                <TestComponent />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </MemoryRouter>
-    )
-
-    expect(screen.getByTestId('protected-content')).toBeInTheDocument()
-  })
-
-  it('should work with nested routes', () => {
-    mockClerkState.isSignedIn = true
-
-    render(
-      <MemoryRouter initialEntries={["/deals/123"]}>
-        <Routes>
-          <Route
-            path="/deals/*"
-            element={
-              <ProtectedRoute>
-                <Routes>
-                  <Route path=":dealId" element={<div data-testid="deal-details">Deal Details</div>} />
-                </Routes>
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </MemoryRouter>
-    )
-
-    expect(screen.getByTestId('deal-details')).toBeInTheDocument()
+    expect(screen.getByTestId('admin')).toBeInTheDocument()
   })
 })
