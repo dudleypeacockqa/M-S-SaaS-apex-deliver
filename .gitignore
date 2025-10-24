@@ -48,3 +48,9 @@ _vendor/
 # Ignore duplicate/backup codebases
 ma-saas-platform-v2/
 
+# Ignore sensitive configuration files
+ApexDeliver Environment Variables - Master Reference.md
+TEMP*.md
+NUL
+env.READY_TO_USE
+

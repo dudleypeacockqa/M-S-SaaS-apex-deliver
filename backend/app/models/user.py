@@ -6,7 +6,6 @@ import uuid
 from datetime import datetime, timezone
 
 from sqlalchemy import Boolean, Column, DateTime, Enum, String
-from sqlalchemy.dialects.postgresql import UUID
 
 from app.db.base import Base
 
@@ -25,7 +24,7 @@ class User(Base):
 
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     clerk_user_id = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
     first_name = Column(String, nullable=True)
@@ -41,7 +40,7 @@ class User(Base):
     last_login_at = Column(DateTime(timezone=True), nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
     role = Column(Enum(UserRole, native_enum=False, length=32), default=UserRole.solo, nullable=False)
-    organization_id = Column(UUID(as_uuid=True), nullable=True)
+    organization_id = Column(String(36), nullable=True)
 
     def __repr__(self) -> str:  # pragma: no cover - repr aid
         return f"User(id={self.id!s}, clerk_user_id={self.clerk_user_id!r})"

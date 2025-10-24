@@ -1,88 +1,72 @@
-"""
-M&A Intelligence Platform - Backend API
-FastAPI application with authentication, database, and business logic
-"""
+"""FastAPI application entry point."""
+from __future__ import annotations
+
+from contextlib import asynccontextmanager
+from datetime import datetime
+from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime
-import os
 
-# Initialize FastAPI app
-app = FastAPI(
-    title="M&A Intelligence Platform API",
-    description="Backend API for M&A SaaS Platform",
-    version="2.0.0",
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
-)
+from app.api import api_router
+from app.core.config import settings
+from app.core.database import close_db, init_db
 
-# CORS configuration
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173,https://apexdeliver.com,https://100daysandbeyond.com").split(",")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=CORS_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """Application lifespan events."""
+    # Startup
+    if settings.debug:
+        await init_db()  # Create tables in development
+    yield
+    # Shutdown
+    await close_db()
 
-# Health check endpoint
-@app.get("/health")
-async def health_check():
-    """
-    Health check endpoint for monitoring and load balancers
-    """
-    return {
-        "status": "healthy",
-        "service": "ma-saas-backend",
-        "version": "2.0.0",
-        "timestamp": datetime.utcnow().isoformat(),
-        "environment": os.getenv("ENVIRONMENT", "production"),
-    }
 
-# Root endpoint
+def create_application() -> FastAPI:
+    """Instantiate and configure the FastAPI application."""
+    application = FastAPI(
+        title=settings.app_name,
+        debug=settings.debug,
+        lifespan=lifespan,
+    )
+
+    # CORS middleware
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # Include API router
+    application.include_router(api_router)
+
+    return application
+
+
+app = create_application()
+
+
 @app.get("/")
-async def root():
-    """
-    Root endpoint with API information
-    """
+async def read_root() -> dict[str, str]:
+    """Root endpoint."""
     return {
         "message": "M&A Intelligence Platform API",
         "version": "2.0.0",
-        "docs": "/api/docs",
-        "health": "/health",
+        "status": "running",
     }
 
-# API v1 router placeholder
-@app.get("/api/v1/status")
-async def api_status():
-    """
-    API status endpoint
-    """
+
+@app.get("/health")
+async def health_check() -> dict[str, str | bool]:
+    """Health check endpoint for Render."""
     return {
-        "api_version": "v1",
-        "status": "operational",
+        "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
+        "clerk_configured": bool(settings.clerk_secret_key),
+        "database_configured": bool(settings.database_url),
+        "webhook_configured": bool(settings.clerk_webhook_secret),
     }
-
-# Startup event
-@app.on_event("startup")
-async def startup_event():
-    """
-    Application startup tasks
-    """
-    print("🚀 M&A Intelligence Platform API starting...")
-    print(f"📝 Environment: {os.getenv('ENVIRONMENT', 'production')}")
-    print(f"🔗 CORS Origins: {CORS_ORIGINS}")
-    print("✅ Backend ready!")
-
-# Shutdown event
-@app.on_event("shutdown")
-async def shutdown_event():
-    """
-    Application shutdown tasks
-    """
-    print("👋 M&A Intelligence Platform API shutting down...")
-

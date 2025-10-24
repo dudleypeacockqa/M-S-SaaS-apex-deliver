@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 from app.models.user import UserRole
 
@@ -19,9 +19,7 @@ class UserBase(BaseModel):
     is_active: bool = True
     last_login_at: Optional[datetime] = None
 
-    model_config = {
-        "from_attributes": True,
-    }
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserRead(UserBase):
