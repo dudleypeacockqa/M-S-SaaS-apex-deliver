@@ -110,6 +110,7 @@ def create_user(db_session) -> Callable[..., User]:
         last_name: str | None = None,
         organization_id: str | None = None,
         last_login_at: datetime | None = None,
+        created_at_override: datetime | None = None,
     ) -> User:
         if isinstance(role, str):
             role_value = UserRole(role)
@@ -125,6 +126,8 @@ def create_user(db_session) -> Callable[..., User]:
             organization_id=organization_id,
             last_login_at=last_login_at,
         )
+        if created_at_override:
+            user.created_at = created_at_override
         db_session.add(user)
         db_session.commit()
         db_session.refresh(user)
