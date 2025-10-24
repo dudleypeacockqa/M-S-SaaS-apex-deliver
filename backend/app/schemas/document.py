@@ -88,6 +88,7 @@ class DocumentUploadResponse(BaseModel):
 class DocumentListParams(BaseModel):
     """Schema for document list query parameters."""
 
+    deal_id: Optional[UUID] = None
     folder_id: Optional[UUID] = None
     search: Optional[str] = Field(None, max_length=255)
     file_type: Optional[str] = Field(None, max_length=100)

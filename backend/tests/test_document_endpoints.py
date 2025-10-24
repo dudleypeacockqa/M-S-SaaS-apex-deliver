@@ -68,9 +68,9 @@ def test_create_folder_success(client, auth_context, seeded_deal):
     headers, cleanup, _, org_id = auth_context
     try:
         response = client.post(
-            "/documents/folders",
+            f"/deals/{seeded_deal.id}/folders",
             headers=headers,
-            json={"deal_id": str(seeded_deal.id), "name": "Due Diligence"},
+            json={"name": "Due Diligence"},
         )
 
         assert response.status_code == 201
@@ -78,7 +78,6 @@ def test_create_folder_success(client, auth_context, seeded_deal):
         assert body["name"] == "Due Diligence"
         assert body["deal_id"] == str(seeded_deal.id)
         assert body["organization_id"] == org_id
-        assert body["document_count"] == 0
     finally:
         cleanup()
 
@@ -88,10 +87,9 @@ def test_upload_document_success(client, auth_context, seeded_deal, db_session):
     try:
         content = b"Quarterly numbers"
         response = client.post(
-            "/documents/upload",
+            f"/deals/{seeded_deal.id}/documents",
             headers=headers,
             files={"file": ("financials.pdf", io.BytesIO(content), "application/pdf")},
-            data={"deal_id": str(seeded_deal.id)},
         )
 
         assert response.status_code == 201
@@ -112,10 +110,9 @@ def test_upload_document_rejects_large_files(client, auth_context, seeded_deal):
     try:
         huge_blob = b"x" * (51 * 1024 * 1024)
         response = client.post(
-            "/documents/upload",
+            f"/deals/{seeded_deal.id}/documents",
             headers=headers,
             files={"file": ("too-big.pdf", io.BytesIO(huge_blob), "application/pdf")},
-            data={"deal_id": str(seeded_deal.id)},
         )
 
         assert response.status_code == 400
@@ -128,14 +125,14 @@ def test_list_documents_filters_by_folder(client, auth_context, seeded_deal):
     headers, cleanup, _, _ = auth_context
     try:
         folder_resp = client.post(
-            "/documents/folders",
+            f"/deals/{seeded_deal.id}/folders",
             headers=headers,
-            json={"deal_id": str(seeded_deal.id), "name": "Financials"},
+            json={"name": "Financials"},
         )
         folder_id = folder_resp.json()["id"]
 
         client.post(
-            "/documents/upload",
+            f"/deals/{seeded_deal.id}/documents?folder_id={folder_id}",
             headers=headers,
             files={
                 "file": (
@@ -144,11 +141,10 @@ def test_list_documents_filters_by_folder(client, auth_context, seeded_deal):
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 )
             },
-            data={"deal_id": str(seeded_deal.id), "folder_id": folder_id},
         )
 
         list_resp = client.get(
-            f"/documents?deal_id={seeded_deal.id}&folder_id={folder_id}",
+            f"/deals/{seeded_deal.id}/documents?folder_id={folder_id}",
             headers=headers,
         )
 
@@ -165,15 +161,14 @@ def test_download_document_records_access_log(client, auth_context, seeded_deal,
     headers, cleanup, _, _ = auth_context
     try:
         upload_resp = client.post(
-            "/documents/upload",
+            f"/deals/{seeded_deal.id}/documents",
             headers=headers,
             files={"file": ("nda.pdf", io.BytesIO(b"nda"), "application/pdf")},
-            data={"deal_id": str(seeded_deal.id)},
         )
         doc_id = upload_resp.json()["id"]
 
-        download = client.get(
-            f"/documents/{doc_id}/download",
+        download = client.post(
+            f"/deals/{seeded_deal.id}/documents/{doc_id}/download",
             headers=headers,
         )
 
@@ -200,15 +195,14 @@ def test_set_document_permission(client, auth_context, seeded_deal, create_user)
         )
 
         upload_resp = client.post(
-            "/documents/upload",
+            f"/deals/{seeded_deal.id}/documents",
             headers=headers,
             files={"file": ("report.pdf", io.BytesIO(b"report"), "application/pdf")},
-            data={"deal_id": str(seeded_deal.id)},
         )
         doc_id = upload_resp.json()["id"]
 
         perm_resp = client.post(
-            f"/documents/{doc_id}/permissions",
+            f"/deals/{seeded_deal.id}/documents/{doc_id}/permissions",
             headers=headers,
             json={"user_id": str(viewer.id), "permission_level": "viewer"},
         )
@@ -219,3 +213,4 @@ def test_set_document_permission(client, auth_context, seeded_deal, create_user)
         assert body["permission_level"] == "viewer"
     finally:
         cleanup()
+

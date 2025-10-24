@@ -2,16 +2,23 @@
 from __future__ import annotations
 
 import os
+import sys
 from collections.abc import Callable, Iterator
 from datetime import datetime, timezone
+from pathlib import Path
 from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
+from httpx import AsyncClient
+from jose import jwt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from jose import jwt
-from httpx import AsyncClient
+
+# Ensure the backend directory is on sys.path for "app" imports
+BACKEND_ROOT = Path(__file__).resolve().parents[1]
+if str(BACKEND_ROOT) not in sys.path:  # pragma: no cover - import guard
+    sys.path.insert(0, str(BACKEND_ROOT))
 
 # Configure environment before importing application modules
 # Force override all settings for test environment
