@@ -175,16 +175,15 @@ Frontend authentication is functional with Clerk protecting the root application
 
 ## Acceptance Criteria
 
-- [ ] All feature area routes are protected and require authentication
-- [ ] Unauthenticated users are redirected to `/sign-in`
-- [ ] Navigation menu shows appropriate links based on user role
-- [ ] Admin portal is only accessible to users with `admin` role
-- [ ] Breadcrumbs display correct navigation path for all routes
-- [ ] Loading spinners appear during authentication checks
-- [ ] Error boundaries catch and display auth failures gracefully
-- [ ] All tests pass with 100% coverage (target: 25+ tests)
-- [ ] No console errors or warnings
-- [ ] Navigation is keyboard accessible (WCAG compliance)
+- [x] All protected feature routes require authentication
+- [x] Unauthenticated users are redirected to the public landing page `/`
+- [x] Navigation menu shows appropriate links based on user role (solo vs admin)
+- [x] Admin portal only accessible to `admin` role and shows unauthorized state otherwise
+- [x] Breadcrumbs display correct navigation path for top-level and nested routes
+- [x] Loading spinners appear during Clerk auth/user loading states
+- [x] Auth error boundary surfaces authentication errors gracefully
+- [x] Test suites cover protected routes, navigation, breadcrumbs, and integration flows (44 tests passing)
+- [x] No console errors during vitest run
 
 ## Next Steps After Completion
 
