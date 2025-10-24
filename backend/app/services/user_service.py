@@ -21,19 +21,24 @@ def _extract_profile_image(data: dict[str, Any]) -> Optional[str]:
     return data.get("profile_image_url")
 
 
-def _extract_role(data: dict[str, Any]) -> UserRole:
+def _extract_role(data: dict[str, Any]) -> Optional[UserRole]:
     role_value = (
         (data.get("public_metadata") or {}).get("role")
         or (data.get("unsafe_metadata") or {}).get("role")
     )
+    if not role_value:
+        return None
     try:
         return UserRole(role_value)
-    except Exception:
-        return UserRole.solo
+    except ValueError:
+        return None
 
 
 def _extract_organization_id(data: dict[str, Any]) -> Optional[str]:
-    return (data.get("organization_id") or (data.get("unsafe_metadata") or {}).get("organization_id"))
+    return (
+        data.get("organization_id")
+        or (data.get("unsafe_metadata") or {}).get("organization_id")
+    )
 
 
 def create_user_from_clerk(db: Session, clerk_data: dict[str, Any]) -> User:
@@ -44,13 +49,14 @@ def create_user_from_clerk(db: Session, clerk_data: dict[str, Any]) -> User:
         return update_user_from_clerk(db, clerk_data["id"], clerk_data)
 
     email = _extract_email(clerk_data)
+    role = _extract_role(clerk_data) or UserRole.solo
     user = User(
         clerk_user_id=clerk_data["id"],
         email=email or "",
         first_name=clerk_data.get("first_name"),
         last_name=clerk_data.get("last_name"),
         profile_image_url=_extract_profile_image(clerk_data),
-        role=_extract_role(clerk_data),
+        role=role,
         organization_id=_extract_organization_id(clerk_data),
     )
     db.add(user)
@@ -67,12 +73,15 @@ def update_user_from_clerk(db: Session, clerk_user_id: str, clerk_data: dict[str
     email = _extract_email(clerk_data)
     if email:
         user.email = email
-    user.first_name = clerk_data.get("first_name", user.first_name)
-    user.last_name = clerk_data.get("last_name", user.last_name)
-    user.profile_image_url = _extract_profile_image(clerk_data) or user.profile_image_url
-    user.role = _extract_role(clerk_data) or user.role
-    org_id = _extract_organization_id(clerk_data)
-    if org_id is not None:
+    if (first_name := clerk_data.get("first_name")) is not None:
+        user.first_name = first_name
+    if (last_name := clerk_data.get("last_name")) is not None:
+        user.last_name = last_name
+    if (profile := _extract_profile_image(clerk_data)) is not None:
+        user.profile_image_url = profile
+    if (role := _extract_role(clerk_data)) is not None:
+        user.role = role
+    if (org_id := _extract_organization_id(clerk_data)) is not None:
         user.organization_id = org_id
 
     db.commit()

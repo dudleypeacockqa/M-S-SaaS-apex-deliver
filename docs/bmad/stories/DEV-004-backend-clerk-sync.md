@@ -32,6 +32,7 @@ Frontend authentication is operational via Clerk, but the FastAPI backend lacks 
 - Ensure tests mock external calls (Clerk JWKS fetch, webhook payloads) to remain deterministic offline.
 
 ## Deliverables
+- [x] Dependency alignment for Clerk SDK (pydantic 2.8.2, httpx 0.27.0, requests 2.32.3).
 - SQLAlchemy model, Pydantic schemas, and Alembic migration for `User`.
 - Webhook router (`backend/app/api/webhooks/clerk.py`) with signature verification.
 - Auth dependency (`backend/app/api/dependencies/auth.py`) plus supporting utilities in `backend/app/core/security.py`.
@@ -50,3 +51,8 @@ Frontend authentication is operational via Clerk, but the FastAPI backend lacks 
 ## Next Steps After Completion
 - DEV-005: Implement RBAC and feature flag enforcement using stored user roles.
 - DEV-006: Wire protected backend endpoints for deal pipeline data leveraging the auth layer.
+
+## Current Progress
+- [x] Verified backend requirements install after resolving version conflicts.
+- [ ] Implement webhook route, auth dependency, and persistence logic.
+- [ ] Add backend pytest coverage; current suite collects 0 tests (needs scaffolding).

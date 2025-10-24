@@ -36,7 +36,10 @@ async def handle_clerk_webhook(request: Request, db: Session = Depends(get_db)) 
     if event_type == "user.created":
         user_service.create_user_from_clerk(db, data)
     elif event_type == "user.updated":
-        user_service.update_user_from_clerk(db, data["id"], data)
+        try:
+            user_service.update_user_from_clerk(db, data["id"], data)
+        except ValueError:
+            user_service.create_user_from_clerk(db, data)
     elif event_type == "user.deleted":
         user_service.delete_user(db, data.get("id", ""))
     elif event_type in {"session.created", "session.ended"}:

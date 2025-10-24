@@ -11,7 +11,7 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 @router.get("/me", response_model=UserRead)
-def read_current_user(current_user: User = Depends(get_current_user)) -> User:
+def read_current_user(current_user: User = Depends(get_current_user)) -> UserRead:
     """Return the authenticated user."""
 
-    return current_user
+    return UserRead.model_validate(current_user)

@@ -117,6 +117,7 @@
 **Objective**: Expose Clerk session data to FastAPI backend, enabling server-side authentication verification and user context.
 
 **Deliverables**:
+- [x] Backend dependency alignment for Clerk SDK (httpx 0.27.0, pydantic 2.8.2, requests 2.32.3)
 - [ ] Clerk webhook endpoints in FastAPI
 - [ ] User model synchronized with Clerk
 - [ ] JWT verification middleware
