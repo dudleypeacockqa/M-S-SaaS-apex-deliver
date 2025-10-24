@@ -52,7 +52,7 @@ export const RootLayout = () => {
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <SignedOut>
-              <SignInButton mode="modal">
+              <SignInButton mode="modal" afterSignInUrl="/dashboard">
                 Sign In
               </SignInButton>
               <Link
@@ -71,7 +71,7 @@ export const RootLayout = () => {
               <span style={{ color: "#1f2937", fontWeight: 600 }}>
                 {user?.firstName ?? "Account"}
               </span>
-              <UserButton />
+              <UserButton afterSignOutUrl="/" />
             </SignedIn>
           </div>
         </div>
@@ -83,5 +83,3 @@ export const RootLayout = () => {
     </div>
   )
 }
-
-
