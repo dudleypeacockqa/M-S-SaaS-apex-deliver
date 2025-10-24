@@ -67,7 +67,6 @@ TEMP*.md
 NUL
 nul
 env.READY_TO_USE
-PRODUCTION_DEPLOYMENT_CHECKLIST.md
 
 # Ignore Render API responses
 render_*.json
