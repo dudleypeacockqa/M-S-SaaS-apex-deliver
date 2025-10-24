@@ -88,7 +88,9 @@
 1. Implement RBAC using stored Clerk roles (DEV-005).
 2. Secure backend feature endpoints with the new dependency stack.
 
----`r`n`r`n### OPS-005: Platform Status Audit ✅
+---
+
+### OPS-005: Platform Status Audit ✅
 **Status**: Completed  
 **Completed**: October 24, 2025  
 **Duration**: ~0.25 hours

@@ -2,12 +2,15 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
+from datetime import datetime, timezone
+from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from jose import jwt
 
 # Configure environment before importing application modules
 # Force override all settings for test environment
@@ -25,6 +28,8 @@ from app.db import session as session_module  # noqa: E402
 from app.db.base import Base  # noqa: E402
 from app.db.session import get_db  # noqa: E402
 from app.main import app  # noqa: E402
+from app.models.user import User, UserRole  # noqa: E402
+from app.models.organization import Organization  # noqa: E402
 
 # Clear the settings cache to ensure test configuration is used
 get_settings.cache_clear()
@@ -82,6 +87,87 @@ def db_session(engine):
         yield session
     finally:
         session.close()
+
+
+def _make_token(clerk_user_id: str) -> str:
+    payload = {
+        "sub": clerk_user_id,
+        "iat": int(datetime.now(timezone.utc).timestamp()),
+    }
+    return jwt.encode(payload, settings.clerk_secret_key, algorithm=settings.clerk_jwt_algorithm)
+
+
+@pytest.fixture()
+def create_user(db_session) -> Callable[..., User]:
+    """Factory fixture to create a user record."""
+
+    def _create_user(
+        *,
+        clerk_user_id: str | None = None,
+        email: str | None = None,
+        role: UserRole | str = UserRole.solo,
+        first_name: str | None = None,
+        last_name: str | None = None,
+        organization_id: str | None = None,
+        last_login_at: datetime | None = None,
+    ) -> User:
+        if isinstance(role, str):
+            role_value = UserRole(role)
+        else:
+            role_value = role
+
+        user = User(
+            clerk_user_id=clerk_user_id or f"clerk_{uuid4()}",
+            email=email or f"user_{uuid4()}@example.com",
+            first_name=first_name,
+            last_name=last_name,
+            role=role_value,
+            organization_id=organization_id,
+            last_login_at=last_login_at,
+        )
+        db_session.add(user)
+        db_session.commit()
+        db_session.refresh(user)
+        return user
+
+    return _create_user
+
+
+@pytest.fixture()
+def create_organization(db_session) -> Callable[..., Organization]:
+    """Factory fixture to create an organization record."""
+
+    def _create_org(
+        *,
+        name: str | None = None,
+        subscription_tier: str = "starter",
+    ) -> Organization:
+        slug = (name or f"org-{uuid4().hex[:8]}").lower().replace(" ", "-")
+        org = Organization(
+            name=name or f"Organization {uuid4().hex[:6]}",
+            slug=slug,
+            subscription_tier=subscription_tier,
+        )
+        db_session.add(org)
+        db_session.commit()
+        db_session.refresh(org)
+        return org
+
+    return _create_org
+
+
+@pytest.fixture()
+def auth_headers_admin(create_user) -> dict[str, str]:
+    admin_user = create_user(role=UserRole.admin, email="admin@example.com")
+    token = _make_token(admin_user.clerk_user_id)
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture()
+def auth_headers_solo(create_user) -> dict[str, str]:
+    solo_user = create_user(role=UserRole.solo, email="solo@example.com")
+    token = _make_token(solo_user.clerk_user_id)
+    return {"Authorization": f"Bearer {token}"}
 
 
 @pytest.fixture()

@@ -88,7 +88,7 @@ describe('Clerk authentication routing', () => {
   })
 
   it('renders the appropriate header action depending on auth state', () => {
-    render(
+    const { rerender } = render(
       <MemoryRouter>
         <AppRoutes />
       </MemoryRouter>
@@ -101,7 +101,7 @@ describe('Clerk authentication routing', () => {
       user: { firstName: 'Morgan' },
     })
 
-    render(
+    rerender(
       <MemoryRouter>
         <AppRoutes />
       </MemoryRouter>
