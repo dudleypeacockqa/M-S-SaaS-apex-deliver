@@ -66,6 +66,26 @@
 
 ## 🚧 In Progress Stories
 
+### QA-002: Frontend Routing Regression Triage
+**Status**: Completed
+**Priority**: Critical
+**Opened**: October 24, 2025
+**Closed**: October 24, 2025
+
+**Summary**: Vitest regressions for protected routing resolved by updating Clerk test doubles, primary navigation labelling, and breadcrumb data for pipeline routes.
+
+**Resolution Highlights**:
+- Clerk mocks now respect sign-in state and expose SignIn/SignUp placeholders needed in vitest suites.
+- AppLayout primary navigation carries an aria-label and breadcrumb config includes the Deals crumb expected by tests.
+- Vitest suite passing (21/21) after npm run test -- --run at 10:16 BST on Oct 24 2025.
+
+**Next Monitoring Steps**:
+1. Re-run vitest after any navigation or breadcrumb change.
+2. Reference QA-002 story for future protected-routing regressions.
+
+---
+
+
 ### DEV-003: Expand Protected Routing & Feature Areas
 **Status**: Planned  
 **Priority**: High  

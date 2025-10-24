@@ -14,6 +14,7 @@ build/
 
 # Ignore Python virtual environment
 venv/
+.venv/
 
 # Ignore Python bytecode
 __pycache__/
@@ -37,4 +38,13 @@ htmlcov/
 
 # Ignore local file storage
 uploads/
+
+# Ignore Claude Code workspace
+.claude/
+
+# Ignore vendor packages
+_vendor/
+
+# Ignore duplicate/backup codebases
+ma-saas-platform-v2/
 

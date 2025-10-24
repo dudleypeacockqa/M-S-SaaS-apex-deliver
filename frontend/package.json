@@ -1,8 +1,9 @@
 {
-  "name": "frontend",
+  "name": "ma-saas-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
   "type": "module",
+  "description": "M&A Intelligence Platform - Frontend Application",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
