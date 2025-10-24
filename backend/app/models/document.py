@@ -43,9 +43,13 @@ class Folder(Base):
         "Folder",
         back_populates="parent",
         cascade="all, delete-orphan",
-        remote_side=[id],
+        single_parent=True,
     )
-    parent = relationship("Folder", back_populates="children", remote_side=[parent_folder_id])
+    parent = relationship(
+        "Folder",
+        back_populates="children",
+        remote_side="Folder.id",
+    )
 
     __table_args__ = (
         Index("idx_folders_deal_id", "deal_id"),

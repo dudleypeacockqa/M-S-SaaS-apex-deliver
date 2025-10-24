@@ -302,3 +302,49 @@ def enterprise_user(db_session):
     db_session.commit()
     db_session.refresh(enterprise_user)
     return enterprise_user
+
+
+@pytest.fixture()
+def test_deal(db_session, solo_user):
+    """Create and return a test deal for document tests."""
+    from app.models.deal import Deal
+
+    deal = Deal(
+        id="test-deal-id",
+        name="Test M&A Deal",
+        target_company="Acme Corp",
+        stage="due_diligence",
+        organization_id=solo_user.organization_id,
+        owner_id=solo_user.id,
+        deal_size=5000000,
+        currency="USD"
+    )
+    db_session.add(deal)
+    db_session.commit()
+    db_session.refresh(deal)
+    return deal
+
+
+@pytest.fixture()
+def test_user(solo_user):
+    """Alias for solo_user to match test expectations."""
+    return solo_user
+
+
+@pytest.fixture()
+def auth_headers(solo_user):
+    """Provide authentication headers using solo_user."""
+    from app.api.dependencies.auth import get_current_user
+
+    # Override the dependency to return our test solo user
+    def override_get_current_user():
+        return solo_user
+
+    app.dependency_overrides[get_current_user] = override_get_current_user
+
+    # Return headers (actual token doesn't matter since we override dependency)
+    headers = {"Authorization": "Bearer mock_solo_token"}
+    yield headers
+
+    # Clean up override after test
+    app.dependency_overrides.pop(get_current_user, None)
