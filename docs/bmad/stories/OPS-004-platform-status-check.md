@@ -20,3 +20,7 @@
 2. Monitor subsequent commits to ensure Render auto-deploys continue to succeed.
 3. Keep BMAD progress tracker in sync with future deployment checks.
 
+### Update 2025-10-24T12:34Z
+- Backend deploy dep-d3tmx0f69nk73emvkbg from commit 2e28ca72b9269f6703156659cde9f48c33409531 built and returned consecutive 200 responses on /health.
+- Frontend build dep-d3tmx3jm7s1s73fbm2g0 failed on first attempt due to Vite config typings; fixed by isolating Vitest config and rerunning build locally.
+- Next redeploy pending after pushing updated config.

@@ -61,6 +61,7 @@ class User(Base):
     is_active = Column(Boolean, default=True, nullable=False)
     role = Column(Enum(UserRole, native_enum=False, length=32), default=UserRole.solo, nullable=False)
     organization_id = Column(String(36), nullable=True)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     def __repr__(self) -> str:  # pragma: no cover - repr aid
         return f"User(id={self.id!s}, clerk_user_id={self.clerk_user_id!r})"

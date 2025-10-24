@@ -82,3 +82,134 @@ def db_session(engine):
         yield session
     finally:
         session.close()
+
+
+@pytest.fixture()
+def admin_user(db_session):
+    """Create and return a test admin user."""
+    from app.models.user import User
+    from app.models.organization import Organization
+
+    # Create test organization
+    org = Organization(
+        id="test-org-admin",
+        name="Admin Test Org",
+        slug="admin-test-org",
+        subscription_tier="enterprise"
+    )
+    db_session.add(org)
+
+    # Create admin user
+    admin_user = User(
+        id="test-admin-user-id",
+        clerk_user_id="test_clerk_admin_user",
+        email="admin@test.com",
+        first_name="Admin",
+        last_name="User",
+        role="admin",
+        organization_id="test-org-admin"
+    )
+    db_session.add(admin_user)
+    db_session.commit()
+    db_session.refresh(admin_user)
+    return admin_user
+
+
+@pytest.fixture()
+def solo_user(db_session):
+    """Create and return a test solo user."""
+    from app.models.user import User
+    from app.models.organization import Organization
+
+    # Create test organization
+    org = Organization(
+        id="test-org-solo",
+        name="Solo Test Org",
+        slug="solo-test-org",
+        subscription_tier="starter"
+    )
+    db_session.add(org)
+
+    # Create solo user
+    solo_user = User(
+        id="test-solo-user-id",
+        clerk_user_id="test_clerk_solo_user",
+        email="solo@test.com",
+        first_name="Solo",
+        last_name="User",
+        role="solo",
+        organization_id="test-org-solo"
+    )
+    db_session.add(solo_user)
+    db_session.commit()
+    db_session.refresh(solo_user)
+    return solo_user
+
+
+@pytest.fixture()
+def auth_headers_admin(admin_user):
+    """Provide authentication headers for an admin user."""
+    from app.api.dependencies.auth import get_current_user
+
+    # Override the dependency to return our test admin user
+    def override_get_current_user():
+        return admin_user
+
+    app.dependency_overrides[get_current_user] = override_get_current_user
+
+    # Return headers (actual token doesn't matter since we override dependency)
+    headers = {"Authorization": "Bearer mock_admin_token"}
+    yield headers
+
+    # Clean up override after test
+    app.dependency_overrides.pop(get_current_user, None)
+
+
+@pytest.fixture()
+def auth_headers_solo(solo_user):
+    """Provide authentication headers for a solo (non-admin) user."""
+    from app.api.dependencies.auth import get_current_user
+
+    # Override the dependency to return our test solo user
+    def override_get_current_user():
+        return solo_user
+
+    app.dependency_overrides[get_current_user] = override_get_current_user
+
+    # Return headers
+    headers = {"Authorization": "Bearer mock_solo_token"}
+    yield headers
+
+    # Clean up override after test
+    app.dependency_overrides.pop(get_current_user, None)
+
+
+@pytest.fixture()
+def enterprise_user(db_session):
+    """Create and return a test enterprise user."""
+    from app.models.user import User
+    from app.models.organization import Organization
+
+    # Create test organization
+    org = Organization(
+        id="test-org-enterprise",
+        name="Enterprise Test Org",
+        slug="enterprise-test-org",
+        subscription_tier="enterprise"
+    )
+    db_session.add(org)
+
+    # Create enterprise user
+    enterprise_user = User(
+        id="test-enterprise-user-id",
+        clerk_user_id="test_clerk_enterprise_user",
+        email="enterprise@test.com",
+        first_name="Enterprise",
+        last_name="User",
+        role="enterprise",
+        organization_id="test-org-enterprise"
+    )
+    db_session.add(enterprise_user)
+    db_session.commit()
+    db_session.refresh(enterprise_user)
+    return enterprise_user
