@@ -1,7 +1,7 @@
 import { Link, Outlet } from "react-router-dom"
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/clerk-react"
 
-export const RootLayout: React.FC = () => {
+export const RootLayout = () => {
   const { user } = useUser()
 
   return (
