@@ -110,6 +110,6 @@ describe('Integration: Routing Flow', () => {
 
     renderRoutes(['/admin'])
 
-    expect(screen.getByTestId('user-button')).toBeInTheDocument()
+    expect(screen.getByTestId('admin-dashboard')).toBeInTheDocument()
   })
 })

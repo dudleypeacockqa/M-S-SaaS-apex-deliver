@@ -1,79 +1,103 @@
-import { Link, useLocation } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { useUser, UserButton } from '@clerk/clerk-react'
 
-/**
- * NavigationMenu Component
- *
- * Main navigation menu with role-based link visibility.
- * Shows different navigation items based on user role:
- * - Solo: Dashboard, Deals
- * - Growth: Dashboard, Deals, Analytics
- * - Enterprise: All Growth features + API
- * - Admin: All features + Admin Portal
- */
-export const NavigationMenu: React.FC = () => {
-  const location = useLocation()
-  const { user } = useUser()
+import type { UserRole } from '../auth/ProtectedRoute'
 
-  // Get user role from Clerk public metadata
-  const userRole = (user?.publicMetadata?.role as string) || 'solo'
+const linkPalette = {
+  default: '#0f172a',
+  muted: '#64748b',
+  highlight: '#4f46e5',
+}
 
-  const isActive = (path: string) => {
-    return location.pathname.startsWith(path)
+interface NavigationItem {
+  to: string
+  label: string
+  roles: UserRole[]
+  exact?: boolean
+}
+
+const navigationItems: NavigationItem[] = [
+  {
+    to: '/dashboard/overview',
+    label: 'Dashboard',
+    roles: ['solo', 'growth', 'enterprise', 'admin'],
+  },
+  {
+    to: '/deals/pipeline',
+    label: 'Deals',
+    roles: ['solo', 'growth', 'enterprise', 'admin'],
+  },
+  {
+    to: '/admin/dashboard',
+    label: 'Admin',
+    roles: ['admin'],
+  },
+]
+
+const resolveRole = (role: unknown): UserRole => {
+  if (role === 'growth' || role === 'enterprise' || role === 'admin') {
+    return role
   }
+  return 'solo'
+}
 
-  const linkStyle = (path: string) => ({
-    padding: '0.5rem 1rem',
-    borderRadius: '6px',
-    textDecoration: 'none',
-    color: isActive(path) ? '#667eea' : '#333',
-    background: isActive(path) ? '#f3f4f6' : 'transparent',
-    fontWeight: isActive(path) ? '600' : '400',
-    transition: 'all 0.2s'
-  })
+export const NavigationMenu: React.FC = () => {
+  const { user } = useUser()
+  const role = resolveRole(user?.publicMetadata?.role)
 
-  // Determine which links to show based on role
-  const showAdminLink = userRole === 'admin'
+  const visibleLinks = navigationItems.filter((item) => item.roles.includes(role))
 
   return (
     <nav
-      role="navigation"
-      aria-label="Main navigation"
+      aria-label="Primary navigation"
       style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1rem',
-        padding: '1rem 2rem',
-        background: 'white',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
         position: 'sticky',
         top: 0,
-        zIndex: 1000
+        zIndex: 50,
+        background: 'white',
+        borderBottom: '1px solid #e2e8f0',
       }}
     >
-      {/* Logo / Brand */}
-      <div style={{ marginRight: 'auto', fontWeight: '700', fontSize: '1.25rem', color: '#667eea' }}>
-        ApexDeliver
+      <div
+        style={{
+          margin: '0 auto',
+          maxWidth: '1200px',
+          padding: '1rem 1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1.5rem',
+        }}
+      >
+        <span style={{ fontWeight: 700, fontSize: '1.25rem', color: linkPalette.highlight }}>
+          ApexDeliver
+        </span>
+
+        <div style={{ display: 'flex', gap: '0.75rem', flexGrow: 1 }}>
+          {visibleLinks.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.exact}
+              style={({ isActive }) => ({
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.5rem 0.9rem',
+                borderRadius: '9999px',
+                textDecoration: 'none',
+                fontWeight: isActive ? 600 : 500,
+                color: isActive ? linkPalette.highlight : linkPalette.muted,
+                background: isActive ? 'rgba(79, 70, 229, 0.12)' : 'transparent',
+                transition: 'color 0.2s ease',
+              })}
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </div>
+
+        <UserButton data-testid="user-button" afterSignOutUrl="/" />
       </div>
-
-      {/* Navigation Links */}
-      <Link to="/dashboard" style={linkStyle('/dashboard')}>
-        Dashboard
-      </Link>
-
-      <Link to="/deals" style={linkStyle('/deals')}>
-        Deals
-      </Link>
-
-      {/* Admin link - only visible to admins */}
-      {showAdminLink && (
-        <Link to="/admin" style={linkStyle('/admin')}>
-          Admin
-        </Link>
-      )}
-
-      {/* User button from Clerk */}
-      <UserButton afterSignOutUrl="/" />
     </nav>
   )
 }

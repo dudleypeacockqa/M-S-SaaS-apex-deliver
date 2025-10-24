@@ -99,6 +99,6 @@ describe('AppRoutes', () => {
 
     renderApp(['/admin'])
 
-    expect(screen.getByTestId('user-button')).toBeInTheDocument()
+    expect(screen.getByTestId('admin-dashboard')).toBeInTheDocument()
   })
 })
