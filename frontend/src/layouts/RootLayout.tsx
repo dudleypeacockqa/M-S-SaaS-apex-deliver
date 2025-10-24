@@ -52,7 +52,7 @@ export const RootLayout = () => {
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <SignedOut>
-              <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
+              <SignInButton mode="modal">
                 Sign In
               </SignInButton>
               <Link
