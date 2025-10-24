@@ -15,7 +15,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.db.base import Base
-from app.db.types import GUID
 
 
 class Folder(Base):
@@ -23,14 +22,14 @@ class Folder(Base):
 
     __tablename__ = "folders"
 
-    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name = Column(String(255), nullable=False)
-    deal_id = Column(GUID(), ForeignKey("deals.id"), nullable=False)
-    parent_folder_id = Column(GUID(), ForeignKey("folders.id"), nullable=True)
+    deal_id = Column(String(36), ForeignKey("deals.id"), nullable=False)
+    parent_folder_id = Column(String(36), ForeignKey("folders.id"), nullable=True)
     organization_id = Column(
-        GUID(), ForeignKey("organizations.id"), nullable=False
+        String(36), ForeignKey("organizations.id"), nullable=False
     )
-    created_by = Column(GUID(), ForeignKey("users.id"), nullable=False)
+    created_by = Column(String(36), ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -66,20 +65,20 @@ class Document(Base):
 
     __tablename__ = "documents"
 
-    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name = Column(String(255), nullable=False)  # Original filename
     file_key = Column(String(500), nullable=False, unique=True)  # Storage key
     file_size = Column(BigInteger, nullable=False)  # Bytes
     file_type = Column(String(100), nullable=False)  # MIME type
-    deal_id = Column(GUID(), ForeignKey("deals.id"), nullable=False)
-    folder_id = Column(GUID(), ForeignKey("folders.id"), nullable=True)
+    deal_id = Column(String(36), ForeignKey("deals.id"), nullable=False)
+    folder_id = Column(String(36), ForeignKey("folders.id"), nullable=True)
     organization_id = Column(
-        GUID(), ForeignKey("organizations.id"), nullable=False
+        String(36), ForeignKey("organizations.id"), nullable=False
     )
-    uploaded_by = Column(GUID(), ForeignKey("users.id"), nullable=False)
+    uploaded_by = Column(String(36), ForeignKey("users.id"), nullable=False)
     version = Column(Integer, default=1, nullable=False)
     parent_document_id = Column(
-        GUID(), ForeignKey("documents.id"), nullable=True
+        String(36), ForeignKey("documents.id"), nullable=True
     )
     archived_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -129,17 +128,17 @@ class DocumentPermission(Base):
 
     __tablename__ = "document_permissions"
 
-    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
-    document_id = Column(GUID(), ForeignKey("documents.id"), nullable=True)
-    folder_id = Column(GUID(), ForeignKey("folders.id"), nullable=True)
-    user_id = Column(GUID(), ForeignKey("users.id"), nullable=False)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    document_id = Column(String(36), ForeignKey("documents.id"), nullable=True)
+    folder_id = Column(String(36), ForeignKey("folders.id"), nullable=True)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     permission_level = Column(
         String(20), nullable=False
     )  # viewer, editor, owner
     organization_id = Column(
-        GUID(), ForeignKey("organizations.id"), nullable=False
+        String(36), ForeignKey("organizations.id"), nullable=False
     )
-    granted_by = Column(GUID(), ForeignKey("users.id"), nullable=False)
+    granted_by = Column(String(36), ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
@@ -173,14 +172,14 @@ class DocumentAccessLog(Base):
 
     __tablename__ = "document_access_logs"
 
-    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
-    document_id = Column(GUID(), ForeignKey("documents.id"), nullable=False)
-    user_id = Column(GUID(), ForeignKey("users.id"), nullable=False)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    document_id = Column(String(36), ForeignKey("documents.id"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     action = Column(String(50), nullable=False)  # view, download, upload, delete
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(String(500), nullable=True)
     organization_id = Column(
-        GUID(), ForeignKey("organizations.id"), nullable=False
+        String(36), ForeignKey("organizations.id"), nullable=False
     )
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
@@ -201,3 +200,4 @@ class DocumentAccessLog(Base):
             f"<DocumentAccessLog(document_id={self.document_id}, "
             f"action={self.action}, user_id={self.user_id})>"
         )
+

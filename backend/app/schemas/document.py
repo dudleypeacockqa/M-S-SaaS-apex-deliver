@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, field_validator
 class FolderCreate(BaseModel):
     """Schema for creating a folder."""
 
+    deal_id: UUID = Field(..., description="Deal UUID this folder belongs to")
     name: str = Field(..., min_length=1, max_length=255, description="Folder name")
     parent_folder_id: Optional[UUID] = Field(None, description="Parent folder UUID")
 
@@ -209,3 +210,4 @@ MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB in bytes
 
 # Maximum versions per document
 MAX_VERSIONS_PER_DOCUMENT = 20
+

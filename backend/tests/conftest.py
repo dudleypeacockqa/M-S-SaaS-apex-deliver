@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from jose import jwt
+from httpx import AsyncClient
 
 # Configure environment before importing application modules
 # Force override all settings for test environment
@@ -348,3 +349,22 @@ def auth_headers(solo_user):
 
     # Clean up override after test
     app.dependency_overrides.pop(get_current_user, None)
+
+
+@pytest.fixture()
+async def async_client(engine):
+    """Return an AsyncClient with overridden database dependency."""
+
+    SessionTesting = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+
+    async def _get_db_override():
+        db = SessionTesting()
+        try:
+            yield db
+        finally:
+            db.close()
+
+    app.dependency_overrides[get_db] = _get_db_override
+    async with AsyncClient(app=app, base_url="http://testserver") as client:
+        yield client
+    app.dependency_overrides.pop(get_db, None)

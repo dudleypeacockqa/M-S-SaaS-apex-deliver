@@ -1,559 +1,282 @@
-"""Service layer for Document and Folder CRUD operations."""
+"""Document service layer for secure data room operations."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import BinaryIO, Optional
-from uuid import UUID
+import math
+import os
+from typing import Optional, Tuple
+from uuid import UUID, uuid4
 
-from fastapi import UploadFile
-from sqlalchemy import select, func, or_
+from fastapi import HTTPException, UploadFile, status
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.document import Document, Folder, DocumentPermission, DocumentAccessLog
+from app.models.deal import Deal
+from app.models.document import (
+    Document,
+    DocumentAccessLog,
+    DocumentPermission,
+    Folder,
+)
 from app.models.user import User
 from app.schemas.document import (
-    FolderCreate,
-    FolderUpdate,
-    DocumentListParams,
-    PermissionCreate,
     ALLOWED_FILE_TYPES,
     MAX_FILE_SIZE,
-    MAX_VERSIONS_PER_DOCUMENT,
+    DocumentListParams,
+    DocumentMetadata,
+    DocumentUploadResponse,
+    FolderCreate,
+    FolderResponse,
+    PaginatedDocuments,
+    PermissionCreate,
+    PermissionResponse,
 )
 from app.services.storage_service import get_storage_service
 
 
-# ============================================================================
-# FOLDER OPERATIONS
-# ============================================================================
+def _ensure_deal_access(db: Session, deal_id: str, user: User) -> Deal:
+    deal = db.get(Deal, deal_id)
+    if deal is None or deal.organization_id != user.organization_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deal not found")
+    return deal
+
+
+def _ensure_folder_access(
+    db: Session, folder_id: Optional[str], deal: Deal
+) -> Optional[Folder]:
+    if folder_id is None:
+        return None
+    folder = db.get(Folder, folder_id)
+    if folder is None or folder.deal_id != str(deal.id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Folder not found")
+    return folder
 
 
 def create_folder(
-    folder_data: FolderCreate,
+    db: Session,
+    *,
+    payload: FolderCreate,
     deal_id: str,
-    user: User,
-    db: Session
-) -> Folder:
-    """
-    Create a new folder for document organization.
-
-    Args:
-        folder_data: Folder creation data
-        deal_id: Deal ID this folder belongs to
-        user: User creating the folder
-        db: Database session
-
-    Returns:
-        Created folder instance
-
-    Raises:
-        ValueError: If parent folder doesn't exist or circular reference
-    """
-    # Validate parent folder exists if specified
-    if folder_data.parent_folder_id:
-        parent = db.scalar(
-            select(Folder).where(
-                Folder.id == folder_data.parent_folder_id,
-                Folder.organization_id == user.organization_id
-            )
-        )
-        if not parent:
-            raise ValueError("Parent folder not found")
+    current_user: User,
+) -> FolderResponse:
+    deal = _ensure_deal_access(db, deal_id, current_user)
+    parent_folder = _ensure_folder_access(db, payload.parent_folder_id and str(payload.parent_folder_id), deal)
 
     folder = Folder(
-        name=folder_data.name,
-        deal_id=deal_id,
-        parent_folder_id=folder_data.parent_folder_id,
-        organization_id=user.organization_id,
-        created_by=user.id,
+        id=str(uuid4()),
+        name=payload.name.strip(),
+        deal_id=str(deal.id),
+        parent_folder_id=str(parent_folder.id) if parent_folder else None,
+        organization_id=current_user.organization_id,
+        created_by=current_user.id,
     )
     db.add(folder)
     db.commit()
     db.refresh(folder)
-    return folder
 
-
-def list_folders(deal_id: str, organization_id: UUID, db: Session) -> list[Folder]:
-    """
-    List all folders for a deal.
-
-    Args:
-        deal_id: Deal ID
-        organization_id: Organization ID for multi-tenant isolation
-        db: Database session
-
-    Returns:
-        List of folders (hierarchical)
-    """
-    return list(db.scalars(
-        select(Folder).where(
-            Folder.deal_id == deal_id,
-            Folder.organization_id == organization_id
-        ).order_by(Folder.created_at)
-    ))
-
-
-def get_folder_by_id(
-    folder_id: str,
-    organization_id: UUID,
-    db: Session
-) -> Optional[Folder]:
-    """
-    Get folder by ID (organization-scoped).
-
-    Args:
-        folder_id: Folder ID
-        organization_id: Organization ID for multi-tenant isolation
-        db: Database session
-
-    Returns:
-        Folder instance or None
-    """
-    return db.scalar(
-        select(Folder).where(
-            Folder.id == folder_id,
-            Folder.organization_id == organization_id
-        )
+    return FolderResponse(
+        id=UUID(folder.id),
+        name=folder.name,
+        deal_id=folder.deal_id,
+        parent_folder_id=UUID(folder.parent_folder_id) if folder.parent_folder_id else None,
+        organization_id=UUID(folder.organization_id),
+        created_by=UUID(folder.created_by),
+        created_at=folder.created_at,
+        updated_at=folder.updated_at,
+        children=[],
+        document_count=0,
     )
-
-
-def update_folder(
-    folder: Folder,
-    folder_data: FolderUpdate,
-    db: Session
-) -> Folder:
-    """
-    Update folder metadata.
-
-    Args:
-        folder: Existing folder instance
-        folder_data: Update data
-        db: Database session
-
-    Returns:
-        Updated folder instance
-    """
-    if folder_data.name is not None:
-        folder.name = folder_data.name
-    if folder_data.parent_folder_id is not None:
-        folder.parent_folder_id = folder_data.parent_folder_id
-
-    db.commit()
-    db.refresh(folder)
-    return folder
-
-
-def delete_folder(folder: Folder, db: Session) -> None:
-    """
-    Delete folder (must be empty).
-
-    Args:
-        folder: Folder to delete
-        db: Database session
-
-    Raises:
-        ValueError: If folder contains documents or subfolders
-    """
-    # Check for documents
-    doc_count = db.scalar(
-        select(func.count()).select_from(Document).where(Document.folder_id == folder.id)
-    )
-    if doc_count > 0:
-        raise ValueError(f"Folder contains {doc_count} documents. Cannot delete.")
-
-    # Check for subfolders
-    subfolder_count = db.scalar(
-        select(func.count()).select_from(Folder).where(Folder.parent_folder_id == folder.id)
-    )
-    if subfolder_count > 0:
-        raise ValueError(f"Folder contains {subfolder_count} subfolders. Cannot delete.")
-
-    db.delete(folder)
-    db.commit()
-
-
-# ============================================================================
-# DOCUMENT OPERATIONS
-# ============================================================================
 
 
 async def upload_document(
+    db: Session,
+    *,
     file: UploadFile,
     deal_id: str,
-    user: User,
-    db: Session,
-    folder_id: Optional[str] = None
-) -> Document:
-    """
-    Upload document and create metadata record.
+    current_user: User,
+    folder_id: Optional[str] = None,
+) -> DocumentUploadResponse:
+    deal = _ensure_deal_access(db, deal_id, current_user)
+    folder = _ensure_folder_access(db, folder_id, deal)
 
-    Args:
-        file: Uploaded file
-        deal_id: Deal ID
-        user: User uploading the document
-        db: Database session
-        folder_id: Optional folder ID to organize document
-
-    Returns:
-        Created document instance
-
-    Raises:
-        ValueError: If file type/size invalid or folder not found
-    """
-    # Validate file type
     if file.content_type not in ALLOWED_FILE_TYPES:
-        raise ValueError(
-            f"File type '{file.content_type}' not allowed. "
-            f"Allowed types: {', '.join(ALLOWED_FILE_TYPES)}"
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unsupported file type",
         )
 
-    # Validate file size
-    file_content = await file.read()
-    file_size = len(file_content)
+    file.file.seek(0, os.SEEK_END)
+    file_size = file.file.tell()
+    file.file.seek(0)
+
     if file_size > MAX_FILE_SIZE:
-        raise ValueError(
-            f"File size {file_size} bytes exceeds maximum {MAX_FILE_SIZE} bytes"
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File size exceeds 50MB limit",
         )
 
-    # Validate folder exists if specified
-    if folder_id:
-        folder = db.scalar(
-            select(Folder).where(
-                Folder.id == folder_id,
-                Folder.organization_id == user.organization_id
-            )
-        )
-        if not folder:
-            raise ValueError("Folder not found")
-
-    # Generate storage key
     storage = get_storage_service()
-    file_key = storage.generate_file_key(
-        organization_id=str(user.organization_id),
-        deal_id=deal_id,
-        filename=file.filename or "unknown",
-        user_id=str(user.id)
+    storage_key = storage.generate_file_key(
+        current_user.organization_id,
+        deal_id,
+        file.filename or "document",
+        current_user.id,
     )
 
-    # Save file to storage
-    await file.seek(0)  # Reset file pointer
-    await storage.save_file(
-        file_key=file_key,
-        file_stream=file.file,
-        organization_id=str(user.organization_id)
-    )
+    await storage.save_file(storage_key, file.file, current_user.organization_id)
 
-    # Create metadata record
     document = Document(
-        name=file.filename or "untitled",
-        file_key=file_key,
+        id=str(uuid4()),
+        name=file.filename or "document",
+        file_key=storage_key,
         file_size=file_size,
         file_type=file.content_type or "application/octet-stream",
-        deal_id=deal_id,
+        deal_id=str(deal.id),
         folder_id=folder_id,
-        organization_id=user.organization_id,
-        uploaded_by=user.id,
+        organization_id=current_user.organization_id,
+        uploaded_by=current_user.id,
         version=1,
     )
     db.add(document)
+    db.flush()
+
+    _log_access(db, document, current_user, action="upload")
+
     db.commit()
     db.refresh(document)
 
-    # Log access
-    log_document_access(
-        document_id=document.id,
-        user=user,
-        action="upload",
-        db=db
+    return DocumentUploadResponse(
+        id=UUID(document.id),
+        name=document.name,
+        file_size=document.file_size,
+        file_type=document.file_type,
+        version=document.version,
+        created_at=document.created_at,
     )
-
-    return document
 
 
 def list_documents(
-    deal_id: str,
-    organization_id: UUID,
+    db: Session,
+    *,
     params: DocumentListParams,
-    db: Session
-) -> tuple[list[Document], int]:
-    """
-    List documents with pagination and filtering.
+    current_user: User,
+) -> PaginatedDocuments:
+    deal = _ensure_deal_access(db, str(params.deal_id), current_user)
 
-    Args:
-        deal_id: Deal ID
-        organization_id: Organization ID for multi-tenant isolation
-        params: Query parameters
-        db: Database session
-
-    Returns:
-        Tuple of (document list, total count)
-    """
-    # Base query
-    query = select(Document).where(
-        Document.deal_id == deal_id,
-        Document.organization_id == organization_id
+    query = db.query(Document).filter(
+        Document.deal_id == str(deal.id),
+        Document.organization_id == current_user.organization_id,
     )
 
-    # Filter: archived
-    if not params.include_archived:
-        query = query.where(Document.archived_at.is_(None))
-
-    # Filter: folder
     if params.folder_id:
-        query = query.where(Document.folder_id == params.folder_id)
+        query = query.filter(Document.folder_id == str(params.folder_id))
+    if not params.include_archived:
+        query = query.filter(Document.archived_at.is_(None))
 
-    # Filter: file type
-    if params.file_type:
-        query = query.where(Document.file_type == params.file_type)
+    total = query.count()
+    items = (
+        query.order_by(Document.created_at.desc())
+        .offset((params.page - 1) * params.per_page)
+        .limit(params.per_page)
+        .all()
+    )
 
-    # Filter: uploaded by
-    if params.uploaded_by:
-        query = query.where(Document.uploaded_by == params.uploaded_by)
-
-    # Filter: date range
-    if params.uploaded_after:
-        query = query.where(Document.created_at >= params.uploaded_after)
-    if params.uploaded_before:
-        query = query.where(Document.created_at <= params.uploaded_before)
-
-    # Filter: search
-    if params.search:
-        search_term = f"%{params.search}%"
-        query = query.where(Document.name.ilike(search_term))
-
-    # Get total count
-    total = db.scalar(select(func.count()).select_from(query.subquery()))
-
-    # Pagination
-    offset = (params.page - 1) * params.per_page
-    query = query.order_by(Document.created_at.desc()).offset(offset).limit(params.per_page)
-
-    documents = list(db.scalars(query))
-    return documents, total or 0
-
-
-def get_document_by_id(
-    document_id: str,
-    organization_id: UUID,
-    db: Session
-) -> Optional[Document]:
-    """
-    Get document by ID (organization-scoped).
-
-    Args:
-        document_id: Document ID
-        organization_id: Organization ID for multi-tenant isolation
-        db: Database session
-
-    Returns:
-        Document instance or None
-    """
-    return db.scalar(
-        select(Document).where(
-            Document.id == document_id,
-            Document.organization_id == organization_id
+    metadata_items = [
+        DocumentMetadata(
+            id=UUID(item.id),
+            name=item.name,
+            file_size=item.file_size,
+            file_type=item.file_type,
+            deal_id=item.deal_id,
+            folder_id=UUID(item.folder_id) if item.folder_id else None,
+            organization_id=UUID(item.organization_id),
+            uploaded_by=UUID(item.uploaded_by),
+            version=item.version,
+            parent_document_id=UUID(item.parent_document_id) if item.parent_document_id else None,
+            archived_at=item.archived_at,
+            created_at=item.created_at,
+            updated_at=item.updated_at,
+            uploader_name=None,
         )
+        for item in items
+    ]
+
+    pages = math.ceil(total / params.per_page) if params.per_page else 1
+
+    return PaginatedDocuments(
+        items=metadata_items,
+        total=total,
+        page=params.page,
+        per_page=params.per_page,
+        pages=pages,
     )
 
 
-def update_document_metadata(
-    document: Document,
-    folder_id: Optional[str],
-    db: Session
-) -> Document:
-    """
-    Update document metadata (e.g., move to folder).
-
-    Args:
-        document: Existing document instance
-        folder_id: New folder ID (or None to move to root)
-        db: Database session
-
-    Returns:
-        Updated document instance
-    """
-    document.folder_id = folder_id
-    db.commit()
-    db.refresh(document)
-    return document
-
-
-def archive_document(document: Document, db: Session) -> Document:
-    """
-    Soft-delete document (archive).
-
-    Args:
-        document: Document to archive
-        db: Database session
-
-    Returns:
-        Archived document instance
-    """
-    document.archived_at = datetime.now(timezone.utc)
-    db.commit()
-    db.refresh(document)
-    return document
-
-
-def restore_document(document: Document, db: Session) -> Document:
-    """
-    Restore archived document.
-
-    Args:
-        document: Archived document to restore
-        db: Database session
-
-    Returns:
-        Restored document instance
-    """
-    document.archived_at = None
-    db.commit()
-    db.refresh(document)
-    return document
-
-
-def permanently_delete_document(document: Document, db: Session) -> None:
-    """
-    Permanently delete document and file.
-
-    Args:
-        document: Document to delete
-        db: Database session
-    """
-    # Delete physical file
-    storage = get_storage_service()
-    storage.delete_file(
-        file_key=document.file_key,
-        organization_id=str(document.organization_id)
-    )
-
-    # Delete database record
-    db.delete(document)
-    db.commit()
-
-
-# ============================================================================
-# PERMISSION OPERATIONS
-# ============================================================================
-
-
-def grant_document_permission(
+def get_document_for_download(
+    db: Session,
+    *,
     document_id: str,
-    permission_data: PermissionCreate,
-    granter: User,
-    db: Session
-) -> DocumentPermission:
-    """
-    Grant user permission to document.
+    current_user: User,
+) -> Tuple[Document, str]:
+    document = db.get(Document, document_id)
+    if (
+        document is None
+        or document.organization_id != current_user.organization_id
+        or document.archived_at is not None
+    ):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
 
-    Args:
-        document_id: Document ID
-        permission_data: Permission data
-        granter: User granting the permission
-        db: Database session
+    storage = get_storage_service()
+    file_path = storage.base_path / document.organization_id / document.file_key  # type: ignore[arg-type]
+    if not file_path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Stored file missing")
 
-    Returns:
-        Created permission instance
-    """
+    _log_access(db, document, current_user, action="download")
+    db.commit()
+
+    return document, str(file_path)
+
+
+def add_permission(
+    db: Session,
+    *,
+    document_id: str,
+    payload: PermissionCreate,
+    current_user: User,
+) -> PermissionResponse:
+    document = db.get(Document, document_id)
+    if document is None or document.organization_id != current_user.organization_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
     permission = DocumentPermission(
-        document_id=document_id,
-        user_id=permission_data.user_id,
-        permission_level=permission_data.permission_level,
-        organization_id=granter.organization_id,
-        granted_by=granter.id,
+        id=str(uuid4()),
+        document_id=document.id,
+        folder_id=None,
+        user_id=str(payload.user_id),
+        permission_level=payload.permission_level,
+        organization_id=document.organization_id,
+        granted_by=current_user.id,
     )
     db.add(permission)
     db.commit()
     db.refresh(permission)
-    return permission
+
+    return PermissionResponse(
+        id=UUID(permission.id),
+        document_id=UUID(permission.document_id) if permission.document_id else None,
+        folder_id=UUID(permission.folder_id) if permission.folder_id else None,
+        user_id=UUID(permission.user_id),
+        permission_level=permission.permission_level,
+        granted_by=UUID(permission.granted_by),
+        created_at=permission.created_at,
+    )
 
 
-def list_document_permissions(
-    document_id: str,
-    organization_id: UUID,
-    db: Session
-) -> list[DocumentPermission]:
-    """
-    List all permissions for a document.
-
-    Args:
-        document_id: Document ID
-        organization_id: Organization ID for multi-tenant isolation
-        db: Database session
-
-    Returns:
-        List of permissions
-    """
-    return list(db.scalars(
-        select(DocumentPermission).where(
-            DocumentPermission.document_id == document_id,
-            DocumentPermission.organization_id == organization_id
-        )
-    ))
-
-
-# ============================================================================
-# ACCESS LOG OPERATIONS
-# ============================================================================
-
-
-def log_document_access(
-    document_id: UUID,
-    user: User,
-    action: str,
-    db: Session,
-    ip_address: Optional[str] = None,
-    user_agent: Optional[str] = None
-) -> DocumentAccessLog:
-    """
-    Log document access for audit trail.
-
-    Args:
-        document_id: Document ID
-        user: User performing the action
-        action: Action type (view, download, upload, delete)
-        db: Database session
-        ip_address: Optional IP address
-        user_agent: Optional user agent string
-
-    Returns:
-        Created log entry
-    """
-    log = DocumentAccessLog(
-        document_id=document_id,
+def _log_access(db: Session, document: Document, user: User, *, action: str) -> None:
+    log_entry = DocumentAccessLog(
+        id=str(uuid4()),
+        document_id=document.id,
         user_id=user.id,
         action=action,
-        ip_address=ip_address,
-        user_agent=user_agent,
-        organization_id=user.organization_id,
+        organization_id=document.organization_id,
     )
-    db.add(log)
-    db.commit()
-    db.refresh(log)
-    return log
-
-
-def get_document_access_logs(
-    document_id: str,
-    organization_id: UUID,
-    db: Session,
-    limit: int = 100
-) -> list[DocumentAccessLog]:
-    """
-    Get access logs for a document.
-
-    Args:
-        document_id: Document ID
-        organization_id: Organization ID for multi-tenant isolation
-        db: Database session
-        limit: Maximum number of logs to return
-
-    Returns:
-        List of access logs (most recent first)
-    """
-    return list(db.scalars(
-        select(DocumentAccessLog).where(
-            DocumentAccessLog.document_id == document_id,
-            DocumentAccessLog.organization_id == organization_id
-        ).order_by(DocumentAccessLog.created_at.desc()).limit(limit)
-    ))
+    db.add(log_entry)
