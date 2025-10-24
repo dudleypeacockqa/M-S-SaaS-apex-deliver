@@ -96,7 +96,7 @@ export const NavigationMenu: React.FC = () => {
           ))}
         </div>
 
-        <UserButton data-testid="user-button" afterSignOutUrl="/" />
+        <UserButton data-testid="user-button" />
       </div>
     </nav>
   )

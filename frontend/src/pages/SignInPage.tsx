@@ -13,7 +13,7 @@ export const SignInPage: React.FC = () => {
       </header>
 
       <SignedOut>
-        <SignInButton mode="modal" afterSignInUrl="/dashboard">
+        <SignInButton mode="modal">
           Sign in with Clerk
         </SignInButton>
       </SignedOut>

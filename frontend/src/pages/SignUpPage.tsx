@@ -12,7 +12,7 @@ export const SignUpPage: React.FC = () => {
         </p>
       </header>
 
-      <SignUpButton mode="modal" afterSignUpUrl="/dashboard">
+      <SignUpButton mode="modal">
         Start your trial
       </SignUpButton>
     </section>
