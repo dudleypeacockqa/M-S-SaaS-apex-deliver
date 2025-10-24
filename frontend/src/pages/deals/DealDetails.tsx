@@ -229,6 +229,21 @@ export const DealDetails: React.FC = () => {
           {!isEditing && !deal.archived_at && (
             <>
               <button
+                onClick={() => navigate(`/deals/${deal.id}/data-room`)}
+                style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  border: '1px solid #3b82f6',
+                  background: 'white',
+                  color: '#3b82f6',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                📂 Data Room
+              </button>
+              <button
                 onClick={handleEditClick}
                 style={{
                   padding: '0.5rem 1rem',
