@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
 import { Breadcrumbs } from './Breadcrumbs'
 
 describe('Breadcrumbs Component', () => {
@@ -10,9 +10,9 @@ describe('Breadcrumbs Component', () => {
 
   it('should render breadcrumb navigation', () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter initialEntries={['/dashboard']}>
         <Breadcrumbs />
-      </BrowserRouter>
+      </MemoryRouter>
     )
 
     expect(screen.getByRole('navigation', { name: /breadcrumb/i })).toBeInTheDocument()
@@ -20,41 +20,32 @@ describe('Breadcrumbs Component', () => {
 
   it('should render breadcrumb trail for nested routes', () => {
     render(
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/deals/:dealId/documents"
-            element={<Breadcrumbs />}
-          />
-        </Routes>
-      </BrowserRouter>
+      <MemoryRouter initialEntries={['/deals/123/documents']}>
+        <Breadcrumbs />
+      </MemoryRouter>
     )
 
-    // Should show: Home > Deals > Deal Details > Documents
+    // Should show: Home > Deals > 123 > Documents
     expect(screen.getByText(/Home/i)).toBeInTheDocument()
+    expect(screen.getByText(/Deals/i)).toBeInTheDocument()
   })
 
   it('should handle root route', () => {
     render(
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Breadcrumbs />} />
-        </Routes>
-      </BrowserRouter>
+      <MemoryRouter initialEntries={['/']}>
+        <Breadcrumbs />
+      </MemoryRouter>
     )
 
-    // Root should show just "Home" or be empty
-    const nav = screen.getByRole('navigation', { name: /breadcrumb/i })
-    expect(nav).toBeInTheDocument()
+    // Root returns null, so breadcrumb nav should not be present
+    expect(screen.queryByRole('navigation', { name: /breadcrumb/i })).not.toBeInTheDocument()
   })
 
   it('should make breadcrumb items clickable links', () => {
     render(
-      <BrowserRouter>
-        <Routes>
-          <Route path="/deals/123" element={<Breadcrumbs />} />
-        </Routes>
-      </BrowserRouter>
+      <MemoryRouter initialEntries={['/deals/123']}>
+        <Breadcrumbs />
+      </MemoryRouter>
     )
 
     const links = screen.getAllByRole('link')

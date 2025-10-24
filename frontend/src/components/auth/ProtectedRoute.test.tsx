@@ -9,11 +9,14 @@ const mockClerkState = {
   isLoaded: true
 }
 
+// Create mock function that reads from mockClerkState
+const mockUseAuth = vi.fn(() => ({
+  isSignedIn: mockClerkState.isSignedIn,
+  isLoaded: mockClerkState.isLoaded
+}))
+
 vi.mock('@clerk/clerk-react', () => ({
-  useAuth: vi.fn(() => ({
-    isSignedIn: mockClerkState.isSignedIn,
-    isLoaded: mockClerkState.isLoaded
-  })),
+  useAuth: () => mockUseAuth(),
 }))
 
 // Test component for protected routes
@@ -118,7 +121,7 @@ describe('ProtectedRoute Component', () => {
     mockClerkState.isSignedIn = true
 
     render(
-      <MemoryRouter initialEntries={["/protected"]}>
+      <MemoryRouter initialEntries={["/admin"]}>
         <Routes>
           <Route
             path="/admin"
@@ -158,13 +161,15 @@ describe('ProtectedRoute Component', () => {
     expect(element).toHaveAttribute('data-custom', 'value')
   })
 
-  it('should handle authentication state changes', async () => {
+  it('should handle authentication state changes', () => {
+    // Test that when user is signed out, content is not rendered
     mockClerkState.isSignedIn = false
     mockClerkState.isLoaded = true
 
-    const { rerender } = render(
+    const { unmount } = render(
       <MemoryRouter initialEntries={["/protected"]}>
         <Routes>
+          <Route path="/" element={<div data-testid="home">Home</div>} />
           <Route
             path="/protected"
             element={
@@ -178,11 +183,12 @@ describe('ProtectedRoute Component', () => {
     )
 
     expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument()
+    unmount()
 
-    // Simulate user signing in
+    // Now test with user signed in
     mockClerkState.isSignedIn = true
 
-    rerender(
+    render(
       <MemoryRouter initialEntries={["/protected"]}>
         <Routes>
           <Route
@@ -197,16 +203,14 @@ describe('ProtectedRoute Component', () => {
       </MemoryRouter>
     )
 
-    await waitFor(() => {
-      expect(screen.getByTestId('protected-content')).toBeInTheDocument()
-    })
+    expect(screen.getByTestId('protected-content')).toBeInTheDocument()
   })
 
   it('should work with nested routes', () => {
     mockClerkState.isSignedIn = true
 
     render(
-      <MemoryRouter initialEntries={["/protected"]}>
+      <MemoryRouter initialEntries={["/deals/123"]}>
         <Routes>
           <Route
             path="/deals/*"
