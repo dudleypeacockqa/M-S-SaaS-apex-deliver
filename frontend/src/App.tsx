@@ -10,6 +10,9 @@ import { AdminDashboard } from "./pages/admin/AdminDashboard"
 import { UserManagement } from "./pages/admin/UserManagement"
 import { OrganizationManagement } from "./pages/admin/OrganizationManagement"
 import { SystemHealth } from "./pages/admin/SystemHealth"
+import { DealPipeline } from "./pages/deals/DealPipeline"
+import { NewDealPage } from "./pages/deals/NewDealPage"
+import { DealDetails } from "./pages/deals/DealDetails"
 
 const DashboardRoute = () => {
   return (
@@ -38,6 +41,11 @@ export const AppRoutes = () => {
         <Route path="admin/users" element={<SignedIn><UserManagement /></SignedIn>} />
         <Route path="admin/organizations" element={<SignedIn><OrganizationManagement /></SignedIn>} />
         <Route path="admin/system" element={<SignedIn><SystemHealth /></SignedIn>} />
+
+        {/* Deal Routes */}
+        <Route path="deals" element={<SignedIn><DealPipeline /></SignedIn>} />
+        <Route path="deals/new" element={<SignedIn><NewDealPage /></SignedIn>} />
+        <Route path="deals/:dealId" element={<SignedIn><DealDetails /></SignedIn>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
