@@ -1022,3 +1022,131 @@
 
 **Next Sprint**: DEV-010 (Multi-Method Valuation Suite) - Natural follow-on using financial data
 
+
+---
+
+## 🚀 Sprint 3 Planning (October 24, 2025 → Ongoing)
+
+**Focus**: Revenue Infrastructure & Financial Intelligence
+
+**Sprint Goal**: Enable platform monetization through subscription management and begin financial analysis features
+
+### Sprint 3 Stories
+
+#### DEV-009: Subscription & Billing Management (F-005) 📋
+**Status**: READY FOR IMPLEMENTATION
+**Priority**: HIGH (Revenue enabler)
+**Estimated Effort**: 16-20 hours
+**Story File**: [`docs/bmad/stories/DEV-009-subscription-billing.md`](stories/DEV-009-subscription-billing.md)
+
+**Objectives**:
+- Stripe integration (Checkout, Customer Portal, Webhooks)
+- 4 subscription tiers (Starter £279, Professional £598, Enterprise £1,598, Community £2,997)
+- Self-service billing management
+- Payment failure handling & dunning
+- Admin billing dashboard (MRR, ARR, churn tracking)
+
+**Key Deliverables**:
+- Backend: Subscription model, Stripe endpoints, webhook handler
+- Frontend: Pricing page, billing settings, checkout integration
+- 35+ tests (20 backend + 15 frontend)
+- Revenue tracking analytics
+
+**Business Impact**:
+- Enables £1.4M ARR target
+- Automates subscription lifecycle
+- Reduces manual billing overhead
+- Essential for business viability
+
+**Technical Stack**:
+- Stripe Checkout (hosted payment page)
+- Stripe Customer Portal (self-service billing)
+- Stripe Webhooks (subscription status sync)
+- PostgreSQL (subscription & invoice tables)
+
+---
+
+#### DEV-010: Financial Intelligence Engine - Phase 1 (F-006) 🔮
+**Status**: PLANNING
+**Priority**: HIGH (Core value proposition)
+**Estimated Effort**: 20-24 hours
+**Dependencies**: DEV-009 (billing must be active first)
+
+**Planned Scope**:
+- Accounting platform integrations (Xero, QuickBooks)
+- 47+ financial ratio calculations
+- AI-generated narratives (GPT-4)
+- Deal Readiness Score algorithm
+- Financial data visualization
+
+**Deferred to Sprint 4 (if needed)**:
+- Full QuickBooks/Sage/NetSuite integrations
+- Advanced scenario modeling
+- Custom ratio definitions
+
+---
+
+### Sprint 3 Success Criteria
+
+**Must Have**:
+- ✅ DEV-009 100% complete (Stripe working end-to-end)
+- ✅ Users can subscribe, upgrade, downgrade, cancel
+- ✅ Webhooks successfully sync subscription status
+- ✅ Admin billing dashboard functional
+- ✅ 35+ tests passing (subscription flow)
+- ✅ Documentation updated
+
+**Nice to Have**:
+- 🎯 DEV-010 Phase 1 started (accounting API research)
+- 🎯 First beta customer subscribed
+- 🎯 MRR tracking dashboard live
+
+**Stretch Goals**:
+- 🌟 DEV-010 50%+ complete
+- 🌟 10+ paying customers
+- 🌟 £2,000+ MRR by sprint end
+
+---
+
+### Sprint 3 Timeline
+
+**Week 1**: DEV-009 Backend (Stripe integration, models, API)  
+**Week 2**: DEV-009 Frontend (pricing page, billing UI, checkout)  
+**Week 3**: DEV-009 Testing & Polish (webhooks, admin dashboard)  
+**Week 4**: DEV-010 Planning & Start (accounting API research)
+
+**Target Completion**: November 15, 2025 (3 weeks from now)
+
+---
+
+## 📈 Project Metrics (Sprint 2 End)
+
+**Total Stories Completed**: 10 (DEV-001 through DEV-008 + OPS stories)  
+**Test Coverage**: 135 tests (81 backend + 54 frontend)  
+**Code Base**: ~8,000 lines (backend + frontend)  
+**Features Complete**: 3/6 Phase 1 features (User/Org, Deal Pipeline, Documents)  
+**Features Remaining**: 3 (Billing, Financial Intelligence, Valuation)  
+
+**Velocity**: ~2 stories per sprint (10-12 days per sprint)  
+**Quality**: 100% test pass rate, production-ready code  
+**Methodology**: BMAD v6-alpha + TDD consistently applied  
+
+---
+
+## 🎯 Path to Phase 1 Completion
+
+**Remaining Work**:
+1. ✅ Sprint 3: DEV-009 (Billing) - 16-20 hours
+2. ✅ Sprint 4: DEV-010 (Financial Intelligence) - 20-24 hours  
+3. ✅ Sprint 5: DEV-011 (Valuation Suite) - 20-24 hours
+4. ✅ Polish & Launch: End-to-end testing, documentation, marketing
+
+**Estimated Timeline**: 8-10 weeks from now (Mid-December 2025)  
+**Confidence Level**: HIGH (established velocity, proven methodology)  
+
+---
+
+**Sprint 3 Status**: 🟢 READY TO BEGIN
+**Next Action**: Implement DEV-009 backend following TDD methodology
+**Last Updated**: October 24, 2025 (17:40 UTC)
+
