@@ -13,6 +13,7 @@ import { SystemHealth } from "./pages/admin/SystemHealth"
 import { DealPipeline } from "./pages/deals/DealPipeline"
 import { NewDealPage } from "./pages/deals/NewDealPage"
 import { DealDetails } from "./pages/deals/DealDetails"
+import { DataRoom } from "./pages/deals/DataRoom"
 
 const DashboardRoute = () => {
   return (
@@ -46,6 +47,7 @@ export const AppRoutes = () => {
         <Route path="deals" element={<SignedIn><DealPipeline /></SignedIn>} />
         <Route path="deals/new" element={<SignedIn><NewDealPage /></SignedIn>} />
         <Route path="deals/:dealId" element={<SignedIn><DealDetails /></SignedIn>} />
+        <Route path="deals/:dealId/data-room" element={<SignedIn><DataRoom /></SignedIn>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
