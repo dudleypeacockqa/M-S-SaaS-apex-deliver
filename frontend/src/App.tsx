@@ -23,7 +23,9 @@ import { OrganizationManagement } from './pages/admin/OrganizationManagement'
 import { AdminAnalytics } from './pages/admin/Analytics'
 import { UnauthorizedPage } from './pages/UnauthorizedPage'
 
-const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const CLERK_PUBLISHABLE_KEY =
+  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ??
+  (import.meta.env.MODE === 'test' ? 'test-clerk-publishable-key' : undefined)
 
 if (!CLERK_PUBLISHABLE_KEY) {
   throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY environment variable')
@@ -191,3 +193,4 @@ function App() {
 }
 
 export default App
+

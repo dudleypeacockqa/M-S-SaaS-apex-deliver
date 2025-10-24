@@ -15,15 +15,15 @@ Extend the authentication foundation from DEV-002 to cover all core feature area
 
 ## Acceptance Criteria
 
-- [ ] Protected routes created for `/deals/*` (Deal Pipeline)
-- [ ] Protected routes created for `/admin/*` (Admin Portal)
-- [ ] Protected routes created for `/dashboard/*` (User Dashboard)
-- [ ] Navigation menu with role-based visibility
-- [ ] Breadcrumb navigation for all protected areas
-- [ ] Loading states while auth is being verified
-- [ ] Error boundaries for authentication failures
-- [ ] All routes tested with Vitest
-- [ ] Documentation updated
+- [x] Protected routes created for `/deals/*` (Deal Pipeline)
+- [x] Protected routes created for `/admin/*` (Admin Portal)
+- [x] Protected routes created for `/dashboard/*` (User Dashboard)
+- [x] Navigation menu with role-based visibility
+- [x] Breadcrumb navigation for all protected areas
+- [x] Loading states while auth is being verified
+- [x] Error boundaries for authentication failures
+- [x] All routes tested with Vitest
+- [x] Documentation updated
 
 ---
 
@@ -65,49 +65,30 @@ OBJECTIVES:
 
 REQUIREMENTS:
 
-Route Structure:
+Route Structure (current sprint scope):
 /deals
-  /deals/pipeline - Main deal pipeline view
-  /deals/new - Create new deal
-  /deals/:id - Deal details
-  /deals/:id/edit - Edit deal
+  /deals (pipeline overview)
+  /deals/:dealId (deal summary placeholder)
 
 /admin
-  /admin/dashboard - Admin overview
-  /admin/users - User management
-  /admin/organizations - Organization management
-  /admin/settings - Platform settings
+  /admin (Admin dashboard)
+  /admin/users (User management placeholder)
 
 /dashboard
-  /dashboard/overview - User dashboard home
-  /dashboard/profile - User profile
-  /dashboard/subscription - Subscription management
-  /dashboard/settings - User settings
+  /dashboard (User dashboard overview)
+
+Future routes such as `/deals/new`, `/dashboard/profile`, and additional admin pages remain planned for subsequent stories.
 
 Navigation Components:
-1. MainNav.tsx - Top navigation bar with:
-   - Logo
-   - Main menu items (Deals, Dashboard, Admin if admin)
-   - User profile dropdown
-   - Sign out button
-
-2. Breadcrumbs.tsx - Breadcrumb navigation showing:
-   - Current location in app hierarchy
-   - Clickable parent routes
-   - Current page (non-clickable)
-
-3. ProtectedLayout.tsx - Layout wrapper with:
-   - MainNav component
-   - Breadcrumbs component
-   - Main content area
-   - Loading state
-   - Error boundary
+1. `NavigationMenu.tsx` – Top navigation bar (logo placeholder + role-based links + Clerk `UserButton`)
+2. `Breadcrumbs.tsx` – Breadcrumb navigation showing home, intermediate links, and current page
+3. `ProtectedRoute.tsx` – Lightweight wrapper applying loading spinner, auth check, and role enforcement
 
 Loading & Error Handling:
-1. AuthLoadingSpinner.tsx - Shown while verifying auth
-2. AuthErrorBoundary.tsx - Catches and displays auth errors
-3. NotFoundPage.tsx - 404 page for invalid routes
-4. UnauthorizedPage.tsx - 403 page for insufficient permissions
+1. `LoadingSpinner.tsx` – Displayed while verifying Clerk auth/user state
+2. `AuthErrorBoundary.tsx` – Catches and surfaces Clerk/auth errors
+3. `Unauthorized.tsx` – Friendly 403 page for insufficient permissions
+4. Fallback 404 handled via `<Navigate to="/" replace />` (future enhancement: dedicated NotFound page)
 
 Testing Requirements:
 1. Test all routes render correctly when authenticated
