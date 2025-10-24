@@ -3,14 +3,16 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { ProtectedRoute } from './ProtectedRoute'
 
-// Mock Clerk state
-let mockIsSignedIn = false
-let mockIsLoaded = true
+// Mock Clerk state (using object for reactivity)
+const mockClerkState = {
+  isSignedIn: false,
+  isLoaded: true
+}
 
 vi.mock('@clerk/clerk-react', () => ({
   useAuth: vi.fn(() => ({
-    isSignedIn: mockIsSignedIn,
-    isLoaded: mockIsLoaded
+    isSignedIn: mockClerkState.isSignedIn,
+    isLoaded: mockClerkState.isLoaded
   })),
 }))
 
