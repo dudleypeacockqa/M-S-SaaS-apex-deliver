@@ -64,10 +64,15 @@ describe("AppRoutes", () => {
   it("renders the home route with sign-in actions for visitors", () => {
     renderApp(["/"])
 
+    // The new landing page has a different structure with MarketingNav
     expect(
       screen.getByRole("heading", { name: /m&a intelligence platform/i })
     ).toBeInTheDocument()
-    expect(screen.getByTestId("sign-in-action")).toBeInTheDocument()
+    // Marketing nav has regular links, not Clerk's SignInButton
+    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
+    // Multiple "Get Started" links exist (nav + footer), so use getAllBy
+    const getStartedLinks = screen.getAllByRole("link", { name: /get started/i })
+    expect(getStartedLinks.length).toBeGreaterThan(0)
   })
 
   it("redirects visitors from the dashboard to the sign-in page", () => {
@@ -97,7 +102,12 @@ describe("AppRoutes", () => {
 
     renderApp(["/"])
 
-    expect(screen.getByTestId("user-menu")).toBeInTheDocument()
-    expect(screen.queryByTestId("sign-in-action")).not.toBeInTheDocument()
+    // The landing page still shows MarketingNav for authenticated users
+    // (they can still access marketing pages)
+    expect(
+      screen.getByRole("heading", { name: /m&a intelligence platform/i })
+    ).toBeInTheDocument()
+    // The marketing nav still shows sign-in/up links even when authenticated
+    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
   })
 })

@@ -59,7 +59,8 @@ describe("Integration: routing", () => {
     expect(
       screen.getByRole("heading", { name: /m&a intelligence platform/i })
     ).toBeInTheDocument()
-    expect(screen.getByTestId("sign-in-header")).toBeInTheDocument()
+    // Marketing nav uses regular links, not Clerk's SignInButton
+    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
   })
 
   it("directs visitors to the sign-in page when accessing the dashboard", () => {
@@ -92,7 +93,11 @@ describe("Integration: routing", () => {
 
     render(<App />)
 
-    expect(screen.getByTestId("user-menu")).toBeInTheDocument()
-    expect(screen.queryByTestId("sign-in-header")).not.toBeInTheDocument()
+    // Landing page still shows marketing nav even when authenticated
+    expect(
+      screen.getByRole("heading", { name: /m&a intelligence platform/i })
+    ).toBeInTheDocument()
+    // Marketing nav always shows sign-in link
+    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
   })
 })

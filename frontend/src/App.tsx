@@ -2,7 +2,6 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 import { SignedIn, SignedOut } from "@clerk/clerk-react"
 
 import { RootLayout } from "./layouts/RootLayout"
-import { HomePage } from "./pages/HomePage"
 import { SignInPage } from "./pages/SignInPage"
 import { SignUpPage } from "./pages/SignUpPage"
 import { DashboardPage } from "./pages/DashboardPage"
@@ -14,6 +13,16 @@ import { DealPipeline } from "./pages/deals/DealPipeline"
 import { NewDealPage } from "./pages/deals/NewDealPage"
 import { DealDetails } from "./pages/deals/DealDetails"
 import { DataRoom } from "./pages/deals/DataRoom"
+
+// Marketing Pages
+import { LandingPage } from "./pages/marketing/LandingPage"
+import { PricingPage } from "./pages/marketing/PricingPage"
+import { FeaturesPage } from "./pages/marketing/FeaturesPage"
+import { AboutPage } from "./pages/marketing/AboutPage"
+import { ContactPage } from "./pages/marketing/ContactPage"
+import { TermsOfService } from "./pages/marketing/legal/TermsOfService"
+import { PrivacyPolicy } from "./pages/marketing/legal/PrivacyPolicy"
+import { CookiePolicy } from "./pages/marketing/legal/CookiePolicy"
 
 const DashboardRoute = () => {
   return (
@@ -31,8 +40,18 @@ const DashboardRoute = () => {
 export const AppRoutes = () => {
   return (
     <Routes>
+      {/* Marketing Routes (No RootLayout - uses MarketingLayout) */}
+      <Route index element={<LandingPage />} />
+      <Route path="pricing" element={<PricingPage />} />
+      <Route path="features" element={<FeaturesPage />} />
+      <Route path="about" element={<AboutPage />} />
+      <Route path="contact" element={<ContactPage />} />
+      <Route path="legal/terms" element={<TermsOfService />} />
+      <Route path="legal/privacy" element={<PrivacyPolicy />} />
+      <Route path="legal/cookies" element={<CookiePolicy />} />
+
+      {/* Authentication Routes (uses RootLayout) */}
       <Route element={<RootLayout />}>
-        <Route index element={<HomePage />} />
         <Route path="sign-in" element={<SignInPage />} />
         <Route path="sign-up" element={<SignUpPage />} />
         <Route path="dashboard" element={<DashboardRoute />} />
@@ -49,6 +68,7 @@ export const AppRoutes = () => {
         <Route path="deals/:dealId" element={<SignedIn><DealDetails /></SignedIn>} />
         <Route path="deals/:dealId/data-room" element={<SignedIn><DataRoom /></SignedIn>} />
       </Route>
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

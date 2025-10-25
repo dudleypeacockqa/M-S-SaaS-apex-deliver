@@ -94,7 +94,8 @@ describe('Clerk authentication routing', () => {
       </MemoryRouter>
     )
 
-    expect(screen.getByTestId('sign-in-button')).toBeInTheDocument()
+    // Marketing nav uses regular link, not Clerk's SignInButton
+    expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument()
 
     setMockClerkState({
       isSignedIn: true,
@@ -107,6 +108,8 @@ describe('Clerk authentication routing', () => {
       </MemoryRouter>
     )
 
-    expect(screen.getByText(/morgan/i)).toBeInTheDocument()
+    // Landing page still shows marketing nav (not the user name in header)
+    // The user name would appear in the dashboard, not on the landing page
+    expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument()
   })
 })
