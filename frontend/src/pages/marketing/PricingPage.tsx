@@ -1,6 +1,7 @@
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { PricingCard } from '../../components/marketing/PricingCard';
 import { CTASection } from '../../components/marketing/CTASection';
+import { SEO } from '../../components/common/SEO';
 
 export const PricingPage: React.FC = () => {
   const pricingTiers = [
@@ -89,6 +90,15 @@ export const PricingPage: React.FC = () => {
 
   return (
     <MarketingLayout>
+      <SEO
+        title="Pricing - ApexDeliver M&A Platform | Plans from £279/month"
+        description="Transparent pricing for professional M&A tools. Starter (£279), Professional (£598), Enterprise (£1,598), Community Leader (£2,997). 70% less than enterprise competitors."
+        keywords="M&A software pricing, deal management pricing, M&A platform cost, professional M&A tools pricing"
+        ogTitle="ApexDeliver Pricing - Professional M&A Tools from £279/month"
+        ogDescription="Choose from 4 pricing tiers designed for solo dealmakers to large organizations. All plans include AI-powered intelligence and deal flow management."
+        ogUrl="https://ma-saas-platform.onrender.com/pricing"
+        canonical="https://ma-saas-platform.onrender.com/pricing"
+      />
       {/* Header Section */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

@@ -1,9 +1,17 @@
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { CTASection } from '../../components/marketing/CTASection';
+import { SEO } from '../../components/common/SEO';
 
 export const FeaturesPage: React.FC = () => {
   return (
     <MarketingLayout>
+      <SEO
+        title="Features - ApexDeliver M&A Platform | AI-Powered Deal Intelligence"
+        description="Comprehensive M&A platform features: Deal pipeline management, financial intelligence engine (47+ ratios), multi-method valuation, secure data rooms, AI deal matching, and more."
+        keywords="M&A features, deal pipeline, financial intelligence, valuation tools, data room, deal matching, M&A automation"
+        ogUrl="https://ma-saas-platform.onrender.com/features"
+        canonical="https://ma-saas-platform.onrender.com/features"
+      />
       {/* Header */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

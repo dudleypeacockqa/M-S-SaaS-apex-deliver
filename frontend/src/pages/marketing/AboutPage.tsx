@@ -1,9 +1,17 @@
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { CTASection } from '../../components/marketing/CTASection';
+import { SEO } from '../../components/common/SEO';
 
 export const AboutPage: React.FC = () => {
   return (
     <MarketingLayout>
+      <SEO
+        title="About ApexDeliver | Democratizing M&A Tools for Dealmakers"
+        description="Learn about ApexDeliver's mission to democratize professional M&A tools. Founded to make enterprise-grade deal intelligence accessible at £279/month vs £10k+ enterprise platforms."
+        keywords="about ApexDeliver, M&A platform mission, dealmaker tools, M&A software company"
+        ogUrl="https://ma-saas-platform.onrender.com/about"
+        canonical="https://ma-saas-platform.onrender.com/about"
+      />
       {/* Header */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

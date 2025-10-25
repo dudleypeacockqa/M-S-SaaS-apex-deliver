@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
+import { SEO } from '../../components/common/SEO';
 
 export const ContactPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -27,6 +28,13 @@ export const ContactPage: React.FC = () => {
 
   return (
     <MarketingLayout>
+      <SEO
+        title="Contact Us - ApexDeliver | Get in Touch"
+        description="Contact ApexDeliver for support, demo requests, or sales inquiries. Email: support@apexdeliver.com. We respond within 24 hours."
+        keywords="contact ApexDeliver, M&A platform support, demo request, sales inquiry"
+        ogUrl="https://ma-saas-platform.onrender.com/contact"
+        canonical="https://ma-saas-platform.onrender.com/contact"
+      />
       {/* Header */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
