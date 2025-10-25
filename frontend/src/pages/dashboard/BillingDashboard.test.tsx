@@ -16,7 +16,11 @@ const mockBillingDashboard: billingService.BillingDashboard = {
     stripe_subscription_id: 'sub_stripe_123',
     current_period_start: '2025-01-01T00:00:00Z',
     current_period_end: '2025-02-01T00:00:00Z',
+    billing_period: 'monthly',
     cancel_at_period_end: false,
+    canceled_at: null,
+    trial_start: null,
+    trial_end: null,
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z',
   },
@@ -61,9 +65,9 @@ describe('BillingDashboard', () => {
     vi.clearAllMocks();
   });
 
-  it('should display loading state initially', () => {
+  it('shows loading skeleton while fetching data', () => {
     vi.mocked(billingService.billingService.getBillingDashboard).mockImplementation(
-      () => new Promise(() => {}) // Never resolves
+      () => new Promise(() => {})
     );
 
     render(
@@ -72,10 +76,10 @@ describe('BillingDashboard', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    expect(screen.getByTestId('billing-dashboard-loading')).toBeInTheDocument();
   });
 
-  it('should display subscription info when loaded', async () => {
+  it('renders subscription details once loaded', async () => {
     vi.mocked(billingService.billingService.getBillingDashboard).mockResolvedValue(
       mockBillingDashboard
     );
@@ -86,14 +90,13 @@ describe('BillingDashboard', () => {
       </BrowserRouter>
     );
 
-    await waitFor(() => {
-      expect(screen.getByText(/Professional Plan/i)).toBeInTheDocument();
-    });
-
-    expect(screen.getByText(/active/i)).toBeInTheDocument();
+    expect(await screen.findByText('Subscription & Billing')).toBeInTheDocument();
+    expect(screen.getByText(/Professional Plan/)).toBeInTheDocument();
+    expect(screen.getAllByText(/active/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/£598/)[0]).toBeInTheDocument();
   });
 
-  it('should display usage metrics', async () => {
+  it('renders usage metrics with progress bars', async () => {
     vi.mocked(billingService.billingService.getBillingDashboard).mockResolvedValue(
       mockBillingDashboard
     );
@@ -104,20 +107,38 @@ describe('BillingDashboard', () => {
       </BrowserRouter>
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Usage')).toBeInTheDocument();
-    });
+    expect(await screen.findByText('Usage Overview')).toBeInTheDocument();
+    const activeDealsRow = screen.getByText('Active Deals').closest('div');
+    expect(activeDealsRow).toHaveTextContent('25 / 50');
 
-    // Check for usage metrics by looking for the specific numbers
-    expect(screen.getByText('25')).toBeInTheDocument(); // Deals count
-    expect(screen.getByText('5')).toBeInTheDocument(); // Users count
-    expect(screen.getByText('150')).toBeInTheDocument(); // Documents count
-    expect(screen.getByText('2.4 GB')).toBeInTheDocument(); // Storage
+    const teamMembersRow = screen.getByText('Team Members').closest('div');
+    expect(teamMembersRow).toHaveTextContent('5 / 10');
+
+    const documentsRow = screen.getByText('Total Documents').closest('div');
+    expect(documentsRow).toHaveTextContent('150');
+
+    const storageRow = screen.getByText('Storage Used').closest('div');
+    expect(storageRow).toHaveTextContent('2 GB / 50 GB');
   });
 
-  it('should display error message on API failure', async () => {
+  it('renders invoice table', async () => {
+    vi.mocked(billingService.billingService.getBillingDashboard).mockResolvedValue(
+      mockBillingDashboard
+    );
+
+    render(
+      <BrowserRouter>
+        <BillingDashboard />
+      </BrowserRouter>
+    );
+
+    expect(await screen.findByText('Recent Invoices')).toBeInTheDocument();
+    expect(screen.getByText('Download PDF')).toBeInTheDocument();
+  });
+
+  it('shows error state when API fails', async () => {
     vi.mocked(billingService.billingService.getBillingDashboard).mockRejectedValue(
-      new Error('Failed to fetch billing data')
+      new Error('Failed to load billing data')
     );
 
     render(
@@ -126,8 +147,7 @@ describe('BillingDashboard', () => {
       </BrowserRouter>
     );
 
-    await waitFor(() => {
-      expect(screen.getByText(/error/i)).toBeInTheDocument();
-    });
+    expect(await screen.findByTestId('billing-dashboard-error')).toBeInTheDocument();
+    expect(screen.getByText(/Unable to load billing data/)).toBeInTheDocument();
   });
 });

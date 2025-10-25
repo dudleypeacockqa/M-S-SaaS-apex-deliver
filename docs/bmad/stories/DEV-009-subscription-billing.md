@@ -399,8 +399,8 @@ TIER_LIMITS = {
 
 - ✅ Billing service refactor with comprehensive tests (`billingService.test.ts` 12/12)
 - ✅ `DashboardSubscription` page implemented (tier change, cancellation, portal flows) with tests (6/6)
-- ✅ Pricing CTA wired to `redirectToCheckout` (tests still pending)
-- ⚠ Pricing CTA tests and Storybook docs outstanding
+- ✅ Pricing CTA wired to `redirectToCheckout` with new Vitest coverage (`PricingPage.test.tsx`)
+- ⚠ Storybook/docs outstanding (optional polish)
 
 ### Frontend Implementation
 

@@ -16,49 +16,61 @@ export const ChangeTierModal: React.FC<ChangeTierModalProps> = ({
 }) => {
   const [tiers, setTiers] = useState<TierDetails[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTier, setSelectedTier] = useState<SubscriptionTier | null>(null);
-  const [changing, setChanging] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedTier, setSelectedTier] = useState<SubscriptionTier | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (isOpen) {
-      loadTiers();
-    }
-  }, [isOpen]);
+    if (!isOpen) return
+    let isMounted = true
 
-  const loadTiers = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const allTiers = await billingService.getAllTiers();
-      setTiers(allTiers);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load subscription tiers');
-    } finally {
-      setLoading(false);
+    const loadTiers = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const allTiers = await billingService.getAllTiers()
+        if (isMounted) {
+          setTiers(allTiers)
+          setSelectedTier(currentTier)
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err instanceof Error ? err.message : 'Failed to load subscription tiers')
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
     }
-  };
+
+    void loadTiers()
+
+    return () => {
+      isMounted = false
+    }
+  }, [isOpen, currentTier])
 
   const handleChangeTier = async () => {
-    if (!selectedTier) return;
+    if (!selectedTier || selectedTier === currentTier) {
+      setError('Please choose a different tier to continue.')
+      return
+    }
 
     try {
-      setChanging(true);
-      setError(null);
-      await billingService.changeTier({
-        new_tier: selectedTier,
-        prorate: true,
-      });
-      onSuccess();
-      onClose();
-    } catch (err: any) {
-      setError(err.message || 'Failed to change subscription tier');
+      setIsSubmitting(true)
+      setError(null)
+      await billingService.changeTier({ new_tier: selectedTier, prorate: true })
+      onSuccess()
+      onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to change subscription tier')
     } finally {
-      setChanging(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div
@@ -67,7 +79,7 @@ export const ChangeTierModal: React.FC<ChangeTierModalProps> = ({
     >
       <div
         className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
       >
@@ -153,20 +165,20 @@ export const ChangeTierModal: React.FC<ChangeTierModalProps> = ({
         <div className="flex justify-end gap-3 mt-6">
           <button
             onClick={onClose}
-            disabled={changing}
+            disabled={isSubmitting}
             className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleChangeTier}
-            disabled={!selectedTier || selectedTier === currentTier || changing}
+            disabled={!selectedTier || selectedTier === currentTier || isSubmitting}
             className="px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {changing ? 'Changing tier...' : 'Confirm Change'}
+            {isSubmitting ? 'Changing tier…' : 'Confirm Change'}
           </button>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

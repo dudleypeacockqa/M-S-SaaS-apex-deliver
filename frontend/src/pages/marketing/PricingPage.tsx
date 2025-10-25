@@ -153,18 +153,19 @@ export const PricingPage: React.FC = () => {
               <PricingCard
                 key={index}
                 {...tier}
-                onCtaClick={tier.cta === 'Get Started' ? () => handleGetStarted(tier.name) : undefined}
+                onGetStarted={tier.cta === 'Get Started' ? () => handleGetStarted(tier.name) : undefined}
                 loading={loadingTier === tier.name}
+                disabled={loadingTier !== null && loadingTier !== tier.name}
+                ctaTestId={`pricing-cta-${tier.name.toLowerCase().replace(/\s+/g, '-')}`}
               />
             ))}
           </div>
 
-          {/* Annual Billing Note */}
-          <div className="mt-12 text-center">
-            <p className="text-gray-600">
-              💡 <strong>Save 20%</strong> with annual billing. Contact sales for details.
-            </p>
-          </div>
+          {errorTier && (
+            <div className="mt-6 text-center text-red-600 font-medium" role="alert">
+              {errorTier}
+            </div>
+          )}
         </div>
       </section>
 
@@ -307,13 +308,6 @@ export const PricingPage: React.FC = () => {
 
       {/* CTA Section */}
       <CTASection />
-      {errorTier && (
-        <div className="max-w-2xl mx-auto mt-6 text-center">
-          <p className="text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
-            {errorTier}
-          </p>
-        </div>
-      )}
     </MarketingLayout>
   );
 };

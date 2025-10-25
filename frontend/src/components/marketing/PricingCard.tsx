@@ -13,6 +13,7 @@ export interface PricingCardProps {
   onGetStarted?: () => void;
   loading?: boolean;
   disabled?: boolean;
+  ctaTestId?: string;
 }
 
 export const PricingCard: React.FC<PricingCardProps> = ({
@@ -28,6 +29,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
   onGetStarted,
   loading = false,
   disabled = false,
+  ctaTestId,
 }) => {
   const cardClasses = highlighted
     ? 'relative bg-white p-8 rounded-lg shadow-2xl border-4 border-indigo-900 transform scale-105'
@@ -37,7 +39,23 @@ export const PricingCard: React.FC<PricingCardProps> = ({
     ? 'w-full bg-indigo-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-800 transition-colors disabled:opacity-50'
     : 'w-full bg-gray-100 text-indigo-900 border-2 border-indigo-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50';
 
-  const content = loading ? 'Creating checkout…' : cta;
+  const ctaContent = loading ? 'Creating checkout…' : cta;
+
+  const ctaElement = onGetStarted ? (
+    <button
+      type="button"
+      className={buttonClasses}
+      onClick={onGetStarted}
+      disabled={disabled || loading}
+      data-testid={ctaTestId}
+    >
+      {ctaContent}
+    </button>
+  ) : (
+    <Link to={ctaLink} className={buttonClasses} data-testid={ctaTestId}>
+      {ctaContent}
+    </Link>
+  );
 
   if (onGetStarted) {
     return (
@@ -70,14 +88,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
             </li>
           ))}
         </ul>
-        <button
-          type="button"
-          className={buttonClasses}
-          onClick={onGetStarted}
-          disabled={disabled || loading}
-        >
-          {content}
-        </button>
+        {ctaElement}
       </article>
     );
   }
@@ -112,9 +123,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
           </li>
         ))}
       </ul>
-      <Link to={ctaLink} className={buttonClasses}>
-        {content}
-      </Link>
+      {ctaElement}
     </article>
   );
 };

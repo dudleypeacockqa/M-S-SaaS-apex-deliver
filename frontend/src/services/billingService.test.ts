@@ -168,6 +168,7 @@ describe('billingService', () => {
           max_deals: 10,
           max_users: 3,
           storage_gb: 10,
+          ai_features: false,
           api_access: false,
           priority_support: false,
         },
@@ -181,5 +182,40 @@ describe('billingService', () => {
 
     expect(apiModule.api.get).toHaveBeenCalledWith('/subscriptions/tiers');
     expect(result).toEqual(mockTiers);
+  });
+
+  it('retrieves customer portal URL', async () => {
+    const mockPortal = { url: 'https://portal.stripe.com/session_123' };
+    vi.mocked(apiModule.api.get).mockResolvedValue({ data: mockPortal } as any);
+
+    const result = await billingService.getCustomerPortalUrl();
+
+    expect(apiModule.api.get).toHaveBeenCalledWith('/subscriptions/customer-portal');
+    expect(result).toEqual(mockPortal);
+  });
+
+  it('redirects to checkout with success/cancel URLs', async () => {
+    const mockSession = { checkout_url: 'https://stripe/checkout', session_id: 'sess_123' };
+    vi.mocked(apiModule.api.post).mockResolvedValue({ data: mockSession } as any);
+
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: {
+        origin: 'https://app.example.com',
+        assign: vi.fn(),
+      },
+    });
+
+    await billingService.redirectToCheckout('starter');
+
+    expect(apiModule.api.post).toHaveBeenCalledWith(
+      '/subscriptions/create-checkout-session',
+      {
+        tier: 'starter',
+        success_url: 'https://app.example.com/checkout/success',
+        cancel_url: 'https://app.example.com/checkout/cancel',
+      }
+    );
+    expect(window.location.assign).toHaveBeenCalledWith(mockSession.checkout_url);
   });
 });

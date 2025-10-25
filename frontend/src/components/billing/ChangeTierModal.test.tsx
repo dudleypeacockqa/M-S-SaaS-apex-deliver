@@ -233,7 +233,7 @@ describe('ChangeTierModal', () => {
     await user.click(screen.getByText('Confirm Change'));
 
     // Should show loading state
-    expect(screen.getByText(/Changing tier.../i)).toBeInTheDocument();
+    expect(screen.getByText(/Changing tier/i)).toBeInTheDocument();
 
     // Wait for completion
     await waitFor(() => {
