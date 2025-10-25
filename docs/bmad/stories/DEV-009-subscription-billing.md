@@ -393,6 +393,13 @@ TIER_LIMITS = {
 }
 ```
 
+### Frontend Implementation Status (Oct 26, 2025)
+
+- ✅ Billing service refactor with comprehensive tests (`billingService.test.ts` 12/12)
+- ✅ `DashboardSubscription` page implemented (tier change, cancellation, portal flows) with tests (6/6)
+- ✅ Pricing CTA wired to `redirectToCheckout` (tests still pending)
+- ⚠ Pricing CTA tests and Storybook docs outstanding
+
 ### Frontend Implementation
 
 #### 1. Pages
@@ -404,11 +411,11 @@ TIER_LIMITS = {
 - Redirect to Stripe Checkout on selection
 
 **Billing Settings Page** (`/settings/billing`):
-- Current subscription status card
-- Usage metrics vs. tier limits
-- "Upgrade Plan" button
-- "Manage Subscription" button (Stripe Customer Portal)
-- Billing history table
+- Current subscription status card ✅ (`DashboardSubscription`)
+- Usage metrics vs. tier limits ✅
+- "Upgrade Plan" button ✅ (tier modal)
+- "Manage Subscription" button ✅ (customer portal)
+- Billing history table ✅
 
 **Checkout Success Page** (`/checkout/success`):
 - Confirmation message: "Payment successful!"
