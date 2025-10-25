@@ -376,3 +376,42 @@ async def async_client(engine):
     async with AsyncClient(app=app, base_url="http://testserver") as client:
         yield client
     app.dependency_overrides.pop(get_db, None)
+
+
+@pytest.fixture()
+def test_organization(db_session):
+    """Create and return a test organization for subscription tests."""
+    from app.models.organization import Organization
+
+    org = Organization(
+        id="test-org-subscription",
+        name="Subscription Test Org",
+        slug="subscription-test-org",
+        subscription_tier="professional"
+    )
+    db_session.add(org)
+    db_session.commit()
+    db_session.refresh(org)
+    return org
+
+
+@pytest.fixture()
+def test_subscription(db_session, test_organization):
+    """Create and return a test subscription."""
+    from app.models.subscription import Subscription, SubscriptionTier, SubscriptionStatus
+    from datetime import datetime, timezone, timedelta
+
+    subscription = Subscription(
+        id="test-subscription-id",
+        organization_id=test_organization.id,
+        stripe_customer_id="cus_test_fixture",
+        stripe_subscription_id="sub_test_fixture",
+        tier=SubscriptionTier.PROFESSIONAL,
+        status=SubscriptionStatus.ACTIVE,
+        current_period_start=datetime.now(timezone.utc),
+        current_period_end=datetime.now(timezone.utc) + timedelta(days=30),
+    )
+    db_session.add(subscription)
+    db_session.commit()
+    db_session.refresh(subscription)
+    return subscription
