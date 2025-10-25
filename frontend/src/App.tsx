@@ -16,6 +16,7 @@ import { DataRoom } from "./pages/deals/DataRoom"
 
 // Marketing Pages
 import { LandingPage } from "./pages/marketing/LandingPage"
+import { EnhancedLandingPage } from "./pages/marketing/EnhancedLandingPage"
 import { PricingPage } from "./pages/marketing/PricingPage"
 import { FeaturesPage } from "./pages/marketing/FeaturesPage"
 import { AboutPage } from "./pages/marketing/AboutPage"
@@ -41,7 +42,7 @@ export const AppRoutes = () => {
   return (
     <Routes>
       {/* Marketing Routes (No RootLayout - uses MarketingLayout) */}
-      <Route index element={<LandingPage />} />
+      <Route index element={<EnhancedLandingPage />} />
       <Route path="pricing" element={<PricingPage />} />
       <Route path="features" element={<FeaturesPage />} />
       <Route path="about" element={<AboutPage />} />
