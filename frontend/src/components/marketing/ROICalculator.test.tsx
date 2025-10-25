@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ROICalculator } from './ROICalculator';
 
 describe('ROICalculator', () => {
@@ -10,38 +10,40 @@ describe('ROICalculator', () => {
 
   it('displays the calculator heading', () => {
     render(<ROICalculator />);
-    expect(screen.getByText(/See How Much You'll Save/i)).toBeInTheDocument();
+    expect(screen.getByText(/See how much time and money you'll save/i)).toBeInTheDocument();
   });
 
   it('renders all input sliders', () => {
     render(<ROICalculator />);
     
-    expect(screen.getByText(/Deals per Year/i)).toBeInTheDocument();
-    expect(screen.getByText(/Average Deal Size/i)).toBeInTheDocument();
-    expect(screen.getByText(/Hours Spent per Deal/i)).toBeInTheDocument();
+    expect(screen.getByText(/Deals per year/i)).toBeInTheDocument();
+    expect(screen.getByText(/Average deal size/i)).toBeInTheDocument();
+    expect(screen.getByText(/Hours spent per deal/i)).toBeInTheDocument();
   });
 
   it('displays default values', () => {
     render(<ROICalculator />);
     
-    // Default: 10 deals, £10M, 50 hours
-    expect(screen.getByDisplayValue('10')).toBeInTheDocument();
+    // Default: 12 deals, £5M, 40 hours
+    expect(screen.getByText(/^12$/)).toBeInTheDocument();
+    expect(screen.getByText(/£5M/i)).toBeInTheDocument();
+    expect(screen.getByText(/40h/i)).toBeInTheDocument();
   });
 
   it('updates deal count when slider changes', () => {
     render(<ROICalculator />);
     
-    const slider = screen.getAllByRole('slider')[0];
-    fireEvent.change(slider, { target: { value: '25' } });
+    const sliders = screen.getAllByRole('slider');
+    fireEvent.change(sliders[0], { target: { value: '25' } });
     
-    expect(screen.getByText(/25/)).toBeInTheDocument();
+    expect(screen.getByText(/^25$/)).toBeInTheDocument();
   });
 
   it('updates deal size when slider changes', () => {
     render(<ROICalculator />);
     
-    const slider = screen.getAllByRole('slider')[1];
-    fireEvent.change(slider, { target: { value: '50000000' } }); // £50M
+    const sliders = screen.getAllByRole('slider');
+    fireEvent.change(sliders[1], { target: { value: '50' } });
     
     expect(screen.getByText(/£50M/i)).toBeInTheDocument();
   });
@@ -49,117 +51,136 @@ describe('ROICalculator', () => {
   it('updates hours per deal when slider changes', () => {
     render(<ROICalculator />);
     
-    const slider = screen.getAllByRole('slider')[2];
-    fireEvent.change(slider, { target: { value: '100' } });
+    const sliders = screen.getAllByRole('slider');
+    fireEvent.change(sliders[2], { target: { value: '100' } });
     
-    expect(screen.getByText(/100/)).toBeInTheDocument();
+    expect(screen.getByText(/100h/i)).toBeInTheDocument();
   });
 
   it('calculates ROI correctly', () => {
     render(<ROICalculator />);
     
-    // With default values, should show positive ROI
-    const roiElement = screen.getByText(/Return on Investment/i).closest('div');
-    expect(roiElement).toBeInTheDocument();
-    
+    expect(screen.getByText(/Return on Investment/i)).toBeInTheDocument();
     // Should display percentage
-    expect(screen.getByText(/%$/)).toBeInTheDocument();
+    const roiElement = screen.getByText(/%$/);
+    expect(roiElement).toBeInTheDocument();
   });
 
   it('calculates time saved correctly', () => {
     render(<ROICalculator />);
     
-    // Default: 10 deals * 50 hours * 40% = 200 hours saved
     expect(screen.getByText(/Time Saved Annually/i)).toBeInTheDocument();
-    expect(screen.getByText(/200 hours/i)).toBeInTheDocument();
+    // Default: 12 deals * 40 hours * 40% = 192 hours
+    expect(screen.getByText(/192 hours/i)).toBeInTheDocument();
   });
 
   it('calculates value of time saved', () => {
     render(<ROICalculator />);
     
-    // Time saved * £150/hour
     expect(screen.getByText(/Value of Time Saved/i)).toBeInTheDocument();
-    expect(screen.getByText(/£30,000/i)).toBeInTheDocument();
+    // 192 hours * £150 = £28,800
+    expect(screen.getByText(/£28,800/i)).toBeInTheDocument();
   });
 
   it('calculates additional deals possible', () => {
     render(<ROICalculator />);
     
-    // 200 hours saved / 50 hours per deal = 4 additional deals
     expect(screen.getByText(/Additional Deals Possible/i)).toBeInTheDocument();
+    // 192 hours / 40 hours = 4 deals
     expect(screen.getByText(/4 deals/i)).toBeInTheDocument();
   });
 
   it('calculates net annual savings', () => {
     render(<ROICalculator />);
     
-    // Value of time saved - platform cost
     expect(screen.getByText(/Net Annual Savings/i)).toBeInTheDocument();
-    
-    // Should be positive number
-    const savingsText = screen.getByText(/£[\d,]+/);
-    expect(savingsText).toBeInTheDocument();
+    // Should show savings after platform cost
+    const savingsElement = screen.getByText(/£25,452/i);
+    expect(savingsElement).toBeInTheDocument();
   });
 
-  it('handles minimum values correctly', () => {
+  it('displays current annual cost', () => {
     render(<ROICalculator />);
     
-    const slider = screen.getAllByRole('slider')[0];
-    fireEvent.change(slider, { target: { value: '1' } });
-    
-    expect(screen.getByText(/1/)).toBeInTheDocument();
-    // Should still calculate without errors
-    expect(screen.getByText(/Return on Investment/i)).toBeInTheDocument();
+    expect(screen.getByText(/Current Annual Cost/i)).toBeInTheDocument();
+    // 12 deals * 40 hours * £150 = £72,000
+    expect(screen.getByText(/£72,000/i)).toBeInTheDocument();
   });
 
-  it('handles maximum values correctly', () => {
+  it('shows consulting rate', () => {
     render(<ROICalculator />);
     
-    const slider = screen.getAllByRole('slider')[0];
-    fireEvent.change(slider, { target: { value: '50' } });
-    
-    expect(screen.getByText(/50/)).toBeInTheDocument();
-    // Should still calculate without errors
-    expect(screen.getByText(/Return on Investment/i)).toBeInTheDocument();
+    expect(screen.getByText(/£150\/hour consulting rate/i)).toBeInTheDocument();
   });
 
-  it('formats currency correctly', () => {
+  it('displays platform cost', () => {
     render(<ROICalculator />);
     
-    // Check for proper currency formatting with £ symbol and commas
-    const currencyElements = screen.getAllByText(/£[\d,]+/);
-    expect(currencyElements.length).toBeGreaterThan(0);
+    // £279 * 12 = £3,348
+    expect(screen.getByText(/£3,348/i)).toBeInTheDocument();
   });
 
-  it('formats percentages correctly', () => {
+  it('shows time reduction percentage', () => {
     render(<ROICalculator />);
     
-    // Check for proper percentage formatting
-    const percentageElements = screen.getAllByText(/\d+%/);
-    expect(percentageElements.length).toBeGreaterThan(0);
+    expect(screen.getByText(/40% reduction/i)).toBeInTheDocument();
   });
 
   it('displays CTA button', () => {
     render(<ROICalculator />);
     
-    const ctaButton = screen.getByText(/Start Your Free Trial/i);
+    const ctaButton = screen.getByText(/Start Saving Today/i);
     expect(ctaButton).toBeInTheDocument();
   });
 
   it('CTA button links to sign-up', () => {
     render(<ROICalculator />);
     
-    const ctaButton = screen.getByText(/Start Your Free Trial/i);
+    const ctaButton = screen.getByText(/Start Saving Today/i);
     expect(ctaButton.closest('a')).toHaveAttribute('href', '/sign-up');
   });
 
-  it('shows calculation methodology note', () => {
+  it('shows free trial messaging', () => {
     render(<ROICalculator />);
     
-    expect(screen.getByText(/Based on 40% time reduction/i)).toBeInTheDocument();
+    expect(screen.getByText(/No credit card required/i)).toBeInTheDocument();
+    expect(screen.getByText(/14-day free trial/i)).toBeInTheDocument();
   });
 
-  it('displays all result cards', () => {
+  it('displays disclaimer', () => {
+    render(<ROICalculator />);
+    
+    expect(screen.getByText(/Calculations are estimates/i)).toBeInTheDocument();
+  });
+
+  it('shows potential revenue from additional deals', () => {
+    render(<ROICalculator />);
+    
+    expect(screen.getByText(/Potential revenue/i)).toBeInTheDocument();
+  });
+
+  it('has two-column layout', () => {
+    const { container } = render(<ROICalculator />);
+    
+    const grid = container.querySelector('.lg\\:grid-cols-2');
+    expect(grid).toBeInTheDocument();
+  });
+
+  it('applies gradient styling to input section', () => {
+    const { container } = render(<ROICalculator />);
+    
+    const gradientSection = container.querySelector('.from-indigo-900');
+    expect(gradientSection).toBeInTheDocument();
+  });
+
+  it('displays section headings', () => {
+    render(<ROICalculator />);
+    
+    expect(screen.getByText(/Your Current Situation/i)).toBeInTheDocument();
+    expect(screen.getByText(/Your Results with ApexDeliver/i)).toBeInTheDocument();
+  });
+
+  it('shows all result cards', () => {
     render(<ROICalculator />);
     
     expect(screen.getByText(/Return on Investment/i)).toBeInTheDocument();
@@ -169,75 +190,72 @@ describe('ROICalculator', () => {
     expect(screen.getByText(/Net Annual Savings/i)).toBeInTheDocument();
   });
 
-  it('applies gradient styling to result cards', () => {
-    const { container } = render(<ROICalculator />);
-    
-    const gradientCards = container.querySelectorAll('.bg-gradient-to-br');
-    expect(gradientCards.length).toBeGreaterThan(0);
-  });
-
-  it('recalculates when any input changes', () => {
+  it('recalculates when deal count changes', () => {
     render(<ROICalculator />);
     
-    const initialROI = screen.getByText(/Return on Investment/i).closest('div')?.textContent;
+    const initialSavings = screen.getByText(/£25,452/i);
+    expect(initialSavings).toBeInTheDocument();
     
-    const slider = screen.getAllByRole('slider')[0];
-    fireEvent.change(slider, { target: { value: '20' } });
+    const sliders = screen.getAllByRole('slider');
+    fireEvent.change(sliders[0], { target: { value: '20' } });
     
-    const newROI = screen.getByText(/Return on Investment/i).closest('div')?.textContent;
-    
-    // ROI should change when inputs change
-    expect(initialROI).not.toBe(newROI);
+    // Savings should change with more deals
+    const newSavings = screen.getByText(/£44,652/i);
+    expect(newSavings).toBeInTheDocument();
   });
 
-  it('handles edge case of 0 deals', () => {
+  it('handles minimum deal count', () => {
     render(<ROICalculator />);
     
-    const slider = screen.getAllByRole('slider')[0];
-    fireEvent.change(slider, { target: { value: '0' } });
+    const sliders = screen.getAllByRole('slider');
+    fireEvent.change(sliders[0], { target: { value: '1' } });
     
-    // Should handle gracefully without crashing
+    expect(screen.getByText(/^1$/)).toBeInTheDocument();
+    // Should still calculate without errors
     expect(screen.getByText(/Return on Investment/i)).toBeInTheDocument();
   });
 
-  it('calculates platform cost correctly', () => {
+  it('handles maximum deal count', () => {
     render(<ROICalculator />);
     
-    // Platform cost should be included in calculations
-    // £279/month * 12 = £3,348/year
-    const savingsText = screen.getByText(/Net Annual Savings/i).closest('div')?.textContent;
-    expect(savingsText).toBeDefined();
-  });
-
-  it('shows realistic ROI for typical customer', () => {
-    render(<ROICalculator />);
-    
-    // Set typical values: 15 deals, £20M average, 80 hours each
     const sliders = screen.getAllByRole('slider');
-    fireEvent.change(sliders[0], { target: { value: '15' } });
-    fireEvent.change(sliders[1], { target: { value: '20000000' } });
-    fireEvent.change(sliders[2], { target: { value: '80' } });
+    fireEvent.change(sliders[0], { target: { value: '50' } });
     
-    // Should show substantial ROI
-    const roiText = screen.getByText(/Return on Investment/i).closest('div')?.textContent;
-    expect(roiText).toContain('%');
+    expect(screen.getByText(/^50$/)).toBeInTheDocument();
+    // Should still calculate without errors
+    expect(screen.getByText(/Return on Investment/i)).toBeInTheDocument();
   });
 
-  it('displays tooltip or help text for inputs', () => {
+  it('formats currency with commas', () => {
     render(<ROICalculator />);
     
-    // Check for descriptive text
-    expect(screen.getByText(/How many M&A deals/i)).toBeInTheDocument();
+    // Check for proper currency formatting
+    const currencyElements = screen.getAllByText(/£[\d,]+/);
+    expect(currencyElements.length).toBeGreaterThan(0);
   });
 
-  it('has responsive layout', () => {
+  it('includes icons for visual appeal', () => {
     const { container } = render(<ROICalculator />);
     
-    const grid = container.querySelector('.grid');
-    expect(grid).toHaveClass('md:grid-cols-2');
+    const icons = container.querySelectorAll('svg');
+    expect(icons.length).toBeGreaterThan(0);
   });
 
-  it('includes section background styling', () => {
+  it('has responsive padding', () => {
+    const { container } = render(<ROICalculator />);
+    
+    const responsivePadding = container.querySelector('.lg\\:p-12');
+    expect(responsivePadding).toBeInTheDocument();
+  });
+
+  it('applies card styling to results', () => {
+    const { container } = render(<ROICalculator />);
+    
+    const cards = container.querySelectorAll('.rounded-xl');
+    expect(cards.length).toBeGreaterThan(5);
+  });
+
+  it('shows section background gradient', () => {
     const { container } = render(<ROICalculator />);
     
     const section = container.querySelector('section');

@@ -8,14 +8,14 @@ describe('TrustBadges', () => {
     expect(screen.getByText(/Enterprise-Grade Security/i)).toBeInTheDocument();
   });
 
-  it('displays the section heading', () => {
+  it('displays the security section heading', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/Trusted & Secure/i)).toBeInTheDocument();
+    expect(screen.getByText(/Enterprise-Grade Security & Compliance/i)).toBeInTheDocument();
   });
 
-  it('displays the section subtitle', () => {
+  it('displays the security section subtitle', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/Bank-grade security/i)).toBeInTheDocument();
+    expect(screen.getByText(/Your data is protected by the same security standards/i)).toBeInTheDocument();
   });
 
   it('displays GDPR compliance badge', () => {
@@ -23,9 +23,9 @@ describe('TrustBadges', () => {
     expect(screen.getByText(/GDPR Compliant/i)).toBeInTheDocument();
   });
 
-  it('displays AES-256 encryption badge', () => {
+  it('displays Bank-Grade Security badge', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/AES-256 Encryption/i)).toBeInTheDocument();
+    expect(screen.getByText(/Bank-Grade Security/i)).toBeInTheDocument();
   });
 
   it('displays SOC 2 Type II badge', () => {
@@ -50,43 +50,56 @@ describe('TrustBadges', () => {
 
   it('shows all 6 security badges', () => {
     const { container } = render(<TrustBadges />);
-    const badges = container.querySelectorAll('.bg-white.rounded-xl');
+    const badges = container.querySelectorAll('.bg-white.rounded-xl.shadow-lg');
     expect(badges.length).toBeGreaterThanOrEqual(6);
   });
 
-  it('displays security features section', () => {
+  it('displays GDPR description', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/Security Features/i)).toBeInTheDocument();
+    expect(screen.getByText(/Full compliance with EU data protection/i)).toBeInTheDocument();
   });
 
-  it('lists end-to-end encryption', () => {
+  it('displays AES-256 encryption description', () => {
     render(<TrustBadges />);
+    expect(screen.getByText(/AES-256 encryption for all data/i)).toBeInTheDocument();
+  });
+
+  it('displays SOC 2 description', () => {
+    render(<TrustBadges />);
+    expect(screen.getByText(/Certified security controls and processes/i)).toBeInTheDocument();
+  });
+
+  it('displays ISO description', () => {
+    render(<TrustBadges />);
+    expect(screen.getByText(/Information security management certified/i)).toBeInTheDocument();
+  });
+
+  it('displays uptime SLA description', () => {
+    render(<TrustBadges />);
+    expect(screen.getByText(/Enterprise-grade reliability SLA/i)).toBeInTheDocument();
+  });
+
+  it('displays PCI DSS description', () => {
+    render(<TrustBadges />);
+    expect(screen.getByText(/Secure payment processing standards/i)).toBeInTheDocument();
+  });
+
+  it('displays data encryption feature', () => {
+    render(<TrustBadges />);
+    expect(screen.getByText(/Data Encryption/i)).toBeInTheDocument();
     expect(screen.getByText(/End-to-end encryption/i)).toBeInTheDocument();
   });
 
-  it('lists two-factor authentication', () => {
+  it('displays regular audits feature', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/Two-factor authentication/i)).toBeInTheDocument();
+    expect(screen.getByText(/Regular Audits/i)).toBeInTheDocument();
+    expect(screen.getByText(/Third-party security audits/i)).toBeInTheDocument();
   });
 
-  it('lists role-based access control', () => {
+  it('displays backup and recovery feature', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/Role-based access control/i)).toBeInTheDocument();
-  });
-
-  it('lists audit logs', () => {
-    render(<TrustBadges />);
-    expect(screen.getByText(/Comprehensive audit logs/i)).toBeInTheDocument();
-  });
-
-  it('lists regular security audits', () => {
-    render(<TrustBadges />);
-    expect(screen.getByText(/Regular security audits/i)).toBeInTheDocument();
-  });
-
-  it('lists data backup', () => {
-    render(<TrustBadges />);
-    expect(screen.getByText(/Automated data backup/i)).toBeInTheDocument();
+    expect(screen.getByText(/Backup & Recovery/i)).toBeInTheDocument();
+    expect(screen.getByText(/Daily encrypted backups/i)).toBeInTheDocument();
   });
 
   it('displays integrations section', () => {
@@ -125,76 +138,67 @@ describe('TrustBadges', () => {
   });
 
   it('displays all 6 integration logos', () => {
-    const { container } = render(<TrustBadges />);
-    const integrationCards = container.querySelectorAll('.bg-gray-50.rounded-lg');
-    expect(integrationCards.length).toBeGreaterThanOrEqual(6);
+    render(<TrustBadges />);
+    
+    expect(screen.getByText(/Xero/i)).toBeInTheDocument();
+    expect(screen.getByText(/QuickBooks/i)).toBeInTheDocument();
+    expect(screen.getByText(/Sage/i)).toBeInTheDocument();
+    expect(screen.getByText(/NetSuite/i)).toBeInTheDocument();
+    expect(screen.getByText(/Stripe/i)).toBeInTheDocument();
+    expect(screen.getByText(/Slack/i)).toBeInTheDocument();
   });
 
-  it('includes shield icon for security badges', () => {
+  it('includes shield icons for security badges', () => {
     const { container } = render(<TrustBadges />);
-    const shieldIcons = container.querySelectorAll('svg');
-    expect(shieldIcons.length).toBeGreaterThan(0);
+    const icons = container.querySelectorAll('svg');
+    expect(icons.length).toBeGreaterThan(6);
   });
 
   it('has responsive grid layout for badges', () => {
     const { container } = render(<TrustBadges />);
-    const grid = container.querySelector('.grid');
-    expect(grid).toHaveClass('md:grid-cols-3');
+    const grid = container.querySelector('.lg\\:grid-cols-6');
+    expect(grid).toBeInTheDocument();
   });
 
   it('has responsive grid layout for integrations', () => {
     const { container } = render(<TrustBadges />);
-    const grids = container.querySelectorAll('.grid');
-    expect(grids.length).toBeGreaterThan(1);
+    const grids = container.querySelectorAll('.md\\:grid-cols-6');
+    expect(grids.length).toBeGreaterThan(0);
   });
 
   it('includes section background styling', () => {
-    const { container } = render(<TrustBadges />);
+    const { container} = render(<TrustBadges />);
     const section = container.querySelector('section');
-    expect(section).toHaveClass('bg-gradient-to-br');
+    expect(section).toHaveClass('bg-gray-50');
   });
 
   it('applies hover effects to badges', () => {
     const { container } = render(<TrustBadges />);
-    const hoverElements = container.querySelectorAll('.hover\\:shadow-lg');
+    const hoverElements = container.querySelectorAll('.hover\\:shadow-xl');
     expect(hoverElements.length).toBeGreaterThan(0);
   });
 
-  it('displays badge descriptions', () => {
+  it('displays custom integration CTA', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/EU data protection/i)).toBeInTheDocument();
+    expect(screen.getByText(/Need a custom integration/i)).toBeInTheDocument();
   });
 
-  it('shows bank-grade security description', () => {
+  it('includes link to view all integrations', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/Bank-grade security/i)).toBeInTheDocument();
+    const link = screen.getByText(/View all integrations/i);
+    expect(link.closest('a')).toHaveAttribute('href', '/integrations');
   });
 
-  it('displays certified description for SOC 2', () => {
-    render(<TrustBadges />);
-    expect(screen.getByText(/Certified/i)).toBeInTheDocument();
-  });
-
-  it('shows uptime guarantee', () => {
-    render(<TrustBadges />);
-    expect(screen.getByText(/SLA/i)).toBeInTheDocument();
-  });
-
-  it('displays payment security description', () => {
-    render(<TrustBadges />);
-    expect(screen.getByText(/Payment security/i)).toBeInTheDocument();
-  });
-
-  it('includes checkmarks for security features', () => {
+  it('displays checkmarks for security features', () => {
     const { container } = render(<TrustBadges />);
     const checkmarks = container.querySelectorAll('.text-green-600');
     expect(checkmarks.length).toBeGreaterThan(0);
   });
 
-  it('displays integration icons', () => {
+  it('includes integration icons/logos', () => {
     const { container } = render(<TrustBadges />);
-    const icons = container.querySelectorAll('svg');
-    expect(icons.length).toBeGreaterThan(6);
+    const logoContainers = container.querySelectorAll('.bg-gray-100.rounded-xl');
+    expect(logoContainers.length).toBe(6);
   });
 
   it('applies proper spacing between sections', () => {
@@ -211,8 +215,52 @@ describe('TrustBadges', () => {
 
   it('displays all content in proper hierarchy', () => {
     const { container } = render(<TrustBadges />);
-    const headings = container.querySelectorAll('h2, h3');
+    const headings = container.querySelectorAll('h2, h3, h4');
     expect(headings.length).toBeGreaterThan(0);
+  });
+
+  it('shows integration subtitle', () => {
+    render(<TrustBadges />);
+    expect(screen.getByText(/Connect with the tools you already use/i)).toBeInTheDocument();
+  });
+
+  it('applies group hover effects', () => {
+    const { container } = render(<TrustBadges />);
+    const groupElements = container.querySelectorAll('.group');
+    expect(groupElements.length).toBeGreaterThan(0);
+  });
+
+  it('displays badge icons in colored circles', () => {
+    const { container } = render(<TrustBadges />);
+    const iconCircles = container.querySelectorAll('.bg-blue-100.rounded-full');
+    expect(iconCircles.length).toBe(6);
+  });
+
+  it('shows security feature cards', () => {
+    const { container } = render(<TrustBadges />);
+    const featureCards = container.querySelectorAll('.border-2.border-gray-200');
+    expect(featureCards.length).toBe(3);
+  });
+
+  it('mentions TLS 1.3 encryption', () => {
+    render(<TrustBadges />);
+    expect(screen.getByText(/TLS 1\.3/i)).toBeInTheDocument();
+  });
+
+  it('mentions penetration testing', () => {
+    render(<TrustBadges />);
+    expect(screen.getByText(/penetration testing/i)).toBeInTheDocument();
+  });
+
+  it('mentions 30-day retention', () => {
+    render(<TrustBadges />);
+    expect(screen.getByText(/30-day retention/i)).toBeInTheDocument();
+  });
+
+  it('applies shadow effects to integration container', () => {
+    const { container } = render(<TrustBadges />);
+    const shadowElement = container.querySelector('.shadow-xl');
+    expect(shadowElement).toBeInTheDocument();
   });
 });
 
