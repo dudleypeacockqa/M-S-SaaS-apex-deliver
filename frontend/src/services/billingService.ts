@@ -103,56 +103,63 @@ export interface CancelSubscriptionRequest {
   reason?: string;
 }
 
-// ============================================================================
-// Billing Service
-// ============================================================================
+const createCheckoutSessionRequest = async (
+  data: CheckoutSessionRequest
+): Promise<CheckoutSessionResponse> => {
+  const response = await api.post<CheckoutSessionResponse>(
+    '/subscriptions/create-checkout-session',
+    data
+  );
+  return response.data;
+};
+
+const getMySubscriptionRequest = async (): Promise<Subscription> => {
+  const response = await api.get<Subscription>('/subscriptions/me');
+  return response.data;
+};
+
+const getBillingDashboardRequest = async (): Promise<BillingDashboard> => {
+  const response = await api.get<BillingDashboard>('/subscriptions/billing-dashboard');
+  return response.data;
+};
+
+const changeTierRequest = async (data: ChangeTierRequest): Promise<Subscription> => {
+  const response = await api.put<Subscription>('/subscriptions/change-tier', data);
+  return response.data;
+};
+
+const cancelSubscriptionRequest = async (
+  data: CancelSubscriptionRequest
+): Promise<Subscription> => {
+  const response = await api.post<Subscription>('/subscriptions/cancel', data);
+  return response.data;
+};
+
+const getAllTiersRequest = async (): Promise<TierDetails[]> => {
+  const response = await api.get<TierDetails[]>('/subscriptions/tiers');
+  return response.data;
+};
+
+const getCustomerPortalUrlRequest = async (): Promise<{ url: string }> => {
+  const response = await api.get<{ url: string }>('/subscriptions/customer-portal');
+  return response.data;
+};
 
 export const billingService = {
-  /**
-   * Create a Stripe Checkout Session for subscription purchase
-   */
-  async createCheckoutSession(data: CheckoutSessionRequest): Promise<CheckoutSessionResponse> {
-    const response = await api.post<CheckoutSessionResponse>('/subscriptions/create-checkout-session', data);
-    return response.data;
-  },
+  createCheckoutSession: createCheckoutSessionRequest,
+  getMySubscription: getMySubscriptionRequest,
+  getBillingDashboard: getBillingDashboardRequest,
+  changeTier: changeTierRequest,
+  cancelSubscription: cancelSubscriptionRequest,
+  getAllTiers: getAllTiersRequest,
+  getCustomerPortalUrl: getCustomerPortalUrlRequest,
+  async redirectToCheckout(tier: SubscriptionTier): Promise<void> {
+    const session = await createCheckoutSessionRequest({
+      tier,
+      success_url: `${window.location.origin}/checkout/success`,
+      cancel_url: `${window.location.origin}/checkout/cancel`,
+    });
 
-  /**
-   * Get current user's subscription details
-   */
-  async getMySubscription(): Promise<Subscription> {
-    const response = await api.get<Subscription>('/subscriptions/me');
-    return response.data;
-  },
-
-  /**
-   * Get complete billing dashboard data
-   */
-  async getBillingDashboard(): Promise<BillingDashboard> {
-    const response = await api.get<BillingDashboard>('/subscriptions/billing-dashboard');
-    return response.data;
-  },
-
-  /**
-   * Change subscription tier (upgrade or downgrade)
-   */
-  async changeTier(data: ChangeTierRequest): Promise<Subscription> {
-    const response = await api.put<Subscription>('/subscriptions/change-tier', data);
-    return response.data;
-  },
-
-  /**
-   * Cancel subscription
-   */
-  async cancelSubscription(data: CancelSubscriptionRequest): Promise<Subscription> {
-    const response = await api.post<Subscription>('/subscriptions/cancel', data);
-    return response.data;
-  },
-
-  /**
-   * Get all available subscription tiers
-   */
-  async getAllTiers(): Promise<TierDetails[]> {
-    const response = await api.get<TierDetails[]>('/subscriptions/tiers');
-    return response.data;
+    window.location.assign(session.checkout_url);
   },
 };

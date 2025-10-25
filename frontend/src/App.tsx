@@ -14,6 +14,11 @@ import { NewDealPage } from "./pages/deals/NewDealPage"
 import { DealDetails } from "./pages/deals/DealDetails"
 import { DataRoom } from "./pages/deals/DataRoom"
 
+// Billing & Checkout Pages
+import { BillingDashboard } from "./pages/dashboard/BillingDashboard"
+import { CheckoutSuccess } from "./pages/checkout/CheckoutSuccess"
+import { CheckoutCancel } from "./pages/checkout/CheckoutCancel"
+
 // Marketing Pages
 import { LandingPage } from "./pages/marketing/LandingPage"
 import { PricingPage } from "./pages/marketing/PricingPage"
@@ -67,6 +72,13 @@ export const AppRoutes = () => {
         <Route path="deals/new" element={<SignedIn><NewDealPage /></SignedIn>} />
         <Route path="deals/:dealId" element={<SignedIn><DealDetails /></SignedIn>} />
         <Route path="deals/:dealId/data-room" element={<SignedIn><DataRoom /></SignedIn>} />
+
+        {/* Billing & Subscription Routes */}
+        <Route path="dashboard/billing" element={<SignedIn><BillingDashboard /></SignedIn>} />
+
+        {/* Checkout Routes */}
+        <Route path="checkout/success" element={<SignedIn><CheckoutSuccess /></SignedIn>} />
+        <Route path="checkout/cancel" element={<CheckoutCancel />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

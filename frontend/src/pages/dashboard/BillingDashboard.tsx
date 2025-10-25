@@ -1,213 +1,308 @@
-import { useEffect, useState } from 'react';
-import { billingService, BillingDashboard as BillingDashboardData } from '../../services/billingService';
+import { useEffect, useState } from 'react'
+import {
+  billingService,
+  type BillingDashboard as BillingDashboardResponse,
+  type Subscription,
+} from '../../services/billingService'
+import { ChangeTierModal } from '../../components/billing/ChangeTierModal'
+import { CancelSubscriptionModal } from '../../components/billing/CancelSubscriptionModal'
 
-export const BillingDashboard = () => {
-  const [data, setData] = useState<BillingDashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const formatCurrency = (value: number | string, currency = 'GBP'): string => {
+  const numeric = typeof value === 'number' ? value : parseFloat(value)
+  return new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 2,
+  }).format(numeric)
+}
 
-  useEffect(() => {
-    loadBillingData();
-  }, []);
+const formatDate = (value?: string | null): string => {
+  if (!value) return '—'
+  return new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(new Date(value))
+}
 
-  const loadBillingData = async () => {
+const percent = (current: number, max?: number | null): number => {
+  if (!max || max <= 0) return 0
+  return Math.min(100, Math.round((current / max) * 100))
+}
+
+export const BillingDashboard: React.FC = () => {
+  const [dashboard, setDashboard] = useState<BillingDashboardResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const [isPortalLoading, setIsPortalLoading] = useState(false)
+  const [isChangeTierOpen, setChangeTierOpen] = useState(false)
+  const [isCancelOpen, setCancelOpen] = useState(false)
+
+  const subscription = dashboard?.subscription
+  const tierDetails = dashboard?.tier_details
+  const usage = dashboard?.usage
+
+  const loadDashboard = async () => {
     try {
-      setLoading(true);
-      setError(null);
-      const dashboardData = await billingService.getBillingDashboard();
-      setData(dashboardData);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load billing data');
+      setLoading(true)
+      const result = await billingService.getBillingDashboard()
+      setDashboard(result)
+    } catch (err) {
+      setDashboard(null)
+      setActionError(err instanceof Error ? err.message : 'Failed to load billing data')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading billing information...</p>
-        </div>
-      </div>
-    );
   }
 
-  if (error) {
+  useEffect(() => {
+    void loadDashboard()
+  }, [])
+
+  const handleOpenPortal = async () => {
+    try {
+      setIsPortalLoading(true)
+      setActionError(null)
+      const { url } = await billingService.getCustomerPortalUrl()
+      window.location.assign(url)
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Failed to open billing portal')
+    } finally {
+      setIsPortalLoading(false)
+    }
+  }
+
+  if (loading && dashboard === null) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <section className="space-y-4" data-testid="billing-dashboard-loading">
+        <div className="bg-white border border-slate-200 rounded-lg p-6 animate-pulse">
+          <div className="h-6 bg-slate-200 rounded w-1/3" />
+          <div className="mt-4 h-4 bg-slate-200 rounded w-1/2" />
+        </div>
+      </section>
+    )
+  }
+
+  if (!dashboard) {
+    return (
+      <section className="space-y-4" data-testid="billing-dashboard-error">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-red-800 mb-2">Error Loading Billing Data</h3>
-          <p className="text-red-600 mb-4">{error}</p>
+          <h2 className="text-lg font-semibold text-red-800 mb-2">Unable to load billing data</h2>
+          <p className="text-red-700">{actionError ?? 'Please try again later.'}</p>
           <button
-            onClick={loadBillingData}
-            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+            className="mt-4 inline-flex items-center px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+            onClick={() => {
+              setActionError(null)
+              void loadDashboard()
+            }}
           >
             Retry
           </button>
         </div>
-      </div>
-    );
+      </section>
+    )
   }
 
-  if (!data) {
-    return null;
-  }
-
-  const { subscription, usage, tier_details, recent_invoices } = data;
+  const subscriptionStatus = subscription.status
+  const monthlyPrice = formatCurrency(tierDetails.price_monthly)
+  const nextBillingDate = subscription.cancel_at_period_end
+    ? formatDate(subscription.current_period_end)
+    : formatDate(subscription.current_period_end)
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Billing & Subscription</h1>
-
-      {/* Subscription Overview */}
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Current Plan</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <p className="text-sm text-gray-600">Plan</p>
-            <p className="text-lg font-semibold">{tier_details.name}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Status</p>
-            <p className="text-lg font-semibold capitalize">{subscription.status}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Monthly Price</p>
-            <p className="text-lg font-semibold">£{tier_details.price_monthly}</p>
-          </div>
-        </div>
-
-        {subscription.current_period_end && (
-          <div className="mt-4 text-sm text-gray-600">
-            Next billing date: {new Date(subscription.current_period_end).toLocaleDateString()}
+    <section className="space-y-8" data-testid="dashboard-subscription">
+      <header className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold text-slate-900">Subscription & Billing</h1>
+        <p className="text-slate-500">
+          Review your current plan, usage, and invoices. Upgrade, cancel, or manage payment methods from this dashboard.
+        </p>
+        {actionError && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg mt-2" role="alert">
+            {actionError}
           </div>
         )}
+      </header>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <article className="bg-white shadow-sm border border-slate-200 rounded-xl p-6 flex flex-col gap-5">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Current Plan</p>
+              <h2 className="text-2xl font-bold text-slate-900 flex items-baseline gap-2">
+                {tierDetails.name}
+                <span className="text-sm font-medium text-slate-500">({subscription.billing_period === 'annual' ? 'Annual' : 'Monthly'})</span>
+              </h2>
+            </div>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+              {subscriptionStatus}
+            </span>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+            <p className="text-sm text-slate-500">Monthly price</p>
+            <p className="text-3xl font-extrabold text-slate-900">{monthlyPrice}</p>
+            <p className="text-sm text-slate-500 mt-2">Renews on {nextBillingDate}</p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <button
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
+              onClick={() => setChangeTierOpen(true)}
+            >
+              Change Tier
+            </button>
+            <button
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50"
+              onClick={() => setCancelOpen(true)}
+            >
+              Cancel Subscription
+            </button>
+            <button
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              onClick={() => void handleOpenPortal()}
+              disabled={isPortalLoading}
+            >
+              {isPortalLoading ? 'Opening…' : 'Update Payment Method'}
+            </button>
+          </div>
+        </article>
+
+        <article className="bg-white shadow-sm border border-slate-200 rounded-xl p-6 space-y-4">
+          <h3 className="text-lg font-semibold text-slate-900">Usage Overview</h3>
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center justify-between text-sm text-slate-500">
+                <span>Active Deals</span>
+                <span>
+                  {usage.deals_count}
+                  {tierDetails.features.max_deals ? ` / ${tierDetails.features.max_deals}` : ''}
+                </span>
+              </div>
+              <div className="mt-2 h-2 bg-slate-100 rounded-full">
+                <div className="h-2 rounded-full bg-indigo-600" style={{ width: `${percent(usage.deals_count, tierDetails.features.max_deals)}%` }} />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between text-sm text-slate-500">
+                <span>Team Members</span>
+                <span>
+                  {usage.users_count}
+                  {tierDetails.features.max_users ? ` / ${tierDetails.features.max_users}` : ''}
+                </span>
+              </div>
+              <div className="mt-2 h-2 bg-slate-100 rounded-full">
+                <div className="h-2 rounded-full bg-indigo-600" style={{ width: `${percent(usage.users_count, tierDetails.features.max_users)}%` }} />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between text-sm text-slate-500">
+              <span>Total Documents</span>
+              <span>{usage.documents_count}</span>
+            </div>
+
+            <div className="flex items-center justify-between text-sm text-slate-500">
+              <span>Storage Used</span>
+              <span>
+                {Math.round(usage.storage_used_mb / 1024)} GB
+                {tierDetails.features.storage_gb ? ` / ${tierDetails.features.storage_gb} GB` : ''}
+              </span>
+            </div>
+          </div>
+        </article>
+
+        <article className="bg-white shadow-sm border border-slate-200 rounded-xl p-6 space-y-3">
+          <h3 className="text-lg font-semibold text-slate-900">Key Features</h3>
+          <ul className="space-y-2 text-slate-600">
+            {tierDetails.features.ai_features && <li>• AI insights & automation</li>}
+            {tierDetails.features.api_access && <li>• API access for integrations</li>}
+            {tierDetails.features.priority_support && <li>• Priority support (2h SLA)</li>}
+            {tierDetails.features.max_deals === null && <li>• Unlimited deal pipelines</li>}
+            {tierDetails.features.max_users === null && <li>• Unlimited team members</li>}
+            {tierDetails.features.storage_gb === null && <li>• Unlimited document storage</li>}
+            {!tierDetails.features.ai_features && !tierDetails.features.api_access && !tierDetails.features.priority_support && (
+              <li>• Core deal pipeline & document room features</li>
+            )}
+          </ul>
+          <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-4 text-sm text-indigo-700">
+            Need custom terms or annual billing? <a href="/contact" className="font-semibold">Contact sales</a> for enterprise packages.
+          </div>
+        </article>
       </div>
 
-      {/* Usage Metrics */}
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Usage</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <section className="bg-white shadow-sm border border-slate-200 rounded-xl">
+        <header className="px-6 py-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
-            <p className="text-sm text-gray-600">Deals</p>
-            <p className="text-2xl font-semibold">{usage.deals_count}</p>
-            {tier_details.features.max_deals && (
-              <p className="text-xs text-gray-500">of {tier_details.features.max_deals}</p>
-            )}
+            <h3 className="text-lg font-semibold text-slate-900">Recent Invoices</h3>
+            <p className="text-sm text-slate-500">Last 3 invoices in your billing history.</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-600">Users</p>
-            <p className="text-2xl font-semibold">{usage.users_count}</p>
-            {tier_details.features.max_users && (
-              <p className="text-xs text-gray-500">of {tier_details.features.max_users}</p>
-            )}
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Documents</p>
-            <p className="text-2xl font-semibold">{usage.documents_count}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Storage</p>
-            <p className="text-2xl font-semibold">{(usage.storage_used_mb / 1024).toFixed(1)} GB</p>
-            {tier_details.features.storage_gb && (
-              <p className="text-xs text-gray-500">of {tier_details.features.storage_gb} GB</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Features */}
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Plan Features</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {tier_details.features.ai_features && (
-            <div className="flex items-center">
-              <svg className="h-5 w-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-              </svg>
-              <span>AI Features</span>
-            </div>
+          {dashboard.upcoming_invoice_amount !== null && (
+            <span className="text-sm font-medium text-indigo-600">
+              Upcoming charge: {formatCurrency(dashboard.upcoming_invoice_amount)}
+            </span>
           )}
-          {tier_details.features.api_access && (
-            <div className="flex items-center">
-              <svg className="h-5 w-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-              </svg>
-              <span>API Access</span>
-            </div>
-          )}
-          {tier_details.features.priority_support && (
-            <div className="flex items-center">
-              <svg className="h-5 w-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-              </svg>
-              <span>Priority Support</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Recent Invoices */}
-      {recent_invoices.length > 0 && (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">Recent Invoices</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+        </header>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Date</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Amount</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Invoice</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-slate-200">
+              {dashboard.recent_invoices.length === 0 && (
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Amount
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Action
-                  </th>
+                  <td colSpan={4} className="px-6 py-4 text-center text-slate-500">
+                    No invoices yet. Your first invoice will appear after your trial ends.
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {recent_invoices.map((invoice) => (
-                  <tr key={invoice.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(invoice.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {invoice.currency} {invoice.amount}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        invoice.status === 'paid'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {invoice.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      {invoice.invoice_pdf && (
-                        <a
-                          href={invoice.invoice_pdf}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          Download
-                        </a>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              )}
+              {dashboard.recent_invoices.map((invoice) => (
+                <tr key={invoice.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4 text-sm text-slate-700">{formatDate(invoice.created_at)}</td>
+                  <td className="px-6 py-4 text-sm text-slate-700">{formatCurrency(invoice.amount, invoice.currency)}</td>
+                  <td className="px-6 py-4 text-sm">
+                    <span className={`px-2 inline-flex text-xs font-semibold rounded-full ${invoice.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                      {invoice.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-right">
+                    {invoice.invoice_pdf ? (
+                      <a
+                        href={invoice.invoice_pdf}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-indigo-600 hover:text-indigo-700"
+                      >
+                        Download PDF
+                      </a>
+                    ) : (
+                      <span className="text-slate-400">Processing</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
-    </div>
-  );
-};
+      </section>
+
+      <ChangeTierModal
+        isOpen={isChangeTierOpen}
+        onClose={() => setChangeTierOpen(false)}
+        currentTier={subscription.tier}
+        onSuccess={() => void loadDashboard()}
+      />
+
+      <CancelSubscriptionModal
+        isOpen={isCancelOpen}
+        onClose={() => setCancelOpen(false)}
+        subscription={subscription}
+        onSuccess={() => void loadDashboard()}
+      />
+    </section>
+  )
+}

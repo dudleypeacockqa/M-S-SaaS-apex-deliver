@@ -2,8 +2,42 @@ import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { PricingCard } from '../../components/marketing/PricingCard';
 import { CTASection } from '../../components/marketing/CTASection';
 import { SEO } from '../../components/common/SEO';
+import { useAuth } from '@clerk/clerk-react';
+import { useState } from 'react';
+import { billingService, type SubscriptionTier } from '../../services/billingService';
 
 export const PricingPage: React.FC = () => {
+  const { isSignedIn } = useAuth();
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
+  const [errorTier, setErrorTier] = useState<string | null>(null);
+
+  const handleGetStarted = async (tierName: string) => {
+    if (!isSignedIn) {
+      window.location.assign('/sign-in');
+      return;
+    }
+
+    setLoadingTier(tierName);
+    setErrorTier(null);
+
+    const tierMap: Record<string, SubscriptionTier> = {
+      Starter: 'starter',
+      Professional: 'professional',
+      Enterprise: 'enterprise',
+      'Community Leader': 'community',
+    };
+
+    try {
+      const tier = tierMap[tierName];
+      if (!tier) {
+        throw new Error('Unknown tier selection.');
+      }
+      await billingService.redirectToCheckout(tier);
+    } catch (error) {
+      setErrorTier('Failed to create checkout session. Please try again.');
+      setLoadingTier(null);
+    }
+  };
   const pricingTiers = [
     {
       name: 'Starter',
@@ -116,7 +150,12 @@ export const PricingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {pricingTiers.map((tier, index) => (
-              <PricingCard key={index} {...tier} />
+              <PricingCard
+                key={index}
+                {...tier}
+                onCtaClick={tier.cta === 'Get Started' ? () => handleGetStarted(tier.name) : undefined}
+                loading={loadingTier === tier.name}
+              />
             ))}
           </div>
 
@@ -268,6 +307,13 @@ export const PricingPage: React.FC = () => {
 
       {/* CTA Section */}
       <CTASection />
+      {errorTier && (
+        <div className="max-w-2xl mx-auto mt-6 text-center">
+          <p className="text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+            {errorTier}
+          </p>
+        </div>
+      )}
     </MarketingLayout>
   );
 };
