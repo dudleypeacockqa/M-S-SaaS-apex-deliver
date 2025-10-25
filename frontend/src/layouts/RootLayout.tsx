@@ -1,7 +1,8 @@
-import { Link, Outlet } from "react-router-dom"
+import { Link, Outlet, useNavigate } from "react-router-dom"
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/clerk-react"
 
 export const RootLayout = () => {
+  const navigate = useNavigate()
   const { user } = useUser()
 
   return (
@@ -52,19 +53,23 @@ export const RootLayout = () => {
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <SignedOut>
-              <SignInButton mode="modal">
+              <SignInButton fallbackRedirectUrl="/dashboard">
                 Sign In
               </SignInButton>
-              <Link
-                to="/sign-up"
+              <button
+                type="button"
+                onClick={() => navigate("/sign-up")}
                 style={{
                   color: "#312e81",
-                  textDecoration: "none",
+                  background: "none",
+                  border: "none",
                   fontWeight: 600,
+                  cursor: "pointer",
+                  textDecoration: "underline",
                 }}
               >
                 Create account
-              </Link>
+              </button>
             </SignedOut>
 
             <SignedIn>

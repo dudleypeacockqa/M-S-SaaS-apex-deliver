@@ -1269,3 +1269,17 @@
 - Frontend Vitest suite (`npm test`) remains green at 52/52 with a react-act warning on DealPipeline retry test.
 - Render health verified at 16:31 UTC: https://ma-saas-backend.onrender.com/health reported healthy; https://ma-saas-platform.onrender.com returned HTTP 200.
 - Git working tree dirty with backend document module changes and new status docs; no local commits ahead of origin/main.
+
+---
+
+### 2025-10-25 07:45 UTC - DEV-009 Subscription & Billing Planning Kickoff
+- Reviewed BMAD story `DEV-009-subscription-billing.md` and confirmed scope remains READY FOR IMPLEMENTATION.
+- Audited codebase: subscription routes/services exist as stubs with placeholder comments; dedicated tests `tests/test_billing_endpoints.py` present but unexecuted due to pending implementation.
+- Verified latest commit `21de8e6` (RED tests for DEV-009) on `main`; local working tree carries additional doc + document API fixes pending commit.
+- Render health revalidated (backend `healthy`, frontend HTTP 200) to ensure production baseline before billing rollout.
+- Established BMAD plan:
+  1. Finalize TDD strategy per story (write failing backend tests iteratively, expand mocks for Stripe, ensure DB fixtures cover subscriptions/invoices).
+  2. Implement service + API logic (checkout session, subscription retrieval, tier changes, cancellation, webhook handlers) with strict multi-tenant enforcement.
+  3. Extend frontend billing UI/tests after backend endpoints green; coordinate with pricing and settings pages.
+  4. Update documentation, status reports, and prepare deployment checklist before merging.
+- Next Action: Begin RED phase by activating targeted pytest modules for checkout session endpoint and filling missing service call wiring.

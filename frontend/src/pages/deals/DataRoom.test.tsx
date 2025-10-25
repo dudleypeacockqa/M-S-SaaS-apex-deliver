@@ -59,8 +59,8 @@ describe('DataRoom - Folder Management', () => {
     renderDataRoom();
 
     await waitFor(() => {
-      expect(screen.getByText(/folders/i)).toBeInTheDocument();
-    });
+      expect(screen.getByRole('heading', { name: /folders/i })).toBeInTheDocument()
+    })
   });
 
   it('should list existing folders', async () => {
@@ -125,11 +125,10 @@ describe('DataRoom - Folder Management', () => {
       fireEvent.click(createButton);
     });
 
-    // Should show folder name input
     await waitFor(() => {
-      const input = screen.getByPlaceholderText(/folder name/i);
-      expect(input).toBeInTheDocument();
-    });
+      const input = screen.getByPlaceholderText(/folder name/i)
+      expect(input).toBeInTheDocument()
+    })
   });
 
   it('should filter documents by selected folder', async () => {
@@ -177,20 +176,19 @@ describe('DataRoom - Folder Management', () => {
       fireEvent.click(folder);
     });
 
-    // Should call listDocuments with folder filter
     await waitFor(() => {
       expect(documentsAPI.listDocuments).toHaveBeenCalledWith(
         'test-deal-123',
         expect.objectContaining({ folder_id: 'folder-1' })
-      );
-    });
+      )
+    })
   });
 
   it('should show All Documents view when no folder selected', async () => {
     renderDataRoom();
 
     await waitFor(() => {
-      expect(screen.getByText(/all documents/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /all documents/i })).toBeInTheDocument()
     });
   });
 });
@@ -212,8 +210,7 @@ describe('DataRoom - Document Operations', () => {
     renderDataRoom();
 
     await waitFor(() => {
-      const uploadButton = screen.getByRole('button', { name: /upload/i });
-      expect(uploadButton).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /upload document/i })).toBeInTheDocument()
     });
   });
 

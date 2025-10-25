@@ -231,3 +231,11 @@ Please choose one of the following:
 **Status Report**: See `STATUS-REPORT-2025-10-24.md` for detailed analysis
 
 **Awaiting your decision...**
+---
+
+## 2025-10-24 16:57 UTC Update
+- Backend document endpoint regressions: 4/17 document pytest cases currently failing with ResponseValidationError (missing organization_id, uploaded_by, parent_document_id, archived_at, updated_at fields returned from API).
+- Document service and routes now exist but response schemas lag underlying models; production readiness blocked until schema, service, and tests realigned.
+- Render services healthy as of 16:31 UTC (backend /health OK; frontend HTTP 200).
+- Git tree carries uncommitted backend document changes plus status docs; no local commits ahead of origin/main.
+- Critical workflow controller bmad/core/tasks/workflow.xml absent, preventing scripted BMAD workflow execution.

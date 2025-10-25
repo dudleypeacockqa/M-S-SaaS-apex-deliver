@@ -1,40 +1,57 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
 
 type JsonHeaders = Record<string, string>
 
-async function getAuthHeaders(contentType: 'json' | 'form' = 'json'): Promise<JsonHeaders> {
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE"
+
+type PermissionLevel = "viewer" | "editor" | "owner"
+
+type FetchOptions = {
+  method?: HttpMethod
+  headers?: HeadersInit
+  body?: BodyInit | null
+}
+
+async function getAuthHeaders(contentType: "json" | "form" = "json"): Promise<JsonHeaders> {
   const headers: JsonHeaders = {}
 
-  if (contentType === 'json') {
-    headers['Content-Type'] = 'application/json'
+  if (contentType === "json") {
+    headers["Content-Type"] = "application/json"
   }
 
   return headers
 }
 
-export interface CreateFolderParams {
-  dealId: string
-  name: string
-  parentFolderId?: string
+function buildDealUrl(dealId: string, path: string): string {
+  return `${API_BASE_URL}/api/deals/${dealId}${path}`
 }
 
-export interface FolderResponse {
+async function request<T>(url: string, options: FetchOptions = {}): Promise<T> {
+  const response = await fetch(url, options)
+
+  if (!response.ok) {
+    const error = await response
+      .json()
+      .catch(() => ({ detail: response.statusText || "Request failed" }))
+    throw new Error(error.detail || "Request failed")
+  }
+
+  return response.json() as Promise<T>
+}
+
+export interface Document {
   id: string
   name: string
+  file_size: number
+  file_type: string
   deal_id: string
-  parent_folder_id: string | null
+  folder_id: string | null
   organization_id: string
-  created_by: string
+  uploaded_by: string
+  version: number
   created_at: string
   updated_at: string | null
-  children: FolderResponse[]
-  document_count: number
-}
-
-export interface UploadDocumentParams {
-  dealId: string
-  file: File
-  folderId?: string
+  archived_at: string | null
 }
 
 export interface DocumentUploadResponse {
@@ -46,43 +63,45 @@ export interface DocumentUploadResponse {
   created_at: string
 }
 
+export interface Folder {
+  id: string
+  name: string
+  deal_id: string
+  parent_folder_id: string | null
+  organization_id: string
+  created_by: string
+  created_at: string
+  updated_at: string | null
+  document_count: number
+  children: Folder[]
+}
+
 export interface DocumentListParams {
-  dealId: string
-  folderId?: string
-  folder_id?: string // snake_case alias
-  includeArchived?: boolean
-  include_archived?: boolean // snake_case alias
   page?: number
-  perPage?: number
-  per_page?: number // snake_case alias
+  per_page?: number
+  folder_id?: string
   search?: string
+  file_type?: string
+  include_archived?: boolean
 }
 
 export interface PaginatedDocuments {
-  items: Array<{
-    id: string
-    name: string
-    file_size: number
-    file_type: string
-    deal_id: string
-    folder_id: string | null
-    organization_id: string
-    uploaded_by: string
-    version: number
-    parent_document_id: string | null
-    archived_at: string | null
-    created_at: string
-    updated_at: string | null
-  }>
+  items: Document[]
   total: number
   page: number
   per_page: number
   pages: number
 }
 
+export interface CreateFolderPayload {
+  name: string
+  parent_folder_id?: string | null
+}
+
 export interface PermissionPayload {
   user_id: string
-  permission_level: 'viewer' | 'editor' | 'owner'
+  permission_level: PermissionLevel
+  folder_id?: string | null
 }
 
 export interface PermissionResponse {
@@ -90,244 +109,187 @@ export interface PermissionResponse {
   document_id: string | null
   folder_id: string | null
   user_id: string
-  permission_level: string
+  permission_level: PermissionLevel
   granted_by: string
   created_at: string
 }
 
-// Function overloads for backward compatibility
-export async function createFolder(dealId: string, name: string, parentFolderId?: string): Promise<FolderResponse>
-export async function createFolder(params: CreateFolderParams): Promise<FolderResponse>
-export async function createFolder(
-  dealIdOrParams: string | CreateFolderParams,
-  name?: string,
-  parentFolderId?: string
-): Promise<FolderResponse> {
-  let params: CreateFolderParams
+export async function createFolder(dealId: string, payload: CreateFolderPayload): Promise<Folder> {
+  const headers = await getAuthHeaders("json")
 
-  if (typeof dealIdOrParams === 'string') {
-    params = { dealId: dealIdOrParams, name: name!, parentFolderId }
-  } else {
-    params = dealIdOrParams
-  }
-
-  const response = await fetch(`${API_BASE_URL}/documents/folders`, {
-    method: 'POST',
-    headers: await getAuthHeaders('json'),
+  return request<Folder>(buildDealUrl(dealId, "/folders"), {
+    method: "POST",
+    headers,
     body: JSON.stringify({
-      deal_id: params.dealId,
-      name: params.name,
-      parent_folder_id: params.parentFolderId,
+      name: payload.name,
+      parent_folder_id: payload.parent_folder_id ?? null,
     }),
   })
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: response.statusText }))
-    throw new Error(error.detail || 'Failed to create folder')
-  }
-
-  return response.json()
 }
 
-// Function overloads for backward compatibility
-export async function uploadDocument(dealId: string, file: File, folderId?: string): Promise<DocumentUploadResponse>
-export async function uploadDocument(params: UploadDocumentParams): Promise<DocumentUploadResponse>
+export async function listFolders(dealId: string): Promise<Folder[]> {
+  const headers = await getAuthHeaders("json")
+
+  return request<Folder[]>(buildDealUrl(dealId, "/folders"), {
+    method: "GET",
+    headers,
+  })
+}
+
 export async function uploadDocument(
-  dealIdOrParams: string | UploadDocumentParams,
-  file?: File,
-  folderId?: string
+  dealId: string,
+  file: File,
+  options: { folderId?: string } = {}
 ): Promise<DocumentUploadResponse> {
-  let params: UploadDocumentParams
+  const formData = new FormData()
+  formData.append("file", file)
 
-  if (typeof dealIdOrParams === 'string') {
-    params = { dealId: dealIdOrParams, file: file!, folderId }
-  } else {
-    params = dealIdOrParams
+  if (options.folderId) {
+    formData.append("folder_id", options.folderId)
   }
 
-  const form = new FormData()
-  form.append('deal_id', params.dealId)
-  if (params.folderId) {
-    form.append('folder_id', params.folderId)
-  }
-  form.append('file', params.file)
-
-  const response = await fetch(`${API_BASE_URL}/documents/upload`, {
-    method: 'POST',
-    headers: await getAuthHeaders('form'),
-    body: form,
+  const response = await fetch(buildDealUrl(dealId, "/documents"), {
+    method: "POST",
+    body: formData,
   })
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: response.statusText }))
-    throw new Error(error.detail || 'Failed to upload document')
+    const error = await response
+      .json()
+      .catch(() => ({ detail: response.statusText || "Upload failed" }))
+    throw new Error(error.detail || "Failed to upload document")
   }
 
-  return response.json()
+  const json = await response.json()
+
+  return {
+    id: json.id,
+    name: json.name,
+    file_size: json.file_size,
+    file_type: json.file_type,
+    version: json.version,
+    created_at: json.created_at,
+  }
 }
 
-// Function overloads for backward compatibility
-export async function listDocuments(dealId: string, options?: Omit<DocumentListParams, 'dealId'>): Promise<PaginatedDocuments>
-export async function listDocuments(params: DocumentListParams): Promise<PaginatedDocuments>
 export async function listDocuments(
-  dealIdOrParams: string | DocumentListParams,
-  options?: Omit<DocumentListParams, 'dealId'>
+  dealId: string,
+  params: DocumentListParams = {}
 ): Promise<PaginatedDocuments> {
-  let params: DocumentListParams
+  const query = new URLSearchParams()
 
-  if (typeof dealIdOrParams === 'string') {
-    params = { dealId: dealIdOrParams, ...options }
-  } else {
-    params = dealIdOrParams
-  }
+  if (params.page) query.append("page", String(params.page))
+  if (params.per_page) query.append("per_page", String(params.per_page))
+  if (params.folder_id) query.append("folder_id", params.folder_id)
+  if (params.search) query.append("search", params.search)
+  if (params.file_type) query.append("file_type", params.file_type)
+  if (params.include_archived) query.append("include_archived", "true")
 
-  const searchParams = new URLSearchParams({ deal_id: params.dealId })
+  const headers = await getAuthHeaders("json")
+  const url = `${buildDealUrl(dealId, "/documents")}${query.toString() ? `?${query}` : ""}`
 
-  // Handle both camelCase and snake_case
-  const folderId = params.folderId || params.folder_id
-  const includeArchived = params.includeArchived || params.include_archived
-  const perPage = params.perPage || params.per_page
-
-  if (folderId) searchParams.append('folder_id', folderId)
-  if (includeArchived) searchParams.append('include_archived', 'true')
-  if (params.page) searchParams.append('page', params.page.toString())
-  if (perPage) searchParams.append('per_page', perPage.toString())
-  if (params.search) searchParams.append('search', params.search)
-
-  const response = await fetch(`${API_BASE_URL}/documents?${searchParams}`, {
-    method: 'GET',
-    headers: await getAuthHeaders('json'),
+  return request<PaginatedDocuments>(url, {
+    method: "GET",
+    headers,
   })
-
-  if (!response.ok) {
-    throw new Error('Failed to list documents')
-  }
-
-  return response.json()
 }
 
-// Function overloads for backward compatibility
-export async function downloadDocument(dealId: string, documentId: string): Promise<string>
-export async function downloadDocument(documentId: string): Promise<string>
-export async function downloadDocument(dealIdOrDocumentId: string, documentId?: string): Promise<string> {
-  const actualDocumentId = documentId || dealIdOrDocumentId
-
-  const response = await fetch(`${API_BASE_URL}/documents/${actualDocumentId}/download`, {
-    method: 'GET',
-    headers: await getAuthHeaders('json'),
+export async function downloadDocument(dealId: string, documentId: string): Promise<string> {
+  const headers = await getAuthHeaders("json")
+  const response = await fetch(buildDealUrl(dealId, `/documents/${documentId}/download`), {
+    method: "GET",
+    headers,
   })
 
   if (!response.ok) {
-    throw new Error('Failed to download document')
+    throw new Error("Failed to download document")
   }
 
   const blob = await response.blob()
   return URL.createObjectURL(blob)
 }
 
+export async function archiveDocument(dealId: string, documentId: string): Promise<Document> {
+  const headers = await getAuthHeaders("json")
+
+  return request<Document>(buildDealUrl(dealId, `/documents/${documentId}/archive`), {
+    method: "POST",
+    headers,
+  })
+}
+
+export async function restoreDocument(dealId: string, documentId: string): Promise<Document> {
+  const headers = await getAuthHeaders("json")
+
+  return request<Document>(buildDealUrl(dealId, `/documents/${documentId}/restore`), {
+    method: "POST",
+    headers,
+  })
+}
+
 export async function addDocumentPermission(
+  dealId: string,
   documentId: string,
-  payload: PermissionPayload,
+  payload: PermissionPayload
 ): Promise<PermissionResponse> {
-  const response = await fetch(`${API_BASE_URL}/documents/${documentId}/permissions`, {
-    method: 'POST',
-    headers: await getAuthHeaders('json'),
-    body: JSON.stringify(payload),
-  })
+  const headers = await getAuthHeaders("json")
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: response.statusText }))
-    throw new Error(error.detail || 'Failed to update permissions')
-  }
-
-  return response.json()
+  return request<PermissionResponse>(
+    buildDealUrl(dealId, `/documents/${documentId}/permissions`),
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        user_id: payload.user_id,
+        permission_level: payload.permission_level,
+        folder_id: payload.folder_id ?? null,
+      }),
+    }
+  )
 }
 
-/**
- * List folders for a deal
- */
-export async function listFolders(dealId: string): Promise<FolderResponse[]> {
-  const response = await fetch(`${API_BASE_URL}/api/deals/${dealId}/folders`, {
-    method: 'GET',
-    headers: await getAuthHeaders('json'),
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to list folders')
-  }
-
-  return response.json()
-}
-
-/**
- * Archive a document (soft delete)
- */
-export async function archiveDocument(dealId: string, documentId: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/deals/${dealId}/documents/${documentId}/archive`, {
-    method: 'POST',
-    headers: await getAuthHeaders('json'),
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to archive document')
-  }
-}
-
-// Export Document type (extracted from PaginatedDocuments)
-export type Document = PaginatedDocuments['items'][number]
-
-// Export Folder type alias for backward compatibility
-export type Folder = FolderResponse
-
-// File upload constants
 export const ALLOWED_FILE_TYPES = [
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // DOCX
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // XLSX
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation', // PPTX
-  'application/msword', // DOC
-  'application/vnd.ms-excel', // XLS
-  'application/vnd.ms-powerpoint', // PPT
-  'text/plain',
-  'text/csv',
-  'image/png',
-  'image/jpeg',
-  'image/jpg',
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.msword",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "application/vnd.ms-powerpoint",
+  "text/plain",
+  "text/csv",
+  "image/png",
+  "image/jpeg",
+  "image/gif",
 ]
 
-export const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
+export const MAX_FILE_SIZE = 50 * 1024 * 1024
 
-/**
- * Format file size in human-readable format
- */
 export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes'
+  if (bytes === 0) return "0 Bytes"
 
   const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"]
   const i = Math.floor(Math.log(bytes) / Math.log(k))
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
 }
 
-/**
- * Get file icon based on file type
- */
 export function getFileIcon(fileType: string): string {
   const iconMap: Record<string, string> = {
-    'application/pdf': '📄',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '📝',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '📊',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation': '📽️',
-    'application/msword': '📝',
-    'application/vnd.ms-excel': '📊',
-    'application/vnd.ms-powerpoint': '📽️',
-    'text/plain': '📃',
-    'text/csv': '📊',
-    'image/png': '🖼️',
-    'image/jpeg': '🖼️',
-    'image/jpg': '🖼️',
+    "application/pdf": "📄",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "📝",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "📊",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": "📽️",
+    "application/msword": "📝",
+    "application/vnd.ms-excel": "📊",
+    "application/vnd.ms-powerpoint": "📽️",
+    "text/plain": "📃",
+    "text/csv": "📊",
+    "image/png": "🖼️",
+    "image/jpeg": "🖼️",
+    "image/gif": "🖼️",
   }
 
-  return iconMap[fileType] || '📎'
+  return iconMap[fileType] || "📎"
 }

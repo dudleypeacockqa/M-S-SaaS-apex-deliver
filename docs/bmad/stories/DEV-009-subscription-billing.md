@@ -9,7 +9,7 @@
 **Dependencies**:
 - DEV-004 (Backend Auth) ✅
 - DEV-005 (Master Admin Portal) ✅
-**Status**: READY FOR IMPLEMENTATION
+**Status**: 🚧 IN PROGRESS (Backend billing endpoints under development via TDD on 2025-10-25)
 
 ---
 
@@ -38,6 +38,11 @@ Subscription & Billing is the revenue engine of the M&A Intelligence Platform. I
 **As a** new user signing up for the platform
 **I want to** select a subscription tier that matches my needs
 **So that** I can access the appropriate features for my use case
+
+**2025-10-25 Update**:
+- ✔ Backend service scaffolding present; routes currently contain placeholder `# await` comments pending implementation.
+- ➡️ Next: Activate pytest coverage via `tests/test_billing_endpoints.py::test_create_checkout_session_success` (expecting RED) then wire `subscription_service.create_checkout_session` into route.
+- ⚠️ Ensure Stripe interactions fully mocked to avoid network calls during tests.
 
 **Acceptance Criteria**:
 - ✅ User sees 4 subscription tier options after sign-up
@@ -74,6 +79,10 @@ def test_successful_payment_webhook():
 **I want to** view my current subscription details
 **So that** I know my billing status and usage limits
 
+**2025-10-25 Update**:
+- ✅ `SubscriptionResponse` schema defined; `GET /billing/me` route stubbed with comment.
+- 🔄 Plan: Implement service `get_organization_subscription` call (converted to async) and return validated response. Add tests for 200/404 cases.
+
 **Acceptance Criteria**:
 - ✅ User can access "Billing" page from settings/profile menu
 - ✅ Page shows: current tier, billing cycle, next payment date, amount
@@ -99,6 +108,10 @@ def test_billing_page_displays_subscription():
 **As a** user with an active subscription
 **I want to** change my subscription tier
 **So that** I can access more features (upgrade) or reduce costs (downgrade)
+
+**2025-10-25 Update**:
+- 🧪 Tests outline upgrade/downgrade flows using Stripe mocks (modify/delete). Need to ensure `stripe.Subscription.retrieve` mocked for proration loops.
+- 🛠️ Implementation pending in `subscription_service.update_subscription_tier`; evaluate proration toggle and multi-tier support.
 
 **Acceptance Criteria**:
 - ✅ User can click "Upgrade" to see higher tiers
@@ -133,6 +146,10 @@ def test_downgrade_scheduled():
 **I want to** cancel my subscription
 **So that** I stop being charged
 
+**2025-10-25 Update**:
+- 🚧 `cancel_subscription` service handles immediate vs period end via Stripe; ensure DB updates and tests verify statuses.
+- 📝 Add audit trail logging once base logic passes tests.
+
 **Acceptance Criteria**:
 - ✅ User can click "Cancel Subscription" from Billing page
 - ✅ Cancellation confirmation modal shows: "Are you sure? Access ends on [date]"
@@ -158,6 +175,10 @@ def test_cancel_subscription_at_period_end():
 **As a** user with a payment failure
 **I want to** update my payment method and retry
 **So that** I don't lose access to the platform
+
+**2025-10-25 Update**:
+- 🧭 Webhook handlers (invoice.payment_failed) still TODO; plan to implement after success webhooks.
+- ⚙️ Tests to be added for failure transitions (past_due → unpaid) once happy path covered.
 
 **Acceptance Criteria**:
 - ✅ Stripe webhook notifies backend of payment failure
@@ -190,6 +211,10 @@ def test_restrict_access_after_multiple_failures():
 **As an** admin user
 **I want to** view billing details for all organizations
 **So that** I can monitor revenue and handle billing issues
+
+**2025-10-25 Update**:
+- 📊 Dashboard endpoint will aggregate deals, users, documents counts; ensure queries respect multi-tenancy.
+- 📈 Plan to add sample data fixtures for invoices to validate metric rendering.
 
 **Acceptance Criteria**:
 - ✅ Admin can access "Billing Dashboard" from Master Admin Portal

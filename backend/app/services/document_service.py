@@ -155,8 +155,16 @@ async def upload_document(
         name=document.name,
         file_size=document.file_size,
         file_type=document.file_type,
+        deal_id=document.deal_id,
+        folder_id=UUID(document.folder_id) if document.folder_id else None,
+        organization_id=UUID(document.organization_id),
+        uploaded_by=UUID(document.uploaded_by),
         version=document.version,
+        parent_document_id=UUID(document.parent_document_id) if document.parent_document_id else None,
+        archived_at=document.archived_at,
         created_at=document.created_at,
+        updated_at=document.updated_at,
+        uploader_name=None,
     )
 
 

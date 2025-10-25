@@ -9,6 +9,7 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
+from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from jose import jwt
@@ -30,11 +31,27 @@ os.environ["CLERK_WEBHOOK_SECRET"] = "test_webhook_secret"
 os.environ["CLERK_JWT_ALGORITHM"] = "HS256"
 os.environ["SECRET_KEY"] = "test_api_secret"
 os.environ["DEBUG"] = "false"  # Disable init_db() in lifespan during tests
+os.environ.setdefault("STRIPE_API_KEY", "sk_test_dummy")
+os.environ.setdefault("STRIPE_SECRET_KEY", "sk_test_dummy")
+os.environ.setdefault("STRIPE_PUBLISHABLE_KEY", "pk_test_dummy")
+os.environ.setdefault("STRIPE_WEBHOOK_SECRET", "whsec_dummy")
+os.environ.setdefault("STRIPE_PRICE_STARTER_MONTHLY", "price_starter_monthly")
+os.environ.setdefault("STRIPE_PRICE_STARTER_ANNUAL", "price_starter_annual")
+os.environ.setdefault("STRIPE_PRICE_PROFESSIONAL_MONTHLY", "price_professional_monthly")
+os.environ.setdefault("STRIPE_PRICE_PROFESSIONAL_ANNUAL", "price_professional_annual")
+os.environ.setdefault("STRIPE_PRICE_ENTERPRISE_MONTHLY", "price_enterprise_monthly")
+os.environ.setdefault("STRIPE_PRICE_ENTERPRISE_ANNUAL", "price_enterprise_annual")
+os.environ.setdefault("STRIPE_PRICE_COMMUNITY_MONTHLY", "price_community_monthly")
+os.environ.setdefault("STRIPE_PRICE_COMMUNITY_ANNUAL", "price_community_annual")
 
 from app.core.config import get_settings, settings  # noqa: E402
 from app.db import session as session_module  # noqa: E402
 from app.db.base import Base  # noqa: E402
 from app.db.session import get_db  # noqa: E402
+stripe_mock = MagicMock()
+stripe_module = stripe_mock
+sys.modules.setdefault("stripe", stripe_module)
+
 from app.main import app  # noqa: E402
 from app.models.user import User, UserRole  # noqa: E402
 from app.models.organization import Organization  # noqa: E402

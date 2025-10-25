@@ -79,8 +79,16 @@ class DocumentUploadResponse(BaseModel):
     name: str
     file_size: int
     file_type: str
+    deal_id: str
+    folder_id: Optional[UUID]
+    organization_id: UUID
+    uploaded_by: UUID
     version: int
+    parent_document_id: Optional[UUID]
+    archived_at: Optional[datetime]
     created_at: datetime
+    updated_at: Optional[datetime]
+    uploader_name: Optional[str] = None
 
     model_config = {"from_attributes": True}
 

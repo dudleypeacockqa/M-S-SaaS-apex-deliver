@@ -42,13 +42,16 @@ describe("documents API client", () => {
       new Response(JSON.stringify(mockResponse), { status: 201 })
     )
 
-    const result = await createFolder({ dealId: "deal-1", name: "Financials" })
+    const result = await createFolder("deal-1", { name: "Financials" } as any)
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringMatching(/\/documents\/folders$/),
+      expect.stringMatching(/\/api\/deals\/deal-1\/folders$/),
       expect.objectContaining({
         method: "POST",
-        body: JSON.stringify({ deal_id: "deal-1", name: "Financials", parent_folder_id: undefined }),
+        body: JSON.stringify({
+          name: "Financials",
+          parent_folder_id: null,
+        }),
       })
     )
     expect(result).toEqual(mockResponse)
@@ -68,16 +71,23 @@ describe("documents API client", () => {
       new Response(JSON.stringify(mockResponse), { status: 201 })
     )
 
-    const result = await uploadDocument({ dealId: "deal-1", file: mockFile })
+    const result = await uploadDocument("deal-1", mockFile)
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringMatching(/\/documents\/upload$/),
+      expect.stringMatching(/\/api\/deals\/deal-1\/documents$/),
       expect.objectContaining({
         method: "POST",
         body: expect.any(FormData),
       })
     )
-    expect(result).toEqual(mockResponse)
+    expect(result).toEqual({
+      id: "doc-1",
+      name: "report.pdf",
+      file_size: 8,
+      file_type: "application/pdf",
+      version: 1,
+      created_at: "2025-10-24T00:00:00Z",
+    })
   })
 
   it("lists documents with query parameters", async () => {
@@ -86,10 +96,10 @@ describe("documents API client", () => {
       new Response(JSON.stringify(mockList), { status: 200 })
     )
 
-    const result = await listDocuments({ dealId: "deal-1", folderId: "folder-1" })
+    const result = await listDocuments("deal-1", { folder_id: "folder-1" })
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining("deal_id=deal-1"),
+      expect.stringContaining("/api/deals/deal-1/documents"),
       expect.objectContaining({ method: "GET" })
     )
     expect(result).toEqual(mockList)
@@ -101,11 +111,11 @@ describe("documents API client", () => {
       new Response(blob, { status: 200, headers: { "Content-Type": "application/pdf" } })
     )
 
-    const url = await downloadDocument("doc-123")
+    const url = await downloadDocument("deal-1", "doc-123")
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringMatching(/\/documents\/doc-123\/download$/),
-      expect.any(Object)
+      expect.stringMatching(/\/api\/deals\/deal-1\/documents\/doc-123\/download$/),
+      expect.objectContaining({ method: "GET" })
     )
     expect(url).toBe("blob:mock")
   })
@@ -124,13 +134,13 @@ describe("documents API client", () => {
       new Response(JSON.stringify(mockResponse), { status: 201 })
     )
 
-    const result = await addDocumentPermission("doc-1", {
+    const result = await addDocumentPermission("deal-1", "doc-1", {
       user_id: "user-2",
       permission_level: "viewer",
     })
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringMatching(/\/documents\/doc-1\/permissions$/),
+      expect.stringMatching(/\/api\/deals\/deal-1\/documents\/doc-1\/permissions$/),
       expect.objectContaining({ method: "POST" })
     )
     expect(result).toEqual(mockResponse)
