@@ -11,9 +11,8 @@ from typing import Optional
 
 import stripe
 from sqlalchemy import select
-from sqlalchemy.orm import Session
-# from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.organization import Organization
 from app.models.subscription import (
@@ -111,6 +110,13 @@ TIER_CONFIG = {
 }
 
 
+def _execute(db: Session | AsyncSession, statement):
+    """Execute a SQLAlchemy statement for both sync and async sessions."""
+    if isinstance(db, AsyncSession):
+        return db.sync_execute(statement)
+    return db.execute(statement)
+
+
 def create_checkout_session(
     organization_id: str,
     tier: SubscriptionTier,
@@ -122,7 +128,7 @@ def create_checkout_session(
     if db is None:  # pragma: no cover - defensive guard
         raise ValueError("Database session is required")
 
-    result = db.execute(select(Organization).where(Organization.id == organization_id))
+    result = _execute(db, select(Organization).where(Organization.id == organization_id))
     organization = result.scalar_one_or_none()
     if not organization:
         raise ValueError("Organization not found")
@@ -142,9 +148,8 @@ def create_checkout_session(
     if not cancel_url:
         cancel_url = f"{os.getenv('FRONTEND_URL', 'http://localhost:5173')}/pricing?subscription=canceled"
 
-    existing_subscription = (
-        db.execute(select(Subscription).where(Subscription.organization_id == organization_id))
-    ).scalar_one_or_none()
+    result = _execute(db, select(Subscription).where(Subscription.organization_id == organization_id))
+    existing_subscription = result.scalar_one_or_none()
 
     if existing_subscription and existing_subscription.stripe_customer_id:
         customer_id = existing_subscription.stripe_customer_id
@@ -178,6 +183,10 @@ def create_checkout_session(
         )
         db.add(new_subscription)
         db.commit()
+        db.refresh(new_subscription)
+    else:
+        db.refresh(existing_subscription)
+
     return {"checkout_url": session.url, "session_id": session.id}
 
 
@@ -185,10 +194,11 @@ def get_organization_subscription(
     organization_id: str,
     db: Session,
 ) -> Optional[Subscription]:
-    result = db.execute(
+    result = _execute(
+        db,
         select(Subscription)
         .where(Subscription.organization_id == organization_id)
-        .options(selectinload(Subscription.organization))
+        .options(selectinload(Subscription.organization)),
     )
     return result.scalar_one_or_none()
 
@@ -255,7 +265,7 @@ def handle_checkout_completed(event_data: dict, db: Session) -> None:
     stripe_customer_id = session["customer"]
 
     stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id)
-    result = db.execute(select(Subscription).where(Subscription.organization_id == organization_id))
+    result = _execute(db, select(Subscription).where(Subscription.organization_id == organization_id))
     subscription = result.scalar_one_or_none()
     if subscription:
         subscription.stripe_subscription_id = stripe_subscription_id
@@ -276,7 +286,7 @@ def handle_invoice_paid(event_data: dict, db: Session) -> None:
     stripe_invoice_id = invoice_data["id"]
     stripe_customer_id = invoice_data["customer"]
 
-    result = db.execute(select(Subscription).where(Subscription.stripe_customer_id == stripe_customer_id))
+    result = _execute(db, select(Subscription).where(Subscription.stripe_customer_id == stripe_customer_id))
     subscription = result.scalar_one_or_none()
     if not subscription:
         return
@@ -299,7 +309,7 @@ def handle_subscription_updated(event_data: dict, db: Session) -> None:
     subscription_data = event_data["object"]
     stripe_subscription_id = subscription_data["id"]
 
-    result = db.execute(select(Subscription).where(Subscription.stripe_subscription_id == stripe_subscription_id))
+    result = _execute(db, select(Subscription).where(Subscription.stripe_subscription_id == stripe_subscription_id))
     subscription = result.scalar_one_or_none()
     if not subscription:
         return
@@ -322,7 +332,7 @@ def handle_subscription_deleted(event_data: dict, db: Session) -> None:
     subscription_data = event_data["object"]
     stripe_subscription_id = subscription_data["id"]
 
-    result = db.execute(select(Subscription).where(Subscription.stripe_subscription_id == stripe_subscription_id))
+    result = _execute(db, select(Subscription).where(Subscription.stripe_subscription_id == stripe_subscription_id))
     subscription = result.scalar_one_or_none()
     if not subscription:
         return

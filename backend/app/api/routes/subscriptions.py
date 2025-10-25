@@ -12,8 +12,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Header
 from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import Session
+from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user
 from app.db.session import get_db
@@ -39,15 +38,14 @@ from app.services import subscription_service
 router = APIRouter(prefix="/billing", tags=["billing", "subscriptions"])
 
 
-@router.post("/create-checkout-session", response_model=CheckoutSessionResponse)
-async def create_checkout_session(
+def create_checkout_session(
     subscription_data: SubscriptionCreate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     """Create a Stripe Checkout Session for subscription purchase."""
     try:
-        result = await subscription_service.create_checkout_session(
+        result = subscription_service.create_checkout_session(
             organization_id=current_user.organization_id,
             tier=subscription_data.tier,
             billing_period="monthly",
@@ -62,48 +60,46 @@ async def create_checkout_session(
         raise HTTPException(status_code=500, detail=f"Failed to create checkout session: {str(e)}")
 
 
-@router.get("/me", response_model=SubscriptionResponse)
-async def get_my_subscription(
+def get_my_subscription(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get current user's subscription details."""
     subscription = subscription_service.get_organization_subscription(
-        current_user.organization_id,
-        db,
+        current_user.organization_id, db
     )
     if not subscription:
         raise HTTPException(status_code=404, detail="No subscription found for your organization")
     return SubscriptionResponse.model_validate(subscription)
 
 
-@router.get("/billing-dashboard", response_model=BillingDashboardResponse)
-async def get_billing_dashboard(
+def get_billing_dashboard(
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     """Get complete billing dashboard data."""
-    subscription = await subscription_service.get_organization_subscription(
-        current_user.organization_id,
-        db,
+    subscription = subscription_service.get_organization_subscription(
+        current_user.organization_id, db
     )
     if not subscription:
         raise HTTPException(status_code=404, detail="No subscription found")
-    result = await db.execute(
+    result = db.execute(
         select(func.count(Deal.id)).filter(
             Deal.organization_id == current_user.organization_id,
             Deal.archived_at.is_(None),
         )
     )
     deals_count = result.scalar()
-    result = await db.execute(
+
+    result = db.execute(
         select(func.count(User.id)).filter(
             User.organization_id == current_user.organization_id,
             User.deleted_at.is_(None),
         )
     )
     users_count = result.scalar()
-    result = await db.execute(
+
+    result = db.execute(
         select(func.count(Document.id)).filter(
             Document.organization_id == current_user.organization_id,
             Document.archived_at.is_(None),
@@ -127,7 +123,7 @@ async def get_billing_dashboard(
         stripe_price_id_monthly=tier_config["stripe_price_id_monthly"],
         stripe_price_id_annual=tier_config["stripe_price_id_annual"],
     )
-    result = await db.execute(
+    result = db.execute(
         select(Invoice)
         .filter(Invoice.subscription_id == subscription.id)
         .order_by(Invoice.created_at.desc())
@@ -144,15 +140,14 @@ async def get_billing_dashboard(
     )
 
 
-@router.put("/change-tier", response_model=SubscriptionResponse)
-async def change_subscription_tier(
+def change_subscription_tier(
     tier_update: SubscriptionUpdate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     """Change subscription tier (upgrade or downgrade)."""
     try:
-        updated_subscription = await subscription_service.update_subscription_tier(
+        updated_subscription = subscription_service.update_subscription_tier(
             organization_id=current_user.organization_id,
             new_tier=tier_update.new_tier,
             prorate=tier_update.prorate,
@@ -165,15 +160,14 @@ async def change_subscription_tier(
         raise HTTPException(status_code=500, detail=f"Failed to update subscription: {str(e)}")
 
 
-@router.post("/cancel", response_model=SubscriptionResponse)
-async def cancel_my_subscription(
+def cancel_my_subscription(
     cancel_request: CancelSubscriptionRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     """Cancel the current subscription."""
     try:
-        canceled_subscription = await subscription_service.cancel_subscription(
+        canceled_subscription = subscription_service.cancel_subscription(
             organization_id=current_user.organization_id,
             immediately=cancel_request.immediately,
             db=db,
@@ -206,17 +200,17 @@ def get_all_tiers():
 
 
 @router.post("/webhooks/stripe")
-async def stripe_webhook(
+def stripe_webhook(
     request: Request,
     stripe_signature: str = Header(None, alias="stripe-signature"),
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     """Handle Stripe webhook events."""
     import stripe
     webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
     if not webhook_secret:
         raise HTTPException(status_code=500, detail="Stripe webhook secret not configured")
-    body_bytes = await request.body()
+    body_bytes = request.body()
     try:
         event = stripe.Webhook.construct_event(body_bytes, stripe_signature, webhook_secret)
     except ValueError:
@@ -227,16 +221,16 @@ async def stripe_webhook(
     event_data = event["data"]
     try:
         if event_type == "checkout.session.completed":
-            await subscription_service.handle_checkout_completed(event_data, db)
+            subscription_service.handle_checkout_completed(event_data, db)
 
         elif event_type == "invoice.paid":
-            await subscription_service.handle_invoice_paid(event_data, db)
+            subscription_service.handle_invoice_paid(event_data, db)
 
         elif event_type == "customer.subscription.updated":
-            await subscription_service.handle_subscription_updated(event_data, db)
+            subscription_service.handle_subscription_updated(event_data, db)
 
         elif event_type == "customer.subscription.deleted":
-            await subscription_service.handle_subscription_deleted(event_data, db)
+            subscription_service.handle_subscription_deleted(event_data, db)
     except Exception as e:
         print(f"Error processing webhook event {event_type}: {str(e)}")
     return {"status": "success"}
