@@ -2,6 +2,8 @@
 
 Handles Stripe integration, subscription lifecycle, and billing operations.
 """
+from __future__ import annotations
+
 import os
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -9,7 +11,8 @@ from typing import Optional
 
 import stripe
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
+# from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.organization import Organization
@@ -108,32 +111,41 @@ TIER_CONFIG = {
 }
 
 
-async def create_checkout_session(
+def create_checkout_session(
     organization_id: str,
     tier: SubscriptionTier,
     billing_period: str = "monthly",
-    success_url: str = None,
-    cancel_url: str = None,
-    db: AsyncSession = None,
+    success_url: str | None = None,
+    cancel_url: str | None = None,
+    db: Session | None = None,
 ) -> dict:
-    """Create a Stripe Checkout Session for subscription purchase."""
-    result = await db.execute(select(Organization).filter(Organization.id == organization_id))
+    if db is None:  # pragma: no cover - defensive guard
+        raise ValueError("Database session is required")
+
+    result = db.execute(select(Organization).where(Organization.id == organization_id))
     organization = result.scalar_one_or_none()
     if not organization:
         raise ValueError("Organization not found")
+
     tier_config = TIER_CONFIG.get(tier)
     if not tier_config:
         raise ValueError(f"Invalid tier: {tier}")
-    if billing_period == "annual":
-        price_id = tier_config["stripe_price_id_annual"]
-    else:
-        price_id = tier_config["stripe_price_id_monthly"]
+
+    price_id = (
+        tier_config["stripe_price_id_annual"]
+        if billing_period == "annual"
+        else tier_config["stripe_price_id_monthly"]
+    )
+
     if not success_url:
         success_url = f"{os.getenv('FRONTEND_URL', 'http://localhost:5173')}/dashboard?subscription=success"
     if not cancel_url:
         cancel_url = f"{os.getenv('FRONTEND_URL', 'http://localhost:5173')}/pricing?subscription=canceled"
-    result = await db.execute(select(Subscription).filter(Subscription.organization_id == organization_id))
-    existing_subscription = result.scalar_one_or_none()
+
+    existing_subscription = (
+        db.execute(select(Subscription).where(Subscription.organization_id == organization_id))
+    ).scalar_one_or_none()
+
     if existing_subscription and existing_subscription.stripe_customer_id:
         customer_id = existing_subscription.stripe_customer_id
     else:
@@ -142,6 +154,7 @@ async def create_checkout_session(
             metadata={"organization_id": organization_id, "organization_name": organization.name},
         )
         customer_id = customer.id
+
     session = stripe.checkout.Session.create(
         customer=customer_id,
         payment_method_types=["card"],
@@ -150,8 +163,12 @@ async def create_checkout_session(
         success_url=success_url,
         cancel_url=cancel_url,
         metadata={"organization_id": organization_id, "tier": tier.value, "billing_period": billing_period},
-        subscription_data={"trial_period_days": 14, "metadata": {"organization_id": organization_id, "tier": tier.value}},
+        subscription_data={
+            "trial_period_days": 14,
+            "metadata": {"organization_id": organization_id, "tier": tier.value},
+        },
     )
+
     if not existing_subscription:
         new_subscription = Subscription(
             organization_id=organization_id,
@@ -160,55 +177,63 @@ async def create_checkout_session(
             status=SubscriptionStatus.TRIALING,
         )
         db.add(new_subscription)
-        await db.commit()
+        db.commit()
     return {"checkout_url": session.url, "session_id": session.id}
 
 
-async def get_organization_subscription(organization_id: str, db: AsyncSession) -> Optional[Subscription]:
-    """Get subscription for an organization."""
-    result = await db.execute(
+def get_organization_subscription(
+    organization_id: str,
+    db: Session,
+) -> Optional[Subscription]:
+    result = db.execute(
         select(Subscription)
-        .filter(Subscription.organization_id == organization_id)
+        .where(Subscription.organization_id == organization_id)
         .options(selectinload(Subscription.organization))
     )
     return result.scalar_one_or_none()
 
 
-async def update_subscription_tier(
+def update_subscription_tier(
     organization_id: str,
     new_tier: SubscriptionTier,
     prorate: bool = True,
-    db: AsyncSession = None,
+    db: Session | None = None,
 ) -> Subscription:
-    """Update subscription tier (upgrade/downgrade)."""
-    subscription = await get_organization_subscription(organization_id, db)
+    subscription = get_organization_subscription(organization_id, db)
     if not subscription:
         raise ValueError("No active subscription found")
     if not subscription.stripe_subscription_id:
         raise ValueError("Subscription not yet activated")
+
     new_tier_config = TIER_CONFIG.get(new_tier)
     if not new_tier_config:
         raise ValueError(f"Invalid tier: {new_tier}")
+
     stripe_subscription = stripe.Subscription.retrieve(subscription.stripe_subscription_id)
     stripe.Subscription.modify(
         subscription.stripe_subscription_id,
         items=[{"id": stripe_subscription["items"]["data"][0].id, "price": new_tier_config["stripe_price_id_monthly"]}],
         proration_behavior="create_prorations" if prorate else "none",
     )
+
     subscription.tier = new_tier
     subscription.updated_at = datetime.now(timezone.utc)
-    await db.commit()
-    await db.refresh(subscription)
+    db.commit()
+    db.refresh(subscription)
     return subscription
 
 
-async def cancel_subscription(organization_id: str, immediately: bool = False, db: AsyncSession = None) -> Subscription:
-    """Cancel a subscription."""
-    subscription = await get_organization_subscription(organization_id, db)
+def cancel_subscription(
+    organization_id: str,
+    immediately: bool = False,
+    db: Session | None = None,
+) -> Subscription:
+    subscription = get_organization_subscription(organization_id, db)
     if not subscription:
         raise ValueError("No active subscription found")
     if not subscription.stripe_subscription_id:
         raise ValueError("Subscription not yet activated")
+
     if immediately:
         stripe.Subscription.delete(subscription.stripe_subscription_id)
         subscription.status = SubscriptionStatus.CANCELED
@@ -216,40 +241,46 @@ async def cancel_subscription(organization_id: str, immediately: bool = False, d
     else:
         stripe.Subscription.modify(subscription.stripe_subscription_id, cancel_at_period_end=True)
         subscription.cancel_at_period_end = True
+
     subscription.updated_at = datetime.now(timezone.utc)
-    await db.commit()
-    await db.refresh(subscription)
+    db.commit()
+    db.refresh(subscription)
     return subscription
 
 
-async def handle_checkout_completed(event_data: dict, db: AsyncSession) -> None:
-    """Handle checkout.session.completed webhook."""
+def handle_checkout_completed(event_data: dict, db: Session) -> None:
     session = event_data["object"]
     organization_id = session["metadata"]["organization_id"]
     stripe_subscription_id = session["subscription"]
     stripe_customer_id = session["customer"]
+
     stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id)
-    result = await db.execute(select(Subscription).filter(Subscription.organization_id == organization_id))
+    result = db.execute(select(Subscription).where(Subscription.organization_id == organization_id))
     subscription = result.scalar_one_or_none()
     if subscription:
         subscription.stripe_subscription_id = stripe_subscription_id
         subscription.stripe_customer_id = stripe_customer_id
         subscription.status = SubscriptionStatus.ACTIVE
-        subscription.current_period_start = datetime.fromtimestamp(stripe_subscription["current_period_start"], tz=timezone.utc)
-        subscription.current_period_end = datetime.fromtimestamp(stripe_subscription["current_period_end"], tz=timezone.utc)
+        subscription.current_period_start = datetime.fromtimestamp(
+            stripe_subscription["current_period_start"], tz=timezone.utc
+        )
+        subscription.current_period_end = datetime.fromtimestamp(
+            stripe_subscription["current_period_end"], tz=timezone.utc
+        )
         subscription.updated_at = datetime.now(timezone.utc)
-        await db.commit()
+        db.commit()
 
 
-async def handle_invoice_paid(event_data: dict, db: AsyncSession) -> None:
-    """Handle invoice.paid webhook."""
+def handle_invoice_paid(event_data: dict, db: Session) -> None:
     invoice_data = event_data["object"]
     stripe_invoice_id = invoice_data["id"]
     stripe_customer_id = invoice_data["customer"]
-    result = await db.execute(select(Subscription).filter(Subscription.stripe_customer_id == stripe_customer_id))
+
+    result = db.execute(select(Subscription).where(Subscription.stripe_customer_id == stripe_customer_id))
     subscription = result.scalar_one_or_none()
     if not subscription:
         return
+
     invoice = Invoice(
         organization_id=subscription.organization_id,
         subscription_id=subscription.id,
@@ -261,36 +292,42 @@ async def handle_invoice_paid(event_data: dict, db: AsyncSession) -> None:
         invoice_pdf=invoice_data.get("invoice_pdf"),
     )
     db.add(invoice)
-    await db.commit()
+    db.commit()
 
 
-async def handle_subscription_updated(event_data: dict, db: AsyncSession) -> None:
-    """Handle customer.subscription.updated webhook."""
+def handle_subscription_updated(event_data: dict, db: Session) -> None:
     subscription_data = event_data["object"]
     stripe_subscription_id = subscription_data["id"]
-    result = await db.execute(select(Subscription).filter(Subscription.stripe_subscription_id == stripe_subscription_id))
+
+    result = db.execute(select(Subscription).where(Subscription.stripe_subscription_id == stripe_subscription_id))
     subscription = result.scalar_one_or_none()
     if not subscription:
         return
+
     subscription.status = SubscriptionStatus(subscription_data["status"].upper())
-    subscription.current_period_start = datetime.fromtimestamp(subscription_data["current_period_start"], tz=timezone.utc)
-    subscription.current_period_end = datetime.fromtimestamp(subscription_data["current_period_end"], tz=timezone.utc)
+    subscription.current_period_start = datetime.fromtimestamp(
+        subscription_data["current_period_start"], tz=timezone.utc
+    )
+    subscription.current_period_end = datetime.fromtimestamp(
+        subscription_data["current_period_end"], tz=timezone.utc
+    )
     subscription.cancel_at_period_end = subscription_data.get("cancel_at_period_end", False)
     if subscription_data.get("canceled_at"):
         subscription.canceled_at = datetime.fromtimestamp(subscription_data["canceled_at"], tz=timezone.utc)
     subscription.updated_at = datetime.now(timezone.utc)
-    await db.commit()
+    db.commit()
 
 
-async def handle_subscription_deleted(event_data: dict, db: AsyncSession) -> None:
-    """Handle customer.subscription.deleted webhook."""
+def handle_subscription_deleted(event_data: dict, db: Session) -> None:
     subscription_data = event_data["object"]
     stripe_subscription_id = subscription_data["id"]
-    result = await db.execute(select(Subscription).filter(Subscription.stripe_subscription_id == stripe_subscription_id))
+
+    result = db.execute(select(Subscription).where(Subscription.stripe_subscription_id == stripe_subscription_id))
     subscription = result.scalar_one_or_none()
     if not subscription:
         return
+
     subscription.status = SubscriptionStatus.CANCELED
     subscription.canceled_at = datetime.now(timezone.utc)
     subscription.updated_at = datetime.now(timezone.utc)
-    await db.commit()
+    db.commit()
