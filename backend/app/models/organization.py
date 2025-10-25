@@ -28,5 +28,9 @@ class Organization(Base):
         nullable=False,
     )
 
+    # Relationships
+    subscription = relationship("Subscription", back_populates="organization", uselist=False)
+    invoices = relationship("Invoice", back_populates="organization")
+
     def __repr__(self) -> str:  # pragma: no cover - repr aid
         return f"Organization(id={self.id!s}, name={self.name!r})"
