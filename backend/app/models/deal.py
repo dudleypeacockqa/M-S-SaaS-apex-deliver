@@ -52,10 +52,6 @@ class Deal(Base):
      # Relationships
      folders = relationship("Folder", back_populates="deal", cascade="all, delete-orphan")
      documents = relationship("Document", back_populates="deal", cascade="all, delete-orphan")
-     financial_connections = relationship("FinancialConnection", back_populates="deal", cascade="all, delete-orphan")
-     financial_statements = relationship("FinancialStatement", back_populates="deal", cascade="all, delete-orphan")
-     financial_ratios = relationship("FinancialRatio", back_populates="deal", cascade="all, delete-orphan")
-     financial_narratives = relationship("FinancialNarrative", back_populates="deal", cascade="all, delete-orphan")
 
      # Indexes for performance
      __table_args__ = (

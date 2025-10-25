@@ -9,7 +9,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import uuid
 
-from app.db.base_class import Base
+from app.db.base import Base
 
 
 class FinancialConnection(Base):
