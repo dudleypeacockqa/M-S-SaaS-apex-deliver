@@ -1,20 +1,94 @@
 # BMAD Progress Tracker - M&A Intelligence Platform
 
-**Last Updated**: October 25, 2025 08:15 UTC
-**Methodology**: BMAD v6-alpha + TDD
-**Project Phase**: Sprint 2 COMPLETE → Sprint 3 Planning
-**Deployment Status**: ✅ Production (backend & frontend healthy - verified 2025-10-25T08:14Z)
-**Sprint 1 Status**: ✅ 100% COMPLETE
-**Sprint 2 Status**: ✅ 100% COMPLETE (DEV-007 ✓, DEV-008 ✓)
-**Sprint 3 Status**: 📋 Ready to Begin - DEV-009 Subscription & Billing
-**Latest Commit**: ed87f5d - docs: add comprehensive Sprint 2 completion report
-**Test Suites**: ✅ Backend 81/81 (100%) • Frontend 66/66 (100%) • Total: 147/147
+**Last Updated**: October 25, 2025 08:45 UTC
+**Methodology**: BMAD v6-alpha + TDD (tests-first policy remains in effect)
+**Project Phase**: Sprint 3 – Marketing Website Complete, Billing Next
+**Deployment Status**: ✅ DEPLOYED - Marketing website live at https://ma-saas-platform.onrender.com
+**Sprint 1 Status**: ✅ 100% complete (historical)
+**Sprint 2 Status**: ✅ Complete (DEV-007, DEV-008)
+**Sprint 3 Status**: ✅ MARK-001 Complete • ⏳ DEV-009 Next
+**Latest Commit**: 7b41e3c `feat(marketing): implement comprehensive marketing website (MARK-001)`
+**Test Suites**: ✅ Frontend 99/99 passing (100%) • ⚠ Backend 103/111 (8 billing tests pending DEV-009 impl)
 
 ---
 
 ---
 
-## ✅ Completed Stories
+## ⚠ Sprint 3 Kickoff Snapshot (2025-10-25)
+
+- Backend billing tests: 8 failures in `backend/tests/test_billing_endpoints.py` (checkout session, tier change, cancel flows returning 5xx/405).
+- Document endpoints: `pytest backend/tests/test_document_endpoints.py` now green (6 tests).
+- Backend overall: `pytest backend/tests` → 103 passed / 8 failed / 111 total (Stripe checkout & cancellation paths still unimplemented).
+- Frontend: `npm test` → 99/99 tests passing; persistent React `act(...)` warning in `DealPipeline.test.tsx` (pre-existing).
+- Working tree: Pending subscription service module (`subscription_service.py`), schema, routes, and documentation updates awaiting implementation/commit.
+- Action items:
+  1. Implement DEV-009 backend endpoints to satisfy billing tests (checkout, change-tier, cancel, me).
+  2. Re-run full `pytest backend/tests` until all 111 tests pass.
+  3. Verify Render deployment once backend succeeds; update tracker with fresh health check evidence.
+
+---
+
+## ✅ Completed Stories (Historical Reference)
+
+### MARK-001: Marketing Website - Landing, Pricing, Features & Legal Pages ✅
+**Status**: Completed
+**Completed**: October 25, 2025
+**Duration**: ~9-10 hours (single sprint)
+**Epic**: Marketing & Lead Generation
+
+**Deliverables**:
+- ✅ **Landing Page**: Hero section, problem-solution, 8 feature cards, testimonials, CTA sections
+- ✅ **Pricing Page**: 4 subscription tiers (£279, £598, £1,598, £2,997), comparison table, FAQ
+- ✅ **Features Page**: 8 detailed feature descriptions with use cases and screenshots placeholders
+- ✅ **About Page**: Mission, vision, founder story, company values, key metrics
+- ✅ **Contact Page**: Form with validation, support info, demo request
+- ✅ **Legal Pages**: Terms of Service, Privacy Policy (GDPR-compliant), Cookie Policy
+- ✅ **Marketing Components**: MarketingNav, Footer, HeroSection, FeatureCard, PricingCard, CTASection
+- ✅ **Routing Updates**: App.tsx updated with all marketing routes
+- ✅ **Test Suite**: 99/99 tests passing (100% pass rate)
+
+**Test Coverage**: ✅ **100%** - All 99 frontend tests passing
+- New marketing component tests: MarketingNav, HeroSection, FeatureCard, PricingCard
+- New page tests: LandingPage, PricingPage, FeaturesPage
+- Updated existing tests: App.test.tsx, routing.test.tsx, Auth.test.tsx
+
+**Key Achievements**:
+- **Professional Marketing Presence**: Conversion-optimized design with clear CTAs
+- **Pricing Transparency**: All 4 tiers clearly displayed with feature comparison
+- **GDPR Compliance**: Comprehensive legal pages covering UK/EU data protection
+- **Mobile-First Design**: Responsive across all breakpoints (320px to 1920px+)
+- **SEO Foundation**: Semantic HTML5, proper heading hierarchy
+- **Build Success**: Production build in 1.59s with optimized bundles
+- **Test-Driven**: All components built following TDD methodology
+
+**Technical Details**:
+- **Tech Stack**: React 19.1.1 + TypeScript, Tailwind CSS 3.4.17, Vite 7.1.7
+- **Component Architecture**: MarketingLayout wrapper with shared nav/footer
+- **Styling**: Consistent indigo-900 brand colors, professional gradient hero
+- **Bundle Sizes**: index.js 182.54 KB (57.43 KB gzip), clerk-vendor 78.71 KB (21.45 KB gzip)
+- **Accessibility**: WCAG 2.1 AA compliance target
+
+**Artifacts**:
+- Story file: `docs/bmad/stories/MARK-001-marketing-website.md`
+- Components: `frontend/src/components/marketing/` (7 components)
+- Pages: `frontend/src/pages/marketing/` (5 pages + 3 legal pages)
+- Commit: 7b41e3c `feat(marketing): implement comprehensive marketing website (MARK-001)`
+
+**Business Impact**:
+- **Lead Generation**: Professional landing page to attract visitors
+- **Conversion Optimization**: Clear pricing and value proposition
+- **Trust Building**: GDPR compliance and professional legal pages
+- **SEO Foundation**: Structure for organic traffic growth
+- **Revenue Communication**: Clear tier structure (£279 to £2,997/month)
+
+**Next Steps**:
+1. Add SEO meta tags (title, description, OpenGraph) - Future enhancement
+2. Implement Google Analytics tracking - Future enhancement
+3. A/B test hero headlines and CTAs - Future enhancement
+4. Add real testimonials and customer logos - Future enhancement
+5. Optimize images with WebP format - Future enhancement
+
+---
 
 ### DEV-001: Project Initialization ✅
 **Status**: Completed  
@@ -1187,3 +1261,11 @@
 **Next Action**: Implement DEV-009 backend following TDD methodology
 **Last Updated**: October 24, 2025 (17:40 UTC)
 
+---
+
+### 2025-10-24 16:57 UTC - TestArch Automate Audit Snapshot
+- Attempted to initialize BMAD workflow at bmad/core/tasks/workflow.xml; file missing from repository, preventing automated workflow execution for testarch/automate.
+- Backend pytest run (`backend\\venv\\Scripts\\python.exe -m pytest`) returned 77/81 passing with four document endpoint failures (ResponseValidationError: DocumentUploadResponse lacks organization_id, uploaded_by, parent_document_id, archived_at, updated_at).
+- Frontend Vitest suite (`npm test`) remains green at 52/52 with a react-act warning on DealPipeline retry test.
+- Render health verified at 16:31 UTC: https://ma-saas-backend.onrender.com/health reported healthy; https://ma-saas-platform.onrender.com returned HTTP 200.
+- Git working tree dirty with backend document module changes and new status docs; no local commits ahead of origin/main.
