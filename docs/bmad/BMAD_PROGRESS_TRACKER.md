@@ -1,14 +1,14 @@
 # BMAD Progress Tracker - M&A Intelligence Platform
 
-**Last Updated**: October 26, 2025 09:45 UTC
+**Last Updated**: October 26, 2025 11:12 UTC
 **Methodology**: BMAD v6-alpha + TDD (tests-first policy remains in effect)
-**Project Phase**: Sprint 3 – ✅ 100% COMPLETE (MARK-001 + DEV-009 FULL STACK VERIFIED)
+**Project Phase**: Sprint 3 – ✅ 100% COMPLETE (MARK-001 + DEV-009-FRONTEND FULLY VERIFIED)
 **Deployment Status**: ✅ Production healthy (Frontend https://apexdeliver.com • Backend https://ma-saas-backend.onrender.com/health)
 **Sprint 1 Status**: ✅ 100% complete (historical)
 **Sprint 2 Status**: ✅ 100% complete (DEV-007, DEV-008)
-**Sprint 3 Status**: ✅ 100% COMPLETE - MARK-001 ✅ • DEV-009 ✅ (Backend 111/111 • Frontend 107/107 • Total 218 tests passing)
-**Latest Commit**: Pending `feat(DEV-009): complete frontend billing UI with Customer Portal integration - 218/218 tests passing`
-**Test Suites**: 🎉 ✅ Backend 111/111 passing (100%) • ✅ Frontend 107/107 passing (100%) • TOTAL: 218/218 (100%)
+**Sprint 3 Status**: ✅ 100% COMPLETE - MARK-001 ✅ • DEV-009 ✅ (Backend 111/111 • Frontend 139/139 • Total 250 tests passing)
+**Latest Commit**: `5ed88ff` - feat(pricing): complete Stripe checkout integration with TDD (139/139 frontend tests passing)
+**Test Suites**: 🎉 ✅ Backend 111/111 passing (100%) • ✅ Frontend 139/139 passing (100%) • TOTAL: 250/250 (100%)
 
 ---
 
@@ -74,10 +74,10 @@
 - `21d5186` - feat(billing): enhance subscription service with trial tracking and fixes (111/111 tests passing)
 
 **Frontend Implementation Complete** ✅ (October 26, 2025):
-- ✅ Pricing page with Stripe Checkout integration
-- ✅ Billing dashboard UI (usage, invoices, tier info) - [BillingDashboard.tsx](frontend/src/pages/dashboard/BillingDashboard.tsx:1-213)
-- ✅ Complete billing service layer with 12 tests - [billingService.ts](frontend/src/services/billingService.ts:1-202)
-- ✅ Customer Portal button integration (Manage Payment Methods)
+- ✅ Pricing page with Stripe Checkout + CTA redirect coverage (`PricingPage.test.tsx`)
+- ✅ `DashboardSubscription` UI (tier change, cancel flow, invoices)
+- ✅ Billing service layer direct tests (`billingService.test.ts` 12/12)
+- ✅ Customer Portal button integration
 
 ---
 
@@ -100,22 +100,32 @@ DEV-009 Subscription & Billing Management is fully complete with comprehensive t
 - Multi-tenant architecture enforced
 - Comprehensive webhook handling (4 event types)
 
-### Frontend Achievements (107/107 tests ✅)
+### Frontend Achievements (139/139 tests ✅)
 - **Billing Service Layer** - Complete API client with 12 comprehensive tests
   - createCheckoutSession(), getCurrentSubscription(), getBillingDashboard()
   - changeTier(), cancelSubscription(), getTiers()
   - getCustomerPortalUrl(), redirectToCheckout()
-- **BillingDashboard Component** - Full-featured subscription management UI
+- **BillingDashboard Component** - Full-featured subscription management UI (5 tests)
   - Current plan display with tier, status, pricing
   - Usage metrics with progress bars (deals, users, documents, storage)
   - Plan features visualization
   - Recent invoices table with PDF downloads
   - "Manage Payment Methods" button (Stripe Customer Portal)
   - "View All Plans" link to pricing page
-- **PricingPage Integration** - Seamless Stripe checkout flow
+- **PricingPage Component** - Seamless Stripe checkout flow (6 tests)
   - 4 subscription tier cards (£279, £598, £1,598, £2,997)
-  - "Get Started" buttons redirect to Stripe Checkout
-  - Loading states and error handling
+  - "Get Started" buttons create Stripe Checkout sessions with auth guard
+  - Loading, disabled states, and error handling (`PricingPage.test.tsx`)
+- **CheckoutSuccess & CheckoutCancel Pages** - Post-checkout flows (6 tests)
+  - Success page with confirmation message and billing dashboard link
+  - Cancel page with retry options and pricing page link
+- **ChangeTierModal Component** - Tier switching UI (6 tests)
+  - Visual tier selection with current tier indication
+  - Loading states during tier change
+  - Success/error handling
+- **CancelSubscriptionModal Component** - Cancellation flow (6 tests)
+  - Immediate vs end-of-period cancellation options
+  - Confirmation UI with loading states
 
 ### User Stories Completed
 ✅ **US-9.1**: Select Subscription Tier During Onboarding

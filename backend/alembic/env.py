@@ -13,6 +13,14 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 # Import all models so Alembic can detect them
 from app.db.base import Base  # noqa: E402
 from app.models.user import User  # noqa: F401, E402
+from app.models.organization import Organization  # noqa: F401, E402
+from app.models.subscription import Subscription  # noqa: F401, E402
+from app.models.deal import Deal, PipelineStage  # noqa: F401, E402
+from app.models.document import Document, Folder  # noqa: F401, E402
+from app.models.financial_connection import FinancialConnection  # noqa: F401, E402
+from app.models.financial_statement import FinancialStatement  # noqa: F401, E402
+from app.models.financial_ratio import FinancialRatio  # noqa: F401, E402
+from app.models.financial_narrative import FinancialNarrative  # noqa: F401, E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
