@@ -118,7 +118,7 @@ export async function listDeals(params: DealListParams = {}): Promise<PaginatedD
   if (params.search) searchParams.append('search', params.search);
   if (params.sort_by) searchParams.append('sort_by', params.sort_by);
   if (params.sort_order) searchParams.append('sort_order', params.sort_order);
-  if (params.include_archived) searchParams.append('include_archived', 'true');
+  if (params.include_archived === true) searchParams.append('include_archived', 'true');
 
   const url = `${API_BASE_URL}/api/deals?${searchParams}`;
   const response = await fetch(url, {
