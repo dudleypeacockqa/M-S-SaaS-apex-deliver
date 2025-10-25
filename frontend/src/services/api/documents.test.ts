@@ -10,13 +10,17 @@ import {
 
 describe("documents API client", () => {
   const originalFetch = global.fetch
+  let originalCreateObjectURL: typeof URL.createObjectURL
 
   beforeEach(() => {
     global.fetch = vi.fn()
+    originalCreateObjectURL = URL.createObjectURL
+    URL.createObjectURL = vi.fn().mockReturnValue("blob:mock")
   })
 
   afterEach(() => {
     global.fetch = originalFetch
+    URL.createObjectURL = originalCreateObjectURL
     vi.clearAllMocks()
   })
 
@@ -32,19 +36,19 @@ describe("documents API client", () => {
       updated_at: null,
       children: [],
       document_count: 0,
-    }
+    };
 
-    vi.mocked(fetch).mockResolvedValueOnce(
+    (fetch as unknown as vi.Mock).mockResolvedValueOnce(
       new Response(JSON.stringify(mockResponse), { status: 201 })
     )
 
-    const result = await createFolder("deal-1", "Financials")
+    const result = await createFolder({ dealId: "deal-1", name: "Financials" })
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringMatching(/\/deals\/deal-1\/folders$/),
+      expect.stringMatching(/\/documents\/folders$/),
       expect.objectContaining({
         method: "POST",
-        body: JSON.stringify({ name: "Financials", parent_folder_id: undefined }),
+        body: JSON.stringify({ deal_id: "deal-1", name: "Financials", parent_folder_id: undefined }),
       })
     )
     expect(result).toEqual(mockResponse)
@@ -59,15 +63,15 @@ describe("documents API client", () => {
       file_size: 8,
       file_type: "application/pdf",
       created_at: "2025-10-24T00:00:00Z",
-    }
-    vi.mocked(fetch).mockResolvedValueOnce(
+    };
+    (fetch as unknown as vi.Mock).mockResolvedValueOnce(
       new Response(JSON.stringify(mockResponse), { status: 201 })
     )
 
-    const result = await uploadDocument("deal-1", mockFile)
+    const result = await uploadDocument({ dealId: "deal-1", file: mockFile })
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringMatching(/\/deals\/deal-1\/documents$/),
+      expect.stringMatching(/\/documents\/upload$/),
       expect.objectContaining({
         method: "POST",
         body: expect.any(FormData),
@@ -77,34 +81,36 @@ describe("documents API client", () => {
   })
 
   it("lists documents with query parameters", async () => {
-    const mockList = { items: [], total: 0, page: 1, per_page: 50, pages: 0 }
-    vi.mocked(fetch).mockResolvedValueOnce(
+    const mockList = { items: [], total: 0, page: 1, per_page: 50, pages: 0 };
+    (fetch as unknown as vi.Mock).mockResolvedValueOnce(
       new Response(JSON.stringify(mockList), { status: 200 })
     )
 
-    const result = await listDocuments("deal-1", { folder_id: "folder-1" })
+    const result = await listDocuments({ dealId: "deal-1", folderId: "folder-1" })
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringMatching(/\/deals\/deal-1\/documents\?/),
-      expect.objectContaining({})
+      expect.stringContaining("deal_id=deal-1"),
+      expect.objectContaining({ method: "GET" })
     )
     expect(result).toEqual(mockList)
   })
 
-  it("downloads a document and opens in new tab", async () => {
-    const windowOpenSpy = vi.spyOn(window, "open").mockImplementation(() => null)
-
-    await downloadDocument("deal-1", "doc-123")
-
-    expect(windowOpenSpy).toHaveBeenCalledWith(
-      expect.stringMatching(/\/deals\/deal-1\/documents\/doc-123\/download$/),
-      "_blank"
+  it("downloads a document and returns blob URL", async () => {
+    const blob = new Blob(["doc"], { type: "application/pdf" });
+    (fetch as unknown as vi.Mock).mockResolvedValueOnce(
+      new Response(blob, { status: 200, headers: { "Content-Type": "application/pdf" } })
     )
-    windowOpenSpy.mockRestore()
+
+    const url = await downloadDocument("doc-123")
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringMatching(/\/documents\/doc-123\/download$/),
+      expect.any(Object)
+    )
+    expect(url).toBe("blob:mock")
   })
 
-  it.skip("adds a document permission via POST", async () => {
-    // TODO: Implement addDocumentPermission function
+  it("adds a document permission via POST", async () => {
     const mockResponse = {
       id: "perm-1",
       document_id: "doc-1",
@@ -113,20 +119,20 @@ describe("documents API client", () => {
       permission_level: "viewer",
       granted_by: "user-1",
       created_at: "2025-10-24T00:00:00Z",
-    }
-    vi.mocked(fetch).mockResolvedValueOnce(
+    };
+    (fetch as unknown as vi.Mock).mockResolvedValueOnce(
       new Response(JSON.stringify(mockResponse), { status: 201 })
     )
 
-    // const result = await addDocumentPermission("doc-1", {
-    //   user_id: "user-2",
-    //   permission_level: "viewer",
-    // })
+    const result = await addDocumentPermission("doc-1", {
+      user_id: "user-2",
+      permission_level: "viewer",
+    })
 
-    // expect(fetch).toHaveBeenCalledWith(
-    //   expect.stringMatching(/\/documents\/doc-1\/permissions$/),
-    //   expect.objectContaining({ method: "POST" })
-    // )
-    // expect(result).toEqual(mockResponse)
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringMatching(/\/documents\/doc-1\/permissions$/),
+      expect.objectContaining({ method: "POST" })
+    )
+    expect(result).toEqual(mockResponse)
   })
 })
