@@ -5,7 +5,7 @@ Handles Stripe integration, subscription lifecycle, and billing operations.
 from __future__ import annotations
 
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 from typing import Optional
 
@@ -110,10 +110,7 @@ TIER_CONFIG = {
 }
 
 
-def _execute(db: Session | AsyncSession, statement):
-    """Execute a SQLAlchemy statement for both sync and async sessions."""
-    if isinstance(db, AsyncSession):
-        return db.sync_execute(statement)
+def _execute(db: Session, statement):
     return db.execute(statement)
 
 
@@ -148,7 +145,10 @@ def create_checkout_session(
     if not cancel_url:
         cancel_url = f"{os.getenv('FRONTEND_URL', 'http://localhost:5173')}/pricing?subscription=canceled"
 
-    result = _execute(db, select(Subscription).where(Subscription.organization_id == organization_id))
+    result = _execute(
+        db,
+        select(Subscription).where(Subscription.organization_id == organization_id)
+    )
     existing_subscription = result.scalar_one_or_none()
 
     if existing_subscription and existing_subscription.stripe_customer_id:
@@ -174,25 +174,32 @@ def create_checkout_session(
         },
     )
 
-    if not existing_subscription:
-        new_subscription = Subscription(
+    if existing_subscription:
+        existing_subscription.stripe_customer_id = customer_id
+        existing_subscription.tier = tier
+        existing_subscription.status = SubscriptionStatus.TRIALING
+        existing_subscription.trial_start = datetime.now(timezone.utc)
+        existing_subscription.trial_end = datetime.now(timezone.utc) + timedelta(days=14)
+        existing_subscription.updated_at = datetime.now(timezone.utc)
+    else:
+        existing_subscription = Subscription(
             organization_id=organization_id,
             stripe_customer_id=customer_id,
             tier=tier,
             status=SubscriptionStatus.TRIALING,
+            trial_start=datetime.now(timezone.utc),
+            trial_end=datetime.now(timezone.utc) + timedelta(days=14),
         )
-        db.add(new_subscription)
-        db.commit()
-        db.refresh(new_subscription)
-    else:
-        db.refresh(existing_subscription)
+        db.add(existing_subscription)
+
+    db.commit()
 
     return {"checkout_url": session.url, "session_id": session.id}
 
 
 def get_organization_subscription(
     organization_id: str,
-    db: Session,
+    db: Session | AsyncSession,
 ) -> Optional[Subscription]:
     result = _execute(
         db,
@@ -207,8 +214,10 @@ def update_subscription_tier(
     organization_id: str,
     new_tier: SubscriptionTier,
     prorate: bool = True,
-    db: Session | None = None,
+    db: Session | AsyncSession | None = None,
 ) -> Subscription:
+    if db is None:  # pragma: no cover - defensive guard
+        raise ValueError("Database session is required")
     subscription = get_organization_subscription(organization_id, db)
     if not subscription:
         raise ValueError("No active subscription found")
@@ -236,8 +245,10 @@ def update_subscription_tier(
 def cancel_subscription(
     organization_id: str,
     immediately: bool = False,
-    db: Session | None = None,
+    db: Session | AsyncSession | None = None,
 ) -> Subscription:
+    if db is None:  # pragma: no cover - defensive guard
+        raise ValueError("Database session is required")
     subscription = get_organization_subscription(organization_id, db)
     if not subscription:
         raise ValueError("No active subscription found")
@@ -258,7 +269,7 @@ def cancel_subscription(
     return subscription
 
 
-def handle_checkout_completed(event_data: dict, db: Session) -> None:
+def handle_checkout_completed(event_data: dict, db: Session | AsyncSession) -> None:
     session = event_data["object"]
     organization_id = session["metadata"]["organization_id"]
     stripe_subscription_id = session["subscription"]
@@ -281,7 +292,7 @@ def handle_checkout_completed(event_data: dict, db: Session) -> None:
         db.commit()
 
 
-def handle_invoice_paid(event_data: dict, db: Session) -> None:
+def handle_invoice_paid(event_data: dict, db: Session | AsyncSession) -> None:
     invoice_data = event_data["object"]
     stripe_invoice_id = invoice_data["id"]
     stripe_customer_id = invoice_data["customer"]
@@ -305,7 +316,7 @@ def handle_invoice_paid(event_data: dict, db: Session) -> None:
     db.commit()
 
 
-def handle_subscription_updated(event_data: dict, db: Session) -> None:
+def handle_subscription_updated(event_data: dict, db: Session | AsyncSession) -> None:
     subscription_data = event_data["object"]
     stripe_subscription_id = subscription_data["id"]
 
@@ -328,7 +339,7 @@ def handle_subscription_updated(event_data: dict, db: Session) -> None:
     db.commit()
 
 
-def handle_subscription_deleted(event_data: dict, db: Session) -> None:
+def handle_subscription_deleted(event_data: dict, db: Session | AsyncSession) -> None:
     subscription_data = event_data["object"]
     stripe_subscription_id = subscription_data["id"]
 
