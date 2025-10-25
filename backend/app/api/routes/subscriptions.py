@@ -38,6 +38,7 @@ from app.services import subscription_service
 router = APIRouter(prefix="/billing", tags=["billing", "subscriptions"])
 
 
+@router.post("/create-checkout-session", response_model=CheckoutSessionResponse)
 def create_checkout_session(
     subscription_data: SubscriptionCreate,
     current_user: User = Depends(get_current_user),
@@ -60,6 +61,7 @@ def create_checkout_session(
         raise HTTPException(status_code=500, detail=f"Failed to create checkout session: {str(e)}")
 
 
+@router.get("/me", response_model=SubscriptionResponse)
 def get_my_subscription(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -73,6 +75,7 @@ def get_my_subscription(
     return SubscriptionResponse.model_validate(subscription)
 
 
+@router.get("/billing-dashboard", response_model=BillingDashboardResponse)
 def get_billing_dashboard(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -140,6 +143,7 @@ def get_billing_dashboard(
     )
 
 
+@router.put("/change-tier", response_model=SubscriptionResponse)
 def change_subscription_tier(
     tier_update: SubscriptionUpdate,
     current_user: User = Depends(get_current_user),
@@ -160,6 +164,7 @@ def change_subscription_tier(
         raise HTTPException(status_code=500, detail=f"Failed to update subscription: {str(e)}")
 
 
+@router.post("/cancel", response_model=SubscriptionResponse)
 def cancel_my_subscription(
     cancel_request: CancelSubscriptionRequest,
     current_user: User = Depends(get_current_user),
@@ -200,7 +205,7 @@ def get_all_tiers():
 
 
 @router.post("/webhooks/stripe")
-def stripe_webhook(
+async def stripe_webhook(
     request: Request,
     stripe_signature: str = Header(None, alias="stripe-signature"),
     db: Session = Depends(get_db),
@@ -210,7 +215,7 @@ def stripe_webhook(
     webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
     if not webhook_secret:
         raise HTTPException(status_code=500, detail="Stripe webhook secret not configured")
-    body_bytes = request.body()
+    body_bytes = await request.body()
     try:
         event = stripe.Webhook.construct_event(body_bytes, stripe_signature, webhook_secret)
     except ValueError:
