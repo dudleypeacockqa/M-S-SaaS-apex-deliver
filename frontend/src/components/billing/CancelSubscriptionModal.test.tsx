@@ -124,7 +124,9 @@ describe('CancelSubscriptionModal', () => {
     await user.click(screen.getByText('Confirm Cancellation'));
 
     await waitFor(() => {
-      expect(billingService.billingService.cancelSubscription).toHaveBeenCalledWith(true);
+      expect(billingService.billingService.cancelSubscription).toHaveBeenCalledWith({
+        immediately: true,
+      });
     });
 
     expect(mockOnSuccess).toHaveBeenCalledTimes(1);
