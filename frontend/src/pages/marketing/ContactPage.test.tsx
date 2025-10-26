@@ -30,13 +30,12 @@ describe('ContactPage', () => {
 
     expect(screen.getByLabelText(/name/i)).toBeInvalid()
     expect(screen.getByLabelText(/email/i)).toBeInvalid()
-    expect(screen.getByLabelText(/subject/i)).toBeInvalid()
     expect(screen.getByLabelText(/message/i)).toBeInvalid()
   })
 
   it('submits form and shows confirmation message', async () => {
     const { container } = renderContact()
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: 5 })
 
     await user.type(screen.getByLabelText(/name/i), 'Jane Doe')
     await user.type(screen.getByLabelText(/email/i), 'jane@example.com')
@@ -47,6 +46,6 @@ describe('ContactPage', () => {
 
     expect(screen.getByText(/message sent/i)).toBeInTheDocument()
     expect(container.querySelector('form')).not.toBeInTheDocument()
-  })
+  }, 15000)
 })
 

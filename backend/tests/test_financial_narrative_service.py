@@ -6,7 +6,7 @@ Testing AI-powered narrative generation, scoring, and parsing
 import pytest
 from unittest.mock import AsyncMock, Mock, patch
 from decimal import Decimal
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 
 from app.services.financial_narrative_service import (
     _build_narrative_prompt,
@@ -17,6 +17,7 @@ from app.services.financial_narrative_service import (
 from app.models.financial_ratio import FinancialRatio
 from app.models.financial_statement import FinancialStatement
 from app.models.financial_narrative import FinancialNarrative
+from app.models.financial_connection import FinancialConnection
 from app.models.deal import Deal
 from app.models.organization import Organization
 
@@ -290,12 +291,25 @@ async def test_generate_financial_narrative_success(db_session):
     db_session.add(deal)
     db_session.commit()
 
-    # Create financial data
-    statement = FinancialStatement(
+    # Create financial connection
+    connection = FinancialConnection(
         deal_id=deal.id,
         organization_id=org.id,
-        period_start_date=datetime(2024, 1, 1, tzinfo=timezone.utc),
-        period_end_date=datetime(2024, 12, 31, tzinfo=timezone.utc),
+        platform="xero",
+        access_token="token",
+        connection_status="active"
+    )
+    db_session.add(connection)
+    db_session.flush()
+
+    # Create financial data
+    statement = FinancialStatement(
+        connection_id=connection.id,
+        deal_id=deal.id,
+        organization_id=org.id,
+        statement_type="income_statement",
+        period_start=date(2024, 1, 1),
+        period_end=date(2024, 12, 31),
         revenue=Decimal("1000000"),
         net_income=Decimal("100000"),
         total_assets=Decimal("800000"),
@@ -304,10 +318,9 @@ async def test_generate_financial_narrative_success(db_session):
     )
 
     ratios = FinancialRatio(
+        statement_id=statement.id,
         deal_id=deal.id,
         organization_id=org.id,
-        period_start_date=datetime(2024, 1, 1, tzinfo=timezone.utc),
-        period_end_date=datetime(2024, 12, 31, tzinfo=timezone.utc),
         current_ratio=Decimal("2.0"),
         net_profit_margin=Decimal("0.10"),
         debt_to_equity=Decimal("0.5"),
@@ -315,6 +328,8 @@ async def test_generate_financial_narrative_success(db_session):
     )
 
     db_session.add(statement)
+    db_session.flush()
+    ratios.statement_id = statement.id
     db_session.add(ratios)
     db_session.commit()
 

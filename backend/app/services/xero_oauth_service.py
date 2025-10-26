@@ -254,7 +254,8 @@ def fetch_xero_statements(connection_id: str, db: Session) -> List[FinancialStat
         raise ValueError(f"Connection {connection_id} not found")
 
     # Check if token is expired
-    if connection.token_expires_at < datetime.now(timezone.utc):
+    # SQLite strips timezone info from datetimes, so compare with naive datetime
+    if connection.token_expires_at < datetime.now():
         # Auto-refresh token
         connection = refresh_xero_token(connection_id, db)
 

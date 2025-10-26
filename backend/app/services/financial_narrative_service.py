@@ -11,7 +11,22 @@ from decimal import Decimal
 from sqlalchemy.orm import Session
 from sqlalchemy import select, desc
 
-from openai import AsyncOpenAI
+try:  # pragma: no cover - allow running without OpenAI installed (tests)
+    from openai import AsyncOpenAI  # type: ignore
+except ModuleNotFoundError:  # pragma: no cover
+    class AsyncOpenAI:  # type: ignore
+        """Minimal stub so tests can execute without OpenAI SDK."""
+
+        def __init__(self, *_, **__):
+            pass
+
+        class chat:  # noqa: N801
+            class completions:  # noqa: N801
+                @staticmethod
+                async def create(**_kwargs):
+                    raise RuntimeError(
+                        "OpenAI client not available. Install openai package or set OPENAI_API_KEY."
+                    )
 
 from app.models.financial_ratio import FinancialRatio
 from app.models.financial_statement import FinancialStatement

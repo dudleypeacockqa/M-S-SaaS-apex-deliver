@@ -170,7 +170,8 @@ def test_refresh_xero_token_success(mock_xero_client, db_session):
     # Assert
     assert refreshed.access_token == "new_access_token_789"
     assert refreshed.refresh_token == "new_refresh_token_101"
-    assert refreshed.token_expires_at > datetime.now(timezone.utc)
+    # SQLite strips timezone info from datetimes, so compare with naive datetime
+    assert refreshed.token_expires_at > datetime.now()
     assert refreshed.last_sync_at is not None
 
 
@@ -401,7 +402,7 @@ def test_get_xero_connection_status_active(db_session):
     # Assert
     assert status["connected"] is True
     assert status["platform"] == "xero"
-    assert status["tenant_name"] == "Company ABC"
+    assert status["platform_organization_name"] == "Company ABC"
     assert status["status"] == "active"
     assert "last_sync" in status
 
