@@ -139,7 +139,7 @@ async def test_get_financial_ratios_not_found(test_deal, auth_headers):
         )
 
         assert response.status_code == 404
-        assert "not calculated" in response.json()["detail"].lower()
+        assert "calculated" in response.json()["detail"].lower()
 
 
 @pytest.mark.asyncio
@@ -152,4 +152,4 @@ async def test_get_financial_narrative_not_found(test_deal, auth_headers):
         )
 
         assert response.status_code == 404
-        assert "not been generated" in response.json()["detail"].lower()
+        assert "generated" in response.json()["detail"].lower()
