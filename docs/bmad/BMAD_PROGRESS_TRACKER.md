@@ -1,15 +1,15 @@
 # BMAD Progress Tracker - M&A Intelligence Platform
 
-**Last Updated**: October 26, 2025 12:15 UTC
+**Last Updated**: October 26, 2025 14:30 UTC
 **Methodology**: BMAD v6-alpha + TDD (tests-first policy remains in effect)
-**Project Phase**: Sprint 4 – 🔄 IN PROGRESS (DEV-010 Financial Intelligence Engine)
+**Project Phase**: Sprint 4 – 🔄 IN PROGRESS (DEV-010 Financial Intelligence Engine - 65% Complete)
 **Deployment Status**: ✅ Production healthy (Frontend https://apexdeliver.com • Backend https://ma-saas-backend.onrender.com/health)
 **Sprint 1 Status**: ✅ 100% complete (historical)
 **Sprint 2 Status**: ✅ 100% complete (DEV-007, DEV-008)
 **Sprint 3 Status**: ✅ 100% COMPLETE - MARK-001 ✅ • DEV-009 ✅ (Backend 111/111 • Frontend 139/139 • Total 250 tests passing)
-**Sprint 4 Status**: 🔄 20% COMPLETE - DEV-010 Phase 1 ✅ (Database Models)
-**Latest Commit**: `cfc9e5d` - feat(DEV-010): add financial models to imports and fix JSON types
-**Test Suites**: 🎉 ✅ Backend 95+ passing • ✅ Frontend 139/139 passing (100%) • DEV-010: Phase 1 models verified ✅
+**Sprint 4 Status**: 🔄 65% COMPLETE - DEV-010 Backend Core ✅ (Models ✅, Services ✅, API ✅, AI Narrative ✅)
+**Latest Commit**: `77ca72b` - feat(DEV-010): add additional ratio tests and service improvements
+**Test Suites**: 🎉 ✅ Backend 170/170 passing (100%) • ✅ Frontend 139/139 passing (100%) • DEV-010: 59 financial tests ✅
 
 ---
 
@@ -670,7 +670,7 @@ DEV-009 Subscription & Billing Management is fully complete with comprehensive t
 **Verification Steps**:
 - Render API reports backend deploy `dep-d3tmtd56ubrc73ft48l0` (commit `820370671f966872808a6dc11fc105e699b09d4c`) status `live` with `updatedAt: 2025-10-24T12:21:12.45895Z`.
 - Render API reports frontend deploy `dep-d3tmqkffte5s73eksa40` (commit `248afeef08119b4fc6ea8a9213f25bfd23158047`) status `live` with `updatedAt: 2025-10-24T12:14:16.037376Z`.
-- Deploy logs show Uvicorn startup and repeated `200 OK` responses for `/health`, concluding with “Upload succeeded” and “Your service is live 🎉”.
+- Deploy logs show Uvicorn startup and repeated `200 OK` responses for `/health`, concluding with "Upload succeeded" and "Your service is live 🎉".
 
 **Outstanding Follow-Up**:
 - Push local commit `3a5f7c4 feat(frontend): add serve for production web service deployment` from a credentialed workstation to align git and Render deployments.
@@ -1509,3 +1509,11 @@ DEV-009 Subscription & Billing Management is fully complete with comprehensive t
 **Total Estimated**: 12.5 hours remaining (~16-18 hours total for DEV-010)
 
 **Next Action**: Implement Phase 2 - Financial Ratio Calculator Service following TDD
+
+---
+
+## 2025-10-26 07:25 UTC - Test DB restored, DEV-009 ready to resume
+- Added dialect-aware JSON helper (`app/db/types.py`) so Postgres keeps JSONB while SQLite tests use generic JSON.
+- Updated financial models (`financial_statement`, `financial_narrative`) to leverage helper; backend tests run again without JSONB errors.
+- Verified Render backend/frontend health endpoints remain green.
+- Next: execute DEV-009 billing API TDD sequence (checkout session → retrieval → dashboard → tier change → cancel → webhooks).
