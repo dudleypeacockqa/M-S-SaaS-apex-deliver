@@ -86,3 +86,43 @@ export function meetsPermissionLevel(user: User | null, minimumRole: string): bo
 
   return userLevel >= requiredLevel
 }
+
+/**
+ * Axios API Client
+ * Provides HTTP methods for API communication
+ */
+import axios from 'axios'
+
+const api = axios.create({
+  baseURL: `${API_BASE_URL}/api`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+// Request interceptor to add authentication token
+api.interceptors.request.use(
+  (config) => {
+    // Token will be injected by Clerk's useAuth hook in components
+    // This is a placeholder for future token injection
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+// Response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.data?.error) {
+      // API returned structured error
+      throw new Error(error.response.data.error.message || 'API request failed')
+    }
+    throw error
+  }
+)
+
+export { api }
+export default api

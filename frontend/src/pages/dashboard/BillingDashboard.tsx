@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import {
   billingService,
   type BillingDashboard as BillingDashboardResponse,
-  type Subscription,
 } from '../../services/billingService'
 import { ChangeTierModal } from '../../components/billing/ChangeTierModal'
 import { CancelSubscriptionModal } from '../../components/billing/CancelSubscriptionModal'
@@ -103,6 +102,27 @@ export const BillingDashboard: React.FC = () => {
     )
   }
 
+  // Null safety guard - ensure all required data is present
+  if (!subscription || !tierDetails || !usage) {
+    return (
+      <section className="space-y-4" data-testid="billing-dashboard-incomplete">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-yellow-800 mb-2">Billing data incomplete</h2>
+          <p className="text-yellow-700">Some billing information is missing. Please try refreshing the page.</p>
+          <button
+            className="mt-4 inline-flex items-center px-4 py-2 rounded-lg bg-yellow-600 text-white hover:bg-yellow-700"
+            onClick={() => {
+              setActionError(null)
+              void loadDashboard()
+            }}
+          >
+            Refresh
+          </button>
+        </div>
+      </section>
+    )
+  }
+
   const subscriptionStatus = subscription.status
   const monthlyPrice = formatCurrency(tierDetails.price_monthly)
   const nextBillingDate = subscription.cancel_at_period_end
@@ -128,9 +148,8 @@ export const BillingDashboard: React.FC = () => {
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Current Plan</p>
-              <h2 className="text-2xl font-bold text-slate-900 flex items-baseline gap-2">
+              <h2 className="text-2xl font-bold text-slate-900">
                 {tierDetails.name}
-                <span className="text-sm font-medium text-slate-500">({subscription.billing_period === 'annual' ? 'Annual' : 'Monthly'})</span>
               </h2>
             </div>
             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
