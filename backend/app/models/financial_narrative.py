@@ -1,9 +1,10 @@
 """Financial Narrative Model - DEV-010."""
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, ForeignKey, Text, Numeric, Integer, JSON
+from sqlalchemy import Column, String, DateTime, ForeignKey, Text, Numeric, Integer
 from sqlalchemy.orm import relationship
 import uuid
 from app.db.base import Base
+from app.db.types import JSONType
 
 class FinancialNarrative(Base):
     """Stores AI-generated financial narratives."""
@@ -14,18 +15,18 @@ class FinancialNarrative(Base):
     organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
     
     summary = Column(Text, nullable=False)
-    strengths = Column(JSON, nullable=True)
-    weaknesses = Column(JSON, nullable=True)
-    red_flags = Column(JSON, nullable=True)
-    growth_signals = Column(JSON, nullable=True)
+    strengths = Column(JSONType, nullable=True)
+    weaknesses = Column(JSONType, nullable=True)
+    red_flags = Column(JSONType, nullable=True)
+    growth_signals = Column(JSONType, nullable=True)
     
     readiness_score = Column(Numeric(5, 2), nullable=True)
-    readiness_score_breakdown = Column(JSON, nullable=True)
+    readiness_score_breakdown = Column(JSONType, nullable=True)
     data_quality_score = Column(Numeric(5, 2), nullable=True)
     financial_health_score = Column(Numeric(5, 2), nullable=True)
     growth_trajectory_score = Column(Numeric(5, 2), nullable=True)
     risk_assessment_score = Column(Numeric(5, 2), nullable=True)
-    recommendations = Column(JSON, nullable=True)
+    recommendations = Column(JSONType, nullable=True)
     
     ai_model = Column(String(100), nullable=False, default='gpt-4')
     prompt_version = Column(String(50), nullable=True)
