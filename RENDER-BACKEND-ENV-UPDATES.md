@@ -27,6 +27,13 @@ OPENAI_API_KEY=sk-proj-[GET_FROM_YOUR_LOCAL_ENV_FILE]
 ANTHROPIC_API_KEY=sk-ant-[GET_FROM_YOUR_LOCAL_ENV_FILE]
 
 # ============================================================================
+# EMAIL SERVICE - SENDGRID
+# ============================================================================
+# NOTE: Get these values from your local .env file (lines 72-83)
+SENDGRID_API_KEY=[GET_FROM_YOUR_LOCAL_ENV_FILE_LINE_72]
+SENDGRID_FROM_EMAIL=noreply@100daysandbeyond.com
+
+# ============================================================================
 # CORS ORIGINS (Updated - Removed apexdeliver.com)
 # ============================================================================
 CORS_ORIGINS=https://100daysandbeyond.com,https://www.100daysandbeyond.com
@@ -97,6 +104,15 @@ ENABLE_DEAL_MATCHING=true
 2. Add `OPENAI_API_KEY` - Copy from your .env file (line 51, starts with `sk-proj-`)
 3. Add `ANTHROPIC_API_KEY` - Copy from your .env file (line 52, starts with `sk-ant-`)
 
+### Step 2b: Add SendGrid Email Service (Required for User Notifications)
+**Get the actual values from your local .env file (lines 72-73)**
+
+1. Add `SENDGRID_API_KEY` - Copy from your .env file (line 72, starts with `SG.`)
+2. Add `SENDGRID_FROM_EMAIL`:
+   ```
+   noreply@100daysandbeyond.com
+   ```
+
 ### Step 3: Fix CORS Origins
 1. Find `CORS_ORIGINS` in Render Backend environment
 2. Change to (remove apexdeliver.com):
@@ -159,6 +175,7 @@ Visit: `https://ma-saas-backend.onrender.com/api/docs`
 |----------|----------------|--------|
 | Clerk Auth | 3 | 🔄 Need Update |
 | AI Services | 2 | 🔄 Need to Add |
+| Email Service | 2 | 🔄 Need to Add |
 | CORS | 1 | 🔄 Need Update |
 | Stripe | 7 | ✅ Already Correct |
 | Database | 1 | ✅ Already Correct |
@@ -166,7 +183,7 @@ Visit: `https://ma-saas-backend.onrender.com/api/docs`
 | App Settings | 4 | ✅ Already Correct |
 | Feature Flags | 2 | ✅ Already Correct |
 
-**Total changes needed**: 7 updates/additions + 1 deletion
+**Total changes needed**: 9 updates/additions + 1 deletion
 
 ---
 

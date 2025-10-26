@@ -83,6 +83,10 @@ CLERK_WEBHOOK_SECRET=[GET_FROM_YOUR_LOCAL_ENV_FILE_LINE_37]
 OPENAI_API_KEY=[GET_FROM_YOUR_LOCAL_ENV_FILE_LINE_51]
 ANTHROPIC_API_KEY=[GET_FROM_YOUR_LOCAL_ENV_FILE_LINE_52]
 
+# Email Service - SendGrid (copy from your local .env lines 72-73)
+SENDGRID_API_KEY=[GET_FROM_YOUR_LOCAL_ENV_FILE_LINE_72]
+SENDGRID_FROM_EMAIL=noreply@100daysandbeyond.com
+
 # CORS Origins (fix - remove apexdeliver.com)
 CORS_ORIGINS=https://100daysandbeyond.com,https://www.100daysandbeyond.com
 
@@ -238,6 +242,8 @@ However, Clerk SDK handles this automatically - you don't need to manually verif
 - [ ] Add `CLERK_WEBHOOK_SECRET`
 - [ ] Add `OPENAI_API_KEY`
 - [ ] Add `ANTHROPIC_API_KEY`
+- [ ] Add `SENDGRID_API_KEY`
+- [ ] Add `SENDGRID_FROM_EMAIL`
 - [ ] Fix `CORS_ORIGINS` (remove apexdeliver.com)
 - [ ] Delete `ALLOWED_ORIGINS` (duplicate)
 - [ ] Save changes and wait for deployment (3-5 minutes)
