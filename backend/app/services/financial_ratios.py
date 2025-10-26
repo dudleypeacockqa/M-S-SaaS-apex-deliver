@@ -457,6 +457,13 @@ def calculate_all_ratios(financial_data: Dict[str, Any]) -> Dict[str, Optional[f
         financial_data.get('current_liabilities', 0)
     )
 
+    ratios['defensive_interval_ratio'] = calculate_defensive_interval_ratio(
+        financial_data.get('cash', 0),
+        financial_data.get('marketable_securities', 0),
+        financial_data.get('receivables', 0),
+        financial_data.get('daily_operating_expenses', 0)
+    )
+
     # Profitability Ratios
     ratios['gross_profit_margin'] = calculate_gross_profit_margin(
         financial_data.get('revenue', 0),
@@ -512,6 +519,163 @@ def calculate_all_ratios(financial_data: Dict[str, Any]) -> Dict[str, Optional[f
     ratios['interest_coverage'] = calculate_interest_coverage(
         financial_data.get('ebit', 0),
         financial_data.get('interest_expense', 0)
+    )
+
+    ratios['debt_service_coverage'] = calculate_debt_service_coverage(
+        financial_data.get('operating_income', 0),
+        financial_data.get('total_debt_service', 0)
+    )
+
+    ratios['financial_leverage'] = calculate_financial_leverage(
+        financial_data.get('total_assets', 0),
+        financial_data.get('shareholders_equity', 0)
+    )
+
+    # Efficiency Ratios
+    ratios['asset_turnover'] = calculate_asset_turnover(
+        financial_data.get('revenue', 0),
+        financial_data.get('average_total_assets', 0)
+    )
+
+    ratios['inventory_turnover'] = calculate_inventory_turnover(
+        financial_data.get('cogs', 0),
+        financial_data.get('average_inventory', 0)
+    )
+
+    ratios['receivables_turnover'] = calculate_receivables_turnover(
+        financial_data.get('revenue', 0),
+        financial_data.get('average_receivables', 0)
+    )
+
+    ratios['payables_turnover'] = calculate_payables_turnover(
+        financial_data.get('cogs', 0),
+        financial_data.get('average_payables', 0)
+    )
+
+    ratios['days_sales_outstanding'] = calculate_days_sales_outstanding(
+        ratios['receivables_turnover'] or 0
+    )
+
+    ratios['days_inventory_outstanding'] = calculate_days_inventory_outstanding(
+        ratios['inventory_turnover'] or 0
+    )
+
+    dpo = calculate_days_inventory_outstanding(ratios['payables_turnover'] or 0)
+    ratios['cash_conversion_cycle'] = calculate_cash_conversion_cycle(
+        ratios['days_sales_outstanding'],
+        ratios['days_inventory_outstanding'],
+        dpo
+    )
+
+    # Valuation Ratios
+    ratios['price_to_earnings'] = calculate_price_to_earnings(
+        financial_data.get('market_price_per_share', 0),
+        financial_data.get('eps', 0)
+    )
+
+    ratios['price_to_book'] = calculate_price_to_book(
+        financial_data.get('market_price_per_share', 0),
+        financial_data.get('book_value_per_share', 0)
+    )
+
+    ratios['ev_to_ebitda'] = calculate_ev_to_ebitda(
+        financial_data.get('enterprise_value', 0),
+        financial_data.get('ebitda', 0)
+    )
+
+    ratios['price_to_sales'] = calculate_price_to_sales(
+        financial_data.get('market_cap', 0),
+        financial_data.get('revenue', 0)
+    )
+
+    ratios['dividend_yield'] = calculate_dividend_yield(
+        financial_data.get('annual_dividends_per_share', 0),
+        financial_data.get('market_price_per_share', 0)
+    )
+
+    # Growth Ratios
+    ratios['revenue_growth_yoy'] = calculate_revenue_growth_yoy(
+        financial_data.get('revenue', 0),
+        financial_data.get('prior_revenue', 0)
+    )
+
+    ratios['ebitda_growth_yoy'] = calculate_ebitda_growth_yoy(
+        financial_data.get('ebitda', 0),
+        financial_data.get('prior_ebitda', 0)
+    )
+
+    ratios['net_income_growth_yoy'] = calculate_net_income_growth_yoy(
+        financial_data.get('net_income', 0),
+        financial_data.get('prior_net_income', 0)
+    )
+
+    ratios['operating_cf_growth_yoy'] = calculate_operating_cf_growth_yoy(
+        financial_data.get('operating_cash_flow', 0),
+        financial_data.get('prior_operating_cash_flow', 0)
+    )
+
+    ratios['asset_growth_yoy'] = calculate_asset_growth_yoy(
+        financial_data.get('total_assets', 0),
+        financial_data.get('prior_total_assets', 0)
+    )
+
+    ratios['equity_growth_yoy'] = calculate_equity_growth_yoy(
+        financial_data.get('total_equity', 0),
+        financial_data.get('prior_total_equity', 0)
+    )
+
+    ratios['eps_growth_yoy'] = calculate_eps_growth_yoy(
+        financial_data.get('eps', 0),
+        financial_data.get('prior_eps', 0)
+    )
+
+    ratios['three_year_revenue_cagr'] = calculate_cagr(
+        financial_data.get('revenue_current', 0),
+        financial_data.get('revenue_three_years_ago', 0),
+        financial_data.get('years_for_cagr', 0)
+    )
+
+    # Cash Flow Ratios
+    ratios['operating_cf_margin'] = calculate_operating_cf_margin(
+        financial_data.get('operating_cash_flow', 0),
+        financial_data.get('revenue', 0)
+    )
+
+    ratios['free_cash_flow'] = calculate_free_cash_flow(
+        financial_data.get('operating_cash_flow', 0),
+        financial_data.get('capex', 0)
+    )
+
+    ratios['free_cf_margin'] = calculate_free_cf_margin(
+        ratios['free_cash_flow'],
+        financial_data.get('revenue', 0)
+    )
+
+    ratios['cf_to_debt'] = calculate_cf_to_debt(
+        financial_data.get('operating_cash_flow', 0),
+        financial_data.get('total_debt', 0)
+    )
+
+    ratios['cash_return_on_assets'] = calculate_cash_return_on_assets(
+        financial_data.get('operating_cash_flow', 0),
+        financial_data.get('total_assets', 0)
+    )
+
+    ratios['cf_adequacy'] = calculate_cf_adequacy(
+        financial_data.get('operating_cash_flow', 0),
+        financial_data.get('capex', 0),
+        financial_data.get('dividends_paid', 0),
+        financial_data.get('debt_repayment', 0)
+    )
+
+    ratios['dividend_payout_ratio_cf'] = calculate_dividend_payout_ratio_cf(
+        financial_data.get('dividends_paid', 0),
+        financial_data.get('operating_cash_flow', 0)
+    )
+
+    ratios['cash_conversion_rate'] = calculate_cash_conversion_rate(
+        financial_data.get('operating_cash_flow', 0),
+        financial_data.get('net_income', 0)
     )
 
     return ratios
