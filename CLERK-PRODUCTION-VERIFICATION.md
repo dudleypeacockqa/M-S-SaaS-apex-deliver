@@ -87,6 +87,11 @@ ANTHROPIC_API_KEY=[GET_FROM_YOUR_LOCAL_ENV_FILE_LINE_52]
 SENDGRID_API_KEY=[GET_FROM_YOUR_LOCAL_ENV_FILE_LINE_72]
 SENDGRID_FROM_EMAIL=noreply@100daysandbeyond.com
 
+# Cloudflare API Keys (copy from your local .env lines 131-133)
+CLOUDFLARE_GLOBAL_API_KEY=[GET_FROM_YOUR_LOCAL_ENV_FILE_LINE_131]
+CLOUDFLARE_ORIGIN_CA_KEY=[GET_FROM_YOUR_LOCAL_ENV_FILE_LINE_132]
+CLOUDFLARE_ROLLOVER_KEY=[GET_FROM_YOUR_LOCAL_ENV_FILE_LINE_133]
+
 # CORS Origins (fix - remove apexdeliver.com)
 CORS_ORIGINS=https://100daysandbeyond.com,https://www.100daysandbeyond.com
 
@@ -244,6 +249,9 @@ However, Clerk SDK handles this automatically - you don't need to manually verif
 - [ ] Add `ANTHROPIC_API_KEY`
 - [ ] Add `SENDGRID_API_KEY`
 - [ ] Add `SENDGRID_FROM_EMAIL`
+- [ ] Add `CLOUDFLARE_GLOBAL_API_KEY`
+- [ ] Add `CLOUDFLARE_ORIGIN_CA_KEY`
+- [ ] Add `CLOUDFLARE_ROLLOVER_KEY`
 - [ ] Fix `CORS_ORIGINS` (remove apexdeliver.com)
 - [ ] Delete `ALLOWED_ORIGINS` (duplicate)
 - [ ] Save changes and wait for deployment (3-5 minutes)

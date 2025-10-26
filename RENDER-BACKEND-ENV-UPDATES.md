@@ -65,10 +65,15 @@ STRIPE_PROFESSIONAL_PRODUCT_ID=prod_RmqL4BCCYMQDlV
 STRIPE_ENTERPRISE_PRODUCT_ID=prod_RmqMlWtlBN0dFo
 STRIPE_COMMUNITY_PRODUCT_ID=prod_RmqNMlscACdDZl
 
-# R2 Storage
-R2_ACCESS_KEY_ID=fc23212e9240e3fdb61f90bde1c3844f
-R2_SECRET_ACCESS_KEY=c0ccf727fd530d84c56f82a9433fb619f56099897b9eb73760dae9ddcd05872c
-R2_ENDPOINT_URL=https://8424f73b33106452fa180d53b6cc128b.r2.cloudflarestorage.com
+# Cloudflare API Keys (from your .env file lines 131-133)
+CLOUDFLARE_GLOBAL_API_KEY=[GET_FROM_YOUR_ENV_FILE_LINE_131]
+CLOUDFLARE_ORIGIN_CA_KEY=[GET_FROM_YOUR_ENV_FILE_LINE_132]
+CLOUDFLARE_ROLLOVER_KEY=[GET_FROM_YOUR_ENV_FILE_LINE_133]
+
+# R2 Storage (from your .env file lines 141-145)
+R2_ACCESS_KEY_ID=[GET_FROM_YOUR_ENV_FILE_LINE_141]
+R2_SECRET_ACCESS_KEY=[GET_FROM_YOUR_ENV_FILE_LINE_142]
+R2_ENDPOINT_URL=[GET_FROM_YOUR_ENV_FILE_LINE_143]
 R2_BUCKET_NAME=ma-saas-documents
 R2_REGION=auto
 
@@ -112,6 +117,13 @@ ENABLE_DEAL_MATCHING=true
    ```
    noreply@100daysandbeyond.com
    ```
+
+### Step 2c: Add Cloudflare API Keys (Required for CDN & Security)
+**Get the actual values from your local .env file (lines 131-133)**
+
+1. Add `CLOUDFLARE_GLOBAL_API_KEY` - Copy from your .env file (line 131)
+2. Add `CLOUDFLARE_ORIGIN_CA_KEY` - Copy from your .env file (line 132)
+3. Add `CLOUDFLARE_ROLLOVER_KEY` - Copy from your .env file (line 133)
 
 ### Step 3: Fix CORS Origins
 1. Find `CORS_ORIGINS` in Render Backend environment
@@ -176,14 +188,16 @@ Visit: `https://ma-saas-backend.onrender.com/api/docs`
 | Clerk Auth | 3 | 🔄 Need Update |
 | AI Services | 2 | 🔄 Need to Add |
 | Email Service | 2 | 🔄 Need to Add |
+| Cloudflare API | 3 | 🔄 Need to Add |
 | CORS | 1 | 🔄 Need Update |
 | Stripe | 7 | ✅ Already Correct |
 | Database | 1 | ✅ Already Correct |
 | R2 Storage | 5 | ✅ Already Correct |
+| GoHighLevel | 2 | ✅ Already Correct |
 | App Settings | 4 | ✅ Already Correct |
 | Feature Flags | 2 | ✅ Already Correct |
 
-**Total changes needed**: 9 updates/additions + 1 deletion
+**Total changes needed**: 12 updates/additions + 1 deletion
 
 ---
 
