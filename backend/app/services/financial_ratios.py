@@ -515,3 +515,218 @@ def calculate_all_ratios(financial_data: Dict[str, Any]) -> Dict[str, Optional[f
     )
 
     return ratios
+
+
+# ============================================================================
+# EFFICIENCY RATIOS (7)
+# Measure how effectively company uses assets
+# ============================================================================
+
+def calculate_asset_turnover(revenue: float, average_total_assets: float) -> Optional[float]:
+    """Asset Turnover = Revenue / Average Total Assets. Good: > 1.0"""
+    if average_total_assets == 0:
+        return None
+    return round(revenue / average_total_assets, 4)
+
+
+def calculate_inventory_turnover(cogs: float, average_inventory: float) -> Optional[float]:
+    """Inventory Turnover = COGS / Average Inventory. Good: > 6.0"""
+    if average_inventory == 0:
+        return None
+    return round(cogs / average_inventory, 4)
+
+
+def calculate_receivables_turnover(revenue: float, average_receivables: float) -> Optional[float]:
+    """Receivables Turnover = Revenue / Average AR. Good: > 10.0"""
+    if average_receivables == 0:
+        return None
+    return round(revenue / average_receivables, 4)
+
+
+def calculate_payables_turnover(cogs: float, average_payables: float) -> Optional[float]:
+    """Payables Turnover = COGS / Average AP. Good: 6-8"""
+    if average_payables == 0:
+        return None
+    return round(cogs / average_payables, 4)
+
+
+def calculate_days_sales_outstanding(receivables_turnover: float) -> Optional[float]:
+    """DSO = 365 / Receivables Turnover. Good: < 45 days"""
+    if receivables_turnover == 0:
+        return None
+    return round(365 / receivables_turnover, 4)
+
+
+def calculate_days_inventory_outstanding(inventory_turnover: float) -> Optional[float]:
+    """DIO = 365 / Inventory Turnover. Good: < 60 days"""
+    if inventory_turnover == 0:
+        return None
+    return round(365 / inventory_turnover, 4)
+
+
+def calculate_cash_conversion_cycle(dso: float, dio: float, dpo: float) -> Optional[float]:
+    """CCC = DSO + DIO - DPO. Good: < 40 days"""
+    if dso is None or dio is None or dpo is None:
+        return None
+    return round(dso + dio - dpo, 4)
+
+
+# ============================================================================
+# VALUATION RATIOS (5)
+# Measure market value metrics
+# ============================================================================
+
+def calculate_price_to_earnings(market_price: float, eps: float) -> Optional[float]:
+    """P/E = Market Price / EPS. Good: 15-25"""
+    if eps == 0:
+        return None
+    return round(market_price / eps, 4)
+
+
+def calculate_price_to_book(market_price: float, book_value_per_share: float) -> Optional[float]:
+    """P/B = Market Price / Book Value per Share. Good: 1-3"""
+    if book_value_per_share == 0:
+        return None
+    return round(market_price / book_value_per_share, 4)
+
+
+def calculate_ev_to_ebitda(enterprise_value: float, ebitda: float) -> Optional[float]:
+    """EV/EBITDA. Good: 8-12"""
+    if ebitda == 0:
+        return None
+    return round(enterprise_value / ebitda, 4)
+
+
+def calculate_price_to_sales(market_cap: float, revenue: float) -> Optional[float]:
+    """P/S = Market Cap / Revenue. Good: < 2.0"""
+    if revenue == 0:
+        return None
+    return round(market_cap / revenue, 4)
+
+
+def calculate_dividend_yield(annual_dividends: float, price: float) -> Optional[float]:
+    """Dividend Yield = Annual Dividends / Price * 100. Good: 2-4%"""
+    if price == 0:
+        return None
+    return round((annual_dividends / price) * 100, 4)
+
+
+# ============================================================================
+# GROWTH RATIOS (8)
+# Measure year-over-year growth trends
+# ============================================================================
+
+def calculate_revenue_growth_yoy(current_revenue: float, prior_revenue: float) -> Optional[float]:
+    """Revenue Growth = (Current - Prior) / Prior * 100"""
+    if prior_revenue == 0:
+        return None
+    return round(((current_revenue - prior_revenue) / prior_revenue) * 100, 4)
+
+
+def calculate_ebitda_growth_yoy(current_ebitda: float, prior_ebitda: float) -> Optional[float]:
+    """EBITDA Growth YoY"""
+    if prior_ebitda == 0:
+        return None
+    return round(((current_ebitda - prior_ebitda) / prior_ebitda) * 100, 4)
+
+
+def calculate_net_income_growth_yoy(current_ni: float, prior_ni: float) -> Optional[float]:
+    """Net Income Growth YoY"""
+    if prior_ni == 0:
+        return None
+    return round(((current_ni - prior_ni) / prior_ni) * 100, 4)
+
+
+def calculate_operating_cf_growth_yoy(current_ocf: float, prior_ocf: float) -> Optional[float]:
+    """Operating Cash Flow Growth YoY"""
+    if prior_ocf == 0:
+        return None
+    return round(((current_ocf - prior_ocf) / prior_ocf) * 100, 4)
+
+
+def calculate_asset_growth_yoy(current_assets: float, prior_assets: float) -> Optional[float]:
+    """Asset Growth YoY"""
+    if prior_assets == 0:
+        return None
+    return round(((current_assets - prior_assets) / prior_assets) * 100, 4)
+
+
+def calculate_equity_growth_yoy(current_equity: float, prior_equity: float) -> Optional[float]:
+    """Equity Growth YoY"""
+    if prior_equity == 0:
+        return None
+    return round(((current_equity - prior_equity) / prior_equity) * 100, 4)
+
+
+def calculate_eps_growth_yoy(current_eps: float, prior_eps: float) -> Optional[float]:
+    """EPS Growth YoY"""
+    if prior_eps == 0:
+        return None
+    return round(((current_eps - prior_eps) / prior_eps) * 100, 4)
+
+
+def calculate_cagr(ending_value: float, beginning_value: float, years: int) -> Optional[float]:
+    """CAGR = ((Ending/Beginning)^(1/years) - 1) * 100"""
+    if beginning_value == 0 or years == 0:
+        return None
+    return round((((ending_value / beginning_value) ** (1 / years)) - 1) * 100, 4)
+
+
+# ============================================================================
+# CASH FLOW RATIOS (8)
+# Measure cash generation and utilization
+# ============================================================================
+
+def calculate_operating_cf_margin(operating_cf: float, revenue: float) -> Optional[float]:
+    """Operating CF Margin = Operating CF / Revenue * 100"""
+    if revenue == 0:
+        return None
+    return round((operating_cf / revenue) * 100, 4)
+
+
+def calculate_free_cash_flow(operating_cf: float, capex: float) -> Optional[float]:
+    """Free Cash Flow = Operating CF - CapEx"""
+    return round(operating_cf - capex, 4)
+
+
+def calculate_free_cf_margin(free_cf: float, revenue: float) -> Optional[float]:
+    """Free CF Margin = Free CF / Revenue * 100"""
+    if revenue == 0:
+        return None
+    return round((free_cf / revenue) * 100, 4)
+
+
+def calculate_cf_to_debt(operating_cf: float, total_debt: float) -> Optional[float]:
+    """CF to Debt = Operating CF / Total Debt"""
+    if total_debt == 0:
+        return None
+    return round(operating_cf / total_debt, 4)
+
+
+def calculate_cash_return_on_assets(operating_cf: float, total_assets: float) -> Optional[float]:
+    """Cash ROA = Operating CF / Total Assets * 100"""
+    if total_assets == 0:
+        return None
+    return round((operating_cf / total_assets) * 100, 4)
+
+
+def calculate_cf_adequacy(operating_cf: float, capex: float, dividends: float, debt_repayment: float) -> Optional[float]:
+    """CF Adequacy = Operating CF / (CapEx + Dividends + Debt Repayment)"""
+    total_requirements = capex + dividends + debt_repayment
+    if total_requirements == 0:
+        return None
+    return round(operating_cf / total_requirements, 4)
+
+
+def calculate_dividend_payout_ratio_cf(dividends: float, operating_cf: float) -> Optional[float]:
+    """Dividend Payout (CF) = Dividends / Operating CF * 100"""
+    if operating_cf == 0:
+        return None
+    return round((dividends / operating_cf) * 100, 4)
+
+
+def calculate_cash_conversion_rate(operating_cf: float, net_income: float) -> Optional[float]:
+    """Cash Conversion = Operating CF / Net Income"""
+    if net_income == 0:
+        return None
+    return round(operating_cf / net_income, 4)
