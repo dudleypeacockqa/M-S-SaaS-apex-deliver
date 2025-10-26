@@ -254,8 +254,8 @@ def calculate_readiness_score(ratios: FinancialRatio, statement: FinancialStatem
     # Component 1: Data Quality Score (0-25 points)
     data_quality = 0.0
     if statement.data_completeness_score:
-        # Use the pre-calculated completeness score
-        data_quality = float(statement.data_completeness_score) * 0.25
+        # Use the pre-calculated completeness score (0.0 to 1.0 scale → 0 to 25 points)
+        data_quality = float(statement.data_completeness_score) * 25
     else:
         # Calculate based on available fields
         total_fields = 10
