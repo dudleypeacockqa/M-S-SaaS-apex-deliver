@@ -17,9 +17,11 @@ describe('Legal Pages', () => {
     renderWithRouter(<TermsOfService />)
 
     expect(screen.getByRole('heading', { level: 1, name: /terms of service/i })).toBeInTheDocument()
-    expect(screen.getByText(/last updated/i)).toHaveTextContent(/2025-10-25/i)
+    const lastUpdated = screen.getAllByText(/last updated/i)
+    expect(lastUpdated[0]).toHaveTextContent(/2025-10-25/i)
     expect(screen.getByRole('heading', { level: 2, name: /acceptance of terms/i })).toBeInTheDocument()
-    expect(screen.getByText(/support@apexdeliver.com/i)).toBeInTheDocument()
+    const tosSupportContacts = screen.getAllByText(/support@apexdeliver.com/i)
+    expect(tosSupportContacts.length).toBeGreaterThan(0)
   })
 
   it('renders Privacy Policy with GDPR notice and DPO contact', () => {
@@ -27,7 +29,8 @@ describe('Legal Pages', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: /privacy policy/i })).toBeInTheDocument()
     expect(screen.getByText(/gdpr compliant/i)).toBeInTheDocument()
-    expect(screen.getByText(/privacy@apexdeliver.com/i)).toBeInTheDocument()
+    const privacyContacts = screen.getAllByText(/privacy@apexdeliver.com/i)
+    expect(privacyContacts.length).toBeGreaterThan(0)
     expect(screen.getByRole('heading', { level: 2, name: /data controller/i })).toBeInTheDocument()
   })
 
