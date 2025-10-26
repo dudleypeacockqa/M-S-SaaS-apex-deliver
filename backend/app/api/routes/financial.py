@@ -18,7 +18,15 @@ from app.schemas.financial import (
     FinancialNarrativeResponse,
 )
 from app.services.financial_ratios import calculate_all_ratios
+from app.services.xero_oauth_service import (
+    initiate_xero_oauth,
+    handle_xero_callback,
+    fetch_xero_statements,
+)
 from app.api.dependencies.auth import get_current_user
+from app.models.financial_connection import FinancialConnection
+from app.models.financial_narrative import FinancialNarrative
+from sqlalchemy import select, desc
 
 router = APIRouter()
 
@@ -282,3 +290,287 @@ def get_financial_narrative(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="No financial narrative has been generated for this deal yet"
     )
+
+
+# ============================================================================
+# NEW ENDPOINTS - DEV-010 Phase 1.2
+# OAuth, Sync, and Readiness Score
+# ============================================================================
+
+@router.post(
+    "/deals/{deal_id}/financial/connect/xero",
+    summary="Initiate Xero OAuth 2.0 flow",
+    description="""
+    Start the OAuth 2.0 authorization flow to connect a Xero accounting platform.
+
+    Returns an authorization URL that the frontend should redirect the user to.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def connect_xero(
+    deal_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Initiate Xero OAuth flow.
+
+    Args:
+        deal_id: ID of the deal to connect
+        db: Database session
+        current_user: Authenticated user
+
+    Returns:
+        Dict with authorization_url and state token
+
+    Raises:
+        HTTPException 404: Deal not found
+        HTTPException 403: User doesn't have access
+    """
+    # Verify deal exists and user has access
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    # Initiate OAuth flow
+    oauth_data = initiate_xero_oauth(deal_id, db)
+
+    return oauth_data
+
+
+@router.get(
+    "/deals/{deal_id}/financial/connect/xero/callback",
+    response_model=FinancialConnectionResponse,
+    summary="Handle Xero OAuth callback",
+    description="""
+    Handle the OAuth 2.0 callback from Xero after user authorization.
+
+    This endpoint is called automatically by Xero after the user authorizes access.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def xero_oauth_callback(
+    deal_id: str,
+    code: str,
+    state: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Handle Xero OAuth callback.
+
+    Args:
+        deal_id: ID of the deal
+        code: Authorization code from Xero
+        state: State token for CSRF validation
+        db: Database session
+        current_user: Authenticated user
+
+    Returns:
+        FinancialConnectionResponse with created connection
+
+    Raises:
+        HTTPException 400: Missing code or state parameter
+        HTTPException 404: Deal not found
+        HTTPException 403: User doesn't have access
+    """
+    # Validate query parameters
+    if not code or not state:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing required query parameters: code and state"
+        )
+
+    # Verify deal exists and user has access
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    # Handle OAuth callback and create connection
+    connection = handle_xero_callback(deal_id, code, state, db)
+
+    # Build response
+    return FinancialConnectionResponse(
+        id=connection.id,
+        deal_id=connection.deal_id,
+        organization_id=connection.organization_id,
+        platform=connection.platform,
+        connection_status=connection.connection_status,
+        platform_organization_name=connection.platform_organization_name,
+        last_sync_at=connection.last_sync_at,
+        created_at=connection.created_at,
+    )
+
+
+@router.post(
+    "/deals/{deal_id}/financial/sync",
+    summary="Manually sync financial data from accounting platform",
+    description="""
+    Trigger a manual sync of financial data from the connected accounting platform (Xero).
+
+    This fetches the latest financial statements and updates the database.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def sync_financial_data(
+    deal_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Manually sync financial data.
+
+    Args:
+        deal_id: ID of the deal
+        db: Database session
+        current_user: Authenticated user
+
+    Returns:
+        Dict with sync status and number of statements synced
+
+    Raises:
+        HTTPException 404: Deal not found or no connection exists
+        HTTPException 403: User doesn't have access
+    """
+    # Verify deal exists and user has access
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    # Check for existing connection
+    result = db.execute(
+        select(FinancialConnection).where(
+            FinancialConnection.deal_id == deal_id,
+            FinancialConnection.platform == "xero"
+        )
+    )
+    connection = result.scalar_one_or_none()
+
+    if not connection:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No Xero connection found for this deal. Please connect Xero first."
+        )
+
+    # Fetch statements from Xero
+    statements = fetch_xero_statements(connection.id, db)
+
+    return {
+        "success": True,
+        "statements_synced": len(statements),
+        "platform": connection.platform,
+        "last_sync_at": connection.last_sync_at.isoformat() if connection.last_sync_at else None
+    }
+
+
+@router.get(
+    "/deals/{deal_id}/financial/readiness-score",
+    summary="Get Deal Readiness Score",
+    description="""
+    Retrieve the Deal Readiness Score (0-100) for a deal.
+
+    The score is calculated based on:
+    - Data Quality (25 points): Completeness of financial data
+    - Financial Health (40 points): Liquidity, profitability, leverage
+    - Growth Trajectory (20 points): Revenue and profit growth
+    - Risk Assessment (15 points): Red flags and warning signs
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def get_readiness_score(
+    deal_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Get Deal Readiness Score.
+
+    Args:
+        deal_id: ID of the deal
+        db: Database session
+        current_user: Authenticated user
+
+    Returns:
+        Dict with overall score and component scores
+
+    Raises:
+        HTTPException 404: Deal not found or no narrative generated
+        HTTPException 403: User doesn't have access
+    """
+    # Verify deal exists and user has access
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    # Get latest narrative with readiness score
+    result = db.execute(
+        select(FinancialNarrative)
+        .where(FinancialNarrative.deal_id == deal_id)
+        .order_by(desc(FinancialNarrative.created_at))
+    )
+    narrative = result.scalar_one_or_none()
+
+    if not narrative:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No financial narrative has been generated for this deal yet. Generate one first."
+        )
+
+    return {
+        "score": float(narrative.readiness_score),
+        "data_quality_score": float(narrative.data_quality_score) if narrative.data_quality_score else 0.0,
+        "financial_health_score": float(narrative.financial_health_score) if narrative.financial_health_score else 0.0,
+        "growth_trajectory_score": float(narrative.growth_trajectory_score) if narrative.growth_trajectory_score else 0.0,
+        "risk_assessment_score": float(narrative.risk_assessment_score) if narrative.risk_assessment_score else 0.0,
+        "calculated_at": narrative.created_at.isoformat() if narrative.created_at else None,
+        "ai_model": narrative.ai_model,
+        "version": narrative.version
+    }

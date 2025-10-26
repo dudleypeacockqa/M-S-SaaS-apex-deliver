@@ -153,3 +153,193 @@ async def test_get_financial_narrative_not_found(test_deal, auth_headers):
 
         assert response.status_code == 404
         assert "generated" in response.json()["detail"].lower()
+
+
+# ============================================================================
+# NEW ENDPOINTS - DEV-010 Phase 1.2
+# ============================================================================
+
+# Test POST /deals/{deal_id}/financial/connect/xero
+@pytest.mark.asyncio
+async def test_connect_xero_initiates_oauth_flow(test_deal, auth_headers):
+    """Test that connecting Xero initiates OAuth flow and returns authorization URL."""
+    from unittest.mock import patch
+
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        with patch('app.api.routes.financial.initiate_xero_oauth') as mock_initiate:
+            mock_initiate.return_value = {
+                "authorization_url": "https://login.xero.com/identity/connect/authorize?...",
+                "state": "random_state_token"
+            }
+
+            response = await client.post(
+                f"/deals/{test_deal.id}/financial/connect/xero",
+                headers=auth_headers
+            )
+
+            assert response.status_code == 200
+            data = response.json()
+            assert "authorization_url" in data
+            assert "state" in data
+            assert data["authorization_url"].startswith("https://login.xero.com")
+
+
+@pytest.mark.asyncio
+async def test_connect_xero_with_invalid_deal(auth_headers):
+    """Test connecting Xero with non-existent deal returns 404."""
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        response = await client.post(
+            "/deals/nonexistent-deal-id/financial/connect/xero",
+            headers=auth_headers
+        )
+
+        assert response.status_code == 404
+        assert "not found" in response.json()["detail"].lower()
+
+
+# Test GET /deals/{deal_id}/financial/connect/xero/callback
+@pytest.mark.asyncio
+async def test_xero_oauth_callback_success(test_deal, auth_headers):
+    """Test successful Xero OAuth callback creates connection."""
+    from unittest.mock import patch, Mock
+
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        with patch('app.api.routes.financial.handle_xero_callback') as mock_callback:
+            # Mock connection object with required attributes
+            from datetime import datetime
+            mock_connection = Mock()
+            mock_connection.id = "conn-api-1"
+            mock_connection.deal_id = test_deal.id
+            mock_connection.organization_id = test_deal.organization_id
+            mock_connection.platform = "xero"
+            mock_connection.connection_status = "active"
+            mock_connection.platform_organization_name = "Test Company"
+            mock_connection.last_sync_at = None
+            mock_connection.created_at = datetime.now()
+
+            mock_callback.return_value = mock_connection
+
+            response = await client.get(
+                f"/deals/{test_deal.id}/financial/connect/xero/callback?code=auth_code_123&state=state_token",
+                headers=auth_headers
+            )
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["platform"] == "xero"
+            assert data["connection_status"] == "active"
+
+
+@pytest.mark.asyncio
+async def test_xero_oauth_callback_missing_code(test_deal, auth_headers):
+    """Test Xero callback without code parameter returns 422 (validation error)."""
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        response = await client.get(
+            f"/deals/{test_deal.id}/financial/connect/xero/callback",
+            headers=auth_headers
+        )
+
+        # FastAPI returns 422 for missing required query parameters (validation error)
+        assert response.status_code == 422
+
+
+# Test POST /deals/{deal_id}/financial/sync
+@pytest.mark.asyncio
+async def test_sync_financial_data_success(test_deal, db_session, auth_headers):
+    """Test manual financial data sync from Xero."""
+    from unittest.mock import patch, Mock
+    from app.models.financial_connection import FinancialConnection
+    from datetime import datetime, timedelta
+
+    # Create connection
+    connection = FinancialConnection(
+        id="conn-api-2",
+        deal_id=test_deal.id,
+        organization_id=test_deal.organization_id,
+        platform="xero",
+        access_token="token",
+        connection_status="active",
+        token_expires_at=datetime.now() + timedelta(hours=1)
+    )
+    db_session.add(connection)
+    db_session.commit()
+
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        with patch('app.api.routes.financial.fetch_xero_statements') as mock_fetch:
+            mock_statement = Mock()
+            mock_statement.id = "stmt-api-1"
+            mock_fetch.return_value = [mock_statement]
+
+            response = await client.post(
+                f"/deals/{test_deal.id}/financial/sync",
+                headers=auth_headers
+            )
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["success"] is True
+            assert data["statements_synced"] == 1
+
+
+@pytest.mark.asyncio
+async def test_sync_financial_data_no_connection(test_deal, auth_headers):
+    """Test syncing without connection returns 404."""
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        response = await client.post(
+            f"/deals/{test_deal.id}/financial/sync",
+            headers=auth_headers
+        )
+
+        assert response.status_code == 404
+        assert "connection" in response.json()["detail"].lower()
+
+
+# Test GET /deals/{deal_id}/financial/readiness-score
+@pytest.mark.asyncio
+async def test_get_readiness_score_success(test_deal, db_session, auth_headers):
+    """Test retrieving Deal Readiness Score."""
+    from app.models.financial_narrative import FinancialNarrative
+    from decimal import Decimal
+
+    narrative = FinancialNarrative(
+        id="narr-api-1",
+        deal_id=test_deal.id,
+        organization_id=test_deal.organization_id,
+        summary="Strong financial health",
+        readiness_score=Decimal("82.5"),
+        data_quality_score=Decimal("22.0"),
+        financial_health_score=Decimal("35.0"),
+        growth_trajectory_score=Decimal("18.5"),
+        risk_assessment_score=Decimal("7.0"),
+        ai_model="gpt-4",
+        version=1
+    )
+    db_session.add(narrative)
+    db_session.commit()
+
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        response = await client.get(
+            f"/deals/{test_deal.id}/financial/readiness-score",
+            headers=auth_headers
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["score"] == 82.5
+        assert data["data_quality_score"] == 22.0
+        assert data["financial_health_score"] == 35.0
+        assert data["growth_trajectory_score"] == 18.5
+        assert data["risk_assessment_score"] == 7.0
+
+
+@pytest.mark.asyncio
+async def test_get_readiness_score_no_narrative(test_deal, auth_headers):
+    """Test getting readiness score when no narrative exists returns 404."""
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        response = await client.get(
+            f"/deals/{test_deal.id}/financial/readiness-score",
+            headers=auth_headers
+        )
+
+        assert response.status_code == 404
+        assert "narrative" in response.json()["detail"].lower()

@@ -46,8 +46,8 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({ dealId }) => {
 
         // Fetch ratios and narrative in parallel
         const [ratiosData, narrativeData] = await Promise.allSettled([
-          getFinancialRatios(dealId, token),
-          getFinancialNarrative(dealId, token),
+          getFinancialRatios(dealId),
+          getFinancialNarrative(dealId),
         ]);
 
         if (ratiosData.status === 'fulfilled') {
