@@ -73,3 +73,4 @@ env.READY_TO_USE
 # Ignore Render API responses
 render_*.json
 
+docs/DEPLOYMENT-COMPLETE-RECORD.md
