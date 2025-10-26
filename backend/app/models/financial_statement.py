@@ -5,7 +5,7 @@ Stores imported financial data from accounting platforms
 
 from datetime import datetime, date
 from sqlalchemy import Column, String, DateTime, Date, ForeignKey, Text, Numeric, Integer
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 import uuid
 
@@ -25,10 +25,10 @@ class FinancialStatement(Base):
     """
     __tablename__ = "financial_statements"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    connection_id = Column(UUID(as_uuid=True), ForeignKey("financial_connections.id", ondelete="CASCADE"), nullable=False, index=True)
-    deal_id = Column(UUID(as_uuid=True), ForeignKey("deals.id", ondelete="CASCADE"), nullable=False, index=True)
-    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    connection_id = Column(String(36), ForeignKey("financial_connections.id", ondelete="CASCADE"), nullable=False, index=True)
+    deal_id = Column(String(36), ForeignKey("deals.id", ondelete="CASCADE"), nullable=False, index=True)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
 
     # Statement metadata
     statement_type = Column(String(50), nullable=False)  # 'balance_sheet', 'income_statement', 'cash_flow'

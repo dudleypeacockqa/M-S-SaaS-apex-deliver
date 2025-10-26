@@ -1,7 +1,6 @@
 """Financial Ratio Model - DEV-010."""
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime, ForeignKey, Text, Numeric
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import uuid
 from app.db.base import Base
@@ -10,10 +9,10 @@ class FinancialRatio(Base):
     """Stores 47 calculated financial ratios."""
     __tablename__ = "financial_ratios"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    statement_id = Column(UUID(as_uuid=True), ForeignKey("financial_statements.id", ondelete="CASCADE"), nullable=False, index=True)
-    deal_id = Column(UUID(as_uuid=True), ForeignKey("deals.id", ondelete="CASCADE"), nullable=False, index=True)
-    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    statement_id = Column(String(36), ForeignKey("financial_statements.id", ondelete="CASCADE"), nullable=False, index=True)
+    deal_id = Column(String(36), ForeignKey("deals.id", ondelete="CASCADE"), nullable=False, index=True)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
     
     # Liquidity (5)
     current_ratio = Column(Numeric(10, 4), nullable=True)

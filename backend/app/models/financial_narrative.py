@@ -1,7 +1,7 @@
 """Financial Narrative Model - DEV-010."""
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime, ForeignKey, Text, Numeric, Integer
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 import uuid
 from app.db.base import Base
@@ -10,9 +10,9 @@ class FinancialNarrative(Base):
     """Stores AI-generated financial narratives."""
     __tablename__ = "financial_narratives"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    deal_id = Column(UUID(as_uuid=True), ForeignKey("deals.id", ondelete="CASCADE"), nullable=False, index=True)
-    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    deal_id = Column(String(36), ForeignKey("deals.id", ondelete="CASCADE"), nullable=False, index=True)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
     
     summary = Column(Text, nullable=False)
     strengths = Column(JSONB, nullable=True)
@@ -33,10 +33,10 @@ class FinancialNarrative(Base):
     token_count = Column(Integer, nullable=True)
     generation_time_ms = Column(Integer, nullable=True)
     version = Column(Integer, nullable=False, default=1)
-    supersedes_id = Column(UUID(as_uuid=True), ForeignKey("financial_narratives.id"), nullable=True)
+    supersedes_id = Column(String(36), ForeignKey("financial_narratives.id"), nullable=True)
     
     generated_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
-    created_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    created_by = Column(String(36), ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
     
     deal = relationship("Deal", back_populates="financial_narratives")
