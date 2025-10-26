@@ -124,6 +124,7 @@ class FinancialStatement(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships
+    deal = relationship("Deal", back_populates="financial_statements")
     connection = relationship("FinancialConnection", back_populates="statements")
     ratios = relationship("FinancialRatio", back_populates="statement", cascade="all, delete-orphan")
 

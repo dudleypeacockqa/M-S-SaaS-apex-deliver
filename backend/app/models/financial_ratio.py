@@ -81,5 +81,7 @@ class FinancialRatio(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
     deleted_at = Column(DateTime(timezone=True), nullable=True)
-    
+
+    # Relationships
+    deal = relationship("Deal", back_populates="financial_ratios")
     statement = relationship("FinancialStatement", back_populates="ratios")
