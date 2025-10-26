@@ -4,11 +4,12 @@ Stores imported financial data from accounting platforms
 """
 
 from datetime import datetime, date
-from sqlalchemy import Column, String, DateTime, Date, ForeignKey, Text, Numeric, Integer, JSON
+from sqlalchemy import Column, String, DateTime, Date, ForeignKey, Text, Numeric, Integer
 from sqlalchemy.orm import relationship
 import uuid
 
 from app.db.base import Base
+from app.db.types import JSONType
 
 
 class FinancialStatement(Base):
@@ -112,10 +113,10 @@ class FinancialStatement(Base):
 
     # Data quality metrics
     data_completeness_score = Column(Numeric(precision=5, scale=2), nullable=True)  # 0-100
-    missing_fields = Column(JSON, nullable=True)  # Array of missing field names
+    missing_fields = Column(JSONType, nullable=True)  # Array of missing field names
 
     # Raw data from platform (for debugging)
-    raw_data = Column(JSON, nullable=True)
+    raw_data = Column(JSONType, nullable=True)
 
     # Audit fields
     imported_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)

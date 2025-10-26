@@ -25,7 +25,7 @@ from app.models.user import User
 async def test_create_financial_connection(db_session: AsyncSession):
     """Test creating a basic financial connection."""
     # Arrange
-    org = Organization(id="org-1", name="Test Org", email="test@test.com")
+    org = Organization(id="org-1", name="Test Org", slug="org-1-slug")
     deal = Deal(id="deal-1", organization_id=org.id, name="Test Deal",
                 target_company="Target", owner_id="user-1")
     db_session.add(org)
@@ -53,7 +53,7 @@ async def test_create_financial_connection(db_session: AsyncSession):
 @pytest.mark.asyncio
 async def test_financial_connection_cascade_delete(db_session: AsyncSession):
     """Test that deleting a deal cascades to delete financial connections."""
-    org = Organization(id="org-2", name="Test Org 2", email="test2@test.com")
+    org = Organization(id="org-2", name="Test Org 2", slug="org-2-slug")
     deal = Deal(id="deal-2", organization_id=org.id, name="Test Deal 2",
                 target_company="Target 2", owner_id="user-2")
     db_session.add(org)
@@ -89,7 +89,7 @@ async def test_financial_connection_cascade_delete(db_session: AsyncSession):
 @pytest.mark.asyncio
 async def test_create_financial_statement_balance_sheet(db_session: AsyncSession):
     """Test creating a balance sheet statement."""
-    org = Organization(id="org-3", name="Org 3", email="test3@test.com")
+    org = Organization(id="org-3", name="Org 3", slug="org-3-slug")
     deal = Deal(id="deal-3", organization_id=org.id, name="Deal 3",
                 target_company="Target 3", owner_id="user-3")
     connection = FinancialConnection(
@@ -129,7 +129,7 @@ async def test_create_financial_statement_balance_sheet(db_session: AsyncSession
 @pytest.mark.asyncio
 async def test_financial_statement_with_json_fields(db_session: AsyncSession):
     """Test statement with JSON fields (raw_data, missing_fields)."""
-    org = Organization(id="org-4", name="Org 4", email="test4@test.com")
+    org = Organization(id="org-4", name="Org 4", slug="org-4-slug")
     deal = Deal(id="deal-4", organization_id=org.id, name="Deal 4",
                 target_company="Target 4", owner_id="user-4")
     connection = FinancialConnection(
@@ -170,7 +170,7 @@ async def test_financial_statement_with_json_fields(db_session: AsyncSession):
 @pytest.mark.asyncio
 async def test_create_financial_ratios(db_session: AsyncSession):
     """Test creating financial ratios with all 47 fields."""
-    org = Organization(id="org-5", name="Org 5", email="test5@test.com")
+    org = Organization(id="org-5", name="Org 5", slug="org-5-slug")
     deal = Deal(id="deal-5", organization_id=org.id, name="Deal 5",
                 target_company="Target 5", owner_id="user-5")
     connection = FinancialConnection(
@@ -223,7 +223,7 @@ async def test_create_financial_ratios(db_session: AsyncSession):
 @pytest.mark.asyncio
 async def test_financial_ratio_nullable_fields(db_session: AsyncSession):
     """Test that ratio fields can be null (data not available)."""
-    org = Organization(id="org-6", name="Org 6", email="test6@test.com")
+    org = Organization(id="org-6", name="Org 6", slug="org-6-slug")
     deal = Deal(id="deal-6", organization_id=org.id, name="Deal 6",
                 target_company="Target 6", owner_id="user-6")
     connection = FinancialConnection(
@@ -265,7 +265,7 @@ async def test_financial_ratio_nullable_fields(db_session: AsyncSession):
 @pytest.mark.asyncio
 async def test_create_financial_narrative(db_session: AsyncSession):
     """Test creating an AI-generated financial narrative."""
-    org = Organization(id="org-7", name="Org 7", email="test7@test.com")
+    org = Organization(id="org-7", name="Org 7", slug="org-7-slug")
     deal = Deal(id="deal-7", organization_id=org.id, name="Deal 7",
                 target_company="Target 7", owner_id="user-7")
     db_session.add(org)
@@ -301,7 +301,7 @@ async def test_create_financial_narrative(db_session: AsyncSession):
 @pytest.mark.asyncio
 async def test_financial_narrative_version_control(db_session: AsyncSession):
     """Test narrative version control with supersedes_id."""
-    org = Organization(id="org-8", name="Org 8", email="test8@test.com")
+    org = Organization(id="org-8", name="Org 8", slug="org-8-slug")
     deal = Deal(id="deal-8", organization_id=org.id, name="Deal 8",
                 target_company="Target 8", owner_id="user-8")
     db_session.add(org)
@@ -346,7 +346,7 @@ async def test_financial_narrative_version_control(db_session: AsyncSession):
 @pytest.mark.asyncio
 async def test_complete_financial_data_chain(db_session: AsyncSession):
     """Test complete chain: Deal → Connection → Statement → Ratios → Narrative."""
-    org = Organization(id="org-9", name="Org 9", email="test9@test.com")
+    org = Organization(id="org-9", name="Org 9", slug="org-9-slug")
     deal = Deal(id="deal-9", organization_id=org.id, name="Deal 9",
                 target_company="Target 9", owner_id="user-9")
 
@@ -389,7 +389,7 @@ async def test_complete_financial_data_chain(db_session: AsyncSession):
 @pytest.mark.asyncio
 async def test_cascade_delete_all_financial_data(db_session: AsyncSession):
     """Test that deleting a deal cascades to all financial data."""
-    org = Organization(id="org-10", name="Org 10", email="test10@test.com")
+    org = Organization(id="org-10", name="Org 10", slug="org-10-slug")
     deal = Deal(id="deal-10", organization_id=org.id, name="Deal 10",
                 target_company="Target 10", owner_id="user-10")
 
