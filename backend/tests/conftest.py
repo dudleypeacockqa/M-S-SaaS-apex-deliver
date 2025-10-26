@@ -66,12 +66,22 @@ def engine():
     """Create a shared SQLite engine for tests."""
 
     connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
+
+    if settings.database_url.startswith("sqlite"):
+        db_path = settings.database_url.replace("sqlite:///", "")
+        db_path = Path(db_path)
+        if not db_path.is_absolute():
+            db_path = Path.cwd() / db_path
+        if db_path.exists():
+            db_path.unlink()
+
     engine = create_engine(settings.database_url, future=True, connect_args=connect_args)
-    Base.metadata.create_all(engine)
+    Base.metadata.drop_all(engine, checkfirst=True)
+    Base.metadata.create_all(engine, checkfirst=True)
     session_module.engine = engine
     session_module.SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
     yield engine
-    Base.metadata.drop_all(engine)
+    Base.metadata.drop_all(engine, checkfirst=True)
     engine.dispose()
 
 
@@ -80,8 +90,8 @@ def _reset_database(engine):
     """Ensure each test runs with a clean database state."""
 
     yield
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
+    Base.metadata.drop_all(engine, checkfirst=True)
+    Base.metadata.create_all(engine, checkfirst=True)
 
 
 @pytest.fixture()
