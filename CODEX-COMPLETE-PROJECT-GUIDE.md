@@ -1983,24 +1983,56 @@ async def generate_deal_matches(
 
     await db.commit()
     return matches
+
+
+async def create_sell_side_mandate(db: AsyncSession, mandate_data, organization_id: str):
+    """Create sell-side mandate."""
+    mandate = SellSideMandate(
+        id=str(uuid.uuid4()),
+        organization_id=organization_id,
+        **mandate_data.dict()
+    )
+    db.add(mandate)
+    await db.commit()
+    return mandate
 ```
 
-**TDD Tests** (~35-45 tests):
-- Mandate CRUD
-- Buy-side profile CRUD
-- AI matching algorithm
-- Confidence scoring
-- Match status transitions
-- API endpoints
+**Schemas & API Endpoints**:
+```python
+# Pydantic schemas + API routes similar to DEV-012 pattern
+# See DEV-012 for complete implementation pattern
+```
 
-**Frontend Components** (~7 components):
-- SellSideMandateForm.tsx
-- BuySideProfileForm.tsx
-- DealMatchesDashboard.tsx
-- MatchCard.tsx
-- ConfidenceScoreBadge.tsx
-- MatchRationaleDisplay.tsx
-- MatchNetworkGraph.tsx (use react-force-graph)
+**Frontend Component**:
+```typescript
+// frontend/src/pages/deal-matching/DealMatchesDashboard.tsx
+export const DealMatchesDashboard: React.FC = () => {
+  const { data: matches } = useQuery({
+    queryKey: ['matches'],
+    queryFn: () => apiClient.get('/api/v1/matches').then(r => r.data)
+  });
+
+  return (
+    <div>
+      {matches?.map(match => (
+        <MatchCard key={match.id} match={match} confidenceScore={match.confidence_score} />
+      ))}
+    </div>
+  );
+};
+```
+
+**TDD Tests**:
+```python
+@pytest.mark.asyncio
+async def test_ai_matching_generates_matches(db_session, test_mandate):
+    matches = await deal_matching_service.generate_deal_matches(
+        db=db_session, sell_side_id=test_mandate.id, organization_id="org-123"
+    )
+    assert len(matches) > 0
+    assert all(m.confidence_score >= 0.6 for m in matches)
+# Add 40+ more tests
+```
 
 **Commit**: `feat(DEV-013): Intelligent Deal Matching with Claude 3 (45 tests)`
 
