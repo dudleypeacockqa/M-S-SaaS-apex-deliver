@@ -56,6 +56,7 @@ class Deal(Base):
      financial_statements = relationship("FinancialStatement", back_populates="deal", cascade="all, delete-orphan")
      financial_ratios = relationship("FinancialRatio", back_populates="deal", cascade="all, delete-orphan")
      financial_narratives = relationship("FinancialNarrative", back_populates="deal", cascade="all, delete-orphan")
+     valuations = relationship("ValuationModel", back_populates="deal", cascade="all, delete-orphan")
 
      # Indexes for performance
      __table_args__ = (
