@@ -1,35 +1,45 @@
-# BMAD Method Implementation Record
+# BMAD-Inspired Methodology Implementation Record
 
 **Project**: M&A Intelligence SaaS Platform
-**Methodology**: BMAD v4 Conventions with Test-Driven Development (TDD)
+**Methodology**: BMAD-Inspired Agile with Test-Driven Development (TDD)
 **Created**: 2025-10-26
 **Last Updated**: 2025-10-27
 
 ---
 
-## ⚠️ Important: BMAD Version Clarification
+## ⚠️ Important Clarification
 
-**This project uses BMAD v4 conventions** (proven and production-ready).
+**This project follows BMAD principles but does NOT use the official BMAD-METHOD framework.**
 
-- **v4 Reference**: `_vendor/BMAD-METHOD/` (main branch, now updated to v6-alpha for reference)
-- **v6-alpha Reference**: Available in `_vendor/BMAD-METHOD/` and documented in `docs/BMAD-V6-ALPHA-REFERENCE.md`
-- **Migration Plan**: See `docs/BMAD-V6-ALPHA-REFERENCE.md` for future v6-alpha adoption
+### What We Actually Do:
+- ✅ **BMAD Structure**: PRD → Architecture → Stories → Implementation
+- ✅ **BMAD Principles**: Business-first, Architecture-driven, Iterative, Test-driven
+- ✅ **BMAD Organization**: `docs/bmad/` directory structure
+- ✅ **Manual Story Management**: Human-written stories, no automation
 
-**Why v4?** Our workflow has successfully delivered 4 sprints and full production deployment. v6-alpha is a complete rewrite with different conventions - we'll consider migration after Sprint 5+.
+### What We DON'T Do:
+- ❌ **BMAD Framework**: Not using `npx bmad-method install`
+- ❌ **BMAD CLI**: No `*po shard prd`, `*sm draft next` commands
+- ❌ **BMAD Agents**: No automated agent workflows
+- ❌ **BMAD Tooling**: All planning and story creation is manual
+
+**Why Manual?** Direct control, proven workflow through 4 sprints, production deployment successful.
+
+**Official BMAD-METHOD**: Available in `_vendor/BMAD-METHOD/` and `docs/BMAD-V6-ALPHA-REFERENCE.md` if you want to adopt the official framework later.
 
 ---
 
-## 📖 BMAD Method Overview
+## 📖 BMAD-Inspired Approach
 
-**BMAD** = Business-Model-Architecture-Development methodology
+**BMAD Principles** = Business-Model-Architecture-Development
 
-A structured approach to software development that emphasizes:
+We follow BMAD principles manually:
 1. **Business value first** - Features driven by revenue and user needs
 2. **Clear architecture** - Technical design before implementation
 3. **Iterative development** - Sprints with measurable outcomes
 4. **Test-driven delivery** - Quality built in from the start
 
-**Our Implementation**: v4 conventions with enhanced TDD practices
+**Implementation**: Manual story creation + AI implementation with TDD
 
 ---
 
@@ -560,24 +570,24 @@ Quality built in from the start:
 
 ---
 
-## ✅ BMAD Compliance Summary
+## ✅ BMAD-Inspired Methodology Summary
 
-**Methodology**: ✅ BMAD v4 Conventions with TDD
+**Methodology**: ✅ BMAD-Inspired Agile with TDD (Manual Implementation)
 **TDD Coverage**: ✅ 85% (target: 80%)
 **Documentation**: ✅ Comprehensive
 **Sprint Cadence**: ✅ 2-week sprints
 **Business Alignment**: ✅ Revenue-focused
 **Quality Gates**: ✅ All passed
 
-**BMAD Score**: 98/100 🏆
+**Methodology Score**: 98/100 🏆
 
-**Future Path**: v6-alpha migration guide available in `docs/BMAD-V6-ALPHA-REFERENCE.md` for consideration after Sprint 5+.
+**Note**: Following BMAD principles manually. Official BMAD-METHOD framework available in `docs/BMAD-V6-ALPHA-REFERENCE.md` for optional future adoption.
 
 ---
 
-**Document Version**: 1.1
+**Document Version**: 1.2
 **Created**: 2025-10-26
 **Last Updated**: 2025-10-27
-**Methodology**: BMAD v4 Conventions with Test-Driven Development (TDD)
+**Methodology**: BMAD-Inspired Agile with Test-Driven Development (Manual)
+**Framework Status**: Not using official BMAD-METHOD tooling
 **Quality**: Production-Ready ✅
-**BMAD Reference**: v6-alpha available in `_vendor/BMAD-METHOD/` (for future consideration)

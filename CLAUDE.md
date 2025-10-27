@@ -4,8 +4,8 @@
 
 **Last Updated**: October 27, 2025
 **Project Version**: 2.0 (Full Production)
-**Methodology**: BMAD v4 Conventions with Test-Driven Development (TDD)
-**BMAD Reference**: v6-alpha available in `_vendor/BMAD-METHOD/` (for future consideration)
+**Methodology**: BMAD-Inspired Agile with Test-Driven Development (TDD)
+**Note**: Following BMAD principles manually (not using official BMAD-METHOD framework)
 
 ---
 
@@ -89,93 +89,94 @@ OpenAI GPT-4 (narratives, analysis)
 
 ---
 
-## 3. Development Methodology: BMAD v4 with TDD
+## 3. Development Methodology: BMAD-Inspired Agile with TDD
 
-### Important Note on BMAD Versions
+### Important Clarification
 
-**This project uses BMAD v4 conventions** (proven through 4 successful sprints and production deployment).
+**This project follows BMAD principles but does NOT use the official BMAD-METHOD framework/tooling.**
 
-- **v4 Documentation**: `docs/BMAD-METHOD-IMPLEMENTATION.md` (current methodology)
-- **v6-alpha Reference**: `docs/BMAD-V6-ALPHA-REFERENCE.md` (future migration guide)
-- **Vendor Source**: `_vendor/BMAD-METHOD/` (updated to v6-alpha for reference)
+What we DO:
+- ✅ Follow BMAD structure (PRD → Architecture → Stories → Implementation)
+- ✅ Use BMAD principles (Business-first, Architecture-driven, Iterative, Test-driven)
+- ✅ Organize docs in `docs/bmad/` directory
+- ✅ Track progress with Sprint planning
 
-**Why v4?** Our workflow has delivered production-ready software efficiently. v6-alpha is a complete rewrite - we'll consider migration after Sprint 5+ when appropriate.
+What we DON'T do:
+- ❌ Use BMAD CLI commands (`*po shard prd`, `*sm draft next`, etc.)
+- ❌ Use BMAD agents or automated workflows
+- ❌ Run `npx bmad-method install`
 
-### Core Workflow (v4 Conventions)
+**Why this approach?** Manual control, proven workflow through 4 sprints, production deployment successful.
+
+**Official BMAD-METHOD reference**: Available in `_vendor/BMAD-METHOD/` and `docs/BMAD-V6-ALPHA-REFERENCE.md` if you want to adopt the official framework later.
+
+### Core Workflow (Manual BMAD-Inspired)
 
 ```
 Planning → Story Creation → Implementation → QA → Deploy
-   (PO)      (Manual/SM)      (AI Dev + TDD)   (Auto)  (Auto)
+   (PO)      (Manual)         (AI Dev + TDD)   (Auto)  (Auto)
 ```
 
-**Key Difference from v6**: We manually create stories and use AI for implementation with TDD. v6-alpha introduces automated agent workflows.
+**Key Point**: Stories are created manually by humans, then implemented by AI following TDD.
 
-### Agent Roles (v4 Implementation)
+### Team Roles (Manual Implementation)
 
-**Product Owner (PO)**:
-- Manages `docs/bmad/prd.md` (Product Requirements Document)
-- Creates user stories manually in `docs/bmad/stories/`
+**Product Owner (Human)**:
+- Creates `docs/bmad/prd.md` (Product Requirements Document)
+- Writes user stories manually in `docs/bmad/stories/`
 - Maintains `docs/bmad/technical_specifications.md` (Architecture)
+- No automation - all manual planning
 
-**Story Manager (SM)** (Conceptual in v4):
-- In v4: Stories drafted manually by humans
-- In v6-alpha: Automated `*sm draft next` command
-- Stories located in: `docs/bmad/stories/`
-
-**Analyst**:
-- Provides research and technical analysis
-- Creates technical specifications
-- Validates architectural decisions
-
-**Developer** (AI - Claude Code):
+**Developer (AI - Claude Code)**:
 - Implements features following TDD (Write test → Implement → Refactor)
 - Writes tests first, then implementation
 - Follows story specifications exactly
 - Uses CLAUDE.md for project context
 
-**QA** (Automated):
+**QA (Automated Tests)**:
 - Runs test suites automatically (npm test / pytest)
 - Validates code coverage (minimum 80%)
 - Checks code quality and linting (ESLint/Black)
 
-### Current Development Commands (v4)
+### Current Development Workflow
 
 ```bash
-# BMAD Installation (v4 reference)
-npx bmad-method install
+# Story Management (100% Manual)
+# 1. Create story file manually: docs/bmad/stories/DEV-XXX-feature-name.md
+# 2. Write story details following template
+# 3. Track progress in: docs/bmad/BMAD_PROGRESS_TRACKER.md
 
-# Story Management (Manual in v4)
-# - Create story files in docs/bmad/stories/
-# - Follow story template format
-# - Track progress in docs/bmad/BMAD_PROGRESS_TRACKER.md
-
-# Development with Claude Code (Primary method)
+# Development with Claude Code
 claude-code -d "Implement [feature] following TDD. Reference docs/bmad/stories/[story].md"
 
-# Example: Financial Intelligence Engine
+# Example
 claude-code -d "Implement DEV-010 Financial Intelligence Engine following TDD. See docs/bmad/stories/DEV-010-financial-intelligence-engine.md"
 ```
 
-### Future: v6-Alpha Commands (For Reference)
+### Optional: Adopt Official BMAD-METHOD Framework
 
-When we migrate to v6-alpha, these commands will be available:
+If you want to use the **official BMAD-METHOD framework** with automated agents and workflows:
 
+**Installation**:
 ```bash
-# Product Manager Commands (replaces PO in v6)
-*prd                   # Scale-adaptive project planning
+cd _vendor/BMAD-METHOD
+npm install
+npm run install:bmad
+```
 
-# Story Manager Commands (automated in v6)
-*create-story          # SM drafts story
+**Commands Available** (after installation):
+```bash
+*prd                   # Scale-adaptive project planning (PM agent)
+*create-story          # SM drafts story automatically
 *story-ready           # SM approves for development
-*story-context         # Expertise injection
-
-# Developer Commands (enhanced in v6)
-*dev-story             # Implement story
+*dev-story             # DEV agent implements
 *story-done            # Mark complete
 *review-story          # Quality validation
 ```
 
-**Migration Guide**: See `docs/BMAD-V6-ALPHA-REFERENCE.md` for complete v6-alpha documentation and migration planning.
+**Migration Guide**: See `docs/BMAD-V6-ALPHA-REFERENCE.md` for complete documentation.
+
+**Current Status**: Not using official framework - manual workflow is working well.
 
 ---
 
@@ -784,20 +785,20 @@ async def create_deal_endpoint(
 - **Architecture**: `docs/bmad/technical_specifications.md`
 - **Stories**: `docs/bmad/stories/`
 - **Progress Tracker**: `docs/bmad/BMAD_PROGRESS_TRACKER.md`
-- **Current Methodology**: `docs/BMAD-METHOD-IMPLEMENTATION.md` (v4 conventions)
-- **v6-alpha Reference**: `docs/BMAD-V6-ALPHA-REFERENCE.md` (future migration guide)
+- **Current Methodology**: `docs/BMAD-METHOD-IMPLEMENTATION.md` (BMAD-inspired approach)
 - **API Docs**: Auto-generated at `/api/docs` (FastAPI)
 
 ### External Resources
-- **BMAD Method v4**: https://github.com/bmad-code-org/BMAD-METHOD (main branch)
-- **BMAD Method v6-alpha**: https://github.com/bmad-code-org/BMAD-METHOD/tree/v6-alpha (future reference)
 - **React Docs**: https://react.dev
 - **FastAPI Docs**: https://fastapi.tiangolo.com
 - **Clerk Docs**: https://clerk.com/docs
 - **Stripe Docs**: https://stripe.com/docs
 
-### Vendor Reference
-- **BMAD Source**: `_vendor/BMAD-METHOD/` (v6-alpha checkout for reference)
+### Optional: Official BMAD-METHOD Framework
+- **BMAD Method Repository**: https://github.com/bmad-code-org/BMAD-METHOD
+- **v6-alpha Reference Guide**: `docs/BMAD-V6-ALPHA-REFERENCE.md` (if you want to adopt official framework)
+- **Adoption Guide**: `docs/BMAD-V6-ADOPTION-GUIDE.md` (migration planning)
+- **Local Reference**: `_vendor/BMAD-METHOD/` (v6-alpha source for reference only)
 
 ---
 

@@ -1,18 +1,30 @@
 # BMAD v6-Alpha Reference Guide
 
-**Document Purpose**: Reference guide for BMAD-METHOD v6-alpha - the next generation of the BMad methodology framework.
+**Document Purpose**: Reference guide for the official BMAD-METHOD v6-alpha framework - available for optional adoption.
 
 **Last Updated**: October 27, 2025
-**Current Project Usage**: BMAD v4 conventions
-**Reference Version**: v6-alpha (for future adoption)
+**Current Project Status**: BMAD-Inspired manual workflow (NOT using official framework)
+**This Document**: Reference for official BMAD-METHOD v6-alpha framework
 
 ---
 
-## Important Note
+## ⚠️ Critical Clarification
 
-**This project currently uses BMAD v4 conventions**, which have served us well through 4 sprints and production deployment. This document serves as a reference for understanding v6-alpha and planning future adoption.
+**This project does NOT currently use the official BMAD-METHOD framework (v4 OR v6-alpha).**
 
-**v6-alpha is available in**: `_vendor/BMAD-METHOD/` (reference only)
+### What We Actually Do:
+- ✅ Follow BMAD **principles** manually (Business-first, Architecture, Iterative, TDD)
+- ✅ Use BMAD **structure** (`docs/bmad/` directory, PRD, stories)
+- ✅ Inspired by BMAD **methodology**
+
+### What We DON'T Do:
+- ❌ Use official BMAD-METHOD CLI/tooling
+- ❌ Run `npx bmad-method install`
+- ❌ Use BMAD agent commands (`*prd`, `*create-story`, etc.)
+
+**This document** describes the official BMAD-METHOD v6-alpha framework, which you can **optionally adopt** if you want automated agents and workflows.
+
+**v6-alpha is available in**: `_vendor/BMAD-METHOD/` (for reference/installation if desired)
 
 ---
 
