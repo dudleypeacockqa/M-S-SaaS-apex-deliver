@@ -12,8 +12,18 @@ in financial contexts.
 
 from __future__ import annotations
 
+import uuid
 from decimal import Decimal, getcontext
-from typing import Iterable, List
+from typing import Dict, Iterable, List, Optional
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.valuation import (
+    ValuationModel,
+    ComparableCompany,
+    PrecedentTransaction,
+)
 
 
 # Increase decimal precision to ensure stability for valuation calcs
