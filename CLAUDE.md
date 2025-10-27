@@ -2,9 +2,10 @@
 
 **Document Purpose**: This file provides comprehensive context for AI coding assistants (Claude Code, CODEX) to understand the project, architecture, conventions, and development approach.
 
-**Last Updated**: October 23, 2025  
-**Project Version**: 2.0 (Full Production)  
-**Methodology**: BMAD v6-alpha with Test-Driven Development (TDD)
+**Last Updated**: October 27, 2025
+**Project Version**: 2.0 (Full Production)
+**Methodology**: BMAD v4 Conventions with Test-Driven Development (TDD)
+**BMAD Reference**: v6-alpha available in `_vendor/BMAD-METHOD/` (for future consideration)
 
 ---
 
@@ -88,25 +89,37 @@ OpenAI GPT-4 (narratives, analysis)
 
 ---
 
-## 3. Development Methodology: BMAD v6-alpha
+## 3. Development Methodology: BMAD v4 with TDD
 
-### Core Workflow
+### Important Note on BMAD Versions
+
+**This project uses BMAD v4 conventions** (proven through 4 successful sprints and production deployment).
+
+- **v4 Documentation**: `docs/BMAD-METHOD-IMPLEMENTATION.md` (current methodology)
+- **v6-alpha Reference**: `docs/BMAD-V6-ALPHA-REFERENCE.md` (future migration guide)
+- **Vendor Source**: `_vendor/BMAD-METHOD/` (updated to v6-alpha for reference)
+
+**Why v4?** Our workflow has delivered production-ready software efficiently. v6-alpha is a complete rewrite - we'll consider migration after Sprint 5+ when appropriate.
+
+### Core Workflow (v4 Conventions)
 
 ```
-Planning → Sharding → Story Drafting → Implementation → QA → Deploy
-   (PO)      (PO)         (SM)            (AI Dev)      (Auto)  (Auto)
+Planning → Story Creation → Implementation → QA → Deploy
+   (PO)      (Manual/SM)      (AI Dev + TDD)   (Auto)  (Auto)
 ```
 
-### Agent Roles
+**Key Difference from v6**: We manually create stories and use AI for implementation with TDD. v6-alpha introduces automated agent workflows.
 
-**Product Owner (PO)**: 
+### Agent Roles (v4 Implementation)
+
+**Product Owner (PO)**:
 - Manages `docs/bmad/prd.md` (Product Requirements Document)
-- Shards PRD into user stories: `*po shard prd`
-- Creates architecture docs: `docs/bmad/architecture.md`
+- Creates user stories manually in `docs/bmad/stories/`
+- Maintains `docs/bmad/technical_specifications.md` (Architecture)
 
-**Story Manager (SM)**:
-- Drafts stories with full context: `*sm draft next`
-- Prepares stories for implementation with all necessary details
+**Story Manager (SM)** (Conceptual in v4):
+- In v4: Stories drafted manually by humans
+- In v6-alpha: Automated `*sm draft next` command
 - Stories located in: `docs/bmad/stories/`
 
 **Analyst**:
@@ -114,37 +127,55 @@ Planning → Sharding → Story Drafting → Implementation → QA → Deploy
 - Creates technical specifications
 - Validates architectural decisions
 
-**Developer** (AI - CODEX/Claude Code):
-- Implements features following TDD
+**Developer** (AI - Claude Code):
+- Implements features following TDD (Write test → Implement → Refactor)
 - Writes tests first, then implementation
 - Follows story specifications exactly
+- Uses CLAUDE.md for project context
 
 **QA** (Automated):
-- Runs test suites automatically
-- Validates code coverage (min 80%)
-- Checks code quality and linting
+- Runs test suites automatically (npm test / pytest)
+- Validates code coverage (minimum 80%)
+- Checks code quality and linting (ESLint/Black)
 
-### Key Commands
+### Current Development Commands (v4)
 
 ```bash
-# BMAD Installation
+# BMAD Installation (v4 reference)
 npx bmad-method install
 
-# Product Owner Commands
-*po shard prd          # Break PRD into stories
-*po shard architecture # Break architecture into stories
+# Story Management (Manual in v4)
+# - Create story files in docs/bmad/stories/
+# - Follow story template format
+# - Track progress in docs/bmad/BMAD_PROGRESS_TRACKER.md
 
-# Story Manager Commands
-*sm draft next         # Draft the next story
-*sm list              # List all stories
-*sm status            # Show story status
+# Development with Claude Code (Primary method)
+claude-code -d "Implement [feature] following TDD. Reference docs/bmad/stories/[story].md"
 
-# Development with CODEX
-codex -d "Implement [feature] following TDD. Reference docs/bmad/stories/[story].md"
-
-# Development with Claude Code
-claude-code -d "Implement [feature] following TDD. Use CLAUDE.md for context."
+# Example: Financial Intelligence Engine
+claude-code -d "Implement DEV-010 Financial Intelligence Engine following TDD. See docs/bmad/stories/DEV-010-financial-intelligence-engine.md"
 ```
+
+### Future: v6-Alpha Commands (For Reference)
+
+When we migrate to v6-alpha, these commands will be available:
+
+```bash
+# Product Manager Commands (replaces PO in v6)
+*prd                   # Scale-adaptive project planning
+
+# Story Manager Commands (automated in v6)
+*create-story          # SM drafts story
+*story-ready           # SM approves for development
+*story-context         # Expertise injection
+
+# Developer Commands (enhanced in v6)
+*dev-story             # Implement story
+*story-done            # Mark complete
+*review-story          # Quality validation
+```
+
+**Migration Guide**: See `docs/BMAD-V6-ALPHA-REFERENCE.md` for complete v6-alpha documentation and migration planning.
 
 ---
 
@@ -750,16 +781,23 @@ async def create_deal_endpoint(
 
 ### Internal Documentation
 - **PRD**: `docs/bmad/prd.md`
-- **Architecture**: `docs/bmad/architecture.md`
+- **Architecture**: `docs/bmad/technical_specifications.md`
 - **Stories**: `docs/bmad/stories/`
+- **Progress Tracker**: `docs/bmad/BMAD_PROGRESS_TRACKER.md`
+- **Current Methodology**: `docs/BMAD-METHOD-IMPLEMENTATION.md` (v4 conventions)
+- **v6-alpha Reference**: `docs/BMAD-V6-ALPHA-REFERENCE.md` (future migration guide)
 - **API Docs**: Auto-generated at `/api/docs` (FastAPI)
 
 ### External Resources
-- **BMAD Method**: https://github.com/bmad-code-org/BMAD-METHOD/tree/v6-alpha
+- **BMAD Method v4**: https://github.com/bmad-code-org/BMAD-METHOD (main branch)
+- **BMAD Method v6-alpha**: https://github.com/bmad-code-org/BMAD-METHOD/tree/v6-alpha (future reference)
 - **React Docs**: https://react.dev
 - **FastAPI Docs**: https://fastapi.tiangolo.com
 - **Clerk Docs**: https://clerk.com/docs
 - **Stripe Docs**: https://stripe.com/docs
+
+### Vendor Reference
+- **BMAD Source**: `_vendor/BMAD-METHOD/` (v6-alpha checkout for reference)
 
 ---
 

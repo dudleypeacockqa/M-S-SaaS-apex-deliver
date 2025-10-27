@@ -1,8 +1,21 @@
 # BMAD Method Implementation Record
 
 **Project**: M&A Intelligence SaaS Platform
-**Methodology**: BMAD v6-alpha with Test-Driven Development
-**Date**: 2025-10-26
+**Methodology**: BMAD v4 Conventions with Test-Driven Development (TDD)
+**Created**: 2025-10-26
+**Last Updated**: 2025-10-27
+
+---
+
+## ⚠️ Important: BMAD Version Clarification
+
+**This project uses BMAD v4 conventions** (proven and production-ready).
+
+- **v4 Reference**: `_vendor/BMAD-METHOD/` (main branch, now updated to v6-alpha for reference)
+- **v6-alpha Reference**: Available in `_vendor/BMAD-METHOD/` and documented in `docs/BMAD-V6-ALPHA-REFERENCE.md`
+- **Migration Plan**: See `docs/BMAD-V6-ALPHA-REFERENCE.md` for future v6-alpha adoption
+
+**Why v4?** Our workflow has successfully delivered 4 sprints and full production deployment. v6-alpha is a complete rewrite with different conventions - we'll consider migration after Sprint 5+.
 
 ---
 
@@ -15,6 +28,8 @@ A structured approach to software development that emphasizes:
 2. **Clear architecture** - Technical design before implementation
 3. **Iterative development** - Sprints with measurable outcomes
 4. **Test-driven delivery** - Quality built in from the start
+
+**Our Implementation**: v4 conventions with enhanced TDD practices
 
 ---
 
@@ -95,31 +110,35 @@ M-S-SaaS-apex-deliver/
 
 ---
 
-## 🛠️ BMAD Commands Used
+## 🛠️ BMAD Commands Used (v4 Conventions)
 
 ### Product Owner Commands
 ```bash
-# Initialize BMAD in project
+# Initialize BMAD in project (v4)
 npx bmad-method install
 
-# Shard PRD into user stories
-*po shard prd
+# Shard PRD into user stories (conceptual - done manually in v4)
+# *po shard prd
 
-# Shard architecture into technical stories
-*po shard architecture
+# Shard architecture into technical stories (conceptual - done manually in v4)
+# *po shard architecture
 ```
+
+**Note**: v4 uses manual story creation in `docs/bmad/stories/`. v6-alpha introduces automated commands.
 
 ### Story Manager Commands
 ```bash
-# Draft next story with full context
-*sm draft next
+# Draft next story with full context (conceptual - done manually in v4)
+# *sm draft next
 
-# List all stories
-*sm list
+# List all stories (manual file listing in v4)
+# ls docs/bmad/stories/
 
-# Show story status
-*sm status
+# Show story status (tracked in progress tracker)
+# See docs/bmad/BMAD_PROGRESS_TRACKER.md
 ```
+
+**Note**: v4 uses manual story management. v6-alpha introduces automated SM agent commands.
 
 ### Developer Commands (This Session)
 ```bash
@@ -132,6 +151,8 @@ claude-code -d "Fix 37 TypeScript build errors blocking deployment"
 # Add API keys
 claude-code -d "Add SendGrid, Cloudflare, and all production API keys"
 ```
+
+**Current Approach**: We use Claude Code with story files as context, following TDD principles. This aligns with BMAD v4 conventions - AI implements stories written by humans.
 
 ---
 
@@ -440,14 +461,21 @@ Quality built in from the start:
 ## 📚 BMAD Resources
 
 ### Official Documentation
-- BMAD Method: https://github.com/bmad-code-org/BMAD-METHOD/tree/v6-alpha
-- BMAD CLI: https://www.npmjs.com/package/bmad-method
+- **BMAD Method v4** (main): https://github.com/bmad-code-org/BMAD-METHOD
+- **BMAD Method v6-alpha**: https://github.com/bmad-code-org/BMAD-METHOD/tree/v6-alpha
+- **BMAD CLI**: https://www.npmjs.com/package/bmad-method
 
 ### Project Documentation
-- PRD: `docs/bmad/prd.md`
-- Architecture: `docs/bmad/architecture.md`
-- Stories: `docs/bmad/stories/`
-- Status Reports: `STATUS-REPORT-*.md`
+- **Current Methodology**: `docs/BMAD-METHOD-IMPLEMENTATION.md` (this file)
+- **v6-alpha Reference**: `docs/BMAD-V6-ALPHA-REFERENCE.md` (future migration guide)
+- **PRD**: `docs/bmad/prd.md`
+- **Architecture**: `docs/bmad/technical_specifications.md`
+- **Stories**: `docs/bmad/stories/`
+- **Progress Tracker**: `docs/bmad/BMAD_PROGRESS_TRACKER.md`
+- **Status Reports**: `STATUS-REPORT-*.md`
+
+### Vendor Reference
+- **BMAD v6-alpha Source**: `_vendor/BMAD-METHOD/` (reference only, not actively used)
 
 ### External Resources
 - TDD Guide: Kent Beck's "Test Driven Development"
@@ -534,7 +562,7 @@ Quality built in from the start:
 
 ## ✅ BMAD Compliance Summary
 
-**Methodology**: ✅ BMAD v6-alpha
+**Methodology**: ✅ BMAD v4 Conventions with TDD
 **TDD Coverage**: ✅ 85% (target: 80%)
 **Documentation**: ✅ Comprehensive
 **Sprint Cadence**: ✅ 2-week sprints
@@ -543,9 +571,13 @@ Quality built in from the start:
 
 **BMAD Score**: 98/100 🏆
 
+**Future Path**: v6-alpha migration guide available in `docs/BMAD-V6-ALPHA-REFERENCE.md` for consideration after Sprint 5+.
+
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-10-26
-**Methodology**: BMAD v6-alpha with TDD
+**Document Version**: 1.1
+**Created**: 2025-10-26
+**Last Updated**: 2025-10-27
+**Methodology**: BMAD v4 Conventions with Test-Driven Development (TDD)
 **Quality**: Production-Ready ✅
+**BMAD Reference**: v6-alpha available in `_vendor/BMAD-METHOD/` (for future consideration)
