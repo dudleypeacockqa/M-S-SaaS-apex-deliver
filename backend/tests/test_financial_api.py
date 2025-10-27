@@ -4,14 +4,16 @@ Testing the /financial API endpoints
 """
 
 import pytest
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
+
 from app.main import app
 
 
 @pytest.mark.asyncio
 async def test_calculate_financial_ratios_endpoint(test_deal, auth_headers):
     """Test POST /deals/{id}/financial/calculate-ratios endpoint"""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         financial_data = {
             "current_assets": 100000,
             "current_liabilities": 50000,
@@ -59,7 +61,8 @@ async def test_calculate_financial_ratios_endpoint(test_deal, auth_headers):
 @pytest.mark.asyncio
 async def test_calculate_ratios_requires_authentication(test_deal):
     """Test that calculating ratios requires authentication"""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
             f"/deals/{test_deal.id}/financial/calculate-ratios",
             json={"revenue": 100000},
@@ -71,7 +74,8 @@ async def test_calculate_ratios_requires_authentication(test_deal):
 @pytest.mark.asyncio
 async def test_calculate_ratios_deal_not_found(auth_headers):
     """Test 404 when deal doesn't exist"""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
             "/deals/nonexistent-deal-id/financial/calculate-ratios",
             json={"revenue": 100000},
@@ -85,7 +89,8 @@ async def test_calculate_ratios_deal_not_found(auth_headers):
 @pytest.mark.asyncio
 async def test_calculate_ratios_with_partial_data(test_deal, auth_headers):
     """Test that calculation works with partial data"""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         financial_data = {
             "revenue": 500000,
             "cogs": 300000,
@@ -115,7 +120,8 @@ async def test_calculate_ratios_with_partial_data(test_deal, auth_headers):
 @pytest.mark.asyncio
 async def test_get_financial_connections_endpoint(test_deal, auth_headers):
     """Test GET /deals/{id}/financial/connections endpoint"""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get(
             f"/deals/{test_deal.id}/financial/connections",
             headers=auth_headers,
@@ -132,7 +138,8 @@ async def test_get_financial_connections_endpoint(test_deal, auth_headers):
 @pytest.mark.asyncio
 async def test_get_financial_ratios_not_found(test_deal, auth_headers):
     """Test GET /deals/{id}/financial/ratios returns 404 when no ratios exist"""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get(
             f"/deals/{test_deal.id}/financial/ratios",
             headers=auth_headers,
@@ -145,7 +152,8 @@ async def test_get_financial_ratios_not_found(test_deal, auth_headers):
 @pytest.mark.asyncio
 async def test_get_financial_narrative_not_found(test_deal, auth_headers):
     """Test GET /deals/{id}/financial/narrative returns 404 when no narrative exists"""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get(
             f"/deals/{test_deal.id}/financial/narrative",
             headers=auth_headers,
@@ -165,7 +173,8 @@ async def test_connect_xero_initiates_oauth_flow(test_deal, auth_headers):
     """Test that connecting Xero initiates OAuth flow and returns authorization URL."""
     from unittest.mock import patch
 
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         with patch('app.api.routes.financial.initiate_xero_oauth') as mock_initiate:
             mock_initiate.return_value = {
                 "authorization_url": "https://login.xero.com/identity/connect/authorize?...",
@@ -187,7 +196,8 @@ async def test_connect_xero_initiates_oauth_flow(test_deal, auth_headers):
 @pytest.mark.asyncio
 async def test_connect_xero_with_invalid_deal(auth_headers):
     """Test connecting Xero with non-existent deal returns 404."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
             "/deals/nonexistent-deal-id/financial/connect/xero",
             headers=auth_headers
@@ -203,7 +213,8 @@ async def test_xero_oauth_callback_success(test_deal, auth_headers):
     """Test successful Xero OAuth callback creates connection."""
     from unittest.mock import patch, Mock
 
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         with patch('app.api.routes.financial.handle_xero_callback') as mock_callback:
             # Mock connection object with required attributes
             from datetime import datetime
@@ -233,7 +244,8 @@ async def test_xero_oauth_callback_success(test_deal, auth_headers):
 @pytest.mark.asyncio
 async def test_xero_oauth_callback_missing_code(test_deal, auth_headers):
     """Test Xero callback without code parameter returns 422 (validation error)."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get(
             f"/deals/{test_deal.id}/financial/connect/xero/callback",
             headers=auth_headers
@@ -264,7 +276,8 @@ async def test_sync_financial_data_success(test_deal, db_session, auth_headers):
     db_session.add(connection)
     db_session.commit()
 
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         with patch('app.api.routes.financial.fetch_xero_statements') as mock_fetch:
             mock_statement = Mock()
             mock_statement.id = "stmt-api-1"
@@ -284,7 +297,8 @@ async def test_sync_financial_data_success(test_deal, db_session, auth_headers):
 @pytest.mark.asyncio
 async def test_sync_financial_data_no_connection(test_deal, auth_headers):
     """Test syncing without connection returns 404."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
             f"/deals/{test_deal.id}/financial/sync",
             headers=auth_headers
@@ -317,7 +331,8 @@ async def test_get_readiness_score_success(test_deal, db_session, auth_headers):
     db_session.add(narrative)
     db_session.commit()
 
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get(
             f"/deals/{test_deal.id}/financial/readiness-score",
             headers=auth_headers
@@ -335,7 +350,8 @@ async def test_get_readiness_score_success(test_deal, db_session, auth_headers):
 @pytest.mark.asyncio
 async def test_get_readiness_score_no_narrative(test_deal, auth_headers):
     """Test getting readiness score when no narrative exists returns 404."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get(
             f"/deals/{test_deal.id}/financial/readiness-score",
             headers=auth_headers
