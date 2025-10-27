@@ -68,7 +68,7 @@ describe('FinancialNarrativeDisplay Component', () => {
   it('should render growth signals section', () => {
     render(<FinancialNarrativeDisplay narrative={mockNarrative} />);
 
-    expect(screen.getByText(/growth/i)).toBeInTheDocument();
+    expect(screen.getByText(/growth signals/i)).toBeInTheDocument();
     expect(screen.getByText(/revenue growth accelerating/i)).toBeInTheDocument();
     expect(screen.getByText(/expanding profit margins/i)).toBeInTheDocument();
   });
@@ -106,13 +106,13 @@ describe('FinancialNarrativeDisplay Component', () => {
   it('should support markdown formatting in summary', () => {
     const narrativeWithMarkdown = {
       ...mockNarrative,
-      summary: 'The company demonstrates **strong** financial health with *consistent* profitability.',
+      summary: 'The company has **excellent** profitability.',
     };
 
     render(<FinancialNarrativeDisplay narrative={narrativeWithMarkdown} />);
 
-    // Check that markdown is rendered (bold and italic)
-    const summary = screen.getByText(/strong.*financial health/i);
-    expect(summary).toBeInTheDocument();
+    // Check that the summary content is rendered (markdown is processed by ReactMarkdown)
+    expect(screen.getByText(/excellent/i)).toBeInTheDocument();
+    expect(screen.getByText(/profitability/i)).toBeInTheDocument();
   });
 });
