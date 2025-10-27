@@ -1,18 +1,105 @@
 # BMAD Progress Tracker - M&A Intelligence Platform
 
-**Last Updated**: October 27, 2025 13:15 UTC
+**Last Updated**: October 27, 2025 14:30 UTC
 **Methodology**: BMAD v6-alpha + TDD (tests-first policy remains in effect)
-**Project Phase**: Sprint 5 – 🔄 In Progress (DEV-011 Multi-Method Valuation Suite - Phase 2/6)
+**Project Phase**: Sprint 5 – 🔄 CODEX Implementation (DEV-011 Multi-Method Valuation Suite - Phase 2.3-6)
 **Deployment Status**: ✅ Backend healthy (https://ma-saas-backend.onrender.com/health) • Frontend 403 (Cloudflare protection)
 **Sprint 1 Status**: ✅ 100% complete (historical)
 **Sprint 2 Status**: ✅ 100% complete (DEV-007, DEV-008)
 **Sprint 3 Status**: ✅ 100% COMPLETE - MARK-001 ✅ • DEV-009 ✅ (Backend 111/111 • Frontend 139/139 • Total 250 tests passing)
 **Sprint 4 Status**: ✅ 100% COMPLETE - DEV-010 Financial Intelligence Engine ✅ (Backend 74/74 • Frontend 33/33 • Total 107 tests passing)
-**Sprint 5 Status**: 🟡 12% COMPLETE - DEV-011 Valuation Suite (Phase 1 ✅ DCF Engine • Phase 2 🔄 Models Created)
-**Latest Commit**: `c4fe93c` - feat(valuation): Phase 2 - Database models for multi-method valuation suite
-**Test Suites**: 🎉 Backend: 84 tests passing (74 financial + 10 valuation DCF) • Frontend: 33 tests • Total: 117 tests
+**Sprint 5 Status**: 🟡 18% COMPLETE - DEV-011 Valuation Suite (Phase 1-2.3 ✅ • Phase 2.4-6 → CODEX)
+**Latest Commit**: `d78fe5c` - feat(valuation): Phase 2.3 RED - TDD tests for service layer (17 tests)
+**Test Suites**: 🎉 Backend: 84 tests passing + 17 RED tests • Frontend: 33 tests • Total: 117 passing (27 RED)
+**CODEX Handoff**: See CODEX-DEV-011-COMPLETION.md for autonomous implementation guide
 
 ---
+
+---
+
+## 🤝 CODEX Handoff - October 27, 2025 14:30 UTC
+
+**Handoff Type**: Claude Code → CODEX for heavy implementation → Claude Code for final review
+
+**Context**: DEV-011 Multi-Method Valuation Suite at 18% completion. Foundation complete, ready for autonomous implementation.
+
+### Completed by Claude Code (18%)
+
+**Phase 1: Backend DCF Engine** ✅ (100%)
+- 10 comprehensive DCF tests (all passing)
+- 6 calculation functions (PV, terminal value, enterprise value, sensitivity)
+- Commit: `47237e2`
+
+**Phase 2.1: Database Migration** ✅ (100%)
+- Migration: `658051b7d4f9` for 5 valuation tables
+- Tables: valuations, valuation_scenarios, comparable_companies, precedent_transactions, valuation_export_logs
+- Commit: `03c463c`
+
+**Phase 2.2: Pydantic Schemas** ✅ (100%)
+- 13 comprehensive schemas (345 lines)
+- Request/response models with validation
+- Commit: `03c463c`
+
+**Phase 2.3: Service Layer RED Tests** ✅ (50%)
+- 17 TDD tests for CRUD operations (RED phase)
+- Tests fail as expected (functions not implemented yet)
+- Commit: `d78fe5c`
+
+### For CODEX to Complete (82%)
+
+**Phase 2.3 GREEN**: Implement service functions (~2 hours)
+- 8 CRUD functions for valuations, comparables, precedents
+- Make 17 tests pass
+
+**Phase 2.4**: API endpoints with TDD (~1.5 hours)
+- 8 RESTful endpoints with multi-tenant security
+- 10-15 new tests
+
+**Phase 3**: Scenario management & Monte Carlo (~3-4 hours)
+- Scenario creation and comparison
+- Monte Carlo simulation (NumPy)
+- Tornado chart data
+- 12-15 new tests
+
+**Phase 4**: Frontend valuation workspace (~5-6 hours)
+- 8 React components (ValuationSuite, DCF forms, tables, charts)
+- TailwindCSS styling, React Query integration
+- 20-30 new tests
+
+**Phase 5**: PDF/Excel exports (~2-3 hours)
+- WeasyPrint PDF generation
+- Pandas Excel export
+- GPT-4 executive summaries
+- 8-12 new tests
+
+**Phase 6**: Integration testing & verification (~2-3 hours)
+- Full test suite verification (~270-290 total tests)
+- End-to-end smoke testing
+- Coverage verification (≥90% backend, ≥85% frontend)
+
+### CODEX Implementation Guide
+
+**File**: `CODEX-DEV-011-COMPLETION.md` (comprehensive 500+ line guide)
+- Exact function implementations with code
+- TDD workflow for each phase
+- Test verification commands
+- Success criteria and targets
+- Handoff protocol to Claude Code
+
+### Claude Code Final Review (Post-CODEX)
+
+When CODEX completes implementation:
+1. Code review and refactoring
+2. Documentation updates (DEV-011 story, BMAD tracker)
+3. Production deployment (Alembic migration, Render)
+4. Final verification and sign-off
+
+### Rationale
+
+- **Cost Efficiency**: CODEX handles bulk implementation (18-20 hours)
+- **Quality Assurance**: Claude Code ensures production readiness
+- **Clear Responsibilities**: Defined handoff points
+- **Risk Mitigation**: Comprehensive guide ensures CODEX success
 
 ---
 
