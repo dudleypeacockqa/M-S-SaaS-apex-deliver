@@ -1276,23 +1276,560 @@ class WorkflowAutomation(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 ```
 
-**TDD Tests** (~30-40 tests):
-- Task CRUD operations
-- Task assignment and reassignment
-- Template application
-- Workflow trigger execution
-- Notification sending
-- API endpoints
+**Service Layer Implementation**:
+```python
+# backend/app/services/task_service.py
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.models.task import Task, ChecklistTemplate, WorkflowAutomation
+from app.schemas.task import TaskCreate, TaskUpdate
+import uuid
+from datetime import datetime
 
-**Frontend Components** (~6 components):
-- TaskList.tsx
-- TaskCard.tsx
-- TaskForm.tsx
-- ChecklistTemplateSelector.tsx
-- GanttChart.tsx (use recharts)
-- WorkflowAutomationBuilder.tsx
+async def create_task(
+    db: AsyncSession,
+    deal_id: str,
+    organization_id: str,
+    task_data: TaskCreate,
+    created_by: str
+) -> Task:
+    """Create a new task."""
+    task = Task(
+        id=str(uuid.uuid4()),
+        deal_id=deal_id,
+        organization_id=organization_id,
+        title=task_data.title,
+        description=task_data.description,
+        status="pending",
+        priority=task_data.priority,
+        assigned_to=task_data.assigned_to,
+        due_date=task_data.due_date,
+        created_by=created_by,
+        created_at=datetime.utcnow()
+    )
 
-**Commit Pattern**:
+    db.add(task)
+    await db.commit()
+    await db.refresh(task)
+
+    # Send email notification if assigned
+    if task.assigned_to:
+        await send_task_assignment_email(db, task)
+
+    return task
+
+
+async def get_deal_tasks(
+    db: AsyncSession,
+    deal_id: str,
+    organization_id: str
+) -> list[Task]:
+    """Get all tasks for a deal."""
+    result = await db.execute(
+        select(Task).where(
+            Task.deal_id == deal_id,
+            Task.organization_id == organization_id
+        ).order_by(Task.due_date, Task.priority)
+    )
+    return result.scalars().all()
+
+
+async def update_task(
+    db: AsyncSession,
+    task_id: str,
+    organization_id: str,
+    task_data: TaskUpdate
+) -> Task:
+    """Update task with status tracking."""
+    result = await db.execute(
+        select(Task).where(
+            Task.id == task_id,
+            Task.organization_id == organization_id
+        )
+    )
+    task = result.scalar_one_or_none()
+
+    if not task:
+        return None
+
+    # Track completion
+    if task_data.status == "completed" and task.status != "completed":
+        task.completed_at = datetime.utcnow()
+
+    # Update fields
+    for key, value in task_data.dict(exclude_unset=True).items():
+        setattr(task, key, value)
+
+    task.updated_at = datetime.utcnow()
+    await db.commit()
+    await db.refresh(task)
+
+    # Trigger workflow automations on status change
+    await trigger_task_automations(db, task)
+
+    return task
+
+
+async def apply_checklist_template(
+    db: AsyncSession,
+    deal_id: str,
+    template_id: str,
+    organization_id: str,
+    created_by: str
+) -> list[Task]:
+    """Apply checklist template to create multiple tasks."""
+    result = await db.execute(
+        select(ChecklistTemplate).where(
+            ChecklistTemplate.id == template_id
+        )
+    )
+    template = result.scalar_one_or_none()
+
+    if not template:
+        raise ValueError("Template not found")
+
+    tasks = []
+    for task_def in template.tasks:
+        task = Task(
+            id=str(uuid.uuid4()),
+            deal_id=deal_id,
+            organization_id=organization_id,
+            title=task_def["title"],
+            description=task_def.get("description", ""),
+            priority=task_def.get("priority", "medium"),
+            status="pending",
+            created_by=created_by,
+            created_at=datetime.utcnow()
+        )
+        db.add(task)
+        tasks.append(task)
+
+    await db.commit()
+    return tasks
+
+
+async def trigger_workflow_automations(
+    db: AsyncSession,
+    deal_id: str,
+    trigger_type: str,
+    trigger_data: dict
+) -> None:
+    """Execute workflow automations based on triggers."""
+    result = await db.execute(
+        select(WorkflowAutomation).where(
+            WorkflowAutomation.is_active == True
+        )
+    )
+    automations = result.scalars().all()
+
+    for automation in automations:
+        if automation.trigger_type == trigger_type:
+            # Check conditions
+            if matches_conditions(automation.trigger_conditions, trigger_data):
+                await execute_automation_actions(db, automation, deal_id)
+
+
+async def execute_automation_actions(
+    db: AsyncSession,
+    automation: WorkflowAutomation,
+    deal_id: str
+) -> None:
+    """Execute automation actions."""
+    for action in automation.actions:
+        if action["type"] == "create_tasks":
+            await apply_checklist_template(
+                db, deal_id, action["template_id"],
+                automation.organization_id, "system"
+            )
+        elif action["type"] == "send_notification":
+            await send_notification(action["recipient"], action["message"])
+
+
+async def send_task_assignment_email(db: AsyncSession, task: Task):
+    """Send email notification for task assignment."""
+    # Get assignee email
+    result = await db.execute(
+        select(User).where(User.id == task.assigned_to)
+    )
+    assignee = result.scalar_one_or_none()
+
+    if assignee:
+        # Use background task for email sending
+        from app.tasks import send_email
+        send_email.delay(
+            to=assignee.email,
+            subject=f"New Task Assigned: {task.title}",
+            body=f"You have been assigned a task:\n\n{task.title}\n\nDue: {task.due_date}"
+        )
+```
+
+**Pydantic Schemas**:
+```python
+# backend/app/schemas/task.py
+from pydantic import BaseModel, Field
+from typing import Optional
+from datetime import datetime
+
+class TaskCreate(BaseModel):
+    title: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    priority: str = Field(default="medium")
+    assigned_to: Optional[str] = None
+    due_date: Optional[datetime] = None
+
+class TaskUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+    priority: Optional[str] = None
+    assigned_to: Optional[str] = None
+    due_date: Optional[datetime] = None
+
+class TaskResponse(BaseModel):
+    id: str
+    deal_id: str
+    title: str
+    description: Optional[str]
+    status: str
+    priority: str
+    assigned_to: Optional[str]
+    due_date: Optional[datetime]
+    completed_at: Optional[datetime]
+    created_by: str
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+```
+
+**API Endpoints**:
+```python
+# backend/app/api/v1/endpoints/tasks.py
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.deps import get_db, get_current_user
+from app.services import task_service
+from app.schemas.task import TaskCreate, TaskResponse, TaskUpdate
+
+router = APIRouter()
+
+@router.post("/deals/{deal_id}/tasks", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
+async def create_task(
+    deal_id: str,
+    task: TaskCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new task for a deal."""
+    result = await task_service.create_task(
+        db=db,
+        deal_id=deal_id,
+        organization_id=current_user.organization_id,
+        task_data=task,
+        created_by=current_user.id
+    )
+    return result
+
+@router.get("/deals/{deal_id}/tasks", response_model=list[TaskResponse])
+async def get_deal_tasks(
+    deal_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get all tasks for a deal."""
+    tasks = await task_service.get_deal_tasks(
+        db=db,
+        deal_id=deal_id,
+        organization_id=current_user.organization_id
+    )
+    return tasks
+
+@router.put("/tasks/{task_id}", response_model=TaskResponse)
+async def update_task(
+    task_id: str,
+    task_data: TaskUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Update a task."""
+    result = await task_service.update_task(
+        db=db,
+        task_id=task_id,
+        organization_id=current_user.organization_id,
+        task_data=task_data
+    )
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    return result
+
+@router.post("/deals/{deal_id}/tasks/apply-template", response_model=list[TaskResponse])
+async def apply_template(
+    deal_id: str,
+    template_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Apply checklist template to create multiple tasks."""
+    tasks = await task_service.apply_checklist_template(
+        db=db,
+        deal_id=deal_id,
+        template_id=template_id,
+        organization_id=current_user.organization_id,
+        created_by=current_user.id
+    )
+    return tasks
+
+@router.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_task(
+    task_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Delete a task."""
+    await task_service.delete_task(
+        db=db,
+        task_id=task_id,
+        organization_id=current_user.organization_id
+    )
+```
+
+**TDD Tests**:
+```python
+# backend/tests/test_task_service.py
+import pytest
+from httpx import AsyncClient
+
+@pytest.mark.asyncio
+async def test_create_task(db_session, test_deal, test_user):
+    """Test creating a task."""
+    task = await task_service.create_task(
+        db=db_session,
+        deal_id=test_deal.id,
+        organization_id=test_user.organization_id,
+        task_data=TaskCreate(
+            title="Review financials",
+            description="Complete financial due diligence",
+            priority="high",
+            assigned_to=test_user.id
+        ),
+        created_by=test_user.id
+    )
+
+    assert task.title == "Review financials"
+    assert task.status == "pending"
+    assert task.priority == "high"
+
+@pytest.mark.asyncio
+async def test_apply_checklist_template(db_session, test_deal, test_template):
+    """Test applying checklist template creates multiple tasks."""
+    tasks = await task_service.apply_checklist_template(
+        db=db_session,
+        deal_id=test_deal.id,
+        template_id=test_template.id,
+        organization_id=test_deal.organization_id,
+        created_by="system"
+    )
+
+    assert len(tasks) == len(test_template.tasks)
+    assert all(t.deal_id == test_deal.id for t in tasks)
+
+@pytest.mark.asyncio
+async def test_task_status_completion_tracking(db_session, test_task):
+    """Test that completing a task sets completed_at timestamp."""
+    assert test_task.completed_at is None
+
+    updated = await task_service.update_task(
+        db=db_session,
+        task_id=test_task.id,
+        organization_id=test_task.organization_id,
+        task_data=TaskUpdate(status="completed")
+    )
+
+    assert updated.status == "completed"
+    assert updated.completed_at is not None
+
+# Add 35+ more tests for API endpoints, workflows, notifications, etc.
+```
+
+**Frontend Components**:
+```typescript
+// frontend/src/pages/deals/TaskList.tsx
+import React from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '@/lib/api';
+import { TaskCard } from './TaskCard';
+import { TaskForm } from './TaskForm';
+
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  assigned_to: string;
+  due_date: string;
+}
+
+export const TaskList: React.FC<{ dealId: string }> = ({ dealId }) => {
+  const queryClient = useQueryClient();
+
+  const { data: tasks, isLoading } = useQuery({
+    queryKey: ['tasks', dealId],
+    queryFn: () => apiClient.get(`/api/v1/deals/${dealId}/tasks`).then(r => r.data)
+  });
+
+  const updateTaskMutation = useMutation({
+    mutationFn: (data: { taskId: string; updates: Partial<Task> }) =>
+      apiClient.put(`/api/v1/tasks/${data.taskId}`, data.updates),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tasks', dealId]);
+    }
+  });
+
+  if (isLoading) return <div>Loading tasks...</div>;
+
+  const pendingTasks = tasks?.filter(t => t.status === 'pending') || [];
+  const inProgressTasks = tasks?.filter(t => t.status === 'in_progress') || [];
+  const completedTasks = tasks?.filter(t => t.status === 'completed') || [];
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Tasks</h2>
+        <TaskForm dealId={dealId} />
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <h3 className="font-semibold text-gray-700">Pending ({pendingTasks.length})</h3>
+          {pendingTasks.map(task => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onUpdate={(updates) => updateTaskMutation.mutate({ taskId: task.id, updates })}
+            />
+          ))}
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="font-semibold text-gray-700">In Progress ({inProgressTasks.length})</h3>
+          {inProgressTasks.map(task => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onUpdate={(updates) => updateTaskMutation.mutate({ taskId: task.id, updates })}
+            />
+          ))}
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="font-semibold text-gray-700">Completed ({completedTasks.length})</h3>
+          {completedTasks.map(task => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onUpdate={(updates) => updateTaskMutation.mutate({ taskId: task.id, updates })}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+```typescript
+// frontend/src/pages/deals/TaskCard.tsx
+import React from 'react';
+
+interface TaskCardProps {
+  task: Task;
+  onUpdate: (updates: Partial<Task>) => void;
+}
+
+export const TaskCard: React.FC<TaskCardProps> = ({ task, onUpdate }) => {
+  const priorityColors = {
+    low: 'bg-green-100 text-green-800',
+    medium: 'bg-yellow-100 text-yellow-800',
+    high: 'bg-red-100 text-red-800'
+  };
+
+  return (
+    <div className="bg-white p-4 rounded-lg shadow border border-gray-200 hover:shadow-md transition-shadow">
+      <div className="flex justify-between items-start mb-2">
+        <h4 className="font-semibold text-gray-900">{task.title}</h4>
+        <span className={`px-2 py-1 text-xs rounded ${priorityColors[task.priority]}`}>
+          {task.priority}
+        </span>
+      </div>
+
+      {task.description && (
+        <p className="text-sm text-gray-600 mb-3">{task.description}</p>
+      )}
+
+      {task.due_date && (
+        <p className="text-xs text-gray-500 mb-2">
+          Due: {new Date(task.due_date).toLocaleDateString()}
+        </p>
+      )}
+
+      <div className="flex gap-2">
+        <button
+          onClick={() => onUpdate({ status: 'in_progress' })}
+          className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+        >
+          Start
+        </button>
+        <button
+          onClick={() => onUpdate({ status: 'completed' })}
+          className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+        >
+          Complete
+        </button>
+      </div>
+    </div>
+  );
+};
+```
+
+**Frontend Tests**:
+```typescript
+// frontend/src/pages/deals/TaskList.test.tsx
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { TaskList } from './TaskList';
+
+describe('TaskList', () => {
+  it('should render tasks organized by status', async () => {
+    render(<TaskList dealId="deal-123" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Pending (3)')).toBeInTheDocument();
+      expect(screen.getByText('In Progress (2)')).toBeInTheDocument();
+      expect(screen.getByText('Completed (5)')).toBeInTheDocument();
+    });
+  });
+
+  it('should update task status when clicking buttons', async () => {
+    const user = userEvent.setup();
+    render(<TaskList dealId="deal-123" />);
+
+    await user.click(screen.getByText('Start'));
+
+    await waitFor(() => {
+      expect(screen.getByText('In Progress (3)')).toBeInTheDocument();
+    });
+  });
+
+  // Add 15+ more component tests
+});
+```
+
+**Commit**:
 ```bash
 git commit -m "feat(DEV-012): complete Task Management & Workflow Automation
 
