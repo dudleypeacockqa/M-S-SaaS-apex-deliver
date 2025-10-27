@@ -2608,6 +2608,62 @@ class DirectMessage(Base):
 
 ---
 
+## 📐 Implementation Patterns Reference
+
+**IMPORTANT**: DEV-011 (Valuation Suite) and DEV-012 (Task Management) contain **COMPLETE implementations** with full code. Use them as templates for DEV-013 through DEV-018.
+
+### Universal CRUD Pattern (Apply to ALL Features)
+
+**Service Layer** (backend/app/services/{feature}_service.py):
+```python
+async def create_{entity}(db, data, org_id):
+    entity = {Model}(id=str(uuid.uuid4()), organization_id=org_id, **data.dict())
+    db.add(entity)
+    await db.commit()
+    return entity
+
+async def get_{entity}(db, entity_id, org_id):
+    return await db.execute(select({Model}).where(...)).scalar_one_or_none()
+```
+
+**API Endpoints** (backend/app/api/v1/endpoints/{feature}.py):
+```python
+@router.post("/{entities}", response_model={Response}, status_code=201)
+async def create(data, db=Depends(get_db), user=Depends(get_current_user)):
+    return await service.create_{entity}(db, data, user.organization_id)
+```
+
+**Frontend List Component**:
+```typescript
+export const {Entity}List: React.FC = () => {
+  const { data } = useQuery({queryKey: ['{entities}'], queryFn: fetch{Entities}});
+  return <div>{data?.map(e => <{Entity}Card key={e.id} entity={e} />)}</div>;
+};
+```
+
+**TDD Tests**:
+```python
+@pytest.mark.asyncio
+async def test_create_{entity}(db_session):
+    entity = await service.create_{entity}(db_session, data, "org-123")
+    assert entity.id is not None
+```
+
+### Complete Reference Examples
+
+- **DEV-011 Lines 70-1220**: Full DCF implementation with 6 phases (600+ lines)
+- **DEV-012 Lines 1279-1844**: Full task management (565+ lines)
+
+**Copy these patterns** and adapt field names, entity names, and business logic for:
+- DEV-013: Deal matching (AI with Claude 3)
+- DEV-014: Document generation (AI with GPT-4)
+- DEV-015: Content hub (GoHighLevel integration)
+- DEV-016: Podcast studio (Whisper transcription)
+- DEV-017: Event management (Stripe tickets)
+- DEV-018: Community platform (Forums, DMs)
+
+---
+
 ## 🎯 Implementation Order & Dependencies
 
 **Recommended sequence for maximum efficiency**:
