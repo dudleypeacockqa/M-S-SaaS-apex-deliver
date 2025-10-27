@@ -1997,26 +1997,343 @@ async def create_sell_side_mandate(db: AsyncSession, mandate_data, organization_
     return mandate
 ```
 
-**Schemas & API Endpoints**:
+**Additional Service Functions**:
 ```python
-# Pydantic schemas + API routes similar to DEV-012 pattern
-# See DEV-012 for complete implementation pattern
+async def get_organization_matches(db: AsyncSession, organization_id: str) -> list[DealMatch]:
+    """Get all matches for an organization."""
+    result = await db.execute(
+        select(DealMatch)
+        .join(SellSideMandate)
+        .where(SellSideMandate.organization_id == organization_id)
+        .order_by(DealMatch.confidence_score.desc())
+    )
+    return result.scalars().all()
+
+async def update_match_status(
+    db: AsyncSession,
+    match_id: str,
+    status: str,
+    organization_id: str
+) -> DealMatch:
+    """Update match status (suggested, contacted, declined, progressing)."""
+    result = await db.execute(
+        select(DealMatch)
+        .join(SellSideMandate)
+        .where(
+            DealMatch.id == match_id,
+            SellSideMandate.organization_id == organization_id
+        )
+    )
+    match = result.scalar_one_or_none()
+    if not match:
+        return None
+    match.status = status
+    await db.commit()
+    return match
 ```
 
-**Frontend Component**:
+**Pydantic Schemas**:
+```python
+# backend/app/schemas/deal_matching.py
+from pydantic import BaseModel, Field
+from typing import Optional, List
+from datetime import datetime
+
+class SellSideMandateCreate(BaseModel):
+    deal_id: Optional[str] = None
+    company_name: str = Field(..., min_length=1)
+    industry: str
+    sub_industry: Optional[str] = None
+    revenue: float = Field(..., gt=0)
+    ebitda: float
+    asking_price: Optional[float] = None
+    geography: str
+    growth_rate: Optional[float] = None
+    description: Optional[str] = None
+    key_strengths: List[str] = []
+
+class SellSideMandateResponse(BaseModel):
+    id: str
+    deal_id: Optional[str]
+    company_name: str
+    industry: str
+    revenue: float
+    ebitda: float
+    geography: str
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class BuySideProfileCreate(BaseModel):
+    buyer_name: str = Field(..., min_length=1)
+    target_industries: List[str]
+    min_revenue: float
+    max_revenue: float
+    target_geographies: List[str]
+    acquisition_criteria: str
+    strategic_focus: Optional[str] = None
+
+class BuySideProfileResponse(BaseModel):
+    id: str
+    buyer_name: str
+    target_industries: List[str]
+    min_revenue: float
+    max_revenue: float
+    target_geographies: List[str]
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class DealMatchResponse(BaseModel):
+    id: str
+    sell_side_id: str
+    buy_side_id: str
+    confidence_score: float
+    match_rationale: str
+    compatibility_factors: dict
+    status: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+```
+
+**API Endpoints**:
+```python
+# backend/app/api/v1/endpoints/deal_matching.py
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.deps import get_db, get_current_user
+from app.services import deal_matching_service
+from app.schemas.deal_matching import (
+    SellSideMandateCreate, SellSideMandateResponse,
+    BuySideProfileCreate, BuySideProfileResponse,
+    DealMatchResponse
+)
+
+router = APIRouter()
+
+@router.post("/sell-side-mandates", response_model=SellSideMandateResponse, status_code=status.HTTP_201_CREATED)
+async def create_sell_side_mandate(
+    mandate: SellSideMandateCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Create a sell-side mandate."""
+    return await deal_matching_service.create_sell_side_mandate(
+        db, mandate, current_user.organization_id
+    )
+
+@router.get("/sell-side-mandates", response_model=List[SellSideMandateResponse])
+async def get_sell_side_mandates(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get all sell-side mandates for organization."""
+    return await deal_matching_service.get_organization_mandates(
+        db, current_user.organization_id
+    )
+
+@router.post("/sell-side-mandates/{mandate_id}/find-matches", response_model=List[DealMatchResponse])
+async def find_matches(
+    mandate_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Generate AI-powered deal matches using Claude 3."""
+    matches = await deal_matching_service.generate_deal_matches(
+        db, mandate_id, current_user.organization_id
+    )
+    return matches
+
+@router.get("/matches", response_model=List[DealMatchResponse])
+async def get_matches(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get all matches for organization."""
+    return await deal_matching_service.get_organization_matches(
+        db, current_user.organization_id
+    )
+
+@router.put("/matches/{match_id}/status", response_model=DealMatchResponse)
+async def update_match_status(
+    match_id: str,
+    status: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Update match status."""
+    result = await deal_matching_service.update_match_status(
+        db, match_id, status, current_user.organization_id
+    )
+    if not result:
+        raise HTTPException(status_code=404, detail="Match not found")
+    return result
+
+@router.post("/buy-side-profiles", response_model=BuySideProfileResponse, status_code=status.HTTP_201_CREATED)
+async def create_buy_side_profile(
+    profile: BuySideProfileCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Create a buy-side profile."""
+    return await deal_matching_service.create_buy_side_profile(
+        db, profile, current_user.organization_id
+    )
+```
+
+**Frontend Components**:
 ```typescript
 // frontend/src/pages/deal-matching/DealMatchesDashboard.tsx
+import React from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '@/lib/api';
+import { MatchCard } from './MatchCard';
+import { ConfidenceScoreBadge } from './ConfidenceScoreBadge';
+
+interface DealMatch {
+  id: string;
+  confidence_score: number;
+  match_rationale: string;
+  compatibility_factors: Record<string, number>;
+  status: string;
+}
+
 export const DealMatchesDashboard: React.FC = () => {
-  const { data: matches } = useQuery({
+  const queryClient = useQueryClient();
+
+  const { data: matches, isLoading } = useQuery({
     queryKey: ['matches'],
     queryFn: () => apiClient.get('/api/v1/matches').then(r => r.data)
   });
 
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ matchId, status }: { matchId: string; status: string }) =>
+      apiClient.put(`/api/v1/matches/${matchId}/status`, { status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['matches']);
+    }
+  });
+
+  if (isLoading) return <div className="flex justify-center p-8"><Spinner /></div>;
+
+  const highConfidence = matches?.filter(m => m.confidence_score >= 0.8) || [];
+  const mediumConfidence = matches?.filter(m => m.confidence_score >= 0.6 && m.confidence_score < 0.8) || [];
+
   return (
-    <div>
-      {matches?.map(match => (
-        <MatchCard key={match.id} match={match} confidenceScore={match.confidence_score} />
-      ))}
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Deal Matches</h2>
+        <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Generate New Matches
+        </button>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            High Confidence Matches
+            <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
+              {highConfidence.length}
+            </span>
+          </h3>
+          <div className="grid gap-4">
+            {highConfidence.map(match => (
+              <MatchCard
+                key={match.id}
+                match={match}
+                onStatusChange={(status) => updateStatusMutation.mutate({ matchId: match.id, status })}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            Medium Confidence Matches
+            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">
+              {mediumConfidence.length}
+            </span>
+          </h3>
+          <div className="grid gap-4">
+            {mediumConfidence.map(match => (
+              <MatchCard
+                key={match.id}
+                match={match}
+                onStatusChange={(status) => updateStatusMutation.mutate({ matchId: match.id, status })}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+```typescript
+// frontend/src/pages/deal-matching/MatchCard.tsx
+import React from 'react';
+import { ConfidenceScoreBadge } from './ConfidenceScoreBadge';
+
+interface MatchCardProps {
+  match: DealMatch;
+  onStatusChange: (status: string) => void;
+}
+
+export const MatchCard: React.FC<MatchCardProps> = ({ match, onStatusChange }) => {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h4 className="font-semibold text-lg">Match #{match.id.slice(0, 8)}</h4>
+          <p className="text-sm text-gray-500">{match.status}</p>
+        </div>
+        <ConfidenceScoreBadge score={match.confidence_score} />
+      </div>
+
+      <div className="mb-4">
+        <h5 className="font-medium text-sm text-gray-700 mb-2">Match Rationale</h5>
+        <p className="text-sm text-gray-600">{match.match_rationale}</p>
+      </div>
+
+      <div className="mb-4">
+        <h5 className="font-medium text-sm text-gray-700 mb-2">Compatibility Factors</h5>
+        <div className="grid grid-cols-2 gap-2">
+          {Object.entries(match.compatibility_factors).map(([key, value]) => (
+            <div key={key} className="flex justify-between text-sm">
+              <span className="text-gray-600 capitalize">{key.replace('_', ' ')}:</span>
+              <span className="font-medium">{(value * 100).toFixed(0)}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex gap-2">
+        <button
+          onClick={() => onStatusChange('contacted')}
+          className="flex-1 bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700"
+        >
+          Contact
+        </button>
+        <button
+          onClick={() => onStatusChange('progressing')}
+          className="flex-1 bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700"
+        >
+          Progress
+        </button>
+        <button
+          onClick={() => onStatusChange('declined')}
+          className="flex-1 bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700"
+        >
+          Decline
+        </button>
+      </div>
     </div>
   );
 };
@@ -2024,14 +2341,93 @@ export const DealMatchesDashboard: React.FC = () => {
 
 **TDD Tests**:
 ```python
+# backend/tests/test_deal_matching.py
+import pytest
+from httpx import AsyncClient
+from app.services import deal_matching_service
+from app.schemas.deal_matching import SellSideMandateCreate, BuySideProfileCreate
+
 @pytest.mark.asyncio
-async def test_ai_matching_generates_matches(db_session, test_mandate):
+async def test_create_sell_side_mandate(db_session, test_user):
+    """Test creating a sell-side mandate."""
+    mandate = await deal_matching_service.create_sell_side_mandate(
+        db=db_session,
+        mandate_data=SellSideMandateCreate(
+            company_name="Tech Startup Inc",
+            industry="Software",
+            revenue=5000000,
+            ebitda=1000000,
+            geography="UK"
+        ),
+        organization_id=test_user.organization_id
+    )
+    assert mandate.company_name == "Tech Startup Inc"
+    assert mandate.is_active == True
+    assert mandate.organization_id == test_user.organization_id
+
+@pytest.mark.asyncio
+async def test_ai_matching_generates_matches(db_session, test_mandate, mock_claude):
+    """Test AI generates appropriate matches with Claude 3."""
     matches = await deal_matching_service.generate_deal_matches(
-        db=db_session, sell_side_id=test_mandate.id, organization_id="org-123"
+        db=db_session,
+        sell_side_id=test_mandate.id,
+        organization_id=test_mandate.organization_id
     )
     assert len(matches) > 0
     assert all(m.confidence_score >= 0.6 for m in matches)
-# Add 40+ more tests
+    assert all(m.match_rationale for m in matches)
+    assert all(m.compatibility_factors for m in matches)
+
+@pytest.mark.asyncio
+async def test_update_match_status(db_session, test_match):
+    """Test updating match status."""
+    updated = await deal_matching_service.update_match_status(
+        db=db_session,
+        match_id=test_match.id,
+        status="contacted",
+        organization_id=test_match.organization_id
+    )
+    assert updated.status == "contacted"
+
+@pytest.mark.asyncio
+async def test_multi_tenant_isolation_matches(db_session, test_match, other_org):
+    """Test matches are isolated by organization."""
+    matches = await deal_matching_service.get_organization_matches(
+        db=db_session,
+        organization_id=other_org.id
+    )
+    assert test_match.id not in [m.id for m in matches]
+
+@pytest.mark.asyncio
+async def test_create_mandate_api_endpoint(client: AsyncClient, auth_headers):
+    """Test API endpoint for creating sell-side mandate."""
+    response = await client.post(
+        "/api/v1/sell-side-mandates",
+        json={
+            "company_name": "Acme Corp",
+            "industry": "Manufacturing",
+            "revenue": 10000000,
+            "ebitda": 2000000,
+            "geography": "US"
+        },
+        headers=auth_headers
+    )
+    assert response.status_code == 201
+    data = response.json()
+    assert data["company_name"] == "Acme Corp"
+
+@pytest.mark.asyncio
+async def test_find_matches_api_endpoint(client: AsyncClient, auth_headers, test_mandate):
+    """Test API endpoint for generating matches."""
+    response = await client.post(
+        f"/api/v1/sell-side-mandates/{test_mandate.id}/find-matches",
+        headers=auth_headers
+    )
+    assert response.status_code == 200
+    matches = response.json()
+    assert len(matches) > 0
+
+# Add 35+ more tests for buy-side profiles, match filtering, confidence scoring, etc.
 ```
 
 **Commit**: `feat(DEV-013): Intelligent Deal Matching with Claude 3 (45 tests)`
@@ -2219,20 +2615,1131 @@ async def review_document_for_risks(
     return review
 ```
 
-**TDD Tests** (~40-50 tests):
-- Template CRUD
-- Document generation
-- AI customization
-- Risk analysis
-- Version control
-- Redlining
-- API endpoints
+**Phase 2.1: Service Layer Functions (RED → GREEN)**
 
-**Frontend Components** (~8 components):
-- DocumentTemplateLibrary.tsx
-- DocumentGenerationWizard.tsx
-- DocumentEditor.tsx (use react-quill)
-- DocumentVersionHistory.tsx
+Complete CRUD service functions for document generation:
+
+```python
+# backend/app/services/document_generation_service.py
+import uuid
+from datetime import datetime
+from typing import Optional, List
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, and_, or_, func
+from openai import AsyncOpenAI
+
+from app.models.document_generation import DocumentTemplate, GeneratedDocument, DocumentReview
+from app.core.config import settings
+
+
+async def create_document_template(
+    db: AsyncSession,
+    name: str,
+    category: str,
+    jurisdiction: str,
+    template_content: str,
+    required_fields: dict,
+    organization_id: Optional[str] = None,
+    is_global: bool = False
+) -> DocumentTemplate:
+    """Create new document template."""
+
+    template = DocumentTemplate(
+        id=str(uuid.uuid4()),
+        name=name,
+        category=category,
+        jurisdiction=jurisdiction,
+        template_content=template_content,
+        required_fields=required_fields,
+        is_global=is_global,
+        organization_id=organization_id if not is_global else None
+    )
+
+    db.add(template)
+    await db.commit()
+    await db.refresh(template)
+
+    return template
+
+
+async def get_available_templates(
+    db: AsyncSession,
+    organization_id: str,
+    category: Optional[str] = None,
+    jurisdiction: Optional[str] = None
+) -> List[DocumentTemplate]:
+    """Get templates available to organization (global + org-specific)."""
+
+    query = select(DocumentTemplate).where(
+        or_(
+            DocumentTemplate.is_global == True,
+            DocumentTemplate.organization_id == organization_id
+        )
+    )
+
+    if category:
+        query = query.where(DocumentTemplate.category == category)
+    if jurisdiction:
+        query = query.where(DocumentTemplate.jurisdiction == jurisdiction)
+
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
+async def get_template(
+    db: AsyncSession,
+    template_id: str
+) -> Optional[DocumentTemplate]:
+    """Get single template by ID."""
+
+    result = await db.execute(
+        select(DocumentTemplate).where(DocumentTemplate.id == template_id)
+    )
+    return result.scalar_one_or_none()
+
+
+async def get_document(
+    db: AsyncSession,
+    document_id: str,
+    organization_id: str
+) -> Optional[GeneratedDocument]:
+    """Get generated document with multi-tenant security."""
+
+    result = await db.execute(
+        select(GeneratedDocument).where(
+            and_(
+                GeneratedDocument.id == document_id,
+                GeneratedDocument.organization_id == organization_id
+            )
+        )
+    )
+    return result.scalar_one_or_none()
+
+
+async def get_deal_documents(
+    db: AsyncSession,
+    deal_id: str,
+    organization_id: str
+) -> List[GeneratedDocument]:
+    """Get all documents for a deal."""
+
+    result = await db.execute(
+        select(GeneratedDocument).where(
+            and_(
+                GeneratedDocument.deal_id == deal_id,
+                GeneratedDocument.organization_id == organization_id
+            )
+        ).order_by(GeneratedDocument.created_at.desc())
+    )
+    return result.scalars().all()
+
+
+async def update_document_content(
+    db: AsyncSession,
+    document_id: str,
+    organization_id: str,
+    content: str,
+    increment_version: bool = False
+) -> GeneratedDocument:
+    """Update document content and optionally create new version."""
+
+    document = await get_document(db, document_id, organization_id)
+    if not document:
+        raise ValueError(f"Document {document_id} not found")
+
+    document.content = content
+
+    if increment_version:
+        document.version += 1
+
+    await db.commit()
+    await db.refresh(document)
+
+    return document
+
+
+async def update_document_status(
+    db: AsyncSession,
+    document_id: str,
+    organization_id: str,
+    status: str
+) -> GeneratedDocument:
+    """Update document status (draft → under_review → finalized)."""
+
+    valid_statuses = ["draft", "under_review", "finalized"]
+    if status not in valid_statuses:
+        raise ValueError(f"Invalid status. Must be one of: {valid_statuses}")
+
+    document = await get_document(db, document_id, organization_id)
+    if not document:
+        raise ValueError(f"Document {document_id} not found")
+
+    document.status = status
+    await db.commit()
+    await db.refresh(document)
+
+    return document
+
+
+async def delete_document(
+    db: AsyncSession,
+    document_id: str,
+    organization_id: str
+) -> bool:
+    """Delete generated document."""
+
+    document = await get_document(db, document_id, organization_id)
+    if not document:
+        return False
+
+    await db.delete(document)
+    await db.commit()
+
+    return True
+
+
+async def get_document_review(
+    db: AsyncSession,
+    document_id: str,
+    organization_id: str
+) -> Optional[DocumentReview]:
+    """Get AI review for a document."""
+
+    result = await db.execute(
+        select(DocumentReview).where(
+            and_(
+                DocumentReview.document_id == document_id,
+                DocumentReview.organization_id == organization_id
+            )
+        ).order_by(DocumentReview.reviewed_at.desc())
+    )
+    return result.first()
+```
+
+**Phase 2.2: Pydantic Schemas**
+
+```python
+# backend/app/schemas/document_generation.py
+from datetime import datetime
+from typing import Optional, List, Dict, Any
+from pydantic import BaseModel, Field, validator
+
+
+class DocumentTemplateCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=255)
+    category: str = Field(..., description="nda, loi, term_sheet, spa, etc.")
+    jurisdiction: str = Field(..., description="UK, US, EU")
+    template_content: str = Field(..., min_length=10, description="HTML with {{placeholders}}")
+    required_fields: Dict[str, Any] = Field(default_factory=dict, description="Field definitions")
+    is_global: bool = Field(default=False, description="Available to all organizations")
+
+    @validator("category")
+    def validate_category(cls, v):
+        valid_categories = ["nda", "loi", "term_sheet", "spa", "employment_agreement", "consulting_agreement", "shareholder_agreement"]
+        if v not in valid_categories:
+            raise ValueError(f"Category must be one of: {valid_categories}")
+        return v
+
+    @validator("jurisdiction")
+    def validate_jurisdiction(cls, v):
+        valid_jurisdictions = ["UK", "US", "EU", "CA", "AU"]
+        if v not in valid_jurisdictions:
+            raise ValueError(f"Jurisdiction must be one of: {valid_jurisdictions}")
+        return v
+
+
+class DocumentTemplateResponse(BaseModel):
+    id: str
+    name: str
+    category: str
+    jurisdiction: str
+    template_content: str
+    required_fields: Dict[str, Any]
+    is_global: bool
+    organization_id: Optional[str]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class GenerateDocumentRequest(BaseModel):
+    template_id: str
+    deal_id: str
+    field_values: Dict[str, Any] = Field(..., description="Values to fill into template")
+    created_by: str
+
+
+class GeneratedDocumentResponse(BaseModel):
+    id: str
+    deal_id: str
+    organization_id: str
+    template_id: str
+    document_name: str
+    content: str
+    field_values: Dict[str, Any]
+    version: int
+    status: str
+    created_by: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class DocumentUpdateRequest(BaseModel):
+    content: Optional[str] = None
+    status: Optional[str] = None
+    increment_version: bool = False
+
+    @validator("status")
+    def validate_status(cls, v):
+        if v is not None:
+            valid_statuses = ["draft", "under_review", "finalized"]
+            if v not in valid_statuses:
+                raise ValueError(f"Status must be one of: {valid_statuses}")
+        return v
+
+
+class IdentifiedRisk(BaseModel):
+    risk: str
+    severity: str  # low, medium, high
+    location: str  # Section reference
+    suggestion: Optional[str] = None
+
+
+class DocumentReviewResponse(BaseModel):
+    id: str
+    document_id: str
+    organization_id: str
+    ai_analysis: str
+    identified_risks: List[IdentifiedRisk]
+    suggested_revisions: List[str]
+    reviewed_at: datetime
+
+    class Config:
+        from_attributes = True
+```
+
+**Phase 2.3: API Endpoints**
+
+```python
+# backend/app/api/v1/document_generation.py
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.api.deps import get_db, get_current_user
+from app.models.user import User
+from app.schemas.document_generation import (
+    DocumentTemplateCreate,
+    DocumentTemplateResponse,
+    GenerateDocumentRequest,
+    GeneratedDocumentResponse,
+    DocumentUpdateRequest,
+    DocumentReviewResponse
+)
+from app.services import document_generation_service
+
+router = APIRouter(prefix="/api/v1/documents", tags=["document-generation"])
+
+
+@router.post("/templates", response_model=DocumentTemplateResponse, status_code=201)
+async def create_template(
+    request: DocumentTemplateCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Create new document template (Admin only for global templates)."""
+
+    # If creating global template, require admin role
+    if request.is_global and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can create global templates")
+
+    template = await document_generation_service.create_document_template(
+        db=db,
+        name=request.name,
+        category=request.category,
+        jurisdiction=request.jurisdiction,
+        template_content=request.template_content,
+        required_fields=request.required_fields,
+        organization_id=current_user.organization_id if not request.is_global else None,
+        is_global=request.is_global
+    )
+
+    return template
+
+
+@router.get("/templates", response_model=List[DocumentTemplateResponse])
+async def get_templates(
+    category: Optional[str] = Query(None, description="Filter by category"),
+    jurisdiction: Optional[str] = Query(None, description="Filter by jurisdiction"),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get available templates (global + organization-specific)."""
+
+    templates = await document_generation_service.get_available_templates(
+        db=db,
+        organization_id=current_user.organization_id,
+        category=category,
+        jurisdiction=jurisdiction
+    )
+
+    return templates
+
+
+@router.post("/generate", response_model=GeneratedDocumentResponse, status_code=201)
+async def generate_document(
+    request: GenerateDocumentRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Generate customized document from template using GPT-4."""
+
+    document = await document_generation_service.generate_custom_document(
+        db=db,
+        template_id=request.template_id,
+        deal_id=request.deal_id,
+        field_values=request.field_values,
+        organization_id=current_user.organization_id
+    )
+
+    return document
+
+
+@router.get("/deals/{deal_id}/documents", response_model=List[GeneratedDocumentResponse])
+async def get_deal_documents(
+    deal_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get all generated documents for a deal."""
+
+    documents = await document_generation_service.get_deal_documents(
+        db=db,
+        deal_id=deal_id,
+        organization_id=current_user.organization_id
+    )
+
+    return documents
+
+
+@router.get("/{document_id}", response_model=GeneratedDocumentResponse)
+async def get_document(
+    document_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get specific generated document."""
+
+    document = await document_generation_service.get_document(
+        db=db,
+        document_id=document_id,
+        organization_id=current_user.organization_id
+    )
+
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    return document
+
+
+@router.put("/{document_id}", response_model=GeneratedDocumentResponse)
+async def update_document(
+    document_id: str,
+    request: DocumentUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Update document content or status."""
+
+    if request.content is not None:
+        document = await document_generation_service.update_document_content(
+            db=db,
+            document_id=document_id,
+            organization_id=current_user.organization_id,
+            content=request.content,
+            increment_version=request.increment_version
+        )
+    elif request.status is not None:
+        document = await document_generation_service.update_document_status(
+            db=db,
+            document_id=document_id,
+            organization_id=current_user.organization_id,
+            status=request.status
+        )
+    else:
+        raise HTTPException(status_code=400, detail="Must provide content or status to update")
+
+    return document
+
+
+@router.post("/{document_id}/review", response_model=DocumentReviewResponse, status_code=201)
+async def review_document(
+    document_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Request AI review of document for risks and issues."""
+
+    review = await document_generation_service.review_document_for_risks(
+        db=db,
+        document_id=document_id,
+        organization_id=current_user.organization_id
+    )
+
+    return review
+
+
+@router.get("/{document_id}/review", response_model=DocumentReviewResponse)
+async def get_document_review(
+    document_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get latest AI review for document."""
+
+    review = await document_generation_service.get_document_review(
+        db=db,
+        document_id=document_id,
+        organization_id=current_user.organization_id
+    )
+
+    if not review:
+        raise HTTPException(status_code=404, detail="No review found for this document")
+
+    return review
+
+
+@router.delete("/{document_id}", status_code=204)
+async def delete_document(
+    document_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Delete generated document."""
+
+    success = await document_generation_service.delete_document(
+        db=db,
+        document_id=document_id,
+        organization_id=current_user.organization_id
+    )
+
+    if not success:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    return None
+```
+
+**Phase 2.4: Frontend Components**
+
+```typescript
+// frontend/src/pages/documents/DocumentTemplateLibrary.tsx
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import apiClient from '@/lib/apiClient';
+
+interface DocumentTemplate {
+  id: string;
+  name: string;
+  category: string;
+  jurisdiction: string;
+  is_global: boolean;
+  required_fields: Record<string, any>;
+}
+
+export const DocumentTemplateLibrary: React.FC = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedJurisdiction, setSelectedJurisdiction] = useState<string>('all');
+
+  const { data: templates, isLoading } = useQuery({
+    queryKey: ['document-templates', selectedCategory, selectedJurisdiction],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (selectedCategory !== 'all') params.append('category', selectedCategory);
+      if (selectedJurisdiction !== 'all') params.append('jurisdiction', selectedJurisdiction);
+
+      return apiClient.get(`/api/v1/documents/templates?${params}`).then(r => r.data);
+    }
+  });
+
+  const categories = [
+    { value: 'all', label: 'All Categories' },
+    { value: 'nda', label: 'NDA' },
+    { value: 'loi', label: 'Letter of Intent' },
+    { value: 'term_sheet', label: 'Term Sheet' },
+    { value: 'spa', label: 'Share Purchase Agreement' }
+  ];
+
+  const jurisdictions = [
+    { value: 'all', label: 'All Jurisdictions' },
+    { value: 'UK', label: 'United Kingdom' },
+    { value: 'US', label: 'United States' },
+    { value: 'EU', label: 'European Union' }
+  ];
+
+  if (isLoading) {
+    return <div className="flex justify-center p-8"><div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent"></div></div>;
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Document Templates</h2>
+        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Create Custom Template
+        </button>
+      </div>
+
+      {/* Filters */}
+      <div className="flex gap-4">
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="px-4 py-2 border rounded-lg"
+        >
+          {categories.map(cat => (
+            <option key={cat.value} value={cat.value}>{cat.label}</option>
+          ))}
+        </select>
+
+        <select
+          value={selectedJurisdiction}
+          onChange={(e) => setSelectedJurisdiction(e.target.value)}
+          className="px-4 py-2 border rounded-lg"
+        >
+          {jurisdictions.map(jur => (
+            <option key={jur.value} value={jur.value}>{jur.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Template Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {templates?.map((template: DocumentTemplate) => (
+          <div key={template.id} className="border rounded-lg p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="font-semibold text-lg">{template.name}</h3>
+                <p className="text-sm text-gray-600">{template.category.toUpperCase()}</p>
+              </div>
+              {template.is_global && (
+                <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Global</span>
+              )}
+            </div>
+
+            <div className="space-y-2 mb-4">
+              <p className="text-sm"><span className="font-medium">Jurisdiction:</span> {template.jurisdiction}</p>
+              <p className="text-sm"><span className="font-medium">Required Fields:</span> {Object.keys(template.required_fields).length}</p>
+            </div>
+
+            <button className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+              Use Template
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {templates?.length === 0 && (
+        <div className="text-center py-12 text-gray-500">
+          <p>No templates found matching your criteria.</p>
+        </div>
+      )}
+    </div>
+  );
+};
+```
+
+```typescript
+// frontend/src/pages/documents/DocumentGenerationWizard.tsx
+import React, { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import apiClient from '@/lib/apiClient';
+
+interface GenerateDocumentRequest {
+  template_id: string;
+  deal_id: string;
+  field_values: Record<string, any>;
+  created_by: string;
+}
+
+export const DocumentGenerationWizard: React.FC<{ templateId: string; dealId: string }> = ({ templateId, dealId }) => {
+  const [step, setStep] = useState(1);
+  const [fieldValues, setFieldValues] = useState<Record<string, any>>({});
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const generateMutation = useMutation({
+    mutationFn: (request: GenerateDocumentRequest) =>
+      apiClient.post('/api/v1/documents/generate', request),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries(['deal-documents', dealId]);
+      navigate(`/documents/${response.data.id}`);
+    }
+  });
+
+  const handleFieldChange = (fieldName: string, value: any) => {
+    setFieldValues(prev => ({ ...prev, [fieldName]: value }));
+  };
+
+  const handleGenerate = () => {
+    generateMutation.mutate({
+      template_id: templateId,
+      deal_id: dealId,
+      field_values: fieldValues,
+      created_by: 'current-user-id' // Should come from auth context
+    });
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-2xl font-bold mb-6">Generate Document</h2>
+
+        {/* Step Indicator */}
+        <div className="flex items-center mb-8">
+          <div className={`flex items-center ${step >= 1 ? 'text-blue-600' : 'text-gray-400'}`}>
+            <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">1</div>
+            <span className="ml-2">Fill Fields</span>
+          </div>
+          <div className="flex-1 h-1 mx-4 bg-gray-300"></div>
+          <div className={`flex items-center ${step >= 2 ? 'text-blue-600' : 'text-gray-400'}`}>
+            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">2</div>
+            <span className="ml-2">Review & Generate</span>
+          </div>
+        </div>
+
+        {/* Step 1: Field Input */}
+        {step === 1 && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Buyer Name</label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 border rounded-lg"
+                onChange={(e) => handleFieldChange('buyer_name', e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Seller Name</label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 border rounded-lg"
+                onChange={(e) => handleFieldChange('seller_name', e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Purchase Price (£)</label>
+              <input
+                type="number"
+                className="w-full px-4 py-2 border rounded-lg"
+                onChange={(e) => handleFieldChange('purchase_price', parseFloat(e.target.value))}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Closing Date</label>
+              <input
+                type="date"
+                className="w-full px-4 py-2 border rounded-lg"
+                onChange={(e) => handleFieldChange('closing_date', e.target.value)}
+              />
+            </div>
+
+            <button
+              onClick={() => setStep(2)}
+              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Continue to Review
+            </button>
+          </div>
+        )}
+
+        {/* Step 2: Review & Generate */}
+        {step === 2 && (
+          <div className="space-y-4">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h3 className="font-semibold mb-2">Review Field Values</h3>
+              <pre className="text-sm">{JSON.stringify(fieldValues, null, 2)}</pre>
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => setStep(1)}
+                className="flex-1 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Back
+              </button>
+              <button
+                onClick={handleGenerate}
+                disabled={generateMutation.isPending}
+                className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+              >
+                {generateMutation.isPending ? 'Generating...' : 'Generate Document'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+```
+
+```typescript
+// frontend/src/components/documents/RiskAnalysisPanel.tsx
+import React from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import apiClient from '@/lib/apiClient';
+
+interface IdentifiedRisk {
+  risk: string;
+  severity: 'low' | 'medium' | 'high';
+  location: string;
+  suggestion?: string;
+}
+
+interface DocumentReview {
+  id: string;
+  ai_analysis: string;
+  identified_risks: IdentifiedRisk[];
+  suggested_revisions: string[];
+  reviewed_at: string;
+}
+
+export const RiskAnalysisPanel: React.FC<{ documentId: string }> = ({ documentId }) => {
+  const { data: review, isLoading } = useQuery<DocumentReview>({
+    queryKey: ['document-review', documentId],
+    queryFn: () => apiClient.get(`/api/v1/documents/${documentId}/review`).then(r => r.data)
+  });
+
+  const requestReviewMutation = useMutation({
+    mutationFn: () => apiClient.post(`/api/v1/documents/${documentId}/review`),
+    onSuccess: () => {
+      // Refresh review data
+    }
+  });
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'high': return 'bg-red-100 text-red-800 border-red-300';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'low': return 'bg-green-100 text-green-800 border-green-300';
+      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+  };
+
+  if (isLoading) {
+    return <div className="animate-pulse">Loading risk analysis...</div>;
+  }
+
+  if (!review) {
+    return (
+      <div className="bg-gray-50 p-6 rounded-lg text-center">
+        <p className="text-gray-600 mb-4">No AI review available yet</p>
+        <button
+          onClick={() => requestReviewMutation.mutate()}
+          disabled={requestReviewMutation.isPending}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+        >
+          {requestReviewMutation.isPending ? 'Analyzing...' : 'Request AI Review'}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h3 className="font-semibold text-lg mb-2">AI Analysis Summary</h3>
+        <p className="text-gray-700">{review.ai_analysis}</p>
+      </div>
+
+      <div>
+        <h3 className="font-semibold text-lg mb-4">Identified Risks ({review.identified_risks.length})</h3>
+        <div className="space-y-3">
+          {review.identified_risks.map((risk, index) => (
+            <div key={index} className={`border rounded-lg p-4 ${getSeverityColor(risk.severity)}`}>
+              <div className="flex items-start justify-between mb-2">
+                <span className="font-medium">{risk.risk}</span>
+                <span className="px-2 py-1 text-xs rounded uppercase font-semibold">
+                  {risk.severity}
+                </span>
+              </div>
+              <p className="text-sm mb-2"><strong>Location:</strong> {risk.location}</p>
+              {risk.suggestion && (
+                <p className="text-sm"><strong>Suggestion:</strong> {risk.suggestion}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {review.suggested_revisions.length > 0 && (
+        <div>
+          <h3 className="font-semibold text-lg mb-4">Suggested Revisions</h3>
+          <ul className="list-disc list-inside space-y-2">
+            {review.suggested_revisions.map((revision, index) => (
+              <li key={index} className="text-gray-700">{revision}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="text-sm text-gray-500">
+        Last reviewed: {new Date(review.reviewed_at).toLocaleString()}
+      </div>
+    </div>
+  );
+};
+```
+
+**Phase 2.5: TDD Tests**
+
+```python
+# backend/tests/services/test_document_generation_service.py
+import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.services import document_generation_service
+
+
+@pytest.mark.asyncio
+async def test_create_global_template(db: AsyncSession):
+    """Test creating global document template."""
+
+    template = await document_generation_service.create_document_template(
+        db=db,
+        name="Standard NDA (UK)",
+        category="nda",
+        jurisdiction="UK",
+        template_content="<h1>Non-Disclosure Agreement</h1><p>Between {{buyer_name}} and {{seller_name}}...</p>",
+        required_fields={
+            "buyer_name": {"type": "string", "required": True},
+            "seller_name": {"type": "string", "required": True},
+            "effective_date": {"type": "date", "required": True}
+        },
+        is_global=True
+    )
+
+    assert template.id is not None
+    assert template.name == "Standard NDA (UK)"
+    assert template.category == "nda"
+    assert template.jurisdiction == "UK"
+    assert template.is_global is True
+    assert template.organization_id is None
+
+
+@pytest.mark.asyncio
+async def test_get_available_templates_includes_global_and_org_specific(db: AsyncSession):
+    """Test that organizations see both global and org-specific templates."""
+
+    # Create global template
+    global_template = await document_generation_service.create_document_template(
+        db=db,
+        name="Global NDA",
+        category="nda",
+        jurisdiction="UK",
+        template_content="<h1>NDA</h1>",
+        required_fields={},
+        is_global=True
+    )
+
+    # Create org-specific template
+    org_template = await document_generation_service.create_document_template(
+        db=db,
+        name="Custom LOI",
+        category="loi",
+        jurisdiction="US",
+        template_content="<h1>LOI</h1>",
+        required_fields={},
+        organization_id="org-123"
+    )
+
+    # Get templates for org-123
+    templates = await document_generation_service.get_available_templates(
+        db=db,
+        organization_id="org-123"
+    )
+
+    assert len(templates) == 2
+    template_ids = [t.id for t in templates]
+    assert global_template.id in template_ids
+    assert org_template.id in template_ids
+
+
+@pytest.mark.asyncio
+async def test_generate_custom_document_with_gpt4(db: AsyncSession, mock_openai):
+    """Test document generation with GPT-4 customization."""
+
+    # This test would require mocking OpenAI API
+    # In real implementation, use pytest-mock or responses library
+
+    document = await document_generation_service.generate_custom_document(
+        db=db,
+        template_id="template-123",
+        deal_id="deal-456",
+        field_values={
+            "buyer_name": "Acme Corp",
+            "seller_name": "Target Ltd",
+            "purchase_price": 5000000,
+            "created_by": "user-789"
+        },
+        organization_id="org-123"
+    )
+
+    assert document.id is not None
+    assert document.deal_id == "deal-456"
+    assert document.organization_id == "org-123"
+    assert document.status == "draft"
+    assert document.version == 1
+    assert "Acme Corp" in document.content
+
+
+@pytest.mark.asyncio
+async def test_review_document_for_risks(db: AsyncSession, mock_openai):
+    """Test AI risk analysis of document."""
+
+    review = await document_generation_service.review_document_for_risks(
+        db=db,
+        document_id="doc-123",
+        organization_id="org-123"
+    )
+
+    assert review.id is not None
+    assert review.document_id == "doc-123"
+    assert review.organization_id == "org-123"
+    assert len(review.identified_risks) > 0
+    assert review.ai_analysis is not None
+
+
+@pytest.mark.asyncio
+async def test_update_document_increments_version(db: AsyncSession):
+    """Test that document version increments on update."""
+
+    # Create initial document
+    document = await create_test_document(db, version=1)
+
+    # Update with version increment
+    updated = await document_generation_service.update_document_content(
+        db=db,
+        document_id=document.id,
+        organization_id=document.organization_id,
+        content="Updated content",
+        increment_version=True
+    )
+
+    assert updated.version == 2
+    assert updated.content == "Updated content"
+
+
+@pytest.mark.asyncio
+async def test_update_document_status_validates_values(db: AsyncSession):
+    """Test that status update validates allowed values."""
+
+    document = await create_test_document(db)
+
+    # Valid status
+    updated = await document_generation_service.update_document_status(
+        db=db,
+        document_id=document.id,
+        organization_id=document.organization_id,
+        status="under_review"
+    )
+    assert updated.status == "under_review"
+
+    # Invalid status should raise error
+    with pytest.raises(ValueError, match="Invalid status"):
+        await document_generation_service.update_document_status(
+            db=db,
+            document_id=document.id,
+            organization_id=document.organization_id,
+            status="invalid_status"
+        )
+
+
+@pytest.mark.asyncio
+async def test_multi_tenant_isolation(db: AsyncSession):
+    """Test that organizations cannot access other orgs' documents."""
+
+    # Create document for org-123
+    doc_org1 = await create_test_document(db, organization_id="org-123")
+
+    # Try to access from org-456
+    document = await document_generation_service.get_document(
+        db=db,
+        document_id=doc_org1.id,
+        organization_id="org-456"
+    )
+
+    assert document is None  # Should not find document from other org
+```
+
+```typescript
+// frontend/src/pages/documents/__tests__/DocumentGeneration.test.tsx
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { DocumentTemplateLibrary } from '../DocumentTemplateLibrary';
+import { RiskAnalysisPanel } from '@/components/documents/RiskAnalysisPanel';
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } }
+});
+
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+);
+
+describe('DocumentTemplateLibrary', () => {
+  it('should render template grid', async () => {
+    render(<DocumentTemplateLibrary />, { wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('Document Templates')).toBeInTheDocument();
+    });
+  });
+
+  it('should filter templates by category', async () => {
+    const user = userEvent.setup();
+    render(<DocumentTemplateLibrary />, { wrapper });
+
+    const categorySelect = screen.getByRole('combobox', { name: /category/i });
+    await user.selectOptions(categorySelect, 'nda');
+
+    // Should trigger new API call with category filter
+    await waitFor(() => {
+      expect(screen.queryByText(/Term Sheet/i)).not.toBeInTheDocument();
+    });
+  });
+});
+
+describe('RiskAnalysisPanel', () => {
+  it('should display identified risks', async () => {
+    render(<RiskAnalysisPanel documentId="doc-123" />, { wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Identified Risks/i)).toBeInTheDocument();
+    });
+  });
+
+  it('should color-code risks by severity', async () => {
+    render(<RiskAnalysisPanel documentId="doc-123" />, { wrapper });
+
+    await waitFor(() => {
+      const highRisk = screen.getByText('HIGH');
+      expect(highRisk).toHaveClass('bg-red-100');
+    });
+  });
+});
+```
+
+**Commit**: `feat(DEV-014): Automated Document Generation with GPT-4 (50 tests)`
 - RiskAnalysisPanel.tsx
 - RedlineComparisonView.tsx
 - DocumentSignatureWorkflow.tsx
