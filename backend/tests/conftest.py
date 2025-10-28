@@ -13,10 +13,10 @@ from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from jose import jwt
-from sqlalchemy import create_engine, inspect, text
-from sqlalchemy.exc import OperationalError
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+from sqlalchemy.exc import OperationalError
 from _pytest.fixtures import FixtureLookupError
 
 # Ensure repository and backend directories are on sys.path for "app" imports
@@ -103,7 +103,7 @@ def _safe_drop_schema(engine) -> None:
 
     try:
         Base.metadata.drop_all(bind=engine)
-    except OperationalError:  # pragma: no cover - defensive cleanup
+    except OperationalError:
         # Drop any remaining tables that SQLAlchemy metadata did not track
         with engine.begin() as connection:
             for table_name in inspector.get_table_names():
@@ -117,11 +117,7 @@ def _reset_metadata(engine) -> None:
     Base.metadata.create_all(bind=engine)
 
 
-@pytest.fixture(autouse=True)
-def _reset_database(engine):
-    """Reset schema before each test for deterministic state."""
-    _reset_metadata(engine)
-    yield
+__all__ = ["_safe_drop_schema", "_reset_metadata"]
 
 
 @pytest.fixture()
@@ -135,13 +131,20 @@ def engine():
         poolclass=StaticPool,
     )
     Base.metadata.create_all(engine)
+
+    session_factory = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
     session_module.engine = engine
-    session_module.SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+    session_module.SessionLocal = session_factory
+    core_database.engine = engine
+    core_database.SessionLocal = session_factory
+
     try:
         yield engine
     finally:
         Base.metadata.drop_all(engine)
         engine.dispose()
+        core_database.engine = None
+        core_database.SessionLocal = None
 
 
 @pytest.fixture()
@@ -576,5 +579,13 @@ def create_deal_for_org(db_session, create_user, create_organization, request):
         return deal, owner_user, org
 
     return _create
+
+
+@pytest.fixture(autouse=True)
+def _reset_database(engine):
+    """Reset schema before each test for deterministic state."""
+
+    _reset_metadata(engine)
+    yield
 
 
