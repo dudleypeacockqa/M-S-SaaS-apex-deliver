@@ -6,7 +6,7 @@ from sqlalchemy import inspect
 from sqlalchemy.exc import OperationalError
 
 from app.db.base import Base
-from backend.tests.conftest import _reset_metadata, _safe_drop_schema
+from conftest import _reset_metadata, _safe_drop_schema
 
 
 def test_reset_metadata_handles_missing_tables(engine):

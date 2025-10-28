@@ -239,12 +239,6 @@ def create_organization(db_session) -> Callable[..., Organization]:
     return _create_org
 
 
-@pytest.fixture()
-def auth_headers_admin(create_user) -> dict[str, str]:
-    admin_user = create_user(role=UserRole.admin, email="admin@example.com")
-    token = _make_token(admin_user.clerk_user_id)
-    return {"Authorization": f"Bearer {token}"}
-
 
 @pytest.fixture()
 def auth_headers_solo(create_user) -> dict[str, str]:
