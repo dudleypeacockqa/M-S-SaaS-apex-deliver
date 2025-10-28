@@ -1,0 +1,1175 @@
+# DEV-016: Podcast Studio (Subscription Add-On)
+
+**Status**: 🟡 In Progress
+**Priority**: High
+**Epic**: Phase 3 - Ecosystem & Network Effects
+**Started**: 2025-10-28
+**Target Completion**: 2025-11-16
+**Estimated Effort**: 13-19 days
+**Methodology**: BMAD v6-alpha + TDD
+
+---
+
+## Story Overview
+
+### User Story
+
+**As a** M&A professional building thought leadership
+**I want** access to a professional podcast studio within my M&A platform
+**So that** I can create audio/video content, transcribe episodes, and publish to YouTube without needing separate tools
+
+### Business Context
+
+**CRITICAL SCOPE CHANGE**: This story has been redefined from a master-admin-only feature to a **subscription-gated add-on** that tenants can access based on their Clerk subscription tier.
+
+**Business Value**:
+- **New Revenue Stream**: Upsell podcast features to existing subscribers (£200K+ ARR potential)
+- **Market Differentiation**: StreamYard-quality features integrated into M&A workflow
+- **Competitive Moat**: YouTube integration, AI transcription, live streaming
+- **Target Market Alignment**: M&A professionals building personal brands through content
+
+**Revenue Model**:
+- Professional tier (£598/mo): Audio-only podcasts, 10 episodes/month
+- Premium tier (£1,598/mo): Audio + video, unlimited episodes, YouTube publishing
+- Enterprise tier (£2,997/mo): Full suite + live streaming, multi-language transcription
+
+---
+
+## Acceptance Criteria
+
+### Must Have (Required for Story Completion)
+
+#### Subscription Tier Enforcement
+- [ ] Clerk integration fetches subscription tier from organization metadata
+- [ ] Feature entitlement service validates access based on tier
+- [ ] API middleware returns 403 for insufficient subscription tiers
+- [ ] Frontend hides/disables features for insufficient tiers
+- [ ] Upgrade CTAs displayed when locked features accessed
+- [ ] Quota enforcement prevents Professional tier exceeding 10 episodes/month
+- [ ] 100% test coverage on tier validation logic
+- [ ] Zero security bypass vulnerabilities (penetration tested)
+
+#### Audio Podcasting (Professional+ Tiers)
+- [ ] Create audio-only podcast episodes
+- [ ] Upload audio files (MP3, WAV, M4A formats, max 500MB)
+- [ ] Edit episode metadata (title, description, show notes)
+- [ ] Delete podcast episodes
+- [ ] List all episodes with filtering and sorting
+- [ ] Basic transcription using OpenAI Whisper API
+- [ ] Download transcripts as TXT/SRT files
+
+#### Video Podcasting (Premium+ Tiers)
+- [ ] Upload video files (MP4, MOV formats, max 2GB)
+- [ ] Video player with playback controls
+- [ ] Thumbnail generation from video frames
+- [ ] Edit video metadata
+
+#### YouTube Integration (Premium+ Tiers)
+- [ ] OAuth connection to YouTube account
+- [ ] Auto-publish episodes to YouTube
+- [ ] Sync metadata (title, description, tags)
+- [ ] Track YouTube video IDs and URLs
+- [ ] View YouTube analytics within platform
+
+#### Live Streaming (Enterprise Tier Only)
+- [ ] Start/stop live streams
+- [ ] StreamYard-quality streaming experience
+- [ ] Real-time viewer count
+- [ ] Chat integration (future enhancement)
+- [ ] Stream recording and auto-archive
+
+#### Usage & Quota Management
+- [ ] Real-time usage tracking (episodes created this month)
+- [ ] Quota display showing limit and remaining
+- [ ] Quota warning when approaching limit (80%, 90%, 100%)
+- [ ] Quota exceeded error with upgrade CTA
+- [ ] Usage reset on monthly billing cycle
+
+#### Testing Requirements
+- [ ] ≥90% backend test coverage
+- [ ] ≥85% frontend test coverage
+- [ ] 100% coverage on tier validation logic
+- [ ] Comprehensive 403 tests for all tiers
+- [ ] E2E tests for all subscription journeys
+- [ ] Security audit passed (no tier bypasses)
+
+### Should Have (High Priority)
+
+- [ ] Graceful degradation when Clerk API fails (deny-by-default)
+- [ ] Redis caching for tier data (cache hit rate >80%)
+- [ ] Real-time quota usage display
+- [ ] Comprehensive error messages guiding to upgrade
+- [ ] Multi-language transcription (Enterprise tier)
+- [ ] Transcript editing capabilities
+- [ ] Episode analytics (plays, downloads, completion rate)
+- [ ] Scheduled publishing
+- [ ] Draft/publish workflow
+
+### Could Have (Nice to Have)
+
+- [ ] A/B testing for upgrade CTA effectiveness
+- [ ] Analytics tracking for feature lock encounters
+- [ ] Self-service tier upgrade flow (Stripe integration)
+- [ ] Podcast RSS feed generation
+- [ ] Automatic audio normalization
+- [ ] Background noise removal
+- [ ] Chapter markers
+- [ ] Podcast artwork management
+- [ ] Episode templates
+
+### Won't Have (Out of Scope)
+
+- ❌ Native recording within platform (use external tools)
+- ❌ Built-in audio editing (use external DAW)
+- ❌ Spotify integration (YouTube only for MVP)
+- ❌ Apple Podcasts integration
+- ❌ Multi-host recording
+- ❌ Video editing capabilities
+
+---
+
+## Technical Specification
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Frontend Layer                          │
+│  ┌─────────────────┐  ┌──────────────┐  ┌────────────────┐ │
+│  │ PodcastStudio   │  │ UpgradePrompt│  │ QuotaDisplay   │ │
+│  │ (Tier Gates)    │  │ (CTAs)       │  │ (Usage)        │ │
+│  └────────┬────────┘  └──────┬───────┘  └────────┬───────┘ │
+│           │                  │                    │         │
+│           └──────────────────┼────────────────────┘         │
+│                              │                              │
+└──────────────────────────────┼──────────────────────────────┘
+                               │
+                      ┌────────┴────────┐
+                      │  React Query    │
+                      │  (API Client)   │
+                      └────────┬────────┘
+                               │
+┌──────────────────────────────┼──────────────────────────────┐
+│                      API Layer (FastAPI)                     │
+│  ┌─────────────────┐  ┌──────────────┐  ┌────────────────┐ │
+│  │ require_feature │  │ Podcast API  │  │ YouTube API    │ │
+│  │ (Middleware)    │──│ Endpoints    │  │ Endpoints      │ │
+│  └────────┬────────┘  └──────┬───────┘  └────────┬───────┘ │
+│           │                  │                    │         │
+└───────────┼──────────────────┼────────────────────┼─────────┘
+            │                  │                    │
+┌───────────┼──────────────────┼────────────────────┼─────────┐
+│                    Service Layer                             │
+│  ┌────────┴────────┐  ┌──────┴───────┐  ┌────────┴───────┐ │
+│  │ Entitlement     │  │ Podcast      │  │ YouTube        │ │
+│  │ Service         │  │ Service      │  │ Service        │ │
+│  │ (Tier Checking) │  │ (CRUD)       │  │ (Integration)  │ │
+│  └────────┬────────┘  └──────┬───────┘  └────────┬───────┘ │
+│           │                  │                    │         │
+└───────────┼──────────────────┼────────────────────┼─────────┘
+            │                  │                    │
+┌───────────┼──────────────────┼────────────────────┼─────────┐
+│                    External Services                         │
+│  ┌────────┴────────┐  ┌──────┴───────┐  ┌────────┴───────┐ │
+│  │ Clerk API       │  │ Whisper API  │  │ YouTube API    │ │
+│  │ (Tier Data)     │  │ (Transcript) │  │ (Upload)       │ │
+│  └─────────────────┘  └──────────────┘  └────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Database Schema
+
+```sql
+-- Podcast Episodes (already exists in models/podcast.py)
+CREATE TABLE podcast_episodes (
+    id VARCHAR(36) PRIMARY KEY,
+    organization_id VARCHAR(36) NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    show_notes TEXT,
+    episode_number INTEGER NOT NULL DEFAULT 1,
+    season_number INTEGER NOT NULL DEFAULT 1,
+    audio_file_url VARCHAR(500) NOT NULL,
+    video_file_url VARCHAR(500),
+    duration_seconds INTEGER,
+    status VARCHAR(32) NOT NULL DEFAULT 'draft', -- draft, published, archived
+    transcript TEXT,
+    youtube_video_id VARCHAR(100),
+    youtube_url VARCHAR(500),
+    created_by VARCHAR(36) NOT NULL REFERENCES users(id),
+    published_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE,
+    INDEX idx_org_id (organization_id),
+    INDEX idx_status (status),
+    INDEX idx_created_at (created_at)
+);
+
+-- Podcast Transcripts
+CREATE TABLE podcast_transcripts (
+    id VARCHAR(36) PRIMARY KEY,
+    episode_id VARCHAR(36) NOT NULL REFERENCES podcast_episodes(id) ON DELETE CASCADE,
+    organization_id VARCHAR(36) NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    text TEXT NOT NULL,
+    language VARCHAR(10) DEFAULT 'en',
+    confidence_score DECIMAL(5,4),
+    processing_time_ms INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    INDEX idx_episode_id (episode_id)
+);
+
+-- Podcast Analytics
+CREATE TABLE podcast_analytics (
+    id VARCHAR(36) PRIMARY KEY,
+    episode_id VARCHAR(36) NOT NULL REFERENCES podcast_episodes(id) ON DELETE CASCADE,
+    organization_id VARCHAR(36) NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    plays INTEGER DEFAULT 0,
+    downloads INTEGER DEFAULT 0,
+    youtube_views INTEGER DEFAULT 0,
+    youtube_likes INTEGER DEFAULT 0,
+    youtube_comments INTEGER DEFAULT 0,
+    avg_watch_duration_seconds INTEGER,
+    last_synced_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE,
+    INDEX idx_episode_id (episode_id)
+);
+
+-- Usage Tracking (NEW - for quota enforcement)
+CREATE TABLE podcast_usage_tracking (
+    id VARCHAR(36) PRIMARY KEY,
+    organization_id VARCHAR(36) NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    month VARCHAR(7) NOT NULL, -- YYYY-MM format
+    episodes_created INTEGER DEFAULT 0,
+    audio_storage_mb DECIMAL(10,2) DEFAULT 0,
+    video_storage_mb DECIMAL(10,2) DEFAULT 0,
+    transcription_minutes INTEGER DEFAULT 0,
+    youtube_uploads INTEGER DEFAULT 0,
+    live_streams INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE INDEX idx_org_month (organization_id, month)
+);
+```
+
+### API Endpoints
+
+```python
+# Episode Management
+POST   /api/v1/podcast/episodes
+  - Auth: Required
+  - Tier: Professional+
+  - Body: { title, description, audio_url, ... }
+  - Returns: 201 Created | 403 Forbidden
+
+GET    /api/v1/podcast/episodes
+  - Auth: Required
+  - Tier: Professional+
+  - Query: ?page=1&limit=20&status=published
+  - Returns: 200 OK | 403 Forbidden
+
+GET    /api/v1/podcast/episodes/{id}
+  - Auth: Required
+  - Tier: Professional+
+  - Returns: 200 OK | 403 Forbidden | 404 Not Found
+
+PUT    /api/v1/podcast/episodes/{id}
+  - Auth: Required
+  - Tier: Professional+
+  - Body: { title, description, ... }
+  - Returns: 200 OK | 403 Forbidden | 404 Not Found
+
+DELETE /api/v1/podcast/episodes/{id}
+  - Auth: Required
+  - Tier: Professional+
+  - Returns: 204 No Content | 403 Forbidden | 404 Not Found
+
+# Transcription
+POST   /api/v1/podcast/episodes/{id}/transcribe
+  - Auth: Required
+  - Tier: Professional+
+  - Returns: 202 Accepted (async task) | 403 Forbidden
+
+GET    /api/v1/podcast/transcripts/{episode_id}
+  - Auth: Required
+  - Tier: Professional+
+  - Returns: 200 OK | 403 Forbidden | 404 Not Found
+
+# YouTube Integration
+POST   /api/v1/podcast/youtube/connect
+  - Auth: Required
+  - Tier: Premium+
+  - Body: { auth_code }
+  - Returns: 200 OK | 403 Forbidden
+
+POST   /api/v1/podcast/episodes/{id}/youtube/publish
+  - Auth: Required
+  - Tier: Premium+
+  - Returns: 202 Accepted (async task) | 403 Forbidden
+
+GET    /api/v1/podcast/youtube/videos
+  - Auth: Required
+  - Tier: Premium+
+  - Returns: 200 OK | 403 Forbidden
+
+# Live Streaming
+POST   /api/v1/podcast/streaming/start
+  - Auth: Required
+  - Tier: Enterprise
+  - Body: { title, description }
+  - Returns: 200 OK (stream URL) | 403 Forbidden
+
+POST   /api/v1/podcast/streaming/stop
+  - Auth: Required
+  - Tier: Enterprise
+  - Returns: 200 OK | 403 Forbidden
+
+GET    /api/v1/podcast/streaming/status
+  - Auth: Required
+  - Tier: Enterprise
+  - Returns: 200 OK | 403 Forbidden
+
+# Usage & Quota
+GET    /api/v1/podcast/usage
+  - Auth: Required
+  - Tier: Professional+
+  - Returns: { episodes_created, limit, remaining, percentage }
+
+GET    /api/v1/podcast/quota
+  - Auth: Required
+  - Tier: Professional+
+  - Returns: { tier, features, limits }
+```
+
+### Feature Entitlement Matrix
+
+```python
+FEATURE_ENTITLEMENTS = {
+    # Core podcast features
+    "podcast_audio": ["professional", "premium", "enterprise"],
+    "podcast_video": ["premium", "enterprise"],
+
+    # Transcription
+    "transcription_basic": ["professional", "premium", "enterprise"],
+    "transcription_ai_enhanced": ["premium", "enterprise"],
+    "transcription_multi_language": ["enterprise"],
+
+    # YouTube
+    "youtube_integration": ["premium", "enterprise"],
+    "youtube_auto_publish": ["premium", "enterprise"],
+
+    # Live streaming
+    "live_streaming": ["enterprise"],
+    "live_streaming_hd": ["enterprise"],
+
+    # Quota limits
+    "podcast_quota": {
+        "professional": {"episodes_per_month": 10},
+        "premium": {"episodes_per_month": -1},  # unlimited
+        "enterprise": {"episodes_per_month": -1},
+    }
+}
+```
+
+---
+
+## TDD Implementation Plan
+
+### Phase 1: Tier Validation (Days 1-2)
+
+#### Test 1: Clerk Tier Fetching
+
+```python
+# RED
+@pytest.mark.asyncio
+async def test_get_organization_tier_returns_professional():
+    """Test Clerk API returns correct subscription tier."""
+    org_id = "org_123"
+    tier = await get_organization_tier(org_id)
+    assert tier == "professional"
+
+@pytest.mark.asyncio
+async def test_get_organization_tier_defaults_to_starter():
+    """Test default tier is 'starter' when metadata missing."""
+    org_id = "org_no_tier"
+    tier = await get_organization_tier(org_id)
+    assert tier == "starter"
+
+# GREEN
+async def get_organization_tier(organization_id: str) -> str:
+    clerk = Clerk(bearer_auth=settings.CLERK_SECRET_KEY)
+    org = await clerk.organizations.get(organization_id)
+    return org.public_metadata.get("subscription_tier", "starter")
+
+# REFACTOR
+# - Add caching decorator (@cache(ttl=300))
+# - Add error handling for Clerk API failures
+# - Add logging for tier checks
+```
+
+#### Test 2: Feature Entitlement Service
+
+```python
+# RED
+@pytest.mark.asyncio
+async def test_professional_has_audio_access():
+    """Test Professional tier has audio podcast access."""
+    has_access = await check_feature_access("org_prof", "podcast_audio")
+    assert has_access is True
+
+@pytest.mark.asyncio
+async def test_starter_no_audio_access():
+    """Test Starter tier does not have audio access."""
+    has_access = await check_feature_access("org_starter", "podcast_audio")
+    assert has_access is False
+
+@pytest.mark.asyncio
+async def test_professional_no_video_access():
+    """Test Professional tier does not have video access."""
+    has_access = await check_feature_access("org_prof", "podcast_video")
+    assert has_access is False
+
+@pytest.mark.asyncio
+async def test_premium_has_youtube_access():
+    """Test Premium tier has YouTube integration."""
+    has_access = await check_feature_access("org_prem", "youtube_integration")
+    assert has_access is True
+
+# GREEN
+async def check_feature_access(org_id: str, feature: str) -> bool:
+    tier = await get_organization_tier(org_id)
+    allowed_tiers = FEATURE_ENTITLEMENTS.get(feature, [])
+    return tier in allowed_tiers
+
+# REFACTOR
+# - Extract tier constants to config
+# - Add feature existence validation
+# - Add detailed logging
+```
+
+#### Test 3: API Middleware
+
+```python
+# RED
+@pytest.mark.asyncio
+async def test_require_feature_allows_sufficient_tier(client, professional_user):
+    """Test middleware allows request with sufficient tier."""
+    response = await client.post(
+        "/api/podcast/episodes",
+        headers=professional_user.auth_headers,
+        json={"title": "Test"}
+    )
+    assert response.status_code in [200, 201]
+
+@pytest.mark.asyncio
+async def test_require_feature_blocks_insufficient_tier(client, starter_user):
+    """Test middleware blocks request with insufficient tier."""
+    response = await client.post(
+        "/api/podcast/episodes",
+        headers=starter_user.auth_headers,
+        json={"title": "Test"}
+    )
+    assert response.status_code == 403
+    assert "subscription upgrade" in response.json()["detail"]
+    assert response.json()["required_tier"] == "professional"
+
+# GREEN
+def require_feature(feature: str):
+    async def check(current_user: User = Depends(get_current_user)):
+        has_access = await check_feature_access(
+            current_user.organization_id, feature
+        )
+        if not has_access:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Feature '{feature}' requires subscription upgrade",
+                headers={"X-Required-Tier": get_required_tier(feature)}
+            )
+        return current_user
+    return check
+
+# REFACTOR
+# - Standardize error response format
+# - Add upgrade URL to response
+# - Add telemetry for blocked requests
+```
+
+### Phase 2: Podcast Service (Days 3-5)
+
+#### Test 4: Episode CRUD with Tier Validation
+
+```python
+# RED
+@pytest.mark.asyncio
+async def test_create_episode_professional_success(db, professional_user):
+    """Test Professional tier can create audio episode."""
+    episode_data = EpisodeCreate(
+        title="Test Episode",
+        audio_url="https://example.com/audio.mp3"
+    )
+    episode = await podcast_service.create_episode(
+        episode_data, professional_user, db
+    )
+    assert episode.title == "Test Episode"
+    assert episode.organization_id == professional_user.organization_id
+
+@pytest.mark.asyncio
+async def test_create_episode_starter_raises(db, starter_user):
+    """Test Starter tier cannot create episodes."""
+    episode_data = EpisodeCreate(title="Test")
+    with pytest.raises(InsufficientTierError) as exc:
+        await podcast_service.create_episode(episode_data, starter_user, db)
+    assert "Professional tier required" in str(exc.value)
+
+@pytest.mark.asyncio
+async def test_create_video_episode_premium_success(db, premium_user):
+    """Test Premium tier can create video episode."""
+    episode_data = EpisodeCreate(
+        title="Video Episode",
+        audio_url="https://example.com/audio.mp3",
+        video_url="https://example.com/video.mp4"
+    )
+    episode = await podcast_service.create_episode(episode_data, premium_user, db)
+    assert episode.video_file_url is not None
+
+@pytest.mark.asyncio
+async def test_create_video_episode_professional_raises(db, professional_user):
+    """Test Professional tier cannot create video episodes."""
+    episode_data = EpisodeCreate(
+        title="Video Episode",
+        video_url="https://example.com/video.mp4"
+    )
+    with pytest.raises(InsufficientTierError) as exc:
+        await podcast_service.create_episode(episode_data, professional_user, db)
+    assert "Premium tier required" in str(exc.value)
+
+# GREEN
+async def create_episode(
+    data: EpisodeCreate,
+    user: User,
+    db: AsyncSession
+) -> Episode:
+    # Check tier for audio
+    if not await check_feature_access(user.organization_id, "podcast_audio"):
+        raise InsufficientTierError("Professional tier required for podcasts")
+
+    # Check tier for video
+    if data.video_url and not await check_feature_access(
+        user.organization_id, "podcast_video"
+    ):
+        raise InsufficientTierError("Premium tier required for video podcasts")
+
+    # Check quota
+    if not await check_monthly_quota(user.organization_id, "episodes"):
+        raise QuotaExceededError("Monthly episode limit reached")
+
+    # Create episode
+    episode = Episode(
+        **data.dict(),
+        organization_id=user.organization_id,
+        created_by=user.id
+    )
+    db.add(episode)
+    await db.commit()
+    await db.refresh(episode)
+
+    # Track usage
+    await track_usage(user.organization_id, "episodes_created")
+
+    return episode
+
+# REFACTOR
+# - Extract validation to separate function
+# - Add detailed error messages
+# - Add telemetry
+```
+
+#### Test 5: Quota Enforcement
+
+```python
+# RED
+@pytest.mark.asyncio
+async def test_quota_allows_within_limit(db, professional_user):
+    """Test quota allows episode creation within limit."""
+    # Create 9 episodes (limit is 10)
+    for i in range(9):
+        await create_episode_helper(db, professional_user, f"Episode {i}")
+
+    # 10th should succeed
+    can_create = await check_monthly_quota(professional_user.organization_id, "episodes")
+    assert can_create is True
+
+@pytest.mark.asyncio
+async def test_quota_blocks_over_limit(db, professional_user):
+    """Test quota blocks episode creation over limit."""
+    # Create 10 episodes (limit is 10)
+    for i in range(10):
+        await create_episode_helper(db, professional_user, f"Episode {i}")
+
+    # 11th should fail
+    can_create = await check_monthly_quota(professional_user.organization_id, "episodes")
+    assert can_create is False
+
+@pytest.mark.asyncio
+async def test_quota_unlimited_for_premium(db, premium_user):
+    """Test Premium tier has unlimited quota."""
+    # Create 50 episodes
+    for i in range(50):
+        await create_episode_helper(db, premium_user, f"Episode {i}")
+
+    # Should still allow more
+    can_create = await check_monthly_quota(premium_user.organization_id, "episodes")
+    assert can_create is True
+
+@pytest.mark.asyncio
+async def test_quota_resets_monthly(db, professional_user):
+    """Test quota resets on new billing cycle."""
+    # Set usage to last month
+    last_month = (datetime.now() - timedelta(days=35)).strftime("%Y-%m")
+    await set_usage(professional_user.organization_id, last_month, episodes=10)
+
+    # Current month should allow new episodes
+    can_create = await check_monthly_quota(professional_user.organization_id, "episodes")
+    assert can_create is True
+
+# GREEN
+async def check_monthly_quota(org_id: str, resource_type: str) -> bool:
+    tier = await get_organization_tier(org_id)
+
+    # Get quota limits for tier
+    quotas = FEATURE_ENTITLEMENTS["podcast_quota"]
+    limit = quotas.get(tier, {}).get(f"{resource_type}_per_month", 0)
+
+    # Unlimited (-1) always passes
+    if limit == -1:
+        return True
+
+    # Get current usage
+    current_month = datetime.now().strftime("%Y-%m")
+    usage = await get_usage(org_id, current_month, resource_type)
+
+    return usage < limit
+
+# REFACTOR
+# - Add database constraints for race conditions
+# - Add quota warning thresholds (80%, 90%)
+# - Add telemetry for quota hits
+```
+
+### Phase 3: API Endpoints (Days 6-8)
+
+#### Test 6: Episode API with 403 Responses
+
+```python
+# RED
+@pytest.mark.asyncio
+async def test_create_episode_api_professional_success(client, professional_user):
+    """Test API allows Professional tier to create episodes."""
+    response = await client.post(
+        "/api/v1/podcast/episodes",
+        headers=professional_user.auth_headers,
+        json={
+            "title": "API Test Episode",
+            "description": "Test description",
+            "audio_url": "https://example.com/audio.mp3"
+        }
+    )
+    assert response.status_code == 201
+    data = response.json()
+    assert data["title"] == "API Test Episode"
+    assert "id" in data
+
+@pytest.mark.asyncio
+async def test_create_episode_api_starter_forbidden(client, starter_user):
+    """Test API blocks Starter tier from creating episodes."""
+    response = await client.post(
+        "/api/v1/podcast/episodes",
+        headers=starter_user.auth_headers,
+        json={"title": "Test"}
+    )
+    assert response.status_code == 403
+    data = response.json()
+    assert "subscription upgrade" in data["detail"]
+    assert data["required_tier"] == "professional"
+    assert "upgrade_url" in data
+
+@pytest.mark.asyncio
+async def test_list_episodes_api_starter_forbidden(client, starter_user):
+    """Test API blocks Starter tier from listing episodes."""
+    response = await client.get(
+        "/api/v1/podcast/episodes",
+        headers=starter_user.auth_headers
+    )
+    assert response.status_code == 403
+
+@pytest.mark.asyncio
+async def test_create_episode_quota_exceeded(client, professional_user):
+    """Test API returns 429 when quota exceeded."""
+    # Create 10 episodes (limit)
+    for i in range(10):
+        await client.post(
+            "/api/v1/podcast/episodes",
+            headers=professional_user.auth_headers,
+            json={"title": f"Episode {i}", "audio_url": "https://example.com/audio.mp3"}
+        )
+
+    # 11th request should fail
+    response = await client.post(
+        "/api/v1/podcast/episodes",
+        headers=professional_user.auth_headers,
+        json={"title": "Over Limit"}
+    )
+    assert response.status_code == 429
+    data = response.json()
+    assert "quota exceeded" in data["detail"].lower()
+    assert "upgrade_url" in data
+
+# GREEN
+@router.post("/episodes", status_code=201, response_model=EpisodeResponse)
+async def create_episode(
+    episode: EpisodeCreate,
+    current_user: User = Depends(require_feature("podcast_audio")),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Create podcast episode (Professional+ only).
+
+    Requires:
+    - Professional tier or higher
+    - Within monthly quota (10 episodes for Professional)
+    """
+    try:
+        return await podcast_service.create_episode(episode, current_user, db)
+    except QuotaExceededError as e:
+        raise HTTPException(
+            status_code=429,
+            detail=str(e),
+            headers={
+                "X-Upgrade-URL": "/pricing",
+                "X-Required-Tier": "premium"
+            }
+        )
+
+# REFACTOR
+# - Standardize all error responses
+# - Add OpenAPI documentation
+# - Add request/response examples
+```
+
+### Phase 4: Frontend Feature Gates (Days 9-11)
+
+#### Test 7: Feature Access Hook
+
+```typescript
+// RED
+describe('useFeatureAccess', () => {
+  it('returns hasAccess=false for starter tier and podcast_audio', () => {
+    const { result } = renderHook(() => useFeatureAccess('podcast_audio'), {
+      wrapper: createWrapper({ tier: 'starter' })
+    });
+
+    expect(result.current.hasAccess).toBe(false);
+    expect(result.current.tier).toBe('starter');
+  });
+
+  it('returns hasAccess=true for professional tier and podcast_audio', () => {
+    const { result } = renderHook(() => useFeatureAccess('podcast_audio'), {
+      wrapper: createWrapper({ tier: 'professional' })
+    });
+
+    expect(result.current.hasAccess).toBe(true);
+  });
+
+  it('returns hasAccess=false for professional tier and podcast_video', () => {
+    const { result } = renderHook(() => useFeatureAccess('podcast_video'), {
+      wrapper: createWrapper({ tier: 'professional' })
+    });
+
+    expect(result.current.hasAccess).toBe(false);
+  });
+});
+
+// GREEN
+export const useFeatureAccess = (feature: string) => {
+  const { organization } = useAuth();
+
+  const { data: hasAccess, isLoading } = useQuery({
+    queryKey: ['feature-access', feature, organization?.id],
+    queryFn: async () => {
+      const response = await api.get(`/podcast/features/${feature}/check`);
+      return response.data.has_access;
+    },
+    enabled: !!organization,
+  });
+
+  return {
+    hasAccess: hasAccess ?? false,
+    tier: organization?.public_metadata?.subscription_tier ?? 'starter',
+    isLoading,
+  };
+};
+
+// REFACTOR
+// - Add caching strategy
+// - Add error handling
+// - Add loading states
+```
+
+#### Test 8: Upgrade Prompt Component
+
+```typescript
+// RED
+describe('UpgradePrompt', () => {
+  it('renders upgrade message for locked feature', () => {
+    const { getByText } = render(
+      <UpgradePrompt
+        feature="Podcast Studio"
+        requiredTier="Professional"
+        benefits={['Create audio podcasts', 'AI transcription']}
+      />
+    );
+
+    expect(getByText(/upgrade to professional/i)).toBeInTheDocument();
+    expect(getByText(/podcast studio/i)).toBeInTheDocument();
+    expect(getByText(/create audio podcasts/i)).toBeInTheDocument();
+  });
+
+  it('navigates to pricing page when CTA clicked', () => {
+    const { getByText } = render(
+      <UpgradePrompt feature="Podcast Studio" requiredTier="Professional" />
+    );
+
+    const button = getByText(/upgrade now/i);
+    fireEvent.click(button);
+
+    expect(mockNavigate).toHaveBeenCalledWith('/pricing');
+  });
+
+  it('tracks analytics event when CTA clicked', () => {
+    const { getByText } = render(
+      <UpgradePrompt feature="Podcast Studio" requiredTier="Professional" />
+    );
+
+    fireEvent.click(getByText(/upgrade now/i));
+
+    expect(mockTrackEvent).toHaveBeenCalledWith('upgrade_cta_clicked', {
+      feature: 'Podcast Studio',
+      current_tier: 'starter',
+      required_tier: 'professional',
+    });
+  });
+});
+
+// GREEN
+export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
+  feature,
+  requiredTier,
+  benefits = []
+}) => {
+  const navigate = useNavigate();
+  const { trackEvent } = useAnalytics();
+
+  const handleUpgrade = () => {
+    trackEvent('upgrade_cta_clicked', {
+      feature,
+      current_tier: getCurrentTier(),
+      required_tier: requiredTier,
+    });
+    navigate('/pricing');
+  };
+
+  return (
+    <div className="upgrade-prompt">
+      <h2>Upgrade to {requiredTier}</h2>
+      <p>Unlock {feature} and more premium features</p>
+      <ul>
+        {benefits.map(benefit => (
+          <li key={benefit}>{benefit}</li>
+        ))}
+      </ul>
+      <button onClick={handleUpgrade}>Upgrade Now</button>
+    </div>
+  );
+};
+
+// REFACTOR
+// - Improve styling
+// - Add animations
+// - Add pricing comparison
+```
+
+---
+
+## Files to Create/Modify
+
+### Backend Files
+
+**New Files**:
+- `backend/app/core/subscription.py` - Clerk integration
+- `backend/app/services/entitlement_service.py` - Feature access logic
+- `backend/app/services/quota_service.py` - Quota tracking
+- `backend/app/services/podcast_service.py` - Podcast CRUD (extend existing)
+- `backend/app/services/transcription_service.py` - Whisper integration
+- `backend/app/services/youtube_service.py` - YouTube API integration
+- `backend/app/services/streaming_service.py` - Live streaming
+- `backend/app/api/v1/endpoints/podcast.py` - Podcast endpoints (extend existing)
+- `backend/app/api/v1/endpoints/transcription.py` - Transcription endpoints
+- `backend/app/api/v1/endpoints/youtube.py` - YouTube endpoints
+- `backend/app/api/v1/endpoints/streaming.py` - Streaming endpoints
+- `backend/app/schemas/podcast.py` - Request/response schemas (extend existing)
+- `backend/app/tasks/podcast_tasks.py` - Celery tasks
+- `backend/tests/test_subscription.py` - Tier checking tests
+- `backend/tests/test_entitlement.py` - Feature access tests
+- `backend/tests/test_quota.py` - Quota enforcement tests
+- `backend/tests/test_podcast_service.py` - Service layer tests (extend existing)
+- `backend/tests/test_podcast_api.py` - API integration tests
+- `backend/alembic/versions/*_add_podcast_usage_tracking.py` - Migration
+
+**Modified Files**:
+- `backend/app/api/deps.py` - Add `require_feature()` dependency
+- `backend/app/models/podcast.py` - Add usage tracking models (already exists)
+- `backend/requirements.txt` - Add dependencies (google-api-python-client, etc.)
+
+### Frontend Files
+
+**New Files**:
+- `frontend/src/hooks/useFeatureAccess.ts` - Feature access hook
+- `frontend/src/hooks/usePodcastQuota.ts` - Quota tracking hook
+- `frontend/src/components/podcast/UpgradePrompt.tsx` - Upgrade CTA
+- `frontend/src/components/podcast/QuotaDisplay.tsx` - Usage display
+- `frontend/src/components/podcast/PodcastStudio.tsx` - Main studio component
+- `frontend/src/components/podcast/EpisodeForm.tsx` - Episode creation form
+- `frontend/src/components/podcast/EpisodeList.tsx` - Episode list
+- `frontend/src/components/podcast/TranscriptViewer.tsx` - Transcript display
+- `frontend/src/components/podcast/YouTubeConnect.tsx` - YouTube OAuth
+- `frontend/src/components/podcast/StreamingControls.tsx` - Live streaming controls
+- `frontend/src/pages/podcast/PodcastDashboard.tsx` - Dashboard page
+- `frontend/src/pages/podcast/EpisodeDetail.tsx` - Episode detail page
+- `frontend/src/components/podcast/*.test.tsx` - Component tests
+
+**Modified Files**:
+- `frontend/src/App.tsx` - Add podcast routes
+- `frontend/src/components/Navigation.tsx` - Add podcast nav item
+- `frontend/src/pages/marketing/PricingPage.tsx` - Highlight podcast features
+
+---
+
+## Dependencies
+
+### Backend Dependencies (add to requirements.txt)
+
+```
+openai>=1.3.0                    # Whisper transcription
+google-api-python-client>=2.100  # YouTube Data API
+google-auth-oauthlib>=1.1.0      # YouTube OAuth
+google-auth-httplib2>=0.1.1      # YouTube auth
+clerk-backend-api>=0.1.0         # Clerk SDK (if not already present)
+redis>=5.0.0                     # Caching (if not already present)
+celery>=5.3.0                    # Background tasks (if not already present)
+```
+
+### Frontend Dependencies (add to package.json)
+
+```json
+{
+  "@tanstack/react-query": "^5.0.0",  // Already present
+  "react-router-dom": "^6.18.0",      // Already present
+  // No additional dependencies needed
+}
+```
+
+### External API Keys (add to .env)
+
+```
+# Clerk (already present)
+CLERK_SECRET_KEY=sk_test_...
+
+# OpenAI
+OPENAI_API_KEY=sk-...
+
+# YouTube Data API
+YOUTUBE_CLIENT_ID=...
+YOUTUBE_CLIENT_SECRET=...
+YOUTUBE_API_KEY=...
+
+# Redis (for caching)
+REDIS_URL=redis://localhost:6379/0
+```
+
+---
+
+## Testing Checklist
+
+### Unit Tests (Backend)
+
+- [ ] test_subscription.py (20+ tests)
+  - [ ] Clerk tier fetching
+  - [ ] Tier caching
+  - [ ] Error handling
+- [ ] test_entitlement.py (15+ tests)
+  - [ ] Feature access logic
+  - [ ] All tier combinations
+  - [ ] Edge cases
+- [ ] test_quota.py (10+ tests)
+  - [ ] Quota checking
+  - [ ] Quota enforcement
+  - [ ] Monthly reset
+- [ ] test_podcast_service.py (30+ tests)
+  - [ ] Episode CRUD with tier validation
+  - [ ] Video episode tier checking
+  - [ ] Quota enforcement
+- [ ] test_transcription_service.py (10+ tests)
+  - [ ] Whisper integration
+  - [ ] Tier validation
+  - [ ] Error handling
+- [ ] test_youtube_service.py (10+ tests)
+  - [ ] YouTube upload
+  - [ ] Tier validation
+  - [ ] OAuth flow
+- [ ] test_streaming_service.py (10+ tests)
+  - [ ] Stream start/stop
+  - [ ] Enterprise tier validation
+
+### Integration Tests (API)
+
+- [ ] test_podcast_api.py (25+ tests)
+  - [ ] Episode CRUD endpoints
+  - [ ] 403 responses for insufficient tiers
+  - [ ] 429 responses for quota exceeded
+  - [ ] All tier combinations
+- [ ] test_transcription_api.py (10+ tests)
+- [ ] test_youtube_api.py (10+ tests)
+- [ ] test_streaming_api.py (10+ tests)
+
+### Component Tests (Frontend)
+
+- [ ] useFeatureAccess.test.ts (10+ tests)
+- [ ] usePodcastQuota.test.ts (5+ tests)
+- [ ] UpgradePrompt.test.tsx (10+ tests)
+- [ ] QuotaDisplay.test.tsx (5+ tests)
+- [ ] PodcastStudio.test.tsx (15+ tests)
+- [ ] EpisodeForm.test.tsx (10+ tests)
+
+### End-to-End Tests
+
+- [ ] Starter tier journey (upgrade prompt shown)
+- [ ] Professional tier journey (create 10 episodes, hit quota)
+- [ ] Premium tier journey (create unlimited, YouTube publish)
+- [ ] Enterprise tier journey (live streaming)
+- [ ] Tier upgrade flow (unlock new features)
+
+---
+
+## Deployment Plan
+
+### Phase 1: Staging Deployment
+
+1. [ ] Create database migrations
+2. [ ] Apply migrations to staging DB
+3. [ ] Deploy backend to staging
+4. [ ] Deploy frontend to staging
+5. [ ] Run smoke tests
+6. [ ] Test all tier combinations manually
+7. [ ] Security audit (tier bypass testing)
+
+### Phase 2: Production Deployment
+
+1. [ ] Create backup of production DB
+2. [ ] Apply migrations to production DB
+3. [ ] Deploy backend to production (blue-green)
+4. [ ] Deploy frontend to production
+5. [ ] Run health checks
+6. [ ] Monitor error rates
+7. [ ] Verify Clerk integration working
+8. [ ] Verify OpenAI/YouTube APIs working
+
+### Phase 3: Monitoring & Rollback
+
+1. [ ] Set up Datadog dashboards
+2. [ ] Configure alerts (error rate, latency)
+3. [ ] Monitor tier validation performance
+4. [ ] Monitor quota enforcement accuracy
+5. [ ] Document rollback procedure
+6. [ ] Test rollback in staging
+
+---
+
+## Success Metrics
+
+### Technical Metrics (Week 1)
+
+- [ ] Test coverage ≥90% backend, ≥85% frontend
+- [ ] Zero tier bypass vulnerabilities
+- [ ] Tier checks <100ms (p95)
+- [ ] Cached tier checks <10ms (p95)
+- [ ] API error rate <0.1%
+
+### Business Metrics (Month 1)
+
+- [ ] ≥20% of Professional+ subscribers activate podcast feature
+- [ ] ≥3% of Starter users upgrade after seeing podcast
+- [ ] Upgrade CTA click-through rate ≥10%
+- [ ] Zero quota enforcement bugs
+- [ ] Customer satisfaction ≥4.5/5 for podcast users
+
+### Business Metrics (Month 3)
+
+- [ ] ≥30% of Professional+ subscribers use podcast regularly
+- [ ] ≥5% of Starter users upgraded to Professional
+- [ [ ] £50K+ additional MRR from podcast-driven upgrades
+- [ ] ≥100 episodes created per week
+- [ ] ≥50 YouTube videos published via platform
+
+---
+
+## Risks & Mitigations
+
+| Risk | Impact | Probability | Mitigation |
+|------|--------|-------------|------------|
+| Subscription bypass vulnerabilities | 🔴 Critical | Medium | Multi-layer enforcement, 403 tests, security audit |
+| Clerk API failures | 🟠 High | Low | Caching, circuit breakers, deny-by-default |
+| Quota enforcement gaps | 🟡 Medium | Medium | Real-time tracking, DB constraints, race prevention |
+| YouTube API rate limits | 🟡 Medium | Medium | Queue uploads, retry with backoff, monitor quotas |
+| Live streaming complexity | 🟡 Medium | High | Phase last, leverage WebRTC libraries, extensive testing |
+| Poor upgrade conversion | 🟡 Medium | Medium | A/B test CTAs, clear value props, frictionless upgrade |
+| Whisper API costs | 🟡 Medium | Low | Monitor usage, consider tier-based limits, cache transcripts |
+
+---
+
+## Story Status
+
+**Current Phase**: Phase 1 - Documentation & Architecture (80% complete)
+
+**Completed**:
+- ✅ Scope change documented
+- ✅ Subscription tier matrix defined
+- ✅ Implementation plan created
+- ✅ TDD approach documented
+
+**In Progress**:
+- 🟡 Database schema design
+- 🟡 API contract documentation
+
+**Next Steps**:
+1. Complete database schema design
+2. Begin Phase 2: Clerk integration (TDD)
+3. Implement tier validation tests and logic
+
+---
+
+## References
+
+- **CODEX-COMPLETE-PROJECT-GUIDE.md**: Subscription architecture section
+- **BMAD_PROGRESS_TRACKER.md**: Progress tracking
+- **plan.plan.md**: Detailed implementation timeline
+- **Clerk Docs**: https://clerk.com/docs/organizations/metadata
+- **OpenAI Whisper Docs**: https://platform.openai.com/docs/api-reference/audio
+- **YouTube Data API Docs**: https://developers.google.com/youtube/v3
+- **StreamYard Features**: https://streamyard.com/features
+
+---
+
+**Story Owner**: AI Development Team
+**Product Owner**: User (M&A Platform Founder)
+**Story Created**: 2025-10-28
+**Last Updated**: 2025-10-28 16:30 UTC
