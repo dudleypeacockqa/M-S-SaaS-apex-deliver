@@ -47,12 +47,11 @@ describe('ValuationSuite RED tests', () => {
     expect(screen.getByText(/valuation suite/i)).toBeInTheDocument()
   })
 
-  // TODO: Test skipped - component doesn't expose role="status" for loading state
-  it.skip('shows loading indicator while valuations fetch', async () => {
-    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([])
+  it('shows loading indicator while valuations fetch', async () => {
+    const pendingPromise = new Promise<never>(() => {})
+    vi.mocked(valuationApi.listValuations).mockImplementationOnce(() => pendingPromise)
     renderSuite('/deals/deal-789/valuations/val-001')
-    // Component has loading states but doesn't use role="status"
-    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+    expect(screen.getByRole('status', { name: /loading/i })).toBeInTheDocument()
   })
 
   // TODO: Add "Create New Valuation" form - component currently only displays existing valuations

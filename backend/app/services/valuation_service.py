@@ -576,6 +576,8 @@ def calculate_precedent_multiples(
     current_date: Optional[datetime] = None,
     subject_ebitda: Optional[float] = None,
 ) -> dict:
+    """Aggregate precedent transaction multiples with stale flag tracking."""
+
     current = current_date or datetime.now(timezone.utc)
     if current.tzinfo is None:
         current = current.replace(tzinfo=timezone.utc)
@@ -613,6 +615,11 @@ def calculate_precedent_multiples(
     if records:
         db.commit()
 
+    def _implied(val: Optional[float]) -> Optional[float]:
+        if val is None or subject_ebitda is None:
+            return None
+        return float(val) * float(subject_ebitda)
+
     def _summary(values: List[Tuple[float, float]]) -> Dict[str, Optional[float]]:
         if not values:
             return {
@@ -621,8 +628,11 @@ def calculate_precedent_multiples(
                 "max": None,
                 "median": None,
                 "weighted_average": None,
+                "implied_enterprise_value_min": None,
+                "implied_enterprise_value_max": None,
                 "implied_enterprise_value_median": None,
                 "implied_enterprise_value_weighted": None,
+                "stale_count": stale_count,
             }
 
         raw_values = [value for value, _ in values]
@@ -635,24 +645,23 @@ def calculate_precedent_multiples(
         )
 
         median_val = median(raw_values)
-
-        def _implied(val: Optional[float]) -> Optional[float]:
-            if val is None or subject_ebitda is None:
-                return None
-            return float(val) * float(subject_ebitda)
+        min_val = min(raw_values)
+        max_val = max(raw_values)
 
         return {
             "count": len(values),
-            "min": min(raw_values),
-            "max": max(raw_values),
+            "min": min_val,
+            "max": max_val,
             "median": median_val,
             "weighted_average": weighted_avg,
+            "implied_enterprise_value_min": _implied(min_val),
+            "implied_enterprise_value_max": _implied(max_val),
             "implied_enterprise_value_median": _implied(median_val),
             "implied_enterprise_value_weighted": _implied(weighted_avg),
+            "stale_count": stale_count,
         }
 
     summary = _summary(active)
-    summary["stale_count"] = stale_count
 
     return {
         "ev_ebitda": summary,
@@ -829,5 +838,6 @@ __all__ = [
     "log_export_event",
     "trigger_export_task",
 ]
+
 
 

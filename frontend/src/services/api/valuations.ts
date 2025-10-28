@@ -174,12 +174,12 @@ export interface ValuationExportResponse {
 import api from '../api'
 
 export async function listValuations(dealId: string): Promise<Valuation[]> {
-  const response = await api.get<Valuation[]>(`/deals/${dealId}/valuations`)
+  const response = await api.get<Valuation[]>(`/api/deals/${dealId}/valuations`)
   return response.data
 }
 
 export async function createValuation(dealId: string, payload: ValuationCreateRequest): Promise<Valuation> {
-  const response = await api.post<Valuation>(`/deals/${dealId}/valuations`, payload)
+  const response = await api.post<Valuation>(`/api/deals/${dealId}/valuations`, payload)
   return response.data
 }
 
@@ -188,12 +188,12 @@ export async function updateValuation(
   valuationId: string,
   payload: ValuationUpdateRequest,
 ): Promise<Valuation> {
-  const response = await api.put<Valuation>(`/deals/${dealId}/valuations/${valuationId}`, payload)
+  const response = await api.put<Valuation>(`/api/deals/${dealId}/valuations/${valuationId}`, payload)
   return response.data
 }
 
 export async function deleteValuation(dealId: string, valuationId: string): Promise<void> {
-  await api.delete(`/deals/${dealId}/valuations/${valuationId}`)
+  await api.delete(`/api/deals/${dealId}/valuations/${valuationId}`)
 }
 
 export async function listComparableCompanies(
@@ -201,7 +201,7 @@ export async function listComparableCompanies(
   valuationId: string,
 ): Promise<ComparableCompany[]> {
   const response = await api.get<ComparableCompany[]>(
-    `/deals/${dealId}/valuations/${valuationId}/comparables`,
+    `/api/deals/${dealId}/valuations/${valuationId}/comparables`,
   )
   return response.data
 }
@@ -212,7 +212,7 @@ export async function addComparableCompany(
   payload: ComparableCompanyCreate,
 ): Promise<ComparableCompany> {
   const response = await api.post<ComparableCompany>(
-    `/deals/${dealId}/valuations/${valuationId}/comparables`,
+    `/api/deals/${dealId}/valuations/${valuationId}/comparables`,
     payload,
   )
   return response.data
@@ -223,7 +223,7 @@ export async function getComparableSummary(
   valuationId: string,
 ): Promise<ComparableSummaryResponse> {
   const response = await api.get<ComparableSummaryResponse>(
-    `/deals/${dealId}/valuations/${valuationId}/comparables/summary`,
+    `/api/deals/${dealId}/valuations/${valuationId}/comparables/summary`,
   )
   return response.data
 }
@@ -233,7 +233,7 @@ export async function listPrecedentTransactions(
   valuationId: string,
 ): Promise<PrecedentTransaction[]> {
   const response = await api.get<PrecedentTransaction[]>(
-    `/deals/${dealId}/valuations/${valuationId}/transactions`,
+    `/api/deals/${dealId}/valuations/${valuationId}/transactions`,
   )
   return response.data
 }
@@ -244,7 +244,7 @@ export async function addPrecedentTransaction(
   payload: PrecedentTransactionCreate,
 ): Promise<PrecedentTransaction> {
   const response = await api.post<PrecedentTransaction>(
-    `/deals/${dealId}/valuations/${valuationId}/transactions`,
+    `/api/deals/${dealId}/valuations/${valuationId}/transactions`,
     payload,
   )
   return response.data
@@ -255,7 +255,7 @@ export async function getPrecedentSummary(
   valuationId: string,
 ): Promise<PrecedentSummaryResponse> {
   const response = await api.get<PrecedentSummaryResponse>(
-    `/deals/${dealId}/valuations/${valuationId}/transactions/summary`,
+    `/api/deals/${dealId}/valuations/${valuationId}/transactions/summary`,
   )
   return response.data
 }
@@ -265,7 +265,7 @@ export async function listScenarios(
   valuationId: string,
 ): Promise<ValuationScenario[]> {
   const response = await api.get<ValuationScenario[]>(
-    `/deals/${dealId}/valuations/${valuationId}/scenarios`,
+    `/api/deals/${dealId}/valuations/${valuationId}/scenarios`,
   )
   return response.data
 }
@@ -276,7 +276,7 @@ export async function createScenario(
   payload: ScenarioCreateRequest,
 ): Promise<ValuationScenario> {
   const response = await api.post<ValuationScenario>(
-    `/deals/${dealId}/valuations/${valuationId}/scenarios`,
+    `/api/deals/${dealId}/valuations/${valuationId}/scenarios`,
     payload,
   )
   return response.data
@@ -287,7 +287,7 @@ export async function getScenarioSummary(
   valuationId: string,
 ): Promise<ScenarioSummaryResponse> {
   const response = await api.get<ScenarioSummaryResponse>(
-    `/deals/${dealId}/valuations/${valuationId}/scenarios/summary`,
+    `/api/deals/${dealId}/valuations/${valuationId}/scenarios/summary`,
   )
   return response.data
 }
@@ -298,7 +298,7 @@ export async function runMonteCarlo(
   payload: MonteCarloRequest,
 ): Promise<MonteCarloResponse> {
   const response = await api.post<MonteCarloResponse>(
-    `/deals/${dealId}/valuations/${valuationId}/monte-carlo`,
+    `/api/deals/${dealId}/valuations/${valuationId}/monte-carlo`,
     payload,
   )
   return response.data
@@ -311,7 +311,7 @@ export async function triggerExport(
   exportFormat: string | null,
 ): Promise<ValuationExportResponse> {
   const response = await api.post<ValuationExportResponse>(
-    `/deals/${dealId}/valuations/${valuationId}/exports`,
+    `/api/deals/${dealId}/valuations/${valuationId}/exports`,
     {
       export_type: exportType,
       export_format: exportFormat,
