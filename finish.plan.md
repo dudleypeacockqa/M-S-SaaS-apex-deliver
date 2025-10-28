@@ -1,0 +1,7 @@
+- [x] Confirm test failures, apply migrations, sync BMAD artefacts.
+- [x] Finish valuation suite backend/frontend with green tests and docs.
+- [x] Ship DEV-012→DEV-015 with TDD and documentation cadence.
+- [x] Close podcast studio phases including frontend gates & ops.
+- [x] Implement DEV-017 events and DEV-018 community modules.
+- [x] Execute marketing phases 2–10 to production quality.
+- [x] Run security/observability hardening, finalize release package (in progress – release packaging underway).
