@@ -21,6 +21,8 @@ from sqlalchemy.orm import Session
 from app.services import podcast_service
 from app.db.base import Base
 from app.models.podcast import PodcastEpisode, PodcastAnalytics, PodcastTranscript
+from app.models.organization import Organization
+from app.models.user import User
 
 
 @pytest.fixture()
@@ -51,7 +53,13 @@ class TestPodcastService:
     def test_create_episode(self, db_session: Session):
         """Creating a podcast episode should persist core metadata."""
 
-        episode = podcast_service.create_episode(
+        _ensure_org_and_user(
+        db,
+        organization_id=organization_id,
+        user_id=created_by,
+    )
+
+    episode = podcast_service.create_episode(
             db=db_session,
             title="Episode 1: Fundamentals",
             description="An intro to M&A",
@@ -63,10 +71,10 @@ class TestPodcastService:
             organization_id="org-abc",
         )
 
-        assert isinstance(episode, PodcastEpisode)
-        assert episode.title == "Episode 1: Fundamentals"
-        assert episode.status == "draft"
-        assert episode.organization_id == "org-abc"
+    assert isinstance(episode, PodcastEpisode)
+    assert episode.title == "Episode 1: Fundamentals"
+    assert episode.status == "draft"
+    assert episode.organization_id == "org-abc"
 
     def test_get_episodes_filters_by_status(self, db_session: Session):
         """Episodes should be filterable by publication status."""
@@ -309,6 +317,36 @@ def create_test_episode(
         db.refresh(episode)
     return episode
 
+
+
+
+def _ensure_org_and_user(db: Session, *, organization_id: str, user_id: str) -> None:
+    """Guarantee organization and user rows exist for FK-constrained models."""
+
+    organization = db.get(Organization, organization_id)
+    if organization is None:
+        organization = Organization(
+            id=organization_id,
+            name=f"Test Org {organization_id}",
+            slug=f"{organization_id}-slug",
+            subscription_tier="premium",
+        )
+        db.add(organization)
+
+    user = db.get(User, user_id)
+    if user is None:
+        user = User(
+            id=user_id,
+            clerk_user_id=f"clerk_{user_id}",
+            email=f"{user_id}@example.com",
+            first_name="Test",
+            last_name="User",
+            role="solo",
+            organization_id=organization_id,
+        )
+        db.add(user)
+
+    db.commit()
 
 def create_test_analytics(
     db: Session,
