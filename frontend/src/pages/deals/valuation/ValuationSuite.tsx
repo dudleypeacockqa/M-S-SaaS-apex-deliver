@@ -26,7 +26,6 @@ import type {
 import { formatCurrency } from '../../../services/api/deals'
 import { Spinner as LoadingSpinner } from '../../../components/ui'
 import type { ChangeEvent, FormEvent } from 'react'
-import { CreateValuationModal } from '../../../components/valuation/CreateValuationModal'
 
 const skeletonClass = 'animate-pulse rounded bg-gray-200 h-4'
 
@@ -341,7 +340,9 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
       )}
     </div>
   )
-}const MonteCarloPanel = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
+}
+
+const MonteCarloPanel = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
   const queryClient = useQueryClient()
   const [iterations, setIterations] = useState(500)
   const [seed, setSeed] = useState<number | ''>('')
@@ -946,6 +947,8 @@ export const ValuationSuite = () => {
     </main>
   )
 }
+
+
 
 
 

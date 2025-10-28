@@ -12,6 +12,13 @@
 - ✅ Updated valuation nav to ARIA tablist/tab pattern for keyboard support; marketing/gating tests unaffected.
 - 🔄 NEXT: Drive scenario analytics RED (`displays scenario summary request and analytics summary`) to implement summary panel + API wiring.
 
+### Session 2025-10-28 (Governance Baseline Reset)
+- ⏱️ `python -m pytest backend/tests -q` → **FAILED during collection** (ImportError: `_reset_metadata` missing from `backend/tests/conftest.py`; `test_database_reset.py` cannot import helper).
+- ⏱️ `npm run test` (frontend) → **45 passed / 5 failed / 3 skipped**; failures caused by syntax error in `ValuationSuite.tsx` (missing newline before `MonteCarloPanel` export) plus dependent routing/Auth suites blocked by valuation compile error.
+- 🌐 Deployment checks: `curl https://ma-saas-backend.onrender.com/health` returned healthy JSON (2025-10-28T18:34:34Z); `curl -I https://apexdeliver.com` still 403 (Cloudflare protection).
+- 🛠️ BMAD CLI `npx bmad-method run workflow-status` unavailable in current wrapper (only install/update/status supported); governance alignment performed manually via documentation updates.
+- 🔄 NEXT: restore backend `_reset_metadata` helper / adjust imports, fix `ValuationSuite.tsx` syntax to unblock DEV-011 TDD cycle, then rerun suites.
+
 ### Session 2025-10-28 (Phase 1 Stabilization + DEV-016 Phase 3 TDD)
 - ✅ Backend regression baseline GREEN: `pytest backend/tests -q` → **378 passed / 12 skipped** after rebuilding SQLite reset helpers, adjusting Clerk webhook prefix, and updating podcast/YouTube service mocks.
 - ✅ Podcast entitlement API now returns tier labels, upgrade messaging, and quota states; synchronized React hook (`useFeatureAccess`), `FeatureGate`, and Podcast Studio quota HUD with full Vitest coverage.

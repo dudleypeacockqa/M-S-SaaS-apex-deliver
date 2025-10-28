@@ -103,8 +103,30 @@ describe('ValuationSuite RED tests', () => {
     })
   })
 
+  it('allows adding precedent transaction to selected valuation', async () => {
+    const user = userEvent.setup()
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
+      { id: 'val-002', enterprise_value: 12000000, equity_value: 9500000, deal_id: 'deal-precedent', organization_id: 'org-1', forecast_years: 5, discount_rate: 11, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 95.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
+    ])
+    vi.mocked(valuationApi.addPrecedentTransaction).mockResolvedValueOnce({ id: 'txn-1', valuation_id: 'val-002', organization_id: 'org-1', target_company: 'Target Corp', acquirer_company: 'Acquirer Inc', ev_ebitda_multiple: 8.5, ev_revenue_multiple: null, weight: 1.0, is_stale: 'false', announcement_date: '2024-06-15', notes: null, created_at: '2025-01-01', updated_at: null })
+
+    renderSuite('/deals/deal-precedent/valuations/val-002')
+
+    await waitFor(() => expect(screen.getByText(/£12,000,000/i)).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /precedents/i }))
+    await user.type(screen.getByLabelText(/target company/i), 'Target Corp')
+    await user.type(screen.getByLabelText(/acquirer company/i), 'Acquirer Inc')
+    await user.type(screen.getByLabelText(/ev\/ebitda/i), '8.5')
+    await user.type(screen.getByLabelText(/announcement date/i), '2024-06-15')
+    await user.click(screen.getByRole('button', { name: /add precedent/i }))
+
+    await waitFor(() => {
+      expect(valuationApi.addPrecedentTransaction).toHaveBeenCalledWith('deal-precedent', 'val-002', expect.objectContaining({ target_company: 'Target Corp', acquirer_company: 'Acquirer Inc' }))
+    })
+  })
+
   // TODO: Test skipped - need to add analytics view or clarify what this test is checking
-  it.skip('displays scenario summary request and analytics summary', async () => {
+  it('displays scenario summary request and analytics summary', async () => {
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
       { id: 'val-analytics', enterprise_value: 12000000, equity_value: 9000000, deal_id: 'deal-analytics', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
     ])
@@ -152,7 +174,7 @@ describe('ValuationSuite RED tests', () => {
   })
 
   // TODO: Add 403 error handling with upgrade message to component
-  it.skip('guards valuation workspace for growth-tier access', async () => {
+  it('guards valuation workspace for growth-tier access', async () => {
     vi.mocked(valuationApi.listValuations).mockRejectedValueOnce({
       response: { status: 403 },
     })
