@@ -92,6 +92,30 @@ class ValuationExportResponse(BaseModel):
     export_format: Optional[str] = None
 
 
+class MonteCarloRequest(BaseModel):
+    """Request payload for Monte Carlo valuation simulation."""
+
+    iterations: int = Field(default=100, ge=1, le=10000)
+    seed: Optional[int] = Field(default=None)
+
+
+class MonteCarloPercentiles(BaseModel):
+    """Breakdown of percentile outcomes from Monte Carlo simulation."""
+
+    p10: float
+    p50: float
+    p90: float
+
+
+class MonteCarloResponse(BaseModel):
+    """Response payload summarising Monte Carlo valuation statistics."""
+
+    iterations: int
+    seed: Optional[int]
+    mean_enterprise_value: float
+    percentiles: MonteCarloPercentiles
+
+
 # Scenario Schemas
 
 class ScenarioCreate(BaseModel):

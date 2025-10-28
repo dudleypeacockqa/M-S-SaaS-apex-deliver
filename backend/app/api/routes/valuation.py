@@ -14,6 +14,8 @@ from app.models.user import User, UserRole
 from app.schemas.valuation import (
     ComparableCompanyCreate,
     ComparableCompanyResponse,
+    MonteCarloRequest,
+    MonteCarloResponse,
     PrecedentTransactionCreate,
     PrecedentTransactionResponse,
     ScenarioCreate,
@@ -323,27 +325,27 @@ def get_valuation_summary(
     }
 
 
-@router.post("/{valuation_id}/monte-carlo")
+@router.post("/{valuation_id}/monte-carlo", response_model=MonteCarloResponse)
 def run_monte_carlo(
     deal_id: str,
     valuation_id: str,
-    payload: dict,
+    payload: MonteCarloRequest,
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
     valuation = _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
-    iterations = int(payload.get("iterations", 100)
-    )
-    if iterations <= 0:
-        _error(status.HTTP_422_UNPROCESSABLE_ENTITY, "INVALID_ITERATIONS", "iterations must be positive")
-    result = valuation_service.run_monte_carlo_simulation(
-        base_cash_flows=valuation.cash_flows,
-        discount_rate=valuation.discount_rate,
-        terminal_growth_rate=valuation.terminal_growth_rate or 0.02,
-        iterations=iterations,
-        seed=payload.get("seed"),
-    )
-    return result
+    try:
+        result = valuation_service.run_monte_carlo_simulation(
+            base_cash_flows=valuation.cash_flows,
+            discount_rate=valuation.discount_rate,
+            terminal_growth_rate=valuation.terminal_growth_rate or 0.02,
+            iterations=payload.iterations,
+            seed=payload.seed,
+        )
+    except ValueError as exc:  # pragma: no cover - defensive path
+        _error(status.HTTP_422_UNPROCESSABLE_ENTITY, "INVALID_MONTE_CARLO", str(exc))
+
+    return MonteCarloResponse(**result)
 
 
 @router.post("/{valuation_id}/exports", response_model=ValuationExportResponse, status_code=status.HTTP_202_ACCEPTED)

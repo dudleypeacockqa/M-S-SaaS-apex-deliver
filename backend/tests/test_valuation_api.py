@@ -192,3 +192,36 @@ class TestValuationApi:
         assert body["status"] == "queued"
         assert body["task_id"] == "abc123"
         assert captured["valuation_id"] == valuation_id
+
+    def test_run_monte_carlo_simulation(self, client, create_deal_for_org, auth_headers_growth):
+        deal, _, _ = create_deal_for_org()
+        create_resp = _create_valuation(client, deal.id, auth_headers_growth, VALUATION_PAYLOAD)
+        valuation_id = create_resp.json()["id"]
+
+        response = client.post(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/monte-carlo",
+            json={"iterations": 10, "seed": 123},
+            headers=auth_headers_growth,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert body["iterations"] == 10
+        assert body["seed"] == 123
+        assert body["percentiles"]["p50"] > 0
+
+    def test_run_monte_carlo_validation(self, client, create_deal_for_org, auth_headers_growth):
+        deal, _, _ = create_deal_for_org()
+        create_resp = _create_valuation(client, deal.id, auth_headers_growth, VALUATION_PAYLOAD)
+        valuation_id = create_resp.json()["id"]
+
+        response = client.post(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/monte-carlo",
+            json={"iterations": 0},
+            headers=auth_headers_growth,
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        detail = response.json()["detail"]
+        if isinstance(detail, dict):
+            assert detail.get("code") == "INVALID_MONTE_CARLO"
