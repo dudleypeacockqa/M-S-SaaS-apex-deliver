@@ -314,6 +314,7 @@ class TestGetQuotaSummary:
         assert summary.limit == 10
         assert summary.used == 3
         assert summary.remaining == 7
+        assert summary.quota_state == "normal"
         assert summary.is_unlimited is False
         assert summary.warning_status is None
         assert summary.warning_message is None
@@ -343,6 +344,7 @@ class TestGetQuotaSummary:
         assert summary.used == 5
         assert summary.remaining == -1
         assert summary.is_unlimited is True
+        assert summary.quota_state == "unlimited"
         assert summary.warning_status is None
         assert summary.warning_message is None
         assert summary.upgrade_required is False
@@ -365,7 +367,8 @@ class TestGetQuotaSummary:
             summary = await get_quota_summary(org_id, tier=SubscriptionTier.PROFESSIONAL, db=mock_db_session)
 
         assert summary.warning_status == "warning"
-        assert "80%" in (summary.warning_message or "")
+        assert summary.warning_message == "80% of monthly quota used."
+        assert summary.quota_state == "warning"
         assert summary.upgrade_required is False
         assert summary.remaining == 2
 
@@ -385,7 +388,8 @@ class TestGetQuotaSummary:
             summary = await get_quota_summary(org_id, tier=SubscriptionTier.PROFESSIONAL, db=mock_db_session)
 
         assert summary.warning_status == "critical"
-        assert "90%" in (summary.warning_message or "")
+        assert summary.warning_message == "90% of monthly quota used."
+        assert summary.quota_state == "critical"
         assert summary.upgrade_required is False
         assert summary.remaining == 1
 
@@ -406,10 +410,12 @@ class TestGetQuotaSummary:
 
         assert summary.warning_status == "critical"
         assert summary.warning_message == "Monthly quota exceeded."
+        assert summary.quota_state == "exceeded"
         assert summary.upgrade_required is True
-        assert summary.upgrade_message is not None
+        assert summary.upgrade_message == "Upgrade to Premium tier for unlimited episodes."
         assert summary.upgrade_cta_url == "/pricing"
         assert summary.remaining == 0
+
 
 # Fixtures -----------------------------------------------------------------
 

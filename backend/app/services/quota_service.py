@@ -1,475 +1,219 @@
-"""Quota enforcement service for subscription-based feature limits.
+"""Quota enforcement service for podcast subscription limits."""
 
+from __future__ import annotations
 
-
-Manages monthly episode quotas based on subscription tiers:
-
-- Starter: 0 episodes (no podcast access)
-
-- Professional: 10 episodes/month
-
-- Premium: Unlimited
-
-- Enterprise: Unlimited
-
-
-
-Tracks usage in database and enforces limits before episode creation.
-
-"""
-
-import logging
 import inspect
-from datetime import UTC, datetime
+import logging
+from datetime import datetime, timezone
 from typing import Optional, Union
-from sqlalchemy import select, func, and_
+
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
-from unittest.mock import AsyncMock
 
-from app.core.subscription import get_organization_tier, SubscriptionTier
+from app.core.subscription import SubscriptionTier, get_organization_tier
 from app.models.podcast_usage import PodcastUsage
 from app.schemas.podcast import PodcastQuotaSummary
 
+try:  # pragma: no cover - AsyncMock is only needed for unit tests
+    from unittest.mock import AsyncMock
+except ImportError:  # pragma: no cover
+    AsyncMock = None  # type: ignore
 
 logger = logging.getLogger(__name__)
 
+SessionLike = Union[Session, AsyncSession]
+if AsyncMock is not None:  # pragma: no branch
+    SessionLikeWithMock = Union[Session, AsyncSession, AsyncMock]  # type: ignore[misc]
+else:  # pragma: no cover - fallback when AsyncMock unavailable
+    SessionLikeWithMock = Union[Session, AsyncSession]
 
-SessionLike = Union[AsyncSession, Session]
+if AsyncMock is not None:  # pragma: no branch
+    _ASYNC_SESSION_TYPES = (AsyncSession, AsyncMock)
+else:  # pragma: no cover
+    _ASYNC_SESSION_TYPES = (AsyncSession,)
 
-
-
-
-
-class QuotaExceededError(Exception):
-
-    """Exception raised when organization exceeds their episode quota."""
-
-
-
-    pass
-
-
-
-
-
-# Quota limits by tier
-
-TIER_QUOTAS = {
-
-    SubscriptionTier.STARTER: 0,  # No podcast access
-
-    SubscriptionTier.PROFESSIONAL: 10,  # 10 episodes/month
-
-    SubscriptionTier.PREMIUM: -1,  # Unlimited (represented as -1)
-
-    SubscriptionTier.ENTERPRISE: -1,  # Unlimited
-
+TIER_QUOTAS: dict[SubscriptionTier, int] = {
+    SubscriptionTier.STARTER: 0,         # No access
+    SubscriptionTier.PROFESSIONAL: 10,   # 10 episodes per month
+    SubscriptionTier.PREMIUM: -1,        # Unlimited
+    SubscriptionTier.ENTERPRISE: -1,     # Unlimited
 }
 
 DEFAULT_UPGRADE_CTA = "/pricing"
 
 
+class QuotaExceededError(Exception):
+    """Raised when an organization has exhausted their quota."""
 
 
+def _current_month_start() -> datetime:
+    now = datetime.now(timezone.utc)
+    return now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
 
-async def check_episode_quota(organization_id: str, db: Optional[SessionLike] = None) -> bool:
-
-    """
-
-    Check if organization can create another episode within their quota.
-
+async def _maybe_await(value):
+    if inspect.isawaitable(value):
+        return await value
+    return value
 
 
-    Args:
-
-        organization_id: Clerk organization ID
-
-        db: Database session (optional, will create if not provided)
+def _is_async_session(db: SessionLikeWithMock) -> bool:
+    return isinstance(db, _ASYNC_SESSION_TYPES)
 
 
-
-    Returns:
-
-        bool: True if can create episode, raises QuotaExceededError otherwise
-
-
-
-    Raises:
-
-        QuotaExceededError: If quota is exceeded or tier has no podcast access
-
-
-
-    Examples:
-
-        >>> can_create = await check_episode_quota("org_123", db)
-
-        >>> if can_create:
-
-        ...     # Create episode
-
-    """
+async def check_episode_quota(
+    organization_id: str,
+    db: Optional[SessionLikeWithMock] = None,
+) -> bool:
+    """Validate that the organization can create another episode this month."""
 
     tier = await get_organization_tier(organization_id)
-
-    quota_limit = TIER_QUOTAS.get(tier, 0)
-
-
+    limit = TIER_QUOTAS.get(tier, 0)
 
     if tier == SubscriptionTier.STARTER:
-
-        logger.warning(f"Organization {organization_id} has no podcast access (Starter tier)")
-
+        logger.warning("Starter tier organization %s attempted podcast creation", organization_id)
         raise QuotaExceededError(
-
             "Your subscription plan does not include podcast access. "
-
             "Upgrade to Professional tier to create audio podcasts."
-
         )
 
-
-
-    if quota_limit == -1:
-
-        logger.debug(f"Organization {organization_id} has unlimited quota ({tier.value})")
-
+    if limit == -1:
+        logger.debug("Organization %s has unlimited podcast quota (%s)", organization_id, tier.value)
         return True
 
-
-
+    used = 0
     if db is not None:
+        used = await get_monthly_usage(organization_id, db)
 
-        current_usage = await get_monthly_usage(organization_id, db)
-
-    else:
-
-        current_usage = 0
-
-
-
-    if current_usage >= quota_limit:
-
-        logger.warning(
-
-            f"Organization {organization_id} quota exceeded: {current_usage}/{quota_limit}"
-
-        )
-
+    if used >= limit:
+        logger.warning("Organization %s exceeded podcast quota %s/%s", organization_id, used, limit)
         raise QuotaExceededError(
-
-            f"Monthly quota of {quota_limit} episodes exceeded ({current_usage}/{quota_limit}). "
-
-            f"Upgrade to Premium tier for unlimited episodes."
-
+            f"Monthly quota of {limit} episodes exceeded ({used}/{limit}). "
+            "Upgrade to Premium tier for unlimited episodes."
         )
 
-
-
-    logger.debug(
-
-        f"Organization {organization_id} within quota: {current_usage}/{quota_limit} used"
-
-    )
-
+    logger.debug("Organization %s within quota %s/%s", organization_id, used, limit)
     return True
-
-
-
 
 
 async def get_remaining_quota(
     organization_id: str,
-    db: Optional[SessionLike] = None,
+    db: Optional[SessionLikeWithMock] = None,
     tier: Optional[SubscriptionTier] = None,
-) -> Optional[int]:
-    """
-    Get remaining episode quota for organization this month.
-
-    Args:
-        organization_id: Clerk organization ID
-        db: Database session (optional)
-        tier: pre-fetched subscription tier (optional)
-
-    Returns:
-        int: Number of episodes remaining (-1 for unlimited, 0 if exhausted)
-
-    Examples:
-        >>> remaining = await get_remaining_quota("org_123", db)
-        >>> print(f"You have {remaining} episodes remaining this month")
-    """
+) -> int:
+    """Return remaining episodes for the month (-1 for unlimited tiers)."""
 
     tier = tier or await get_organization_tier(organization_id)
-    quota_limit = TIER_QUOTAS.get(tier, 0)
+    limit = TIER_QUOTAS.get(tier, 0)
 
-    # Starter tier has no access
+    if limit == -1:
+        return -1
     if tier == SubscriptionTier.STARTER:
         return 0
 
-    # Unlimited tiers
-    if quota_limit == -1:
-        return -1  # -1 indicates unlimited
-
-    # Professional tier: calculate remaining
-    if db:
-        current_usage = await get_monthly_usage(organization_id, db)
-    else:
-        current_usage = 0
-
-    remaining = max(0, quota_limit - current_usage)
-    return remaining
+    used = 0
+    if db is not None:
+        used = await get_monthly_usage(organization_id, db)
+    return max(0, limit - used)
 
 
+async def increment_episode_count(organization_id: str, db: SessionLikeWithMock) -> None:
+    """Increment usage for the current month, creating the record if necessary."""
 
+    if db is None:
+        raise ValueError("Database session is required to increment usage")
 
-
-async def increment_episode_count(organization_id: str, db: SessionLike) -> None:
-
-    """
-
-    Increment episode count for organization in current month.
-
-
-
-    Creates new usage record if none exists for current month.
-
-
-
-    Args:
-
-        organization_id: Clerk organization ID
-
-        db: Database session
-
-
-
-    Examples:
-
-        >>> await increment_episode_count("org_123", db)
-
-        >>> # Usage count incremented by 1
-
-    """
-
-    current_month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-
-
-
+    current_month = _current_month_start()
     stmt = select(PodcastUsage).where(
-
         and_(
-
             PodcastUsage.organization_id == organization_id,
-
-            PodcastUsage.month == current_month
-
+            PodcastUsage.month == current_month,
         )
-
     )
 
-
-
-    is_async_db = isinstance(db, (AsyncSession, AsyncMock))
-
-
-
-    if is_async_db:
-
+    if _is_async_session(db):
         result = await db.execute(stmt)
-
-        usage_record = result.scalar_one_or_none()
-
-        if inspect.isawaitable(usage_record):
-
-            usage_record = await usage_record
-
     else:
+        result = db.execute(stmt)  # type: ignore[arg-type]
 
-        result = db.execute(stmt)
+    usage = result.scalar_one_or_none()
+    usage = await _maybe_await(usage)
 
-        usage_record = result.scalar_one_or_none()
-
-
-
-    if usage_record:
-
-        usage_record.episode_count += 1
-
-        logger.debug(
-
-            f"Incremented episode count for {organization_id}: {usage_record.episode_count}"
-
-        )
-
-    else:
-
-        usage_record = PodcastUsage(
-
+    if usage is None:
+        usage = PodcastUsage(
             organization_id=organization_id,
-
             month=current_month,
-
-            episode_count=1
-
+            episode_count=1,
         )
-
-        add_result = db.add(usage_record)
-
-        if inspect.isawaitable(add_result):
-
-            await add_result
-
-        logger.info(
-
-            f"Created new usage record for {organization_id} in {current_month.strftime('%Y-%m')}"
-
-        )
-
-
-
-    if is_async_db:
-
-        commit_result = db.commit()
-
-        if inspect.isawaitable(commit_result):
-
-            await commit_result
-
-        refresh_result = db.refresh(usage_record)
-
-        if inspect.isawaitable(refresh_result):
-
-            await refresh_result
-
+        await _maybe_await(db.add(usage))
+        logger.info("Created podcast usage record for %s/%s", organization_id, current_month.strftime("%Y-%m"))
     else:
+        usage.episode_count += 1
+        logger.debug("Incremented podcast usage for %s to %s", organization_id, usage.episode_count)
 
-        db.commit()
-
-        db.refresh(usage_record)
-
-
-
+    await _maybe_await(db.commit())
+    await _maybe_await(db.refresh(usage))
 
 
-async def get_monthly_usage(organization_id: str, db: SessionLike) -> int:
+async def get_monthly_usage(organization_id: str, db: SessionLikeWithMock) -> int:
+    """Return the number of episodes created in the current month."""
 
-    """
+    if db is None:
+        raise ValueError("Database session is required to compute usage")
 
-    Get current month's episode count for organization.
-
-
-
-    Args:
-
-        organization_id: Clerk organization ID
-
-        db: Database session
+    if _is_async_session(db):
+        return await _query_usage_async(organization_id, db)
+    return _query_usage_sync(organization_id, db)  # type: ignore[arg-type]
 
 
-
-    Returns:
-
-        int: Number of episodes created this month (0 if none)
-
-
-
-    Examples:
-
-        >>> usage = await get_monthly_usage("org_123", db)
-
-        >>> print(f"Created {usage} episodes this month")
-
-    """
-
-    if isinstance(db, (AsyncSession, AsyncMock)):
-
-        return await _query_usage_for_month(organization_id, db)
-
-    return _query_usage_for_month_sync(organization_id, db)
-
-
-
-
-
-async def _query_usage_for_month(organization_id: str, db: AsyncSession | AsyncMock) -> int:
-
-    """
-
-    Internal helper to query usage for current month.
-
-
-
-    Args:
-
-        organization_id: Clerk organization ID
-
-        db: Database session
-
-
-
-    Returns:
-
-        int: Episode count for current month
-
-    """
-
-    current_month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-
-
-
+async def _query_usage_async(organization_id: str, db: AsyncSession | AsyncMock) -> int:
+    current_month = _current_month_start()
     stmt = select(PodcastUsage.episode_count).where(
-
         and_(
-
             PodcastUsage.organization_id == organization_id,
-
-            PodcastUsage.month == current_month
-
+            PodcastUsage.month == current_month,
         )
-
     )
 
     result = await db.execute(stmt)
-
     count = result.scalar_one_or_none()
-
-    if inspect.isawaitable(count):
-
-        count = await count
-
+    count = await _maybe_await(count)
     return count or 0
 
+
+def _query_usage_sync(organization_id: str, db: Session) -> int:
+    current_month = _current_month_start()
+    stmt = select(PodcastUsage.episode_count).where(
+        and_(
+            PodcastUsage.organization_id == organization_id,
+            PodcastUsage.month == current_month,
+        )
+    )
+
+    result = db.execute(stmt)
+    count = result.scalar_one_or_none()
+    return count or 0
 
 
 async def get_quota_summary(
     organization_id: str,
     tier: SubscriptionTier,
-    db: Optional[SessionLike] = None,
+    db: SessionLikeWithMock,
 ) -> PodcastQuotaSummary:
-    """Aggregate quota information for API responses."""
+    """Aggregate quota information for API responses and UI displays."""
 
     if db is None:
         raise ValueError("Database session is required to compute quota summary")
 
     limit = TIER_QUOTAS.get(tier, 0)
-    used = await get_monthly_usage(organization_id, db=db)
-    quota_remaining = await get_remaining_quota(
-        organization_id,
-        db=db,
-        tier=tier,
-    )
+    used = await get_monthly_usage(organization_id, db)
+    remaining = await get_remaining_quota(organization_id, db=db, tier=tier)
 
     is_unlimited = limit == -1
     limit_value: Optional[int] = None if is_unlimited else limit
+    remaining_value = -1 if is_unlimited else remaining
 
-    if is_unlimited:
-        remaining_value = -1
-    else:
-        remaining_value = max(0, quota_remaining if quota_remaining is not None else limit - used)
-
-    period = datetime.now(UTC).strftime("%Y-%m")
     tier_label = tier.value.title()
     quota_state = "unlimited" if is_unlimited else "normal"
     warning_status: Optional[str] = None
@@ -479,7 +223,7 @@ async def get_quota_summary(
     upgrade_cta_url: Optional[str] = None
 
     if not is_unlimited and limit_value:
-        usage_ratio = used / limit_value if limit_value else 0
+        usage_ratio = used / limit_value
         if usage_ratio >= 1:
             quota_state = "exceeded"
             warning_status = "critical"
@@ -497,6 +241,8 @@ async def get_quota_summary(
             warning_status = "warning"
             warning_message = "80% of monthly quota used."
 
+    period = datetime.now(timezone.utc).strftime("%Y-%m")
+
     return PodcastQuotaSummary(
         tier=tier.value,
         tier_label=tier_label,
@@ -513,29 +259,18 @@ async def get_quota_summary(
         upgrade_cta_url=upgrade_cta_url,
     )
 
-def _query_usage_for_month_sync(organization_id: str, db: Session) -> int:
 
-    """Synchronous helper for monthly usage queries."""
+__all__ = [
+    "QuotaExceededError",
+    "check_episode_quota",
+    "get_remaining_quota",
+    "increment_episode_count",
+    "get_monthly_usage",
+    "get_quota_summary",
+    "TIER_QUOTAS",
+]
 
-    current_month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-    stmt = select(PodcastUsage.episode_count).where(
-
-        and_(
-
-            PodcastUsage.organization_id == organization_id,
-
-            PodcastUsage.month == current_month
-
-        )
-
-    )
-
-    result = db.execute(stmt)
-
-    count = result.scalar_one_or_none()
-
-    return count if count is not None else 0
 
 
 
