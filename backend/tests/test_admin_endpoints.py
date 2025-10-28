@@ -25,7 +25,7 @@ from app.models.organization import Organization
 
 def test_admin_dashboard_returns_metrics(client: TestClient, auth_headers_admin: dict):
     """Admin dashboard should return platform metrics"""
-    response = client.get("/admin/dashboard", headers=auth_headers_admin)
+    response = client.get("/api/admin/dashboard", headers=auth_headers_admin)
 
     assert response.status_code == 200
     data = response.json()
@@ -52,13 +52,13 @@ def test_admin_dashboard_returns_metrics(client: TestClient, auth_headers_admin:
 
 def test_admin_dashboard_forbidden_for_non_admin(client: TestClient, auth_headers_solo: dict):
     """Non-admin users should not access admin dashboard"""
-    response = client.get("/admin/dashboard", headers=auth_headers_solo)
+    response = client.get("/api/admin/dashboard", headers=auth_headers_solo)
     assert response.status_code == 403
 
 
 def test_admin_dashboard_forbidden_for_unauthenticated(client: TestClient):
     """Unauthenticated users should not access admin dashboard"""
-    response = client.get("/admin/dashboard")
+    response = client.get("/api/admin/dashboard")
     assert response.status_code == 401
 
 
@@ -85,7 +85,7 @@ def test_admin_dashboard_metrics_accuracy(client: TestClient, auth_headers_admin
     db_session.add(test_user)
     db_session.commit()
 
-    response = client.get("/admin/dashboard", headers=auth_headers_admin)
+    response = client.get("/api/admin/dashboard", headers=auth_headers_admin)
     assert response.status_code == 200
 
     data = response.json()
@@ -100,7 +100,7 @@ def test_admin_dashboard_metrics_accuracy(client: TestClient, auth_headers_admin
 
 def test_list_all_users_as_admin(client: TestClient, auth_headers_admin: dict):
     """Admin can list all users across all organizations"""
-    response = client.get("/admin/users", headers=auth_headers_admin)
+    response = client.get("/api/admin/users", headers=auth_headers_admin)
 
     assert response.status_code == 200
     data = response.json()
@@ -117,7 +117,7 @@ def test_list_all_users_as_admin(client: TestClient, auth_headers_admin: dict):
 
 def test_list_users_forbidden_for_non_admin(client: TestClient, auth_headers_solo: dict):
     """Non-admin cannot list all users"""
-    response = client.get("/admin/users", headers=auth_headers_solo)
+    response = client.get("/api/admin/users", headers=auth_headers_solo)
     assert response.status_code == 403
 
 
@@ -145,7 +145,7 @@ def test_search_users_by_email(client: TestClient, auth_headers_admin: dict, db_
     db_session.commit()
 
     response = client.get(
-        "/admin/users?search=searchable@test.com",
+        "/api/admin/users?search=searchable@test.com",
         headers=auth_headers_admin
     )
 
@@ -162,7 +162,7 @@ def test_pagination_users_list(client: TestClient, auth_headers_admin: dict):
     """User list should support pagination"""
     # Request first page with 5 items
     response = client.get(
-        "/admin/users?page=1&per_page=5",
+        "/api/admin/users?page=1&per_page=5",
         headers=auth_headers_admin
     )
 
@@ -198,7 +198,7 @@ def test_get_user_details_as_admin(client: TestClient, auth_headers_admin: dict,
     db_session.commit()
 
     response = client.get(
-        f"/admin/users/{test_user.id}",
+        f"/api/admin/users/{test_user.id}",
         headers=auth_headers_admin
     )
 
@@ -236,7 +236,7 @@ def test_update_user_role_as_admin(client: TestClient, auth_headers_admin: dict,
 
     # Update to enterprise role
     response = client.put(
-        f"/admin/users/{test_user.id}",
+        f"/api/admin/users/{test_user.id}",
         headers=auth_headers_admin,
         json={"role": "enterprise"}
     )
@@ -271,7 +271,7 @@ def test_soft_delete_user_as_admin(client: TestClient, auth_headers_admin: dict,
 
     # Soft delete the user
     response = client.delete(
-        f"/admin/users/{test_user.id}",
+        f"/api/admin/users/{test_user.id}",
         headers=auth_headers_admin
     )
 
@@ -279,7 +279,7 @@ def test_soft_delete_user_as_admin(client: TestClient, auth_headers_admin: dict,
 
     # Verify user is marked as deleted
     response = client.get(
-        f"/admin/users/{test_user.id}",
+        f"/api/admin/users/{test_user.id}",
         headers=auth_headers_admin
     )
 
@@ -314,7 +314,7 @@ def test_restore_deleted_user(client: TestClient, auth_headers_admin: dict, db_s
 
     # Restore the user
     response = client.post(
-        f"/admin/users/{test_user.id}/restore",
+        f"/api/admin/users/{test_user.id}/restore",
         headers=auth_headers_admin
     )
 
@@ -329,7 +329,7 @@ def test_restore_deleted_user(client: TestClient, auth_headers_admin: dict, db_s
 
 def test_list_all_organizations(client: TestClient, auth_headers_admin: dict):
     """Admin can list all organizations"""
-    response = client.get("/admin/organizations", headers=auth_headers_admin)
+    response = client.get("/api/admin/organizations", headers=auth_headers_admin)
 
     assert response.status_code == 200
     data = response.json()
@@ -341,7 +341,7 @@ def test_list_all_organizations(client: TestClient, auth_headers_admin: dict):
 
 def test_list_organizations_forbidden_for_non_admin(client: TestClient, auth_headers_solo: dict):
     """Non-admin cannot list all organizations"""
-    response = client.get("/admin/organizations", headers=auth_headers_solo)
+    response = client.get("/api/admin/organizations", headers=auth_headers_solo)
     assert response.status_code == 403
 
 
@@ -358,7 +358,7 @@ def test_get_organization_details(client: TestClient, auth_headers_admin: dict, 
     db_session.commit()
 
     response = client.get(
-        f"/admin/organizations/{test_org.id}",
+        f"/api/admin/organizations/{test_org.id}",
         headers=auth_headers_admin
     )
 
@@ -394,7 +394,7 @@ def test_get_organization_users(client: TestClient, auth_headers_admin: dict, db
     db_session.commit()
 
     response = client.get(
-        f"/admin/organizations/{test_org.id}/users",
+        f"/api/admin/organizations/{test_org.id}/users",
         headers=auth_headers_admin
     )
 
@@ -417,7 +417,7 @@ def test_get_organization_metrics(client: TestClient, auth_headers_admin: dict, 
     db_session.commit()
 
     response = client.get(
-        f"/admin/organizations/{test_org.id}/metrics",
+        f"/api/admin/organizations/{test_org.id}/metrics",
         headers=auth_headers_admin
     )
 
@@ -433,7 +433,7 @@ def test_get_organization_metrics(client: TestClient, auth_headers_admin: dict, 
 
 def test_system_health_check_as_admin(client: TestClient, auth_headers_admin: dict):
     """Admin can view system health metrics"""
-    response = client.get("/admin/system/health", headers=auth_headers_admin)
+    response = client.get("/api/admin/system/health", headers=auth_headers_admin)
 
     assert response.status_code == 200
     data = response.json()
@@ -453,13 +453,13 @@ def test_system_health_check_as_admin(client: TestClient, auth_headers_admin: di
 
 def test_system_health_forbidden_for_non_admin(client: TestClient, auth_headers_solo: dict):
     """Non-admin cannot view system health"""
-    response = client.get("/admin/system/health", headers=auth_headers_solo)
+    response = client.get("/api/admin/system/health", headers=auth_headers_solo)
     assert response.status_code == 403
 
 
 def test_system_health_includes_api_metrics(client: TestClient, auth_headers_admin: dict):
     """System health should include API performance metrics"""
-    response = client.get("/admin/system/health", headers=auth_headers_admin)
+    response = client.get("/api/admin/system/health", headers=auth_headers_admin)
 
     assert response.status_code == 200
     data = response.json()

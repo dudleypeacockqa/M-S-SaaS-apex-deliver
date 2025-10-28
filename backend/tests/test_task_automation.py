@@ -46,7 +46,7 @@ def test_manual_rule_run_creates_tasks_and_logs(
     deal, owner, _ = deal_context
 
     template_resp = client.post(
-        f"/api/deals/{deal.id}/task-templates",
+        f"/api/api/deals/{deal.id}/task-templates",
         headers=auth_headers_growth,
         json=_template_payload(),
     )
@@ -54,7 +54,7 @@ def test_manual_rule_run_creates_tasks_and_logs(
     template_id = template_resp.json()["id"]
 
     rule_resp = client.post(
-        f"/api/deals/{deal.id}/automation/rules",
+        f"/api/api/deals/{deal.id}/automation/rules",
         headers=auth_headers_growth,
         json=_rule_payload(template_id),
     )
@@ -62,7 +62,7 @@ def test_manual_rule_run_creates_tasks_and_logs(
     rule_id = rule_resp.json()["id"]
 
     run_resp = client.post(
-        f"/api/deals/{deal.id}/automation/rules/{rule_id}/run",
+        f"/api/api/deals/{deal.id}/automation/rules/{rule_id}/run",
         headers=auth_headers_growth,
         json={"run_id": str(uuid4())},
     )
@@ -72,7 +72,7 @@ def test_manual_rule_run_creates_tasks_and_logs(
     assert payload["status"] == "queued"
 
     list_resp = client.get(
-        f"/api/deals/{deal.id}/tasks",
+        f"/api/api/deals/{deal.id}/tasks",
         headers=auth_headers_growth,
     )
     assert list_resp.status_code == status.HTTP_200_OK
@@ -80,7 +80,7 @@ def test_manual_rule_run_creates_tasks_and_logs(
     assert any(task["title"] == "Collect financial statements" for task in tasks)
 
     log_resp = client.get(
-        f"/api/deals/{deal.id}/automation/logs",
+        f"/api/api/deals/{deal.id}/automation/logs",
         headers=auth_headers_growth,
     )
     assert log_resp.status_code == status.HTTP_200_OK
@@ -98,7 +98,7 @@ def test_starter_tier_cannot_create_automation_rule(
     deal, _, _ = deal_context
 
     template_resp = client.post(
-        f"/api/deals/{deal.id}/task-templates",
+        f"/api/api/deals/{deal.id}/task-templates",
         headers=auth_headers,
         json=_template_payload(),
     )

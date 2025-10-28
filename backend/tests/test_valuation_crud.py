@@ -56,7 +56,7 @@ class TestValuationCrudApi:
         deal, growth_user, _ = create_deal_for_org()
 
         response = client.post(
-            f"/deals/{deal.id}/valuations",
+            f"/api/deals/{deal.id}/valuations",
             json=valuation_payload,
             headers=auth_headers_growth,
         )
@@ -72,7 +72,7 @@ class TestValuationCrudApi:
 
         # GET endpoint returns same valuation
         fetch_resp = client.get(
-            f"/deals/{deal.id}/valuations/{body['id']}",
+            f"/api/deals/{deal.id}/valuations/{body['id']}",
             headers=auth_headers_growth,
         )
         assert fetch_resp.status_code == status.HTTP_200_OK
@@ -82,7 +82,7 @@ class TestValuationCrudApi:
         deal, _, _ = create_deal_for_org()
 
         response = client.post(
-            f"/deals/{deal.id}/valuations",
+            f"/api/deals/{deal.id}/valuations",
             json=valuation_payload,
             headers=auth_headers,
         )
@@ -92,7 +92,7 @@ class TestValuationCrudApi:
     def test_update_valuation_modifies_record(self, client, create_deal_for_org, auth_headers_growth, valuation_payload):
         deal, _, _ = create_deal_for_org()
         create_resp = client.post(
-            f"/deals/{deal.id}/valuations",
+            f"/api/deals/{deal.id}/valuations",
             json=valuation_payload,
             headers=auth_headers_growth,
         )
@@ -100,7 +100,7 @@ class TestValuationCrudApi:
 
         update_payload = {"discount_rate": 0.1, "terminal_growth_rate": 0.025}
         update_resp = client.put(
-            f"/deals/{deal.id}/valuations/{valuation_id}",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}",
             json=update_payload,
             headers=auth_headers_growth,
         )
@@ -113,14 +113,14 @@ class TestValuationCrudApi:
     def test_delete_valuation_returns_204(self, client, create_deal_for_org, auth_headers_growth, valuation_payload, db_session):
         deal, _, _ = create_deal_for_org()
         create_resp = client.post(
-            f"/deals/{deal.id}/valuations",
+            f"/api/deals/{deal.id}/valuations",
             json=valuation_payload,
             headers=auth_headers_growth,
         )
         valuation_id = create_resp.json()["id"]
 
         delete_resp = client.delete(
-            f"/deals/{deal.id}/valuations/{valuation_id}",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}",
             headers=auth_headers_growth,
         )
 
@@ -130,14 +130,14 @@ class TestValuationCrudApi:
     def test_add_comparable_company(self, client, create_deal_for_org, auth_headers_growth, valuation_payload, comparable_payload):
         deal, _, _ = create_deal_for_org()
         create_resp = client.post(
-            f"/deals/{deal.id}/valuations",
+            f"/api/deals/{deal.id}/valuations",
             json=valuation_payload,
             headers=auth_headers_growth,
         )
         valuation_id = create_resp.json()["id"]
 
         response = client.post(
-            f"/deals/{deal.id}/valuations/{valuation_id}/comparables",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/comparables",
             json=comparable_payload,
             headers=auth_headers_growth,
         )
@@ -149,14 +149,14 @@ class TestValuationCrudApi:
     def test_add_precedent_transaction(self, client, create_deal_for_org, auth_headers_growth, valuation_payload, precedent_payload):
         deal, _, _ = create_deal_for_org()
         create_resp = client.post(
-            f"/deals/{deal.id}/valuations",
+            f"/api/deals/{deal.id}/valuations",
             json=valuation_payload,
             headers=auth_headers_growth,
         )
         valuation_id = create_resp.json()["id"]
 
         response = client.post(
-            f"/deals/{deal.id}/valuations/{valuation_id}/transactions",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/transactions",
             json=precedent_payload,
             headers=auth_headers_growth,
         )
@@ -167,7 +167,7 @@ class TestValuationCrudApi:
     def test_create_scenario_requires_growth_tier(self, client, create_deal_for_org, auth_headers, valuation_payload):
         deal, _, _ = create_deal_for_org()
         create_resp = client.post(
-            f"/deals/{deal.id}/valuations",
+            f"/api/deals/{deal.id}/valuations",
             json=valuation_payload,
             headers=auth_headers,
         )
@@ -179,7 +179,7 @@ class TestValuationAccessControl:
     def test_cannot_access_other_org_deal(self, client, create_deal_for_org, auth_headers_growth, valuation_payload, create_organization, create_user):
         deal, _, _ = create_deal_for_org()
         create_resp = client.post(
-            f"/deals/{deal.id}/valuations",
+            f"/api/deals/{deal.id}/valuations",
             json=valuation_payload,
             headers=auth_headers_growth,
         )
@@ -192,7 +192,7 @@ class TestValuationAccessControl:
         app.dependency_overrides[get_current_user] = lambda: other_user
 
         response = client.get(
-            f"/deals/{deal.id}/valuations/{valuation_id}",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}",
             headers={"Authorization": "Bearer mock_growth_token"},
         )
 
@@ -205,14 +205,16 @@ class TestValuationAccessControl:
 
 
 class TestValuationServiceOps:
-    def test_create_valuation_calculates_metrics(self, db_session, valuation_payload):
+    def test_create_valuation_calculates_metrics(self, db_session, valuation_payload, create_deal_for_org):
         from app.services import valuation_service
+
+        deal, owner, org = create_deal_for_org()
 
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=deal.id,
+            organization_id=org.id,
+            created_by=owner.id,
             **valuation_payload,
         )
 
@@ -220,14 +222,16 @@ class TestValuationServiceOps:
         assert valuation.equity_value is not None
         assert valuation.implied_share_price is not None
 
-    def test_update_valuation_recalculates(self, db_session, valuation_payload):
+    def test_update_valuation_recalculates(self, db_session, valuation_payload, create_deal_for_org):
         from app.services import valuation_service
+
+        deal, owner, org = create_deal_for_org()
 
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=deal.id,
+            organization_id=org.id,
+            created_by=owner.id,
             **valuation_payload,
         )
 
@@ -243,14 +247,16 @@ class TestValuationServiceOps:
         assert updated.discount_rate == 0.1
         assert updated.enterprise_value != original_ev
 
-    def test_add_comparable_records(self, db_session, valuation_payload, comparable_payload):
+    def test_add_comparable_records(self, db_session, valuation_payload, comparable_payload, create_deal_for_org):
         from app.services import valuation_service
+
+        deal, owner, org = create_deal_for_org()
 
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=deal.id,
+            organization_id=org.id,
+            created_by=owner.id,
             **valuation_payload,
         )
 
@@ -263,14 +269,16 @@ class TestValuationServiceOps:
 
         assert comparable.company_name == "Peer Co"
 
-    def test_add_precedent_records(self, db_session, valuation_payload, precedent_payload):
+    def test_add_precedent_records(self, db_session, valuation_payload, precedent_payload, create_deal_for_org):
         from app.services import valuation_service
+
+        deal, owner, org = create_deal_for_org()
 
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=deal.id,
+            organization_id=org.id,
+            created_by=owner.id,
             **valuation_payload,
         )
 
@@ -283,14 +291,16 @@ class TestValuationServiceOps:
 
         assert precedent.target_company == "Target Co"
 
-    def test_create_scenario_persists(self, db_session, valuation_payload):
+    def test_create_scenario_persists(self, db_session, valuation_payload, create_deal_for_org):
         from app.services import valuation_service
+
+        deal, owner, org = create_deal_for_org()
 
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=deal.id,
+            organization_id=org.id,
+            created_by=owner.id,
             **valuation_payload,
         )
 
@@ -305,14 +315,16 @@ class TestValuationServiceOps:
         assert scenario.name == "Upside"
         assert db_session.get(ValuationScenario, scenario.id) is not None
 
-    def test_generate_export_log_entry(self, db_session, valuation_payload):
+    def test_generate_export_log_entry(self, db_session, valuation_payload, create_deal_for_org):
         from app.services import valuation_service
+
+        deal, owner, org = create_deal_for_org()
 
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=deal.id,
+            organization_id=org.id,
+            created_by=owner.id,
             **valuation_payload,
         )
 
@@ -324,20 +336,22 @@ class TestValuationServiceOps:
             export_format="summary",
             exported_by=valuation.created_by,
             file_size_bytes=256000,
-            document_id=str(uuid4()),
+            document_id=None,
         )
 
         assert log_entry.export_type == "pdf"
         assert db_session.get(ValuationExportLog, log_entry.id) is not None
 
-    def test_delete_valuation_cascades(self, db_session, valuation_payload, comparable_payload):
+    def test_delete_valuation_cascades(self, db_session, valuation_payload, comparable_payload, create_deal_for_org):
         from app.services import valuation_service
+
+        deal, owner, org = create_deal_for_org()
 
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=deal.id,
+            organization_id=org.id,
+            created_by=owner.id,
             **valuation_payload,
         )
 
@@ -357,14 +371,16 @@ class TestValuationServiceOps:
         assert deleted is True
         assert db_session.get(ValuationModel, valuation.id) is None
 
-    def test_calculate_comparable_multiples(self, db_session, valuation_payload):
+    def test_calculate_comparable_multiples(self, db_session, valuation_payload, create_deal_for_org):
         from app.services import valuation_service
+
+        deal, owner, org = create_deal_for_org()
 
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=deal.id,
+            organization_id=org.id,
+            created_by=owner.id,
             **valuation_payload,
         )
 
@@ -394,14 +410,16 @@ class TestValuationServiceOps:
         assert multiples["ev_ebitda"]["min"] == 8.0
         assert multiples["ev_ebitda"]["max"] == 10.0
 
-    def test_calculate_precedent_multiples(self, db_session, valuation_payload):
+    def test_calculate_precedent_multiples(self, db_session, valuation_payload, create_deal_for_org):
         from app.services import valuation_service
+
+        deal, owner, org = create_deal_for_org()
 
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=deal.id,
+            organization_id=org.id,
+            created_by=owner.id,
             **valuation_payload,
         )
 

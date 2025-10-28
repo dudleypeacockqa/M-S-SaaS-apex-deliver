@@ -34,7 +34,7 @@ async def test_calculate_financial_ratios_endpoint(test_deal, auth_headers):
         }
 
         response = await client.post(
-            f"/deals/{test_deal.id}/financial/calculate-ratios",
+            f"/api/deals/{test_deal.id}/financial/calculate-ratios",
             json=financial_data,
             headers=auth_headers,
         )
@@ -64,7 +64,7 @@ async def test_calculate_ratios_requires_authentication(test_deal):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
-            f"/deals/{test_deal.id}/financial/calculate-ratios",
+            f"/api/deals/{test_deal.id}/financial/calculate-ratios",
             json={"revenue": 100000},
         )
 
@@ -77,7 +77,7 @@ async def test_calculate_ratios_deal_not_found(auth_headers):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
-            "/deals/nonexistent-deal-id/financial/calculate-ratios",
+            "/api/deals/nonexistent-deal-id/financial/calculate-ratios",
             json={"revenue": 100000},
             headers=auth_headers,
         )
@@ -98,7 +98,7 @@ async def test_calculate_ratios_with_partial_data(test_deal, auth_headers):
         }
 
         response = await client.post(
-            f"/deals/{test_deal.id}/financial/calculate-ratios",
+            f"/api/deals/{test_deal.id}/financial/calculate-ratios",
             json=financial_data,
             headers=auth_headers,
         )
@@ -123,7 +123,7 @@ async def test_get_financial_connections_endpoint(test_deal, auth_headers):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get(
-            f"/deals/{test_deal.id}/financial/connections",
+            f"/api/deals/{test_deal.id}/financial/connections",
             headers=auth_headers,
         )
 
@@ -141,7 +141,7 @@ async def test_get_financial_ratios_not_found(test_deal, auth_headers):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get(
-            f"/deals/{test_deal.id}/financial/ratios",
+            f"/api/deals/{test_deal.id}/financial/ratios",
             headers=auth_headers,
         )
 
@@ -155,7 +155,7 @@ async def test_get_financial_narrative_not_found(test_deal, auth_headers):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get(
-            f"/deals/{test_deal.id}/financial/narrative",
+            f"/api/deals/{test_deal.id}/financial/narrative",
             headers=auth_headers,
         )
 
@@ -182,7 +182,7 @@ async def test_connect_xero_initiates_oauth_flow(test_deal, auth_headers):
             }
 
             response = await client.post(
-                f"/deals/{test_deal.id}/financial/connect/xero",
+                f"/api/deals/{test_deal.id}/financial/connect/xero",
                 headers=auth_headers
             )
 
@@ -199,7 +199,7 @@ async def test_connect_xero_with_invalid_deal(auth_headers):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
-            "/deals/nonexistent-deal-id/financial/connect/xero",
+            "/api/deals/nonexistent-deal-id/financial/connect/xero",
             headers=auth_headers
         )
 
@@ -231,7 +231,7 @@ async def test_xero_oauth_callback_success(test_deal, auth_headers):
             mock_callback.return_value = mock_connection
 
             response = await client.get(
-                f"/deals/{test_deal.id}/financial/connect/xero/callback?code=auth_code_123&state=state_token",
+                f"/api/deals/{test_deal.id}/financial/connect/xero/callback?code=auth_code_123&state=state_token",
                 headers=auth_headers
             )
 
@@ -247,7 +247,7 @@ async def test_xero_oauth_callback_missing_code(test_deal, auth_headers):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get(
-            f"/deals/{test_deal.id}/financial/connect/xero/callback",
+            f"/api/deals/{test_deal.id}/financial/connect/xero/callback",
             headers=auth_headers
         )
 
@@ -284,7 +284,7 @@ async def test_sync_financial_data_success(test_deal, db_session, auth_headers):
             mock_fetch.return_value = [mock_statement]
 
             response = await client.post(
-                f"/deals/{test_deal.id}/financial/sync",
+                f"/api/deals/{test_deal.id}/financial/sync",
                 headers=auth_headers
             )
 
@@ -300,7 +300,7 @@ async def test_sync_financial_data_no_connection(test_deal, auth_headers):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
-            f"/deals/{test_deal.id}/financial/sync",
+            f"/api/deals/{test_deal.id}/financial/sync",
             headers=auth_headers
         )
 
@@ -334,7 +334,7 @@ async def test_get_readiness_score_success(test_deal, db_session, auth_headers):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get(
-            f"/deals/{test_deal.id}/financial/readiness-score",
+            f"/api/deals/{test_deal.id}/financial/readiness-score",
             headers=auth_headers
         )
 
@@ -353,7 +353,7 @@ async def test_get_readiness_score_no_narrative(test_deal, auth_headers):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get(
-            f"/deals/{test_deal.id}/financial/readiness-score",
+            f"/api/deals/{test_deal.id}/financial/readiness-score",
             headers=auth_headers
         )
 

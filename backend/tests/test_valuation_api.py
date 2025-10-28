@@ -7,7 +7,7 @@ from fastapi import status
 
 def _create_valuation(client, deal_id: str, headers: dict, payload: dict):
     return client.post(
-        f"/deals/{deal_id}/valuations",
+        f"/api/deals/{deal_id}/valuations",
         json=payload,
         headers=headers,
     )
@@ -58,7 +58,7 @@ class TestValuationApi:
         valuation_id = create_resp.json()["id"]
 
         response = client.get(
-            f"/deals/{deal.id}/valuations/{valuation_id}",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}",
             headers=auth_headers_growth,
         )
 
@@ -71,7 +71,7 @@ class TestValuationApi:
         valuation_id = create_resp.json()["id"]
 
         update_resp = client.put(
-            f"/deals/{deal.id}/valuations/{valuation_id}",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}",
             json={"discount_rate": 0.1},
             headers=auth_headers_growth,
         )
@@ -85,7 +85,7 @@ class TestValuationApi:
         valuation_id = create_resp.json()["id"]
 
         delete_resp = client.delete(
-            f"/deals/{deal.id}/valuations/{valuation_id}",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}",
             headers=auth_headers_growth,
         )
 
@@ -109,7 +109,7 @@ class TestValuationApi:
         app.dependency_overrides[get_current_user] = override_user
 
         response = client.get(
-            f"/deals/{deal.id}/valuations/{valuation_id}",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}",
             headers={"Authorization": "Bearer mock_growth_token"},
         )
 
@@ -124,7 +124,7 @@ class TestValuationApi:
 
         payload = {"company_name": "Peer Co", "ev_ebitda_multiple": 8.4, "weight": 1.0}
         response = client.post(
-            f"/deals/{deal.id}/valuations/{valuation_id}/comparables",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/comparables",
             json=payload,
             headers=auth_headers_growth,
         )
@@ -144,7 +144,7 @@ class TestValuationApi:
             "ev_ebitda_multiple": 7.8,
         }
         response = client.post(
-            f"/deals/{deal.id}/valuations/{valuation_id}/transactions",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/transactions",
             json=payload,
             headers=auth_headers_growth,
         )
@@ -158,7 +158,7 @@ class TestValuationApi:
         valuation_id = create_resp.json()["id"]
 
         response = client.post(
-            f"/deals/{deal.id}/valuations/{valuation_id}/scenarios",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/scenarios",
             json=SCENARIO_PAYLOAD,
             headers=auth_headers_growth,
         )
@@ -182,7 +182,7 @@ class TestValuationApi:
         monkeypatch.setattr("app.services.valuation_service.trigger_export_task", fake_trigger_export_task)
 
         response = client.post(
-            f"/deals/{deal.id}/valuations/{valuation_id}/exports",
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/exports",
             json={"export_type": "pdf", "export_format": "summary"},
             headers=auth_headers_growth,
         )

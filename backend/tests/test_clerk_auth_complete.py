@@ -53,7 +53,7 @@ def test_webhook_creates_user(client, db_session: Session) -> None:
     signature, body = _sign_payload(payload)
 
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -75,7 +75,7 @@ def test_webhook_rejects_invalid_signature(client) -> None:
     body = json.dumps(payload).encode()
 
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": "invalid_signature", "content-type": "application/json"},
     )
@@ -90,7 +90,7 @@ def test_webhook_rejects_missing_signature(client) -> None:
     body = json.dumps(payload).encode()
 
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"content-type": "application/json"},
     )
@@ -125,7 +125,7 @@ def test_webhook_updates_existing_user(client, db_session: Session) -> None:
     signature, body = _sign_payload(payload)
 
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -152,7 +152,7 @@ def test_webhook_update_creates_if_not_exists(client, db_session: Session) -> No
     signature, body = _sign_payload(payload)
 
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -178,7 +178,7 @@ def test_webhook_soft_deletes_user(client, db_session: Session) -> None:
     signature, body = _sign_payload(payload)
 
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -206,7 +206,7 @@ def test_webhook_updates_last_login_on_session_created(client, db_session: Sessi
     signature, body = _sign_payload(payload)
 
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -237,7 +237,7 @@ def test_webhook_handles_session_ended(client, db_session: Session) -> None:
     signature, body = _sign_payload(payload)
 
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -261,7 +261,7 @@ def test_webhook_handles_missing_email_addresses(client, db_session: Session) ->
     signature, body = _sign_payload(payload)
 
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -285,7 +285,7 @@ def test_webhook_handles_invalid_role_gracefully(client, db_session: Session) ->
     signature, body = _sign_payload(payload)
 
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -315,7 +315,7 @@ def test_auth_me_returns_current_user(client, db_session: Session) -> None:
 
     token = _make_token("user_auth_me")
 
-    response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/api/api/auth/me", headers={"Authorization": f"Bearer {token}"})
 
     assert response.status_code == 200
     data = response.json()
@@ -328,14 +328,14 @@ def test_auth_me_returns_current_user(client, db_session: Session) -> None:
 
 def test_auth_me_requires_token(client) -> None:
     """Test /api/auth/me returns 401 without token."""
-    response = client.get("/api/auth/me")
+    response = client.get("/api/api/auth/me")
     assert response.status_code == 401
     assert "Authentication required" in response.json()["detail"]
 
 
 def test_auth_me_rejects_invalid_token(client) -> None:
     """Test /api/auth/me returns 401 for invalid tokens."""
-    response = client.get("/api/auth/me", headers={"Authorization": "Bearer invalid_token_xyz"})
+    response = client.get("/api/api/auth/me", headers={"Authorization": "Bearer invalid_token_xyz"})
     assert response.status_code == 401
 
 
@@ -343,7 +343,7 @@ def test_auth_me_rejects_token_for_nonexistent_user(client, db_session: Session)
     """Test /api/auth/me returns 401 if user not in database."""
     token = _make_token("user_does_not_exist")
 
-    response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/api/api/auth/me", headers={"Authorization": f"Bearer {token}"})
 
     assert response.status_code == 401
     assert "User not registered" in response.json()["detail"]
@@ -358,7 +358,7 @@ def test_auth_me_rejects_token_without_sub(client, db_session: Session) -> None:
     }
     token = jwt.encode(payload, settings.clerk_secret_key, algorithm=settings.clerk_jwt_algorithm)
 
-    response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/api/api/auth/me", headers={"Authorization": f"Bearer {token}"})
 
     assert response.status_code == 401
     assert "Invalid token payload" in response.json()["detail"]
@@ -377,7 +377,7 @@ def test_webhook_handles_empty_data_gracefully(client) -> None:
     # This will currently raise a 500 error because the code expects an 'id' field
     # This is acceptable behavior - malformed webhooks should fail
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -392,7 +392,7 @@ def test_webhook_ignores_unknown_event_types(client) -> None:
     signature, body = _sign_payload(payload)
 
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -417,7 +417,7 @@ def test_user_creation_with_all_roles(client, db_session: Session) -> None:
         signature, body = _sign_payload(payload)
 
         response = client.post(
-            "/api/webhooks/clerk",
+            "/api/api/webhooks/clerk",
             data=body,
             headers={"svix-signature": signature, "content-type": "application/json"},
         )
@@ -444,7 +444,7 @@ def test_webhook_handles_invalid_timestamp_format(client, db_session: Session) -
     signature, body = _sign_payload(payload)
 
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -475,7 +475,7 @@ def test_full_user_lifecycle(client, db_session: Session) -> None:
     }
     signature, body = _sign_payload(create_payload)
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -497,7 +497,7 @@ def test_full_user_lifecycle(client, db_session: Session) -> None:
     }
     signature, body = _sign_payload(update_payload)
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -514,7 +514,7 @@ def test_full_user_lifecycle(client, db_session: Session) -> None:
     }
     signature, body = _sign_payload(login_payload)
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )
@@ -525,7 +525,7 @@ def test_full_user_lifecycle(client, db_session: Session) -> None:
 
     # Step 4: Test auth endpoint
     token = _make_token("user_lifecycle")
-    response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/api/api/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     assert response.json()["email"] == "lifecycle@example.com"
 
@@ -533,7 +533,7 @@ def test_full_user_lifecycle(client, db_session: Session) -> None:
     delete_payload = {"type": "user.deleted", "data": {"id": "user_lifecycle"}}
     signature, body = _sign_payload(delete_payload)
     response = client.post(
-        "/api/webhooks/clerk",
+        "/api/api/webhooks/clerk",
         data=body,
         headers={"svix-signature": signature, "content-type": "application/json"},
     )

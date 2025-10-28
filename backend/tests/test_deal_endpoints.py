@@ -28,7 +28,7 @@ def test_create_deal_success(client, create_user, create_organization, db_sessio
     app.dependency_overrides[get_current_user] = lambda: user
 
     response = client.post(
-        "/deals",
+        "/api/deals",
         headers={"Authorization": token},
         json={
             "name": "Acme Corp Acquisition",
@@ -71,7 +71,7 @@ def test_create_deal_validation_errors(client, create_user, create_organization)
 
     # Missing required field: target_company
     response = client.post(
-        "/deals",
+        "/api/deals",
         headers={"Authorization": token},
         json={"name": "Test Deal", "industry": "Tech"},
     )
@@ -94,7 +94,7 @@ def test_create_deal_sets_owner_and_org(client, create_user, create_organization
     app.dependency_overrides[get_current_user] = lambda: user
 
     response = client.post(
-        "/deals",
+        "/api/deals",
         headers={"Authorization": token},
         json={"name": "Auto Deal", "target_company": "Target Inc"},
     )
@@ -111,7 +111,7 @@ def test_create_deal_sets_owner_and_org(client, create_user, create_organization
 def test_create_deal_requires_auth(client):
     """Unauthenticated users cannot create deals."""
     response = client.post(
-        "/deals",
+        "/api/deals",
         json={"name": "Unauthorized Deal", "target_company": "Test Co"},
     )
 
@@ -130,7 +130,7 @@ def test_create_deal_default_stage(client, create_user, create_organization):
     app.dependency_overrides[get_current_user] = lambda: user
 
     response = client.post(
-        "/deals",
+        "/api/deals",
         headers={"Authorization": token},
         json={"name": "Default Stage Deal", "target_company": "Default Inc"},
     )
@@ -181,7 +181,7 @@ def test_list_deals_returns_org_deals_only(client, create_user, create_organizat
 
     app.dependency_overrides[get_current_user] = lambda: user1
 
-    response = client.get("/deals", headers={"Authorization": "Bearer token1"})
+    response = client.get("/api/deals", headers={"Authorization": "Bearer token1"})
 
     assert response.status_code == 200
     data = response.json()
@@ -218,7 +218,7 @@ def test_list_deals_pagination_works(client, create_user, create_organization, d
 
     # Request first 5
     response = client.get(
-        "/deals",
+        "/api/deals",
         headers={"Authorization": "Bearer token"},
         params={"page": 1, "per_page": 5},
     )
@@ -266,7 +266,7 @@ def test_list_deals_filter_by_stage(client, create_user, create_organization, db
 
     # Filter by due_diligence stage
     response = client.get(
-        "/deals",
+        "/api/deals",
         headers={"Authorization": "Bearer token"},
         params={"stage": "due_diligence"},
     )
@@ -311,7 +311,7 @@ def test_list_deals_search_by_name(client, create_user, create_organization, db_
 
     # Search for "Searchable"
     response = client.get(
-        "/deals",
+        "/api/deals",
         headers={"Authorization": "Bearer token"},
         params={"search": "Searchable"},
     )
@@ -362,7 +362,7 @@ def test_list_deals_sort_by_created_at(client, create_user, create_organization,
 
     # Sort by created_at descending (newest first)
     response = client.get(
-        "/deals",
+        "/api/deals",
         headers={"Authorization": "Bearer token"},
         params={"sort": "-created_at"},
     )
@@ -410,7 +410,7 @@ def test_list_deals_excludes_archived(client, create_user, create_organization, 
     app.dependency_overrides[get_current_user] = lambda: user
 
     # Default list should exclude archived
-    response = client.get("/deals", headers={"Authorization": "Bearer token"})
+    response = client.get("/api/deals", headers={"Authorization": "Bearer token"})
 
     assert response.status_code == 200
     data = response.json()
@@ -423,7 +423,7 @@ def test_list_deals_excludes_archived(client, create_user, create_organization, 
 
 def test_list_deals_requires_auth(client):
     """Unauthenticated users cannot list deals."""
-    response = client.get("/deals")
+    response = client.get("/api/deals")
     assert response.status_code == 401
 
 
@@ -459,7 +459,7 @@ def test_get_deal_success(client, create_user, create_organization, db_session):
 
     app.dependency_overrides[get_current_user] = lambda: user
 
-    response = client.get(f"/deals/{deal.id}", headers={"Authorization": "Bearer token"})
+    response = client.get(f"/api/deals/{deal.id}", headers={"Authorization": "Bearer token"})
 
     assert response.status_code == 200
     data = response.json()
@@ -486,7 +486,7 @@ def test_get_deal_not_found(client, create_user, create_organization):
 
     app.dependency_overrides[get_current_user] = lambda: user
 
-    response = client.get("/deals/nonexistent-id", headers={"Authorization": "Bearer token"})
+    response = client.get("/api/deals/nonexistent-id", headers={"Authorization": "Bearer token"})
 
     assert response.status_code == 404
 
@@ -521,7 +521,7 @@ def test_get_deal_forbidden_other_org(client, create_user, create_organization, 
     # User 1 tries to access org 2's deal
     app.dependency_overrides[get_current_user] = lambda: user1
 
-    response = client.get(f"/deals/{deal.id}", headers={"Authorization": "Bearer token"})
+    response = client.get(f"/api/deals/{deal.id}", headers={"Authorization": "Bearer token"})
 
     # Returns 404 to not leak information about deals in other orgs
     assert response.status_code == 404
@@ -532,7 +532,7 @@ def test_get_deal_forbidden_other_org(client, create_user, create_organization, 
 
 def test_get_deal_requires_auth(client):
     """Unauthenticated users cannot get deal details."""
-    response = client.get("/deals/some-id")
+    response = client.get("/api/deals/some-id")
     assert response.status_code == 401
 
 
@@ -569,7 +569,7 @@ def test_update_deal_success(client, create_user, create_organization, db_sessio
     app.dependency_overrides[get_current_user] = lambda: user
 
     response = client.put(
-        f"/deals/{deal.id}",
+        f"/api/deals/{deal.id}",
         headers={"Authorization": "Bearer token"},
         json={
             "name": "Updated Name",
@@ -622,7 +622,7 @@ def test_update_deal_stage_change(client, create_user, create_organization, db_s
     # Progress through stages
     for stage in ["evaluation", "due_diligence", "negotiation", "closing", "won"]:
         response = client.put(
-            f"/deals/{deal.id}",
+            f"/api/deals/{deal.id}",
             headers={"Authorization": "Bearer token"},
             json={"stage": stage},
         )
@@ -659,7 +659,7 @@ def test_update_deal_partial_update(client, create_user, create_organization, db
 
     # Update only the name
     response = client.put(
-        f"/deals/{deal.id}",
+        f"/api/deals/{deal.id}",
         headers={"Authorization": "Bearer token"},
         json={"name": "Updated Name Only"},
     )
@@ -702,7 +702,7 @@ def test_update_deal_forbidden_other_org(client, create_user, create_organizatio
     app.dependency_overrides[get_current_user] = lambda: user1
 
     response = client.put(
-        f"/deals/{deal.id}",
+        f"/api/deals/{deal.id}",
         headers={"Authorization": "Bearer token"},
         json={"name": "Hacked Name"},
     )
@@ -738,7 +738,7 @@ def test_update_deal_validation_errors(client, create_user, create_organization,
 
     # Try to set invalid deal_size (negative)
     response = client.put(
-        f"/deals/{deal.id}",
+        f"/api/deals/{deal.id}",
         headers={"Authorization": "Bearer token"},
         json={"deal_size": "-1000"},
     )
@@ -777,7 +777,7 @@ def test_archive_deal_success(client, create_user, create_organization, db_sessi
 
     app.dependency_overrides[get_current_user] = lambda: user
 
-    response = client.delete(f"/deals/{deal.id}", headers={"Authorization": "Bearer token"})
+    response = client.delete(f"/api/deals/{deal.id}", headers={"Authorization": "Bearer token"})
 
     assert response.status_code == 200
     data = response.json()
@@ -819,7 +819,7 @@ def test_archive_deal_forbidden_other_org(client, create_user, create_organizati
     # User 1 tries to archive org 2's deal
     app.dependency_overrides[get_current_user] = lambda: user1
 
-    response = client.delete(f"/deals/{deal.id}", headers={"Authorization": "Bearer token"})
+    response = client.delete(f"/api/deals/{deal.id}", headers={"Authorization": "Bearer token"})
 
     assert response.status_code == 403
 
@@ -853,7 +853,7 @@ def test_unarchive_deal_success(client, create_user, create_organization, db_ses
 
     app.dependency_overrides[get_current_user] = lambda: user
 
-    response = client.post(f"/deals/{deal.id}/restore", headers={"Authorization": "Bearer token"})
+    response = client.post(f"/api/deals/{deal.id}/restore", headers={"Authorization": "Bearer token"})
 
     assert response.status_code == 200
     data = response.json()
@@ -893,7 +893,7 @@ def test_unarchive_deal_forbidden_other_org(client, create_user, create_organiza
     # User 1 tries to restore org 2's deal
     app.dependency_overrides[get_current_user] = lambda: user1
 
-    response = client.post(f"/deals/{deal.id}/restore", headers={"Authorization": "Bearer token"})
+    response = client.post(f"/api/deals/{deal.id}/restore", headers={"Authorization": "Bearer token"})
 
     assert response.status_code == 403
 

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import os
-import sqlite3
 import sys
 from collections.abc import Callable, Iterator
 from datetime import datetime, timezone
@@ -15,8 +14,8 @@ from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from jose import jwt
 from sqlalchemy import create_engine, text, inspect
-from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 from _pytest.fixtures import FixtureLookupError
 
 # Ensure repository and backend directories are on sys.path for "app" imports
@@ -89,23 +88,14 @@ get_settings.cache_clear()
 
 @pytest.fixture(scope="session")
 def engine():
-    """Create a shared SQLite engine for tests."""
+    """Create an in-memory SQLite engine shared across tests."""
 
-    connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
-
-    if settings.database_url.startswith("sqlite"):
-        db_path = settings.database_url.replace("sqlite:///", "")
-        db_path = Path(db_path)
-        if not db_path.is_absolute():
-            db_path = Path.cwd() / db_path
-        if db_path.exists():
-            try:
-                db_path.unlink()
-            except PermissionError:
-                # On Windows the previous connection may still be closing; ignore and reuse file
-                pass
-
-    engine = create_engine(settings.database_url, future=True, connect_args=connect_args)
+    engine = create_engine(
+        "sqlite+pysqlite:///:memory:",
+        future=True,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
     _reset_metadata(engine)
     session_module.engine = engine
     session_module.SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
@@ -116,10 +106,10 @@ def engine():
 
 @pytest.fixture(autouse=True)
 def _reset_database(engine):
-    """Ensure each test runs with a clean database state."""
+    """Reset schema before each test for deterministic state."""
 
-    yield
     _reset_metadata(engine)
+    yield
 
 
 def _reset_metadata(engine) -> None:

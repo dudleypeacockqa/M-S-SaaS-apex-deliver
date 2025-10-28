@@ -35,7 +35,7 @@ def test_create_task_returns_201(client, deal_context, auth_headers_growth):
     deal, owner, org = deal_context
 
     response = client.post(
-        f"/api/deals/{deal.id}/tasks",
+        f"/api/api/deals/{deal.id}/tasks",
         headers=auth_headers_growth,
         json=_task_payload(assignee_id=str(owner.id)),
     )
@@ -53,12 +53,12 @@ def test_list_tasks_scopes_to_deal(client, deal_context, auth_headers_growth, cr
 
     # Create tasks for target deal
     client.post(
-        f"/api/deals/{deal.id}/tasks",
+        f"/api/api/deals/{deal.id}/tasks",
         headers=auth_headers_growth,
         json=_task_payload(title="Kick-off call", assignee_id=str(owner.id)),
     )
     client.post(
-        f"/api/deals/{deal.id}/tasks",
+        f"/api/api/deals/{deal.id}/tasks",
         headers=auth_headers_growth,
         json=_task_payload(title="Collect documents", assignee_id=str(owner.id)),
     )
@@ -66,13 +66,13 @@ def test_list_tasks_scopes_to_deal(client, deal_context, auth_headers_growth, cr
     # Create task for different deal to ensure filtering occurs
     other_deal, other_owner, _ = create_deal_for_org()
     client.post(
-        f"/api/deals/{other_deal.id}/tasks",
+        f"/api/api/deals/{other_deal.id}/tasks",
         headers=auth_headers_growth,
         json=_task_payload(title="External task", assignee_id=str(other_owner.id)),
     )
 
     list_response = client.get(
-        f"/api/deals/{deal.id}/tasks",
+        f"/api/api/deals/{deal.id}/tasks",
         headers=auth_headers_growth,
     )
 
@@ -86,7 +86,7 @@ def test_list_tasks_scopes_to_deal(client, deal_context, auth_headers_growth, cr
 def test_update_task_allows_status_and_due_date_change(client, deal_context, auth_headers_growth):
     deal, owner, _ = deal_context
     create_resp = client.post(
-        f"/api/deals/{deal.id}/tasks",
+        f"/api/api/deals/{deal.id}/tasks",
         headers=auth_headers_growth,
         json=_task_payload(assignee_id=str(owner.id)),
     )
@@ -94,7 +94,7 @@ def test_update_task_allows_status_and_due_date_change(client, deal_context, aut
 
     new_due_date = (datetime.utcnow() + timedelta(days=7)).isoformat()
     patch_resp = client.patch(
-        f"/api/deals/{deal.id}/tasks/{task_id}",
+        f"/api/api/deals/{deal.id}/tasks/{task_id}",
         headers=auth_headers_growth,
         json={"status": "in_progress", "due_date": new_due_date},
     )
@@ -108,14 +108,14 @@ def test_update_task_allows_status_and_due_date_change(client, deal_context, aut
 def test_delete_task_returns_204(client, deal_context, auth_headers_growth):
     deal, owner, _ = deal_context
     create_resp = client.post(
-        f"/api/deals/{deal.id}/tasks",
+        f"/api/api/deals/{deal.id}/tasks",
         headers=auth_headers_growth,
         json=_task_payload(assignee_id=str(owner.id)),
     )
     task_id = create_resp.json()["id"]
 
     delete_resp = client.delete(
-        f"/api/deals/{deal.id}/tasks/{task_id}",
+        f"/api/api/deals/{deal.id}/tasks/{task_id}",
         headers=auth_headers_growth,
     )
 
@@ -126,7 +126,7 @@ def test_starter_tier_cannot_create_tasks(client, deal_context, auth_headers):
     deal, owner, _ = deal_context
 
     response = client.post(
-        f"/api/deals/{deal.id}/tasks",
+        f"/api/api/deals/{deal.id}/tasks",
         headers=auth_headers,
         json=_task_payload(assignee_id=str(owner.id)),
     )
@@ -137,7 +137,7 @@ def test_starter_tier_cannot_create_tasks(client, deal_context, auth_headers):
 def test_cannot_access_tasks_from_other_org(client, create_deal_for_org, auth_headers_growth, create_organization, create_user):
     deal, owner, _ = create_deal_for_org()
     create_resp = client.post(
-        f"/api/deals/{deal.id}/tasks",
+        f"/api/api/deals/{deal.id}/tasks",
         headers=auth_headers_growth,
         json=_task_payload(assignee_id=str(owner.id)),
     )
@@ -152,7 +152,7 @@ def test_cannot_access_tasks_from_other_org(client, create_deal_for_org, auth_he
     app.dependency_overrides[get_current_user] = lambda: outsider
     try:
         forbidden_resp = client.patch(
-            f"/api/deals/{deal.id}/tasks/{task_id}",
+            f"/api/api/deals/{deal.id}/tasks/{task_id}",
             headers={"Authorization": "Bearer outsider"},
             json={"status": "done"},
         )

@@ -36,7 +36,7 @@ def test_create_checkout_session_success(client: TestClient, db_session, create_
 
         # Act
         response = client.post(
-            "/billing/create-checkout-session",
+            "/api/billing/create-checkout-session",
             json={"tier": "professional"},
             headers={"Authorization": "Bearer test_token"}
         )
@@ -65,7 +65,7 @@ def test_create_checkout_session_invalid_tier(client: TestClient, auth_headers_s
     user = create_user(email="test@example.com", organization_id=str(org.id))
 
     response = client.post(
-        "/billing/create-checkout-session",
+        "/api/billing/create-checkout-session",
         json={"tier": "invalid_tier"},
         headers=auth_headers_solo
     )
@@ -76,7 +76,7 @@ def test_create_checkout_session_invalid_tier(client: TestClient, auth_headers_s
 def test_create_checkout_session_requires_auth(client: TestClient):
     """Test creating checkout session requires authentication."""
     response = client.post(
-        "/billing/create-checkout-session",
+        "/api/billing/create-checkout-session",
         json={"tier": "professional"}
     )
 
@@ -121,7 +121,7 @@ def test_create_checkout_session_existing_subscription(client: TestClient, db_se
         )
 
         response = client.post(
-            "/billing/create-checkout-session",
+            "/api/billing/create-checkout-session",
             json={"tier": "professional"},
             headers={"Authorization": "Bearer test_token"}
         )
@@ -158,7 +158,7 @@ def test_create_checkout_session_with_trial(client: TestClient, db_session, crea
         )
 
         response = client.post(
-            "/billing/create-checkout-session",
+            "/api/billing/create-checkout-session",
             json={"tier": "starter"},
             headers={"Authorization": "Bearer test_token"}
         )
@@ -202,7 +202,7 @@ def test_get_subscription_success(client: TestClient, db_session, create_user, c
     app.dependency_overrides[get_current_user] = override_get_current_user
 
     response = client.get(
-        "/billing/me",
+        "/api/billing/me",
         headers={"Authorization": "Bearer test_token"}
     )
 
@@ -222,7 +222,7 @@ def test_get_subscription_not_found(client: TestClient, auth_headers_solo: dict,
     user = create_user(email="user@nosub.org", organization_id=str(org.id))
 
     response = client.get(
-        "/billing/me",
+        "/api/billing/me",
         headers=auth_headers_solo
     )
 
@@ -231,7 +231,7 @@ def test_get_subscription_not_found(client: TestClient, auth_headers_solo: dict,
 
 def test_get_subscription_requires_auth(client: TestClient):
     """Test getting subscription requires authentication."""
-    response = client.get("/billing/me")
+    response = client.get("/api/billing/me")
 
     assert response.status_code == 401
 
@@ -275,7 +275,7 @@ def test_update_subscription_tier_upgrade(client: TestClient, db_session, create
         )
 
         response = client.put(
-            "/billing/change-tier",
+            "/api/billing/change-tier",
             json={"new_tier": "professional", "prorate": True},
             headers={"Authorization": "Bearer test_token"}
         )
@@ -326,7 +326,7 @@ def test_update_subscription_tier_downgrade(client: TestClient, db_session, crea
         mock_stripe.return_value = Mock(id='sub_downgrade123')
 
         response = client.put(
-            "/billing/change-tier",
+            "/api/billing/change-tier",
             json={"new_tier": "starter", "prorate": False},
             headers={"Authorization": "Bearer test_token"}
         )
@@ -372,7 +372,7 @@ def test_cancel_subscription_at_period_end(client: TestClient, db_session, creat
         )
 
         response = client.post(
-            "/billing/cancel",
+            "/api/billing/cancel",
             json={"immediately": False},
             headers={"Authorization": "Bearer test_token"}
         )
@@ -417,7 +417,7 @@ def test_cancel_subscription_immediately(client: TestClient, db_session, create_
         )
 
         response = client.post(
-            "/billing/cancel",
+            "/api/billing/cancel",
             json={"immediately": True},
             headers={"Authorization": "Bearer test_token"}
         )
@@ -436,7 +436,7 @@ def test_cancel_subscription_requires_active_subscription(client: TestClient, au
     user = create_user(email="user@noactive.org", organization_id=str(org.id))
 
     response = client.post(
-        "/billing/cancel",
+        "/api/billing/cancel",
         json={"immediately": False},
         headers=auth_headers_solo
     )
@@ -463,7 +463,7 @@ def test_customer_portal_redirect(client: TestClient, auth_headers_solo: dict, d
 
     # Customer portal endpoint may not exist yet - check if it's implemented
     response = client.get(
-        "/billing/customer-portal",
+        "/api/billing/customer-portal",
         headers=auth_headers_solo
     )
 
