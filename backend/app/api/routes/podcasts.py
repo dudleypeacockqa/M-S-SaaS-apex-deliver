@@ -16,19 +16,16 @@ from app.schemas.podcast import (
     PodcastQuotaSummary,
 )
 from app.services import podcast_service, quota_service
-from app.services.quota_service import QuotaExceededError, get_quota_summary
+from app.services.quota_service import QuotaExceededError
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/podcasts", tags=["podcasts"])
 
 
-
-
-async def get_quota_summary(*, organization_id: str, db: Session) -> PodcastQuotaSummary:
+async def get_quota_summary(*, organization_id: str, tier: subscription.SubscriptionTier, db: Session) -> PodcastQuotaSummary:
     """Compute quota summary using shared service helpers."""
 
-    tier = await subscription.get_organization_tier(organization_id)
     return await quota_service.get_quota_summary(
         organization_id=organization_id,
         tier=tier,
@@ -91,13 +88,8 @@ async def get_podcast_usage_summary(
     """Return quota summary for the current tenant's podcast usage."""
 
     organization_id = current_user.organization_id
-
     tier = await subscription.get_organization_tier(organization_id)
-    return await get_quota_summary(
-        organization_id=organization_id,
-        tier=tier,
-        db=db,
-    )
+    return await get_quota_summary(organization_id=organization_id, tier=tier, db=db)
 
 
 async def _increment_episode_usage(organization_id: str, db: Session) -> None:

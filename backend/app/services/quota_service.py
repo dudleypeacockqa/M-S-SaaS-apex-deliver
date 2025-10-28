@@ -20,7 +20,7 @@ Tracks usage in database and enforces limits before episode creation.
 
 import logging
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from typing import Optional, Union
 
@@ -185,72 +185,45 @@ async def check_episode_quota(organization_id: str, db: Optional[SessionLike] = 
 
 
 
-async def get_remaining_quota(organization_id: str, db: Optional[SessionLike] = None) -> Optional[int]:
-
+async def get_remaining_quota(
+    organization_id: str,
+    db: Optional[SessionLike] = None,
+    tier: Optional[SubscriptionTier] = None,
+) -> Optional[int]:
     """
-
     Get remaining episode quota for organization this month.
 
-
-
     Args:
-
         organization_id: Clerk organization ID
-
         db: Database session (optional)
-
-
+        tier: pre-fetched subscription tier (optional)
 
     Returns:
-
         int: Number of episodes remaining (-1 for unlimited, 0 if exhausted)
 
-
-
     Examples:
-
         >>> remaining = await get_remaining_quota("org_123", db)
-
         >>> print(f"You have {remaining} episodes remaining this month")
-
     """
 
-    tier = await get_organization_tier(organization_id)
-
+    tier = tier or await get_organization_tier(organization_id)
     quota_limit = TIER_QUOTAS.get(tier, 0)
 
-
-
     # Starter tier has no access
-
     if tier == SubscriptionTier.STARTER:
-
         return 0
 
-
-
     # Unlimited tiers
-
     if quota_limit == -1:
-
         return -1  # -1 indicates unlimited
 
-
-
     # Professional tier: calculate remaining
-
     if db:
-
         current_usage = await get_monthly_usage(organization_id, db)
-
     else:
-
         current_usage = 0
 
-
-
     remaining = max(0, quota_limit - current_usage)
-
     return remaining
 
 
@@ -285,7 +258,7 @@ async def increment_episode_count(organization_id: str, db: SessionLike) -> None
 
     """
 
-    current_month = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    current_month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
 
 
@@ -427,7 +400,7 @@ async def _query_usage_for_month(organization_id: str, db: AsyncSession) -> int:
 
     """
 
-    current_month = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    current_month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
 
 
@@ -460,24 +433,27 @@ async def get_quota_summary(
 ) -> PodcastQuotaSummary:
     """Aggregate quota information for API responses."""
 
-    limit = TIER_QUOTAS.get(tier, 0)
-
     if db is None:
         raise ValueError("Database session is required to compute quota summary")
 
+    limit = TIER_QUOTAS.get(tier, 0)
     used = await get_monthly_usage(organization_id, db=db)
-    quota_remaining = await get_remaining_quota(organization_id, db=db)
+    quota_remaining = await get_remaining_quota(
+        organization_id,
+        db=db,
+        tier=tier,
+    )
 
     is_unlimited = limit == -1
-
     limit_value: Optional[int] = None if is_unlimited else limit
 
     if is_unlimited:
         remaining_value = -1
     else:
+        # quota_remaining may already reflect tier-aware calculation
         remaining_value = max(0, quota_remaining if quota_remaining is not None else limit - used)
 
-    period = datetime.utcnow().strftime("%Y-%m")
+    period = datetime.now(UTC).strftime("%Y-%m")
 
     return PodcastQuotaSummary(
         tier=tier.value,
@@ -496,7 +472,7 @@ def _query_usage_for_month_sync(organization_id: str, db: Session) -> int:
 
     """Synchronous helper for monthly usage queries."""
 
-    current_month = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    current_month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
     stmt = select(PodcastUsage.episode_count).where(
 

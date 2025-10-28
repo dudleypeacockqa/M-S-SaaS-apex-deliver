@@ -341,6 +341,11 @@ class TestPodcastUsageEndpoint:
 
             assert response.status_code == status.HTTP_200_OK
             mock_summary.assert_awaited_once()
+            assert mock_summary.await_args.kwargs == {
+                "organization_id": premium_user.organization_id,
+                "tier": SubscriptionTier.PREMIUM,
+                "db": ANY,
+            }
 
             payload = response.json()
             assert payload == {
