@@ -48,6 +48,11 @@ describe('ValuationSuite RED tests', () => {
     vi.mocked(valuationApi.listScenarios).mockResolvedValue([])
     vi.mocked(valuationApi.listComparableCompanies).mockResolvedValue([])
     vi.mocked(valuationApi.listPrecedentTransactions).mockResolvedValue([])
+    vi.mocked(valuationApi.getScenarioSummary).mockResolvedValue({
+      count: 0,
+      enterprise_value_range: { min: null, max: null, median: null },
+      equity_value_range: { min: null, max: null, median: null },
+    })
   })
 
   it('renders valuation layout shell', () => {
@@ -114,11 +119,18 @@ describe('ValuationSuite RED tests', () => {
 
     await waitFor(() => expect(screen.getByText(/£12,000,000/i)).toBeInTheDocument())
     await user.click(screen.getByRole('tab', { name: /precedents/i }))
-    await user.type(screen.getByLabelText(/target company/i), 'Target Corp')
-    await user.type(screen.getByLabelText(/acquirer company/i), 'Acquirer Inc')
-    await user.type(screen.getByLabelText(/ev\/ebitda/i), '8.5')
-    await user.type(screen.getByLabelText(/announcement date/i), '2024-06-15')
-    await user.click(screen.getByRole('button', { name: /add precedent/i }))
+
+    const targetInput = await screen.findByLabelText(/target company/i)
+    const acquirerInput = await screen.findByLabelText(/acquirer company/i)
+    const evEbitdaInput = await screen.findByLabelText(/ev\/ebitda/i)
+    const dateInput = await screen.findByLabelText(/announcement date/i)
+    const addButton = await screen.findByRole('button', { name: /add precedent/i })
+
+    await user.type(targetInput, 'Target Corp')
+    await user.type(acquirerInput, 'Acquirer Inc')
+    await user.type(evEbitdaInput, '8.5')
+    await user.type(dateInput, '2024-06-15')
+    await user.click(addButton)
 
     await waitFor(() => {
       expect(valuationApi.addPrecedentTransaction).toHaveBeenCalledWith('deal-precedent', 'val-002', expect.objectContaining({ target_company: 'Target Corp', acquirer_company: 'Acquirer Inc' }))
