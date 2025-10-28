@@ -1,57 +1,13 @@
 """Tests for quota enforcement service.
 
-
-
-
-
-
-
 Tests monthly episode limits based on subscription tiers:
-
-
-
 - Starter: No podcast access (0 episodes)
-
-
-
 - Professional: 10 episodes/month
-
-
-
 - Premium: Unlimited
-
-
-
 - Enterprise: Unlimited
 
-
-
-
-
-
-
-
-
-
-def async_test(fn):
-
-    """Simple decorator to run coroutine tests without pytest-asyncio."""
-
-    @wraps(fn)
-
-    def wrapper(*args, **kwargs):
-
-        return asyncio.run(fn(*args, **kwargs))
-
-    return wrapper
-
 Following TDD: RED → GREEN → REFACTOR
-
-
-
 """
-
-
 
 import pytest
 
@@ -108,7 +64,7 @@ class TestCheckEpisodeQuota:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -164,7 +120,7 @@ class TestCheckEpisodeQuota:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -228,7 +184,7 @@ class TestCheckEpisodeQuota:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -284,7 +240,7 @@ class TestCheckEpisodeQuota:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -340,7 +296,7 @@ class TestCheckEpisodeQuota:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -408,7 +364,7 @@ class TestGetRemainingQuota:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -460,7 +416,7 @@ class TestGetRemainingQuota:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -508,7 +464,7 @@ class TestGetRemainingQuota:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -576,7 +532,7 @@ class TestIncrementEpisodeCount:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -668,7 +624,7 @@ class TestIncrementEpisodeCount:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -732,7 +688,7 @@ class TestIncrementEpisodeCount:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -812,7 +768,7 @@ class TestGetMonthlyUsage:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -856,7 +812,7 @@ class TestGetMonthlyUsage:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -900,7 +856,7 @@ class TestGetMonthlyUsage:
 
 
 
-    @async_test
+    @pytest.mark.asyncio
 
 
 
@@ -1012,7 +968,7 @@ class TestQuotaExceededError:
 
 
 class TestGetQuotaSummary:
-    @async_test
+    @pytest.mark.asyncio
     async def test_returns_professional_summary(self, mock_db_session):
         org_id = "org_professional"
 
@@ -1039,7 +995,7 @@ class TestGetQuotaSummary:
         assert summary.is_unlimited is False
         assert "-" in summary.period
 
-    @async_test
+    @pytest.mark.asyncio
     async def test_returns_unlimited_summary(self, mock_db_session):
         org_id = "org_premium"
 
