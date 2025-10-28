@@ -27,14 +27,14 @@ describe.skip('ValuationSuite RED tests', () => {
   })
 
   it('shows loading indicator while valuations fetch', async () => {
-    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce({ items: [], total: 0 })
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([])
     render(<ValuationSuite dealId="deal-789" />)
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
   it('submits new valuation when form completed', async () => {
     const user = userEvent.setup()
-    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce({ items: [], total: 0 })
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([])
     vi.mocked(valuationApi.createValuation).mockResolvedValueOnce({ id: 'val-1' })
 
     render(<ValuationSuite dealId="deal-new" />)
@@ -50,10 +50,9 @@ describe.skip('ValuationSuite RED tests', () => {
 
   it('allows adding comparable company to selected valuation', async () => {
     const user = userEvent.setup()
-    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce({
-      items: [{ id: 'val-1', name: 'Base Case', enterpriseValue: 10500000 }],
-      total: 1,
-    })
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
+      { id: 'val-1', name: 'Base Case', enterprise_value: 10500000, equity_value: 8000000 }
+    ])
     vi.mocked(valuationApi.addComparable).mockResolvedValueOnce({ id: 'comp-1' })
 
     render(<ValuationSuite dealId="deal-compare" />)
@@ -73,10 +72,9 @@ describe.skip('ValuationSuite RED tests', () => {
   })
 
   it('displays scenario summary request and analytics summary', async () => {
-    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce({
-      items: [{ id: 'val-analytics', name: 'Upside', enterpriseValue: 12000000 }],
-      total: 1,
-    })
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
+      { id: 'val-analytics', name: 'Upside', enterprise_value: 12000000, equity_value: 9000000 }
+    ])
     vi.mocked(valuationApi.getScenarioSummary).mockResolvedValueOnce({
       count: 2,
       enterpriseValueRange: { min: 8000000, max: 12500000, median: 10250000 },
