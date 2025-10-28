@@ -3,9 +3,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { ValuationSuite } from './ValuationSuite'
-import * as valuationApi from '../../../services/api/valuation'
+import * as valuationApi from '../../../services/api/valuations'
 
-vi.mock('../../../services/api/valuation', () => ({
+vi.mock('../../../services/api/valuations', () => ({
   listValuations: vi.fn(),
   getValuation: vi.fn(),
   createValuation: vi.fn(),
@@ -16,7 +16,7 @@ vi.mock('../../../services/api/valuation', () => ({
   triggerExport: vi.fn(),
 }))
 
-describe.skip('ValuationSuite RED tests', () => {
+describe('ValuationSuite RED tests', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -26,13 +26,13 @@ describe.skip('ValuationSuite RED tests', () => {
     expect(screen.getByText(/valuations/i)).toBeInTheDocument()
   })
 
-  it('shows loading indicator while valuations fetch', async () => {
+  it.skip('shows loading indicator while valuations fetch', async () => {
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([])
     render(<ValuationSuite dealId="deal-789" />)
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
-  it('submits new valuation when form completed', async () => {
+  it.skip('submits new valuation when form completed', async () => {
     const user = userEvent.setup()
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([])
     vi.mocked(valuationApi.createValuation).mockResolvedValueOnce({ id: 'val-1' })
@@ -48,7 +48,7 @@ describe.skip('ValuationSuite RED tests', () => {
     })
   })
 
-  it('allows adding comparable company to selected valuation', async () => {
+  it.skip('allows adding comparable company to selected valuation', async () => {
     const user = userEvent.setup()
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
       { id: 'val-1', name: 'Base Case', enterprise_value: 10500000, equity_value: 8000000 }
@@ -71,7 +71,7 @@ describe.skip('ValuationSuite RED tests', () => {
     })
   })
 
-  it('displays scenario summary request and analytics summary', async () => {
+  it.skip('displays scenario summary request and analytics summary', async () => {
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
       { id: 'val-analytics', name: 'Upside', enterprise_value: 12000000, equity_value: 9000000 }
     ])
@@ -87,7 +87,7 @@ describe.skip('ValuationSuite RED tests', () => {
     await waitFor(() => expect(valuationApi.getScenarioSummary).toHaveBeenCalled())
   })
 
-  it('fetches scenario list when scenarios tab opened', async () => {
+  it.skip('fetches scenario list when scenarios tab opened', async () => {
     const user = userEvent.setup()
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce({
       items: [{ id: 'val-scenario', name: 'Base Case', enterpriseValue: 10500000 }],
@@ -103,7 +103,7 @@ describe.skip('ValuationSuite RED tests', () => {
     await waitFor(() => expect(valuationApi.listScenarios).toHaveBeenCalled())
   })
 
-  it('allows triggering PDF export for growth-tier users', async () => {
+  it.skip('allows triggering PDF export for growth-tier users', async () => {
     const user = userEvent.setup()
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce({
       items: [{ id: 'val-export', name: 'Base Case', enterpriseValue: 10500000 }],
@@ -119,7 +119,7 @@ describe.skip('ValuationSuite RED tests', () => {
     await waitFor(() => expect(valuationApi.triggerExport).toHaveBeenCalled())
   })
 
-  it('guards valuation workspace for growth-tier access', async () => {
+  it.skip('guards valuation workspace for growth-tier access', async () => {
     vi.mocked(valuationApi.listValuations).mockRejectedValueOnce({
       response: { status: 403 },
     })
@@ -129,4 +129,5 @@ describe.skip('ValuationSuite RED tests', () => {
     await waitFor(() => expect(screen.getByText(/upgrade required/i)).toBeInTheDocument())
   })
 })
+
 

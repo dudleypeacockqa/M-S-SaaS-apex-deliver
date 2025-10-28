@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import sqlite3
 import sys
 from collections.abc import Callable, Iterator
 from datetime import datetime, timezone
@@ -13,11 +14,10 @@ from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from jose import jwt
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text, inspect
 from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import sessionmaker
 from _pytest.fixtures import FixtureLookupError
-from sqlalchemy.inspection import inspect
 
 # Ensure the backend directory is on sys.path for "app" imports
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
@@ -103,7 +103,7 @@ def engine():
     session_module.engine = engine
     session_module.SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
     yield engine
-    Base.metadata.drop_all(engine, checkfirst=True)
+    _safe_drop_schema(engine)
     engine.dispose()
 
 
@@ -115,21 +115,35 @@ def _reset_database(engine):
     _reset_metadata(engine)
 
 
-def _reset_metadata(engine):
-    """Drop stray tables and rebuild metadata, tolerating missing objects."""
+def _reset_metadata(engine) -> None:
+    """Drop unmanaged tables and recreate metadata for tests."""
+
+    _safe_drop_schema(engine)
+    Base.metadata.create_all(engine, checkfirst=True)
+
+
+def _safe_drop_schema(engine) -> None:
+    """Drop all tables without raising errors for missing tables."""
+
+    inspector = inspect(engine)
+    managed_tables = {table.name for table in Base.metadata.sorted_tables}
+    existing_tables = set(inspector.get_table_names())
 
     with engine.begin() as connection:
-        inspector = inspect(connection)
-        managed_tables = set(Base.metadata.tables.keys())
-        for table_name in inspector.get_table_names():
-            if table_name not in managed_tables:
-                connection.exec_driver_sql(f"DROP TABLE IF EXISTS {table_name}")
+        for table in reversed(Base.metadata.sorted_tables):
+            if table.name not in existing_tables:
+                continue
+            try:
+                table.drop(connection, checkfirst=True)
+            except (OperationalError, ProgrammingError, sqlite3.OperationalError):
+                continue
 
-    try:
-        Base.metadata.drop_all(engine, checkfirst=True)
-    except (OperationalError, ProgrammingError):
-        Base.metadata.drop_all(engine, checkfirst=False)
-    Base.metadata.create_all(engine, checkfirst=True)
+        orphans = existing_tables - managed_tables
+        for table_name in orphans:
+            try:
+                connection.execute(text(f'DROP TABLE IF EXISTS "{table_name}"'))
+            except (OperationalError, ProgrammingError, sqlite3.OperationalError):
+                continue
 
 
 @pytest.fixture()
