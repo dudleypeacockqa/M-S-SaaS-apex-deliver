@@ -60,7 +60,7 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
 
   if (isLoading) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-3" role="status" aria-label="Loading valuations">
         <div className={`${skeletonClass} w-32`}></div>
         <div className={`${skeletonClass} w-full`}></div>
         <div className={`${skeletonClass} w-3/4`}></div>
@@ -569,4 +569,5 @@ export const ValuationSuite = () => {
     </main>
   )
 }
+
 
