@@ -82,6 +82,14 @@ export interface QuotaSummary {
   upgradeCtaUrl: string | null;
 }
 
+interface ApiYouTubeUploadResponse {
+  video_id: string;
+}
+
+export interface YouTubeUploadResponse {
+  videoId: string;
+}
+
 /**
  * Check if current user has access to a podcast feature based on subscription tier
  */
@@ -207,4 +215,18 @@ export async function deleteEpisode(episodeId: string): Promise<void> {
   await axios.delete(`${API_BASE_URL}/api/podcasts/episodes/${episodeId}`, {
     withCredentials: true,
   });
+}
+
+export async function publishEpisodeToYouTube(episodeId: string): Promise<YouTubeUploadResponse> {
+  const response = await axios.post<ApiYouTubeUploadResponse>(
+    `${API_BASE_URL}/api/podcasts/episodes/${episodeId}/youtube`,
+    undefined,
+    {
+      withCredentials: true,
+    }
+  );
+
+  return {
+    videoId: response.data.video_id,
+  };
 }

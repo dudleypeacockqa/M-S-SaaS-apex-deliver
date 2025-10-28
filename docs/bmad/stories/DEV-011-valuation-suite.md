@@ -5,14 +5,20 @@
 **Priority**: ⭐️⭐️⭐️⭐️⭐️ (Core Differentiator)  
 **Estimated Effort**: 20-24 hours (TDD end-to-end)  
 **Methodology**: BMAD v6-alpha + Test-Driven Development (strict RED → GREEN → REFACTOR)  
-**Status**: 🟠 In Progress (Phase 4 UI TDD – scenario summary & gating pending)
+**Status**: 🟠 In Progress (Phase 4 UI TDD – exports + scenario editing pending)
 
-**Latest Update (2025-10-28 18:43 UTC)**:
+**Latest Update (2025-10-28 21:47 UTC)**:
+- Ran RED → GREEN cycle on `ValuationSuite.test.tsx`, expanding analytics expectations to include EV/Equity range bands and dynamic upgrade messaging.
+- Summary tab now renders five insight cards (count, EV/Equity medians, EV/Equity ranges) with formatted currency values sourced from `getScenarioSummary`.
+- Growth-tier gate surfaces API-supplied messaging, CTA URL, and tier labels; fallback copy retained for legacy responses.
+- Next: Layer scenario editing UX and export queue status into the workspace before closing DEV-011.
+
+**Update (2025-10-28 18:43 UTC)**:
 - Scenario analytics panel and Growth-tier upgrade CTA implemented in `ValuationSuite.tsx`; valuation workspace Vitest suite now 9/9 GREEN.
 - `npm run test -- ValuationSuite.test.tsx` confirms scenario summary + 403 gating specs pass; Summary view now calls `getScenarioSummary` eagerly for analytics cards.
 - Next: Continue DEV-011 backlog with scenario editing + export polish while prepping to transition to DEV-016 podcast gating per cross-feature plan.
 
-**Latest Update (2025-10-28 18:27 UTC)**:
+**Update (2025-10-28 18:27 UTC)**:
 - `frontend/src/pages/deals/valuation/ValuationSuite.test.tsx` now GREEN (6 passed / 2 skipped) after Vitest run; skipped cases cover scenario analytics + growth-tier gating awaiting implementation.
 - Backend valuation CRUD/API suites remain GREEN from prior Phase 2 runs; no regressions observed during governance sync.
 - Next: promote the two skipped specs to RED and deliver scenario analytics plus tier gating UI to achieve full GREEN.
