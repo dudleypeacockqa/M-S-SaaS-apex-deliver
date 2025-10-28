@@ -10,6 +10,14 @@
 
 ---
 
+**Latest Update (2025-10-28 22:00 UTC)**:
+- Catalogued active work-in-progress files tied to DEV-016 before restarting `/dev-story`:
+  - Backend enforcement: `backend/app/api/routes/podcasts.py`, `backend/app/models/podcast.py`, `backend/app/schemas/podcast.py`, `backend/app/services/quota_service.py`, `backend/tests/test_podcast_api.py`, `backend/tests/test_quota_service.py`, plus fixture updates in `backend/tests/conftest.py`.
+  - Story assets/scripts: `scripts/update_podcast_quota_summary_mocks.py`, `scripts/update_podcast_usage_assertions.py`, and `scripts/view_podcast_usage_block*.py` (usage inspection helpers).
+  - Frontend/UI gates: `frontend/src/pages/podcast/PodcastStudio.test.tsx` (quota + messaging specs) with partner updates queued for `PodcastStudio.tsx`.
+  - Alembic migration `backend/alembic/versions/de0a8956401c_add_podcast_usage_table_for_quota_.py` already staged; verify upgrade records during Phase 1 stabilization.
+- Next: resume TDD loop for quota HUD + entitlement CTAs once governance reset concludes.
+
 **Latest Update (2025-10-28 12:56 UTC)**:
 - Backend pytest suite now 369 passed / 1 skipped; frontend Vitest suite passing.
 - `/podcasts/usage` quota summary endpoint implemented with professional/premium/starter coverage tests.

@@ -10,6 +10,14 @@
 
 ---
 
+**Latest Update (2025-10-28 22:00 UTC)**:
+- Catalogued outstanding marketing assets/tests tied to this story before resuming RED→GREEN work:
+  - Component/test sync: `frontend/src/components/marketing/ExitIntentPopup.tsx`, `StickyCTABar.tsx`, `ROICalculator.tsx`, `EnhancedTestimonials.test.tsx`, `TrustBadges.test.tsx`.
+  - Page-level coverage: `frontend/src/pages/marketing/EnhancedLandingPage.test.tsx` (copy mismatches pending fix).
+  - SEO/ops assets: `frontend/public/robots.txt`, `frontend/public/sitemap.xml`, `frontend/public/service-worker.js`.
+  - App wiring: `frontend/src/main.tsx`, `frontend/src/vite-env.d.ts` (service worker + marketing env typings).
+- All items linked to MARK-002 Phase 2-5 deliverables; will drive TDD once DEV-011/DEV-016 stabilization passes.
+
 ## Executive Summary
 
 Complete implementation of world-class, high-converting sales and marketing website with:
