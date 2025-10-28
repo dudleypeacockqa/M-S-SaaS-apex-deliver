@@ -6,6 +6,7 @@
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Button, Badge } from '../ui'
+import { trackCtaClick } from '../../lib/analytics'
 
 export const EnhancedHeroSection: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -26,6 +27,46 @@ export const EnhancedHeroSection: React.FC = () => {
     { name: 'Sarah Chen', role: 'Managing Director, Apex Capital', quote: 'Closed 3 deals in Q1 alone. ApexDeliver pays for itself.' },
     { name: 'James Morrison', role: 'VP M&A, TechVentures', quote: 'Finally, a platform that understands the modern deal flow.' },
     { name: 'Emma Rodriguez', role: 'Partner, Sterling PE', quote: 'Cut our due diligence time by 60%. Game changer.' },
+  ]
+
+  const trustIndicators = [
+    {
+      text: 'No credit card required',
+      icon: (
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M8 7V5a4 4 0 018 0v2" />
+          <rect x="3" y="7" width="18" height="14" rx="3" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M7 13h2" />
+        </svg>
+      ),
+    },
+    {
+      text: '5-minute setup',
+      icon: (
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3" />
+          <circle cx="12" cy="12" r="9" />
+        </svg>
+      ),
+    },
+    {
+      text: 'Cancel anytime',
+      icon: (
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 19A2 2 0 014 17V7a2 2 0 012-2h8l4 4v8a2 2 0 01-2 2H6z" />
+        </svg>
+      ),
+    },
+    {
+      text: 'GDPR compliant',
+      icon: (
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6l7 4v4c0 3.866-3.582 7-8 7s-8-3.134-8-7v-4l7-4z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 13l2 2 4-4" />
+        </svg>
+      ),
+    },
   ]
 
   return (
@@ -88,7 +129,7 @@ export const EnhancedHeroSection: React.FC = () => {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/sign-up" className="group">
+              <Link to="/sign-up" className="group" onClick={() => trackCtaClick('start-free-trial', 'hero')}>
                 <Button variant="primary" btnSize="lg" className="w-full sm:w-auto text-lg px-8 py-6 shadow-2xl hover:shadow-blue-500/50 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
                   Start Free 14-Day Trial
                   <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,7 +138,7 @@ export const EnhancedHeroSection: React.FC = () => {
                 </Button>
               </Link>
 
-              <Link to="/pricing" className="group">
+              <Link to="/pricing" className="group" onClick={() => trackCtaClick('watch-demo', 'hero')}>
                 <Button variant="ghost" btnSize="lg" className="w-full sm:w-auto text-lg px-8 py-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 hover:bg-white/20">
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
@@ -109,14 +150,9 @@ export const EnhancedHeroSection: React.FC = () => {
 
             {/* Trust Indicators */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 text-blue-200 text-sm">
-              {[
-                { icon: '✓', text: 'No credit card required' },
-                { icon: '✓', text: '5-minute setup' },
-                { icon: '✓', text: 'Cancel anytime' },
-                { icon: '✓', text: 'GDPR compliant' },
-              ].map((item) => (
+              {trustIndicators.map((item) => (
                 <div key={item.text} className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 text-xs font-bold">
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-green-400">
                     {item.icon}
                   </div>
                   <span>{item.text}</span>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 60">
+  <defs>
+    <linearGradient id="integration-netsuite" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="156" height="56" rx="14" fill="rgba(37,99,235,0.12)" />
+  <text x="44" y="36" font-family="'Segoe UI', sans-serif" font-size="22" font-weight="700" fill="#1e3a8a">NetSuite</text>
+  <rect x="16" y="18" width="24" height="24" rx="6" fill="url(#integration-netsuite)" />
+  <path d="M22 24h12v12" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

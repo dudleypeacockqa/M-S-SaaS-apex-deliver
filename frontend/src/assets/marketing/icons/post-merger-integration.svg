@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <defs>
+    <linearGradient id="post-merger-integration-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#f472b6" />
+    </linearGradient>
+  </defs>
+  <rect x="6" y="6" width="84" height="84" rx="20" fill="url(#post-merger-integration-gradient)" />
+  <g fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M30 48c0-9.941 8.059-18 18-18s18 8.059 18 18" opacity="0.5" />
+    <path d="M30 48c0 9.941 8.059 18 18 18s18-8.059 18-18" opacity="0.9" />
+    <path d="M24 48h48" opacity="0.35" />
+    <path d="M48 30v36" opacity="0.35" />
+    <path d="M36 36l12 12 12-12" />
+    <path d="M36 60l12-12 12 12" />
+    <circle cx="48" cy="48" r="8" fill="#fef9c3" stroke-width="0" />
+  </g>
+</svg>

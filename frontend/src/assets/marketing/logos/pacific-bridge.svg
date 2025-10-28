@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60">
+  <defs>
+    <linearGradient id="pacific-bridge-logo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="196" height="56" rx="12" fill="rgba(59,130,246,0.08)" />
+  <path d="M24 42c10-10 24-16 40-16s30 6 40 16" stroke="url(#pacific-bridge-logo)" stroke-width="6" fill="none" stroke-linecap="round" />
+  <text x="32" y="28" font-family="'Segoe UI', sans-serif" font-size="20" font-weight="700" fill="#0f172a">Pacific</text>
+  <text x="118" y="28" font-family="'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#1f2937">Bridge Capital</text>
+</svg>

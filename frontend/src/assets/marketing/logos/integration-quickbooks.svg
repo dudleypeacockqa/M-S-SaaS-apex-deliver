@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 60">
+  <defs>
+    <linearGradient id="integration-quickbooks" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e" />
+      <stop offset="100%" stop-color="#16a34a" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="156" height="56" rx="14" fill="rgba(34,197,94,0.12)" />
+  <text x="40" y="36" font-family="'Segoe UI', sans-serif" font-size="22" font-weight="700" fill="#14532d">QuickBooks</text>
+  <circle cx="26" cy="30" r="16" fill="url(#integration-quickbooks)" />
+  <text x="26" y="34" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="#ffffff">QB</text>
+</svg>

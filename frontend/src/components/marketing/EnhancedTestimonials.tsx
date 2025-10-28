@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { marketingAvatars, marketingPartnerLogos } from '../../assets/marketing';
 
 export const EnhancedTestimonials: React.FC = () => {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -8,8 +9,9 @@ export const EnhancedTestimonials: React.FC = () => {
       name: 'James Davidson',
       role: 'Independent M&A Advisor',
       company: 'Davidson Advisory',
-      image: 'JD',
-      content: 'ApexDeliver has been a game-changer for my practice. The AI-powered financial analysis saves me hours on every deal, and the pricing makes it accessible for solo practitioners like me. I\'ve closed 5 additional deals this year thanks to the time savings.',
+      image: marketingAvatars.jamesDavidson,
+      content:
+        "ApexDeliver has been a game-changer for my practice. The AI-powered financial analysis saves me hours on every deal, and the pricing makes it accessible for solo practitioners like me. I've closed 5 additional deals this year thanks to the time savings.",
       metrics: {
         timeSaved: '120 hours/year',
         dealsClosed: '+5 deals',
@@ -21,8 +23,9 @@ export const EnhancedTestimonials: React.FC = () => {
       name: 'Sarah Reynolds',
       role: 'VP, Growth Equity',
       company: 'Horizon Capital Partners',
-      image: 'SR',
-      content: 'Our team closed 30% more deals this quarter using ApexDeliver. The collaboration features and secure data rooms are best-in-class, and the ROI is undeniable. The AI deal matching has introduced us to opportunities we would have never found otherwise.',
+      image: marketingAvatars.sarahReynolds,
+      content:
+        'Our team closed 30% more deals this quarter using ApexDeliver. The collaboration features and secure data rooms are best-in-class, and the ROI is undeniable. The AI deal matching has introduced us to opportunities we would have never found otherwise.',
       metrics: {
         dealsIncrease: '+30%',
         teamSize: '12 users',
@@ -34,8 +37,9 @@ export const EnhancedTestimonials: React.FC = () => {
       name: 'Michael Park',
       role: 'Corporate Development Director',
       company: 'TechVentures PLC',
-      image: 'MP',
-      content: 'The valuation suite and deal matching features are incredible. We discovered two acquisition targets through the platform that we wouldn\'t have found otherwise. The automated document generation alone has saved us thousands in legal fees.',
+      image: marketingAvatars.michaelPark,
+      content:
+        "The valuation suite and deal matching features are incredible. We discovered two acquisition targets through the platform that we wouldn't have found otherwise. The automated document generation alone has saved us thousands in legal fees.",
       metrics: {
         targetsFound: '2 acquisitions',
         legalSavings: '£25K',
@@ -47,8 +51,9 @@ export const EnhancedTestimonials: React.FC = () => {
       name: 'Emma Thompson',
       role: 'Managing Partner',
       company: 'Sterling M&A',
-      image: 'ET',
-      content: 'We switched from a £15K/year enterprise platform to ApexDeliver and couldn\'t be happier. The AI features are more advanced, the interface is more intuitive, and we\'re saving £10K annually. Best decision we made this year.',
+      image: marketingAvatars.emmaThompson,
+      content:
+        "We switched from a £15K/year enterprise platform to ApexDeliver and couldn't be happier. The AI features are more advanced, the interface is more intuitive, and we're saving £10K annually. Best decision we made this year.",
       metrics: {
         savings: '£10K/year',
         satisfaction: '10/10',
@@ -60,8 +65,9 @@ export const EnhancedTestimonials: React.FC = () => {
       name: 'David Chen',
       role: 'Principal',
       company: 'Pacific Bridge Capital',
-      image: 'DC',
-      content: 'The financial intelligence engine is phenomenal. It connects to our accounting systems and provides instant analysis that would take our team days to compile manually. The deal readiness scores have helped us prioritize opportunities effectively.',
+      image: marketingAvatars.davidChen,
+      content:
+        'The financial intelligence engine is phenomenal. It connects to our accounting systems and provides instant analysis that would take our team days to compile manually. The deal readiness scores have helped us prioritize opportunities effectively.',
       metrics: {
         analysisTime: '-85%',
         accuracy: '98%',
@@ -91,8 +97,8 @@ export const EnhancedTestimonials: React.FC = () => {
             <div className="grid md:grid-cols-3 gap-0">
               {/* Left Side - Person Info */}
               <div className="bg-gradient-to-br from-indigo-900 to-blue-900 text-white p-8 flex flex-col justify-center items-center text-center">
-                <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center text-3xl font-bold mb-4 border-4 border-white/30">
-                  {current.image}
+                <div className="w-24 h-24 mb-4 rounded-full overflow-hidden border-4 border-white/30 shadow-lg">
+                  <img src={current.image.src} alt={current.image.alt} className="h-full w-full object-cover" loading="lazy" />
                 </div>
                 <h3 className="text-xl font-bold mb-1">{current.name}</h3>
                 <p className="text-blue-200 text-sm mb-1">{current.role}</p>
@@ -181,10 +187,10 @@ export const EnhancedTestimonials: React.FC = () => {
           <p className="text-center text-sm text-gray-500 mb-8">
             Trusted by professionals from leading firms
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center opacity-60">
-            {['Goldman Sachs', 'KKR', 'Barclays', 'BlackRock', 'Morgan Stanley'].map((company) => (
-              <div key={company} className="text-center">
-                <div className="text-2xl font-bold text-gray-400">{company}</div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center opacity-80">
+            {marketingPartnerLogos.map((logo) => (
+              <div key={logo.name} className="flex items-center justify-center">
+                <img src={logo.src} alt={`${logo.name} logo`} className="max-h-12 w-auto" loading="lazy" />
               </div>
             ))}
           </div>

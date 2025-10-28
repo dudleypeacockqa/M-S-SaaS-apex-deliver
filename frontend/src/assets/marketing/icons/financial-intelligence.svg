@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <defs>
+    <linearGradient id="financial-intelligence-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#14b8a6" />
+    </linearGradient>
+    <linearGradient id="financial-intelligence-line" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#bef264" />
+      <stop offset="100%" stop-color="#22d3ee" />
+    </linearGradient>
+  </defs>
+  <rect x="6" y="6" width="84" height="84" rx="20" fill="url(#financial-intelligence-gradient)" />
+  <g fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 68h52" stroke="rgba(255,255,255,0.35)" />
+    <path d="M28 60l10-16 12 12 16-24 8 10" stroke="url(#financial-intelligence-line)" />
+    <circle cx="28" cy="60" r="5" fill="#fbbf24" />
+    <circle cx="38" cy="44" r="5" fill="#f97316" />
+    <circle cx="50" cy="56" r="5" fill="#22d3ee" />
+    <circle cx="66" cy="32" r="5" fill="#bef264" />
+    <circle cx="74" cy="42" r="5" fill="#38bdf8" />
+  </g>
+</svg>

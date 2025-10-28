@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60">
+  <defs>
+    <linearGradient id="horizon-capital-logo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#facc15" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="196" height="56" rx="12" fill="rgba(249,115,22,0.08)" />
+  <path d="M18 30c6-10 18-16 32-16s26 6 32 16" stroke="url(#horizon-capital-logo)" stroke-width="6" fill="none" stroke-linecap="round" />
+  <text x="26" y="46" font-family="'Segoe UI', sans-serif" font-size="22" font-weight="700" fill="#1f2937">Horizon</text>
+  <text x="116" y="46" font-family="'Segoe UI', sans-serif" font-size="20" font-weight="600" fill="#4b5563">Capital</text>
+</svg>

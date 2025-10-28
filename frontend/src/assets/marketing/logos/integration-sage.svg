@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 60">
+  <defs>
+    <linearGradient id="integration-sage" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="156" height="56" rx="14" fill="rgba(16,185,129,0.12)" />
+  <text x="44" y="36" font-family="'Segoe UI', sans-serif" font-size="24" font-weight="700" fill="#064e3b">Sage</text>
+  <circle cx="28" cy="30" r="16" fill="url(#integration-sage)" />
+  <path d="M20 30h16" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+  <path d="M28 22v16" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.65" />
+</svg>

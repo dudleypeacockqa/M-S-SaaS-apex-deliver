@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <defs>
+    <linearGradient id="professional-community-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+  <rect x="6" y="6" width="84" height="84" rx="20" fill="url(#professional-community-gradient)" />
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="34" cy="40" r="10" stroke-width="5" />
+    <circle cx="62" cy="40" r="10" stroke-width="5" opacity="0.75" />
+    <circle cx="48" cy="60" r="14" stroke-width="5" opacity="0.9" />
+    <path d="M24 68c3-10 11-16 24-16s21 6 24 16" stroke-width="5" />
+    <path d="M28 44c-4 2-8 6-10 12" stroke-width="5" opacity="0.45" />
+    <path d="M68 44c4 2 8 6 10 12" stroke-width="5" opacity="0.45" />
+    <circle cx="48" cy="60" r="6" fill="#fef08a" stroke-width="0" />
+  </g>
+</svg>

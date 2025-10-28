@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 60">
+  <defs>
+    <linearGradient id="integration-stripe" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="156" height="56" rx="14" fill="rgba(99,102,241,0.12)" />
+  <text x="44" y="36" font-family="'Segoe UI', sans-serif" font-size="24" font-weight="700" fill="#312e81">Stripe</text>
+  <rect x="20" y="18" width="24" height="24" rx="6" fill="url(#integration-stripe)" />
+  <path d="M24 34h16" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+  <path d="M24 28c2-4 8-4 12-2" stroke="#c4b5fd" stroke-width="3" stroke-linecap="round" />
+</svg>

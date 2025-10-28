@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 60">
+  <defs>
+    <linearGradient id="integration-xero" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0ea5e9" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="156" height="56" rx="14" fill="rgba(56,189,248,0.15)" />
+  <text x="40" y="38" font-family="'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#075985">Xero</text>
+  <circle cx="28" cy="30" r="16" fill="url(#integration-xero)" />
+  <path d="M28 22l6 8-6 8-6-8z" fill="#ffffff" />
+</svg>

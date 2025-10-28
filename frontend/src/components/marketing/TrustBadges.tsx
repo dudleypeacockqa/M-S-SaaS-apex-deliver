@@ -1,3 +1,5 @@
+import { marketingIntegrationLogos } from '../../assets/marketing'
+
 export const TrustBadges: React.FC = () => {
   const badges = [
     {
@@ -58,14 +60,7 @@ export const TrustBadges: React.FC = () => {
     }
   ];
 
-  const integrations = [
-    { name: 'Xero', logo: 'X' },
-    { name: 'QuickBooks', logo: 'QB' },
-    { name: 'Sage', logo: 'S' },
-    { name: 'NetSuite', logo: 'NS' },
-    { name: 'Stripe', logo: 'ST' },
-    { name: 'Slack', logo: 'SL' }
-  ];
+  const integrations = marketingIntegrationLogos
 
   return (
     <section className="py-20 bg-gray-50">
@@ -155,17 +150,17 @@ export const TrustBadges: React.FC = () => {
 
           <div className="bg-white rounded-2xl shadow-xl p-12">
             <div className="grid grid-cols-3 md:grid-cols-6 gap-8 items-center">
-              {integrations.map((integration, index) => (
+              {integrations.map((integration) => (
                 <div
-                  key={index}
+                  key={integration.name}
                   className="text-center group cursor-pointer"
                 >
-                  <div className="w-20 h-20 mx-auto bg-gray-100 rounded-xl flex items-center justify-center text-2xl font-bold text-gray-400 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors mb-3">
-                    {integration.logo}
-                  </div>
-                  <div className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors">
-                    {integration.name}
-                  </div>
+                  <img
+                    src={integration.src}
+                    alt={integration.name}
+                    className="mx-auto h-14 w-auto rounded-xl bg-white shadow-sm transition-transform group-hover:scale-105"
+                    loading="lazy"
+                  />
                 </div>
               ))}
             </div>

@@ -1,67 +1,137 @@
+import { lazy, Suspense, useMemo } from 'react';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
-import { EnhancedHeroSection } from '../../components/marketing/EnhancedHeroSection';
 import { FeatureCard } from '../../components/marketing/FeatureCard';
-import { ROICalculator } from '../../components/marketing/ROICalculator';
-import { ComparisonTable } from '../../components/marketing/ComparisonTable';
-import { EnhancedTestimonials } from '../../components/marketing/EnhancedTestimonials';
-import { FAQSection } from '../../components/marketing/FAQSection';
-import { TrustBadges } from '../../components/marketing/TrustBadges';
-import { CTASection } from '../../components/marketing/CTASection';
+import { StructuredData } from '../../components/common/StructuredData';
+import { marketingFeatureIcons } from '../../assets/marketing';
 import { SEO } from '../../components/common/SEO';
-import { ExitIntentPopup } from '../../components/marketing/ExitIntentPopup';
-import { StickyCTABar } from '../../components/marketing/StickyCTABar';
+const EnhancedHeroSection = lazy(async () => ({
+  default: (await import('../../components/marketing/EnhancedHeroSection')).EnhancedHeroSection,
+}));
+
+const ROICalculator = lazy(async () => ({
+  default: (await import('../../components/marketing/ROICalculator')).ROICalculator,
+}));
+
+const ComparisonTable = lazy(async () => ({
+  default: (await import('../../components/marketing/ComparisonTable')).ComparisonTable,
+}));
+
+const EnhancedTestimonials = lazy(async () => ({
+  default: (await import('../../components/marketing/EnhancedTestimonials')).EnhancedTestimonials,
+}));
+
+const FAQSection = lazy(async () => ({
+  default: (await import('../../components/marketing/FAQSection')).FAQSection,
+}));
+
+const TrustBadges = lazy(async () => ({
+  default: (await import('../../components/marketing/TrustBadges')).TrustBadges,
+}));
+
+const CTASection = lazy(async () => ({
+  default: (await import('../../components/marketing/CTASection')).CTASection,
+}));
+
+const ExitIntentPopup = lazy(async () => ({
+  default: (await import('../../components/marketing/ExitIntentPopup')).ExitIntentPopup,
+}));
+
+const StickyCTABar = lazy(async () => ({
+  default: (await import('../../components/marketing/StickyCTABar')).StickyCTABar,
+}));
 
 export const EnhancedLandingPage: React.FC = () => {
-  const features = [
-    {
-      icon: '📊',
-      title: 'Deal Pipeline Management',
-      description: 'Visualize and manage your M&A deals from sourcing to closing with customizable Kanban boards and list views. Track progress, assign tasks, and collaborate seamlessly with your team.',
-    },
-    {
-      icon: '🧠',
-      title: 'Financial Intelligence Engine',
-      description: 'Connect to major accounting platforms (Xero, QuickBooks, Sage, NetSuite) and get instant analysis with 47+ financial ratios, AI-generated narratives, and Deal Readiness Scores.',
-    },
-    {
-      icon: '💰',
-      title: 'Multi-Method Valuation Suite',
-      description: 'Build professional valuations using DCF, Public Comparables, and Precedent Transactions. AI assists with assumptions, and real-time sensitivity analysis shows all scenarios.',
-    },
-    {
-      icon: '🔒',
-      title: 'Secure Document Room',
-      description: 'Enterprise-grade data rooms with granular access controls, watermarking, version control, and detailed audit logs. Manage Q&A workflows and document sharing with confidence.',
-    },
-    {
-      icon: '🤝',
-      title: 'AI-Powered Deal Matching',
-      description: 'Intelligent matching between buy-side and sell-side mandates based on industry, financials, geography, and strategic fit. Network effects create more opportunities as the platform grows.',
-    },
-    {
-      icon: '📄',
-      title: 'Automated Document Generation',
-      description: 'Generate NDAs, LOIs, Term Sheets, and SPAs customized to your jurisdiction and deal terms. AI-powered contract review identifies risks and negotiation points instantly.',
-    },
-    {
-      icon: '✅',
-      title: 'Task & Workflow Automation',
-      description: 'Pre-built checklists for due diligence and integration planning. Automate task assignments when deals move between stages, ensuring nothing falls through the cracks.',
-    },
-    {
-      icon: '👥',
-      title: 'Professional Community',
-      description: 'Network with M&A professionals, join industry discussions, attend premium events, and access exclusive content. Build relationships that drive deal flow and knowledge sharing.',
-    },
-    {
-      icon: '🔄',
-      title: 'Post-Merger Integration',
-      description: 'Seamlessly transition from deal closing to Day 1 success with our integrated PMI services powered by FinanceFlo.ai. ERP consolidation, financial systems integration, and synergy tracking.',
-    },
-  ];
+  const features = useMemo(
+    () => [
+      {
+        icon: marketingFeatureIcons.dealPipeline,
+        title: 'Deal Pipeline Management',
+        description:
+          'Visualize and manage your M&A deals from sourcing to closing with customizable Kanban boards and list views. Track progress, assign tasks, and collaborate seamlessly with your team.',
+      },
+      {
+        icon: marketingFeatureIcons.financialIntelligence,
+        title: 'Financial Intelligence Engine',
+        description:
+          'Connect to major accounting platforms (Xero, QuickBooks, Sage, NetSuite) and get instant analysis with 47+ financial ratios, AI-generated narratives, and Deal Readiness Scores.',
+      },
+      {
+        icon: marketingFeatureIcons.valuationSuite,
+        title: 'Multi-Method Valuation Suite',
+        description:
+          'Build professional valuations using DCF, Public Comparables, and Precedent Transactions. AI assists with assumptions, and real-time sensitivity analysis shows all scenarios.',
+      },
+      {
+        icon: marketingFeatureIcons.secureDocumentRoom,
+        title: 'Secure Document Room',
+        description:
+          'Enterprise-grade data rooms with granular access controls, watermarking, version control, and detailed audit logs. Manage Q&A workflows and document sharing with confidence.',
+      },
+      {
+        icon: marketingFeatureIcons.dealMatching,
+        title: 'AI-Powered Deal Matching',
+        description:
+          'Intelligent matching between buy-side and sell-side mandates based on industry, financials, geography, and strategic fit. Network effects create more opportunities as the platform grows.',
+      },
+      {
+        icon: marketingFeatureIcons.documentGeneration,
+        title: 'Automated Document Generation',
+        description:
+          'Generate NDAs, LOIs, Term Sheets, and SPAs customized to your jurisdiction and deal terms. AI-powered contract review identifies risks and negotiation points instantly.',
+      },
+      {
+        icon: marketingFeatureIcons.workflowAutomation,
+        title: 'Task & Workflow Automation',
+        description:
+          'Pre-built checklists for due diligence and integration planning. Automate task assignments when deals move between stages, ensuring nothing falls through the cracks.',
+      },
+      {
+        icon: marketingFeatureIcons.professionalCommunity,
+        title: 'Professional Community',
+        description:
+          'Network with M&A professionals, join industry discussions, attend premium events, and access exclusive content. Build relationships that drive deal flow and knowledge sharing.',
+      },
+      {
+        icon: marketingFeatureIcons.postMergerIntegration,
+        title: 'Post-Merger Integration',
+        description:
+          'Seamlessly transition from deal closing to Day 1 success with our integrated PMI services powered by FinanceFlo.ai. ERP consolidation, financial systems integration, and synergy tracking.',
+      },
+    ],
+    [],
+  );
+
+  const structuredData = useMemo(
+    () => ({
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: 'ApexDeliver M&A Intelligence Platform',
+      description:
+        'AI-powered multi-tenant M&A platform combining deal flow management, valuations, secure collaboration, and post-merger integration.',
+      brand: {
+        '@type': 'Organization',
+        name: 'ApexDeliver',
+        url: 'https://apexdeliver.com',
+      },
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'GBP',
+        price: '279.00',
+        url: 'https://apexdeliver.com/pricing',
+        availability: 'https://schema.org/InStock',
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.9',
+        reviewCount: '187',
+      },
+    }),
+    [],
+  );
 
   return (
     <MarketingLayout>
+      <StructuredData json={structuredData} />
       <SEO
         title="ApexDeliver - Complete M&A Lifecycle Platform | From Deal Sourcing to Day 100 Success"
         description="The only M&A platform combining AI-powered deal intelligence with post-merger integration. Close deals 70% faster and ensure integration success. Starting at £279/month."
@@ -73,7 +143,9 @@ export const EnhancedLandingPage: React.FC = () => {
       />
 
       {/* Enhanced Hero Section */}
-      <EnhancedHeroSection />
+      <Suspense fallback={null}>
+        <EnhancedHeroSection />
+      </Suspense>
 
       {/* Problem-Solution Section */}
       <section className="py-20 bg-white">
@@ -173,8 +245,8 @@ export const EnhancedLandingPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <FeatureCard key={index} {...feature} />
+            {features.map((feature) => (
+              <FeatureCard key={feature.title} {...feature} />
             ))}
           </div>
         </div>
@@ -319,26 +391,42 @@ export const EnhancedLandingPage: React.FC = () => {
       </section>
 
       {/* ROI Calculator */}
-      <ROICalculator />
+      <Suspense fallback={null}>
+        <ROICalculator />
+      </Suspense>
 
       {/* Comparison Table */}
-      <ComparisonTable />
+      <Suspense fallback={null}>
+        <ComparisonTable />
+      </Suspense>
 
       {/* Enhanced Testimonials */}
-      <EnhancedTestimonials />
+      <Suspense fallback={null}>
+        <EnhancedTestimonials />
+      </Suspense>
 
       {/* Trust Badges & Security */}
-      <TrustBadges />
+      <Suspense fallback={null}>
+        <TrustBadges />
+      </Suspense>
 
       {/* FAQ Section */}
-      <FAQSection />
+      <Suspense fallback={null}>
+        <FAQSection />
+      </Suspense>
 
       {/* Final CTA Section */}
-      <CTASection />
+      <Suspense fallback={null}>
+        <CTASection />
+      </Suspense>
 
       {/* Conversion Optimization Components */}
-      <ExitIntentPopup />
-      <StickyCTABar />
+      <Suspense fallback={null}>
+        <ExitIntentPopup />
+      </Suspense>
+      <Suspense fallback={null}>
+        <StickyCTABar />
+      </Suspense>
     </MarketingLayout>
   );
 };

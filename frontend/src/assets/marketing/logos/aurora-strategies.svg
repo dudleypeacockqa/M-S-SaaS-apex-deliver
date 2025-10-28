@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60">
+  <defs>
+    <linearGradient id="aurora-strategies-logo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="196" height="56" rx="12" fill="rgba(99,102,241,0.08)" />
+  <text x="28" y="38" font-family="'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#1e293b">Aurora</text>
+  <text x="118" y="38" font-family="'Segoe UI', sans-serif" font-size="20" font-weight="600" fill="#475569">Strategies</text>
+  <path d="M20 18l8 12-8 12-8-12z" fill="url(#aurora-strategies-logo)" />
+</svg>
