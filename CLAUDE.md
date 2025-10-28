@@ -141,6 +141,74 @@ node -e "const path=require('node:path');const {ManifestGenerator}=require('./to
 - Keep backend coverage ≥ 80%, platform frontend ≥ 85%
 - Use BMAD TEA agent /bmad:bmm:agents:tea for test strategy reviews
 
+---
+
+## 3.1 BMAD Local Installation & Daily Workflow
+
+### One-Time Environment Setup
+
+BMAD v6-alpha is already baked into this repository via the official BMAD-METHOD CLI inside `_vendor/BMAD-METHOD/`. To set up your local environment:
+
+```bash
+cd _vendor/BMAD-METHOD
+npx bmad-method install
+```
+
+**Note**: This only needs to be done **once per development environment** (e.g., once per developer machine, once per CI/CD runner).
+
+The install command will:
+- Compile agents from YAML to Markdown
+- Generate manifests (agent-manifest.csv, workflow-manifest.csv, etc.)
+- Set up IDE integrations for Codex CLI and Claude Code
+- Ensure bmad/ directory structure is correct
+
+### Day-to-Day Workflow Commands
+
+Once installed, use these commands from anywhere in the project:
+
+```bash
+# Check current workflow status
+npx bmad-method status
+
+# View available workflows
+npx bmad-method workflows
+
+# Execute specific workflow
+npx bmad-method run <workflow-name>
+```
+
+**Common workflows:**
+- `/bmad:bmm:workflows:workflow-status` - Check project state and next action
+- `/bmad:bmm:workflows:create-story` - Draft new user story
+- `/bmad:bmm:workflows:dev-story` - Implement story with TDD
+- `/bmad:bmm:workflows:review-story` - QA review cycle
+
+### Progress Tracking (Critical)
+
+After completing each sprint or major story, update:
+- **`docs/bmad/BMAD_PROGRESS_TRACKER.md`** - Main progress log with test counts, metrics, completion status
+- **`docs/bmad/bmm-workflow-status.md`** - Current workflow state (NEXT_ACTION, NEXT_COMMAND, NEXT_AGENT)
+
+This keeps BMAD agents synchronized with actual project progress.
+
+### TDD Cadence (Mandatory)
+
+All development follows strict TDD:
+1. **RED**: Write failing test first ❌
+2. **GREEN**: Implement minimal code to pass ✅
+3. **REFACTOR**: Clean up while keeping tests green ♻️
+
+BMAD workflows enforce this cadence at every step.
+
+### Further Reading
+
+For deeper understanding of BMAD ceremony expectations, agent prompts, and documentation requirements, see:
+- `docs/BMAD-METHOD-IMPLEMENTATION.md` - Full implementation record
+- `docs/BMAD-V6-ADOPTION-GUIDE.md` - Adoption guide
+- `.bmad-core/user-guide.md` - Workflow diagrams and user guide
+
+---
+
 ## 4. Test-Driven Development (TDD)
 
 

@@ -26,6 +26,70 @@ intelligence, secure collaboration, and professional community features.
 
 ---
 
+## Quick Setup
+
+### Prerequisites
+
+- **Node.js 18+** (for BMAD CLI and frontend)
+- **Python 3.11+** (for backend)
+- **PostgreSQL 15+** (database)
+- **Redis** (cache and task queue)
+
+### BMAD Method Installation (One-Time)
+
+This project uses the **BMAD v6-alpha methodology** for structured, agent-driven development. The BMAD CLI is vendored in this repository and must be installed once per development environment:
+
+```bash
+cd _vendor/BMAD-METHOD
+npx bmad-method install
+```
+
+**What this does:**
+- Compiles YAML agents to Markdown
+- Generates agent/workflow manifests
+- Sets up IDE integrations (Codex, Claude Code)
+- Validates bmad/ directory structure
+
+**Note**: Only needs to be run **once per development environment** (e.g., once per developer machine).
+
+### Daily Development Commands
+
+```bash
+# Check workflow status and next recommended action
+npx bmad-method status
+
+# View available workflows
+npx bmad-method workflows
+
+# Execute workflow (e.g., create story, implement feature)
+npx bmad-method run <workflow-name>
+```
+
+### TDD Discipline (Mandatory)
+
+All feature development follows strict Test-Driven Development:
+
+1. **RED** ❌ - Write failing test first
+2. **GREEN** ✅ - Implement minimal code to pass
+3. **REFACTOR** ♻️ - Clean up while keeping tests green
+
+BMAD workflows enforce TDD at every step.
+
+### Progress Tracking
+
+After completing each sprint or major story, update:
+- `docs/bmad/BMAD_PROGRESS_TRACKER.md` - Log test counts, coverage, commits
+- `docs/bmad/bmm-workflow-status.md` - Update workflow state
+
+### Full Documentation
+
+- **[CLAUDE.md](./CLAUDE.md)** - AI assistant context (primary developer reference)
+- **[CODEX-COMPLETE-PROJECT-GUIDE.md](./CODEX-COMPLETE-PROJECT-GUIDE.md)** - Complete implementation guide
+- **[docs/BMAD-METHOD-IMPLEMENTATION.md](./docs/BMAD-METHOD-IMPLEMENTATION.md)** - BMAD setup details and troubleshooting
+- **[docs/BMAD-V6-ADOPTION-GUIDE.md](./docs/BMAD-V6-ADOPTION-GUIDE.md)** - Comprehensive adoption guide
+
+---
+
 ## Technology Stack
 
 ### Frontend

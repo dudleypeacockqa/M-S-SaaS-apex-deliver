@@ -47,6 +47,63 @@
 
 ---
 
+## 2.1 BMAD Method Setup
+
+### Local Installation (One-Time Setup)
+
+This project uses **BMAD v6-alpha** (Build-Measure-Adapt-Deploy) methodology for structured development workflows. The BMAD CLI is vendored in this repository at `_vendor/BMAD-METHOD/`.
+
+**Initial Setup** (once per development environment):
+
+```bash
+cd _vendor/BMAD-METHOD
+npx bmad-method install
+```
+
+This generates:
+- Agent manifests in `bmad/_cfg/` (CSV files)
+- Compiled agent markdown files in `bmad/<module>/agents/`
+- IDE integration configs for Codex and Claude Code
+- Workflow templates and task definitions
+
+### Daily Development Workflow
+
+**Check Project Status:**
+```bash
+npx bmad-method status
+```
+
+This shows current workflow state, next recommended action, and progress metrics.
+
+**Execute Workflows:**
+```bash
+npx bmad-method run workflow-status  # Determine next action
+npx bmad-method run create-story     # Draft new story
+npx bmad-method run dev-story        # Implement with TDD
+npx bmad-method run review-story     # QA review cycle
+```
+
+**Update Progress After Each Sprint/Story:**
+- **`docs/bmad/BMAD_PROGRESS_TRACKER.md`** - Log completion metrics (test counts, coverage, commits)
+- **`docs/bmad/bmm-workflow-status.md`** - Update workflow state (NEXT_ACTION, NEXT_COMMAND, NEXT_AGENT)
+
+### TDD Integration
+
+BMAD enforces strict Test-Driven Development at every workflow step:
+
+1. **RED**: Write failing test first ❌
+2. **GREEN**: Implement minimal passing code ✅
+3. **REFACTOR**: Clean up while tests stay green ♻️
+
+All BMAD workflows include TDD checkpoints and reminders. The `dev-story` workflow will not proceed without tests written first.
+
+### Reference Documentation
+
+- **`docs/BMAD-METHOD-IMPLEMENTATION.md`** - Complete installation record and troubleshooting
+- **`docs/BMAD-V6-ADOPTION-GUIDE.md`** - Comprehensive adoption guide with examples
+- **`.bmad-core/user-guide.md`** - Workflow diagrams (planning → execution cycles)
+- **`_vendor/BMAD-METHOD/README.md`** - Official BMAD CLI documentation
+
 ---
 
 ## 3. Delivery Framework (BMAD + TDD)

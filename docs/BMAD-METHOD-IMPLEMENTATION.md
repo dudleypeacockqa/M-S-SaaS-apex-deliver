@@ -7,6 +7,78 @@
 
 ---
 
+## 🚀 Quick Start for Developers
+
+### First Time Setup (Once Per Environment)
+
+BMAD v6-alpha is already vendored in this repository. To set up your development environment:
+
+```bash
+# Navigate to vendored BMAD CLI
+cd _vendor/BMAD-METHOD
+
+# Run installation (one-time setup)
+npx bmad-method install
+
+# Confirm installation succeeded
+npx bmad-method status
+```
+
+**What this does:**
+- Compiles YAML agents to Markdown (bmad/<module>/agents/*.md)
+- Generates CSV manifests for workflows, agents, tasks (bmad/_cfg/*.csv)
+- Creates IDE integration configs for Codex and Claude Code
+- Validates bmad/ directory structure is correct
+
+**Note**: This command only needs to be run **once per development environment** (e.g., once per developer machine, once per CI/CD runner).
+
+### Daily Workflow
+
+From anywhere in the project directory:
+
+```bash
+# Check current workflow status and next recommended action
+npx bmad-method status
+
+# View all available workflows
+npx bmad-method workflows
+
+# Execute a specific workflow
+npx bmad-method run <workflow-name>
+
+# Common workflows:
+npx bmad-method run workflow-status  # Determine next action
+npx bmad-method run create-story     # Draft new user story
+npx bmad-method run dev-story        # Implement story with TDD
+npx bmad-method run review-story     # QA review cycle
+```
+
+### After Each Sprint/Story (Critical)
+
+Update these files to keep BMAD agents synchronized with actual project progress:
+
+1. **`docs/bmad/BMAD_PROGRESS_TRACKER.md`**
+   - Log completed work with test counts, coverage percentages, git commits
+   - Mark stories as ✅ COMPLETE with timestamps
+   - Record any blockers or issues
+
+2. **`docs/bmad/bmm-workflow-status.md`**
+   - Update NEXT_ACTION (what needs to be done next)
+   - Update NEXT_COMMAND (specific BMAD command to run)
+   - Update NEXT_AGENT (which agent should execute next)
+
+### TDD Reminder (Mandatory)
+
+Every feature implementation follows strict Test-Driven Development:
+
+1. **Write test (RED)** ❌ - Test fails because feature doesn't exist
+2. **Implement code (GREEN)** ✅ - Minimal code to make test pass
+3. **Refactor (keep tests green)** ♻️ - Clean up code while tests stay passing
+
+BMAD workflows enforce this discipline at every step. The `dev-story` workflow will not proceed without tests written first.
+
+---
+
 ## ✅ Official Adoption Summary
 
 The project now runs on the official **BMAD-METHOD v6-alpha** toolchain. The full CLI install was refreshed from `_vendor/BMAD-METHOD` and compiled directly into the repository-level `bmad/` directory. All CLI assets, manifests, and IDE integrations have been generated for both **Codex CLI** and **Claude Code**, enabling agent-driven workflows end-to-end.
