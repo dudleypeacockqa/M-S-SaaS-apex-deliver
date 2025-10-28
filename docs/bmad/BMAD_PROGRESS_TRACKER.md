@@ -1,3 +1,27 @@
+### Session 2025-10-28 (Phases 10-11: Dashboard Real Data Completion)
+- ✅ **Phase 10**: Fixed TypeScript linting issues in ErrorBoundary and DashboardPage
+- ✅ **Phase 11**: Replaced ALL dashboard mock data with real API calculations
+  - WelcomeSection QuickStats: Active Deals, Total Pipeline, Avg Deal Size (real data)
+  - FinancialInsightsWidget: Total Pipeline Value, Avg Deal Size, Active Deals, Stages Covered (real calculations)
+  - ActivityFeedWidget: Derives from deals' updated_at timestamps (real time display)
+  - UpcomingTasksWidget: "Coming Soon" message (no backend endpoint yet - honest about limitation)
+  - Single API call strategy: Fetch deals once at root, share across all widgets
+- ✅ **Commit**: `6517c8c` feat(dashboard): replace all mock data with real API data (Phase 10-11)
+- ✅ **Test Status**: Backend 360 passed (83% coverage), Frontend TypeScript compilation passing
+- ⚠️ **Next**: Phase 13 - Final production verification, then customer onboarding enabled
+
+### Session 2025-10-28 (Codex TDD – Transcription entitlement)
+- ✅ Added RED/Green tests for podcast transcription service (Professional+ gating)
+- ✅ Updated `podcast_service.transcribe_episode` to enforce `transcription_basic` entitlement with upgrade messaging
+- ✅ Mocked Whisper flow in service tests (`backend/tests/test_podcast_service.py` → 11 passed)
+- ⚠️ Next: expand service-layer coverage for YouTube uploads and streaming limits (Phase 3)
+
+### Session 2025-10-28 (Full Production Alignment)
+- ✅ Adopted `Full Production Completion Plan` (see `/full.plan.md`) covering workflow alignment, valuation suite completion, marketing polish, and production deployment.
+- ✅ Surfaced `AGENTS.md` in `README.md` and reiterated BMAD tracker upkeep for new contributors.
+- ✅ Reviewed deployment guides (`docs/PRODUCTION_DEPLOYMENT_CHECKLIST.md`, `docs/DEPLOYMENT_HEALTH.md`) – automation gaps queued in plan for upcoming CI/deploy work.
+- 🔄 NEXT: shift active dev story from DEV-016 to valuation suite (DEV-011) backend completion and update BMAD workflow status accordingly.
+
 ### Session 2025-10-28 (Status Sync & Render Health)
 - ✅ Captured repo state (`git status`, `git log -1`) – on `main`, ahead of `origin/main` by 1 commit (`09e9eba`)
 - ✅ Confirmed BMAD CLI install (`npx bmad-method status`) – workflow remains `dev-story` under Phase 4 Implementation
@@ -6,7 +30,7 @@
 
 # BMAD Progress Tracker - M&A Intelligence Platform
 
-**Last Updated**: 2025-10-28 15:10 UTC (Status sync + Render health captured)
+**Last Updated**: 2025-10-28 13:50 UTC (Status sync + Render health captured)
 **Methodology**: BMAD v6-alpha (core + bmb + bmm + cis) + Strict TDD
 **Project Phase**: Sprint 6 - DEV-016 Podcast Studio Subscription Add-On (API enforcement cycle)
 **Deployment Status**: 🟡 Backend quota suites green; Render health endpoints confirmed 2025-10-28 15:04Z (redeploy + frontend gating still pending)
@@ -16,8 +40,8 @@
 **Sprint 4**: ✅ DEV-010 complete
 **Sprint 5**: 🟡 DEV-011 backend analytics green; frontend polish pending
 **Sprint 6**: 🟠 DEV-016 entitlement + quota enforcement progressing (backend usage endpoint GREEN)
-**Latest Commit**: 09e9eba feat(auth): implement Clerk authentication & real dashboard data (Phase 8-9)
-**Working Branch**: main (ahead of origin/main by 1 commit; local doc/test changes unstaged)
+**Latest Commit**: 6517c8c feat(dashboard): replace all mock data with real API data (Phase 10-11)
+**Working Branch**: main (ahead of origin/main by 2 commits; doc updates unstaged)
 **Test Suites**: ✅ backend `backend/venv/Scripts/python -m pytest backend/tests/test_quota_service.py` → 18 passed; ✅ backend `backend/venv/Scripts/python -m pytest backend/tests/test_podcast_api.py` → 9 passed; ⚪ frontend not rerun (last green 454/465)
 ## Session 2025-10-28: Critical Tailwind Fix + Test Suite Completion
 
