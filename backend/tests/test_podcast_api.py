@@ -64,7 +64,7 @@ class TestPodcastEpisodeCreation:
                     "Upgrade to Professional tier to unlock audio podcasting."
                 )
 
-                response = client.post("/api/podcasts/episodes", json=EPISODE_PAYLOAD)
+                response = client.post("/api/api/podcasts/episodes", json=EPISODE_PAYLOAD)
 
             assert response.status_code == status.HTTP_403_FORBIDDEN
             assert response.headers["X-Required-Tier"] == "professional"
@@ -97,7 +97,7 @@ class TestPodcastEpisodeCreation:
                 mock_feature.return_value = True
                 mock_quota.return_value = True
 
-                response = client.post("/api/podcasts/episodes", json=EPISODE_PAYLOAD)
+                response = client.post("/api/api/podcasts/episodes", json=EPISODE_PAYLOAD)
 
             assert response.status_code == status.HTTP_201_CREATED
             mock_quota.assert_awaited_once()
@@ -130,7 +130,7 @@ class TestPodcastEpisodeCreation:
                 mock_feature.return_value = True
                 mock_quota.return_value = True
 
-                response = client.post("/api/podcasts/episodes", json=EPISODE_PAYLOAD)
+                response = client.post("/api/api/podcasts/episodes", json=EPISODE_PAYLOAD)
 
             assert response.status_code == status.HTTP_201_CREATED
             body = response.json()
@@ -167,7 +167,7 @@ class TestPodcastEpisodeCreation:
                 mock_feature.return_value = True
                 mock_quota.side_effect = QuotaExceededError("Monthly quota exceeded")
 
-                response = client.post("/api/podcasts/episodes", json=EPISODE_PAYLOAD)
+                response = client.post("/api/api/podcasts/episodes", json=EPISODE_PAYLOAD)
 
             assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
             assert "quota" in response.json()["detail"].lower()
@@ -198,7 +198,7 @@ class TestPodcastEpisodeCreation:
                 mock_feature.side_effect = [True, False]
                 mock_quota.return_value = True
 
-                response = client.post("/api/podcasts/episodes", json=payload)
+                response = client.post("/api/api/podcasts/episodes", json=payload)
 
             assert response.status_code == status.HTTP_403_FORBIDDEN
             assert "upgrade" in response.json()["detail"].lower()
@@ -233,7 +233,7 @@ class TestPodcastEpisodeCreation:
                 mock_quota.return_value = True
                 mock_increment.return_value = None
 
-                response = client.post("/api/podcasts/episodes", json=payload)
+                response = client.post("/api/api/podcasts/episodes", json=payload)
 
             assert response.status_code == status.HTTP_201_CREATED
             body = response.json()
@@ -281,7 +281,7 @@ class TestPodcastUsageEndpoint:
                     period=expected_period,
                 )
 
-                response = client.get("/api/podcasts/usage")
+                response = client.get("/api/api/podcasts/usage")
 
             assert response.status_code == status.HTTP_200_OK
             mock_summary.assert_awaited_once()
@@ -338,7 +338,7 @@ class TestPodcastUsageEndpoint:
                     period=expected_period,
                 )
 
-                response = client.get("/api/podcasts/usage")
+                response = client.get("/api/api/podcasts/usage")
 
             assert response.status_code == status.HTTP_200_OK
             mock_summary.assert_awaited_once()
@@ -392,7 +392,7 @@ class TestPodcastUsageEndpoint:
                     "Upgrade to Professional tier to unlock audio podcasting."
                 )
 
-                response = client.get("/api/podcasts/usage")
+                response = client.get("/api/api/podcasts/usage")
 
             assert response.status_code == status.HTTP_403_FORBIDDEN
             assert response.headers["X-Required-Tier"] == "professional"
@@ -429,7 +429,7 @@ class TestPodcastFeatureAccessEndpoint:
                 mock_check.return_value = True
                 mock_required.return_value = SubscriptionTier.PROFESSIONAL
 
-                response = client.get("/api/podcasts/features/podcast_audio")
+                response = client.get("/api/api/podcasts/features/podcast_audio")
 
             assert response.status_code == status.HTTP_200_OK
             payload = response.json()
@@ -466,7 +466,7 @@ class TestPodcastFeatureAccessEndpoint:
                 mock_check.return_value = False
                 mock_required.return_value = SubscriptionTier.PROFESSIONAL
 
-                response = client.get("/api/podcasts/features/podcast_audio")
+                response = client.get("/api/api/podcasts/features/podcast_audio")
 
             assert response.status_code == status.HTTP_200_OK
             payload = response.json()
@@ -499,7 +499,7 @@ class TestPodcastFeatureAccessEndpoint:
                 mock_tier.return_value = SubscriptionTier.PROFESSIONAL
                 mock_check.side_effect = FeatureNotFoundError("Feature not found")
 
-                response = client.get("/api/podcasts/features/unknown_feature")
+                response = client.get("/api/api/podcasts/features/unknown_feature")
 
             assert response.status_code == status.HTTP_404_NOT_FOUND
             assert "Feature not found" in response.json()["detail"]
@@ -530,7 +530,7 @@ class TestPodcastListEndpoint:
                 mock_feature.return_value = True
                 mock_get.return_value = []
                 
-                response = client.get("/api/podcasts/episodes")
+                response = client.get("/api/api/podcasts/episodes")
                 
             assert response.status_code == status.HTTP_200_OK
             mock_get.assert_called_once()
@@ -558,7 +558,7 @@ class TestPodcastListEndpoint:
                 mock_feature.return_value = True
                 mock_get.return_value = []
                 
-                response = client.get("/api/podcasts/episodes?status=published")
+                response = client.get("/api/api/podcasts/episodes?status=published")
                 
             assert response.status_code == status.HTTP_200_OK
             assert mock_get.call_args.kwargs["status"] == "published"
@@ -603,7 +603,7 @@ class TestPodcastGetSingleEndpoint:
                 )
                 mock_get.return_value = mock_episode
                 
-                response = client.get(f"/podcasts/episodes/{episode_id}")
+                response = client.get(f"/api/podcasts/episodes/{episode_id}")
                 
             assert response.status_code == status.HTTP_200_OK
             mock_get.assert_called_once_with(
@@ -634,7 +634,7 @@ class TestPodcastGetSingleEndpoint:
                 mock_feature.return_value = True
                 mock_get.return_value = None
                 
-                response = client.get("/api/podcasts/episodes/nonexistent")
+                response = client.get("/api/api/podcasts/episodes/nonexistent")
                 
             assert response.status_code == status.HTTP_404_NOT_FOUND
         finally:
@@ -679,7 +679,7 @@ class TestPodcastUpdateEndpoint:
                 mock_update.return_value = mock_episode
                 
                 payload = {"title": "Updated Title", "description": "New description"}
-                response = client.put(f"/podcasts/episodes/{episode_id}", json=payload)
+                response = client.put(f"/api/podcasts/episodes/{episode_id}", json=payload)
                 
             assert response.status_code == status.HTTP_200_OK
             mock_update.assert_called_once()
@@ -712,7 +712,7 @@ class TestPodcastDeleteEndpoint:
                 mock_feature.return_value = True
                 mock_delete.return_value = True
                 
-                response = client.delete(f"/podcasts/episodes/{episode_id}")
+                response = client.delete(f"/api/podcasts/episodes/{episode_id}")
                 
             assert response.status_code == status.HTTP_204_NO_CONTENT
             mock_delete.assert_called_once_with(
@@ -743,7 +743,7 @@ class TestPodcastDeleteEndpoint:
                 mock_feature.return_value = True
                 mock_delete.return_value = False
                 
-                response = client.delete("/api/podcasts/episodes/nonexistent")
+                response = client.delete("/api/api/podcasts/episodes/nonexistent")
                 
             assert response.status_code == status.HTTP_404_NOT_FOUND
         finally:

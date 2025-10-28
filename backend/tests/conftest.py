@@ -130,12 +130,22 @@ def _reset_metadata(engine) -> None:
 
 
 def _safe_drop_schema(engine) -> None:
-    """Drop all known tables without raising errors for missing tables."""
+    """Drop all tables/views without raising errors for missing objects."""
 
-    try:
-        Base.metadata.drop_all(engine, checkfirst=True)
-    except (OperationalError, ProgrammingError, sqlite3.OperationalError):
-        Base.metadata.drop_all(engine, checkfirst=False)
+    with engine.begin() as connection:
+        inspector = inspect(connection)
+
+        if engine.dialect.name == "sqlite":
+            connection.exec_driver_sql("PRAGMA foreign_keys=OFF")
+
+        for table_name in inspector.get_table_names():
+            connection.execute(text(f'DROP TABLE IF EXISTS "{table_name}"'))
+
+        for view_name in inspector.get_view_names():
+            connection.execute(text(f'DROP VIEW IF EXISTS "{view_name}"'))
+
+        if engine.dialect.name == "sqlite":
+            connection.exec_driver_sql("PRAGMA foreign_keys=ON")
 
 
 @pytest.fixture()
