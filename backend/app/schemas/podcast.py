@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, HttpUrl, Field, ConfigDict
 
 
 class PodcastEpisodeCreate(BaseModel):
@@ -20,6 +20,8 @@ class PodcastEpisodeCreate(BaseModel):
 class PodcastEpisodeResponse(BaseModel):
     """Minimal podcast episode response."""
 
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     title: str
     description: Optional[str]
@@ -27,6 +29,3 @@ class PodcastEpisodeResponse(BaseModel):
     season_number: int
     audio_file_url: HttpUrl
     video_file_url: Optional[HttpUrl]
-
-    class Config:
-        orm_mode = True

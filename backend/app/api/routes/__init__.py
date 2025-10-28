@@ -1,6 +1,6 @@
 """Route package exports."""
 
-from . import admin, auth, deals, documents, financial, subscriptions, tasks, valuation
+from . import admin, auth, deals, documents, financial, podcasts, subscriptions, tasks, valuation
 
 __all__ = [
     "admin",
@@ -8,6 +8,7 @@ __all__ = [
     "deals",
     "documents",
     "financial",
+    "podcasts",
     "subscriptions",
     "tasks",
     "valuation",

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.api.dependencies.auth import get_current_user, require_min_role
 from app.db.session import get_db
 from app.models.user import User, UserRole
-from app.schemas import (
+from app.schemas.task import (
     TaskCreate,
     TaskUpdate,
     TaskResponse,

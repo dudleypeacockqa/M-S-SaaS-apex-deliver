@@ -728,19 +728,19 @@ def run_monte_carlo_simulation(
         )
         simulated_values.append(float(ev))
 
-    ev_array = np.array(simulated_values, dtype=float)
 
     def _percentile(values: List[float], percentile: float) -> float:
         if not values:
             return 0.0
-        k = (len(values) - 1) * percentile
+        sorted_values = sorted(values)
+        k = (len(sorted_values) - 1) * percentile
         f = math.floor(k)
         c = math.ceil(k)
         if f == c:
-            return float(values[int(k)])
-        d0 = values[int(f)] * (c - k)
-        d1 = values[int(c)] * (k - f)
-        return float(d0 + d1)
+            return float(sorted_values[int(k)])
+        lower = sorted_values[int(f)]
+        upper = sorted_values[int(c)]
+        return float(lower + (upper - lower) * (k - f))
 
     mean_ev = sum(simulated_values) / len(simulated_values)
     p10 = _percentile(simulated_values, 0.10)

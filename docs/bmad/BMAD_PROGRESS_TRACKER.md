@@ -1,6 +1,6 @@
 # BMAD Progress Tracker - M&A Intelligence Platform
 
-**Last Updated**: 2025-10-28 11:05 UTC
+**Last Updated**: 2025-10-28 13:30 UTC
 **Methodology**: BMAD v6-alpha (core + bmb + bmm + cis) + TDD (tests-first)
 **Project Phase**: Sprint 6 – DEV-016 Podcast Studio Subscription Add-On (BLOCKED)
 **Deployment Status**: ⚠️ Backend pytest now runs but 21 valuation/task automation tests remain RED; frontend valuation workspace still failing (11 specs)
@@ -18,6 +18,14 @@
 - Codex & Claude exports rebuilt (bmad/docs/codex-instructions.md, bmad/docs/claude-code-instructions.md)
 
 **CRITICAL SCOPE CHANGE**: 🚨 DEV-016 Podcast Studio redefined as subscription add-on feature
+
+### Planning Refresh (2025-10-28)
+
+- ✅ PRD and epic breakdown refreshed (see docs/bmad/prd.md and docs/bmad/epics.md)
+- ✅ Linked PMI toolkit + modeling libraries into epic roadmap (E11/E12)
+- ⚠️ Implementation remains focused on DEV-016 podcast subscription enforcement (tests still RED)
+- ⚠️ Render deploy checklist still pending environment updates (see PRODUCTION-DEPLOYMENT-CHECKLIST.md)
+
 ---
 
 ## CRITICAL SCOPE CHANGE: DEV-016 Podcast Studio (2025-10-28)
