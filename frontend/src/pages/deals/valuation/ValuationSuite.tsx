@@ -21,6 +21,7 @@ import type {
 } from '../../../services/api/valuations'
 
 import { formatCurrency } from '../../../services/api/deals'
+import { Spinner as LoadingSpinner } from '../../../components/ui'
 
 const skeletonClass = 'animate-pulse rounded bg-gray-200 h-4'
 
@@ -60,19 +61,18 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
 
   if (isLoading) {
     return (
-      <div className="space-y-3" role="status" aria-label="Loading valuations">
-        <div className={`${skeletonClass} w-32`}></div>
-        <div className={`${skeletonClass} w-full`}></div>
-        <div className={`${skeletonClass} w-3/4`}></div>
+      <div className="flex flex-col items-center gap-4 py-6">
+        <LoadingSpinner />
+        <div className="w-full space-y-3">
+          <div className={`${skeletonClass} w-32`}></div>
+          <div className={`${skeletonClass} w-full`}></div>
+          <div className={`${skeletonClass} w-3/4`}></div>
+        </div>
       </div>
     )
   }
 
-  if (!valuations || valuations.length === 0) {
-    return <p className="text-sm text-gray-600">No valuations created yet.</p>
-  }
-
-  const currentValuation = valuations.find((valuation) => valuation.id === valuationId)
+  const currentValuation = valuations?.find((valuation) => valuation.id === valuationId)
 
   return (
     <div className="space-y-6">
