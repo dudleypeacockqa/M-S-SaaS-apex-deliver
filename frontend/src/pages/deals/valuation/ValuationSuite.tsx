@@ -13,6 +13,7 @@ import {
   triggerExport,
   createValuation,
   addComparableCompany,
+  createScenario,
   addPrecedentTransaction,
 } from '../../../services/api/valuations'
 
@@ -22,6 +23,7 @@ import type {
   ValuationExportResponse,
   ComparableSummaryMetrics,
   ValuationCreateRequest,
+  ScenarioCreateRequest,
 } from '../../../services/api/valuations'
 
 import { formatCurrency } from '../../../services/api/deals'
@@ -162,7 +164,7 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
       discount_rate: discountRateValue / 100,
       terminal_method: 'gordon_growth',
       terminal_cash_flow: terminalCashFlowValue,
-      cash_flows: cashFlows,
+      'cash_flows': cashFlows,
       net_debt: Number(formValues.netDebt || 0),
     }
 
@@ -292,14 +294,52 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
       (error as { statusCode?: number } | undefined)?.statusCode
 
     if (statusCode === 403) {
+      const responseDetail =
+        (error as { response?: { data?: unknown } } | undefined)?.response?.data ??
+        (error as { detail?: unknown } | undefined)?.detail
+
+      let upgradeMessage: string | null = null
+      let upgradeCtaUrl = '/pricing'
+      let requiredTierLabel: string | null = null
+
+      if (responseDetail) {
+        if (typeof responseDetail === 'string') {
+          upgradeMessage = responseDetail
+        } else if (typeof responseDetail === 'object' && responseDetail !== null) {
+          const detailObject =
+            'detail' in responseDetail && typeof (responseDetail as { detail?: unknown }).detail !== 'undefined'
+              ? (responseDetail as { detail?: unknown }).detail
+              : responseDetail
+
+          if (typeof detailObject === 'string') {
+            upgradeMessage = detailObject
+          } else if (typeof detailObject === 'object' && detailObject !== null) {
+            const detailRecord = detailObject as Record<string, unknown>
+            if (typeof detailRecord.message === 'string') {
+              upgradeMessage = detailRecord.message
+            }
+            if (typeof detailRecord.upgrade_cta_url === 'string') {
+              upgradeCtaUrl = detailRecord.upgrade_cta_url
+            }
+            if (typeof detailRecord.required_tier_label === 'string') {
+              requiredTierLabel = detailRecord.required_tier_label
+            }
+          }
+        }
+      }
+
+      const requiredTierText = requiredTierLabel ?? 'Growth'
+      const displayUpgradeMessage =
+        upgradeMessage ?? 'Please upgrade your subscription to unlock valuation analytics and exports.'
+
       return (
         <div className="space-y-6">
           <SectionCard title="Upgrade Required">
             <div className="space-y-3 text-sm text-gray-600">
-              <p>The valuation workspace is available to Growth tier and above.</p>
-              <p>Please upgrade your subscription to unlock valuation analytics and exports.</p>
+              <p>The valuation workspace is available to {requiredTierText} tier and above.</p>
+              <p>{displayUpgradeMessage}</p>
               <Link
-                to="/pricing"
+                to={upgradeCtaUrl}
                 className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-indigo-700"
               >
                 View pricing plans
@@ -386,7 +426,7 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
               <span>Fetching scenario analytics…</span>
             </div>
           ) : scenarioSummary ? (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
               <AnalyticsMetric label="Scenarios Analysed" value={scenarioSummary.count} />
               <RangeValue label="EV Median" value={scenarioSummary.enterprise_value_range.median} />
               <RangeValue label="Equity Median" value={scenarioSummary.equity_value_range.median} />
@@ -397,6 +437,18 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
                   scenarioSummary.enterprise_value_range.max != null
                     ? `${formatCurrency(scenarioSummary.enterprise_value_range.min, 'GBP')} – ${formatCurrency(
                         scenarioSummary.enterprise_value_range.max,
+                        'GBP',
+                      )}`
+                    : 'N/A'
+                }
+                isPlain
+              />
+              <AnalyticsMetric
+                label="Equity Range"
+                value={
+                  scenarioSummary.equity_value_range.min != null && scenarioSummary.equity_value_range.max != null
+                    ? `${formatCurrency(scenarioSummary.equity_value_range.min, 'GBP')} – ${formatCurrency(
+                        scenarioSummary.equity_value_range.max,
                         'GBP',
                       )}`
                     : 'N/A'
@@ -994,6 +1046,7 @@ const PrecedentsView = ({ dealId, valuationId }: { dealId: string; valuationId: 
 }
 
 const ScenariosView = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
+  const queryClient = useQueryClient()
   const { data: scenarios, isLoading } = useQuery({
     queryKey: ['valuations', dealId, valuationId, 'scenarios'],
     queryFn: () => listScenarios(dealId, valuationId),
@@ -1005,16 +1058,196 @@ const ScenariosView = ({ dealId, valuationId }: { dealId: string; valuationId: s
     enabled: !!scenarios?.length,
   })
 
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [formValues, setFormValues] = useState({
+    name: '',
+    description: '',
+    assumptions: '{\n  "revenue_growth": 0.05\n}',
+  })
+  const [formError, setFormError] = useState<string | null>(null)
+  const [formMessage, setFormMessage] = useState<string | null>(null)
+
+  const handleScenarioFieldChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = event.target
+    setFormValues((previous) => ({ ...previous, [name]: value }))
+  }
+
+  const resetForm = () => {
+    setFormValues({ name: '', description: '', assumptions: '{\n  "revenue_growth": 0.05\n}' })
+  }
+
+  const scenarioMutation = useMutation({
+    mutationFn: (payload: ScenarioCreateRequest) => createScenario(dealId, valuationId, payload),
+    onSuccess: () => {
+      setFormMessage('Scenario saved successfully.')
+      setFormError(null)
+      resetForm()
+      setIsFormOpen(false)
+      queryClient.invalidateQueries({ queryKey: ['valuations', dealId, valuationId, 'scenarios'] })
+      queryClient.invalidateQueries({
+        queryKey: ['valuations', dealId, valuationId, 'scenarios', 'summary'],
+      })
+    },
+    onError: () => {
+      setFormMessage(null)
+      setFormError('Unable to save scenario. Please try again.')
+    },
+  })
+
+  const handleScenarioSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setFormError(null)
+    setFormMessage(null)
+
+    if (!formValues.name.trim()) {
+      setFormError('Scenario name is required.')
+      return
+    }
+
+    const assumptionText = formValues.assumptions.trim()
+    let parsedAssumptions: Record<string, unknown> = {}
+
+    if (assumptionText.length > 0) {
+      try {
+        const candidate = JSON.parse(assumptionText)
+        if (typeof candidate !== 'object' || candidate === null || Array.isArray(candidate)) {
+          setFormError('Assumptions must be a JSON object.')
+          return
+        }
+        parsedAssumptions = candidate as Record<string, unknown>
+      } catch (error) {
+        setFormError('Assumptions must be valid JSON.')
+        return
+      }
+    }
+
+    const payload: ScenarioCreateRequest = {
+      name: formValues.name.trim(),
+      assumptions: parsedAssumptions,
+    }
+
+    if (formValues.description.trim()) {
+      payload.description = formValues.description.trim()
+    }
+
+    scenarioMutation.mutate(payload)
+  }
+
   if (isLoading) {
     return <p className="text-sm text-gray-600">Loading scenarios...</p>
   }
 
-  if (!scenarios || scenarios.length === 0) {
-    return <p className="text-sm text-gray-600">No scenarios created yet.</p>
-  }
+  const hasScenarios = Array.isArray(scenarios) && scenarios.length > 0
 
   return (
     <div className="space-y-6">
+      <SectionCard title="Scenario Management">
+        <div className="space-y-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <p className="text-sm text-gray-600">
+              Model alternative forecasts, sensitivities, and downside cases to stress-test valuations.
+            </p>
+            {!isFormOpen && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsFormOpen(true)
+                  setFormError(null)
+                  setFormMessage(null)
+                }}
+                className="inline-flex items-center rounded-md border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 transition-colors hover:bg-indigo-100"
+              >
+                Add Scenario
+              </button>
+            )}
+          </div>
+
+          {formMessage && (
+            <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700" role="status">
+              {formMessage}
+            </p>
+          )}
+          {formError && (
+            <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+              {formError}
+            </p>
+          )}
+
+          {isFormOpen && (
+            <form className="space-y-4" onSubmit={handleScenarioSubmit} noValidate>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-700" htmlFor="scenario-name">
+                    Scenario Name
+                  </label>
+                  <input
+                    id="scenario-name"
+                    name="name"
+                    value={formValues.name}
+                    onChange={handleScenarioFieldChange}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                    placeholder="e.g. Upside Case"
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-700" htmlFor="scenario-description">
+                    Description
+                  </label>
+                  <input
+                    id="scenario-description"
+                    name="description"
+                    value={formValues.description}
+                    onChange={handleScenarioFieldChange}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                    placeholder="Optional summary"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700" htmlFor="scenario-assumptions">
+                  Assumptions JSON
+                </label>
+                <textarea
+                  id="scenario-assumptions"
+                  name="assumptions"
+                  value={formValues.assumptions}
+                  onChange={handleScenarioFieldChange}
+                  rows={6}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                  spellCheck={false}
+                />
+                <p className="text-xs text-gray-500">
+                  Provide a JSON object of assumption overrides (e.g. <code>{'{ "revenue_growth": 0.12 }'}</code>).
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={scenarioMutation.isPending}
+                  className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {scenarioMutation.isPending ? 'Saving…' : 'Save Scenario'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsFormOpen(false)
+                    setFormError(null)
+                    setFormMessage(null)
+                  }}
+                  className="inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </SectionCard>
+
       {summary && (
         <SectionCard title="Enterprise Value Range">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -1026,25 +1259,29 @@ const ScenariosView = ({ dealId, valuationId }: { dealId: string; valuationId: s
       )}
 
       <SectionCard title="Scenario Details">
-        <div className="grid grid-cols-1 gap-4">
-          {scenarios.map((scenario) => (
-            <article key={scenario.id} className="rounded-lg border border-gray-200 p-4">
-              <header className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-gray-900">{scenario.name}</h3>
-                <span className="text-xs uppercase tracking-wide text-gray-500">
-                  {scenario.enterprise_value ? formatCurrency(scenario.enterprise_value, 'GBP') : 'N/A'}
-                </span>
-              </header>
-              {scenario.description && <p className="mt-2 text-sm text-gray-600">{scenario.description}</p>}
-              <details className="mt-3 rounded-lg border border-gray-200 p-3">
-                <summary className="cursor-pointer text-sm font-medium text-gray-900">Assumptions</summary>
-                <pre className="mt-2 whitespace-pre-wrap text-xs text-gray-600">
-                  {JSON.stringify(scenario.assumptions, null, 2)}
-                </pre>
-              </details>
-            </article>
-          ))}
-        </div>
+        {hasScenarios ? (
+          <div className="grid grid-cols-1 gap-4">
+            {scenarios!.map((scenario) => (
+              <article key={scenario.id} className="rounded-lg border border-gray-200 p-4">
+                <header className="flex items-center justify-between">
+                  <h3 className="text-base font-semibold text-gray-900">{scenario.name}</h3>
+                  <span className="text-xs uppercase tracking-wide text-gray-500">
+                    {scenario.enterprise_value ? formatCurrency(scenario.enterprise_value, 'GBP') : 'N/A'}
+                  </span>
+                </header>
+                {scenario.description && <p className="mt-2 text-sm text-gray-600">{scenario.description}</p>}
+                <details className="mt-3 rounded-lg border border-gray-200 p-3">
+                  <summary className="cursor-pointer text-sm font-medium text-gray-900">Assumptions</summary>
+                  <pre className="mt-2 whitespace-pre-wrap text-xs text-gray-600">
+                    {JSON.stringify(scenario.assumptions, null, 2)}
+                  </pre>
+                </details>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-600">No scenarios created yet.</p>
+        )}
       </SectionCard>
     </div>
   )
@@ -1083,13 +1320,30 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
   const [exportType, setExportType] = useState<'pdf' | 'excel'>('pdf')
   const [exportFormat, setExportFormat] = useState<string | null>('summary')
 
-  const { mutate, data, isPending, isSuccess } = useMutation({
+  const [lastExport, setLastExport] = useState<ValuationExportResponse | null>(null)
+  const [exportError, setExportError] = useState<string | null>(null)
+
+  const { mutate, isPending } = useMutation({
     mutationFn: () => triggerExport(dealId, valuationId, exportType, exportFormat),
+    onMutate: () => {
+      setExportError(null)
+      setLastExport(null)
+    },
     onSuccess: (response: ValuationExportResponse) => {
+      setLastExport(response)
       queryClient.invalidateQueries({ queryKey: ['valuations', dealId, valuationId, 'exports'] })
-      return response
+    },
+    onError: () => {
+      setExportError('Unable to queue export. Please try again.')
     },
   })
+
+  const formatLabel = (value: string | null) => {
+    if (!value) {
+      return 'custom'
+    }
+    return value.replace(/_/g, ' ')
+  }
 
   return (
     <div className="space-y-6">
@@ -1127,9 +1381,14 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
           >
             {isPending ? 'Queuing export...' : 'Queue Export'}
           </button>
-          {isSuccess && data && (
-            <p className="text-sm text-emerald-700">
-              Export queued successfully. Task ID: <span className="font-semibold">{data.task_id}</span>
+          {exportError && (
+            <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+              {exportError}
+            </p>
+          )}
+          {lastExport && (
+            <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700" role="status">
+              Export queued: {lastExport.export_type} ({formatLabel(lastExport.export_format)}) · Task ID {lastExport.task_id}
             </p>
           )}
         </div>
@@ -1201,6 +1460,7 @@ export const ValuationSuite = () => {
     </main>
   )
 }
+
 
 
 

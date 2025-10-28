@@ -21,6 +21,7 @@ vi.mock('../../../services/api/valuations', () => ({
   triggerExport: vi.fn(),
   addComparableCompany: vi.fn(),
   addPrecedentTransaction: vi.fn(),
+  createScenario: vi.fn(),
 }))
 
 const renderSuite = (initialEntry = '/deals/deal-123/valuations/val-001') => {
@@ -138,7 +139,7 @@ describe('ValuationSuite RED tests', () => {
   })
 
   // TODO: Test skipped - need to add analytics view or clarify what this test is checking
-  it('displays scenario summary request and analytics summary', async () => {
+  it('displays scenario summary insights with analytics metrics', async () => {
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
       { id: 'val-analytics', enterprise_value: 12000000, equity_value: 9000000, deal_id: 'deal-analytics', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
     ])
@@ -150,8 +151,91 @@ describe('ValuationSuite RED tests', () => {
 
     renderSuite('/deals/deal-analytics/valuations/val-analytics')
 
-    await waitFor(() => expect(screen.getByText(/analytics/i)).toBeInTheDocument())
+    const analyticsHeading = await screen.findByRole('heading', { name: /analytics summary/i })
+    expect(analyticsHeading).toBeInTheDocument()
     await waitFor(() => expect(valuationApi.getScenarioSummary).toHaveBeenCalled())
+
+    expect(screen.getByText(/scenarios analysed/i)).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
+    expect(screen.getByText(/ev median/i)).toBeInTheDocument()
+    expect(screen.getByText('£10,250,000')).toBeInTheDocument()
+    expect(screen.getByText(/equity median/i)).toBeInTheDocument()
+    expect(screen.getByText('£8,100,000')).toBeInTheDocument()
+    expect(screen.getByText(/ev range/i)).toBeInTheDocument()
+    expect(screen.getByText('£8,000,000 – £12,500,000')).toBeInTheDocument()
+    expect(screen.getByText(/equity range/i)).toBeInTheDocument()
+    expect(screen.getByText('£6,200,000 – £10,000,000')).toBeInTheDocument()
+  })
+
+  it('allows creating a new scenario with JSON assumptions', async () => {
+    const user = userEvent.setup()
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
+      { id: 'val-scenarios', enterprise_value: 10500000, equity_value: 8000000, deal_id: 'deal-scenarios', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
+    ])
+    vi.mocked(valuationApi.listScenarios).mockResolvedValueOnce([])
+    vi.mocked(valuationApi.listScenarios).mockResolvedValue([
+      { id: 'scenario-upside', valuation_id: 'val-scenarios', organization_id: 'org-1', name: 'Upside Case', description: 'Revenue beats plan', assumptions: { revenue_growth: 0.18 }, enterprise_value: 11800000, equity_value: 9300000, created_at: '2025-01-01', updated_at: null },
+    ])
+    vi.mocked(valuationApi.createScenario).mockResolvedValueOnce({
+      id: 'scenario-upside',
+      valuation_id: 'val-scenarios',
+      organization_id: 'org-1',
+      name: 'Upside Case',
+      description: 'Revenue beats plan',
+      assumptions: { revenue_growth: 0.18 },
+      enterprise_value: 11800000,
+      equity_value: 9300000,
+      created_at: '2025-01-01T00:00:00Z',
+      updated_at: null,
+    })
+
+    renderSuite('/deals/deal-scenarios/valuations/val-scenarios')
+
+    await waitFor(() => expect(screen.getByText(/£10,500,000/i)).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /scenarios/i }))
+    await user.click(await screen.findByRole('button', { name: /add scenario/i }))
+
+    await user.type(await screen.findByLabelText(/scenario name/i), 'Upside Case')
+    await user.type(screen.getByLabelText(/description/i), 'Revenue beats plan')
+    const assumptionsInput = screen.getByLabelText(/assumptions json/i)
+    await user.clear(assumptionsInput)
+    await user.paste('{"revenue_growth":0.18}')
+    await user.click(screen.getByRole('button', { name: /save scenario/i }))
+
+    await waitFor(() => {
+      expect(valuationApi.createScenario).toHaveBeenCalledWith('deal-scenarios', 'val-scenarios', {
+        name: 'Upside Case',
+        description: 'Revenue beats plan',
+        assumptions: { revenue_growth: 0.18 },
+      })
+    })
+
+    expect(
+      await screen.findByText(/scenario saved successfully/i),
+    ).toBeInTheDocument()
+    expect(await screen.findByText(/upside case/i)).toBeInTheDocument()
+  })
+
+  it('shows validation error when scenario assumptions JSON is invalid', async () => {
+    const user = userEvent.setup()
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
+      { id: 'val-scenarios', enterprise_value: 10500000, equity_value: 8000000, deal_id: 'deal-scenarios', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
+    ])
+    vi.mocked(valuationApi.listScenarios).mockResolvedValueOnce([])
+
+    renderSuite('/deals/deal-scenarios/valuations/val-scenarios')
+
+    await waitFor(() => expect(screen.getByText(/£10,500,000/i)).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /scenarios/i }))
+    await user.click(await screen.findByRole('button', { name: /add scenario/i }))
+
+    await user.type(await screen.findByLabelText(/scenario name/i), 'Broken JSON')
+    await user.clear(screen.getByLabelText(/assumptions json/i))
+    await user.paste('{not valid')
+    await user.click(screen.getByRole('button', { name: /save scenario/i }))
+
+    expect(await screen.findByText(/assumptions must be valid json/i)).toBeInTheDocument()
+    expect(valuationApi.createScenario).not.toHaveBeenCalled()
   })
 
   it('fetches scenario list when scenarios tab opened', async () => {
@@ -169,7 +253,7 @@ describe('ValuationSuite RED tests', () => {
     await waitFor(() => expect(valuationApi.listScenarios).toHaveBeenCalled())
   })
 
-  it('allows triggering PDF export for growth-tier users', async () => {
+  it('shows detailed confirmation after queuing an export', async () => {
     const user = userEvent.setup()
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
       { id: 'val-export', enterprise_value: 10500000, equity_value: 8000000, deal_id: 'deal-export', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
@@ -183,17 +267,32 @@ describe('ValuationSuite RED tests', () => {
     await user.click(screen.getByRole('button', { name: /queue export/i }))
 
     await waitFor(() => expect(valuationApi.triggerExport).toHaveBeenCalled())
+    expect(
+      await screen.findByText(/export queued: pdf \(summary\) · task id task-1/i),
+    ).toBeInTheDocument()
   })
 
   // TODO: Add 403 error handling with upgrade message to component
-  it('guards valuation workspace for growth-tier access', async () => {
+  it('guards valuation workspace for growth-tier access with upgrade messaging', async () => {
     vi.mocked(valuationApi.listValuations).mockRejectedValueOnce({
-      response: { status: 403 },
+      response: {
+        status: 403,
+        data: {
+          detail: {
+            message: 'Upgrade to Growth tier to unlock valuation analytics and exports.',
+            upgrade_cta_url: '/billing/upgrade',
+          },
+        },
+      },
     })
 
     renderSuite('/deals/deal-403/valuations/val-403')
 
     await waitFor(() => expect(screen.getByText(/upgrade required/i)).toBeInTheDocument())
+    expect(
+      screen.getByText(/upgrade to growth tier to unlock valuation analytics and exports/i),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /view pricing plans/i })).toHaveAttribute('href', '/billing/upgrade')
   })
 })
 
