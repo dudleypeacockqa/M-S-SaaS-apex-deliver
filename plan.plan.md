@@ -778,7 +778,7 @@ export const PodcastStudio = () => {
 | Phase | Duration | Start Date | End Date | Status |
 |-------|----------|-----------|----------|--------|
 | Phase 1: Documentation | 2 days | 2025-10-28 | 2025-10-30 | 🟢 In Progress |
-| Phase 2: Clerk Integration | 3 days | 2025-10-30 | 2025-11-02 | ⏳ Pending |
+| Phase 2: Clerk Integration | 3 days | 2025-10-30 | 2025-11-02 | 🟡 In Progress |
 | Phase 3: Service Layer | 4 days | 2025-11-02 | 2025-11-06 | ⏳ Pending |
 | Phase 4: API Endpoints | 3 days | 2025-11-06 | 2025-11-09 | ⏳ Pending |
 | Phase 5: Frontend | 3 days | 2025-11-09 | 2025-11-12 | ⏳ Pending |

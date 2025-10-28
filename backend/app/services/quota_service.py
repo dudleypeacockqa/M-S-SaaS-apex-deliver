@@ -455,11 +455,11 @@ async def _query_usage_for_month(organization_id: str, db: AsyncSession) -> int:
 
 async def get_quota_summary(
     organization_id: str,
+    tier: SubscriptionTier,
     db: Optional[SessionLike] = None,
 ) -> PodcastQuotaSummary:
     """Aggregate quota information for API responses."""
 
-    tier = await get_organization_tier(organization_id)
     limit = TIER_QUOTAS.get(tier, 0)
 
     if db is None:

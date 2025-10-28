@@ -1015,7 +1015,7 @@ class TestGetQuotaSummary:
             mock_usage.return_value = 3
             mock_remaining.return_value = 7
 
-            summary = await get_quota_summary(org_id, db=mock_db_session)
+            summary = await get_quota_summary(org_id, tier=SubscriptionTier.PROFESSIONAL, db=mock_db_session)
 
         assert summary.tier == SubscriptionTier.PROFESSIONAL.value
         assert summary.limit == 10
@@ -1042,7 +1042,7 @@ class TestGetQuotaSummary:
             mock_usage.return_value = 5
             mock_remaining.return_value = -1
 
-            summary = await get_quota_summary(org_id, db=mock_db_session)
+            summary = await get_quota_summary(org_id, tier=SubscriptionTier.PREMIUM, db=mock_db_session)
 
         assert summary.tier == SubscriptionTier.PREMIUM.value
         assert summary.limit is None

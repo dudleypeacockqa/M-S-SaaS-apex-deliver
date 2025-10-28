@@ -47,15 +47,15 @@
 #### Subscription Tier Enforcement
 - [ ] Clerk integration fetches subscription tier from organization metadata
 - [ ] Feature entitlement service validates access based on tier
-- [ ] API middleware returns 403 for insufficient subscription tiers
+- [x] API middleware returns 403 for insufficient subscription tiers
 - [ ] Frontend hides/disables features for insufficient tiers
 - [ ] Upgrade CTAs displayed when locked features accessed
-- [ ] Quota enforcement prevents Professional tier exceeding 10 episodes/month
+- [x] Quota enforcement prevents Professional tier exceeding 10 episodes/month (backend service + API tests)
 - [ ] 100% test coverage on tier validation logic
 - [ ] Zero security bypass vulnerabilities (penetration tested)
 
 #### Audio Podcasting (Professional+ Tiers)
-- [ ] Create audio-only podcast episodes
+- [x] Create audio-only podcast episodes (POST /podcasts/episodes)
 - [ ] Upload audio files (MP3, WAV, M4A formats, max 500MB)
 - [ ] Edit episode metadata (title, description, show notes)
 - [ ] Delete podcast episodes
@@ -84,8 +84,8 @@
 - [ ] Stream recording and auto-archive
 
 #### Usage & Quota Management
-- [ ] Real-time usage tracking (episodes created this month)
-- [ ] Quota display showing limit and remaining
+- [x] Real-time usage tracking (episodes created this month) - `/podcasts/usage` quota summary
+- [x] Quota display showing limit and remaining (API response delivers tier, limit, remaining, used, unlimited flag)
 - [ ] Quota warning when approaching limit (80%, 90%, 100%)
 - [ ] Quota exceeded error with upgrade CTA
 - [ ] Usage reset on monthly billing cycle

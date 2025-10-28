@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch, ANY
 
 from app.services.quota_service import QuotaExceededError
@@ -247,12 +248,12 @@ class TestPodcastUsageEndpoint:
     def test_usage_endpoint_returns_quota_summary_for_professional(
         self,
         client,
-        create_user,
-        create_organization,
     ) -> None:
-        org = create_organization(subscription_tier="professional")
-        professional_user = create_user(role=UserRole.growth, organization_id=org.id)
-        professional_user.subscription_tier = SubscriptionTier.PROFESSIONAL.value
+        organization_id = "org_professional"
+        professional_user = SimpleNamespace(
+            id="user-professional",
+            organization_id=organization_id,
+        )
 
         _override_user(professional_user)
         expected_period = datetime.utcnow().strftime("%Y-%m")
@@ -262,10 +263,13 @@ class TestPodcastUsageEndpoint:
                 "app.api.dependencies.auth.check_feature_access",
                 new_callable=AsyncMock,
             ) as mock_feature, patch(
-                "app.api.routes.podcasts.quota_service.get_quota_summary",
+                "app.api.routes.podcasts.subscription.get_organization_tier",
                 new_callable=AsyncMock,
-                create=True,
+            ) as mock_tier, patch(
+                "app.api.routes.podcasts.get_quota_summary",
+                new_callable=AsyncMock,
             ) as mock_summary:
+                mock_tier.return_value = SubscriptionTier.PROFESSIONAL
                 mock_feature.return_value = True
                 mock_summary.return_value = PodcastQuotaSummary(
                     tier=SubscriptionTier.PROFESSIONAL.value,
@@ -282,6 +286,7 @@ class TestPodcastUsageEndpoint:
             mock_summary.assert_awaited_once()
             assert mock_summary.await_args.kwargs == {
                 "organization_id": professional_user.organization_id,
+                "tier": SubscriptionTier.PROFESSIONAL,
                 "db": ANY,
             }
 
@@ -300,12 +305,12 @@ class TestPodcastUsageEndpoint:
     def test_usage_endpoint_reports_unlimited_for_premium(
         self,
         client,
-        create_user,
-        create_organization,
     ) -> None:
-        org = create_organization(subscription_tier="premium")
-        premium_user = create_user(role=UserRole.enterprise, organization_id=org.id)
-        premium_user.subscription_tier = SubscriptionTier.PREMIUM.value
+        organization_id = "org_premium"
+        premium_user = SimpleNamespace(
+            id="user-premium",
+            organization_id=organization_id,
+        )
 
         _override_user(premium_user)
         expected_period = datetime.utcnow().strftime("%Y-%m")
@@ -315,10 +320,13 @@ class TestPodcastUsageEndpoint:
                 "app.api.dependencies.auth.check_feature_access",
                 new_callable=AsyncMock,
             ) as mock_feature, patch(
-                "app.api.routes.podcasts.quota_service.get_quota_summary",
+                "app.api.routes.podcasts.subscription.get_organization_tier",
                 new_callable=AsyncMock,
-                create=True,
+            ) as mock_tier, patch(
+                "app.api.routes.podcasts.get_quota_summary",
+                new_callable=AsyncMock,
             ) as mock_summary:
+                mock_tier.return_value = SubscriptionTier.PREMIUM
                 mock_feature.return_value = True
                 mock_summary.return_value = PodcastQuotaSummary(
                     tier=SubscriptionTier.PREMIUM.value,
@@ -349,12 +357,11 @@ class TestPodcastUsageEndpoint:
     def test_usage_endpoint_blocks_starter_tier(
         self,
         client,
-        create_user,
-        create_organization,
     ) -> None:
-        org = create_organization(subscription_tier="starter")
-        starter_user = create_user(role=UserRole.solo, organization_id=org.id)
-        starter_user.subscription_tier = SubscriptionTier.STARTER.value
+        starter_user = SimpleNamespace(
+            id="user-starter",
+            organization_id="org_starter",
+        )
 
         _override_user(starter_user)
         try:
@@ -366,10 +373,13 @@ class TestPodcastUsageEndpoint:
             ) as mock_required, patch(
                 "app.api.dependencies.auth.get_feature_upgrade_message"
             ) as mock_message, patch(
-                "app.api.routes.podcasts.quota_service.get_quota_summary",
+                "app.core.subscription.get_organization_tier",
                 new_callable=AsyncMock,
-                create=True,
+            ) as mock_tier, patch(
+                "app.services.quota_service.get_quota_summary",
+                new_callable=AsyncMock,
             ) as mock_summary:
+                mock_tier.return_value = SubscriptionTier.STARTER
                 mock_feature.return_value = False
                 mock_required.return_value = SubscriptionTier.PROFESSIONAL
                 mock_message.return_value = (
@@ -382,6 +392,7 @@ class TestPodcastUsageEndpoint:
             assert response.headers["X-Required-Tier"] == "professional"
             assert "Upgrade" in response.json()["detail"]
             mock_summary.assert_not_awaited()
+            mock_tier.assert_not_called()
         finally:
             _clear_override()
 

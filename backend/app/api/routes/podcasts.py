@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import require_feature
+from app.core import subscription
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.podcast import (
@@ -20,6 +21,19 @@ from app.services.quota_service import QuotaExceededError, get_quota_summary
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/podcasts", tags=["podcasts"])
+
+
+
+
+async def get_quota_summary(*, organization_id: str, db: Session) -> PodcastQuotaSummary:
+    """Compute quota summary using shared service helpers."""
+
+    tier = await subscription.get_organization_tier(organization_id)
+    return await quota_service.get_quota_summary(
+        organization_id=organization_id,
+        tier=tier,
+        db=db,
+    )
 
 
 @router.post(
@@ -76,12 +90,14 @@ async def get_podcast_usage_summary(
 ) -> PodcastQuotaSummary:
     """Return quota summary for the current tenant's podcast usage."""
 
-    summary = await get_quota_summary(
-        organization_id=current_user.organization_id,
+    organization_id = current_user.organization_id
+
+    tier = await subscription.get_organization_tier(organization_id)
+    return await get_quota_summary(
+        organization_id=organization_id,
+        tier=tier,
         db=db,
     )
-
-    return summary
 
 
 async def _increment_episode_usage(organization_id: str, db: Session) -> None:

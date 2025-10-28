@@ -15,9 +15,11 @@
 **Sprint 4**: ✅ DEV-010 complete
 **Sprint 5**: 🟡 DEV-011 backend analytics green; frontend polish pending
 **Sprint 6**: 🟠 DEV-016 entitlement + gating in progress (planning + tests aligned)
-**Latest Commit**: 983a10 docs(bmad): update progress tracker with Session 2025-10-28 completion
+**Latest Commit**: 
+983a10 docs(bmad): update progress tracker with Session 2025-10-28 completion
 **Working Branch**: audit/bmad-alignment (local; doc/test alignment updates in progress)
-**Test Suites**: BLOCKED backend (ackend/venv/Scripts/python.exe -m pytest backend/tests/test_quota_service.py) -> OperationalError during drop_all (inancial_ratios missing); FRONTEND not rerun this session (last green 454/465)
+**Test Suites**: BLOCKED backend (ackend/venv/Scripts/python.exe -m pytest backend/tests/test_quota_service.py) -> OperationalError during drop_all (
+inancial_ratios missing); FRONTEND not rerun this session (last green 454/465)
 
 ---
 
