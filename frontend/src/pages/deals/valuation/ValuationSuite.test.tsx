@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 
 import { ValuationSuite } from './ValuationSuite'
@@ -16,19 +19,38 @@ vi.mock('../../../services/api/valuations', () => ({
   triggerExport: vi.fn(),
 }))
 
+const renderSuite = (initialEntry = '/deals/deal-123/valuations/val-001') => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+    },
+  })
+
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntry]}>
+        <Routes>
+          <Route path="/deals/:dealId/valuations/:valuationId" element={<ValuationSuite />} />
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>,
+  )
+}
+
 describe('ValuationSuite RED tests', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(valuationApi.listValuations).mockResolvedValue([])
   })
 
   it('renders valuation layout shell', () => {
-    render(<ValuationSuite dealId="deal-123" />)
-    expect(screen.getByText(/valuations/i)).toBeInTheDocument()
+    renderSuite()
+    expect(screen.getByText(/valuation suite/i)).toBeInTheDocument()
   })
 
   it.skip('shows loading indicator while valuations fetch', async () => {
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([])
-    render(<ValuationSuite dealId="deal-789" />)
+    renderSuite('/deals/deal-789/valuations/val-001')
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
@@ -37,7 +59,7 @@ describe('ValuationSuite RED tests', () => {
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([])
     vi.mocked(valuationApi.createValuation).mockResolvedValueOnce({ id: 'val-1' })
 
-    render(<ValuationSuite dealId="deal-new" />)
+    renderSuite('/deals/deal-new/valuations/val-001')
 
     await user.type(screen.getByLabelText(/discount rate/i), '12')
     await user.type(screen.getByLabelText(/terminal cash flow/i), '1200000')
@@ -55,7 +77,7 @@ describe('ValuationSuite RED tests', () => {
     ])
     vi.mocked(valuationApi.addComparable).mockResolvedValueOnce({ id: 'comp-1' })
 
-    render(<ValuationSuite dealId="deal-compare" />)
+    renderSuite('/deals/deal-compare/valuations/val-001')
 
     await waitFor(() => expect(screen.getByText(/base case/i)).toBeInTheDocument())
     await user.click(screen.getByRole('tab', { name: /comparables/i }))
@@ -81,7 +103,7 @@ describe('ValuationSuite RED tests', () => {
       equityValueRange: { min: 6200000, max: 10000000, median: 8100000 },
     })
 
-    render(<ValuationSuite dealId="deal-analytics" />)
+    renderSuite('/deals/deal-analytics/valuations/val-analytics')
 
     await waitFor(() => expect(screen.getByText(/analytics/i)).toBeInTheDocument())
     await waitFor(() => expect(valuationApi.getScenarioSummary).toHaveBeenCalled())
@@ -95,7 +117,7 @@ describe('ValuationSuite RED tests', () => {
     })
     vi.mocked(valuationApi.listScenarios).mockResolvedValueOnce([])
 
-    render(<ValuationSuite dealId="deal-scenarios" />)
+    renderSuite('/deals/deal-scenarios/valuations/val-scenario')
 
     await waitFor(() => expect(screen.getByText(/base case/i)).toBeInTheDocument())
     await user.click(screen.getByRole('tab', { name: /scenarios/i }))
@@ -111,7 +133,7 @@ describe('ValuationSuite RED tests', () => {
     })
     vi.mocked(valuationApi.triggerExport).mockResolvedValueOnce({ taskId: 'task-1', status: 'queued' })
 
-    render(<ValuationSuite dealId="deal-export" />)
+    renderSuite('/deals/deal-export/valuations/val-export')
 
     await waitFor(() => expect(screen.getByText(/base case/i)).toBeInTheDocument())
     await user.click(screen.getByRole('button', { name: /export pdf/i }))
@@ -124,10 +146,12 @@ describe('ValuationSuite RED tests', () => {
       response: { status: 403 },
     })
 
-    render(<ValuationSuite dealId="deal-403" />)
+    renderSuite('/deals/deal-403/valuations/val-403')
 
     await waitFor(() => expect(screen.getByText(/upgrade required/i)).toBeInTheDocument())
   })
 })
+
+
 
 

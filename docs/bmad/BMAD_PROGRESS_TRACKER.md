@@ -1,39 +1,24 @@
-### Session 2025-10-28 (Phase 7: Final Production Readiness - COMPLETE)
-- ✅ COMPLETED: Phase 7.1 - All verification scripts executed successfully
-- ✅ COMPLETED: Backend tests - 360 passing, 83% coverage (exceeds 80% target)
-- ✅ COMPLETED: Frontend tests - 487 passing, 11 skipped (ValuationSuite RED phase)
-- ✅ COMPLETED: Database migration verification - All 11 required tables exist
-- ✅ COMPLETED: Production health check - All services healthy
-- ✅ COMPLETED: Phase 7.2 - DEPLOYMENT_HEALTH.md created with comprehensive status
-- ✅ COMPLETED: Phase 7.3 - ErrorBoundary component created and integrated into App.tsx
-- ✅ COMPLETED: Phase 7.4 - BMAD Progress Tracker updated
-- 🎯 PRODUCTION STATUS: 100% READY FOR CLIENT ACQUISITION
-
-### Session 2025-10-28 (Continued - Podcast Usage Endpoint Implementation)
-- ✅ COMPLETED: /podcasts/usage quota summary endpoint (27/27 tests passing)
-- ✅ COMPLETED: Fixed all test mock paths and tier expectations
-- ✅ COMPLETED: TDD cycle RED→GREEN→REFACTOR for usage endpoint
-- 🔄 IN PROGRESS: Merging audit/bmad-alignment to main and deploying to Render
-- NEXT: Complete DEV-011 Valuation Suite frontend OR continue DEV-016 Phases 3-6
+### Session 2025-10-28 (Tier & Quota Stabilisation)
+- ✅ Hardened SQLite teardown via `_safe_drop_schema`; quota fixtures no longer raise OperationalError
+- ✅ backend pytest `backend/venv/Scripts/python -m pytest backend/tests/test_quota_service.py` → 18 passed (warnings only)
+- ✅ backend pytest `backend/venv/Scripts/python -m pytest backend/tests/test_podcast_api.py` → 9 passed (usage summary + tier gating)
+- 🔄 NEXT: implement entitlement middleware + frontend gating, then perform Render env sync & smoke checks
 
 # BMAD Progress Tracker - M&A Intelligence Platform
 
-**Last Updated**: 2025-10-28 15:10 UTC
-**Methodology**: BMAD v6-alpha (core + bmb + bmm + cis) + TDD (tests-first)
-**Project Phase**: Sprint 6 – DEV-016 Podcast Studio Subscription Add-On (API implementation)
-**Deployment Status**: ✅ Tests Passing (27/27 podcast + quota) – Ready for merge and deploy
+**Last Updated**: 2025-10-28 13:45 UTC (Codex quota suites GREEN)
+**Methodology**: BMAD v6-alpha (core + bmb + bmm + cis) + Strict TDD
+**Project Phase**: Sprint 6 - DEV-016 Podcast Studio Subscription Add-On (API enforcement cycle)
+**Deployment Status**: 🟡 Backend quota suites green; Render redeploy & frontend gating still pending
 **Sprint 1**: ✅ Complete (historical)
 **Sprint 2**: ✅ DEV-007 and DEV-008 complete
 **Sprint 3**: ✅ MARK-001 and DEV-009 complete
 **Sprint 4**: ✅ DEV-010 complete
 **Sprint 5**: 🟡 DEV-011 backend analytics green; frontend polish pending
-**Sprint 6**: 🟠 DEV-016 entitlement + gating in progress (planning + tests aligned)
-**Latest Commit**: `ea6b49b` fix(tailwind): configure Tailwind CSS properly + add comprehensive tests
-**Working Branch**: audit/bmad-alignment (local; doc/test alignment updates in progress)
-**Test Suites**: BLOCKED backend (ackend/venv/Scripts/python.exe -m pytest backend/tests/test_quota_service.py) -> OperationalError during drop_all (
-inancial_ratios missing); FRONTEND not rerun this session (last green 454/465)
-**Test Suites**: Backend 100% operational (27/27 tests passing); Frontend 8 tests pending (ValuationSuite - post-launch fix scheduled)
-
+**Sprint 6**: 🟠 DEV-016 entitlement + quota enforcement progressing (backend usage endpoint GREEN)
+**Latest Commit**: f983a10 docs(bmad): update progress tracker with Session 2025-10-28 completion
+**Working Branch**: audit/bmad-alignment (local doc/test alignment updates)
+**Test Suites**: ✅ backend `backend/venv/Scripts/python -m pytest backend/tests/test_quota_service.py` → 18 passed; ✅ backend `backend/venv/Scripts/python -m pytest backend/tests/test_podcast_api.py` → 9 passed; ⚪ frontend not rerun (last green 454/465)
 ## Session 2025-10-28: Critical Tailwind Fix + Test Suite Completion
 
 ### Critical Issue Resolved: Tailwind CSS Not Working
