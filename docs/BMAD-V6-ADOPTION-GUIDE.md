@@ -14,7 +14,7 @@
 
 **What Changed**:
 - Compiled agents + manifests refreshed via Installer/ManifestGenerator scripts
-- Codex + Claude Code integrations rebuilt (mad/docs/*-instructions.md)
+- Codex + Claude Code integrations rebuilt (bmad/docs/*-instructions.md)
 - docs/bmad/bmm-workflow-status.md activated for Level 4 greenfield tracking
 
 **Next Actions**:
@@ -390,5 +390,6 @@ Give 1 point for each "Yes":
 **Last Updated**: October 28, 2025
 **Review Schedule**: Sprint 5 Planning (Q4 2025)
 **Maintained By**: Development Team
+
 
 
