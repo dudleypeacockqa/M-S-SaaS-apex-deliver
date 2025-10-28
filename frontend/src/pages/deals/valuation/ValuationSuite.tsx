@@ -11,13 +11,15 @@ import {
   getPrecedentSummary,
   runMonteCarlo,
   triggerExport,
-  Valuation,
-  ValuationScenario,
-  ComparableCompany,
-  PrecedentTransaction,
+} from '../../../services/api/valuations'
+
+// Import types separately
+import type {
   MonteCarloRequest,
   ValuationExportResponse,
+  ComparableSummaryMetrics,
 } from '../../../services/api/valuations'
+
 import { formatCurrency } from '../../../services/api/deals'
 
 const skeletonClass = 'animate-pulse rounded bg-gray-200 h-4'
@@ -263,37 +265,46 @@ const SummaryMetricCard = ({
   metrics,
 }: {
   title: string
-  metrics: ComparableSummaryMetrics
-}) => (
-  <div className="rounded-lg border border-gray-200 p-4">
-    <h4 className="text-sm font-semibold text-gray-900">{title}</h4>
-    <dl className="mt-3 space-y-2 text-sm">
-      <div className="flex items-center justify-between">
-        <dt className="text-gray-500">Median</dt>
-        <dd className="font-medium text-gray-900">
-          {metrics.implied_enterprise_value_median
-            ? formatCurrency(metrics.implied_enterprise_value_median, 'GBP')
-            : 'N/A'}
-        </dd>
-      </div>
-      <div className="flex items-center justify-between">
-        <dt className="text-gray-500">Range</dt>
-        <dd className="font-medium text-gray-900">
-          {metrics.implied_enterprise_value_min && metrics.implied_enterprise_value_max
-            ? `${formatCurrency(metrics.implied_enterprise_value_min, 'GBP')} - ${formatCurrency(
-                metrics.implied_enterprise_value_max,
-                'GBP',
-              )}`
-            : 'N/A'}
-        </dd>
-      </div>
-      <div className="flex items-center justify-between">
-        <dt className="text-gray-500">Outliers Removed</dt>
-        <dd className="font-medium text-gray-900">{metrics.excluded_outliers}</dd>
-      </div>
-    </dl>
-  </div>
-)
+  metrics: ComparableSummaryMetrics | { count: number; min: number | null; max: number | null; median: number | null; weighted_average: number | null }
+}) => {
+  // Type guard to check if this is ComparableSummaryMetrics
+  const isComparable = 'implied_enterprise_value_median' in metrics;
+
+  return (
+    <div className="rounded-lg border border-gray-200 p-4">
+      <h4 className="text-sm font-semibold text-gray-900">{title}</h4>
+      <dl className="mt-3 space-y-2 text-sm">
+        <div className="flex items-center justify-between">
+          <dt className="text-gray-500">Median</dt>
+          <dd className="font-medium text-gray-900">
+            {isComparable && (metrics as ComparableSummaryMetrics).implied_enterprise_value_median
+              ? formatCurrency((metrics as ComparableSummaryMetrics).implied_enterprise_value_median!, 'GBP')
+              : 'N/A'}
+          </dd>
+        </div>
+        {isComparable && (
+          <>
+            <div className="flex items-center justify-between">
+              <dt className="text-gray-500">Range</dt>
+              <dd className="font-medium text-gray-900">
+                {(metrics as ComparableSummaryMetrics).implied_enterprise_value_min && (metrics as ComparableSummaryMetrics).implied_enterprise_value_max
+                  ? `${formatCurrency((metrics as ComparableSummaryMetrics).implied_enterprise_value_min!, 'GBP')} - ${formatCurrency(
+                      (metrics as ComparableSummaryMetrics).implied_enterprise_value_max!,
+                      'GBP',
+                    )}`
+                  : 'N/A'}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between">
+              <dt className="text-gray-500">Outliers Removed</dt>
+              <dd className="font-medium text-gray-900">{(metrics as ComparableSummaryMetrics).excluded_outliers}</dd>
+            </div>
+          </>
+        )}
+      </dl>
+    </div>
+  )
+}
 
 const PrecedentsView = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
   const { data: transactions, isLoading } = useQuery({
