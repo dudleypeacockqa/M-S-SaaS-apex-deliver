@@ -30,6 +30,10 @@ async def create_podcast_episode(
 ) -> PodcastEpisodeResponse:
     """Create a new podcast episode guarded by tier access and quotas."""
 
+    if payload.video_file_url:
+        video_gate = require_feature("podcast_video")
+        await video_gate(current_user=current_user)
+
     try:
         await quota_service.check_episode_quota(current_user.organization_id)
     except QuotaExceededError as exc:

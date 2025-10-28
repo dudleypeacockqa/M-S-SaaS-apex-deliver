@@ -2,8 +2,22 @@
 
 from __future__ import annotations
 
-from celery import shared_task
+from typing import Any, Callable, TypeVar
+
 from sqlalchemy.orm import Session
+
+try:
+    from celery import shared_task
+except ModuleNotFoundError:  # pragma: no cover - allow tests without Celery
+    F = TypeVar("F", bound=Callable[..., Any])
+
+    def shared_task(func: F | None = None, **_kwargs: Any) -> F:
+        if func is None:
+            def decorator(inner: F) -> F:
+                return inner
+
+            return decorator  # type: ignore[return-value]
+        return func
 
 from app.db.session import SessionLocal
 from app.services import task_template_service

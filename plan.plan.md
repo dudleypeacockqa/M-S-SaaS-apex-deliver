@@ -786,3 +786,14 @@ export const PodcastStudio = () => {
 
 **Status**: 🟢 Phase 1 in progress - Documentation 80% complete
 **Next**: Create DEV-016 story document and begin Clerk integration
+
+### Phase 2.2: Podcast API Entitlement Enforcement (In Progress)
+- [ ] RED: Expand `tests/test_podcast_api.py` with quota (429) and video tier cases
+- [ ] GREEN: Implement `quota_service.check_episode_quota` / `increment_episode_count` and ensure FastAPI router responds with 403/201
+- [ ] GREEN: Verify response headers (`X-Required-Tier`, `X-Feature-Locked`, `X-Upgrade-URL`)
+- [ ] REFACTOR: Standardize feature identifiers and log entries
+
+### Phase 2.3: Frontend Gating Prep
+- [ ] Document React gating plan (feature prompts, upgrade CTAs)
+- [ ] RED: Introduce Jest/Vitest specs for new gating components
+- [ ] GREEN/REFACTOR to align with entitlement service

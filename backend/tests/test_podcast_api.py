@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, patch, ANY
+
+from app.services.quota_service import QuotaExceededError
 
 from fastapi import status
 
@@ -97,7 +99,105 @@ class TestPodcastEpisodeCreation:
             body = response.json()
             assert body["title"] == EPISODE_PAYLOAD["title"]
             mock_feature.assert_awaited_once()
-            mock_quota.assert_awaited_once()
-            mock_increment.assert_awaited_once()
+            mock_quota.assert_awaited_once_with(professional_user.organization_id)
+            mock_increment.assert_awaited_once_with(professional_user.organization_id, ANY)
         finally:
             _clear_override()
+    def test_professional_user_quota_exceeded_returns_429(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(role=UserRole.growth, organization_id=org.id)
+        professional_user.subscription_tier = SubscriptionTier.PROFESSIONAL.value
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.services.quota_service.check_episode_quota",
+                new_callable=AsyncMock,
+            ) as mock_quota:
+                mock_feature.return_value = True
+                mock_quota.side_effect = QuotaExceededError("Monthly quota exceeded")
+
+                response = client.post("/podcasts/episodes", json=EPISODE_PAYLOAD)
+
+            assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+            assert "quota" in response.json()["detail"].lower()
+        finally:
+            _clear_override()
+
+    def test_professional_user_blocked_from_video_episode(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(role=UserRole.growth, organization_id=org.id)
+        professional_user.subscription_tier = SubscriptionTier.PROFESSIONAL.value
+
+        payload = {**EPISODE_PAYLOAD, "video_file_url": "https://cdn.example.com/video.mp4"}
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.services.quota_service.check_episode_quota",
+                new_callable=AsyncMock,
+            ) as mock_quota:
+                mock_feature.side_effect = [True, False]
+                mock_quota.return_value = True
+
+                response = client.post("/podcasts/episodes", json=payload)
+
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert "upgrade" in response.json()["detail"].lower()
+        finally:
+            _clear_override()
+
+    def test_premium_user_can_create_video_episode(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="premium")
+        premium_user = create_user(role=UserRole.enterprise, organization_id=org.id)
+        premium_user.subscription_tier = SubscriptionTier.PREMIUM.value
+
+        payload = {**EPISODE_PAYLOAD, "video_file_url": "https://cdn.example.com/video.mp4"}
+
+        _override_user(premium_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.services.quota_service.check_episode_quota",
+                new_callable=AsyncMock,
+            ) as mock_quota, patch(
+                "app.services.quota_service.increment_episode_count",
+                new_callable=AsyncMock,
+            ) as mock_increment:
+                mock_feature.side_effect = [True, True]
+                mock_quota.return_value = True
+                mock_increment.return_value = None
+
+                response = client.post("/podcasts/episodes", json=payload)
+
+            assert response.status_code == status.HTTP_201_CREATED
+            body = response.json()
+            assert body["video_file_url"] == payload["video_file_url"]
+            assert mock_feature.await_count == 2
+        finally:
+            _clear_override()
+
+
