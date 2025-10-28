@@ -4,16 +4,21 @@ Testing the /financial API endpoints
 """
 
 import pytest
-from httpx import AsyncClient, ASGITransport
+from unittest.mock import Mock, patch
+from datetime import datetime, timedelta
+from decimal import Decimal
 
 from app.main import app
+from app.api.dependencies.auth import get_current_user
+from app.models.financial_connection import FinancialConnection
+from app.models.financial_narrative import FinancialNarrative
 
 
-@pytest.mark.asyncio
-async def test_calculate_financial_ratios_endpoint(test_deal, auth_headers):
+def test_calculate_financial_ratios_endpoint(client, test_deal, solo_user):
     """Test POST /deals/{id}/financial/calculate-ratios endpoint"""
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
         financial_data = {
             "current_assets": 100000,
             "current_liabilities": 50000,
@@ -33,10 +38,9 @@ async def test_calculate_financial_ratios_endpoint(test_deal, auth_headers):
             "operating_cash_flow": 60000,
         }
 
-        response = await client.post(
+        response = client.post(
             f"/api/deals/{test_deal.id}/financial/calculate-ratios",
             json=financial_data,
-            headers=auth_headers,
         )
 
         assert response.status_code == 200
@@ -56,51 +60,50 @@ async def test_calculate_financial_ratios_endpoint(test_deal, auth_headers):
         assert data["net_profit_margin"] == 10.0  # 50k / 500k * 100
         assert data["return_on_equity"] == 20.0  # 50k / 250k * 100
         assert data["debt_to_equity"] == 0.8  # 200k / 250k
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
-@pytest.mark.asyncio
-async def test_calculate_ratios_requires_authentication(test_deal):
+def test_calculate_ratios_requires_authentication(client, test_deal):
     """Test that calculating ratios requires authentication"""
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.post(
-            f"/api/deals/{test_deal.id}/financial/calculate-ratios",
-            json={"revenue": 100000},
-        )
+    response = client.post(
+        f"/api/deals/{test_deal.id}/financial/calculate-ratios",
+        json={"revenue": 100000},
+    )
 
-        assert response.status_code == 401  # Unauthorized
+    assert response.status_code == 401  # Unauthorized
 
 
-@pytest.mark.asyncio
-async def test_calculate_ratios_deal_not_found(auth_headers):
+def test_calculate_ratios_deal_not_found(client, solo_user):
     """Test 404 when deal doesn't exist"""
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.post(
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.post(
             "/api/deals/nonexistent-deal-id/financial/calculate-ratios",
             json={"revenue": 100000},
-            headers=auth_headers,
         )
 
         assert response.status_code == 404
         assert "not found" in response.json()["detail"].lower()
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
-@pytest.mark.asyncio
-async def test_calculate_ratios_with_partial_data(test_deal, auth_headers):
+def test_calculate_ratios_with_partial_data(client, test_deal, solo_user):
     """Test that calculation works with partial data"""
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
         financial_data = {
             "revenue": 500000,
             "cogs": 300000,
             "net_income": 50000,
         }
 
-        response = await client.post(
+        response = client.post(
             f"/api/deals/{test_deal.id}/financial/calculate-ratios",
             json=financial_data,
-            headers=auth_headers,
         )
 
         assert response.status_code == 200
@@ -115,16 +118,17 @@ async def test_calculate_ratios_with_partial_data(test_deal, auth_headers):
         # Ratios that need missing data should be None
         assert data["current_ratio"] is None  # Missing current assets/liabilities
         assert data["return_on_assets"] is None  # Missing total assets
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
-@pytest.mark.asyncio
-async def test_get_financial_connections_endpoint(test_deal, auth_headers):
+def test_get_financial_connections_endpoint(client, test_deal, solo_user):
     """Test GET /deals/{id}/financial/connections endpoint"""
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.get(
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.get(
             f"/api/deals/{test_deal.id}/financial/connections",
-            headers=auth_headers,
         )
 
         assert response.status_code == 200
@@ -133,34 +137,38 @@ async def test_get_financial_connections_endpoint(test_deal, auth_headers):
         # Should return empty list (no connections yet)
         assert isinstance(data, list)
         assert len(data) == 0
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
-@pytest.mark.asyncio
-async def test_get_financial_ratios_not_found(test_deal, auth_headers):
+def test_get_financial_ratios_not_found(client, test_deal, solo_user):
     """Test GET /deals/{id}/financial/ratios returns 404 when no ratios exist"""
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.get(
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.get(
             f"/api/deals/{test_deal.id}/financial/ratios",
-            headers=auth_headers,
         )
 
         assert response.status_code == 404
         assert "calculated" in response.json()["detail"].lower()
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
-@pytest.mark.asyncio
-async def test_get_financial_narrative_not_found(test_deal, auth_headers):
+def test_get_financial_narrative_not_found(client, test_deal, solo_user):
     """Test GET /deals/{id}/financial/narrative returns 404 when no narrative exists"""
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.get(
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.get(
             f"/api/deals/{test_deal.id}/financial/narrative",
-            headers=auth_headers,
         )
 
         assert response.status_code == 404
         assert "generated" in response.json()["detail"].lower()
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
 # ============================================================================
@@ -168,22 +176,19 @@ async def test_get_financial_narrative_not_found(test_deal, auth_headers):
 # ============================================================================
 
 # Test POST /deals/{deal_id}/financial/connect/xero
-@pytest.mark.asyncio
-async def test_connect_xero_initiates_oauth_flow(test_deal, auth_headers):
+def test_connect_xero_initiates_oauth_flow(client, test_deal, solo_user):
     """Test that connecting Xero initiates OAuth flow and returns authorization URL."""
-    from unittest.mock import patch
+    app.dependency_overrides[get_current_user] = lambda: solo_user
 
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    try:
         with patch('app.api.routes.financial.initiate_xero_oauth') as mock_initiate:
             mock_initiate.return_value = {
                 "authorization_url": "https://login.xero.com/identity/connect/authorize?...",
                 "state": "random_state_token"
             }
 
-            response = await client.post(
+            response = client.post(
                 f"/api/deals/{test_deal.id}/financial/connect/xero",
-                headers=auth_headers
             )
 
             assert response.status_code == 200
@@ -191,33 +196,33 @@ async def test_connect_xero_initiates_oauth_flow(test_deal, auth_headers):
             assert "authorization_url" in data
             assert "state" in data
             assert data["authorization_url"].startswith("https://login.xero.com")
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
-@pytest.mark.asyncio
-async def test_connect_xero_with_invalid_deal(auth_headers):
+def test_connect_xero_with_invalid_deal(client, solo_user):
     """Test connecting Xero with non-existent deal returns 404."""
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.post(
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.post(
             "/api/deals/nonexistent-deal-id/financial/connect/xero",
-            headers=auth_headers
         )
 
         assert response.status_code == 404
         assert "not found" in response.json()["detail"].lower()
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
 # Test GET /deals/{deal_id}/financial/connect/xero/callback
-@pytest.mark.asyncio
-async def test_xero_oauth_callback_success(test_deal, auth_headers):
+def test_xero_oauth_callback_success(client, test_deal, solo_user):
     """Test successful Xero OAuth callback creates connection."""
-    from unittest.mock import patch, Mock
+    app.dependency_overrides[get_current_user] = lambda: solo_user
 
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    try:
         with patch('app.api.routes.financial.handle_xero_callback') as mock_callback:
             # Mock connection object with required attributes
-            from datetime import datetime
             mock_connection = Mock()
             mock_connection.id = "conn-api-1"
             mock_connection.deal_id = test_deal.id
@@ -230,112 +235,108 @@ async def test_xero_oauth_callback_success(test_deal, auth_headers):
 
             mock_callback.return_value = mock_connection
 
-            response = await client.get(
+            response = client.get(
                 f"/api/deals/{test_deal.id}/financial/connect/xero/callback?code=auth_code_123&state=state_token",
-                headers=auth_headers
             )
 
             assert response.status_code == 200
             data = response.json()
             assert data["platform"] == "xero"
             assert data["connection_status"] == "active"
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
-@pytest.mark.asyncio
-async def test_xero_oauth_callback_missing_code(test_deal, auth_headers):
+def test_xero_oauth_callback_missing_code(client, test_deal, solo_user):
     """Test Xero callback without code parameter returns 422 (validation error)."""
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.get(
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.get(
             f"/api/deals/{test_deal.id}/financial/connect/xero/callback",
-            headers=auth_headers
         )
 
         # FastAPI returns 422 for missing required query parameters (validation error)
         assert response.status_code == 422
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
 # Test POST /deals/{deal_id}/financial/sync
-@pytest.mark.asyncio
-async def test_sync_financial_data_success(test_deal, db_session, auth_headers):
+def test_sync_financial_data_success(client, test_deal, db_session, solo_user):
     """Test manual financial data sync from Xero."""
-    from unittest.mock import patch, Mock
-    from app.models.financial_connection import FinancialConnection
-    from datetime import datetime, timedelta
+    app.dependency_overrides[get_current_user] = lambda: solo_user
 
-    # Create connection
-    connection = FinancialConnection(
-        id="conn-api-2",
-        deal_id=test_deal.id,
-        organization_id=test_deal.organization_id,
-        platform="xero",
-        access_token="token",
-        connection_status="active",
-        token_expires_at=datetime.now() + timedelta(hours=1)
-    )
-    db_session.add(connection)
-    db_session.commit()
+    try:
+        # Create connection
+        connection = FinancialConnection(
+            id="conn-api-2",
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            platform="xero",
+            access_token="token",
+            connection_status="active",
+            token_expires_at=datetime.now() + timedelta(hours=1)
+        )
+        db_session.add(connection)
+        db_session.commit()
 
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
         with patch('app.api.routes.financial.fetch_xero_statements') as mock_fetch:
             mock_statement = Mock()
             mock_statement.id = "stmt-api-1"
             mock_fetch.return_value = [mock_statement]
 
-            response = await client.post(
+            response = client.post(
                 f"/api/deals/{test_deal.id}/financial/sync",
-                headers=auth_headers
             )
 
             assert response.status_code == 200
             data = response.json()
             assert data["success"] is True
             assert data["statements_synced"] == 1
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
-@pytest.mark.asyncio
-async def test_sync_financial_data_no_connection(test_deal, auth_headers):
+def test_sync_financial_data_no_connection(client, test_deal, solo_user):
     """Test syncing without connection returns 404."""
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.post(
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.post(
             f"/api/deals/{test_deal.id}/financial/sync",
-            headers=auth_headers
         )
 
         assert response.status_code == 404
         assert "connection" in response.json()["detail"].lower()
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
 # Test GET /deals/{deal_id}/financial/readiness-score
-@pytest.mark.asyncio
-async def test_get_readiness_score_success(test_deal, db_session, auth_headers):
+def test_get_readiness_score_success(client, test_deal, db_session, solo_user):
     """Test retrieving Deal Readiness Score."""
-    from app.models.financial_narrative import FinancialNarrative
-    from decimal import Decimal
+    app.dependency_overrides[get_current_user] = lambda: solo_user
 
-    narrative = FinancialNarrative(
-        id="narr-api-1",
-        deal_id=test_deal.id,
-        organization_id=test_deal.organization_id,
-        summary="Strong financial health",
-        readiness_score=Decimal("82.5"),
-        data_quality_score=Decimal("22.0"),
-        financial_health_score=Decimal("35.0"),
-        growth_trajectory_score=Decimal("18.5"),
-        risk_assessment_score=Decimal("7.0"),
-        ai_model="gpt-4",
-        version=1
-    )
-    db_session.add(narrative)
-    db_session.commit()
+    try:
+        narrative = FinancialNarrative(
+            id="narr-api-1",
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            summary="Strong financial health",
+            readiness_score=Decimal("82.5"),
+            data_quality_score=Decimal("22.0"),
+            financial_health_score=Decimal("35.0"),
+            growth_trajectory_score=Decimal("18.5"),
+            risk_assessment_score=Decimal("7.0"),
+            ai_model="gpt-4",
+            version=1
+        )
+        db_session.add(narrative)
+        db_session.commit()
 
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.get(
+        response = client.get(
             f"/api/deals/{test_deal.id}/financial/readiness-score",
-            headers=auth_headers
         )
 
         assert response.status_code == 200
@@ -345,17 +346,20 @@ async def test_get_readiness_score_success(test_deal, db_session, auth_headers):
         assert data["financial_health_score"] == 35.0
         assert data["growth_trajectory_score"] == 18.5
         assert data["risk_assessment_score"] == 7.0
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
-@pytest.mark.asyncio
-async def test_get_readiness_score_no_narrative(test_deal, auth_headers):
+def test_get_readiness_score_no_narrative(client, test_deal, solo_user):
     """Test getting readiness score when no narrative exists returns 404."""
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.get(
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.get(
             f"/api/deals/{test_deal.id}/financial/readiness-score",
-            headers=auth_headers
         )
 
         assert response.status_code == 404
         assert "narrative" in response.json()["detail"].lower()
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
