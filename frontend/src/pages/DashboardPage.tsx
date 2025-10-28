@@ -14,16 +14,22 @@ import { listDeals, type DealStage, formatCurrency, getStageDisplayName } from '
 export const DashboardPage: React.FC = () => {
   const { user } = useUser()
 
+  // Fetch deals data once for all widgets
+  const { data: dealsData, isLoading: dealsLoading } = useQuery({
+    queryKey: ['deals', 'all'],
+    queryFn: () => listDeals({ include_archived: false }),
+  })
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Welcome Section */}
-        <WelcomeSection userName={user?.firstName || 'User'} />
+        <WelcomeSection userName={user?.firstName || 'User'} dealsData={dealsData} dealsLoading={dealsLoading} />
 
         {/* Main Dashboard Grid */}
         <GridSystem cols={3} gap="lg" responsive>
           <div className="col-span-3 lg:col-span-2">
-            <PipelineSummaryWidget />
+            <PipelineSummaryWidget dealsData={dealsData} dealsLoading={dealsLoading} />
           </div>
           <div className="col-span-3 lg:col-span-1">
             <QuickActionsWidget />
@@ -31,11 +37,11 @@ export const DashboardPage: React.FC = () => {
         </GridSystem>
 
         <GridSystem cols={2} gap="lg" responsive>
-          <ActivityFeedWidget />
+          <ActivityFeedWidget dealsData={dealsData} dealsLoading={dealsLoading} />
           <UpcomingTasksWidget />
         </GridSystem>
 
-        <FinancialInsightsWidget />
+        <FinancialInsightsWidget dealsData={dealsData} dealsLoading={dealsLoading} />
       </div>
     </div>
   )
@@ -44,10 +50,21 @@ export const DashboardPage: React.FC = () => {
 /**
  * Welcome Section Widget
  */
-const WelcomeSection: React.FC<{ userName: string }> = ({ userName }) => {
+interface WelcomeSectionProps {
+  userName: string
+  dealsData?: { items: any[]; total: number }
+  dealsLoading: boolean
+}
+
+const WelcomeSection: React.FC<WelcomeSectionProps> = ({ userName, dealsData, dealsLoading }) => {
   const now = new Date()
   const hour = now.getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
+
+  // Calculate real metrics from deals data
+  const activeDeals = dealsData?.items.length || 0
+  const totalValue = dealsData?.items.reduce((sum, deal) => sum + (deal.deal_size || 0), 0) || 0
+  const avgDealSize = activeDeals > 0 ? totalValue / activeDeals : 0
 
   return (
     <div className="bg-gradient-to-r from-blue-600 to-teal-600 rounded-xl p-8 text-white shadow-lg">
@@ -60,11 +77,13 @@ const WelcomeSection: React.FC<{ userName: string }> = ({ userName }) => {
             {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
           </p>
         </div>
-        <div className="hidden md:flex items-center gap-6">
-          <QuickStat label="Active Deals" value="12" />
-          <QuickStat label="This Month" value="£2.4M" />
-          <QuickStat label="Avg. Deal Size" value="£200K" />
-        </div>
+        {!dealsLoading && (
+          <div className="hidden md:flex items-center gap-6">
+            <QuickStat label="Active Deals" value={activeDeals.toString()} />
+            <QuickStat label="Total Pipeline" value={formatCurrency(totalValue, 'GBP')} />
+            <QuickStat label="Avg. Deal Size" value={formatCurrency(avgDealSize, 'GBP')} />
+          </div>
+        )}
       </div>
     </div>
   )
@@ -80,12 +99,14 @@ const QuickStat: React.FC<{ label: string; value: string }> = ({ label, value })
 /**
  * Pipeline Summary Widget
  */
-const PipelineSummaryWidget: React.FC = () => {
-  // Fetch real deals from API
-  const { data: dealsData, isLoading, error } = useQuery({
-    queryKey: ['deals', 'pipeline'],
-    queryFn: () => listDeals({ include_archived: false }),
-  })
+interface PipelineWidgetProps {
+  dealsData?: { items: any[]; total: number }
+  dealsLoading: boolean
+}
+
+const PipelineSummaryWidget: React.FC<PipelineWidgetProps> = ({ dealsData, dealsLoading }) => {
+  const isLoading = dealsLoading
+  const error = null  // Error handled at parent level
 
   // Aggregate deals by stage
   const pipelineData = React.useMemo(() => {
@@ -136,7 +157,7 @@ const PipelineSummaryWidget: React.FC = () => {
         {error && (
           <div className="text-center py-8 text-red-600">
             <p>Failed to load pipeline data</p>
-            <p className="text-sm text-gray-600 mt-2">{error instanceof Error ? error.message : 'Unknown error'}</p>
+            <p className="text-sm text-gray-600 mt-2">Unknown error</p>
           </div>
         )}
 
@@ -206,15 +227,41 @@ const QuickActionsWidget: React.FC = () => {
 /**
  * Activity Feed Widget
  */
-const ActivityFeedWidget: React.FC = () => {
-  // Mock data - will be replaced with real API call
-  const activities = [
-    { id: 1, type: 'deal_created', message: 'New deal "Acme Corp Acquisition" created', time: '2 hours ago', icon: '🎯' },
-    { id: 2, type: 'document_uploaded', message: 'Financial statements uploaded to DataRoom', time: '5 hours ago', icon: '📄' },
-    { id: 3, type: 'valuation_completed', message: 'DCF valuation completed for Target Co.', time: '1 day ago', icon: '💰' },
-    { id: 4, type: 'task_completed', message: 'Due diligence checklist completed', time: '2 days ago', icon: '✅' },
-    { id: 5, type: 'deal_updated', message: 'Deal stage updated to "Negotiation"', time: '3 days ago', icon: '🔄' },
-  ]
+interface ActivityFeedProps {
+  dealsData?: { items: any[]; total: number }
+  dealsLoading: boolean
+}
+
+const ActivityFeedWidget: React.FC<ActivityFeedProps> = ({ dealsData, dealsLoading }) => {
+  // Generate activities from deals data
+  const activities = React.useMemo(() => {
+    if (!dealsData?.items.length) return []
+
+    // Sort deals by updated_at (most recent first)
+    const sortedDeals = [...dealsData.items]
+      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      .slice(0, 5) // Get 5 most recent
+
+    return sortedDeals.map((deal) => {
+      const updatedAt = new Date(deal.updated_at)
+      const now = new Date()
+      const diffMs = now.getTime() - updatedAt.getTime()
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+      const diffDays = Math.floor(diffHours / 24)
+
+      let timeAgo = ''
+      if (diffHours < 1) timeAgo = 'Just now'
+      else if (diffHours < 24) timeAgo = `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
+      else timeAgo = `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+
+      return {
+        id: deal.id,
+        message: `Deal "${deal.name}" updated to ${getStageDisplayName(deal.stage)}`,
+        time: timeAgo,
+        icon: '🎯',
+      }
+    })
+  }, [dealsData])
 
   return (
     <Card variant="elevated" padding="lg">
@@ -222,17 +269,32 @@ const ActivityFeedWidget: React.FC = () => {
         <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
       </CardHeader>
       <CardBody>
-        <div className="space-y-4">
-          {activities.map((activity) => (
-            <div key={activity.id} className="flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
-              <div className="text-2xl">{activity.icon}</div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-900">{activity.message}</p>
-                <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+        {dealsLoading && (
+          <div className="flex items-center justify-center py-8">
+            <Spinner />
+          </div>
+        )}
+
+        {!dealsLoading && activities.length === 0 && (
+          <div className="text-center py-8 text-gray-600">
+            <p>No recent activity yet</p>
+            <p className="text-sm mt-2">Create your first deal to see activity</p>
+          </div>
+        )}
+
+        {!dealsLoading && activities.length > 0 && (
+          <div className="space-y-4">
+            {activities.map((activity) => (
+              <div key={activity.id} className="flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                <div className="text-2xl">{activity.icon}</div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-900">{activity.message}</p>
+                  <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CardBody>
     </Card>
   )
@@ -240,41 +302,19 @@ const ActivityFeedWidget: React.FC = () => {
 
 /**
  * Upcoming Tasks Widget
+ * TODO: Replace with real task API when backend endpoint is ready
  */
 const UpcomingTasksWidget: React.FC = () => {
-  // Mock data - will be replaced with real API call
-  const tasks = [
-    { id: 1, title: 'Review financial statements', deadline: 'Today', priority: 'high' },
-    { id: 2, title: 'Schedule management meeting', deadline: 'Tomorrow', priority: 'medium' },
-    { id: 3, title: 'Update valuation model', deadline: 'Dec 1', priority: 'medium' },
-    { id: 4, title: 'Prepare investor deck', deadline: 'Dec 5', priority: 'low' },
-    { id: 5, title: 'Finalize term sheet', deadline: 'Dec 10', priority: 'high' },
-  ]
-
-  const priorityBadge = {
-    high: 'danger' as const,
-    medium: 'warning' as const,
-    low: 'neutral' as const,
-  }
-
   return (
     <Card variant="elevated" padding="lg">
       <CardHeader>
         <h2 className="text-xl font-bold text-gray-900">Upcoming Tasks</h2>
       </CardHeader>
       <CardBody>
-        <div className="space-y-3">
-          {tasks.map((task) => (
-            <div key={task.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">{task.title}</p>
-                <p className="text-xs text-gray-500 mt-1">Due: {task.deadline}</p>
-              </div>
-              <Badge variant={priorityBadge[task.priority as keyof typeof priorityBadge]}>
-                {task.priority}
-              </Badge>
-            </div>
-          ))}
+        <div className="text-center py-12 text-gray-500">
+          <div className="text-4xl mb-4">📋</div>
+          <p className="text-lg font-medium mb-2">Task Management Coming Soon</p>
+          <p className="text-sm">Automated task workflows will be available in the next update</p>
         </div>
       </CardBody>
     </Card>
@@ -284,14 +324,35 @@ const UpcomingTasksWidget: React.FC = () => {
 /**
  * Financial Insights Widget
  */
-const FinancialInsightsWidget: React.FC = () => {
-  // Mock data - will be replaced with real API call
-  const insights = [
-    { metric: 'Total Pipeline Value', value: '£3.2M', change: '+12%', trend: 'up' },
-    { metric: 'Avg. Deal Size', value: '£267K', change: '+8%', trend: 'up' },
-    { metric: 'Close Rate', value: '32%', change: '-2%', trend: 'down' },
-    { metric: 'Avg. Deal Cycle', value: '45 days', change: '+5%', trend: 'down' },
-  ]
+interface FinancialInsightsProps {
+  dealsData?: { items: any[]; total: number }
+  dealsLoading: boolean
+}
+
+const FinancialInsightsWidget: React.FC<FinancialInsightsProps> = ({ dealsData, dealsLoading }) => {
+  // Calculate real metrics from deals data
+  const insights = React.useMemo(() => {
+    if (!dealsData?.items.length) {
+      return [
+        { metric: 'Total Pipeline Value', value: formatCurrency(0, 'GBP') },
+        { metric: 'Avg. Deal Size', value: formatCurrency(0, 'GBP') },
+        { metric: 'Active Deals', value: '0' },
+        { metric: 'Stages Covered', value: '0' },
+      ]
+    }
+
+    const deals = dealsData.items
+    const totalValue = deals.reduce((sum, deal) => sum + (deal.deal_size || 0), 0)
+    const avgDealSize = deals.length > 0 ? totalValue / deals.length : 0
+    const uniqueStages = new Set(deals.map(d => d.stage)).size
+
+    return [
+      { metric: 'Total Pipeline Value', value: formatCurrency(totalValue, 'GBP') },
+      { metric: 'Avg. Deal Size', value: formatCurrency(avgDealSize, 'GBP') },
+      { metric: 'Active Deals', value: deals.length.toString() },
+      { metric: 'Stages Covered', value: `${uniqueStages}/5` },
+    ]
+  }, [dealsData])
 
   return (
     <Card variant="elevated" padding="lg">
@@ -299,17 +360,22 @@ const FinancialInsightsWidget: React.FC = () => {
         <h2 className="text-xl font-bold text-gray-900">Financial Insights</h2>
       </CardHeader>
       <CardBody>
-        <GridSystem cols={4} gap="md" responsive>
-          {insights.map((insight) => (
-            <div key={insight.metric} className="text-center p-4 bg-gradient-to-br from-gray-50 to-white rounded-lg border border-gray-200">
-              <div className="text-2xl font-bold text-gray-900 mb-1">{insight.value}</div>
-              <div className="text-sm text-gray-600 mb-2">{insight.metric}</div>
-              <div className={`text-xs font-medium ${insight.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                {insight.trend === 'up' ? '↑' : '↓'} {insight.change}
+        {dealsLoading && (
+          <div className="flex items-center justify-center py-8">
+            <Spinner />
+          </div>
+        )}
+
+        {!dealsLoading && (
+          <GridSystem cols={4} gap="md" responsive>
+            {insights.map((insight) => (
+              <div key={insight.metric} className="text-center p-4 bg-gradient-to-br from-gray-50 to-white rounded-lg border border-gray-200">
+                <div className="text-2xl font-bold text-gray-900 mb-1">{insight.value}</div>
+                <div className="text-sm text-gray-600">{insight.metric}</div>
               </div>
-            </div>
-          ))}
-        </GridSystem>
+            ))}
+          </GridSystem>
+        )}
       </CardBody>
     </Card>
   )
