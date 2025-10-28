@@ -1,16 +1,15 @@
 """
-Tests for Xero OAuth Integration Service - DEV-010
+Tests for Xero OAuth Integration Service - DEV-010 (Phase 3)
 Following TDD methodology (RED → GREEN → REFACTOR)
 Tests OAuth 2.0 flow, token management, and data import from Xero
 
-SKIPPED: Phase 4 feature - Xero integration not yet implemented.
-See Phase 4 of 100% completion plan for implementation timeline.
+Phase 3 Update: RealXeroClient implemented, tests now using MockXeroClient fallback.
+These tests validate the service layer logic with mocked Xero API responses.
 """
 
 import pytest
 
-# Skip entire module until Phase 4 (Financial Intelligence Expansion)
-pytestmark = pytest.mark.skip(reason="Phase 4 feature: Xero integration not implemented")
+# Tests now active - using MockXeroClient until xero-python SDK is installed
 from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime, timezone, timedelta
 from decimal import Decimal

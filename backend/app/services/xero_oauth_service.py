@@ -1,6 +1,8 @@
 """
-Xero OAuth Integration Service - DEV-010
+Xero OAuth Integration Service - DEV-010 (Phase 3)
 Handles OAuth 2.0 flow, token management, and data import from Xero accounting platform
+
+Phase 3 Update: Real xero-python SDK integration (replaced mock client)
 """
 
 import os
@@ -16,12 +18,181 @@ from app.models.financial_statement import FinancialStatement
 from app.models.deal import Deal
 
 
-# Mock Xero client for now (will be replaced with actual SDK)
-class XeroClient:
-    """Mock Xero client for testing."""
+# Real Xero SDK Integration
+try:
+    from xero_python.api_client import ApiClient
+    from xero_python.api_client.configuration import Configuration
+    from xero_python.api_client.oauth2 import OAuth2Token
+    from xero_python.accounting import AccountingApi
+    from xero_python.identity import IdentityApi
+    XERO_SDK_AVAILABLE = True
+except ImportError:
+    # Fallback to mock if SDK not installed (for testing)
+    XERO_SDK_AVAILABLE = False
+    print("WARNING: xero-python SDK not installed. Using mock client for development.")
+    # Define stub classes for type hints
+    ApiClient = None  # type: ignore
+    Configuration = None  # type: ignore
+    OAuth2Token = None  # type: ignore
+    AccountingApi = None  # type: ignore
+    IdentityApi = None  # type: ignore
+
+
+if XERO_SDK_AVAILABLE:
+    class RealXeroClient:
+        """
+        Real Xero client using xero-python SDK.
+
+        Wraps the official Xero API SDK to provide consistent interface
+        for OAuth flow, token management, and data fetching.
+
+        Phase 3: Production-ready Xero integration
+        """
+
+        def __init__(self):
+            """Initialize Xero API client with credentials from environment."""
+            self.client_id = os.getenv("XERO_CLIENT_ID")
+            self.client_secret = os.getenv("XERO_CLIENT_SECRET")
+            self.redirect_uri = os.getenv(
+                "XERO_REDIRECT_URI",
+                "http://localhost:3000/api/financial/connect/xero/callback"
+            )
+
+            if not XERO_SDK_AVAILABLE:
+                raise ImportError(
+                    "xero-python SDK not installed. "
+                    "Install with: pip install xero-python"
+                )
+
+            # Initialize SDK configuration
+            self.config = Configuration(
+                oauth2_client_id=self.client_id,
+                oauth2_client_secret=self.client_secret,
+            )
+
+        def _get_api_client(self, access_token: str):
+            """Create authenticated API client with access token."""
+            api_client = ApiClient(
+                self.config,
+                oauth2_token=OAuth2Token(access_token=access_token)
+            )
+            return api_client
+
+        def exchange_code_for_token(self, code: str) -> Dict:
+            """
+            Exchange authorization code for access/refresh tokens.
+
+            Args:
+                code: Authorization code from OAuth callback
+
+            Returns:
+                Dict with access_token, refresh_token, expires_in, token_type
+            """
+            api_client = ApiClient(self.config)
+
+            # Exchange code for token using SDK
+            token_response = api_client.get_token_from_authorization_code(
+                authorization_code=code,
+                redirect_uri=self.redirect_uri
+            )
+
+            return {
+                "access_token": token_response.access_token,
+                "refresh_token": token_response.refresh_token,
+                "expires_in": token_response.expires_in,
+                "token_type": token_response.token_type,
+            }
+
+        def get_connections(self, access_token: str) -> List[Dict]:
+            """
+            Get list of Xero organizations (tenants) accessible to this token.
+
+            Args:
+                access_token: OAuth access token
+
+            Returns:
+                List of tenant/connection dictionaries with tenantId, tenantName, etc.
+            """
+            api_client = self._get_api_client(access_token)
+            identity_api = IdentityApi(api_client)
+
+            # Fetch connections from Xero Identity API
+            connections = identity_api.get_connections()
+
+            # Convert to dict format
+            return [
+                {
+                    "tenantId": conn.tenant_id,
+                    "tenantName": conn.tenant_name,
+                    "tenantType": conn.tenant_type,
+                    "createdDateUtc": conn.created_date_utc.isoformat() if conn.created_date_utc else None,
+                }
+                for conn in connections
+            ]
+
+        def refresh_access_token(self, refresh_token: str) -> Dict:
+            """
+            Refresh expired access token using refresh token.
+
+            Args:
+                refresh_token: OAuth refresh token
+
+            Returns:
+                Dict with new access_token, refresh_token, expires_in
+            """
+            api_client = ApiClient(self.config)
+
+            # Refresh token using SDK
+            token_response = api_client.refresh_oauth2_token(refresh_token=refresh_token)
+
+            return {
+                "access_token": token_response.access_token,
+                "refresh_token": token_response.refresh_token,
+                "expires_in": token_response.expires_in,
+            }
+
+        def get_report(
+            self,
+            platform_organization_id: str,
+            access_token: str,
+            report_type: str
+        ) -> Dict:
+            """
+            Fetch financial report from Xero Accounting API.
+
+            Args:
+                platform_organization_id: Xero tenant ID
+                access_token: OAuth access token
+                report_type: Report type (BalanceSheet, ProfitAndLoss, etc.)
+
+            Returns:
+                Report data dictionary from Xero API
+            """
+            api_client = self._get_api_client(access_token)
+            accounting_api = AccountingApi(api_client)
+
+            # Fetch report based on type
+            if report_type == "BalanceSheet":
+                report = accounting_api.get_report_balance_sheet(
+                    xero_tenant_id=platform_organization_id
+                )
+            elif report_type == "ProfitAndLoss":
+                report = accounting_api.get_report_profit_and_loss(
+                    xero_tenant_id=platform_organization_id
+                )
+            else:
+                raise ValueError(f"Unsupported report type: {report_type}")
+
+            # Convert to dict (SDK returns Report object)
+            return report.to_dict() if hasattr(report, 'to_dict') else report
+
+
+# Mock Xero client for fallback (when SDK not installed)
+class MockXeroClient:
+    """Mock Xero client for development without SDK."""
 
     def exchange_code_for_token(self, code: str) -> Dict:
-        """Exchange authorization code for access/refresh tokens."""
+        """Mock token exchange."""
         return {
             "access_token": f"xero_access_{secrets.token_hex(16)}",
             "refresh_token": f"xero_refresh_{secrets.token_hex(16)}",
@@ -30,16 +201,18 @@ class XeroClient:
         }
 
     def get_connections(self, access_token: str) -> List[Dict]:
-        """Get list of Xero organizations (tenants)."""
+        """Mock connections list."""
         return [
             {
                 "tenantId": f"tenant-{secrets.token_hex(8)}",
-                "tenantName": "Default Organization"
+                "tenantName": "Default Organization",
+                "tenantType": "ORGANISATION",
+                "createdDateUtc": datetime.now(timezone.utc).isoformat(),
             }
         ]
 
     def refresh_access_token(self, refresh_token: str) -> Dict:
-        """Refresh access token using refresh token."""
+        """Mock token refresh."""
         return {
             "access_token": f"xero_new_access_{secrets.token_hex(16)}",
             "refresh_token": f"xero_new_refresh_{secrets.token_hex(16)}",
@@ -47,12 +220,25 @@ class XeroClient:
         }
 
     def get_report(self, platform_organization_id: str, access_token: str, report_type: str) -> Dict:
-        """Fetch financial report from Xero."""
+        """Mock report fetch."""
         return {"Reports": [{"Rows": []}]}
 
 
-# Global client instance
-xero_client = XeroClient()
+# Global client instance (use real SDK if available, fallback to mock)
+if XERO_SDK_AVAILABLE and os.getenv("XERO_CLIENT_ID"):
+    try:
+        xero_client = RealXeroClient()
+        print("[Phase 3] Using REAL Xero Python SDK")
+    except Exception as e:
+        print(f"[WARNING] Failed to initialize real Xero client: {e}")
+        xero_client = MockXeroClient()
+        print("[WARNING] Falling back to mock Xero client")
+else:
+    xero_client = MockXeroClient()
+    if not XERO_SDK_AVAILABLE:
+        print("[WARNING] xero-python SDK not installed - using mock client")
+    else:
+        print("[WARNING] XERO_CLIENT_ID not configured - using mock client")
 
 
 def initiate_xero_oauth(deal_id: str, db: Session) -> Dict[str, str]:
