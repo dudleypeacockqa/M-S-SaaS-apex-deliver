@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -31,9 +31,14 @@ async def test_upload_video_allowed_for_premium():
         create=True,
     ) as mock_client:
         mock_access.return_value = True
-        mock_client.return_value.videos.return_value.insert.return_value.execute.return_value = {
-            "id": "YT_12345"
-        }
+
+        api_client = MagicMock()
+        videos_resource = MagicMock()
+        insert_request = MagicMock()
+        insert_request.execute.return_value = {"id": "YT_12345"}
+        videos_resource.insert.return_value = insert_request
+        api_client.videos.return_value = videos_resource
+        mock_client.return_value = api_client
 
         video_id = await youtube_service.upload_video(
             data=payload,

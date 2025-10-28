@@ -11,7 +11,7 @@ from app.core.security import verify_webhook_signature
 from app.db.session import get_db
 from app.services import user_service
 
-router = APIRouter(prefix="/api/webhooks", tags=["webhooks"])
+router = APIRouter(prefix="/webhooks", tags=["webhooks"])
 
 
 def _parse_datetime(value: str | None) -> datetime | None:
