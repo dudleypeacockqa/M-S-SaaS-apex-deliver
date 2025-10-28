@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Button, Badge } from '../ui'
+import { trackCtaClick, trackFormSubmission, trackMarketingEvent } from '../../lib/analytics'
 
 export const ExitIntentPopup: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -38,14 +39,15 @@ export const ExitIntentPopup: React.FC = () => {
   }, [isVisible])
 
   const handleClose = () => {
+    trackMarketingEvent('exit_intent_dismissed', { location: 'exit-intent-popup' })
     setIsVisible(false)
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // TODO: Integrate with email service (Mailchimp, SendGrid, etc.)
-    console.log('Email captured:', email)
+    trackFormSubmission('exit-intent', 'exit-intent-popup')
+    trackCtaClick('start-free-trial', 'exit-intent-popup')
 
     setIsSubmitted(true)
 
@@ -104,13 +106,43 @@ export const ExitIntentPopup: React.FC = () => {
             {/* Benefits Grid */}
             <div className="grid grid-cols-2 gap-4 mb-8">
               {[
-                { icon: '🚀', text: '70% faster closures' },
-                { icon: '🤖', text: 'AI-powered insights' },
-                { icon: '💰', text: 'Save £9,721/year' },
-                { icon: '✅', text: 'No credit card required' },
+                {
+                  text: '70% faster closures',
+                  icon: (
+                    <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  ),
+                },
+                {
+                  text: 'AI-powered insights',
+                  icon: (
+                    <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-2.21 0-4 .79-4 2 0 1.1 1.36 1.87 3.18 1.99M12 8c2.21 0 4 .79 4 2 0 1.1-1.36 1.87-3.18 1.99M12 8v10" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16h8" />
+                    </svg>
+                  ),
+                },
+                {
+                  text: 'Save £9,721/year',
+                  icon: (
+                    <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 12v-2m6-6a6 6 0 10-12 0 6 6 0 0012 0z" />
+                    </svg>
+                  ),
+                },
+                {
+                  text: 'No credit card required',
+                  icon: (
+                    <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M7 7V5a4 4 0 018 0v2" />
+                      <rect x="4" y="7" width="16" height="10" rx="3" />
+                    </svg>
+                  ),
+                },
               ].map((benefit) => (
                 <div key={benefit.text} className="flex items-center gap-3 bg-blue-50 rounded-lg p-4">
-                  <span className="text-2xl">{benefit.icon}</span>
+                  {benefit.icon}
                   <span className="text-sm font-medium text-gray-800">{benefit.text}</span>
                 </div>
               ))}

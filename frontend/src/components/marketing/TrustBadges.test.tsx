@@ -109,43 +109,39 @@ describe('TrustBadges', () => {
 
   it('shows Xero integration', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/Xero/i)).toBeInTheDocument();
+    expect(screen.getByAltText(/Xero accounting integration/i)).toBeInTheDocument();
   });
 
   it('shows QuickBooks integration', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/QuickBooks/i)).toBeInTheDocument();
+    expect(screen.getByAltText(/QuickBooks accounting integration/i)).toBeInTheDocument();
   });
 
   it('shows Sage integration', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/Sage/i)).toBeInTheDocument();
+    expect(screen.getByAltText(/Sage accounting integration/i)).toBeInTheDocument();
   });
 
   it('shows NetSuite integration', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/NetSuite/i)).toBeInTheDocument();
+    expect(screen.getByAltText(/NetSuite ERP integration/i)).toBeInTheDocument();
   });
 
   it('shows Stripe integration', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/Stripe/i)).toBeInTheDocument();
+    expect(screen.getByAltText(/Stripe payment integration/i)).toBeInTheDocument();
   });
 
   it('shows Slack integration', () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/Slack/i)).toBeInTheDocument();
+    expect(screen.getByAltText(/Slack collaboration integration/i)).toBeInTheDocument();
   });
 
   it('displays all 6 integration logos', () => {
     render(<TrustBadges />);
-    
-    expect(screen.getByText(/Xero/i)).toBeInTheDocument();
-    expect(screen.getByText(/QuickBooks/i)).toBeInTheDocument();
-    expect(screen.getByText(/Sage/i)).toBeInTheDocument();
-    expect(screen.getByText(/NetSuite/i)).toBeInTheDocument();
-    expect(screen.getByText(/Stripe/i)).toBeInTheDocument();
-    expect(screen.getByText(/Slack/i)).toBeInTheDocument();
+
+    const logos = screen.getAllByRole('img', { name: /integration/i });
+    expect(logos).toHaveLength(6);
   });
 
   it('includes shield icons for security badges', () => {
@@ -196,9 +192,9 @@ describe('TrustBadges', () => {
   });
 
   it('includes integration icons/logos', () => {
-    const { container } = render(<TrustBadges />);
-    const logoContainers = container.querySelectorAll('.bg-gray-100.rounded-xl');
-    expect(logoContainers.length).toBe(6);
+    render(<TrustBadges />);
+    const logos = screen.getAllByRole('img', { name: /integration/i });
+    expect(logos.length).toBe(6);
   });
 
   it('applies proper spacing between sections', () => {

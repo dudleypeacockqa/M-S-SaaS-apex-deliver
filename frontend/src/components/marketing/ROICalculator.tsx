@@ -1,9 +1,25 @@
 import { useState } from 'react';
+import { trackCtaClick, trackMarketingEvent } from '../../lib/analytics';
 
 export const ROICalculator: React.FC = () => {
   const [dealsPerYear, setDealsPerYear] = useState(12);
   const [avgDealSize, setAvgDealSize] = useState(5);
   const [hoursPerDeal, setHoursPerDeal] = useState(40);
+
+  const handleDealsChange = (value: number) => {
+    setDealsPerYear(value);
+    trackMarketingEvent('roi_calculator_update', { field: 'deals_per_year', value });
+  };
+
+  const handleDealSizeChange = (value: number) => {
+    setAvgDealSize(value);
+    trackMarketingEvent('roi_calculator_update', { field: 'average_deal_size_millions', value });
+  };
+
+  const handleHoursChange = (value: number) => {
+    setHoursPerDeal(value);
+    trackMarketingEvent('roi_calculator_update', { field: 'hours_per_deal', value });
+  };
 
   // Calculations
   const currentCost = dealsPerYear * hoursPerDeal * 150; // £150/hour consulting rate
@@ -45,7 +61,7 @@ export const ROICalculator: React.FC = () => {
                       min="1"
                       max="50"
                       value={dealsPerYear}
-                      onChange={(e) => setDealsPerYear(Number(e.target.value))}
+                      onChange={(e) => handleDealsChange(Number(e.target.value))}
                       className="flex-1 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
                     />
                     <div className="w-16 text-right">
@@ -65,7 +81,7 @@ export const ROICalculator: React.FC = () => {
                       min="1"
                       max="100"
                       value={avgDealSize}
-                      onChange={(e) => setAvgDealSize(Number(e.target.value))}
+                      onChange={(e) => handleDealSizeChange(Number(e.target.value))}
                       className="flex-1 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
                     />
                     <div className="w-16 text-right">
@@ -86,7 +102,7 @@ export const ROICalculator: React.FC = () => {
                       max="200"
                       step="10"
                       value={hoursPerDeal}
-                      onChange={(e) => setHoursPerDeal(Number(e.target.value))}
+                      onChange={(e) => handleHoursChange(Number(e.target.value))}
                       className="flex-1 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer"
                     />
                     <div className="w-16 text-right">
@@ -155,6 +171,7 @@ export const ROICalculator: React.FC = () => {
                 <a
                   href="/sign-up"
                   className="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-center px-8 py-4 rounded-xl text-lg font-bold hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-105 shadow-lg"
+                  onClick={() => trackCtaClick('start-saving', 'roi-calculator')}
                 >
                   Start Saving Today - Free Trial
                 </a>

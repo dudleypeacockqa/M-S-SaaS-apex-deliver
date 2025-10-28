@@ -118,12 +118,9 @@ describe('EnhancedTestimonials', () => {
 
   it('shows multiple company logos', () => {
     render(<EnhancedTestimonials />);
-    
-    expect(screen.getByText(/Goldman Sachs/i)).toBeInTheDocument();
-    expect(screen.getByText(/KKR/i)).toBeInTheDocument();
-    expect(screen.getByText(/Barclays/i)).toBeInTheDocument();
-    expect(screen.getByText(/BlackRock/i)).toBeInTheDocument();
-    expect(screen.getByText(/Morgan Stanley/i)).toBeInTheDocument();
+
+    expect(screen.getByAltText(/Aurora Strategies logo/i)).toBeInTheDocument();
+    expect(screen.getByAltText(/Horizon Capital logo/i)).toBeInTheDocument();
   });
 
   it('displays platform statistics bar', () => {
@@ -226,10 +223,17 @@ describe('EnhancedTestimonials', () => {
 
   it('shows all 5 company logos', () => {
     render(<EnhancedTestimonials />);
-    
-    const companies = ['Goldman Sachs', 'KKR', 'Barclays', 'BlackRock', 'Morgan Stanley'];
-    companies.forEach(company => {
-      expect(screen.getByText(company)).toBeInTheDocument();
+
+    const partnerLogos = [
+      /Aurora Strategies logo/i,
+      /Horizon Capital logo/i,
+      /Sterling Advisors logo/i,
+      /Pacific Bridge Capital logo/i,
+      /Summit Equity Group logo/i
+    ];
+
+    partnerLogos.forEach((pattern) => {
+      expect(screen.getByAltText(pattern)).toBeInTheDocument();
     });
   });
 

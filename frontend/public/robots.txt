@@ -3,29 +3,6 @@
 # Block authenticated/private areas
 
 User-agent: *
-
-# Allow marketing pages (high priority for SEO)
 Allow: /
-Allow: /pricing
-Allow: /features
-Allow: /about
-Allow: /contact
-Allow: /legal/
 
-# Block authenticated areas (protect user privacy)
-Disallow: /dashboard
-Disallow: /deals
-Disallow: /admin
-Disallow: /checkout/success
-Disallow: /checkout/cancel
-Disallow: /dashboard/billing
-
-# Block API endpoints
-Disallow: /api/
-
-# Allow sign-in/sign-up pages (for indexing)
-Allow: /sign-in
-Allow: /sign-up
-
-# Sitemap location
-Sitemap: https://100daysandbeyond.com/sitemap.xml
+Sitemap: https://apexdeliver.com/sitemap.xml

@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../ui'
+import { trackCtaClick, trackMarketingEvent } from '../../lib/analytics'
 
 export const StickyCTABar: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -40,6 +41,7 @@ export const StickyCTABar: React.FC = () => {
   const handleDismiss = () => {
     setIsDismissed(true)
     sessionStorage.setItem('stickyCTADismissed', 'true')
+    trackMarketingEvent('sticky_cta_dismissed', { location: 'sticky-cta-bar' })
   }
 
   // Don't render if dismissed
@@ -82,6 +84,7 @@ export const StickyCTABar: React.FC = () => {
                   variant="secondary"
                   btnSize="lg"
                   className="bg-white text-blue-700 hover:bg-blue-50 font-bold shadow-lg whitespace-nowrap"
+                  onClick={() => trackCtaClick('get-started', 'sticky-cta-bar')}
                 >
                   Get Started →
                 </Button>
