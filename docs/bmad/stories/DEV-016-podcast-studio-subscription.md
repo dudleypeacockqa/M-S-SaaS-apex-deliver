@@ -20,6 +20,11 @@
 - Git workspace contains pending edits across podcasts API/service, quota tests, and frontend gating hook.
 - Render deployment status still pending manual confirmation; track in `PRODUCTION_DEPLOYMENT_2025-10-28.md`.
 
+**Latest Update (2025-10-28 18:24 UTC)**:
+- Dirty working tree holds entitlement-aware frontend gating updates (`FeatureGate`, `useFeatureAccess`) plus initial `youtube_service.py` scaffold awaiting coverage.
+- API quota + middleware tests remain GREEN; additional YouTube + transcript flows still RED/absent.
+- Immediate focus: finish DEV-016 Phase 3 frontend gates and backfill service/API coverage before progressing to integrations.
+
 ## Story Overview
 
 ### User Story
