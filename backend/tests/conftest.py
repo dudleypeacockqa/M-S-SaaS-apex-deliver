@@ -117,6 +117,13 @@ def _reset_metadata(engine) -> None:
     Base.metadata.create_all(bind=engine)
 
 
+@pytest.fixture(autouse=True)
+def _reset_database(engine):
+    """Reset schema before each test for deterministic state."""
+    _reset_metadata(engine)
+    yield
+
+
 @pytest.fixture()
 def engine():
     """Create an in-memory SQLite engine per test."""
