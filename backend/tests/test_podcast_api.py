@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, patch, ANY
 
 from app.services.quota_service import QuotaExceededError
 from app.schemas.podcast import PodcastQuotaSummary
+from app.services.entitlement_service import FeatureNotFoundError
 
 from fastapi import status
 
@@ -402,12 +403,108 @@ class TestPodcastUsageEndpoint:
             _clear_override()
 
 
+class TestPodcastFeatureAccessEndpoint:
+    """Tests for /podcasts/features/{feature} entitlement endpoint."""
 
+    def test_feature_access_returns_true_for_authorized_tier(self, client) -> None:
+        organization_id = "org_pro"
+        professional_user = SimpleNamespace(
+            id="user-pro",
+            organization_id=organization_id,
+        )
 
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.core.subscription.get_organization_tier",
+                new_callable=AsyncMock,
+            ) as mock_tier, patch(
+                "app.services.entitlement_service.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_check, patch(
+                "app.services.entitlement_service.get_required_tier",
+                new_callable=AsyncMock,
+            ) as mock_required:
+                mock_tier.return_value = SubscriptionTier.PROFESSIONAL
+                mock_check.return_value = True
+                mock_required.return_value = SubscriptionTier.PROFESSIONAL
 
+                response = client.get("/podcasts/features/podcast_audio")
 
+            assert response.status_code == status.HTTP_200_OK
+            payload = response.json()
+            assert payload == {
+                "feature": "podcast_audio",
+                "has_access": True,
+                "tier": SubscriptionTier.PROFESSIONAL.value,
+                "required_tier": SubscriptionTier.PROFESSIONAL.value,
+            }
+            mock_check.assert_awaited_once_with(organization_id, "podcast_audio")
+        finally:
+            _clear_override()
 
+    def test_feature_access_returns_false_for_insufficient_tier(self, client) -> None:
+        organization_id = "org_starter"
+        starter_user = SimpleNamespace(
+            id="user-starter",
+            organization_id=organization_id,
+        )
 
+        _override_user(starter_user)
+        try:
+            with patch(
+                "app.core.subscription.get_organization_tier",
+                new_callable=AsyncMock,
+            ) as mock_tier, patch(
+                "app.services.entitlement_service.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_check, patch(
+                "app.services.entitlement_service.get_required_tier",
+                new_callable=AsyncMock,
+            ) as mock_required:
+                mock_tier.return_value = SubscriptionTier.STARTER
+                mock_check.return_value = False
+                mock_required.return_value = SubscriptionTier.PROFESSIONAL
+
+                response = client.get("/podcasts/features/podcast_audio")
+
+            assert response.status_code == status.HTTP_200_OK
+            payload = response.json()
+            assert payload == {
+                "feature": "podcast_audio",
+                "has_access": False,
+                "tier": SubscriptionTier.STARTER.value,
+                "required_tier": SubscriptionTier.PROFESSIONAL.value,
+            }
+            mock_check.assert_awaited_once_with(organization_id, "podcast_audio")
+        finally:
+            _clear_override()
+
+    def test_feature_access_returns_404_for_unknown_feature(self, client) -> None:
+        organization_id = "org_pro"
+        professional_user = SimpleNamespace(
+            id="user-pro",
+            organization_id=organization_id,
+        )
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.core.subscription.get_organization_tier",
+                new_callable=AsyncMock,
+            ) as mock_tier, patch(
+                "app.services.entitlement_service.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_check:
+                mock_tier.return_value = SubscriptionTier.PROFESSIONAL
+                mock_check.side_effect = FeatureNotFoundError("Feature not found")
+
+                response = client.get("/podcasts/features/unknown_feature")
+
+            assert response.status_code == status.HTTP_404_NOT_FOUND
+            assert "Feature not found" in response.json()["detail"]
+        finally:
+            _clear_override()
 
 
 class TestPodcastListEndpoint:

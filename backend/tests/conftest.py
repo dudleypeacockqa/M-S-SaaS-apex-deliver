@@ -19,10 +19,12 @@ from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import sessionmaker
 from _pytest.fixtures import FixtureLookupError
 
-# Ensure the backend directory is on sys.path for "app" imports
+# Ensure repository and backend directories are on sys.path for "app" imports
+REPO_ROOT = Path(__file__).resolve().parents[2]
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
-if str(BACKEND_ROOT) not in sys.path:  # pragma: no cover - import guard
-    sys.path.insert(0, str(BACKEND_ROOT))
+for path in (REPO_ROOT, BACKEND_ROOT):  # pragma: no cover - import guard
+    if str(path) not in sys.path:
+        sys.path.insert(0, str(path))
 
 # Configure environment before importing application modules
 # Force override all settings for test environment
@@ -76,6 +78,11 @@ from app.models.deal import Deal, DealStage  # noqa: E402, F401
 from app.models.valuation import ValuationModel, ComparableCompany, PrecedentTransaction, ValuationScenario, ValuationExportLog
 from app.models.podcast import PodcastEpisode, PodcastTranscript, PodcastAnalytics
 
+# Ensure Base metadata is populated with all models and ready for schema ops
+from app import models as _models  # noqa: E402,F401
+if not Base.metadata.tables:  # pragma: no cover - sanity check
+    raise RuntimeError("SQLAlchemy metadata did not register application tables")
+
 # Clear the settings cache to ensure test configuration is used
 get_settings.cache_clear()
 
@@ -123,27 +130,12 @@ def _reset_metadata(engine) -> None:
 
 
 def _safe_drop_schema(engine) -> None:
-    """Drop all tables without raising errors for missing tables."""
+    """Drop all known tables without raising errors for missing tables."""
 
-    inspector = inspect(engine)
-    managed_tables = {table.name for table in Base.metadata.sorted_tables}
-    existing_tables = set(inspector.get_table_names())
-
-    with engine.begin() as connection:
-        for table in reversed(Base.metadata.sorted_tables):
-            if table.name not in existing_tables:
-                continue
-            try:
-                table.drop(connection, checkfirst=True)
-            except (OperationalError, ProgrammingError, sqlite3.OperationalError):
-                continue
-
-        orphans = existing_tables - managed_tables
-        for table_name in orphans:
-            try:
-                connection.execute(text(f'DROP TABLE IF EXISTS "{table_name}"'))
-            except (OperationalError, ProgrammingError, sqlite3.OperationalError):
-                continue
+    try:
+        Base.metadata.drop_all(engine, checkfirst=True)
+    except (OperationalError, ProgrammingError, sqlite3.OperationalError):
+        Base.metadata.drop_all(engine, checkfirst=False)
 
 
 @pytest.fixture()

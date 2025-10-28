@@ -15,10 +15,10 @@
 - `/podcasts/usage` quota summary endpoint implemented with professional/premium/starter coverage tests.
 - DEV-016 moving from planning into implementation; entitlement enforcement and frontend gating remain outstanding.
 
-**Latest Update (2025-10-28 13:45 UTC)**:
-- `_safe_drop_schema` fixture stabilised SQLite teardown; quota service pytest now green (18 passed).
-- Podcast API usage suite green (9 passed) covering tier summary and starter 403 guard.
-- Ready to progress into entitlement middleware, frontend gating work, and Render redeploy tasks.
+**Latest Update (2025-10-28 18:50 UTC)**:
+- Baseline documentation refresh complete; backend podcast service/API TDD expansion underway.
+- Git workspace contains pending edits across podcasts API/service, quota tests, and frontend gating hook.
+- Render deployment status still pending manual confirmation; track in `PRODUCTION_DEPLOYMENT_2025-10-28.md`.
 
 ## Story Overview
 

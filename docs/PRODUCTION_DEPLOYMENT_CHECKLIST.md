@@ -105,17 +105,17 @@ CLERK_JWT_ALGORITHM=RS256
 - **URL**:
   <https://ma-saas-backend.onrender.com>
 - **Region**: Frankfurt
-- **Status**: Healthy ✓
-- **Last Deploy**: October 24, 2025
+- **Status**: Healthy ✓ (verified 2025-10-28T15:04Z)
+- **Last Deploy**: October 24, 2025 (redeploy pending after DEV-016 completion)
 
-**Health Check**:
+**Health Check (Latest)**:
 
 ```bash
 curl https://ma-saas-backend.onrender.com/health
 
 {
   "status": "healthy",
-  "timestamp": "2025-10-24T12:20:38.755511",
+  "timestamp": "2025-10-28T15:04:11.438881",
   "clerk_configured": true,
   "database_configured": true,
   "webhook_configured": true
@@ -127,8 +127,19 @@ curl https://ma-saas-backend.onrender.com/health
 - **Service Name**: ma-saas-platform
 - **URL**: <https://ma-saas-platform.onrender.com>
 - **Region**: Frankfurt
-- **Status**: Healthy ✓
-- **Last Deploy**: October 24, 2025
+- **Status**: Healthy ✓ (HTTP 200 verified 2025-10-28T15:05Z)
+- **Last Deploy**: October 24, 2025 (redeploy pending after DEV-016 completion)
+
+**Health Check (Latest)**:
+
+```bash
+curl -I https://ma-saas-platform.onrender.com
+
+HTTP/1.1 200 OK
+Date: Tue, 28 Oct 2025 15:05:44 GMT
+Content-Type: text/html; charset=utf-8
+...
+```
 
 ---
 

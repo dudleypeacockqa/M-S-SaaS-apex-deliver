@@ -19,6 +19,7 @@ from unittest.mock import AsyncMock, patch
 from sqlalchemy.orm import Session
 
 from app.services import podcast_service
+from app.db.base import Base
 from app.models.podcast import PodcastEpisode, PodcastAnalytics, PodcastTranscript
 
 
@@ -103,6 +104,8 @@ class TestPodcastService:
     async def test_transcribe_episode_uses_whisper(self, db_session: Session, audio_file: Path):
         """Transcribing an episode should create transcript records using Whisper."""
 
+        Base.metadata.create_all(db_session.get_bind(), checkfirst=True)
+
         episode = create_test_episode(db_session, organization_id="org-abc")
         segments = [
             {"time": 0.0, "text": "Intro"},
@@ -144,6 +147,8 @@ class TestPodcastService:
     @pytest.mark.asyncio
     async def test_transcribe_episode_requires_entitlement(self, db_session: Session, audio_file: Path):
         """Transcription should be blocked when organization lacks entitlement."""
+
+        Base.metadata.create_all(db_session.get_bind(), checkfirst=True)
 
         episode = create_test_episode(db_session, organization_id="org-abc")
 

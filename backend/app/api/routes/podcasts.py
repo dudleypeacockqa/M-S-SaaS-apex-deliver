@@ -6,7 +6,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import require_feature
+from app.api.dependencies.auth import get_current_user, require_feature
 from app.core import subscription
 from app.db.session import get_db
 from app.models.user import User
@@ -15,8 +15,33 @@ from app.schemas.podcast import (
     PodcastEpisodeResponse,
     PodcastQuotaSummary,
 )
-from app.services import podcast_service, quota_service
+from app.services import entitlement_service, podcast_service, quota_service
+from app.services.entitlement_service import FeatureNotFoundError
 from app.services.quota_service import QuotaExceededError
+@router.get("/features/{feature}")
+async def get_feature_access(
+    feature: str,
+    current_user: User = Depends(get_current_user),
+) -> dict[str, str | bool]:
+    """Expose feature entitlement state for the current tenant."""
+
+    organization_id = current_user.organization_id
+
+    try:
+        tier = await subscription.get_organization_tier(organization_id)
+        has_access = await entitlement_service.check_feature_access(organization_id, feature)
+        required_tier = entitlement_service.get_required_tier(feature)
+    except FeatureNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+
+    return {
+        "feature": feature,
+        "tier": tier.value,
+        "has_access": has_access,
+        "required_tier": required_tier.value,
+    }
+
+
 
 logger = logging.getLogger(__name__)
 
