@@ -170,7 +170,7 @@ export interface ValuationExportResponse {
   export_format: string | null
 }
 
-import { api } from './api'
+import api from '../api'
 
 export async function listValuations(dealId: string): Promise<Valuation[]> {
   const response = await api.get<Valuation[]>(`/deals/${dealId}/valuations`)
