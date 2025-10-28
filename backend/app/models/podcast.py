@@ -28,6 +28,7 @@ class PodcastEpisode(Base):
 
     audio_file_url = Column(String(500), nullable=False)
     video_file_url = Column(String(500), nullable=True)
+    youtube_video_id = Column(String(64), nullable=True)
     duration_seconds = Column(Integer, nullable=True)
 
     status = Column(String(32), nullable=False, default="draft")

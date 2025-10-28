@@ -29,6 +29,7 @@ class PodcastEpisodeResponse(BaseModel):
     season_number: int
     audio_file_url: HttpUrl
     video_file_url: Optional[HttpUrl]
+    youtube_video_id: Optional[str] = None
 
 
 class PodcastQuotaSummary(BaseModel):
@@ -47,3 +48,9 @@ class PodcastQuotaSummary(BaseModel):
     upgrade_required: bool = False
     upgrade_message: Optional[str] = None
     upgrade_cta_url: Optional[str] = None
+
+
+class PodcastYouTubeUploadResponse(BaseModel):
+    """Response model for YouTube publish endpoint."""
+
+    video_id: str

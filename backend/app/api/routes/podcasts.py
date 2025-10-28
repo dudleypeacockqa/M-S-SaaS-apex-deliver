@@ -14,8 +14,9 @@ from app.schemas.podcast import (
     PodcastEpisodeCreate,
     PodcastEpisodeResponse,
     PodcastQuotaSummary,
+    PodcastYouTubeUploadResponse,
 )
-from app.services import entitlement_service, podcast_service, quota_service
+from app.services import entitlement_service, podcast_service, quota_service, youtube_service
 from app.services.entitlement_service import (
     FeatureNotFoundError,
     get_feature_upgrade_cta,
@@ -191,6 +192,59 @@ async def list_podcast_episodes(
         limit=limit,
     )
     return [PodcastEpisodeResponse.model_validate(ep) for ep in episodes]
+
+
+@router.post(
+    "/episodes/{episode_id}/youtube",
+    response_model=PodcastYouTubeUploadResponse,
+)
+async def publish_episode_to_youtube(
+    episode_id: str,
+    current_user: User = Depends(require_feature("youtube_integration")),
+    db: Session = Depends(get_db),
+) -> PodcastYouTubeUploadResponse:
+    """Publish an episode's video asset to YouTube and persist the video id."""
+
+    episode = podcast_service.get_episode(
+        db=db,
+        episode_id=episode_id,
+        organization_id=current_user.organization_id,
+    )
+    if episode is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Episode {episode_id} not found",
+        )
+
+    if not episode.video_file_url:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Video file required to publish episode to YouTube.",
+        )
+
+    tier = await subscription.get_organization_tier(current_user.organization_id)
+
+    try:
+        video_id = await youtube_service.upload_video(
+            data={
+                "title": episode.title,
+                "description": episode.description or "",
+                "file_path": str(episode.video_file_url),
+            },
+            organization_id=current_user.organization_id,
+            user_tier=tier,
+        )
+    except PermissionError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+
+    podcast_service.update_episode(
+        db=db,
+        episode_id=episode_id,
+        organization_id=current_user.organization_id,
+        youtube_video_id=video_id,
+    )
+
+    return PodcastYouTubeUploadResponse(video_id=video_id)
 
 
 @router.get(

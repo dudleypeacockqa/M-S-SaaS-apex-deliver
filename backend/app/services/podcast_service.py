@@ -107,6 +107,7 @@ def update_episode(
     description: Optional[str] = None,
     show_notes: Optional[str] = None,
     status: Optional[str] = None,
+    youtube_video_id: Optional[str] = None,
 ) -> PodcastEpisode:
     """Mutate simple episode fields and persist changes."""
 
@@ -124,6 +125,8 @@ def update_episode(
         episode.status = status
         if status == "published" and episode.published_at is None:
             episode.published_at = datetime.now(timezone.utc)
+    if youtube_video_id is not None:
+        episode.youtube_video_id = youtube_video_id
 
     db.add(episode)
     db.commit()

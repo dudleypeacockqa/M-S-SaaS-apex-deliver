@@ -899,3 +899,144 @@ class TestPodcastDeleteEndpoint:
             _clear_override()
 
 
+class TestPodcastYouTubeUpload:
+    """Tests covering the YouTube publish endpoint."""
+
+    def test_premium_user_can_publish_video_to_youtube(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="premium")
+        premium_user = create_user(role=UserRole.enterprise, organization_id=org.id)
+        premium_user.subscription_tier = SubscriptionTier.PREMIUM.value
+
+        _override_user(premium_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.subscription.get_organization_tier",
+                new_callable=AsyncMock,
+            ) as mock_tier, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode, patch(
+                "app.api.routes.podcasts.youtube_service.upload_video",
+                new_callable=AsyncMock,
+            ) as mock_upload, patch(
+                "app.api.routes.podcasts.podcast_service.update_episode"
+            ) as mock_update:
+                mock_feature.return_value = True
+                mock_tier.return_value = SubscriptionTier.PREMIUM
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-youtube",
+                    title="Premium Video Episode",
+                    description="Video upload",
+                    video_file_url="/tmp/video.mp4",
+                    organization_id=premium_user.organization_id,
+                )
+                mock_upload.return_value = "YT_123"
+
+                response = client.post("/api/podcasts/episodes/ep-youtube/youtube")
+
+            assert response.status_code == status.HTTP_200_OK
+            assert response.json() == {"video_id": "YT_123"}
+
+            mock_get_episode.assert_called_once()
+            mock_upload.assert_awaited_once_with(
+                data={
+                    "title": "Premium Video Episode",
+                    "description": "Video upload",
+                    "file_path": "/tmp/video.mp4",
+                },
+                organization_id=premium_user.organization_id,
+                user_tier=SubscriptionTier.PREMIUM,
+            )
+            mock_update.assert_called_once()
+            update_kwargs = mock_update.call_args.kwargs
+            assert update_kwargs["episode_id"] == "ep-youtube"
+            assert update_kwargs["youtube_video_id"] == "YT_123"
+        finally:
+            _clear_override()
+
+    def test_podcast_youtube_upload_requires_video_asset(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="premium")
+        premium_user = create_user(role=UserRole.enterprise, organization_id=org.id)
+        premium_user.subscription_tier = SubscriptionTier.PREMIUM.value
+
+        _override_user(premium_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.subscription.get_organization_tier",
+                new_callable=AsyncMock,
+            ) as mock_tier, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode:
+                mock_feature.return_value = True
+                mock_tier.return_value = SubscriptionTier.PREMIUM
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-no-video",
+                    title="Audio Only",
+                    description=None,
+                    video_file_url=None,
+                    organization_id=premium_user.organization_id,
+                )
+
+                response = client.post("/api/podcasts/episodes/ep-no-video/youtube")
+
+            assert response.status_code == status.HTTP_400_BAD_REQUEST
+            assert "video file" in response.json()["detail"].lower()
+        finally:
+            _clear_override()
+
+    def test_youtube_upload_permission_error_returns_403(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="premium")
+        premium_user = create_user(role=UserRole.enterprise, organization_id=org.id)
+        premium_user.subscription_tier = SubscriptionTier.PREMIUM.value
+
+        _override_user(premium_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.subscription.get_organization_tier",
+                new_callable=AsyncMock,
+            ) as mock_tier, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode, patch(
+                "app.api.routes.podcasts.youtube_service.upload_video",
+                new_callable=AsyncMock,
+            ) as mock_upload:
+                mock_feature.return_value = True
+                mock_tier.return_value = SubscriptionTier.PREMIUM
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-youtube",
+                    title="Premium Video Episode",
+                    description="Video upload",
+                    video_file_url="/tmp/video.mp4",
+                    organization_id=premium_user.organization_id,
+                )
+                mock_upload.side_effect = PermissionError("Premium tier required")
+
+                response = client.post("/api/podcasts/episodes/ep-youtube/youtube")
+
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert "premium" in response.json()["detail"].lower()
+        finally:
+            _clear_override()
