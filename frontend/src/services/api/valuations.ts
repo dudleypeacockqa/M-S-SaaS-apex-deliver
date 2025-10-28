@@ -221,31 +221,19 @@ export async function addComparableCompany(
 export async function getComparableSummary(
   dealId: string,
   valuationId: string,
+  options: { subjectRevenue?: number | null; subjectEbitda?: number | null } = {},
 ): Promise<ComparableSummaryResponse> {
+  const params: Record<string, number> = {}
+  if (options.subjectRevenue != null) {
+    params.subject_revenue = options.subjectRevenue
+  }
+  if (options.subjectEbitda != null) {
+    params.subject_ebitda = options.subjectEbitda
+  }
+
   const response = await api.get<ComparableSummaryResponse>(
     `/api/deals/${dealId}/valuations/${valuationId}/comparables/summary`,
-  )
-  return response.data
-}
-
-export async function listPrecedentTransactions(
-  dealId: string,
-  valuationId: string,
-): Promise<PrecedentTransaction[]> {
-  const response = await api.get<PrecedentTransaction[]>(
-    `/api/deals/${dealId}/valuations/${valuationId}/transactions`,
-  )
-  return response.data
-}
-
-export async function addPrecedentTransaction(
-  dealId: string,
-  valuationId: string,
-  payload: PrecedentTransactionCreate,
-): Promise<PrecedentTransaction> {
-  const response = await api.post<PrecedentTransaction>(
-    `/api/deals/${dealId}/valuations/${valuationId}/transactions`,
-    payload,
+    { params },
   )
   return response.data
 }
@@ -253,9 +241,16 @@ export async function addPrecedentTransaction(
 export async function getPrecedentSummary(
   dealId: string,
   valuationId: string,
+  options: { subjectEbitda?: number | null } = {},
 ): Promise<PrecedentSummaryResponse> {
+  const params: Record<string, number> = {}
+  if (options.subjectEbitda != null) {
+    params.subject_ebitda = options.subjectEbitda
+  }
+
   const response = await api.get<PrecedentSummaryResponse>(
     `/api/deals/${dealId}/valuations/${valuationId}/transactions/summary`,
+    { params },
   )
   return response.data
 }
@@ -337,3 +332,4 @@ export default {
   runMonteCarlo,
   triggerExport,
 }
+
