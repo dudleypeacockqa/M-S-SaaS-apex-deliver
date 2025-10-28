@@ -136,76 +136,29 @@ export async function listUsers(
   const params = new URLSearchParams({
     page: page.toString(),
     per_page: perPage.toString(),
-  });
+  })
 
   if (search) {
-    params.append('search', search);
+    params.append('search', search)
   }
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/admin/users?${params}`,
-    {
-      headers: await getAuthHeaders(),
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch users: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.get<PaginatedUsers>(`/api/admin/users?${params}`)
 }
 
 export async function getUserDetails(userId: string): Promise<User> {
-  const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}`, {
-    headers: await getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch user details: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.get<User>(`/api/admin/users/${userId}`)
 }
 
 export async function updateUser(userId: string, updates: UserUpdate): Promise<User> {
-  const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}`, {
-    method: 'PUT',
-    headers: await getAuthHeaders(),
-    body: JSON.stringify(updates),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to update user: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.put<User>(`/api/admin/users/${userId}`, updates)
 }
 
 export async function softDeleteUser(userId: string): Promise<{ message: string; user_id: string }> {
-  const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}`, {
-    method: 'DELETE',
-    headers: await getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to delete user: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.delete<{ message: string; user_id: string }>(`/api/admin/users/${userId}`)
 }
 
 export async function restoreUser(userId: string): Promise<User> {
-  const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/restore`, {
-    method: 'POST',
-    headers: await getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to restore user: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.post<User>(`/api/admin/users/${userId}/restore`)
 }
 
 /**
@@ -218,75 +171,26 @@ export async function listOrganizations(
   const params = new URLSearchParams({
     page: page.toString(),
     per_page: perPage.toString(),
-  });
+  })
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/admin/organizations?${params}`,
-    {
-      headers: await getAuthHeaders(),
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch organizations: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.get<PaginatedOrganizations>(`/api/admin/organizations?${params}`)
 }
 
 export async function getOrganizationDetails(orgId: string): Promise<Organization> {
-  const response = await fetch(`${API_BASE_URL}/api/admin/organizations/${orgId}`, {
-    headers: await getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch organization details: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.get<Organization>(`/api/admin/organizations/${orgId}`)
 }
 
 export async function getOrganizationUsers(orgId: string): Promise<OrganizationUsers> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/admin/organizations/${orgId}/users`,
-    {
-      headers: await getAuthHeaders(),
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch organization users: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.get<OrganizationUsers>(`/api/admin/organizations/${orgId}/users`)
 }
 
 export async function getOrganizationMetrics(orgId: string): Promise<OrganizationMetrics> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/admin/organizations/${orgId}/metrics`,
-    {
-      headers: await getAuthHeaders(),
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch organization metrics: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.get<OrganizationMetrics>(`/api/admin/organizations/${orgId}/metrics`)
 }
 
 /**
  * System Health API Functions
  */
 export async function getSystemHealth(): Promise<SystemHealth> {
-  const response = await fetch(`${API_BASE_URL}/api/admin/system/health`, {
-    headers: await getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch system health: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.get<SystemHealth>('/api/admin/system/health')
 }

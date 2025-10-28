@@ -5,18 +5,7 @@
  * All endpoints require authentication and are organization-scoped.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-/**
- * Get authorization headers with Clerk JWT token
- */
-async function getAuthHeaders(): Promise<HeadersInit> {
-  // In production, this would get the token from Clerk
-  // For now, we'll implement a basic version
-  return {
-    'Content-Type': 'application/json',
-  };
-}
+import { apiClient } from './client'
 
 /**
  * Deal Types
@@ -92,115 +81,52 @@ export interface PaginatedDeals {
  * Create a new deal
  */
 export async function createDeal(deal: DealCreate): Promise<Deal> {
-  const response = await fetch(`${API_BASE_URL}/api/deals`, {
-    method: 'POST',
-    headers: await getAuthHeaders(),
-    body: JSON.stringify(deal),
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: response.statusText }));
-    throw new Error(error.detail || `Failed to create deal: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.post<Deal>('/api/deals', deal)
 }
 
 /**
  * List deals with filters and pagination
  */
 export async function listDeals(params: DealListParams = {}): Promise<PaginatedDeals> {
-  const searchParams = new URLSearchParams();
+  const searchParams = new URLSearchParams()
 
-  if (params.page) searchParams.append('page', params.page.toString());
-  if (params.per_page) searchParams.append('per_page', params.per_page.toString());
-  if (params.stage) searchParams.append('stage', params.stage);
-  if (params.search) searchParams.append('search', params.search);
-  if (params.sort_by) searchParams.append('sort_by', params.sort_by);
-  if (params.sort_order) searchParams.append('sort_order', params.sort_order);
-  if (params.include_archived === true) searchParams.append('include_archived', 'true');
+  if (params.page) searchParams.append('page', params.page.toString())
+  if (params.per_page) searchParams.append('per_page', params.per_page.toString())
+  if (params.stage) searchParams.append('stage', params.stage)
+  if (params.search) searchParams.append('search', params.search)
+  if (params.sort_by) searchParams.append('sort_by', params.sort_by)
+  if (params.sort_order) searchParams.append('sort_order', params.sort_order)
+  if (params.include_archived === true) searchParams.append('include_archived', 'true')
 
-  const url = `${API_BASE_URL}/api/deals?${searchParams}`;
-  const response = await fetch(url, {
-    headers: await getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch deals: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.get<PaginatedDeals>(`/api/deals?${searchParams}`)
 }
 
 /**
  * Get a single deal by ID
  */
 export async function getDeal(dealId: string): Promise<Deal> {
-  const response = await fetch(`${API_BASE_URL}/api/deals/${dealId}`, {
-    headers: await getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    if (response.status === 404) {
-      throw new Error('Deal not found');
-    }
-    if (response.status === 403) {
-      throw new Error('You do not have permission to view this deal');
-    }
-    throw new Error(`Failed to fetch deal: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.get<Deal>(`/api/deals/${dealId}`)
 }
 
 /**
  * Update a deal
  */
 export async function updateDeal(dealId: string, updates: DealUpdate): Promise<Deal> {
-  const response = await fetch(`${API_BASE_URL}/api/deals/${dealId}`, {
-    method: 'PUT',
-    headers: await getAuthHeaders(),
-    body: JSON.stringify(updates),
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: response.statusText }));
-    throw new Error(error.detail || `Failed to update deal: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.put<Deal>(`/api/deals/${dealId}`, updates)
 }
 
 /**
  * Archive a deal (soft delete)
  */
 export async function archiveDeal(dealId: string): Promise<{ message: string; deal_id: string }> {
-  const response = await fetch(`${API_BASE_URL}/api/deals/${dealId}/archive`, {
-    method: 'POST',
-    headers: await getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to archive deal: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.post<{ message: string; deal_id: string }>(`/api/deals/${dealId}/archive`)
 }
 
 /**
  * Unarchive a deal
  */
 export async function unarchiveDeal(dealId: string): Promise<Deal> {
-  const response = await fetch(`${API_BASE_URL}/api/deals/${dealId}/unarchive`, {
-    method: 'POST',
-    headers: await getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to unarchive deal: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.post<Deal>(`/api/deals/${dealId}/unarchive`)
 }
 
 /**

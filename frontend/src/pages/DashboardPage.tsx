@@ -6,8 +6,10 @@
 import React from 'react'
 import { useUser } from '@clerk/clerk-react'
 import { Link } from 'react-router-dom'
-import { Card, CardHeader, CardBody, Badge, Button } from '../components/ui'
+import { useQuery } from '@tanstack/react-query'
+import { Card, CardHeader, CardBody, Badge, Button, Spinner } from '../components/ui'
 import { GridSystem } from '../components/layout'
+import { listDeals, type DealStage, formatCurrency, getStageDisplayName } from '../services/api/deals'
 
 export const DashboardPage: React.FC = () => {
   const { user } = useUser()
@@ -79,14 +81,40 @@ const QuickStat: React.FC<{ label: string; value: string }> = ({ label, value })
  * Pipeline Summary Widget
  */
 const PipelineSummaryWidget: React.FC = () => {
-  // Mock data - will be replaced with real API call
-  const pipelineData = [
-    { stage: 'Sourcing', count: 8, value: '£1.2M', color: 'bg-blue-500' },
-    { stage: 'Evaluation', count: 5, value: '£800K', color: 'bg-purple-500' },
-    { stage: 'Due Diligence', count: 3, value: '£600K', color: 'bg-yellow-500' },
-    { stage: 'Negotiation', count: 2, value: '£400K', color: 'bg-orange-500' },
-    { stage: 'Closing', count: 1, value: '£200K', color: 'bg-green-500' },
-  ]
+  // Fetch real deals from API
+  const { data: dealsData, isLoading, error } = useQuery({
+    queryKey: ['deals', 'pipeline'],
+    queryFn: () => listDeals({ include_archived: false }),
+  })
+
+  // Aggregate deals by stage
+  const pipelineData = React.useMemo(() => {
+    if (!dealsData?.items) return []
+
+    const stageColors: Record<DealStage, string> = {
+      sourcing: 'bg-blue-500',
+      evaluation: 'bg-purple-500',
+      due_diligence: 'bg-yellow-500',
+      negotiation: 'bg-orange-500',
+      closing: 'bg-green-500',
+      won: 'bg-emerald-600',
+      lost: 'bg-red-500',
+    }
+
+    const stages: DealStage[] = ['sourcing', 'evaluation', 'due_diligence', 'negotiation', 'closing']
+
+    return stages.map(stage => {
+      const stageDeals = dealsData.items.filter(deal => deal.stage === stage)
+      const totalValue = stageDeals.reduce((sum, deal) => sum + (deal.deal_size || 0), 0)
+
+      return {
+        stage: getStageDisplayName(stage),
+        count: stageDeals.length,
+        value: formatCurrency(totalValue, stageDeals[0]?.currency || 'GBP'),
+        color: stageColors[stage],
+      }
+    }).filter(s => s.count > 0) // Only show stages with deals
+  }, [dealsData])
 
   return (
     <Card variant="elevated" padding="lg">
@@ -99,20 +127,45 @@ const PipelineSummaryWidget: React.FC = () => {
         </div>
       </CardHeader>
       <CardBody>
-        <div className="space-y-4">
-          {pipelineData.map((stage) => (
-            <div key={stage.stage} className="flex items-center gap-4">
-              <div className={`w-2 h-12 ${stage.color} rounded-full`} />
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium text-gray-900">{stage.stage}</span>
-                  <Badge variant="neutral">{stage.count} deals</Badge>
+        {isLoading && (
+          <div className="flex items-center justify-center py-8">
+            <Spinner />
+          </div>
+        )}
+
+        {error && (
+          <div className="text-center py-8 text-red-600">
+            <p>Failed to load pipeline data</p>
+            <p className="text-sm text-gray-600 mt-2">{error instanceof Error ? error.message : 'Unknown error'}</p>
+          </div>
+        )}
+
+        {!isLoading && !error && pipelineData.length === 0 && (
+          <div className="text-center py-8 text-gray-600">
+            <p className="text-lg font-medium mb-2">No deals yet</p>
+            <p className="text-sm mb-4">Create your first deal to get started</p>
+            <Link to="/deals/new">
+              <Button variant="primary" btnSize="sm">Create Deal</Button>
+            </Link>
+          </div>
+        )}
+
+        {!isLoading && !error && pipelineData.length > 0 && (
+          <div className="space-y-4">
+            {pipelineData.map((stage) => (
+              <div key={stage.stage} className="flex items-center gap-4">
+                <div className={`w-2 h-12 ${stage.color} rounded-full`} />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-medium text-gray-900">{stage.stage}</span>
+                    <Badge variant="neutral">{stage.count} {stage.count === 1 ? 'deal' : 'deals'}</Badge>
+                  </div>
+                  <div className="text-sm text-gray-600">{stage.value} total value</div>
                 </div>
-                <div className="text-sm text-gray-600">{stage.value} total value</div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CardBody>
     </Card>
   )
