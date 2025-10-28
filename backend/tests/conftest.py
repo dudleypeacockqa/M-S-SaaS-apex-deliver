@@ -13,7 +13,7 @@ from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from jose import jwt
-from sqlalchemy import create_engine, text, inspect
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from _pytest.fixtures import FixtureLookupError
@@ -28,7 +28,7 @@ for path in (REPO_ROOT, BACKEND_ROOT):  # pragma: no cover - import guard
 # Configure environment before importing application modules
 # Force override all settings for test environment
 os.environ["ENVIRONMENT"] = "test"
-os.environ["DATABASE_URL"] = "sqlite:///./test_app.db"
+os.environ["DATABASE_URL"] = "sqlite+pysqlite:///:memory:"
 os.environ["CLERK_SECRET_KEY"] = "test_clerk_secret"
 os.environ["CLERK_PUBLISHABLE_KEY"] = "test_clerk_pk"
 os.environ["CLERK_WEBHOOK_SECRET"] = "test_webhook_secret"
@@ -52,6 +52,7 @@ os.environ.setdefault("CELERY_RESULT_BACKEND", "cache+memory://")
 os.environ.setdefault("CELERY_TASK_ALWAYS_EAGER", "true")
 os.environ.setdefault("CELERY_TASK_EAGER_PROPAGATES", "true")
 
+from app.core import database as core_database  # noqa: E402
 from app.core.config import get_settings, settings  # noqa: E402
 from app.db import session as session_module  # noqa: E402
 from app.db.base import Base  # noqa: E402
@@ -86,9 +87,9 @@ if not Base.metadata.tables:  # pragma: no cover - sanity check
 get_settings.cache_clear()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def engine():
-    """Create an in-memory SQLite engine shared across tests."""
+    """Create an in-memory SQLite engine per test."""
 
     engine = create_engine(
         "sqlite+pysqlite:///:memory:",
@@ -96,46 +97,53 @@ def engine():
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
-    _reset_metadata(engine)
+    Base.metadata.create_all(engine)
+    SessionFactory = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
     session_module.engine = engine
-    session_module.SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
-    yield engine
-    _safe_drop_schema(engine)
-    engine.dispose()
+    session_module.SessionLocal = SessionFactory
+    core_database.engine = engine
+    core_database.SessionLocal = SessionFactory
+    try:
+        yield engine
+    finally:
+        Base.metadata.drop_all(engine)
+        engine.dispose()
+        core_database.engine = None
+        core_database.SessionLocal = None
 
 
+# fmt: off
+# Database reset helpers - DO NOT let linter/formatter modify these!
 @pytest.fixture(autouse=True)
 def _reset_database(engine):
     """Reset schema before each test for deterministic state."""
-
     _reset_metadata(engine)
     yield
 
 
 def _reset_metadata(engine) -> None:
     """Drop unmanaged tables and recreate metadata for tests."""
-
     _safe_drop_schema(engine)
     Base.metadata.create_all(engine, checkfirst=True)
 
 
 def _safe_drop_schema(engine) -> None:
     """Drop all tables/views without raising errors for missing objects."""
-
     with engine.begin() as connection:
         inspector = inspect(connection)
 
-        if engine.dialect.name == "sqlite":
+        if engine.dialect.name == "sqlite":  # pragma: no cover - sqlite path
             connection.exec_driver_sql("PRAGMA foreign_keys=OFF")
 
         for table_name in inspector.get_table_names():
-            connection.execute(text(f'DROP TABLE IF EXISTS "{table_name}"'))
+            connection.exec_driver_sql(f'DROP TABLE IF EXISTS "{table_name}"')
 
         for view_name in inspector.get_view_names():
             connection.execute(text(f'DROP VIEW IF EXISTS "{view_name}"'))
 
-        if engine.dialect.name == "sqlite":
+        if engine.dialect.name == "sqlite":  # pragma: no cover - sqlite path
             connection.exec_driver_sql("PRAGMA foreign_keys=ON")
+# fmt: on
 
 
 @pytest.fixture()
@@ -159,13 +167,14 @@ def client(engine) -> Iterator[TestClient]:
 
 @pytest.fixture()
 def db_session(engine):
-    """Provide a raw SQLAlchemy session for direct database inspection."""
+    """Provide a SQLAlchemy session for direct database inspection."""
 
     SessionTesting = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
     session = SessionTesting()
     try:
         yield session
     finally:
+        session.rollback()
         session.close()
 
 
