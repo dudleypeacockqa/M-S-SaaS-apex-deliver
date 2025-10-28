@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   listValuations,
@@ -13,6 +13,7 @@ import {
   triggerExport,
   createValuation,
   addComparableCompany,
+  addPrecedentTransaction,
 } from '../../../services/api/valuations'
 
 // Import types separately
@@ -83,10 +84,26 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
     data: valuations,
     isLoading,
     isError,
+    error,
     refetch,
   } = useQuery({
     queryKey: ['valuations', dealId],
     queryFn: () => listValuations(dealId),
+  })
+
+  const currentValuation = useMemo(() => {
+    if (!valuations || valuations.length === 0) {
+      return undefined
+    }
+    return valuations.find((valuation) => valuation.id === valuationId) ?? valuations[0]
+  }, [valuations, valuationId])
+
+  const currentValuationId = currentValuation?.id
+
+  const { data: scenarioSummary, isPending: isScenarioSummaryPending } = useQuery({
+    queryKey: ['valuations', dealId, currentValuationId, 'scenarios', 'summary'],
+    queryFn: () => getScenarioSummary(dealId, currentValuationId as string),
+    enabled: Boolean(currentValuationId),
   })
 
   const [formValues, setFormValues] = useState<ValuationFormState>(DEFAULT_VALUATION_FORM)
@@ -145,7 +162,7 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
       discount_rate: discountRateValue / 100,
       terminal_method: 'gordon_growth',
       terminal_cash_flow: terminalCashFlowValue,
-      cash_flows,
+      cash_flows: cashFlows,
       net_debt: Number(formValues.netDebt || 0),
     }
 
@@ -269,6 +286,30 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
   }
 
   if (isError) {
+    const statusCode =
+      (error as { response?: { status?: number } } | undefined)?.response?.status ??
+      (error as { status?: number } | undefined)?.status ??
+      (error as { statusCode?: number } | undefined)?.statusCode
+
+    if (statusCode === 403) {
+      return (
+        <div className="space-y-6">
+          <SectionCard title="Upgrade Required">
+            <div className="space-y-3 text-sm text-gray-600">
+              <p>The valuation workspace is available to Growth tier and above.</p>
+              <p>Please upgrade your subscription to unlock valuation analytics and exports.</p>
+              <Link
+                to="/pricing"
+                className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-indigo-700"
+              >
+                View pricing plans
+              </Link>
+            </div>
+          </SectionCard>
+        </div>
+      )
+    }
+
     return (
       <div className="space-y-6">
         {createForm}
@@ -298,8 +339,6 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
       </div>
     )
   }
-
-  const currentValuation = valuations.find((valuation) => valuation.id === valuationId) ?? valuations[0]
 
   return (
     <div className="space-y-6">
@@ -336,6 +375,38 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
       {currentValuation && (
         <SectionCard title="Monte Carlo Simulation">
           <MonteCarloPanel dealId={dealId} valuationId={currentValuation.id} />
+        </SectionCard>
+      )}
+
+      {currentValuation && (
+        <SectionCard title="Analytics Summary">
+          {isScenarioSummaryPending ? (
+            <div className="flex items-center gap-2 text-sm text-gray-600" role="status">
+              <LoadingSpinner />
+              <span>Fetching scenario analytics…</span>
+            </div>
+          ) : scenarioSummary ? (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+              <AnalyticsMetric label="Scenarios Analysed" value={scenarioSummary.count} />
+              <RangeValue label="EV Median" value={scenarioSummary.enterprise_value_range.median} />
+              <RangeValue label="Equity Median" value={scenarioSummary.equity_value_range.median} />
+              <AnalyticsMetric
+                label="EV Range"
+                value={
+                  scenarioSummary.enterprise_value_range.min != null &&
+                  scenarioSummary.enterprise_value_range.max != null
+                    ? `${formatCurrency(scenarioSummary.enterprise_value_range.min, 'GBP')} – ${formatCurrency(
+                        scenarioSummary.enterprise_value_range.max,
+                        'GBP',
+                      )}`
+                    : 'N/A'
+                }
+                isPlain
+              />
+            </div>
+          ) : (
+            <p className="text-sm text-gray-600">Create valuation scenarios to unlock analytics insights.</p>
+          )}
         </SectionCard>
       )}
     </div>
@@ -685,6 +756,7 @@ const SummaryMetricCard = ({
 }
 
 const PrecedentsView = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
+  const queryClient = useQueryClient()
   const { data: transactions, isLoading } = useQuery({
     queryKey: ['valuations', dealId, valuationId, 'precedents'],
     queryFn: () => listPrecedentTransactions(dealId, valuationId),
@@ -696,16 +768,176 @@ const PrecedentsView = ({ dealId, valuationId }: { dealId: string; valuationId: 
     enabled: !!transactions?.length,
   })
 
+  const [formData, setFormData] = useState({
+    targetCompany: '',
+    acquirerCompany: '',
+    evEbitda: '',
+    evRevenue: '',
+    weight: '1.00',
+    announcementDate: '',
+    notes: '',
+  })
+
+  const resetForm = () =>
+    setFormData({ targetCompany: '', acquirerCompany: '', evEbitda: '', evRevenue: '', weight: '1.00', announcementDate: '', notes: '' })
+
+  const toNullableNumber = (value: string) => {
+    if (value.trim() === '') return null
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+
+  const { mutateAsync, isPending, error } = useMutation({
+    mutationFn: () =>
+      addPrecedentTransaction(dealId, valuationId, {
+        target_company: formData.targetCompany.trim(),
+        acquirer_company: formData.acquirerCompany.trim(),
+        ev_ebitda_multiple: toNullableNumber(formData.evEbitda) ?? undefined,
+        ev_revenue_multiple: toNullableNumber(formData.evRevenue) ?? undefined,
+        weight: Number(formData.weight) || 1.0,
+        announcement_date: formData.announcementDate || undefined,
+        notes: formData.notes ? formData.notes.trim() : undefined,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['valuations', dealId, valuationId, 'precedents'] })
+      queryClient.invalidateQueries({ queryKey: ['valuations', dealId, valuationId, 'precedents', 'summary'] })
+      resetForm()
+    },
+  })
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!formData.targetCompany.trim() || !formData.acquirerCompany.trim()) {
+      return
+    }
+    await mutateAsync()
+  }
+
   if (isLoading) {
     return <p className="text-sm text-gray-600">Loading precedent transactions...</p>
   }
 
-  if (!transactions || transactions.length === 0) {
-    return <p className="text-sm text-gray-600">No precedent transactions recorded yet.</p>
-  }
-
   return (
     <div className="space-y-6">
+      <SectionCard title="Add Precedent Transaction">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label htmlFor="precedent-target-company" className="block text-sm font-medium text-gray-700">
+              Target Company
+            </label>
+            <input
+              id="precedent-target-company"
+              type="text"
+              value={formData.targetCompany}
+              onChange={(event) => setFormData((current) => ({ ...current, targetCompany: event.target.value }))}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="precedent-acquirer-company" className="block text-sm font-medium text-gray-700">
+              Acquirer Company
+            </label>
+            <input
+              id="precedent-acquirer-company"
+              type="text"
+              value={formData.acquirerCompany}
+              onChange={(event) => setFormData((current) => ({ ...current, acquirerCompany: event.target.value }))}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="precedent-ev-ebitda" className="block text-sm font-medium text-gray-700">
+              EV/EBITDA
+            </label>
+            <input
+              id="precedent-ev-ebitda"
+              type="number"
+              step="0.1"
+              value={formData.evEbitda}
+              onChange={(event) => setFormData((current) => ({ ...current, evEbitda: event.target.value }))}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              placeholder="e.g. 8.5"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="precedent-ev-revenue" className="block text-sm font-medium text-gray-700">
+              EV/Revenue Multiple
+            </label>
+            <input
+              id="precedent-ev-revenue"
+              type="number"
+              step="0.1"
+              value={formData.evRevenue}
+              onChange={(event) => setFormData((current) => ({ ...current, evRevenue: event.target.value }))}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              placeholder="e.g. 4.5"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="precedent-weight" className="block text-sm font-medium text-gray-700">
+              Weight
+            </label>
+            <input
+              id="precedent-weight"
+              type="number"
+              min="0"
+              step="0.1"
+              value={formData.weight}
+              onChange={(event) => setFormData((current) => ({ ...current, weight: event.target.value }))}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="precedent-announcement-date" className="block text-sm font-medium text-gray-700">
+              Announcement Date
+            </label>
+            <input
+              id="precedent-announcement-date"
+              type="date"
+              value={formData.announcementDate}
+              onChange={(event) => setFormData((current) => ({ ...current, announcementDate: event.target.value }))}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label htmlFor="precedent-notes" className="block text-sm font-medium text-gray-700">
+              Notes (optional)
+            </label>
+            <textarea
+              id="precedent-notes"
+              value={formData.notes}
+              onChange={(event) => setFormData((current) => ({ ...current, notes: event.target.value }))}
+              rows={3}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+            />
+          </div>
+
+          {error && (
+            <p className="md:col-span-2 text-sm text-red-600" role="alert">
+              Unable to add precedent transaction. Please try again.
+            </p>
+          )}
+
+          <div className="md:col-span-2 flex justify-end">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isPending ? 'Saving...' : 'Add Precedent'}
+            </button>
+          </div>
+        </form>
+      </SectionCard>
+
       {summary && (
         <SectionCard title="Valuation Summary">
           <SummaryMetricCard title="EV / EBITDA" metrics={summary.ev_ebitda} />
@@ -717,8 +949,11 @@ const PrecedentsView = ({ dealId, valuationId }: { dealId: string; valuationId: 
       )}
 
       <SectionCard title="Precedent Transactions">
+        {(!transactions || transactions.length === 0) && (
+          <p className="text-sm text-gray-600">No precedent transactions recorded yet.</p>
+        )}
         <div className="space-y-4">
-          {transactions.map((transaction) => (
+          {transactions?.map((transaction) => (
             <article key={transaction.id} className="rounded-lg border border-gray-200 p-4">
               <header className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
                 <div>
@@ -823,6 +1058,25 @@ const RangeValue = ({ label, value }: { label: string; value: number | null }) =
     </p>
   </div>
 )
+
+const AnalyticsMetric = ({
+  label,
+  value,
+  isPlain = false,
+}: {
+  label: string
+  value: number | string
+  isPlain?: boolean
+}) => {
+  const displayValue = typeof value === 'number' && !isPlain ? value.toLocaleString() : value
+
+  return (
+    <div className="rounded-lg border border-gray-200 p-4 text-center">
+      <p className="text-sm text-gray-500">{label}</p>
+      <p className="text-lg font-semibold text-gray-900">{displayValue}</p>
+    </div>
+  )
+}
 
 const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
   const queryClient = useQueryClient()
