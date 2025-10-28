@@ -10,6 +10,11 @@
 
 ---
 
+**Latest Update (2025-10-28 12:56 UTC)**:
+- Backend pytest suite now 369 passed / 1 skipped; frontend Vitest suite passing.
+- `/podcasts/usage` quota summary endpoint implemented with professional/premium/starter coverage tests.
+- DEV-016 moving from planning into implementation; entitlement enforcement and frontend gating remain outstanding.
+
 ## Story Overview
 
 ### User Story
@@ -177,169 +182,45 @@
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Database Schema
+### Data & Persistence Design
 
-```sql
--- Podcast Episodes (already exists in models/podcast.py)
-CREATE TABLE podcast_episodes (
-    id VARCHAR(36) PRIMARY KEY,
-    organization_id VARCHAR(36) NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    show_notes TEXT,
-    episode_number INTEGER NOT NULL DEFAULT 1,
-    season_number INTEGER NOT NULL DEFAULT 1,
-    audio_file_url VARCHAR(500) NOT NULL,
-    video_file_url VARCHAR(500),
-    duration_seconds INTEGER,
-    status VARCHAR(32) NOT NULL DEFAULT 'draft', -- draft, published, archived
-    transcript TEXT,
-    youtube_video_id VARCHAR(100),
-    youtube_url VARCHAR(500),
-    created_by VARCHAR(36) NOT NULL REFERENCES users(id),
-    published_at TIMESTAMP WITH TIME ZONE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE,
-    INDEX idx_org_id (organization_id),
-    INDEX idx_status (status),
-    INDEX idx_created_at (created_at)
-);
+**Current schema**
+- `podcast_episodes` (existing): stores core metadata, ownership (`organization_id`), and asset URLs. No structural changes required for DEV-016.
+- `podcast_usage` (new): matches `app/models/podcast_usage.py` with columns `id`, `organization_id`, `month` (UTC first of month), `episode_count`, `created_at`, `updated_at`, and composite unique index on `(organization_id, month)` for quota enforcement.
 
--- Podcast Transcripts
-CREATE TABLE podcast_transcripts (
-    id VARCHAR(36) PRIMARY KEY,
-    episode_id VARCHAR(36) NOT NULL REFERENCES podcast_episodes(id) ON DELETE CASCADE,
-    organization_id VARCHAR(36) NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    text TEXT NOT NULL,
-    language VARCHAR(10) DEFAULT 'en',
-    confidence_score DECIMAL(5,4),
-    processing_time_ms INTEGER,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    INDEX idx_episode_id (episode_id)
-);
+**Planned extensions**
+- `podcast_transcripts`, `podcast_analytics`, and expanded usage metrics (storage, transcription minutes) remain in backlog; document revisions will be made during corresponding stories.
+- Alembic migrations exist for podcast usage tracking—verify they are applied before production deploy.
 
--- Podcast Analytics
-CREATE TABLE podcast_analytics (
-    id VARCHAR(36) PRIMARY KEY,
-    episode_id VARCHAR(36) NOT NULL REFERENCES podcast_episodes(id) ON DELETE CASCADE,
-    organization_id VARCHAR(36) NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    plays INTEGER DEFAULT 0,
-    downloads INTEGER DEFAULT 0,
-    youtube_views INTEGER DEFAULT 0,
-    youtube_likes INTEGER DEFAULT 0,
-    youtube_comments INTEGER DEFAULT 0,
-    avg_watch_duration_seconds INTEGER,
-    last_synced_at TIMESTAMP WITH TIME ZONE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE,
-    INDEX idx_episode_id (episode_id)
-);
+### API Surface (Current vs Planned)
 
--- Usage Tracking (NEW - for quota enforcement)
-CREATE TABLE podcast_usage_tracking (
-    id VARCHAR(36) PRIMARY KEY,
-    organization_id VARCHAR(36) NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    month VARCHAR(7) NOT NULL, -- YYYY-MM format
-    episodes_created INTEGER DEFAULT 0,
-    audio_storage_mb DECIMAL(10,2) DEFAULT 0,
-    video_storage_mb DECIMAL(10,2) DEFAULT 0,
-    transcription_minutes INTEGER DEFAULT 0,
-    youtube_uploads INTEGER DEFAULT 0,
-    live_streams INTEGER DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE,
-    UNIQUE INDEX idx_org_month (organization_id, month)
-);
-```
+**Implemented**
+- `POST /podcasts/episodes`
+  - Guards: `require_feature("podcast_audio")`; conditional `require_feature("podcast_video")` when `video_file_url` present.
+  - Errors: `403 Forbidden` (insufficient tier), `429 Too Many Requests` (Professional quota exceeded).
+  - Side-effects: calls `quota_service.check_episode_quota` before creation and `increment_episode_count` afterwards.
 
-### API Endpoints
+**In progress / backlog**
+- Episode listing, detail, update, delete endpoints (reasons: not yet defined in routes module).
+- Transcription & YouTube integration endpoints (future phases once Whisper/YouTube services finished).
+- Live streaming endpoints (Enterprise feature—design placeholder only).
+- Usage summary endpoint `GET /podcasts/usage` to expose remaining quota for UI; to be implemented alongside quota UI work.
 
-```python
-# Episode Management
-POST   /api/v1/podcast/episodes
-  - Auth: Required
-  - Tier: Professional+
-  - Body: { title, description, audio_url, ... }
-  - Returns: 201 Created | 403 Forbidden
+### Quota Enforcement Flow
 
-GET    /api/v1/podcast/episodes
-  - Auth: Required
-  - Tier: Professional+
-  - Query: ?page=1&limit=20&status=published
-  - Returns: 200 OK | 403 Forbidden
+1. `get_organization_tier` (from `app/core/subscription.py`) resolves the Clerk organization tier, defaulting to Starter when metadata is missing.
+2. `check_episode_quota` (quota service) maps tier → quota limit via `TIER_QUOTAS` and denies Starter tiers immediately with upgrade messaging.
+3. Professional tier fetches current month usage (`get_monthly_usage`) using the composite index on `podcast_usage`; hitting the limit raises `QuotaExceededError` which becomes HTTP 429.
+4. Premium/Enterprise tiers bypass quota checks (limit `-1`) but still record usage for analytics.
+5. `increment_episode_count` upserts the monthly record (async/sync safe) and commits; concurrency issues log warnings without breaking the request.
 
-GET    /api/v1/podcast/episodes/{id}
-  - Auth: Required
-  - Tier: Professional+
-  - Returns: 200 OK | 403 Forbidden | 404 Not Found
+### Frontend Gating Patterns
 
-PUT    /api/v1/podcast/episodes/{id}
-  - Auth: Required
-  - Tier: Professional+
-  - Body: { title, description, ... }
-  - Returns: 200 OK | 403 Forbidden | 404 Not Found
-
-DELETE /api/v1/podcast/episodes/{id}
-  - Auth: Required
-  - Tier: Professional+
-  - Returns: 204 No Content | 403 Forbidden | 404 Not Found
-
-# Transcription
-POST   /api/v1/podcast/episodes/{id}/transcribe
-  - Auth: Required
-  - Tier: Professional+
-  - Returns: 202 Accepted (async task) | 403 Forbidden
-
-GET    /api/v1/podcast/transcripts/{episode_id}
-  - Auth: Required
-  - Tier: Professional+
-  - Returns: 200 OK | 403 Forbidden | 404 Not Found
-
-# YouTube Integration
-POST   /api/v1/podcast/youtube/connect
-  - Auth: Required
-  - Tier: Premium+
-  - Body: { auth_code }
-  - Returns: 200 OK | 403 Forbidden
-
-POST   /api/v1/podcast/episodes/{id}/youtube/publish
-  - Auth: Required
-  - Tier: Premium+
-  - Returns: 202 Accepted (async task) | 403 Forbidden
-
-GET    /api/v1/podcast/youtube/videos
-  - Auth: Required
-  - Tier: Premium+
-  - Returns: 200 OK | 403 Forbidden
-
-# Live Streaming
-POST   /api/v1/podcast/streaming/start
-  - Auth: Required
-  - Tier: Enterprise
-  - Body: { title, description }
-  - Returns: 200 OK (stream URL) | 403 Forbidden
-
-POST   /api/v1/podcast/streaming/stop
-  - Auth: Required
-  - Tier: Enterprise
-  - Returns: 200 OK | 403 Forbidden
-
-GET    /api/v1/podcast/streaming/status
-  - Auth: Required
-  - Tier: Enterprise
-  - Returns: 200 OK | 403 Forbidden
-
-# Usage & Quota
-GET    /api/v1/podcast/usage
-  - Auth: Required
-  - Tier: Professional+
-  - Returns: { episodes_created, limit, remaining, percentage }
-
-GET    /api/v1/podcast/quota
-  - Auth: Required
-  - Tier: Professional+
-  - Returns: { tier, features, limits }
-```
+- Extend `useCurrentUser` hook to expose `subscriptionTier` and `featureEntitlements` fetched from Clerk + entitlement service.
+- `ProtectedRoute` gains `requiredFeature` prop to redirect unauthorized users to `UpgradePrompt` with contextual messaging built from `get_feature_upgrade_message`.
+- Component-level guard utility `useFeatureFlag` handles conditional rendering for controls like Upload, Video toggle, and YouTube publish action.
+- Quota display consumes upcoming `/podcasts/usage` endpoint to show remaining episodes, color-coded thresholds (80/90/100%).
+- Error boundaries map HTTP 403/429 to upgrade modals and CTA flows rather than generic toasts.
 
 ### Feature Entitlement Matrix
 
@@ -1187,4 +1068,5 @@ REDIS_URL=redis://localhost:6379/0
 4. **Validation & Deployment Readiness**
    - Run pytest, npm test/lint/build; regenerate BMAD manifests (installer.compileAgents + ManifestGenerator).
    - Verify Render backend/marketing health, update story checklist and PR description.
+
 

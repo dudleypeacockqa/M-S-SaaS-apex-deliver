@@ -9,9 +9,13 @@ from sqlalchemy.orm import Session
 from app.api.dependencies.auth import require_feature
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.podcast import PodcastEpisodeCreate, PodcastEpisodeResponse
+from app.schemas.podcast import (
+    PodcastEpisodeCreate,
+    PodcastEpisodeResponse,
+    PodcastQuotaSummary,
+)
 from app.services import podcast_service, quota_service
-from app.services.quota_service import QuotaExceededError
+from app.services.quota_service import QuotaExceededError, get_quota_summary
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +39,10 @@ async def create_podcast_episode(
         await video_gate(current_user=current_user)
 
     try:
-        await quota_service.check_episode_quota(current_user.organization_id)
+        await quota_service.check_episode_quota(
+            organization_id=current_user.organization_id,
+            db=db,
+        )
     except QuotaExceededError as exc:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
@@ -54,22 +61,34 @@ async def create_podcast_episode(
         organization_id=current_user.organization_id,
     )
 
-    await _increment_episode_usage(current_user.organization_id, db)
+    await _increment_episode_usage(organization_id=current_user.organization_id, db=db)
 
     return PodcastEpisodeResponse.model_validate(episode)
+
+
+@router.get(
+    "/usage",
+    response_model=PodcastQuotaSummary,
+)
+async def get_podcast_usage_summary(
+    current_user: User = Depends(require_feature("podcast_audio")),
+    db: Session = Depends(get_db),
+) -> PodcastQuotaSummary:
+    """Return quota summary for the current tenant's podcast usage."""
+
+    summary = await get_quota_summary(
+        organization_id=current_user.organization_id,
+        db=db,
+    )
+
+    return summary
 
 
 async def _increment_episode_usage(organization_id: str, db: Session) -> None:
     """Increment usage counts when possible, tolerating sync-only sessions."""
 
     try:
-        await quota_service.increment_episode_count(organization_id, db)  # type: ignore[arg-type]
-    except (TypeError, AttributeError) as exc:
-        logger.debug(
-            "Skipping async quota increment for organization %s due to session incompatibility: %s",
-            organization_id,
-            exc,
-        )
+        await quota_service.increment_episode_count(organization_id=organization_id, db=db)
     except QuotaExceededError:
         # Ignore quota overshoot triggered concurrently; creation already succeeded
         logger.warning(
@@ -80,6 +99,3 @@ async def _increment_episode_usage(organization_id: str, db: Session) -> None:
         logger.exception(
             "Unexpected error incrementing podcast quota for organization %s", organization_id
         )
-
-
-

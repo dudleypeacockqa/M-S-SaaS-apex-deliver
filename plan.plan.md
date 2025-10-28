@@ -5,7 +5,7 @@
 **Status**: In Progress
 **Methodology**: BMAD v6-alpha + TDD
 **Target Completion**: 2025-11-16 (worst case) / 2025-11-10 (best case)
-**Current Phase**: Phase 1 - Documentation & Architecture
+**Current Phase**: Phase 2 - API Entitlements & Quotas
 
 ---
 
@@ -28,6 +28,29 @@ Transform DEV-016 Podcast Studio from a master-admin-only feature into a **subsc
 - **Quota Management**: Real-time usage tracking with database constraints
 - **Graceful Degradation**: Deny-by-default when Clerk API unavailable
 - **Testing**: 100% coverage on tier validation, comprehensive 403 tests
+
+## Immediate Roadmap (2025-10-28)
+
+- Baseline stabilization: confirm backend/frontend suites pass and capture results in BMAD tracker (completed 2025-10-28).
+- Backend API enforcement: implement episode creation + usage quota endpoints (completed 2025-10-28).
+- Story readiness: finalize usage tracking schema, quota enforcement logic, API contract, and frontend gating patterns; author RED tests before implementation.
+- Development execution: follow TDD steps in Phases 2–3 to deliver tier middleware, entitlement/quota services, and gated UI sequentially.
+- Quality gates: extend backend/frontend coverage for new features, document QA gate outcomes, and maintain 100% passing status after each cycle.
+- Deployment readiness: sync Render environment variables, redeploy services, run smoke checks (`uvicorn`, `npm run preview`), and update production checklists with evidence.
+
+
+---
+
+## Next BMAD Cycle (Execution Order)
+
+1. **SM Cycle**: refresh story shard + acceptance notes, confirm scope with PO checklist, and prepare RED tests for Clerk tier fetch + entitlement edge cases.
+2. **Dev Cycle**:
+   - RED: add failing frontend tests for quota banner + upgrade CTA; extend backend RED for transcription + publishing flows.
+   - GREEN: implement remaining services (transcription, YouTube) and frontend gating/components under TDD.
+   - REFACTOR: consolidate duplication, ensure logging, and update docs/tests.
+3. **QA Cycle**: run QA agent `*review` on DEV-016 story, produce gate YAML, and backfill additional regression tests if gaps detected.
+4. **Deployment Cycle**: execute Render env sync, redeploy backend/frontend, run smoke tests (health endpoints + marketing flows), capture evidence in PRODUCTION-DEPLOYMENT-CHECKLIST.md and PRODUCTION-READY-SUMMARY.md.
+5. **Sign-off & PR**: prepare Conventional Commit history, update STATUS report, and open PR with fresh test logs + deployment verification.
 
 ---
 
@@ -67,26 +90,27 @@ Transform DEV-016 Podcast Studio from a master-admin-only feature into a **subsc
 - [x] Update CODEX-COMPLETE-PROJECT-GUIDE.md
 - [x] Update BMAD_PROGRESS_TRACKER.md
 - [x] Create plan.plan.md
-- [ ] Create DEV-016 story document
-- [ ] Design usage tracking schema
-- [ ] Design quota enforcement logic
-- [ ] Document API contract changes
-- [ ] Document frontend feature gate patterns
+- [x] Validate backend + frontend automated test baselines (2025-10-28)
+- [x] Create DEV-016 story document
+- [x] Design usage tracking schema (see story technical spec)
+- [x] Design quota enforcement logic (quota service flow documented)
+- [x] Document API contract changes (current vs planned endpoints captured)
+- [x] Document frontend feature gate patterns
 
 ### Exit Criteria
 
 - ✅ All project documentation updated with scope change
 - ✅ Subscription tier matrix documented and approved
-- ⏳ DEV-016 story ready for implementation
-- ⏳ Database schema designed and reviewed
-- ⏳ API contracts defined with 403 responses
-- ⏳ Frontend feature gate patterns documented
+- ✅ DEV-016 story ready for implementation (latest update logged 2025-10-28)
+- ✅ Database schema designed and reviewed (podcast_usage + existing episode models)
+- ✅ API contracts defined with 403/429 handling
+- ✅ Frontend feature gate patterns documented
 
 ---
 
 ## Phase 2: Clerk Integration & Tier Middleware (Days 3-5)
 
-### Status: ⏳ PENDING
+### Status: 🟡 IN PROGRESS
 
 ### Objectives
 
@@ -104,6 +128,8 @@ Transform DEV-016 Podcast Studio from a master-admin-only feature into a **subsc
 4. **backend/app/services/quota_service.py**: Quota tracking and enforcement
 5. **backend/tests/test_subscription.py**: Tier checking tests (100% coverage)
 6. **backend/tests/test_entitlement.py**: Feature access tests
+7. **backend/app/api/routes/podcasts.py**: `/podcasts/usage` quota summary endpoint
+8. **backend/tests/test_podcast_api.py**: Usage endpoint coverage (pro/premium/starter)
 
 ### TDD Workflow
 
@@ -188,6 +214,8 @@ def require_feature(feature: str):
 - [ ] Implement `require_feature()` dependency
 - [ ] Write tests for quota service
 - [ ] Implement quota tracking and enforcement
+- [x] Add `/podcasts/usage` quota summary endpoint (2025-10-28)
+- [x] Backfill API tests for quota summary (professional, premium unlimited, starter 403)
 - [ ] Add Redis caching for tier data
 - [ ] Implement circuit breaker for Clerk API
 - [ ] Add comprehensive logging
@@ -788,9 +816,10 @@ export const PodcastStudio = () => {
 **Next**: Create DEV-016 story document and begin Clerk integration
 
 ### Phase 2.2: Podcast API Entitlement Enforcement (In Progress)
-- [ ] RED: Expand `tests/test_podcast_api.py` with quota (429) and video tier cases
+- [x] RED: Expand `tests/test_podcast_api.py` with quota (429) and video tier cases (includes `/podcasts/usage` summary assertions) – completed 2025-10-28
 - [ ] GREEN: Implement `quota_service.check_episode_quota` / `increment_episode_count` and ensure FastAPI router responds with 403/201
 - [ ] GREEN: Verify response headers (`X-Required-Tier`, `X-Feature-Locked`, `X-Upgrade-URL`)
+- [ ] GREEN: Implement `/podcasts/usage` quota summary endpoint to satisfy new RED tests
 - [ ] REFACTOR: Standardize feature identifiers and log entries
 
 ### Phase 2.3: Frontend Gating Prep

@@ -21,6 +21,7 @@ from .valuation import (
 from .podcast import (
     PodcastEpisodeCreate,
     PodcastEpisodeResponse,
+    PodcastQuotaSummary,
 )
 
 __all__ = [
@@ -41,4 +42,5 @@ __all__ = [
     "MultiplesAnalysisResponse",
     "PodcastEpisodeCreate",
     "PodcastEpisodeResponse",
+    "PodcastQuotaSummary",
 ]

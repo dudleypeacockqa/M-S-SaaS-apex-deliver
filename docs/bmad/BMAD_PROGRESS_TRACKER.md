@@ -1,17 +1,23 @@
+### Session 2025-10-28 (Tier & Quota Baseline)
+- COMPLETED: quota summary endpoint implemented with professional/premium/starter coverage tests
+- BLOCKED: backend quota pytest currently fails with sqlite OperationalError (drop_all financial_ratios)
+- NEXT: harden pytest DB reset, rerun RED cycle, then integrate tier middleware + frontend gating before Render smoke checks
+
 # BMAD Progress Tracker - M&A Intelligence Platform
 
-**Last Updated**: 2025-10-28 20:00 UTC
-**Methodology**: BMAD-Inspired Agile + TDD (manual story workflow)
-**Project Phase**: Sprint 6 – DEV-016 Podcast Studio (Backend Complete) + Marketing Website Polish
-**Deployment Status**: ✅ **PRODUCTION HEALTHY** - Backend 100%, Frontend deployed and styled
+**Last Updated**: 2025-10-28 12:57 UTC (Codex status audit)
+**Methodology**: BMAD v6-alpha (core + bmb + bmm + cis) + TDD (tests-first)
+**Project Phase**: Sprint 6 – DEV-016 Podcast Studio Subscription Add-On (API enforcement cycle)
+**Deployment Status**: BLOCKED – backend quota pytest failing during SQLite teardown (OperationalError: no such table: financial_ratios); Render redeploy pending env sync & verification
 **Sprint 1**: ✅ Complete (historical)
 **Sprint 2**: ✅ DEV-007 and DEV-008 complete
 **Sprint 3**: ✅ MARK-001 and DEV-009 complete
 **Sprint 4**: ✅ DEV-010 complete
-**Sprint 5**: ✅ DEV-011 backend analytics complete
-**Sprint 6**: ✅ DEV-016 backend complete; 🟢 Marketing website fully functional
-**Latest Commit**: `768de14` test(frontend): fix all failing tests - 454/465 passing
-**Test Suites**: ✅ Backend: 360/362 passing (83% coverage), Frontend: 454/465 passing (54% coverage)
+**Sprint 5**: 🟡 DEV-011 backend analytics green; frontend polish pending
+**Sprint 6**: 🟠 DEV-016 entitlement + gating in progress (planning + tests aligned)
+**Latest Commit**: 983a10 docs(bmad): update progress tracker with Session 2025-10-28 completion
+**Working Branch**: audit/bmad-alignment (local; doc/test alignment updates in progress)
+**Test Suites**: BLOCKED backend (ackend/venv/Scripts/python.exe -m pytest backend/tests/test_quota_service.py) -> OperationalError during drop_all (inancial_ratios missing); FRONTEND not rerun this session (last green 454/465)
 
 ---
 
@@ -58,9 +64,9 @@
 
 ### Deployment Status
 
-- Backend: ✅ 100% healthy (https://ma-saas-backend.onrender.com/health)
-- Frontend: ✅ Deployed and styled (https://100daysandbeyond.com)
-- All design system components now rendering correctly with Tailwind
+- Backend: 🟡 Local pytest suite passing; latest Render health check pending post-env update
+- Frontend: 🟡 Local Vitest suite passing; verify https://100daysandbeyond.com after redeploy
+- Tailwind configuration repaired; conduct post-redeploy visual QA to confirm parity
 
 ---
 
@@ -75,8 +81,20 @@
 
 - ✅ PRD and epic breakdown refreshed (see docs/bmad/prd.md and docs/bmad/epics.md)
 - ✅ Linked PMI toolkit + modeling libraries into epic roadmap (E11/E12)
-- ⚠️ Implementation remains focused on DEV-016 podcast subscription enforcement (tests still RED)
+- ✅ DEV-016 story + plan updated with schema, quota logic, and gating patterns (docs/bmad/stories/DEV-016*, plan.plan.md)
+- 🟠 Episode-creation API tests now GREEN; quota usage endpoints remain RED pending implementation
 - ⚠️ Render deploy checklist still pending environment updates (see PRODUCTION-DEPLOYMENT-CHECKLIST.md)
+
+### Release Status Snapshot (2025-10-28 13:55 UTC)
+
+- **Latest remote commit**: `768de14` (main, origin/main) `test(frontend): fix all failing tests - 454/465 passing`.
+- **Working branch**: `audit/bmad-alignment` (local only, +2 ahead of main; large doc/code deltas remain unreviewed).
+- **Local changes pending commit**: `backend/app/api/routes/podcasts.py`, `backend/app/schemas/__init__.py`, `backend/app/schemas/podcast.py`, `backend/app/services/quota_service.py`, relevant tests, and BMAD docs.
+- **Open PRs**: none; next PR must bundle DEV-016 implementation once tests + docs remain green.
+- **Push status**: `audit/bmad-alignment` not published to origin (no remote branch detected via `git branch -vv`).
+- **Render deployment**: last documented configuration session 2025-10-26; environment variable sync + redeploy still TODO (see PRODUCTION-DEPLOYMENT-CHECKLIST.md §Critical Steps). Unable to verify live health in offline sandbox.
+- **Render health**: pending manual confirmation; treat as 🟠 until next redeploy / monitoring snapshot captured.
+- **Local findings (2025-10-28 13:55 UTC)**: Targeted `backend/tests/test_podcast_api.py` run returns 404 for `/podcasts/usage` (usage summary endpoint pending).
 
 ---
 
@@ -1021,6 +1039,36 @@ CREATE INDEX ix_podcast_usage_organization_id ON podcast_usage (organization_id)
 **Next Review**: after resolving test failures and deployment blockers
 **Owner**: Development Team
 
+
+
+
+
+### Phase 2.4: Podcast Episode API quota wiring ? COMPLETE
+
+- **Status**: ? Complete (2025-10-28 13:05 UTC)
+- **Duration**: 45 minutes
+- **Priority**: High
+
+#### TDD Cycle
+
+**RED Phase**:
+- Added `TestPodcastEpisodeCreation.test_quota_service_passes_db_session` to enforce DB propagation
+
+**GREEN Phase**:
+- Updated `POST /podcasts/episodes` to call `check_episode_quota(organization_id=?, db=Session)`
+
+**REFACTOR Phase**:
+- Strengthened existing API tests for quota enforcement and video gating
+
+#### Test Results
+
+? `py -m pytest tests/test_podcast_api.py::TestPodcastEpisodeCreation` -> 6 passed (usage endpoints still RED)
+
+#### Files Updated
+
+- backend/app/api/routes/podcasts.py
+- backend/tests/test_podcast_api.py
+- docs/bmad/BMAD_PROGRESS_TRACKER.md
 
 
 

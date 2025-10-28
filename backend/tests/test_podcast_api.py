@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from unittest.mock import AsyncMock, patch, ANY
 
 from app.services.quota_service import QuotaExceededError
+from app.schemas.podcast import PodcastQuotaSummary
 
 from fastapi import status
 
@@ -68,6 +70,39 @@ class TestPodcastEpisodeCreation:
         finally:
             _clear_override()
 
+    def test_quota_service_passes_db_session(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(role=UserRole.growth, organization_id=org.id)
+        professional_user.subscription_tier = SubscriptionTier.PROFESSIONAL.value
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.services.quota_service.check_episode_quota",
+                new_callable=AsyncMock,
+            ) as mock_quota, patch(
+                "app.services.quota_service.increment_episode_count",
+                new_callable=AsyncMock,
+            ) as mock_increment:
+                mock_feature.return_value = True
+                mock_quota.return_value = True
+
+                response = client.post("/podcasts/episodes", json=EPISODE_PAYLOAD)
+
+            assert response.status_code == status.HTTP_201_CREATED
+            mock_quota.assert_awaited_once()
+            assert "db" in mock_quota.await_args.kwargs
+            assert mock_quota.await_args.kwargs["db"] is not None
+        finally:
+            _clear_override()
     def test_professional_user_can_create_episode(
         self,
         client,
@@ -99,8 +134,13 @@ class TestPodcastEpisodeCreation:
             body = response.json()
             assert body["title"] == EPISODE_PAYLOAD["title"]
             mock_feature.assert_awaited_once()
-            mock_quota.assert_awaited_once_with(professional_user.organization_id)
-            mock_increment.assert_awaited_once_with(professional_user.organization_id, ANY)
+            mock_quota.assert_awaited_once()
+            assert mock_quota.await_args.kwargs["organization_id"] == professional_user.organization_id
+            assert mock_quota.await_args.kwargs["db"] is not None
+
+            mock_increment.assert_awaited_once()
+            assert mock_increment.await_args.kwargs["organization_id"] == professional_user.organization_id
+            assert mock_increment.await_args.kwargs["db"] is not None
         finally:
             _clear_override()
     def test_professional_user_quota_exceeded_returns_429(
@@ -199,5 +239,156 @@ class TestPodcastEpisodeCreation:
             assert mock_feature.await_count == 2
         finally:
             _clear_override()
+
+
+class TestPodcastUsageEndpoint:
+    """Tests for upcoming /podcasts/usage quota summary endpoint."""
+
+    def test_usage_endpoint_returns_quota_summary_for_professional(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(role=UserRole.growth, organization_id=org.id)
+        professional_user.subscription_tier = SubscriptionTier.PROFESSIONAL.value
+
+        _override_user(professional_user)
+        expected_period = datetime.utcnow().strftime("%Y-%m")
+
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.quota_service.get_quota_summary",
+                new_callable=AsyncMock,
+                create=True,
+            ) as mock_summary:
+                mock_feature.return_value = True
+                mock_summary.return_value = PodcastQuotaSummary(
+                    tier=SubscriptionTier.PROFESSIONAL.value,
+                    limit=10,
+                    remaining=7,
+                    used=3,
+                    is_unlimited=False,
+                    period=expected_period,
+                )
+
+                response = client.get("/podcasts/usage")
+
+            assert response.status_code == status.HTTP_200_OK
+            mock_summary.assert_awaited_once()
+            assert mock_summary.await_args.kwargs == {
+                "organization_id": professional_user.organization_id,
+                "db": ANY,
+            }
+
+            payload = response.json()
+            assert payload == {
+                "tier": SubscriptionTier.PROFESSIONAL.value,
+                "limit": 10,
+                "remaining": 7,
+                "used": 3,
+                "is_unlimited": False,
+                "period": expected_period,
+            }
+        finally:
+            _clear_override()
+
+    def test_usage_endpoint_reports_unlimited_for_premium(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="premium")
+        premium_user = create_user(role=UserRole.enterprise, organization_id=org.id)
+        premium_user.subscription_tier = SubscriptionTier.PREMIUM.value
+
+        _override_user(premium_user)
+        expected_period = datetime.utcnow().strftime("%Y-%m")
+
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.quota_service.get_quota_summary",
+                new_callable=AsyncMock,
+                create=True,
+            ) as mock_summary:
+                mock_feature.return_value = True
+                mock_summary.return_value = PodcastQuotaSummary(
+                    tier=SubscriptionTier.PREMIUM.value,
+                    limit=None,
+                    remaining=-1,
+                    used=5,
+                    is_unlimited=True,
+                    period=expected_period,
+                )
+
+                response = client.get("/podcasts/usage")
+
+            assert response.status_code == status.HTTP_200_OK
+            mock_summary.assert_awaited_once()
+
+            payload = response.json()
+            assert payload == {
+                "tier": SubscriptionTier.PREMIUM.value,
+                "limit": None,
+                "remaining": -1,
+                "used": 5,
+                "is_unlimited": True,
+                "period": expected_period,
+            }
+        finally:
+            _clear_override()
+
+    def test_usage_endpoint_blocks_starter_tier(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="starter")
+        starter_user = create_user(role=UserRole.solo, organization_id=org.id)
+        starter_user.subscription_tier = SubscriptionTier.STARTER.value
+
+        _override_user(starter_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.dependencies.auth.get_required_tier"
+            ) as mock_required, patch(
+                "app.api.dependencies.auth.get_feature_upgrade_message"
+            ) as mock_message, patch(
+                "app.api.routes.podcasts.quota_service.get_quota_summary",
+                new_callable=AsyncMock,
+                create=True,
+            ) as mock_summary:
+                mock_feature.return_value = False
+                mock_required.return_value = SubscriptionTier.PROFESSIONAL
+                mock_message.return_value = (
+                    "Upgrade to Professional tier to unlock audio podcasting."
+                )
+
+                response = client.get("/podcasts/usage")
+
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert response.headers["X-Required-Tier"] == "professional"
+            assert "Upgrade" in response.json()["detail"]
+            mock_summary.assert_not_awaited()
+        finally:
+            _clear_override()
+
+
+
+
+
+
 
 

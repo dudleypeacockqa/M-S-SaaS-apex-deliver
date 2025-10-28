@@ -29,3 +29,14 @@ class PodcastEpisodeResponse(BaseModel):
     season_number: int
     audio_file_url: HttpUrl
     video_file_url: Optional[HttpUrl]
+
+
+class PodcastQuotaSummary(BaseModel):
+    """Quota summary response for podcast usage endpoint."""
+
+    tier: str
+    limit: Optional[int]
+    remaining: int
+    used: int
+    is_unlimited: bool
+    period: str
