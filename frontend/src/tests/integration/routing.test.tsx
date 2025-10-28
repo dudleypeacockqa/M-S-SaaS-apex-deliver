@@ -57,7 +57,7 @@ describe("Integration: routing", () => {
     render(<App />)
 
     expect(
-      screen.getByRole("heading", { name: /m&a intelligence platform/i })
+      screen.getByRole("heading", { name: /close deals/i, level: 1 })
     ).toBeInTheDocument()
     // Marketing nav uses regular links, not Clerk's SignInButton
     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
@@ -95,7 +95,7 @@ describe("Integration: routing", () => {
 
     // Landing page still shows marketing nav even when authenticated
     expect(
-      screen.getByRole("heading", { name: /m&a intelligence platform/i })
+      screen.getByRole("heading", { name: /close deals/i, level: 1 })
     ).toBeInTheDocument()
     // Marketing nav always shows sign-in link
     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()

@@ -110,7 +110,7 @@ describe('ROICalculator', () => {
   it('shows consulting rate', () => {
     render(<ROICalculator />);
     
-    expect(screen.getByText(/£150\/hour consulting rate/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/£150\/hour consulting rate/i).length).toBeGreaterThan(0);
   });
 
   it('displays platform cost', () => {

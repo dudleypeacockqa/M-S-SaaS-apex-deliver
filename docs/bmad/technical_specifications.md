@@ -786,7 +786,6 @@ graph TB
 **Production Environment** runs on Render with managed PostgreSQL, Redis, and integrated monitoring for high-availability operations.
 
 ### 3.6.6 Deployment Architecture
-
 ```mermaid
 graph TB
     subgraph "Development"
@@ -980,6 +979,7 @@ flowchart TD
 ```
 
 **Validation Rules:**
+
 - Email format validation using RFC 5322 standards
 - Password minimum 8 characters with complexity requirements
 - Organization name uniqueness validation
@@ -987,6 +987,7 @@ flowchart TD
 - Payment processing through PCI-DSS compliant Stripe integration
 
 **Error Handling:**
+
 - Invalid email formats return specific validation messages
 - Failed payment processing triggers retry mechanism with 3 attempts
 - Expired verification links generate new verification emails
@@ -1034,6 +1035,7 @@ flowchart TD
 ```
 
 **Business Rules:**
+
 - Deal names must be unique within organization
 - Minimum required fields: company name, industry, deal size
 - Stage transitions follow predefined workflow rules
@@ -1041,6 +1043,7 @@ flowchart TD
 - All deal activities logged for audit trail
 
 **State Management:**
+
 - Deal states: Draft, Active, Due Diligence, Negotiation, Closing, Closed, Archived
 - State transitions validated against business rules
 - Concurrent state changes handled through database locks
@@ -1092,12 +1095,14 @@ flowchart TD
 ```
 
 **Performance Requirements:**
+
 - Financial data import: <30 seconds for 3 years of data
 - Ratio calculations: <5 seconds for 47+ ratios
 - AI narrative generation: <10 seconds
 - Dashboard rendering: <2 seconds
 
 **Data Validation:**
+
 - Financial statement completeness checks
 - Data consistency validation across periods
 - Currency and format standardization
@@ -1142,6 +1147,7 @@ flowchart TD
 ```
 
 **Matching Criteria:**
+
 - Industry classification and sub-sectors
 - Financial metrics and performance ranges
 - Geographic preferences and restrictions
@@ -1150,6 +1156,7 @@ flowchart TD
 - Timeline and urgency factors
 
 **Confidence Scoring:**
+
 - Vector similarity score (0-1)
 - Business rule compliance score
 - Historical match success rate
@@ -1194,6 +1201,7 @@ flowchart TD
 ```
 
 **Document Types:**
+
 - Non-Disclosure Agreements (NDAs)
 - Letters of Intent (LOIs)
 - Term Sheets
@@ -1202,6 +1210,7 @@ flowchart TD
 - Valuation Reports
 
 **Security Controls:**
+
 - Document encryption at rest and in transit
 - Granular access permissions
 - Watermarking with user identification
@@ -1241,6 +1250,7 @@ sequenceDiagram
 ```
 
 **Integration Patterns:**
+
 - OAuth 2.0 authentication flow
 - Incremental data synchronization
 - Error handling and retry mechanisms
@@ -1248,6 +1258,7 @@ sequenceDiagram
 - Data transformation and validation
 
 **Supported Systems:**
+
 - Xero: Real-time API with webhook support
 - QuickBooks Online: Batch processing with rate limits
 - Sage: Multiple product API endpoints
@@ -1298,12 +1309,14 @@ flowchart TD
 ```
 
 **AI Service Selection Logic:**
+
 - Financial narratives: OpenAI GPT-4 for natural language generation
 - Complex reasoning: Anthropic Claude 3 for deal matching logic
 - Document analysis: OpenAI GPT-4 for contract review
 - Audio processing: OpenAI Whisper for transcription
 
 **Error Handling:**
+
 - Exponential backoff retry strategy
 - Service health monitoring
 - Automatic failover to backup services
@@ -1349,6 +1362,7 @@ flowchart TD
 ```
 
 **Payment States:**
+
 - Pending: Initial payment processing
 - Succeeded: Payment completed successfully
 - Failed: Payment declined or failed
@@ -1356,6 +1370,7 @@ flowchart TD
 - Canceled: Payment canceled by user
 
 **Webhook Security:**
+
 - Signature verification using Stripe webhook secrets
 - Idempotency handling for duplicate events
 - Event ordering and replay protection
@@ -1417,12 +1432,14 @@ flowchart TD
 ```
 
 **Task Categories:**
+
 - **High Priority**: Payment processing, security alerts, system failures
 - **Default Priority**: Financial analysis, document generation, user notifications
 - **Low Priority**: Data cleanup, analytics processing, backup operations
 - **Scheduled**: Subscription renewals, data synchronization, health checks
 
 **Worker Specialization:**
+
 - Financial workers: Accounting integrations, ratio calculations
 - Document workers: PDF generation, file processing, OCR
 - Communication workers: Email/SMS sending, notifications
@@ -1464,12 +1481,14 @@ flowchart TD
 ```
 
 **Retry Strategies:**
+
 - **Exponential Backoff**: 2^retry_count seconds delay
 - **Fixed Delay**: Consistent wait time between retries
 - **Linear Backoff**: Incrementally increasing delays
 - **Jittered Backoff**: Random variation to prevent thundering herd
 
 **Error Classification:**
+
 - **Transient Errors**: Network timeouts, temporary service unavailability
 - **Permanent Errors**: Invalid data, authentication failures
 - **Rate Limit Errors**: API quota exceeded, requires longer delays
@@ -1512,6 +1531,7 @@ flowchart TD
 ```
 
 **Scheduled Task Types:**
+
 - **Subscription Management**: Daily renewal checks, payment retries
 - **Data Synchronization**: Hourly accounting data updates
 - **System Maintenance**: Weekly database cleanup, log rotation
@@ -1559,12 +1579,13 @@ flowchart TD
 ```
 
 **Connection Types:**
+
 - **User Connections**: Personal notifications and updates
 - **Deal Channels**: Team collaboration on specific deals
 - **Document Sessions**: Real-time document editing
 - **System Broadcasts**: Platform-wide announcements
-
 **Message Types:**
+
 - **Notifications**: New tasks, mentions, system alerts
 - **Collaboration**: Document changes, comments, approvals
 - **Status Updates**: Deal stage changes, user presence
@@ -1613,6 +1634,7 @@ flowchart TD
 ```
 
 **Notification Channels:**
+
 - **WebSocket**: Immediate delivery to active users
 - **Email**: Detailed notifications with action links
 - **SMS**: Critical alerts and time-sensitive updates
@@ -1620,6 +1642,7 @@ flowchart TD
 - **Push**: Mobile app notifications (future enhancement)
 
 **Delivery Guarantees:**
+
 - **At-least-once**: Critical notifications with retry logic
 - **Best-effort**: Non-critical updates with single attempt
 - **Ordered**: Sequential delivery for related notifications
@@ -1656,12 +1679,14 @@ flowchart TD
 ```
 
 **Transaction Boundaries:**
+
 - **Single Entity**: User creation, deal updates
 - **Multi-Entity**: Deal creation with data room setup
 - **Cross-Service**: Payment processing with subscription activation
 - **Distributed**: Integration with external systems
 
 **Consistency Levels:**
+
 - **Strong Consistency**: Financial data, user permissions
 - **Eventual Consistency**: Analytics data, search indexes
 - **Session Consistency**: User interface state
@@ -1700,12 +1725,14 @@ flowchart TD
 ```
 
 **Cache Layers:**
+
 - **Application Cache**: Frequently accessed data (user sessions, permissions)
 - **Query Cache**: Database query results (financial ratios, deal lists)
 - **API Cache**: External API responses (accounting data, AI results)
 - **Static Cache**: Generated documents, images, assets
 
 **Invalidation Triggers:**
+
 - **Data Mutations**: Create, update, delete operations
 - **Permission Changes**: Role updates, access modifications
 - **External Updates**: Webhook notifications, scheduled syncs
@@ -1780,6 +1807,7 @@ The platform's data flow follows a **request-response pattern** with asynchronou
 The React frontend serves as the primary user interface, providing responsive, interactive experiences for deal management, financial analysis, and collaboration. Built with TypeScript for type safety and Vite for optimal development experience and build performance.
 
 **Technologies and Frameworks:**
+
 - **React 18.3+** with concurrent features for improved performance
 - **TypeScript 5.3+** for static type checking and enhanced developer experience
 - **Vite 6.0+** for fast development server and optimized production builds
@@ -1788,6 +1816,7 @@ The React frontend serves as the primary user interface, providing responsive, i
 - **React Query** for server state management and caching
 
 **Key Interfaces and APIs:**
+
 - RESTful API communication with FastAPI backend
 - WebSocket connections for real-time collaboration
 - Clerk SDK integration for authentication flows
@@ -1820,6 +1849,7 @@ graph TB
 The FastAPI backend provides high-performance API services, implementing business logic, data validation, authentication, and orchestrating background tasks. FastAPI natively supports asynchronous programming with a robust dependency injection system that simplifies managing complex dependencies like database connections, authentication, and external services.
 
 **Technologies and Frameworks:**
+
 - **FastAPI 0.104+** for async API development with automatic documentation
 - **SQLAlchemy 2.0+** with async support for database operations
 - **Pydantic 2.5+** for data validation and serialization
@@ -1827,6 +1857,7 @@ The FastAPI backend provides high-performance API services, implementing busines
 - **Alembic** for database migrations
 
 **Key Interfaces and APIs:**
+
 - RESTful endpoints with automatic OpenAPI documentation
 - WebSocket endpoints for real-time features
 - Background task queuing via Celery
@@ -1872,6 +1903,7 @@ sequenceDiagram
 PostgreSQL serves as the primary data store with multi-tenant architecture, providing ACID compliance, advanced indexing, and specialized extensions for geographic and vector data processing.
 
 **Technologies and Extensions:**
+
 - **PostgreSQL 17.6** for core relational database functionality
 - **PostGIS** extension for geographic data processing
 - **pgvector** extension for AI-powered similarity search
@@ -1881,6 +1913,7 @@ PostgreSQL serves as the primary data store with multi-tenant architecture, prov
 The platform uses a tenant discriminator approach where every table contains a customer or tenant ID, ensuring queries join on that key for data isolation. This approach balances security with operational simplicity and performance.
 
 **Key Schema Components:**
+
 - **Organizations**: Tenant isolation and subscription management
 - **Users**: Authentication and role-based access control
 - **Deals**: Core business entities with full lifecycle tracking
@@ -1918,6 +1951,7 @@ graph TB
 Celery orchestrates task delegation and execution while Redis acts as the central communication hub, ensuring tasks move efficiently between producers and consumers. The system handles financial analysis, document generation, AI processing, and external API integrations asynchronously.
 
 **Technologies and Frameworks:**
+
 - **Celery 5.3+** for distributed task queue management
 - **Redis 7.2+** as message broker and result backend
 - **Multiple worker types** specialized for different task categories
@@ -2081,18 +2115,21 @@ The platform implements multi-layer monitoring to ensure system health and perfo
 The platform implements comprehensive security through multiple layers:
 
 **Authentication Layer (Clerk Integration):**
+
 - JWT token-based authentication with automatic refresh
 - Multi-factor authentication for Enterprise users
 - Social login integration (Google, LinkedIn)
 - Session management with configurable timeouts
 
 **Authorization Layer (RBAC):**
+
 - Organization-level access control
 - Feature-based permissions by subscription tier
 - Resource-level permissions for deals and documents
 - API endpoint protection with dependency injection
 
 **Data Security:**
+
 - Encryption at rest (AES-256) and in transit (TLS 1.3)
 - Multi-tenant data isolation at database level
 - Audit logging for all data access and modifications
@@ -2160,12 +2197,14 @@ The platform maintains strict performance standards to ensure optimal user exper
 The platform implements comprehensive disaster recovery procedures to ensure business continuity:
 
 **Backup Strategy:**
+
 - **Database Backups**: Automated daily backups with point-in-time recovery
 - **File Storage Backups**: Incremental backups of documents and generated files
 - **Configuration Backups**: Infrastructure as code with version control
 - **Application State**: Redis persistence with backup and restore capabilities
 
 **Recovery Procedures:**
+
 - **RTO (Recovery Time Objective)**: 4 hours for full system restoration
 - **RPO (Recovery Point Objective)**: 1 hour maximum data loss
 - **Failover Procedures**: Automated health checks with manual failover triggers
@@ -2344,7 +2383,6 @@ The database schema is organized into logical components that reflect the busine
 **Integration Tables**: External service credentials, API tokens, synchronization status, and mapping tables for third-party system integration.
 
 ### 6.4.3 Performance Optimization Components
-
 Database performance is optimized through several component strategies:
 
 **Indexing Strategy**: Comprehensive indexing on tenant_id, frequently queried columns, and composite indexes for complex query patterns while balancing query performance with write performance.
@@ -2372,7 +2410,6 @@ The database includes robust migration and versioning capabilities:
 ### 6.5.1 External Service Integration Components
 
 The platform integrates with multiple external services through standardized integration components:
-
 **OAuth Authentication Components**: Standardized OAuth 2.0 flow implementation for accounting system integrations (Xero, QuickBooks, Sage, NetSuite) with token refresh, error handling, and security compliance.
 
 **API Client Components**: HTTP client abstractions for each external service with rate limiting, retry logic, circuit breaker patterns, and response caching to handle service reliability and performance requirements.
@@ -2832,12 +2869,14 @@ The database design supports the platform's complex requirements including deal 
 The platform implements a **shared database, shared schema** approach with tenant isolation through organization_id columns on every table. There is a single database and single schema containing the data of all tenants, however, every table that contains per-tenant data has a special column that indicates which tenant the row belongs to. This design choice balances operational simplicity with data security and future scalability requirements.
 
 **Multi-Tenant Design Benefits:**
+
 - On the positive side, it is very easy to establish such a database infrastructure and to scale it up to a large amount of service tenants.
 - Simplified backup and maintenance operations
 - Cost-effective resource utilization
 - Consistent schema management across all tenants
 
 **Security Considerations:**
+
 - Major downside of this approach is that it requires a very close attention to multi-tenancy in the data access layer implementation of services / micro-services. An inexperienced developer can easily make a mistake of not adding the 'WHERE tenant_id=<...>' to the query and impacting data of multiple tenants.
 - Row-Level Security (RLS) policies enforce tenant isolation at the database level
 - Application-level filtering with SQLAlchemy ORM ensures proper tenant context
@@ -3141,7 +3180,6 @@ CREATE TABLE deal_matches (
 All primary keys automatically receive unique B-tree indexes. Foreign key relationships are optimized with composite indexes that include the organization_id for efficient tenant-filtered queries.
 
 #### 6.2.5.2 Multi-Tenant Query Optimization
-
 ```sql
 -- Composite indexes for tenant-filtered queries
 CREATE INDEX idx_users_org_email ON users(organization_id, email);
@@ -3161,794 +3199,16 @@ pgvector, an open-source PostgreSQL extension that provides vector similarity se
 
 ```sql
 -- HNSW index for deal matching embeddings
-CREATE INDEX idx_deal_profiles_embedding_hnsw 
-ON deal_profiles 
-USING hnsw (embedding vector_cosine_ops) 
+CREATE INDEX idx_deal_profiles_embedding_hnsw
+ON deal_profiles
+USING hnsw (embedding vector_cosine_ops)
 WITH (m = 16, ef_construction = 64);
-
 -- Filtered index for active deal profiles
-CREATE INDEX idx_deal_profiles_active_embedding 
-ON deal_profiles 
-USING hnsw (embedding vector_cosine_ops) 
+CREATE INDEX idx_deal_profiles_active_embedding
+ON deal_profiles
+USING hnsw (embedding vector_cosine_ops)
 WITH (m = 16, ef_construction = 64)
 WHERE is_active = true;
-```
-
-#### 6.2.5.4 Full-Text Search Indexes
-
-```sql
--- Full-text search for deals and documents
-CREATE INDEX idx_deals_search ON deals USING gin(to_tsvector('english', name || ' ' || COALESCE(description, '') || ' ' || COALESCE(target_company, '')));
-CREATE INDEX idx_documents_search ON documents USING gin(to_tsvector('english', name || ' ' || COALESCE(description, '')));
-```
-
-### 6.2.6 Partitioning Strategy
-
-#### 6.2.6.1 Time-Based Partitioning for Audit Data
-
-```sql
--- Partitioned activities table for audit logging
-CREATE TABLE activities (
-    id BIGSERIAL,
-    organization_id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
-    deal_id BIGINT,
-    activity_type VARCHAR(50) NOT NULL,
-    description TEXT,
-    metadata JSONB DEFAULT '{}'::jsonb,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-) PARTITION BY RANGE (created_at);
-
--- Monthly partitions for activities
-CREATE TABLE activities_2025_01 PARTITION OF activities
-FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
-
-CREATE TABLE activities_2025_02 PARTITION OF activities
-FOR VALUES FROM ('2025-02-01') TO ('2025-03-01');
-```
-
-#### 6.2.6.2 List Partitioning Considerations
-
-LIST partitioning by tenant_id doesn't scale beyond a few thousand tenants. RANGE partitioning is best suited for time-series data, not tenant IDs. HASH partitioning works — but only within a single server, and offers no distributed capabilities. The platform uses time-based partitioning for audit data while maintaining the shared schema approach for operational tables.
-
-### 6.2.7 Data Migration and Versioning
-
-#### 6.2.7.1 Alembic Migration Framework
-
-The platform uses Alembic for database schema migrations with multi-tenant considerations:
-
-```python
-# Migration template for multi-tenant changes
-def upgrade():
-    # Create new table with organization_id
-    op.create_table('new_feature_table',
-        sa.Column('id', sa.BigInteger(), nullable=False),
-        sa.Column('organization_id', sa.BigInteger(), nullable=False),
-        sa.Column('name', sa.String(255), nullable=False),
-        sa.Column('created_at', sa.TIMESTAMP(timezone=True), 
-                 server_default=sa.text('CURRENT_TIMESTAMP')),
-        sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], 
-                               ondelete='CASCADE'),
-        sa.PrimaryKeyConstraint('id')
-    )
-    
-    # Create tenant-aware index
-    op.create_index('idx_new_feature_org_name', 'new_feature_table', 
-                   ['organization_id', 'name'])
-
-def downgrade():
-    op.drop_table('new_feature_table')
-```
-
-#### 6.2.7.2 Data Seeding Strategy
-
-```sql
--- Default deal stages for new organizations
-INSERT INTO deal_stages (organization_id, name, stage_order) VALUES
-(NEW.id, 'Sourcing', 1),
-(NEW.id, 'Evaluation', 2),
-(NEW.id, 'Due Diligence', 3),
-(NEW.id, 'Negotiation', 4),
-(NEW.id, 'Closing', 5);
-```
-
-### 6.2.8 Backup and Recovery Architecture
-
-#### 6.2.8.1 Continuous Archiving and PITR
-
-However, the existence of the log makes it possible to use a third strategy for backing up databases: we can combine a file-system-level backup with backup of the WAL files. If recovery is needed, we restore the file system backup and then replay from the backed-up WAL files to bring the system to a current state.
-
-The platform implements PostgreSQL's Point-in-Time Recovery (PITR) capabilities:
-
-```sql
--- WAL archiving configuration
-wal_level = replica
-archive_mode = on
-archive_command = 'cp %p /var/lib/postgresql/wal_archive/%f'
-max_wal_senders = 3
-archive_timeout = 300  -- Force WAL switch every 5 minutes
-```
-
-#### 6.2.8.2 Backup Strategy Implementation
-
-| Backup Type | Frequency | Retention | Purpose |
-|---|---|---|---|
-| **Full Base Backup** | Daily at 2 AM UTC | 30 days | Complete system recovery |
-| **WAL Archive** | Continuous | 30 days | Point-in-time recovery |
-| **Logical Backup** | Weekly | 12 weeks | Schema and data export |
-| **Configuration Backup** | On change | 90 days | System configuration |
-
-#### 6.2.8.3 Recovery Procedures
-
-By combining periodic base backups with WAL files, PITR minimizes the need for frequent full backups, saving storage space and reducing backup times. PITR is also a very precise recovery method, allowing you to recover to a specific second, minimizing the risk of data loss during an incident.
-
-```bash
-# Point-in-time recovery example
-pg_basebackup -D /var/lib/postgresql/recovery -Ft -z -P
-# Configure recovery.conf for specific timestamp
-echo "restore_command = 'cp /var/lib/postgresql/wal_archive/%f %p'" >> recovery.conf
-echo "recovery_target_time = '2025-01-15 14:30:00 UTC'" >> recovery.conf
-```
-
-### 6.2.9 Performance Optimization
-
-#### 6.2.9.1 Connection Pooling Configuration
-
-```python
-# SQLAlchemy async connection pool settings
-DATABASE_CONFIG = {
-    "pool_size": 20,
-    "max_overflow": 30,
-    "pool_timeout": 30,
-    "pool_recycle": 3600,
-    "pool_pre_ping": True
-}
-```
-
-#### 6.2.9.2 Query Optimization Patterns
-
-```sql
--- Optimized tenant-aware query pattern
-SELECT d.*, ds.name as stage_name, u.first_name, u.last_name
-FROM deals d
-JOIN deal_stages ds ON d.current_stage_id = ds.id AND ds.organization_id = d.organization_id
-JOIN users u ON d.owner_id = u.id AND u.organization_id = d.organization_id
-WHERE d.organization_id = $1 
-  AND d.status = 'active'
-ORDER BY d.last_activity_at DESC
-LIMIT 50;
-```
-
-#### 6.2.9.3 Caching Strategy Integration
-
-```python
-# Redis caching for frequently accessed data
-@cache_result(expire=300)  # 5 minutes
-async def get_organization_deals(org_id: int, status: str = "active"):
-    query = select(Deal).where(
-        Deal.organization_id == org_id,
-        Deal.status == status
-    ).order_by(Deal.last_activity_at.desc())
-    return await session.execute(query)
-```
-
-### 6.2.10 Compliance and Security
-
-#### 6.2.10.1 Row-Level Security Implementation
-
-```sql
--- Enable RLS on all tenant tables
-ALTER TABLE deals ENABLE ROW LEVEL SECURITY;
-ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
-ALTER TABLE financial_data ENABLE ROW LEVEL SECURITY;
-
--- RLS policies for tenant isolation
-CREATE POLICY deals_tenant_isolation ON deals
-    FOR ALL TO application_role
-    USING (organization_id = current_setting('app.current_organization_id')::bigint);
-
-CREATE POLICY documents_tenant_isolation ON documents
-    FOR ALL TO application_role
-    USING (organization_id = current_setting('app.current_organization_id')::bigint);
-```
-
-#### 6.2.10.2 Audit Trail Implementation
-
-```sql
--- Comprehensive audit logging
-CREATE TABLE audit_logs (
-    id BIGSERIAL PRIMARY KEY,
-    organization_id BIGINT NOT NULL,
-    table_name VARCHAR(100) NOT NULL,
-    record_id BIGINT NOT NULL,
-    operation VARCHAR(10) NOT NULL, -- 'INSERT', 'UPDATE', 'DELETE'
-    old_values JSONB,
-    new_values JSONB,
-    user_id BIGINT,
-    ip_address INET,
-    user_agent TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-) PARTITION BY RANGE (created_at);
-
--- Audit trigger function
-CREATE OR REPLACE FUNCTION audit_trigger_function()
-RETURNS TRIGGER AS $$
-BEGIN
-    INSERT INTO audit_logs (
-        organization_id, table_name, record_id, operation,
-        old_values, new_values, user_id, ip_address
-    ) VALUES (
-        COALESCE(NEW.organization_id, OLD.organization_id),
-        TG_TABLE_NAME,
-        COALESCE(NEW.id, OLD.id),
-        TG_OP,
-        CASE WHEN TG_OP = 'DELETE' THEN row_to_json(OLD) ELSE NULL END,
-        CASE WHEN TG_OP = 'INSERT' THEN row_to_json(NEW) 
-             WHEN TG_OP = 'UPDATE' THEN row_to_json(NEW) ELSE NULL END,
-        current_setting('app.current_user_id', true)::bigint,
-        current_setting('app.client_ip', true)::inet
-    );
-    RETURN COALESCE(NEW, OLD);
-END;
-$$ LANGUAGE plpgsql;
-```
-
-#### 6.2.10.3 Data Retention and Privacy
-
-```sql
--- GDPR compliance data export function
-CREATE OR REPLACE FUNCTION export_user_data(user_email VARCHAR)
-RETURNS JSONB AS $$
-DECLARE
-    user_data JSONB;
-BEGIN
-    SELECT jsonb_build_object(
-        'user_profile', (SELECT row_to_json(u) FROM users u WHERE u.email = user_email),
-        'deals', (SELECT jsonb_agg(row_to_json(d)) FROM deals d 
-                 JOIN users u ON d.owner_id = u.id WHERE u.email = user_email),
-        'documents', (SELECT jsonb_agg(row_to_json(doc)) FROM documents doc
-                     JOIN users u ON doc.uploaded_by_id = u.id WHERE u.email = user_email),
-        'activities', (SELECT jsonb_agg(row_to_json(a)) FROM activities a
-                      JOIN users u ON a.user_id = u.id WHERE u.email = user_email)
-    ) INTO user_data;
-    
-    RETURN user_data;
-END;
-$$ LANGUAGE plpgsql;
-```
-
-### 6.2.11 Monitoring and Maintenance
-
-#### 6.2.11.1 Database Health Monitoring
-
-```sql
--- Performance monitoring queries
-CREATE VIEW database_performance AS
-SELECT 
-    schemaname,
-    tablename,
-    attname,
-    n_distinct,
-    correlation,
-    most_common_vals,
-    most_common_freqs
-FROM pg_stats 
-WHERE schemaname = 'public'
-ORDER BY tablename, attname;
-
--- Index usage monitoring
-CREATE VIEW index_usage AS
-SELECT 
-    schemaname,
-    tablename,
-    indexname,
-    idx_tup_read,
-    idx_tup_fetch,
-    idx_scan
-FROM pg_stat_user_indexes
-ORDER BY idx_scan DESC;
-```
-
-#### 6.2.11.2 Automated Maintenance Tasks
-
-```sql
--- Automated vacuum and analyze scheduling
-SELECT cron.schedule('vacuum-analyze', '0 2 * * *', 'VACUUM ANALYZE;');
-SELECT cron.schedule('reindex-weekly', '0 3 * * 0', 'REINDEX DATABASE ma_intelligence;');
-
--- Partition maintenance for audit logs
-SELECT cron.schedule('create-monthly-partition', '0 1 1 * *', 
-    'SELECT create_monthly_audit_partition();');
-```
-
-The M&A Intelligence Platform's database design provides a robust, scalable foundation that supports complex multi-tenant operations while maintaining strict data isolation and security. The combination of PostgreSQL's advanced features, specialized extensions like pgvector for AI capabilities, and comprehensive backup and monitoring strategies ensures the platform can scale from initial launch to enterprise-grade operations supporting thousands of concurrent users across multiple organizations.
-
-## 6.3 Integration Architecture
-
-The M&A Intelligence Platform requires extensive integration with external systems and services to deliver its comprehensive functionality. In a nutshell, it is a way to run non-critical operations in the background in a request-response life cycle. It's a part of the Starlette web framework and, by extension, is well-supported and frequently utilized in the FastAPI Python web application framework. In this case, I want to use the BackgroundTasks to call the method 'insert_user' and the client will receive an HTTP 200 response without having to wait for the completion of it. The platform's integration architecture follows modern patterns that enable scalable, reliable, and secure communication with accounting systems, AI services, payment processors, and marketing automation platforms.
-
-### 6.3.1 API Design
-
-#### 6.3.1.1 Protocol Specifications
-
-The platform implements a **RESTful API architecture** using HTTP/HTTPS protocols with JSON as the primary data exchange format. FastAPI is an ASGI framework that emphasizes developer experience and runtime speed. It generates OpenAPI docs automatically, enforces request/response typing, and integrates cleanly with async workflows.
-
-**Core Protocol Standards:**
-
-| Protocol | Usage | Implementation | Security |
-|---|---|---|---|
-| **HTTPS/TLS 1.3** | All external API communications | Automatic certificate management | End-to-end encryption |
-| **HTTP/2** | High-performance client connections | Uvicorn/Hypercorn server support | Multiplexed connections |
-| **WebSocket** | Real-time collaboration features | FastAPI WebSocket endpoints | JWT-based authentication |
-| **OAuth 2.0** | Third-party service authentication | PKCE flow for security | Secure token exchange |
-
-**API Endpoint Structure:**
-```
-https://api.ma-intelligence.com/v1/{resource}/{action}
-```
-
-**Request/Response Format:**
-- **Content-Type**: `application/json`
-- **Character Encoding**: UTF-8
-- **Date Format**: ISO 8601 (RFC 3339)
-- **Error Format**: RFC 7807 Problem Details
-
-#### 6.3.1.2 Authentication Methods
-
-The platform implements multiple authentication methods to support different integration scenarios and security requirements.
-
-**Primary Authentication Mechanisms:**
-
-```mermaid
-graph TB
-    subgraph "Authentication Flow"
-        A[Client Request] --> B{Auth Method}
-        B -->|JWT Token| C[Clerk Validation]
-        B -->|API Key| D[API Key Validation]
-        B -->|OAuth 2.0| E[OAuth Provider]
-        
-        C --> F[Extract User Context]
-        D --> G[Extract Organization Context]
-        E --> H[Exchange Authorization Code]
-        
-        F --> I[Proceed to Endpoint]
-        G --> I
-        H --> I
-        
-        I --> J[Business Logic]
-        J --> K[Response]
-    end
-```
-
-**Authentication Method Specifications:**
-
-| Method | Use Case | Token Format | Expiration | Refresh |
-|---|---|---|---|---|
-| **JWT (Clerk)** | User sessions | Bearer token | 1 hour | Automatic |
-| **API Keys** | Service-to-service | Custom header | No expiration | Manual rotation |
-| **OAuth 2.0** | Third-party integrations | Bearer token | Variable | Refresh token |
-| **Webhook Signatures** | Incoming webhooks | HMAC-SHA256 | Per request | N/A |
-
-#### 6.3.1.3 Authorization Framework
-
-The platform implements a **Role-Based Access Control (RBAC)** system with fine-grained permissions for API endpoints and resources.
-
-**Authorization Hierarchy:**
-
-```mermaid
-graph TD
-    subgraph "Authorization Levels"
-        A[Platform Level] --> B[Organization Level]
-        B --> C[Resource Level]
-        C --> D[Action Level]
-        
-        A --> E[Subscription Tier Access]
-        B --> F[Team Member Permissions]
-        C --> G[Deal/Document Access]
-        D --> H[Read/Write/Delete]
-    end
-```
-
-**Permission Matrix:**
-
-| Resource | Solo Dealmaker | Growth Firm | Enterprise | Community Leader |
-|---|---|---|---|---|
-| **Deal Management** | Own deals only | Team deals | All org deals | Community deals |
-| **Financial Analysis** | Basic ratios | Full analysis | Custom models | Public insights |
-| **AI Features** | Limited usage | Standard quota | Unlimited | Content generation |
-| **API Access** | Read-only | Standard API | Full API + webhooks | Community API |
-
-#### 6.3.1.4 Rate Limiting Strategy
-
-Security & rate limiting: Implement authentication at the edge (API gateway) and enforce rate limits (Redis-backed) to protect services. Validate inputs strictly with pydantic to avoid malformed requests.
-
-**Rate Limiting Implementation:**
-
-```python
-# Redis-backed rate limiting configuration
-RATE_LIMITS = {
-    "starter": {
-        "requests_per_minute": 100,
-        "requests_per_hour": 1000,
-        "requests_per_day": 10000
-    },
-    "professional": {
-        "requests_per_minute": 500,
-        "requests_per_hour": 10000,
-        "requests_per_day": 100000
-    },
-    "enterprise": {
-        "requests_per_minute": 2000,
-        "requests_per_hour": 50000,
-        "requests_per_day": 1000000
-    }
-}
-```
-
-**Rate Limiting Patterns:**
-
-| Pattern | Implementation | Use Case | Recovery |
-|---|---|---|---|
-| **Token Bucket** | Redis counters with TTL | API endpoints | Gradual refill |
-| **Fixed Window** | Time-based quotas | Daily/monthly limits | Reset at interval |
-| **Sliding Window** | Rolling time periods | Burst protection | Continuous tracking |
-| **Adaptive Limiting** | Dynamic based on load | System protection | Auto-adjustment |
-
-#### 6.3.1.5 Versioning Approach
-
-The platform implements **semantic versioning** for API endpoints with backward compatibility guarantees.
-
-**Versioning Strategy:**
-
-```mermaid
-graph LR
-    subgraph "API Versioning"
-        A["v1.0 - Initial Release"] --> B["v1.1 - Minor Updates"]
-        B --> C["v1.2 - Feature Additions"]
-        C --> D["v2.0 - Breaking Changes"]
-        
-        E["URL Versioning"] --> F["/v1/deals"]
-        E --> G["/v2/deals"]
-        
-        H["Header Versioning"] --> I["Accept: application/vnd.api+json;version=1"]
-        H --> J["Accept: application/vnd.api+json;version=2"]
-    end
-```
-
-**Version Support Policy:**
-
-| Version Status | Support Duration | Deprecation Notice | Migration Support |
-|---|---|---|---|
-| **Current** | Indefinite | N/A | Full support |
-| **Previous** | 12 months | 6 months prior | Migration tools |
-| **Legacy** | 6 months | 12 months prior | Documentation only |
-| **Deprecated** | 3 months | 18 months prior | Emergency fixes only |
-
-#### 6.3.1.6 Documentation Standards
-
-It preserves the schemas for requests and responses and maintains any existing documentation created for Swagger or OpenAPI interfaces. These features ensure that AI agents can access the endpoints and understand how to interact with them effectively and safely.
-
-**Automated Documentation Generation:**
-
-The platform leverages FastAPI's automatic OpenAPI documentation generation with enhanced specifications:
-
-```python
-# Enhanced OpenAPI configuration
-app = FastAPI(
-    title="M&A Intelligence Platform API",
-    description="Comprehensive API for M&A deal management and intelligence",
-    version="1.0.0",
-    openapi_tags=[
-        {"name": "deals", "description": "Deal management operations"},
-        {"name": "financial", "description": "Financial analysis and intelligence"},
-        {"name": "documents", "description": "Document and data room management"},
-        {"name": "ai", "description": "AI-powered features and analysis"}
-    ]
-)
-```
-
-**Documentation Components:**
-
-| Component | Format | Auto-Generated | Manual Content |
-|---|---|---|---|
-| **API Reference** | OpenAPI 3.0 | ✓ | Descriptions, examples |
-| **Authentication Guide** | Markdown | ✗ | Setup instructions |
-| **Integration Examples** | Code samples | ✗ | Language-specific guides |
-| **Webhook Documentation** | OpenAPI + Markdown | Partial | Event descriptions |
-
-### 6.3.2 Message Processing
-
-#### 6.3.2.1 Event Processing Patterns
-
-The platform implements **event-driven architecture** patterns to handle asynchronous operations and system integration.
-
-**Event Processing Flow:**
-
-```mermaid
-sequenceDiagram
-    participant API as FastAPI Endpoint
-    participant Queue as Redis Queue
-    participant Worker as Celery Worker
-    participant DB as PostgreSQL
-    participant External as External Service
-    
-    API->>Queue: Publish Event
-    Queue->>Worker: Consume Event
-    Worker->>DB: Update State
-    Worker->>External: API Call
-    External->>Worker: Response
-    Worker->>DB: Store Result
-    Worker->>Queue: Publish Completion Event
-```
-
-**Event Types and Patterns:**
-
-| Event Type | Processing Pattern | Reliability | Ordering |
-|---|---|---|---|
-| **User Actions** | Fire-and-forget | Best effort | Not required |
-| **Financial Analysis** | Request-response | Guaranteed | Sequential |
-| **Document Processing** | Batch processing | At-least-once | Not required |
-| **AI Operations** | Circuit breaker | Retry with backoff | Not required |
-
-#### 6.3.2.2 Message Queue Architecture
-
-Celery is one of Python's most robust, mature, and production-grade libraries for managing asynchronous tasks and distributed job queues. Combined with a message broker like Redis, it can handle millions of background tasks efficiently.
-
-**Celery + Redis Architecture:**
-
-```mermaid
-graph TB
-    subgraph "Message Queue Architecture"
-        A[FastAPI Application] --> B[Task Publisher]
-        B --> C[Redis Message Broker]
-        
-        C --> D[High Priority Queue]
-        C --> E[Default Queue]
-        C --> F[Low Priority Queue]
-        C --> G[Scheduled Queue]
-        
-        D --> H[Financial Workers]
-        E --> I[Document Workers]
-        F --> J[Cleanup Workers]
-        G --> K[Scheduled Workers]
-        
-        H --> L[Result Backend]
-        I --> L
-        J --> L
-        K --> L
-    end
-```
-
-**Queue Configuration:**
-
-The priority support is implemented by creating n lists for each queue. This means that even though there are 10 (0-9) priority levels, these are consolidated into 4 levels by default to save resources. This means that a queue named celery will really be split into 4 queues.
-
-```python
-# Celery queue configuration
-from kombu import Exchange, Queue
-
-app.conf.task_queues = [
-    Queue('high_priority', routing_key='high'),
-    Queue('default', routing_key='default'),
-    Queue('low_priority', routing_key='low'),
-    Queue('financial_analysis', routing_key='financial'),
-    Queue('document_processing', routing_key='documents'),
-    Queue('ai_processing', routing_key='ai')
-]
-
-#### Priority queue configuration
-app.conf.broker_transport_options = {
-    'queue_order_strategy': 'priority',
-    'priority_steps': list(range(10)),
-    'sep': '\x06\x16',
-    'queue_order_strategy': 'priority'
-}
-```
-
-#### 6.3.2.3 Stream Processing Design
-
-The platform implements **stream processing** for real-time data flows and event handling.
-
-**Stream Processing Components:**
-
-| Component | Technology | Purpose | Throughput |
-|---|---|---|---|
-| **Event Streams** | Redis Streams | Real-time events | 10K events/sec |
-| **WebSocket Streams** | FastAPI WebSocket | Live collaboration | 1K connections |
-| **Data Pipelines** | Celery Workflows | ETL operations | 1M records/hour |
-| **Notification Streams** | Redis Pub/Sub | User notifications | 5K messages/sec |
-
-#### 6.3.2.4 Batch Processing Flows
-
-**Batch Processing Architecture:**
-
-```mermaid
-graph TB
-    subgraph "Batch Processing"
-        A[Scheduled Trigger] --> B[Batch Job Controller]
-        B --> C[Data Collection]
-        C --> D[Processing Pipeline]
-        D --> E[Quality Validation]
-        E --> F[Result Storage]
-        F --> G[Notification]
-        
-        H[Manual Trigger] --> B
-        I[Event Trigger] --> B
-    end
-```
-
-**Batch Job Types:**
-
-| Job Type | Schedule | Duration | Resources |
-|---|---|---|---|
-| **Financial Data Sync** | Hourly | 5-15 minutes | 2 CPU, 4GB RAM |
-| **AI Model Training** | Daily | 30-60 minutes | 4 CPU, 8GB RAM |
-| **Report Generation** | Weekly | 10-30 minutes | 1 CPU, 2GB RAM |
-| **Data Cleanup** | Monthly | 60-120 minutes | 1 CPU, 1GB RAM |
-
-#### 6.3.2.5 Error Handling Strategy
-
-Celery can automatically retry failed tasks. @app.task(bind=True, max_retries=3) def risky_operation(self, x): try: if x == 0: raise ValueError("Invalid value") return 10 / x except Exception as exc: raise self.retry(exc=exc, countdown=5)
-
-**Error Handling Patterns:**
-
-```mermaid
-flowchart TD
-    A[Task Execution] --> B{Success?}
-    B -->|Yes| C[Complete Task]
-    B -->|No| D[Classify Error]
-    
-    D --> E{Retryable?}
-    E -->|Yes| F[Check Retry Count]
-    E -->|No| G[Dead Letter Queue]
-    
-    F --> H{Max Retries?}
-    H -->|No| I[Schedule Retry]
-    H -->|Yes| G
-    
-    I --> J[Exponential Backoff]
-    J --> A
-    
-    G --> K[Manual Investigation]
-```
-
-**Error Classification:**
-
-| Error Type | Retry Strategy | Max Retries | Backoff |
-|---|---|---|---|
-| **Network Timeout** | Exponential backoff | 5 | 2^n seconds |
-| **Rate Limit** | Fixed delay | 3 | 60 seconds |
-| **Authentication** | No retry | 0 | N/A |
-| **Data Validation** | No retry | 0 | N/A |
-
-### 6.3.3 External Systems
-
-#### 6.3.3.1 Third-Party Integration Patterns
-
-The platform integrates with multiple external systems using standardized patterns for reliability and maintainability.
-
-**Integration Architecture Overview:**
-
-```mermaid
-graph TB
-    subgraph "M&A Intelligence Platform"
-        A[FastAPI Backend]
-        B[Integration Layer]
-        C[Circuit Breakers]
-        D[Retry Logic]
-        E[Caching Layer]
-    end
-    
-    subgraph "External Systems"
-        F[Accounting Systems]
-        G[AI Services]
-        H[Payment Processing]
-        I[Marketing Automation]
-        J[Email Services]
-    end
-    
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    
-    E --> F
-    E --> G
-    E --> H
-    E --> I
-    E --> J
-```
-
-**Integration Patterns:**
-
-| Pattern | Use Case | Implementation | Benefits |
-|---|---|---|---|
-| **Circuit Breaker** | External API failures | Hystrix-style implementation | Fault tolerance |
-| **Retry with Backoff** | Transient failures | Exponential backoff | Reliability |
-| **Bulkhead** | Resource isolation | Separate connection pools | Stability |
-| **Timeout** | Slow responses | Request timeouts | Performance |
-
-#### 6.3.3.2 Accounting System Integrations
-
-The platform integrates with four major accounting systems to provide comprehensive financial intelligence.
-
-**Accounting Integration Architecture:**
-
-```mermaid
-sequenceDiagram
-    participant User as User
-    participant Platform as M&A Platform
-    participant OAuth as OAuth Provider
-    participant Accounting as Accounting System
-    participant Worker as Background Worker
-    
-    User->>Platform: Initiate Integration
-    Platform->>OAuth: Start OAuth Flow
-    OAuth->>User: Authorization Request
-    User->>OAuth: Grant Permission
-    OAuth->>Platform: Authorization Code
-    Platform->>OAuth: Exchange for Tokens
-    OAuth->>Platform: Access & Refresh Tokens
-    Platform->>Worker: Queue Data Import
-    Worker->>Accounting: Fetch Financial Data
-    Accounting->>Worker: Return Data
-    Worker->>Platform: Store Processed Data
-    Platform->>User: Integration Complete
-```
-
-**Supported Accounting Systems:**
-
-| System | API Version | Authentication | Data Scope | Sync Frequency |
-|---|---|---|---|---|
-| **Xero** | v2.0 | OAuth 2.0 | Full financial data | Real-time webhooks |
-| **QuickBooks Online** | v3.0 | OAuth 2.0 | Full financial data | Hourly sync |
-| **Sage** | v3.1 | OAuth 2.0 | Financial statements | Daily sync |
-| **NetSuite** | 2023.2 | OAuth 2.0 + TBA | ERP data | Hourly sync |
-
-#### 6.3.3.3 AI Service Integrations
-
-The platform integrates with multiple AI providers for different use cases, implementing fallback mechanisms and cost optimization.
-
-**AI Service Integration Flow:**
-
-```mermaid
-flowchart TD
-    A[AI Request] --> B[Service Selection]
-    B --> C{Request Type}
-    
-    C -->|Financial Analysis| D[OpenAI GPT-4]
-    C -->|Deal Matching| E[Anthropic Claude 3]
-    C -->|Document Analysis| F[OpenAI GPT-4]
-    C -->|Audio Transcription| G[OpenAI Whisper]
-    
-    D --> H[Process Request]
-    E --> H
-    F --> H
-    G --> H
-    
-    H --> I{Success?}
-    I -->|Yes| J[Return Result]
-    I -->|No| K[Try Fallback]
-    
-    K --> L{Fallback Available?}
-    L -->|Yes| M[Switch Provider]
-    L -->|No| N[Return Error]
-    
-    M --> H
-```
-
-**AI Provider Configuration:**
-
-| Provider | Models | Use Cases | Rate Limits | Cost Optimization |
-|---|---|---|---|---|
-| **OpenAI** | GPT-4, GPT-3.5-turbo, Whisper | Text generation, transcription | 10K RPM | Token counting, caching |
-| **Anthropic** | Claude 3 Opus, Sonnet | Complex reasoning, analysis | 5K RPM | Request batching |
-| **Fallback** | Local models | Emergency processing | Unlimited | Resource management |
-
-#### 6.3.3.4 Payment Processing Integration
-
-**Stripe Integration Architecture:**
-
 ```mermaid
 sequenceDiagram
     participant User as User
@@ -4172,6 +3432,7 @@ Authentication verifies who a user is, while authorization controls what they ca
 | **Community Leader** | Mandatory | TOTP, SMS | Platform requirement |
 
 **MFA Configuration:**
+
 - **TOTP (Time-based One-Time Password)**: Google Authenticator, Authy compatibility
 - **SMS Verification**: Global SMS delivery with rate limiting
 - **Email Verification**: Backup method with secure token delivery
@@ -4211,6 +3472,7 @@ graph TB
 ```
 
 **Session Configuration:**
+
 - **Token Expiration**: 1 hour access tokens, 7-day refresh tokens
 - **Automatic Refresh**: Seamless token renewal before expiration
 - **Session Timeout**: 30 minutes inactivity timeout (configurable by organization)
@@ -4231,6 +3493,7 @@ Comprehensive password security policies ensure strong authentication credential
 | **Expiration** | No expiration | 90 days (configurable) | Automated prompts |
 
 **Password Security Features:**
+
 - **Breach Detection**: Integration with HaveIBeenPwned API
 - **Strength Meter**: Real-time password strength feedback
 - **Common Password Blocking**: Prevention of dictionary attacks
@@ -4297,6 +3560,7 @@ The platform implements fine-grained permission management with dynamic policy e
 | **Feature Permissions** | Subscription-based | AI features, API access | Tier-based |
 
 **Dynamic Permission Evaluation:**
+
 ```python
 # Permission evaluation logic
 async def check_permission(
@@ -4714,7 +3978,6 @@ The platform implements a multi-layered metrics collection strategy using Promet
 | **Duration** | `http_request_duration_seconds` | Request processing time distribution | Histogram with buckets |
 
 **Business Metrics**: Custom metrics specific to the M&A Intelligence Platform's business logic and user workflows.
-
 | Business Metric | Purpose | Implementation | Alert Threshold |
 |---|---|---|---|
 | `deals_created_total` | Track deal creation rate | Counter increment on creation | <10 per hour |
@@ -5096,9 +4359,10 @@ The platform integrates with industry-standard monitoring and observability tool
 
 **Monitoring Tool Strategy**: Sentry excels better at error monitoring compared to Datadog. The reason for this is Sentry's primary focus on application-level error tracking and performance monitoring. It is specifically designed to capture, aggregate, and analyze errors and exceptions in real-time, providing developers with detailed insights into application issues.
 
-The platform employs a hybrid approach combining Sentry for application-level error tracking with Datadog for comprehensive infrastructure monitoring. This strategy provides the best of both worlds: detailed error analysis and broad system observability while managing costs effectively.
+The platform employs a hybrid approach combining Sentry for error tracking and basic performance monitoring with Datadog for comprehensive infrastructure monitoring. This strategy provides the best of both worlds: detailed error analysis and broad system observability while managing costs effectively.
 
 **Implementation Timeline**:
+
 - **Phase 1**: Sentry integration for error tracking and basic performance monitoring
 - **Phase 2**: Prometheus and Grafana for custom metrics and dashboards  
 - **Phase 3**: Datadog integration for advanced APM and infrastructure monitoring
@@ -5496,7 +4760,6 @@ test('robust element interaction', async ({ page }) => {
 ```
 
 #### 6.6.2.2 Test Environment Architecture
-
 ```mermaid
 graph TB
     subgraph "Development Environment"
@@ -5547,7 +4810,6 @@ Coverage testing ensures that the entire source code is exercised by tests. It p
 | **Data Models** | 90% | 85% | 95% | 100% |
 | **Utility Functions** | 95% | 90% | 100% | 95% |
 | **Integration Points** | 85% | 80% | 90% | 100% |
-
 **Coverage Exclusions**
 
 ```python
@@ -6229,7 +5491,7 @@ The M&A Intelligence Platform leverages Render's comprehensive cloud services ec
 
 ### 8.2.4 Cost Optimization Strategy
 
-**Resource Right-Sizing**: Regular monitoring and analysis of resource utilization to ensure optimal instance sizing and avoid over-provisioning.
+**Resource Right-Sizing**: Regular monitoring and analysis of resource utilization to ensure optimal instance sizes and avoid over-provisioning.
 
 **Efficient Scaling Policies**: Auto-scaling configurations that respond to actual demand patterns while minimizing unnecessary resource allocation.
 
@@ -6271,6 +5533,7 @@ The M&A Intelligence Platform utilizes Docker containerization to ensure consist
 **Multi-Stage Build Approach**: The platform uses multi-stage Docker builds to optimize image size and security by separating build dependencies from runtime requirements.
 
 **FastAPI Backend Container**:
+
 ```dockerfile
 # Multi-stage build for FastAPI backend
 FROM python:3.11-slim as builder
@@ -6293,10 +5556,8 @@ WORKDIR /app
 
 #### Copy installed packages from builder stage
 COPY --from=builder /root/.local /root/.local
-
 #### Copy application code
 COPY app/ ./app/
-
 #### Create non-root user for security
 RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app
 USER app
@@ -6314,6 +5575,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
 **React Frontend Container**:
+
 ```dockerfile
 # Multi-stage build for React frontend
 FROM node:18-alpine as builder
@@ -6353,6 +5615,7 @@ CMD ["nginx", "-g", "daemon off;"]
 **Git-Based Tagging**: Images are tagged with Git commit SHA for precise version tracking and rollback capabilities.
 
 **Multi-Tag Strategy**:
+
 - `latest`: Most recent stable release
 - `v1.2.3`: Specific version tags
 - `abc123def`: Git commit SHA tags
@@ -6599,11 +5862,13 @@ secrets:
 ```
 
 **Access Controls**: Environment-specific protection rules ensure only authorized deployments:
+
 - **Staging**: Automatic deployment from develop branch
 - **Production**: Manual approval required for release deployments
 - **Secrets**: Environment-specific secret access with audit logging
 
 **Security Scanning**: Integrated security scanning throughout the pipeline:
+
 - **Dependency Scanning**: Automated vulnerability scanning of all dependencies
 - **Code Scanning**: Static analysis for security vulnerabilities
 - **Container Scanning**: Docker image vulnerability scanning
@@ -6618,6 +5883,7 @@ The M&A Intelligence Platform implements comprehensive infrastructure monitoring
 **Multi-Layer Monitoring Strategy**: The platform implements monitoring at application, infrastructure, and business levels to provide complete visibility into system health and performance.
 
 **Render Native Monitoring**: Render provides built-in monitoring capabilities including:
+
 - **Service Health**: Automatic health checks and uptime monitoring
 - **Resource Utilization**: CPU, memory, and network usage tracking
 - **Request Metrics**: Response times, throughput, and error rates
@@ -6669,6 +5935,7 @@ graph TB
 **Cost Tracking Dashboard**: Real-time cost monitoring across all Render services with budget alerts and optimization recommendations.
 
 **Resource Optimization Strategies**:
+
 - **Right-Sizing**: Regular analysis of resource utilization to optimize instance sizes
 - **Auto-Scaling**: Dynamic scaling based on demand to minimize over-provisioning
 - **Service Optimization**: Regular review of service configurations for cost efficiency
@@ -6693,6 +5960,7 @@ graph TB
 - **Infrastructure Security**: Unauthorized configuration changes, security policy violations
 
 **Compliance Monitoring**: Automated monitoring of compliance requirements:
+
 - **GDPR Compliance**: Data access logging, retention policy enforcement
 - **SOC 2 Controls**: Security control monitoring, audit trail maintenance
 - **Financial Regulations**: Transaction logging, data integrity verification
@@ -6719,6 +5987,7 @@ retention_policies:
 ```
 
 **Automated Compliance Reporting**: Regular generation of compliance reports for regulatory requirements:
+
 - **Monthly Security Reports**: Security event summaries and trend analysis
 - **Quarterly Compliance Reports**: SOC 2 control effectiveness and audit findings
 - **Annual Risk Assessments**: Comprehensive security and compliance posture review
@@ -6970,12 +6239,14 @@ graph TB
 ### 8.7.3 Cost Optimization Opportunities
 
 **Immediate Optimizations**:
+
 - **Resource Right-Sizing**: Regular monitoring to optimize instance sizes
 - **Auto-Scaling Tuning**: Optimize scaling thresholds to minimize over-provisioning
 - **Cache Optimization**: Implement intelligent caching to reduce database load
 - **CDN Optimization**: Optimize asset delivery to reduce bandwidth costs
 
 **Long-Term Optimizations**:
+
 - **Reserved Capacity**: Consider reserved instances for predictable workloads
 - **Multi-Region Strategy**: Optimize regional deployment for cost and performance
 - **Service Consolidation**: Evaluate opportunities to consolidate services
@@ -7023,7 +6294,7 @@ psql ma_intelligence_dev -c "CREATE EXTENSION postgis;"
 psql ma_intelligence_dev -c "CREATE EXTENSION vector;"
 ```
 
-### 9.1.2 API Rate Limiting SpecificationsThe platform implements a sophisticated, Redis-backed rate limiting system using FastAPI middleware to protect against API abuse and ensure fair resource allocation across subscription tiers.
+### 9.1.2 API Rate Limiting SpecificationsThe platform implements a sophisticated, Redis-backed rate limiting system using FastAPI middleware to protect against API abuse and ensure fair resource allocation across subscription tiers
 
 **Rate Limiting Implementation:**
 
@@ -7076,7 +6347,6 @@ class TieredRateLimiter:
 The platform supports real-time collaboration features through WebSocket connections with proper connection lifecycle management and message routing.
 
 **WebSocket Architecture:**
-
 ```mermaid
 graph TB
     subgraph "WebSocket Management"
@@ -7135,358 +6405,3 @@ class ConnectionManager:
         if channel in self.active_connections:
             for connection in self.active_connections[channel]:
                 await connection.send_text(json.dumps(message))
-```
-
-### 9.1.4 Background Task Processing PatternsThe platform implements a sophisticated background task processing architecture using Celery with Redis as both message broker and result backend, designed to handle the complex, long-running operations required by the M&A Intelligence Platform.
-
-**Task Processing Architecture:**
-
-```mermaid
-graph TB
-    subgraph "FastAPI Application"
-        A[API Endpoints] --> B[Task Dispatch]
-        B --> C[Celery Client]
-    end
-    
-    subgraph "Redis Message Broker"
-        D[High Priority Queue]
-        E[Default Queue] 
-        F[Low Priority Queue]
-        G[Scheduled Queue]
-    end
-    
-    subgraph "Celery Workers"
-        H[Financial Analysis Workers]
-        I[Document Processing Workers]
-        J[AI Processing Workers]
-        K[Email/SMS Workers]
-    end
-    
-    subgraph "Task Results"
-        L[(Redis Result Backend)]
-        M[(PostgreSQL Persistence)]
-        N[File Storage]
-    end
-    
-    C --> D
-    C --> E
-    C --> F
-    C --> G
-    
-    D --> H
-    E --> I
-    E --> J
-    F --> K
-    
-    H --> L
-    I --> N
-    J --> L
-    K --> M
-```
-
-**Task Categories and Processing Patterns:**
-
-| Task Category | Queue Priority | Retry Strategy | Timeout | Use Cases |
-|---|---|---|---|---|
-| **Financial Analysis** | High | 3 retries, exponential backoff | 300s | Ratio calculations, AI narratives |
-| **Document Processing** | Default | 2 retries, fixed delay | 600s | PDF generation, file conversions |
-| **AI Operations** | Default | 5 retries, exponential backoff | 120s | GPT-4 calls, deal matching |
-| **Communications** | Low | 3 retries, linear backoff | 60s | Email/SMS sending |
-
-**Celery Configuration:**
-
-```python
-# celery_app.py
-from celery import Celery
-from kombu import Exchange, Queue
-
-#### Celery application configuration
-celery_app = Celery(
-    "ma_intelligence",
-    broker="redis://localhost:6379/0",
-    backend="redis://localhost:6379/0",
-    include=["app.tasks.financial", "app.tasks.documents", "app.tasks.ai", "app.tasks.communications"]
-)
-
-#### Queue configuration with priorities
-celery_app.conf.update(
-    task_queues=[
-        Queue("high_priority", Exchange("high_priority"), routing_key="high"),
-        Queue("default", Exchange("default"), routing_key="default"),
-        Queue("low_priority", Exchange("low_priority"), routing_key="low"),
-        Queue("financial_analysis", Exchange("financial"), routing_key="financial"),
-    ],
-    task_routes={
-        "app.tasks.financial.*": {"queue": "financial_analysis"},
-        "app.tasks.ai.*": {"queue": "default"},
-        "app.tasks.communications.*": {"queue": "low_priority"},
-    },
-    task_serializer="json",
-    accept_content=["json"],
-    result_serializer="json",
-    timezone="UTC",
-    enable_utc=True,
-    task_track_started=True,
-    task_time_limit=30 * 60,  # 30 minutes
-    task_soft_time_limit=25 * 60,  # 25 minutes
-    worker_prefetch_multiplier=1,
-    task_acks_late=True,
-    worker_disable_rate_limits=False,
-)
-
-#### Retry configuration
-celery_app.conf.task_annotations = {
-    "app.tasks.financial.calculate_ratios": {
-        "rate_limit": "10/m",
-        "retry_kwargs": {"max_retries": 3, "countdown": 60}
-    },
-    "app.tasks.ai.generate_narrative": {
-        "rate_limit": "30/m",
-        "retry_kwargs": {"max_retries": 5, "countdown": 30}
-    }
-}
-```
-
-### 9.1.5 File Upload and Storage Management
-
-The platform handles various file types including financial documents, legal contracts, and media files with comprehensive security and organization features.
-
-**File Storage Architecture:**
-
-| File Category | Max Size | Allowed Types | Storage Location | Security Level |
-|---|---|---|---|---|
-| **Financial Documents** | 50MB | PDF, Excel, CSV | Encrypted storage | High |
-| **Legal Documents** | 100MB | PDF, Word, RTF | Secure data rooms | Very High |
-| **Media Files** | 500MB | Images, Audio, Video | CDN storage | Medium |
-| **System Files** | 10MB | JSON, XML, TXT | Application storage | Low |
-
-**File Processing Pipeline:**
-
-```python
-# File upload processing
-from fastapi import UploadFile, HTTPException
-import aiofiles
-import hashlib
-import magic
-
-class FileProcessor:
-    def __init__(self):
-        self.max_sizes = {
-            "financial": 50 * 1024 * 1024,  # 50MB
-            "legal": 100 * 1024 * 1024,     # 100MB
-            "media": 500 * 1024 * 1024,     # 500MB
-        }
-        self.allowed_types = {
-            "financial": ["application/pdf", "application/vnd.ms-excel"],
-            "legal": ["application/pdf", "application/msword"],
-            "media": ["image/jpeg", "image/png", "audio/mpeg", "video/mp4"]
-        }
-    
-    async def process_upload(self, file: UploadFile, category: str, deal_id: str):
-        # Validate file size
-        if file.size > self.max_sizes.get(category, 10 * 1024 * 1024):
-            raise HTTPException(status_code=413, detail="File too large")
-        
-        # Validate file type
-        content = await file.read()
-        mime_type = magic.from_buffer(content, mime=True)
-        
-        if mime_type not in self.allowed_types.get(category, []):
-            raise HTTPException(status_code=415, detail="Unsupported file type")
-        
-        # Generate file hash for deduplication
-        file_hash = hashlib.sha256(content).hexdigest()
-        
-        # Store file securely
-        file_path = f"deals/{deal_id}/{category}/{file_hash}_{file.filename}"
-        
-        async with aiofiles.open(file_path, "wb") as f:
-            await f.write(content)
-        
-        return {
-            "file_path": file_path,
-            "file_hash": file_hash,
-            "mime_type": mime_type,
-            "size": file.size
-        }
-```
-
-## 9.2 Glossary
-
-**API Gateway**: A service that acts as a single entry point for all client requests, handling routing, authentication, rate limiting, and request/response transformation.
-
-**Async/Await**: Python programming pattern for handling asynchronous operations, allowing non-blocking execution of I/O-bound tasks.
-
-**Background Tasks**: Operations that run outside the normal request-response cycle, typically handled by Celery workers for long-running or resource-intensive processes.
-
-**Circuit Breaker**: A design pattern that prevents cascading failures by monitoring external service calls and "opening" the circuit when failure rates exceed thresholds.
-
-**Data Room**: A secure virtual space where sensitive documents are stored and shared during M&A transactions, with granular access controls and audit logging.
-
-**Deal Readiness Score**: An AI-generated metric that evaluates a company's preparedness for M&A transactions based on financial health, data quality, and market conditions.
-
-**Event-Driven Architecture**: A software architecture pattern where system components communicate through events, enabling loose coupling and scalability.
-
-**FastAPI**: A modern, high-performance Python web framework for building APIs with automatic documentation generation and type validation.
-
-**Financial Intelligence Engine**: The platform's core analytical component that imports accounting data, calculates financial ratios, and generates AI-powered insights.
-
-**Horizontal Scaling**: The ability to handle increased load by adding more servers or instances rather than upgrading existing hardware.
-
-**JWT (JSON Web Token)**: A compact, URL-safe token format used for securely transmitting information between parties, commonly used for authentication.
-
-**Multi-Tenant Architecture**: A software architecture where a single instance serves multiple customers (tenants) while keeping their data completely isolated.
-
-**OAuth 2.0**: An authorization framework that enables applications to obtain limited access to user accounts on external services like accounting platforms.
-
-**RBAC (Role-Based Access Control)**: A security model that restricts system access based on user roles and permissions within an organization.
-
-**Redis**: An in-memory data structure store used as a database, cache, and message broker, providing high-performance data operations.
-
-**RESTful API**: An architectural style for web services that uses HTTP methods and follows REST principles for stateless, scalable communication.
-
-**SaaS (Software as a Service)**: A software distribution model where applications are hosted centrally and accessed via the internet on a subscription basis.
-
-**SQLAlchemy**: A Python SQL toolkit and Object-Relational Mapping (ORM) library that provides database abstraction and query building capabilities.
-
-**Webhook**: An HTTP callback mechanism that allows applications to provide real-time information to other applications when specific events occur.
-
-**WebSocket**: A communication protocol that provides full-duplex communication channels over a single TCP connection, enabling real-time data exchange.
-
-## 9.3 Acronyms
-
-**AI**: Artificial Intelligence - Computer systems that perform tasks typically requiring human intelligence
-
-**API**: Application Programming Interface - Set of protocols and tools for building software applications
-
-**ASGI**: Asynchronous Server Gateway Interface - Python specification for asynchronous web servers and applications
-
-**AWS**: Amazon Web Services - Cloud computing platform providing various infrastructure services
-
-**CDN**: Content Delivery Network - Distributed network of servers that deliver web content based on geographic location
-
-**CI/CD**: Continuous Integration/Continuous Deployment - Development practices for automated testing and deployment
-
-**CORS**: Cross-Origin Resource Sharing - Mechanism allowing web pages to access resources from other domains
-
-**CPU**: Central Processing Unit - Primary component of a computer that executes instructions
-
-**CRUD**: Create, Read, Update, Delete - Basic operations for persistent storage management
-
-**CSS**: Cascading Style Sheets - Language used for describing the presentation of web documents
-
-**DCF**: Discounted Cash Flow - Valuation method that estimates investment value based on projected cash flows
-
-**DDoS**: Distributed Denial of Service - Cyber attack that overwhelms systems with traffic from multiple sources
-
-**DOM**: Document Object Model - Programming interface for HTML and XML documents
-
-**ERP**: Enterprise Resource Planning - Business process management software integrating core business processes
-
-**GDPR**: General Data Protection Regulation - European Union regulation on data protection and privacy
-
-**HTML**: HyperText Markup Language - Standard markup language for creating web pages
-
-**HTTP**: HyperText Transfer Protocol - Foundation protocol for data communication on the World Wide Web
-
-**HTTPS**: HTTP Secure - Extension of HTTP with encryption for secure communication
-
-**IaC**: Infrastructure as Code - Managing and provisioning infrastructure through machine-readable definition files
-
-**JSON**: JavaScript Object Notation - Lightweight data interchange format
-
-**JWT**: JSON Web Token - Compact token format for securely transmitting information between parties
-
-**KPI**: Key Performance Indicator - Measurable value demonstrating organizational effectiveness
-
-**LBO**: Leveraged Buyout - Acquisition strategy using significant amounts of borrowed money
-
-**M&A**: Mergers and Acquisitions - Corporate transactions involving company combinations or purchases
-
-**MFA**: Multi-Factor Authentication - Security method requiring multiple verification factors
-
-**MRR**: Monthly Recurring Revenue - Predictable revenue generated each month from subscriptions
-
-**MVP**: Minimum Viable Product - Product with basic features sufficient for early customer feedback
-
-**NDA**: Non-Disclosure Agreement - Legal contract establishing confidential relationships
-
-**ORM**: Object-Relational Mapping - Programming technique for converting data between incompatible systems
-
-**PaaS**: Platform as a Service - Cloud computing model providing development and deployment platforms
-
-**PCI DSS**: Payment Card Industry Data Security Standard - Security standards for credit card processing
-
-**PDF**: Portable Document Format - File format for presenting documents independently of software/hardware
-
-**PE**: Private Equity - Investment strategy involving direct investment in private companies
-
-**PITR**: Point-in-Time Recovery - Database backup method allowing restoration to specific timestamps
-
-**PWA**: Progressive Web App - Web applications using modern capabilities to provide app-like experiences
-
-**RAM**: Random Access Memory - Computer memory for storing data temporarily during processing
-
-**RBAC**: Role-Based Access Control - Security model restricting access based on user roles
-
-**REST**: Representational State Transfer - Architectural style for designing networked applications
-
-**RLS**: Row-Level Security - Database security feature controlling access to individual table rows
-
-**RPO**: Recovery Point Objective - Maximum acceptable data loss measured in time
-
-**RTO**: Recovery Time Objective - Maximum acceptable downtime for system recovery
-
-**SaaS**: Software as a Service - Software distribution model with centralized hosting and subscription access
-
-**SDK**: Software Development Kit - Collection of tools for developing applications for specific platforms
-
-**SLA**: Service Level Agreement - Contract defining expected service performance levels
-
-**SMS**: Short Message Service - Text messaging service for mobile communication
-
-**SOC 2**: Service Organization Control 2 - Auditing standard for service organizations' security controls
-
-**SPA**: Single Page Application - Web application loading single HTML page and updating content dynamically
-
-**SQL**: Structured Query Language - Programming language for managing relational databases
-
-**SSD**: Solid State Drive - Data storage device using flash memory for faster access
-
-**SSL**: Secure Sockets Layer - Cryptographic protocol for secure communication (superseded by TLS)
-
-**TLS**: Transport Layer Security - Cryptographic protocol providing secure communication over networks
-
-**TTL**: Time To Live - Mechanism limiting data lifespan or hop count in computer networks
-
-**UI**: User Interface - Space where interactions between humans and machines occur
-
-**URL**: Uniform Resource Locator - Web address specifying resource location on the internet
-
-**UX**: User Experience - Overall experience of person using product, system, or service
-
-**VPC**: Virtual Private Cloud - Isolated cloud computing environment within public cloud infrastructure
-
-**WCAG**: Web Content Accessibility Guidelines - International standards for web accessibility
-
-**WSGI**: Web Server Gateway Interface - Python specification for web servers and applications
-
-**XML**: eXtensible Markup Language - Markup language defining rules for encoding documents
-
-**YAML**: YAML Ain't Markup Language - Human-readable data serialization standard
-
-This comprehensive appendices section provides essential technical information, definitions, and acronym expansions that support the complete understanding and implementation of the M&A Intelligence Platform's technical specifications. The information maintains consistency with the technology choices and architectural decisions outlined throughout the document while providing practical implementation guidance for development teams.
----
-
-## Development Progress Log (BMAD)
-
-| Date | Sprint Phase | Activity | Status | Notes |
-| --- | --- | --- | --- | --- |
-| 2025-10-24 | Implementation | Backend Clerk session sync (DEV-004) | Complete | Webhooks, auth dependency, user service delivered; `python -m pytest` (20) passing. |
-| 2025-10-24 | Implementation | Protected routing expansion (DEV-003) | Complete | Protected layout, role-aware navigation, breadcrumbs, and vitest integration suite (43/43) delivered. |
-| 2025-02-14 | Implementation | Frontend Clerk authentication flows (DEV-002) | Complete | Router guards, dashboard, and Clerk pages implemented; Vitest auth suite green. |
-| 2025-02-14 | Implementation | Frontend React/Vite shell initialized with Tailwind and Vitest baseline | Complete | Verified via automated unit test (App.test.tsx). |
-| 2025-02-14 | Implementation | Frontend dev server verification | Complete | `timeout 5 npm run dev` confirms Vite server boots on http://localhost:5173. |
-| 2025-02-14 | Planning | Backend FastAPI service initialization | Complete | FastAPI scaffold with `/` and `/health` implemented; `pytest` green using ASGI transport harness. |
-
-

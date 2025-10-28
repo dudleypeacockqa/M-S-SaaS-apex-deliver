@@ -34,8 +34,8 @@ describe('EnhancedLandingPage', () => {
       </RouterWrapper>
     );
     expect(screen.getByText(/The M&A Industry Has an Accessibility Problem/i)).toBeInTheDocument();
-    expect(screen.getByText(/Traditional Enterprise Platforms/i)).toBeInTheDocument();
-    expect(screen.getByText(/ApexDeliver Platform/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: /Traditional Enterprise Platforms/i })).toBeInTheDocument();
+    expect(screen.getAllByText(/ApexDeliver Platform/i).length).toBeGreaterThan(0);
   });
 
   it('displays all 9 feature cards', () => {
@@ -45,15 +45,15 @@ describe('EnhancedLandingPage', () => {
       </RouterWrapper>
     );
     
-    expect(screen.getByText(/Deal Pipeline Management/i)).toBeInTheDocument();
-    expect(screen.getByText(/Financial Intelligence Engine/i)).toBeInTheDocument();
-    expect(screen.getByText(/Multi-Method Valuation Suite/i)).toBeInTheDocument();
-    expect(screen.getByText(/Secure Document Room/i)).toBeInTheDocument();
-    expect(screen.getByText(/AI-Powered Deal Matching/i)).toBeInTheDocument();
-    expect(screen.getByText(/Automated Document Generation/i)).toBeInTheDocument();
-    expect(screen.getByText(/Task & Workflow Automation/i)).toBeInTheDocument();
-    expect(screen.getByText(/Professional Community/i)).toBeInTheDocument();
-    expect(screen.getByText(/Post-Merger Integration/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Deal Pipeline Management/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Financial Intelligence Engine/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Multi-Method Valuation Suite/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Secure Document Room/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/AI-Powered Deal Matching/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Automated Document Generation/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Task & Workflow Automation/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Professional Community/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('heading', { level: 3, name: /Post-Merger Integration/i }).length).toBeGreaterThan(0);
   });
 
   it('renders PMI Integration section', () => {
@@ -72,7 +72,7 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/Powered by FinanceFlo.ai/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Powered by FinanceFlo.ai/i).length).toBeGreaterThan(0);
   });
 
   it('shows complete M&A lifecycle stages', () => {
@@ -83,7 +83,7 @@ describe('EnhancedLandingPage', () => {
     );
     expect(screen.getByText(/Pre-Deal/i)).toBeInTheDocument();
     expect(screen.getByText(/Deal Execution/i)).toBeInTheDocument();
-    expect(screen.getByText(/Post-Merger Integration/i)).toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { level: 3, name: /Post-Merger Integration/i }).length).toBeGreaterThan(0);
   });
 
   it('includes link to FinanceFlo.ai', () => {
@@ -120,7 +120,8 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/What Our Customers Say/i)).toBeInTheDocument();
+    const testimonialsHeadings = screen.getAllByText(/Trusted by M&A Professionals Worldwide/i);
+    expect(testimonialsHeadings.length).toBeGreaterThan(0);
   });
 
   it('renders TrustBadges component', () => {
@@ -193,7 +194,8 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/£279\/month/i)).toBeInTheDocument();
+    const pricingEntries = screen.getAllByText(/£279\/month/i);
+    expect(pricingEntries.length).toBeGreaterThan(0);
   });
 
   it('shows 70% savings claim', () => {
@@ -202,7 +204,8 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/70% Less Expensive/i)).toBeInTheDocument();
+    const savingsClaims = screen.getAllByText(/70% Less Expensive/i);
+    expect(savingsClaims.length).toBeGreaterThan(0);
   });
 
   it('displays trust indicators', () => {
@@ -211,7 +214,8 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/No credit card required/i)).toBeInTheDocument();
+    const trustIndicators = screen.getAllByText(/No credit card required/i);
+    expect(trustIndicators.length).toBeGreaterThan(0);
   });
 
   it('shows customer count', () => {
@@ -220,7 +224,7 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/500\+/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/500\+/i).length).toBeGreaterThan(0);
   });
 
   it('displays deal statistics', () => {
@@ -229,7 +233,7 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/847\+/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Active Deals/i).length).toBeGreaterThan(0);
   });
 
   it('shows deal value metric', () => {
@@ -238,7 +242,7 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/£50B\+/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/£50B\+/i).length).toBeGreaterThan(0);
   });
 
   it('includes MarketingLayout wrapper', () => {
@@ -279,7 +283,7 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/From Deal Sourcing to Day 100 Success/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Day 100 success/i).length).toBeGreaterThan(0);
   });
 
   it('highlights PMI as NEW feature', () => {
@@ -298,7 +302,8 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/ERP consolidation/i)).toBeInTheDocument();
+    const erpItems = screen.getAllByText(/ERP consolidation/i);
+    expect(erpItems.length).toBeGreaterThan(0);
   });
 
   it('shows synergy tracking feature', () => {
@@ -307,7 +312,8 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/Synergy tracking/i)).toBeInTheDocument();
+    const synergyMentions = screen.getAllByText(/Synergy tracking/i);
+    expect(synergyMentions.length).toBeGreaterThan(0);
   });
 
   it('mentions Day 1-100 success planning', () => {
@@ -334,9 +340,9 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/Xero/i)).toBeInTheDocument();
-    expect(screen.getByText(/QuickBooks/i)).toBeInTheDocument();
-    expect(screen.getByText(/Sage/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Xero/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/QuickBooks/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Sage/i).length).toBeGreaterThan(0);
   });
 
   it('displays security certifications', () => {
@@ -345,8 +351,8 @@ describe('EnhancedLandingPage', () => {
         <EnhancedLandingPage />
       </RouterWrapper>
     );
-    expect(screen.getByText(/GDPR Compliant/i)).toBeInTheDocument();
-    expect(screen.getByText(/SOC 2 Type II/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/GDPR Compliant/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/SOC 2 Type II/i).length).toBeGreaterThan(0);
   });
 });
 

@@ -15,6 +15,7 @@ from httpx import AsyncClient
 from jose import jwt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from _pytest.fixtures import FixtureLookupError
 
 # Ensure the backend directory is on sys.path for "app" imports
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
@@ -52,10 +53,15 @@ stripe_mock = MagicMock()
 stripe_module = stripe_mock
 sys.modules.setdefault("stripe", stripe_module)
 
+import importlib
+
 from app.main import app  # noqa: E402
 from app.models.user import User, UserRole  # noqa: E402
 from app.models.organization import Organization  # noqa: E402
 from app.models.document import Document, Folder, DocumentPermission, DocumentAccessLog  # noqa: E402, F401
+from app.models.deal import Deal, DealStage  # noqa: E402, F401
+from app.models.valuation import ValuationModel, ComparableCompany, PrecedentTransaction, ValuationScenario, ValuationExportLog
+from app.models.podcast import PodcastEpisode, PodcastTranscript, PodcastAnalytics
 
 # Clear the settings cache to ensure test configuration is used
 get_settings.cache_clear()
@@ -73,7 +79,11 @@ def engine():
         if not db_path.is_absolute():
             db_path = Path.cwd() / db_path
         if db_path.exists():
-            db_path.unlink()
+            try:
+                db_path.unlink()
+            except PermissionError:
+                # On Windows the previous connection may still be closing; ignore and reuse file
+                pass
 
     engine = create_engine(settings.database_url, future=True, connect_args=connect_args)
     Base.metadata.drop_all(engine, checkfirst=True)
@@ -368,6 +378,22 @@ def test_user(solo_user):
 
 
 @pytest.fixture()
+def valuation_payload() -> dict:
+    """Reusable valuation payload for valuation tests."""
+
+    return {
+        "forecast_years": 5,
+        "discount_rate": 0.12,
+        "terminal_growth_rate": 0.03,
+        "terminal_method": "gordon_growth",
+        "cash_flows": [500000, 650000, 800000, 950000, 1100000],
+        "terminal_cash_flow": 1200000,
+        "net_debt": 2000000,
+        "shares_outstanding": 1000000,
+    }
+
+
+@pytest.fixture()
 def auth_headers(solo_user):
     """Provide authentication headers using solo_user."""
     from app.api.dependencies.auth import get_current_user
@@ -442,3 +468,77 @@ def test_subscription(db_session, test_organization):
     db_session.commit()
     db_session.refresh(subscription)
     return subscription
+
+
+@pytest.fixture()
+def growth_user(create_user, create_organization, db_session):
+    org = create_organization(subscription_tier="growth")
+    user = create_user(role=UserRole.growth, organization_id=org.id)
+    db_session.refresh(user)
+    return user
+
+
+@pytest.fixture()
+def auth_headers_growth(growth_user):
+    """Provide authentication headers for a growth-tier user (valuation access)."""
+    from app.api.dependencies.auth import get_current_user
+
+    def override_get_current_user():
+        return growth_user
+
+    app.dependency_overrides[get_current_user] = override_get_current_user
+    headers = {"Authorization": "Bearer mock_growth_token"}
+    yield headers
+    app.dependency_overrides.pop(get_current_user, None)
+
+
+@pytest.fixture()
+def create_deal_for_org(db_session, create_user, create_organization, request):
+    """Factory to create a deal tied to an organization and owner."""
+
+    def _create(
+        *,
+        organization: Organization | None = None,
+        owner: User | None = None,
+        name: str = "Test Deal",
+        stage: DealStage | str = DealStage.sourcing,
+        target_company: str = "Target Co",
+        currency: str = "GBP",
+    ):
+        owner_user = owner
+        if owner_user is None:
+            try:
+                owner_user = request.getfixturevalue("growth_user")
+            except FixtureLookupError:
+                owner_user = None
+
+        if owner_user is not None:
+            org = organization
+            if org is None:
+                org = db_session.query(Organization).filter(Organization.id == owner_user.organization_id).first()
+            if org is None:
+                org = create_organization(subscription_tier="growth")
+                owner_user.organization_id = org.id
+                db_session.add(owner_user)
+                db_session.commit()
+        else:
+            org = organization or create_organization()
+            owner_user = create_user(role=UserRole.growth, organization_id=org.id)
+
+        stage_value = stage if isinstance(stage, DealStage) else DealStage(stage)
+
+        deal = Deal(
+            id=f"deal-{uuid4()}",
+            organization_id=org.id,
+            name=name,
+            stage=stage_value,
+            owner_id=owner_user.id,
+            target_company=target_company,
+            currency=currency,
+        )
+        db_session.add(deal)
+        db_session.commit()
+        db_session.refresh(deal)
+        return deal, owner_user, org
+
+    return _create

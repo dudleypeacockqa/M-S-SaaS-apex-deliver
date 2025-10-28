@@ -13,6 +13,15 @@ from .financial_narrative import FinancialNarrative
 from .deal import Deal, DealStage, PipelineStage
 from .document import Document, Folder, DocumentPermission, DocumentAccessLog
 from .subscription import Subscription, Invoice, SubscriptionTier, SubscriptionStatus
+from .valuation import (
+    ValuationModel,
+    ValuationScenario,
+    ComparableCompany,
+    PrecedentTransaction,
+    ValuationExportLog,
+)
+from .task import DealTask, TaskTemplate, TaskAutomationRule, TaskAutomationLog
+from .podcast import PodcastEpisode, PodcastTranscript, PodcastAnalytics
 
 __all__ = [
     "User",
@@ -33,4 +42,16 @@ __all__ = [
     "Invoice",
     "SubscriptionTier",
     "SubscriptionStatus",
+    "ValuationModel",
+    "ValuationScenario",
+    "ComparableCompany",
+    "PrecedentTransaction",
+    "ValuationExportLog",
+    "DealTask",
+    "TaskTemplate",
+    "TaskAutomationRule",
+    "TaskAutomationLog",
+    "PodcastEpisode",
+    "PodcastTranscript",
+    "PodcastAnalytics",
 ]

@@ -1,4 +1,5 @@
 """Database base class definitions."""
+
 from sqlalchemy.orm import DeclarativeBase
 
 

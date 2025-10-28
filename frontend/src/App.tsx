@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 import { SignedIn, SignedOut } from "@clerk/clerk-react"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import { RootLayout } from "./layouts/RootLayout"
 import { SignInPage } from "./pages/SignInPage"
@@ -13,6 +14,7 @@ import { DealPipeline } from "./pages/deals/DealPipeline"
 import { NewDealPage } from "./pages/deals/NewDealPage"
 import { DealDetails } from "./pages/deals/DealDetails"
 import { DataRoom } from "./pages/deals/DataRoom"
+import { ValuationSuite } from "./pages/deals/valuation/ValuationSuite"
 
 // Billing & Checkout Pages
 import { BillingDashboard } from "./pages/dashboard/BillingDashboard"
@@ -73,6 +75,7 @@ export const AppRoutes = () => {
         <Route path="deals/new" element={<SignedIn><NewDealPage /></SignedIn>} />
         <Route path="deals/:dealId" element={<SignedIn><DealDetails /></SignedIn>} />
         <Route path="deals/:dealId/data-room" element={<SignedIn><DataRoom /></SignedIn>} />
+        <Route path="deals/:dealId/valuation" element={<SignedIn><ValuationSuite /></SignedIn>} />
 
         {/* Billing & Subscription Routes */}
         <Route path="dashboard/billing" element={<SignedIn><BillingDashboard /></SignedIn>} />
@@ -87,11 +90,15 @@ export const AppRoutes = () => {
   )
 }
 
+const queryClient = new QueryClient()
+
 const App = () => {
   return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </QueryClientProvider>
   )
 }
 

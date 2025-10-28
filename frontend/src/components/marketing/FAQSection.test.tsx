@@ -45,8 +45,8 @@ describe('FAQSection', () => {
     const firstQuestion = screen.getByText(/How is ApexDeliver different/i);
     fireEvent.click(firstQuestion); // Close it
     
-    const answer = screen.queryByText(/ApexDeliver is purpose-built/i);
-    expect(answer).not.toBeVisible();
+    const answer = screen.getByText(/ApexDeliver is purpose-built/i);
+    expect(answer.parentElement).toHaveClass('max-h-0');
   });
 
   it('closes other FAQs when opening a new one', () => {
@@ -61,7 +61,8 @@ describe('FAQSection', () => {
     
     // Second should be open, first should be closed
     expect(screen.getByText(/Your free trial includes/i)).toBeVisible();
-    expect(screen.queryByText(/ApexDeliver is purpose-built/i)).not.toBeVisible();
+    const firstAnswer = screen.getByText(/ApexDeliver is purpose-built/i);
+    expect(firstAnswer.parentElement).toHaveClass('max-h-0');
   });
 
   it('displays chevron icon for each FAQ', () => {
@@ -226,7 +227,7 @@ describe('FAQSection', () => {
     fireEvent.click(pricingQuestion);
     
     expect(screen.getByText(/20% off/i)).toBeInTheDocument();
-    expect(screen.getByText(/£279\/month/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/£279\/month/i).length).toBeGreaterThan(0);
   });
 
   it('mentions data retention period', () => {
@@ -235,7 +236,7 @@ describe('FAQSection', () => {
     const dataQuestion = screen.getByText(/What happens to my data if I cancel/i);
     fireEvent.click(dataQuestion);
     
-    expect(screen.getByText(/30 days after cancellation/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/30 days after cancellation/i).length).toBeGreaterThan(0);
   });
 
   it('mentions support availability', () => {

@@ -74,3 +74,29 @@ env.READY_TO_USE
 render_*.json
 
 docs/DEPLOYMENT-COMPLETE-RECORD.md
+
+# Ignore temporary development files
+testfile.txt
+dev.plan.md
+
+# Ignore Word documents and reference materials
+*.docx
+*.DOCX
+*.xlsx
+*.pptx
+*.pdf
+12 Tips for Selling to the C-Suite Infographic (1).docx
+12 Tips for Selling to the C-Suite Infographic.docx
+48 - Eric Andrews Modelling Spreadsheets/
+8. Mergers and Acquisitions Toolkit/
+M&A Real life example docs/
+ApexDeliver Sales & Marketing Website - Complete Development Plan.md
+ApexDeliver Website Development - Work Summary.md
+Cursor Development Continuation Guide.md
+AGENTS.md
+
+# Ignore duplicate package-lock.json in root
+/package-lock.json
+
+# Ignore bmad working directory
+bmad/

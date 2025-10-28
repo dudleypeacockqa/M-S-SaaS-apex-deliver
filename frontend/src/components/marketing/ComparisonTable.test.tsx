@@ -21,7 +21,7 @@ describe('ComparisonTable', () => {
   it('displays two platform columns', () => {
     render(<ComparisonTable />);
     
-    expect(screen.getByText(/ApexDeliver/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/ApexDeliver/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Traditional Platforms/i)).toBeInTheDocument();
   });
 
@@ -124,7 +124,7 @@ describe('ComparisonTable', () => {
     render(<ComparisonTable />);
     
     expect(screen.getByText(/Minimum Contract/i)).toBeInTheDocument();
-    expect(screen.getByText(/Monthly/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Monthly/i).length).toBeGreaterThan(0);
   });
 
   it('includes CTA button', () => {
@@ -230,7 +230,7 @@ describe('ComparisonTable', () => {
   it('shows "Extra Cost" indicator', () => {
     render(<ComparisonTable />);
     
-    expect(screen.getByText(/Extra Cost/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Extra Cost/i).length).toBeGreaterThan(0);
   });
 
   it('displays alternating row colors', () => {

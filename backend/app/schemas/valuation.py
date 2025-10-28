@@ -4,7 +4,7 @@ This module defines request/response schemas for valuation endpoints.
 """
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -78,6 +78,18 @@ class ValuationResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ValuationExportCreate(BaseModel):
+    export_type: Literal["pdf", "excel"]
+    export_format: Optional[str] = None
+
+
+class ValuationExportResponse(BaseModel):
+    status: str
+    task_id: str
+    export_type: Literal["pdf", "excel"]
+    export_format: Optional[str] = None
 
 
 # Scenario Schemas

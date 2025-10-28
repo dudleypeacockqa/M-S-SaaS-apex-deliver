@@ -54,7 +54,30 @@ class ValuationModel(Base):
     # Relationships
     deal = relationship("Deal", back_populates="valuations")
     organization = relationship("Organization")
-    scenarios = relationship("ValuationScenario", back_populates="valuation", cascade="all, delete-orphan")
+    scenarios = relationship(
+        "ValuationScenario",
+        back_populates="valuation",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    comparables = relationship(
+        "ComparableCompany",
+        back_populates="valuation",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    precedent_transactions = relationship(
+        "PrecedentTransaction",
+        back_populates="valuation",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    export_logs = relationship(
+        "ValuationExportLog",
+        back_populates="valuation",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
     created_by_user = relationship("User")
 
 
@@ -126,7 +149,7 @@ class ComparableCompany(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relationships
-    valuation = relationship("ValuationModel")
+    valuation = relationship("ValuationModel", back_populates="comparables")
     organization = relationship("Organization")
 
 
@@ -171,7 +194,7 @@ class PrecedentTransaction(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relationships
-    valuation = relationship("ValuationModel")
+    valuation = relationship("ValuationModel", back_populates="precedent_transactions")
     organization = relationship("Organization")
 
 
@@ -195,7 +218,7 @@ class ValuationExportLog(Base):
     exported_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     # Relationships
-    valuation = relationship("ValuationModel")
+    valuation = relationship("ValuationModel", back_populates="export_logs")
     organization = relationship("Organization")
     exported_by_user = relationship("User")
     document = relationship("Document")

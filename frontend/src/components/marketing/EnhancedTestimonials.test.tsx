@@ -10,7 +10,7 @@ describe('EnhancedTestimonials', () => {
 
   it('displays the section heading', () => {
     render(<EnhancedTestimonials />);
-    expect(screen.getByText(/Join 500\+ dealmakers who have transformed/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Join 500\+ dealmakers who have transformed/i).length).toBeGreaterThan(0);
   });
 
   it('renders first testimonial by default', () => {
@@ -136,14 +136,14 @@ describe('EnhancedTestimonials', () => {
   it('shows customer count statistic', () => {
     render(<EnhancedTestimonials />);
     
-    expect(screen.getByText(/500\+/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/500\+/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Active Users/i)).toBeInTheDocument();
   });
 
   it('displays deals managed statistic', () => {
     render(<EnhancedTestimonials />);
     
-    expect(screen.getByText(/£50B\+/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/£50B\+/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Deals Managed/i)).toBeInTheDocument();
   });
 
@@ -278,8 +278,8 @@ describe('EnhancedTestimonials', () => {
   it('displays all 4 statistics', () => {
     render(<EnhancedTestimonials />);
     
-    expect(screen.getByText(/500\+/i)).toBeInTheDocument();
-    expect(screen.getByText(/£50B\+/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/500\+/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/£50B\+/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/4\.9\/5/i)).toBeInTheDocument();
     expect(screen.getByText(/99\.9%/i)).toBeInTheDocument();
   });

@@ -2,19 +2,35 @@
 
 **Quick Reference**: When and how to migrate from BMAD v4 to v6-alpha
 
-**Last Updated**: October 27, 2025
-**Current Status**: v4 conventions (production-ready)
-**Target**: v6-alpha (complete rewrite, for future consideration)
+**Last Updated**: October 28, 2025
+**Current Status**: v6-alpha CLI installed (core + bmb + bmm + cis) & active
+**Target**: Sustain & iterate on v6-alpha workflows
 
 ---
 
 ## Executive Summary
 
-**Current State**: BMAD v4 conventions working successfully (4 sprints, production deployed)
+**Current State**: BMAD-METHOD v6-alpha modules (core, bmb, bmm, cis) installed on 2025-10-28; manifests and IDE exports regenerated.
 
-**v6-Alpha Status**: Complete rewrite available in `_vendor/BMAD-METHOD/` (v6-alpha branch)
+**What Changed**:
+- Compiled agents + manifests refreshed via Installer/ManifestGenerator scripts
+- Codex + Claude Code integrations rebuilt (mad/docs/*-instructions.md)
+- docs/bmad/bmm-workflow-status.md activated for Level 4 greenfield tracking
 
-**Recommendation**: Stay with v4 until Sprint 5+, then re-evaluate based on project needs
+**Next Actions**:
+1. Keep workflow status file in sync with ongoing phases
+2. Run agent rebuild + manifest script after YAML edits
+3. Extend adoption to additional IDEs (Cursor/Windsurf) when needed
+
+---
+
+## Migration Snapshot (October 28, 2025)
+
+- CLI install path: _vendor/BMAD-METHOD › project root mad/
+- Modules active: core, bmb, bmm, cis (bmd preserved)
+- IDE coverage: Codex CLI, Claude Code
+- Support scripts: installer.compileAgents + ManifestGenerator snippets recorded in CLAUDE.md
+- Status file: docs/bmad/bmm-workflow-status.md now authoritative
 
 ---
 
@@ -371,6 +387,7 @@ Give 1 point for each "Yes":
 ---
 
 **Document Version**: 1.0
-**Last Updated**: October 27, 2025
+**Last Updated**: October 28, 2025
 **Review Schedule**: Sprint 5 Planning (Q4 2025)
 **Maintained By**: Development Team
+

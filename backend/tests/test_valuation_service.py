@@ -5,7 +5,9 @@ completed. They encode the expected behaviour of core DCF and sensitivity
 calculations to drive TDD.
 """
 
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
+from uuid import uuid4
 from typing import List
 
 import pytest
@@ -82,11 +84,13 @@ class TestFullDCFValuation:
         discount_rate = 0.12
         terminal_growth_rate = 0.03
 
-        ev = valuation_service.calculate_enterprise_value_dcf(
+        ev = valuation_service._calculate_enterprise_value(
             cash_flows=cash_flows,
             terminal_cash_flow=terminal_cash_flow,
             discount_rate=discount_rate,
+            terminal_method="gordon_growth",
             terminal_growth_rate=terminal_growth_rate,
+            terminal_ebitda_multiple=None,
         )
 
         # PV of cash flows + PV of terminal value
@@ -100,11 +104,13 @@ class TestFullDCFValuation:
         discount_rate = 0.10
         terminal_growth_rate = 0.02
 
-        ev = valuation_service.calculate_enterprise_value_dcf(
+        ev = valuation_service._calculate_enterprise_value(
             cash_flows=cash_flows,
             terminal_cash_flow=terminal_cash_flow,
             discount_rate=discount_rate,
+            terminal_method="gordon_growth",
             terminal_growth_rate=terminal_growth_rate,
+            terminal_ebitda_multiple=None,
         )
 
         assert ev > 0
@@ -116,11 +122,13 @@ class TestFullDCFValuation:
         discount_rate = 0.15
         terminal_growth_rate = 0.04
 
-        ev = valuation_service.calculate_enterprise_value_dcf(
+        ev = valuation_service._calculate_enterprise_value(
             cash_flows=cash_flows,
             terminal_cash_flow=terminal_cash_flow,
             discount_rate=discount_rate,
+            terminal_method="gordon_growth",
             terminal_growth_rate=terminal_growth_rate,
+            terminal_ebitda_multiple=None,
         )
 
         # Should still produce positive EV due to strong later years
@@ -151,4 +159,262 @@ class TestEdgeCasesAndValidation:
                 growth_rate=0.03,  # Equal = invalid
             )
 
+
+class TestMultiplesAndScenarioAnalytics:
+    def test_comparable_analysis_excludes_outliers_and_weighs_results(self, db_session, valuation_payload):
+        from uuid import uuid4
+
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=str(uuid4()),
+            organization_id=str(uuid4()),
+            created_by=str(uuid4()),
+            **valuation_payload,
+        )
+
+        valuation_service.add_comparable(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            company_name="Comp Base",
+            ev_ebitda_multiple=8.0,
+            weight=1.0,
+            is_outlier="false",
+        )
+        valuation_service.add_comparable(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            company_name="Comp Heavy",
+            ev_ebitda_multiple=10.0,
+            weight=2.0,
+            is_outlier="false",
+        )
+        valuation_service.add_comparable(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            company_name="Comp Outlier",
+            ev_ebitda_multiple=30.0,
+            weight=1.0,
+            is_outlier="true",
+        )
+
+        multiples = valuation_service.calculate_comparable_multiples(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            subject_revenue=5_500_000,
+            subject_ebitda=2_000_000,
+        )
+
+        ev_ebitda = multiples["ev_ebitda"]
+        assert ev_ebitda["count"] == 2
+        assert ev_ebitda["weighted_average"] == pytest.approx(9.3333, rel=1e-3)
+        assert ev_ebitda["implied_enterprise_value_median"] == pytest.approx(18_000_000, rel=1e-3)
+
+        ev_revenue = multiples["ev_revenue"]
+        assert ev_revenue["count"] == 0
+
+    def test_precedent_analysis_flags_stale_transactions(self, db_session, valuation_payload):
+        from uuid import uuid4
+        from datetime import datetime, timedelta, timezone
+
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=str(uuid4()),
+            organization_id=str(uuid4()),
+            created_by=str(uuid4()),
+            **valuation_payload,
+        )
+
+        valuation_service.add_precedent_transaction(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            target_company="T1",
+            acquirer_company="Buyer 1",
+            ev_ebitda_multiple=7.5,
+            weight=1.0,
+            announcement_date=datetime.now(timezone.utc),
+        )
+        valuation_service.add_precedent_transaction(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            target_company="T2",
+            acquirer_company="Buyer 2",
+            ev_ebitda_multiple=8.5,
+            weight=1.0,
+            announcement_date=datetime.now(timezone.utc) - timedelta(days=400),
+        )
+
+        multiples = valuation_service.calculate_precedent_multiples(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            subject_ebitda=1_800_000,
+            current_date=datetime.now(timezone.utc),
+        )
+
+        ev_ebitda = multiples["ev_ebitda"]
+        assert ev_ebitda["stale_count"] == 1
+        assert ev_ebitda["implied_enterprise_value_median"] == pytest.approx(13_500_000, rel=1e-3)
+
+    def test_generate_tornado_chart_orders_by_impact(self):
+        scenario_results = [
+            {
+                "metric": "discount_rate",
+                "base_value": 0.12,
+                "scenario_value": 0.10,
+                "enterprise_value": 11_200_000,
+            },
+            {
+                "metric": "terminal_growth_rate",
+                "base_value": 0.03,
+                "scenario_value": 0.05,
+                "enterprise_value": 10_950_000,
+            },
+            {
+                "metric": "revenue_growth",
+                "base_value": 0.20,
+                "scenario_value": 0.18,
+                "enterprise_value": 10_100_000,
+            },
+        ]
+
+        tornado = valuation_service.generate_tornado_chart_data(
+            base_enterprise_value=10_500_000,
+            scenario_results=scenario_results,
+            top_n=3,
+        )
+
+        assert tornado[0]["metric"] == "discount_rate"
+        assert tornado[0]["delta"] == pytest.approx(700_000, rel=1e-3)
+        assert tornado[-1]["metric"] == "revenue_growth"
+
+    def test_run_monte_carlo_simulation_returns_deterministic_summary(self):
+        summary = valuation_service.run_monte_carlo_simulation(
+            base_cash_flows=[500000, 650000, 800000, 950000, 1100000],
+            discount_rate=0.12,
+            terminal_growth_rate=0.03,
+            iterations=100,
+            seed=123,
+        )
+
+        assert summary["iterations"] == 100
+        assert summary["seed"] == 123
+        assert summary["percentiles"]["p90"] > summary["percentiles"]["p10"]
+        assert summary["mean_enterprise_value"] > 0
+
+
+class TestScenarioAnalytics:
+    def test_calculate_scenario_summary_returns_expected_stats(self, db_session, valuation_payload):
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=str(uuid4()),
+            organization_id=str(uuid4()),
+            created_by=str(uuid4()),
+            **valuation_payload,
+        )
+
+        valuation_service.add_scenario(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            name="Upside",
+            enterprise_value=12_500_000,
+            equity_value=10_000_000,
+        )
+        valuation_service.add_scenario(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            name="Downside",
+            enterprise_value=8_000_000,
+            equity_value=6_200_000,
+        )
+
+        summary = valuation_service.calculate_scenario_summary(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+        )
+
+        assert summary["count"] == 2
+        assert summary["enterprise_value_range"]["min"] == 8_000_000
+        assert summary["enterprise_value_range"]["max"] == 12_500_000
+        assert summary["equity_value_range"]["median"] == pytest.approx(8_100_000, rel=1e-3)
+
+    def test_generate_tornado_chart_orders_by_impact(self):
+        scenario_results = [
+            {
+                "metric": "discount_rate",
+                "base_value": 0.12,
+                "scenario_value": 0.10,
+                "enterprise_value": 11_200_000,
+            },
+            {
+                "metric": "terminal_growth_rate",
+                "base_value": 0.03,
+                "scenario_value": 0.05,
+                "enterprise_value": 10_950_000,
+            },
+            {
+                "metric": "revenue_growth",
+                "base_value": 0.20,
+                "scenario_value": 0.18,
+                "enterprise_value": 10_100_000,
+            },
+        ]
+
+        tornado = valuation_service.generate_tornado_chart_data(
+            base_enterprise_value=10_500_000,
+            scenario_results=scenario_results,
+            top_n=3,
+        )
+
+        assert tornado[0]["metric"] == "discount_rate"
+        assert tornado[0]["delta"] == pytest.approx(700_000, rel=1e-3)
+        assert tornado[-1]["metric"] == "revenue_growth"
+
+    def test_run_monte_carlo_simulation_returns_deterministic_summary(self):
+        summary = valuation_service.run_monte_carlo_simulation(
+            base_cash_flows=[500000, 650000, 800000, 950000, 1100000],
+            discount_rate=0.12,
+            terminal_growth_rate=0.03,
+            iterations=100,
+            seed=123,
+        )
+
+        assert summary["iterations"] == 100
+        assert summary["seed"] == 123
+        assert summary["percentiles"]["p90"] > summary["percentiles"]["p10"]
+        assert summary["mean_enterprise_value"] > 0
+
+
+class TestExportLogging:
+    def test_log_export_creates_audit_record(self, db_session, valuation_payload):
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=str(uuid4()),
+            organization_id=str(uuid4()),
+            created_by=str(uuid4()),
+            **valuation_payload,
+        )
+
+        log_entry = valuation_service.log_export_event(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            export_type="pdf",
+            export_format="summary",
+            exported_by=valuation.created_by,
+            file_size_bytes=204800,
+            document_id=str(uuid4()),
+        )
+
+        assert log_entry.export_type == "pdf"
+        assert log_entry.export_format == "summary"
+        assert log_entry.file_size_bytes == 204800
 

@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD013 MD022 MD032 MD031 MD040 MD036 -->
 # M&A Intelligence Platform
 
 **Version**: 2.0 (Full Production Build)  
@@ -9,11 +10,17 @@
 
 ## Executive Summary
 
-The M&A Intelligence Platform is an enterprise-grade, fully-integrated SaaS ecosystem designed to empower M&A professionals through every stage of the deal lifecycle. The platform addresses the critical market gap for accessible, comprehensive M&A technology by combining deal flow management, AI-powered financial intelligence, secure collaboration, and professional community features.
+The M&A Intelligence Platform is an enterprise-grade, fully-integrated SaaS ecosystem.
+It empowers M&A professionals through every stage of the deal lifecycle.
+The platform addresses the market gap for accessible, comprehensive M&A
+technology. It combines deal flow management, AI-powered financial
+intelligence, secure collaboration, and professional community features.
 
 **Key Differentiators**:
+
 - Integrated end-to-end M&A workflow (not fragmented tools)
-- AI-powered intelligence (47+ financial ratios, automated valuations, deal matching)
+- AI-powered intelligence:
+  47+ financial ratios, automated valuations, deal matching
 - Accessible pricing (£279/month vs £10,000+ enterprise solutions)
 - Network effects through community and deal matching
 
@@ -22,32 +29,49 @@ The M&A Intelligence Platform is an enterprise-grade, fully-integrated SaaS ecos
 ## Technology Stack
 
 ### Frontend
+
 - **Framework**: React 18+ with TypeScript
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS
 - **State Management**: Zustand / Redux Toolkit
 - **Routing**: React Router v6
 - **API Client**: React Query (TanStack Query)
-- **Authentication**: Clerk React SDK
-- **Payments**: Stripe React SDK
+- **Authentication & Subscription Management**:
+  - Clerk React SDK
+  - Connected to Stripe billing
+- **Payments**:
+  - Stripe React SDK
+  - Supports one-off transactions and event tickets
 
 ### Backend
+
 - **Framework**: Python 3.11+ with FastAPI
 - **ORM**: SQLAlchemy 2.0
 - **Validation**: Pydantic v2
 - **Migrations**: Alembic
 - **Task Queue**: Celery + Redis
-- **Authentication**: Clerk Python SDK
-- **Payments**: Stripe Python SDK
+- **Authentication & Subscription Management**:
+  - Clerk Python SDK verifies JWTs
+  - Reads subscription tiers from Clerk
+- **Payments**:
+  - Stripe Python SDK
+  - Handles webhooks for one-off charges
 
 ### Database & Infrastructure
-- **Primary Database**: PostgreSQL 15+ (with PostGIS, pgvector)
+
+- **Primary Database**: PostgreSQL 15+
+- **Extensions**: PostGIS, pgvector
 - **Cache & Queue**: Redis
-- **Hosting**: Render (Web Services, Static Site, PostgreSQL, Redis)
+- **Hosting**: Render
+  - Web Services
+  - Static Site
+  - PostgreSQL
+  - Redis
 - **CI/CD**: GitHub Actions
 - **Monitoring**: Sentry, Datadog
 
 ### AI & Integrations
+
 - **AI Services**: OpenAI GPT-4, Anthropic Claude 3, Whisper
 - **Accounting**: Xero, QuickBooks, Sage, NetSuite APIs
 - **Marketing**: GoHighLevel API
@@ -57,61 +81,30 @@ The M&A Intelligence Platform is an enterprise-grade, fully-integrated SaaS ecos
 
 ## Project Structure
 
-```
-ma-saas-platform-v2/
-├── frontend/                 # React + TypeScript frontend
-│   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── pages/           # Page components
-│   │   ├── features/        # Feature-based modules
-│   │   ├── hooks/           # Custom React hooks
-│   │   ├── services/        # API service layer
-│   │   ├── store/           # State management
-│   │   ├── types/           # TypeScript type definitions
-│   │   └── utils/           # Utility functions
-│   ├── tests/               # Frontend tests
-│   ├── public/              # Static assets
-│   └── package.json
-│
-├── backend/                  # Python + FastAPI backend
-│   ├── app/
-│   │   ├── api/             # API routes
-│   │   ├── core/            # Core configuration
-│   │   ├── models/          # SQLAlchemy models
-│   │   ├── schemas/         # Pydantic schemas
-│   │   ├── services/        # Business logic
-│   │   ├── tasks/           # Celery tasks
-│   │   └── utils/           # Utility functions
-│   ├── tests/               # Backend tests
-│   ├── alembic/             # Database migrations
-│   └── requirements.txt
-│
-├── docs/                     # Documentation
-│   ├── bmad/                # BMAD methodology docs
-│   ├── api/                 # API documentation
-│   ├── architecture/        # Architecture diagrams
-│   └── guides/              # User & developer guides
-│
-├── tests/                    # Integration & E2E tests
-│   ├── integration/
-│   └── e2e/
-│
-├── .github/                  # GitHub configuration
-│   └── workflows/           # CI/CD workflows
-│
-├── CLAUDE.md                # Claude AI context file
-├── README.md                # This file
-├── .gitignore               # Git ignore rules
-└── .env.example             # Environment variable template
+```text
+./
+├── backend/                  # FastAPI application (app/, alembic/, tests/)
+├── frontend/                 # React + Vite frontend (src/, public/, dist/)
+├── docs/                     # Project documentation, including BMAD artefacts
+├── scripts/                  # Utility scripts (e.g., secure_render_database.py)
+├── node_modules/             # Committed Node workspace (consider pruning)
+├── backend/venv/             # Committed Python virtualenv (stale packages)
+├── ma-saas-platform-v2/      # Legacy snapshot retained for reference only
+├── AGENTS.md                 # Contributor guide
+├── CODEX-*.md                # Implementation playbooks
+├── QUICK_START_GUIDE.md      # Local setup instructions
+└── ...                       # Additional operational docs and assets
 ```
 
 ---
 
 ## Development Methodology: BMAD v6-alpha
 
-This project follows the **BMAD (Build, Measure, Analyze, Decide) methodology v6-alpha** for AI-assisted development. Key principles:
+This project follows the **BMAD (Build, Measure, Analyze, Decide) methodology
+v6-alpha** for AI-assisted development.
 
 ### Core Workflow
+
 1. **Planning**: Define features in Product Requirements Documents (PRDs)
 2. **Sharding**: Break PRDs into manageable user stories
 3. **Story Management**: Use Story Manager (SM) to draft and track stories
@@ -120,6 +113,7 @@ This project follows the **BMAD (Build, Measure, Analyze, Decide) methodology v6
 6. **Iteration**: Continuous feedback and improvement
 
 ### Agent Roles
+
 - **Product Owner (PO)**: Manages PRDs and shards them into stories
 - **Story Manager (SM)**: Drafts stories with full context for implementation
 - **Analyst**: Provides research and technical analysis
@@ -127,6 +121,7 @@ This project follows the **BMAD (Build, Measure, Analyze, Decide) methodology v6
 - **QA**: Automated testing and quality assurance
 
 ### Key Files
+
 - `docs/bmad/prd.md` - Product Requirements Document
 - `docs/bmad/architecture.md` - System Architecture
 - `docs/bmad/stories/` - User stories directory
@@ -137,6 +132,7 @@ This project follows the **BMAD (Build, Measure, Analyze, Decide) methodology v6
 ## Getting Started
 
 ### Prerequisites
+
 - **Node.js**: 22.13.0+ (for frontend)
 - **Python**: 3.11+ (for backend)
 - **PostgreSQL**: 15+ (local or Render)
@@ -147,12 +143,14 @@ This project follows the **BMAD (Build, Measure, Analyze, Decide) methodology v6
 ### Initial Setup
 
 #### 1. Clone and Navigate
+
 ```bash
 cd C:\Projects\ma-saas-platform
 # This directory will be synced with the repository
 ```
 
 #### 2. Install BMAD Method
+
 ```bash
 npx bmad-method install
 # Select: Cursor IDE
@@ -160,6 +158,7 @@ npx bmad-method install
 ```
 
 #### 3. Frontend Setup
+
 ```bash
 cd frontend
 npm install
@@ -169,6 +168,7 @@ npm run dev
 ```
 
 #### 4. Backend Setup
+
 ```bash
 cd backend
 python -m venv venv
@@ -181,12 +181,12 @@ uvicorn app.main:app --reload
 ```
 
 #### 5. Database Setup
+
 ```bash
 # Local PostgreSQL
 createdb ma_saas_platform
-
-# Or use Render PostgreSQL (recommended)
-# Connection string in .env: DATABASE_URL
+# Seed data if needed
+psql ma_saas_platform < scripts/seed.sql
 ```
 
 ---
@@ -196,33 +196,27 @@ createdb ma_saas_platform
 This project follows strict TDD principles:
 
 ### TDD Workflow
-1. **Write Test First**: Define expected behavior in a test
-2. **Run Test (Fail)**: Verify test fails (red)
-3. **Write Minimal Code**: Implement just enough to pass
-4. **Run Test (Pass)**: Verify test passes (green)
-5. **Refactor**: Improve code while keeping tests green
-6. **Repeat**: For each new feature or bug fix
+
+1. **Write Test First**: Define expected behavior
+2. **Run Tests**: Ensure they fail (RED)
+3. **Implement**: Write minimal code to pass (GREEN)
+4. **Refactor**: Clean up while keeping tests green
 
 ### Testing Stack
-- **Frontend**: Vitest, React Testing Library, Playwright (E2E)
-- **Backend**: pytest, pytest-asyncio, httpx (for FastAPI testing)
-- **Integration**: pytest with database fixtures
-- **Coverage**: Minimum 80% code coverage required
+
+- **Frontend**: Vitest, React Testing Library
+- **Backend**: Pytest, httpx
+- **E2E**: Playwright/Selenium scripts
 
 ### Running Tests
-```bash
-# Frontend tests
-cd frontend
-npm run test              # Unit tests
-npm run test:coverage     # With coverage
-npm run test:e2e          # End-to-end tests
 
-# Backend tests
+```bash
+# Frontend
+cd frontend
+npm test
+# Backend
 cd backend
-pytest                    # All tests
-pytest --cov=app          # With coverage
-pytest tests/unit         # Unit tests only
-pytest tests/integration  # Integration tests only
+pytest
 ```
 
 ---
@@ -230,24 +224,27 @@ pytest tests/integration  # Integration tests only
 ## AI-Assisted Development
 
 ### Using CODEX CLI (GPT-5)
-```bash
-# From project root
-codex -d "Implement user authentication with Clerk following TDD principles. Write tests first, then implementation. Use the CLAUDE.md file for context."
 
-# For specific features
-codex -d "Create the Deal Pipeline Kanban board component. Reference docs/bmad/stories/deal-pipeline-kanban.md for requirements. Write tests first."
+```bash
+# From project root (summarized prompt)
+codex -d "Implement Clerk authentication with TDD. Write tests first, then code."
+
+# For specific features (summarized prompt)
+codex -d "Create Deal Pipeline Kanban board. See docs/bmad/stories/deal-pipeline-kanban.md."
 ```
 
 ### Using Claude Code CLI (Sonnet 4.5)
-```bash
-# From project root
-claude-code -d "Implement the Financial Intelligence Engine API endpoint. Follow TDD. Reference CLAUDE.md and docs/bmad/prd.md for full context."
 
-# For debugging
-claude-code -d "Fix the failing test in tests/backend/test_deal_service.py. Analyze the error and provide a solution that maintains test coverage."
+```bash
+# From project root (summarized prompt)
+claude-code -d "Implement the Financial Intelligence Engine API using TDD."
+
+# For debugging (summarized prompt)
+claude-code -d "Fix failing test in tests/backend/test_deal_service.py with coverage."
 ```
 
 ### Context Files for AI
+
 - **CLAUDE.md**: Primary context file with project overview, architecture, and guidelines
 - **docs/bmad/prd.md**: Product requirements and feature specifications
 - **docs/bmad/architecture.md**: System architecture and technical decisions
@@ -260,6 +257,7 @@ claude-code -d "Fix the failing test in tests/backend/test_deal_service.py. Anal
 ### Render Deployment
 
 #### Frontend (Static Site)
+
 ```yaml
 # render.yaml (frontend)
 services:
@@ -276,6 +274,7 @@ services:
 ```
 
 #### Backend (Web Service)
+
 ```yaml
 # render.yaml (backend)
 services:
@@ -297,6 +296,7 @@ services:
 ```
 
 ### CI/CD Pipeline
+
 - **GitHub Actions**: Automated testing on every push
 - **Render Auto-Deploy**: Automatic deployment on merge to `main`
 - **Environment Variables**: Managed in Render dashboard
@@ -306,6 +306,7 @@ services:
 ## Contributing
 
 ### Workflow
+
 1. Create feature branch from `main`
 2. Write tests first (TDD)
 3. Implement feature
@@ -316,7 +317,8 @@ services:
 8. Merge after approval
 
 ### Commit Message Format
-```
+
+```text
 type(scope): subject
 
 body (optional)
@@ -327,7 +329,8 @@ footer (optional)
 **Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 **Example**:
-```
+
+```text
 feat(deal-pipeline): add Kanban board component
 
 - Implement drag-and-drop functionality
@@ -353,7 +356,7 @@ Closes #123
 
 Proprietary - All Rights Reserved
 
-**Copyright © 2025 Dudley Peacock / Apex Deliver**
+Copyright © 2025 Dudley Peacock / Apex Deliver
 
 ---
 
@@ -362,17 +365,20 @@ Proprietary - All Rights Reserved
 **Current Phase**: Phase 1 - Foundational Core & Revenue Engine (Months 1-3)
 
 **Completed**:
+
 - [x] Project structure setup
 - [x] Git repository initialization
 - [x] Documentation framework
 - [x] BMAD methodology integration
 
 **In Progress**:
+
 - [ ] User & Organization Management (F-001)
 - [ ] Deal Flow & Pipeline Management (F-002)
 - [ ] Subscription & Billing System (F-005)
 
 **Next Up**:
+
 - [ ] Financial Intelligence Engine (F-006)
 - [ ] Secure Document & Data Room (F-003)
 - [ ] Multi-Method Valuation Suite (F-007)
@@ -381,4 +387,3 @@ Proprietary - All Rights Reserved
 
 **Last Updated**: October 23, 2025  
 **Maintained By**: Dudley Peacock with AI assistance (Manus, CODEX, Claude Code)
-

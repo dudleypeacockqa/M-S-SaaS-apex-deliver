@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD013 MD031 MD032 MD036 MD040 -->
 # M&A Intelligence Platform: Quick Start Guide
 
 **Welcome!** This guide will help you get the project set up on your local machine (`C:\Projects\ma-saas-platform`) and start building with AI assistance.
@@ -15,18 +16,20 @@
 ### 1.2 Verify Project Structure
 
 You should see:
+
 ```
-C:\Projects\ma-saas-platform\
-├── frontend/           # React + TypeScript
-├── backend/            # Python + FastAPI
-├── docs/               # Documentation
-│   ├── bmad/          # BMAD methodology docs
-│   └── AI_PROMPT_LIBRARY.md
-├── README.md           # Main documentation
-├── CLAUDE.md           # AI context file
-├── .env.example        # Environment variables template
-└── .gitignore
+C:\\Projects\\ma-saas-platform\\
+├── backend          # FastAPI services, tests, Alembic migrations
+├── frontend         # React + Vite app (src/, public/, dist/)
+├── docs             # BMAD artefacts and guides
+├── scripts          # Operational scripts
+├── node_modules     # Committed Node workspace (local use only)
+├── backend\\venv     # Committed Python virtualenv (refresh via pip install)
+├── ma-saas-platform-v2 # Legacy snapshot, do not modify
+└── *.md             # Onboarding and status documentation
 ```
+
+Note: `ma-saas-platform-v2/` is an archived snapshot; leave it untouched and work from the root directories above.
 
 ---
 
@@ -68,6 +71,7 @@ cp ../.env.example .env.local
 Edit `.env` and `.env.local` with your actual API keys:
 
 **Required for initial setup**:
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `REDIS_URL` - Redis connection string
 - `VITE_CLERK_PUBLISHABLE_KEY` - From Clerk dashboard
@@ -76,6 +80,7 @@ Edit `.env` and `.env.local` with your actual API keys:
 - `STRIPE_SECRET_KEY` - From Stripe dashboard
 
 **Optional (can be added later)**:
+
 - OpenAI, Anthropic API keys
 - Accounting platform credentials
 - GoHighLevel API keys
@@ -86,7 +91,7 @@ Edit `.env` and `.env.local` with your actual API keys:
 
 ### 4.1 Create GitHub Repository
 
-1. Go to https://github.com/new
+1. Go to <https://github.com/new>
 2. Repository name: `ma-saas-platform`
 3. Description: "M&A Intelligence Platform - Full Production"
 4. **Private** repository
@@ -109,7 +114,7 @@ git push -u origin master
 
 ### 5.1 Create Render Account
 
-1. Go to https://render.com
+1. Go to <https://render.com>
 2. Sign up or log in
 3. Connect your GitHub account
 
@@ -171,6 +176,7 @@ codex -d "Set up Clerk authentication in the React frontend. Create environment 
 ```
 
 This will:
+
 - Set up Clerk authentication
 - Create protected routes
 - Write tests first (TDD)
@@ -183,6 +189,7 @@ After CODEX completes:
 1. Review the generated code
 2. Run tests: `cd frontend && npm test`
 3. If tests pass, commit:
+
    ```bash
    git add .
    git commit -m "feat(auth): implement Clerk authentication with protected routes"
@@ -200,6 +207,7 @@ Open `docs/AI_PROMPT_LIBRARY.md` for a comprehensive list of prompts to build ea
 ### 7.2 Follow Phase 1 Priorities
 
 **High Priority** (Months 1-3):
+
 1. User & Organization Management (F-001)
 2. Deal Flow & Pipeline Management (F-002)
 3. Subscription & Billing (F-005)
@@ -255,6 +263,7 @@ git push
 ### Issue: Tests failing
 
 **Solution**: Read the error message carefully. Use Claude Code to debug:
+
 ```bash
 claude-code -d "The test [test-name] is failing with error [error-message]. Analyze and fix."
 ```
@@ -273,4 +282,3 @@ claude-code -d "The test [test-name] is failing with error [error-message]. Anal
 **You're ready to build!** Start with the first prompt in the AI Prompt Library and let the AI assistants do the heavy lifting. Your role is to guide, review, and ensure quality.
 
 **Happy coding! 🚀**
-

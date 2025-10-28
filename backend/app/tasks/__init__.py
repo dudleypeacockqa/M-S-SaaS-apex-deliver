@@ -1,8 +1,5 @@
-"""Background tasks for async job processing.
+"""Background tasks entrypoint."""
 
-This module will contain Celery tasks for long-running operations like:
-- Financial data processing
-- AI-powered analysis
-- Document generation
-- Email notifications
-"""
+from .task_automation import enqueue_manual_rule_run
+
+__all__ = ["enqueue_manual_rule_run"]

@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { DealPipeline } from './DealPipeline';
 import * as dealsApi from '../../services/api/deals';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Mock the deals API
 vi.mock('../../services/api/deals', () => ({
@@ -85,10 +86,13 @@ const mockDeals = [
 ];
 
 const renderDealPipeline = () => {
+  const queryClient = new QueryClient();
   return render(
-    <MemoryRouter>
-      <DealPipeline />
-    </MemoryRouter>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        <DealPipeline />
+      </MemoryRouter>
+    </QueryClientProvider>
   );
 };
 
@@ -203,7 +207,9 @@ describe('DealPipeline', () => {
     });
 
     const retryButton = screen.getByText('Retry');
-    retryButton.click();
+    await act(async () => {
+      retryButton.click();
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Deal Pipeline')).toBeInTheDocument();

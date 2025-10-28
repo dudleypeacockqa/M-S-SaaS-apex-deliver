@@ -2,10 +2,10 @@
 
 **Document Purpose**: This file provides comprehensive context for AI coding assistants (Claude Code, CODEX) to understand the project, architecture, conventions, and development approach.
 
-**Last Updated**: October 27, 2025
+**Last Updated**: October 28, 2025
 **Project Version**: 2.0 (Full Production)
-**Methodology**: BMAD-Inspired Agile with Test-Driven Development (TDD)
-**Note**: Following BMAD principles manually (not using official BMAD-METHOD framework)
+**Methodology**: BMAD v6-alpha (core + bmb + bmm + cis) with Test-Driven Development (TDD)
+**Note**: Official BMAD-METHOD v6-alpha CLI installed (core + bmb + bmm + cis) alongside enforced TDD
 
 ---
 
@@ -89,98 +89,60 @@ OpenAI GPT-4 (narratives, analysis)
 
 ---
 
-## 3. Development Methodology: BMAD-Inspired Agile with TDD
+## 3. Development Methodology: BMAD v6-alpha + TDD
 
-### Important Clarification
+### Current Status
+- Official BMAD-METHOD v6-alpha CLI installed from _vendor/BMAD-METHOD
+- Modules active: **core**, **bmb**, **bmm**, **cis** (with maintainer module **bmd** preserved)
+- Codex CLI and Claude Code exports regenerated (mad/docs/codex-instructions.md, mad/docs/claude-code-instructions.md)
+- Agents compiled via installer.compileAgents to keep YAML & Markdown in sync
 
-**This project follows BMAD principles but does NOT use the official BMAD-METHOD framework/tooling.**
+### Workflow Overview
+`
+Analysis → Planning → Solutioning → Implementation → Review
+           (workflow-status drives next action)
+`
+1. **workflow-status** (/bmad:bmm:workflows:workflow-status) parses docs/bmad/bmm-workflow-status.md
+2. **Planning / Solutioning** leverage /bmad:bmm:workflows:prd and /bmad:bmm:workflows:tech-spec
+3. **Implementation Loop** runs create-story → story-ready → dev-story → review-story
+4. **Quality Gates** enforced via /bmad:bmm:workflows:retrospective plus platform TDD suites
 
-What we DO:
-- ✅ Follow BMAD structure (PRD → Architecture → Stories → Implementation)
-- ✅ Use BMAD principles (Business-first, Architecture-driven, Iterative, Test-driven)
-- ✅ Organize docs in `docs/bmad/` directory
-- ✅ Track progress with Sprint planning
-
-What we DON'T do:
-- ❌ Use BMAD CLI commands (`*po shard prd`, `*sm draft next`, etc.)
-- ❌ Use BMAD agents or automated workflows
-- ❌ Run `npx bmad-method install`
-
-**Why this approach?** Manual control, proven workflow through 4 sprints, production deployment successful.
-
-**Official BMAD-METHOD reference**: Available in `_vendor/BMAD-METHOD/` and `docs/BMAD-V6-ALPHA-REFERENCE.md` if you want to adopt the official framework later.
-
-### Core Workflow (Manual BMAD-Inspired)
-
-```
-Planning → Story Creation → Implementation → QA → Deploy
-   (PO)      (Manual)         (AI Dev + TDD)   (Auto)  (Auto)
-```
-
-**Key Point**: Stories are created manually by humans, then implemented by AI following TDD.
-
-### Team Roles (Manual Implementation)
-
-**Product Owner (Human)**:
-- Creates `docs/bmad/prd.md` (Product Requirements Document)
-- Writes user stories manually in `docs/bmad/stories/`
-- Maintains `docs/bmad/technical_specifications.md` (Architecture)
-- No automation - all manual planning
-
-**Developer (AI - Claude Code)**:
-- Implements features following TDD (Write test → Implement → Refactor)
-- Writes tests first, then implementation
-- Follows story specifications exactly
-- Uses CLAUDE.md for project context
-
-**QA (Automated Tests)**:
-- Runs test suites automatically (npm test / pytest)
-- Validates code coverage (minimum 80%)
-- Checks code quality and linting (ESLint/Black)
-
-### Current Development Workflow
-
-```bash
-# Story Management (100% Manual)
-# 1. Create story file manually: docs/bmad/stories/DEV-XXX-feature-name.md
-# 2. Write story details following template
-# 3. Track progress in: docs/bmad/BMAD_PROGRESS_TRACKER.md
-
-# Development with Claude Code
-claude-code -d "Implement [feature] following TDD. Reference docs/bmad/stories/[story].md"
-
-# Example
-claude-code -d "Implement DEV-010 Financial Intelligence Engine following TDD. See docs/bmad/stories/DEV-010-financial-intelligence-engine.md"
-```
-
-### Optional: Adopt Official BMAD-METHOD Framework
-
-If you want to use the **official BMAD-METHOD framework** with automated agents and workflows:
-
-**Installation**:
-```bash
+### Installation & Maintenance Commands
+`
 cd _vendor/BMAD-METHOD
 npm install
-npm run install:bmad
-```
+npm run install:bmad   # target project root, modules bmb/bmm/cis, ides codex/claude-code
+`
 
-**Commands Available** (after installation):
-```bash
-*prd                   # Scale-adaptive project planning (PM agent)
-*create-story          # SM drafts story automatically
-*story-ready           # SM approves for development
-*dev-story             # DEV agent implements
-*story-done            # Mark complete
-*review-story          # Quality validation
-```
+**Automation snippet (skip IDE prompts during rebuilds):**
+`
+node -e "const path=require('node:path');
+const ui=require('./tools/cli/lib/ui');
+ui.UI.prototype.promptToolSelection = async () => ({ skipIde: true, ides: ['codex','claude-code'] });
+const {Installer}=require('./tools/cli/installers/lib/core/installer');
+(async()=>{const installer=new Installer();
+  await installer.compileAgents({ directory: path.resolve('..','..') });})();"
+`
 
-**Migration Guide**: See `docs/BMAD-V6-ALPHA-REFERENCE.md` for complete documentation.
+**Regenerate manifests after copying module sources:**
+`
+node -e "const path=require('node:path');const {ManifestGenerator}=require('./tools/cli/installers/lib/core/manifest-generator');
+(async()=>{const project=path.resolve('..','..');const bmad=path.join(project,'bmad');
+  const gen=new ManifestGenerator();
+  await gen.generateManifests(bmad,['bmb','bmm','cis'],[],{ ides:['codex','claude-code'], preservedModules:['bmd']});})();"
+`
 
-**Current Status**: Not using official framework - manual workflow is working well.
+### Workflow Status File
+- docs/bmad/bmm-workflow-status.md populated (Level 4 greenfield, current workflow prd)
+- Update NEXT_ACTION, NEXT_COMMAND, and NEXT_AGENT after each workflow completes
 
----
+### TDD Commitments
+- Maintain failing test first → implementation → refactor loop
+- Keep backend coverage ≥ 80%, platform frontend ≥ 85%
+- Use BMAD TEA agent /bmad:bmm:agents:tea for test strategy reviews
 
 ## 4. Test-Driven Development (TDD)
+
 
 ### TDD Workflow (MANDATORY)
 

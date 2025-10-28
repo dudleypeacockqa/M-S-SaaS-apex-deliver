@@ -2,18 +2,29 @@
 
 **Last Updated**: 2025-10-26
 **Status**: Production Ready - Configuration Required
-**Primary Domain**: https://100daysandbeyond.com
+**Primary Domain**: <https://100daysandbeyond.com>
 
 ---
 
 ## 🎯 Domain Strategy
 
 ### Current Configuration
-- **Production Domain**: `100daysandbeyond.com` (PRIMARY)
-- **Alternate Domain**: `apexdeliver.com` (NOT CURRENTLY USED)
-- **Clerk Configuration**: Already configured for `100daysandbeyond.com` ✅
 
-**Good News**: Since your Clerk production keys are already configured for `100daysandbeyond.com`, no Clerk domain changes are needed!
+- **Production Domain**: `100daysandbeyond.com`
+- **Backend URL**: `https://ma-saas-backend.onrender.com`
+- **Frontend URL**: `https://ma-saas-platform.onrender.com`
+- **Marketing URL**: `https://apexdeliver.com`
+- **Clerk Instance**: `ma-saas-platform`
+- **Stripe Account**: Production workspace with four tiers (Starter, Professional,
+  Enterprise, Community)
+- **Render Services**:
+  - Backend: `ma-saas-backend`
+  - Frontend: `ma-saas-platform`
+  - Marketing: `apexdeliver-web`
+  - Database: managed PostgreSQL with PostGIS + pgvector
+
+**Good News**: Since your Clerk production keys already target
+`100daysandbeyond.com`, no Clerk domain changes are required.
 
 ---
 
@@ -21,10 +32,10 @@
 
 Before starting, ensure you have access to:
 
-- [ ] Render Dashboard (https://dashboard.render.com)
-- [ ] Clerk Dashboard (https://dashboard.clerk.com)
-- [ ] Stripe Dashboard (https://dashboard.stripe.com) - for production keys
-- [ ] OpenAI Platform (https://platform.openai.com) - for AI features
+- [ ] Render Dashboard (<https://dashboard.render.com>)
+- [ ] Clerk Dashboard (<https://dashboard.clerk.com>)
+- [ ] Stripe Dashboard (<https://dashboard.stripe.com>) - for production keys
+- [ ] OpenAI Platform (<https://platform.openai.com>) - for AI features
 
 ---
 
@@ -34,13 +45,14 @@ Before starting, ensure you have access to:
 
 #### 1.1 Find Your Render Service Names
 
-1. Go to https://dashboard.render.com
+1. Go to <https://dashboard.render.com>
 2. Navigate to your Dashboard
 3. Locate your two services:
    - **Frontend Service** (Static Site or Web Service)
    - **Backend Service** (Web Service - FastAPI)
 
 **Write down the service URLs**:
+
 - Frontend: `https://__________________.onrender.com`
 - Backend: `https://__________________.onrender.com`
 
@@ -65,72 +77,43 @@ NODE_ENV=production
 ```
 
 **Action Required**:
+
 - Replace `[YOUR-BACKEND-SERVICE]` with actual backend URL from Step 2.1
 - Replace `[GET_FROM_STRIPE_DASHBOARD]` with your Stripe production publishable key
 
-4. Click **Save Changes**
-5. Render will automatically trigger a new deployment
+1. Click **Save Changes**
+2. Render will automatically trigger a new deployment
 
 #### 2.3 Configure Backend Service
 
 1. In Render Dashboard, click on your **Backend Service**
-2. Go to **Environment** tab
-3. Add/update the following environment variables:
+2. Navigate to the **Environment** tab
+3. Update environment variables using the JSON payload shown below
+4. Click **Save Changes**
+5. Verify deploy status and logs
 
-```bash
-# Clerk Authentication
-CLERK_SECRET_KEY=sk_live_[YOUR_CLERK_SECRET_KEY_FROM_ENV_FILE]
-CLERK_WEBHOOK_SECRET=[GET_FROM_CLERK_DASHBOARD]
-
-# Database (Use INTERNAL Render URL - already configured)
-DATABASE_URL=[YOUR_DATABASE_URL_FROM_ENV_FILE]
-
-# CORS Origins (Allow 100daysandbeyond.com)
-CORS_ORIGINS=https://100daysandbeyond.com,https://www.100daysandbeyond.com
-
-# Stripe (REPLACE WITH PRODUCTION KEYS)
-STRIPE_SECRET_KEY=sk_live_[GET_FROM_STRIPE_DASHBOARD]
-STRIPE_WEBHOOK_SECRET=whsec_[GET_FROM_STRIPE_DASHBOARD]
-
-# OpenAI (REQUIRED for DEV-010 AI Narratives)
-OPENAI_API_KEY=sk-proj-[GET_FROM_OPENAI_PLATFORM]
-
-# Security Keys (GENERATE THESE - see instructions below)
-JWT_SECRET=[GENERATE_RANDOM_32_CHARS]
-SESSION_SECRET=[GENERATE_RANDOM_32_CHARS]
-ENCRYPTION_KEY=[GENERATE_RANDOM_32_CHARS]
-
-# Application Mode
-PYTHON_ENV=production
-DEBUG=false
-LOG_SQL_QUERIES=false
-SHOW_ERROR_DETAILS=false
-
-# Redis (if you have Redis on Render)
-# REDIS_URL=redis://[YOUR_REDIS_URL]:6379
-
-# Feature Flags
-ENABLE_AI_FEATURES=true
-ENABLE_DEAL_MATCHING=true
-ENABLE_PODCAST_STUDIO=false
-ENABLE_EVENT_MANAGEMENT=false
-ENABLE_COMMUNITY_PLATFORM=false
+```json
+{
+  "DATABASE_URL": "postgresql+asyncpg://..."
+}
 ```
 
 **Action Required**:
+
 - Get Clerk webhook secret from Clerk Dashboard → Webhooks
-- Get Stripe production keys from https://dashboard.stripe.com/apikeys
-- Get OpenAI API key from https://platform.openai.com/api-keys
+- Get Stripe production keys from <https://dashboard.stripe.com/apikeys>
+- Get OpenAI API key from <https://platform.openai.com/api-keys>
 - Generate secure random keys (see Step 3)
 
-4. Click **Save Changes**
-5. Render will automatically trigger a new deployment
+1. Click **Save Changes**
+2. Render will automatically trigger a new deployment
 
 ---
 
 ### STEP 3: Generate Secure Random Keys (2 minutes)
 
 **On Mac/Linux**:
+
 ```bash
 # Generate JWT_SECRET
 openssl rand -base64 32
@@ -143,13 +126,14 @@ openssl rand -base64 32
 ```
 
 **On Windows (PowerShell)**:
+
 ```powershell
 # Generate random 32-character strings
 [Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
 ```
 
 **Or use online tool** (secure):
-https://generate-secret.vercel.app/32
+<https://generate-secret.vercel.app/32>
 
 Copy each generated string and paste into Render environment variables.
 
@@ -159,7 +143,7 @@ Copy each generated string and paste into Render environment variables.
 
 #### 4.1 Stripe Production Keys
 
-1. Go to https://dashboard.stripe.com
+1. Go to <https://dashboard.stripe.com>
 2. Toggle from "Test mode" to "Live mode" (top right)
 3. Navigate to **Developers** → **API Keys**
 4. Copy:
@@ -172,7 +156,7 @@ Copy each generated string and paste into Render environment variables.
 
 #### 4.2 OpenAI API Key
 
-1. Go to https://platform.openai.com
+1. Go to <https://platform.openai.com>
 2. Log in with your account
 3. Navigate to **API Keys** (left sidebar)
 4. Click **"Create new secret key"**
@@ -182,14 +166,16 @@ Copy each generated string and paste into Render environment variables.
 
 #### 4.3 Clerk Webhook Secret
 
-1. Go to https://dashboard.clerk.com
+1. Go to <https://dashboard.clerk.com>
 2. Select your application
 3. Navigate to **Webhooks** (left sidebar)
 4. Click **"Add Endpoint"** or select existing endpoint
 5. Enter your backend webhook URL:
-   ```
-   https://[YOUR-BACKEND-SERVICE].onrender.com/api/webhooks/clerk
-   ```
+
+```text
+https://[YOUR-BACKEND-SERVICE].onrender.com/api/webhooks/clerk
+```
+
 6. Select events to listen for:
    - `user.created`
    - `user.updated`
@@ -214,10 +200,11 @@ Copy each generated string and paste into Render environment variables.
 #### 5.2 Check for Errors
 
 **Common deployment errors**:
-- ❌ `Missing required environment variable` → Add the missing variable
-- ❌ `Database connection failed` → Check DATABASE_URL format
-- ❌ `Port already in use` → Render will auto-assign port
-- ❌ `Build failed` → Check build logs for TypeScript/Python errors
+
+- ❌ `Missing required environment variable` — add the missing variable.
+- ❌ `Database connection failed` — verify `DATABASE_URL` formatting.
+- ❌ `Port already in use` — Render auto-assigns ports; rerun deploy.
+- ❌ `Build failed` — check build logs for TypeScript/Python errors.
 
 ---
 
@@ -225,7 +212,7 @@ Copy each generated string and paste into Render environment variables.
 
 #### 6.1 Test Clerk Authentication
 
-1. Open https://apexdeliver.com in **Incognito/Private** browser window
+1. Open <https://apexdeliver.com> in **Incognito/Private** browser window
 2. Open browser console (F12 → Console tab)
 3. Click **"Sign In"** or **"Get Started"**
 4. **Expected behavior**:
@@ -271,8 +258,9 @@ Copy each generated string and paste into Render environment variables.
 ### Issue: Clerk Still Shows "Domain Not Allowed"
 
 **Solution**:
-1. Double-check domain was added in Clerk Dashboard
-2. Wait 15-20 minutes for DNS propagation
+
+1. Double-check domain was added in Render → Custom domains.
+2. Confirm DNS records at registrar point to Render.
 3. Clear browser cache (Ctrl+Shift+Delete)
 4. Try in Incognito/Private window
 5. Check that you're in "Production" mode in Clerk (not Development)
@@ -280,6 +268,7 @@ Copy each generated string and paste into Render environment variables.
 ### Issue: "Failed to fetch" or CORS Errors
 
 **Solution**:
+
 1. Verify `VITE_API_URL` is set correctly in Frontend environment
 2. Verify `CORS_ORIGINS` includes `apexdeliver.com` in Backend environment
 3. Ensure both services have finished deploying
@@ -288,6 +277,7 @@ Copy each generated string and paste into Render environment variables.
 ### Issue: "Database connection failed"
 
 **Solution**:
+
 1. Use **INTERNAL** Render database URL for backend (without `.com`)
 2. Format: `postgresql://user:pass@dpg-xxxxx-a/database_name`
 3. NOT: `postgresql://user:pass@dpg-xxxxx-a.frankfurt-postgres.render.com/database_name`
@@ -295,6 +285,7 @@ Copy each generated string and paste into Render environment variables.
 ### Issue: Stripe Webhook Errors
 
 **Solution**:
+
 1. Verify webhook URL in Stripe Dashboard matches backend URL
 2. Ensure `STRIPE_WEBHOOK_SECRET` matches signing secret from Stripe
 3. Check webhook endpoint is `/api/webhooks/stripe` (note the `/api` prefix)
@@ -302,10 +293,16 @@ Copy each generated string and paste into Render environment variables.
 ### Issue: OpenAI API Errors (DEV-010)
 
 **Solution**:
-1. Verify `OPENAI_API_KEY` is set and valid
-2. Check OpenAI billing: https://platform.openai.com/account/billing
-3. Ensure you have credit/payment method on file
-4. Test key works: `curl https://api.openai.com/v1/models -H "Authorization: Bearer YOUR_KEY"`
+
+1. Verify `OPENAI_API_KEY` is set and valid.
+2. Check OpenAI billing: <https://platform.openai.com/account/billing>.
+3. Ensure you have credit/payment method on file.
+4. Test the key:
+
+```bash
+curl https://api.openai.com/v1/models \
+  -H "Authorization: Bearer YOUR_KEY"
+```
 
 ---
 
@@ -353,6 +350,7 @@ Once deployment is successful, complete this checklist:
 ### Required Environment Variables
 
 **Frontend (Render Static Site)**:
+
 ```bash
 VITE_CLERK_PUBLISHABLE_KEY=pk_live_[YOUR_CLERK_KEY_FROM_ENV_FILE]
 VITE_API_URL=https://[backend].onrender.com
@@ -361,6 +359,7 @@ NODE_ENV=production
 ```
 
 **Backend (Render Web Service)**:
+
 ```bash
 # Authentication
 CLERK_SECRET_KEY=sk_live_[CLERK_KEY]
@@ -408,10 +407,10 @@ If you encounter issues not covered in this guide:
    - Try making API calls with Postman or curl
 
 4. **Common Resources**:
-   - Render Docs: https://render.com/docs
-   - Clerk Docs: https://clerk.com/docs
-   - Stripe Docs: https://stripe.com/docs
-   - FastAPI Docs: https://fastapi.tiangolo.com
+   - Render Docs: <https://render.com/docs>
+   - Clerk Docs: <https://clerk.com/docs>
+   - Stripe Docs: <https://stripe.com/docs>
+   - FastAPI Docs: <https://fastapi.tiangolo.com>
 
 ---
 
@@ -428,4 +427,3 @@ If you encounter issues not covered in this guide:
 **Document Version**: 1.0
 **Last Verified**: 2025-10-26
 **Next Review**: After successful production deployment
-

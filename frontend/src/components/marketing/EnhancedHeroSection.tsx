@@ -1,33 +1,39 @@
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export const EnhancedHeroSection: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [dealCount, setDealCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     setIsVisible(true);
-    // Animate counters
-    const dealInterval = setInterval(() => {
-      setDealCount(prev => {
-        if (prev < 847) return prev + 17;
-        clearInterval(dealInterval);
-        return 847;
-      });
-    }, 30);
 
-    const userInterval = setInterval(() => {
-      setUserCount(prev => {
-        if (prev < 500) return prev + 10;
-        clearInterval(userInterval);
-        return 500;
+    const dealTarget = 847;
+    const userTarget = 500;
+
+    const animate = () => {
+      setDealCount(prev => {
+        const next = Math.min(dealTarget, prev + 60);
+        return next;
       });
-    }, 30);
+
+      setUserCount(prev => {
+        const next = Math.min(userTarget, prev + 40);
+        return next;
+      });
+
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
 
     return () => {
-      clearInterval(dealInterval);
-      clearInterval(userInterval);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
     };
   }, []);
 

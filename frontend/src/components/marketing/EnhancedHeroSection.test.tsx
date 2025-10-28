@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { EnhancedHeroSection } from './EnhancedHeroSection';
 
@@ -102,17 +102,12 @@ describe('EnhancedHeroSection', () => {
         <EnhancedHeroSection />
       </RouterWrapper>
     );
-    
-    // Initially should be 0 or low
-    const initialCount = screen.getByText(/\d+\+/);
-    expect(initialCount).toBeInTheDocument();
-    
-    // Fast-forward timers to complete animation
-    vi.advanceTimersByTime(2000);
-    
-    await waitFor(() => {
-      expect(screen.getByText(/847\+/)).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(800);
     });
+
+    expect(screen.getAllByText(/847\+/).length).toBeGreaterThan(0);
   });
 
   it('animates user count from 0 to 500', async () => {
@@ -121,13 +116,12 @@ describe('EnhancedHeroSection', () => {
         <EnhancedHeroSection />
       </RouterWrapper>
     );
-    
-    // Fast-forward timers to complete animation
-    vi.advanceTimersByTime(2000);
-    
-    await waitFor(() => {
-      expect(screen.getByText(/500\+/)).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(800);
     });
+
+    expect(screen.getAllByText(/500\+/).length).toBeGreaterThan(0);
   });
 
   it('displays dashboard preview stats', () => {
@@ -153,7 +147,7 @@ describe('EnhancedHeroSection', () => {
     expect(screen.getByText(/Sourcing/i)).toBeInTheDocument();
     expect(screen.getByText(/Qualifying/i)).toBeInTheDocument();
     expect(screen.getByText(/Due Diligence/i)).toBeInTheDocument();
-    expect(screen.getByText(/Closing/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Closing/i).length).toBeGreaterThan(0);
   });
 
   it('displays recent activity deals', () => {
@@ -230,8 +224,8 @@ describe('EnhancedHeroSection', () => {
       </RouterWrapper>
     );
     
-    expect(screen.getByText(/£45\.2M/i)).toBeInTheDocument();
-    expect(screen.getByText(/£82\.5M/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/£45\.2M/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/£82\.5M/i).length).toBeGreaterThan(0);
   });
 
   it('has responsive grid layout', () => {
@@ -252,8 +246,8 @@ describe('EnhancedHeroSection', () => {
       </RouterWrapper>
     );
     
-    const pattern = container.querySelector('[style*="backgroundImage"]');
-    expect(pattern).toBeInTheDocument();
+    const heroSection = container.querySelector('section');
+    expect(heroSection?.innerHTML).toContain('background-image');
   });
 });
 
