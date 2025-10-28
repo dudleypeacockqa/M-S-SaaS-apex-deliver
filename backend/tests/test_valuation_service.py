@@ -161,14 +161,14 @@ class TestEdgeCasesAndValidation:
 
 
 class TestMultiplesAndScenarioAnalytics:
-    def test_comparable_analysis_excludes_outliers_and_weighs_results(self, db_session, valuation_payload):
+    def test_comparable_analysis_excludes_outliers_and_weighs_results(self, db_session, valuation_payload, test_deal, solo_user):
         from uuid import uuid4
 
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            created_by=solo_user.id,
             **valuation_payload,
         )
 
@@ -216,15 +216,15 @@ class TestMultiplesAndScenarioAnalytics:
         ev_revenue = multiples["ev_revenue"]
         assert ev_revenue["count"] == 0
 
-    def test_precedent_analysis_flags_stale_transactions(self, db_session, valuation_payload):
+    def test_precedent_analysis_flags_stale_transactions(self, db_session, valuation_payload, test_deal, solo_user):
         from uuid import uuid4
         from datetime import datetime, timedelta, timezone
 
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            created_by=solo_user.id,
             **valuation_payload,
         )
 
@@ -309,12 +309,12 @@ class TestMultiplesAndScenarioAnalytics:
 
 
 class TestScenarioAnalytics:
-    def test_calculate_scenario_summary_returns_expected_stats(self, db_session, valuation_payload):
+    def test_calculate_scenario_summary_returns_expected_stats(self, db_session, valuation_payload, test_deal, solo_user):
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            created_by=solo_user.id,
             **valuation_payload,
         )
 
@@ -394,12 +394,12 @@ class TestScenarioAnalytics:
 
 
 class TestExportLogging:
-    def test_log_export_creates_audit_record(self, db_session, valuation_payload):
+    def test_log_export_creates_audit_record(self, db_session, valuation_payload, test_deal, solo_user):
         valuation = valuation_service.create_valuation(
             db=db_session,
-            deal_id=str(uuid4()),
-            organization_id=str(uuid4()),
-            created_by=str(uuid4()),
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            created_by=solo_user.id,
             **valuation_payload,
         )
 

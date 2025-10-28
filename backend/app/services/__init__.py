@@ -8,6 +8,7 @@ from .user_service import (
 )
 
 from . import valuation_service, podcast_service, quota_service
+from .youtube_service import upload_video as upload_youtube_video
 from .task_service import (
     create_task,
     list_tasks,
@@ -35,6 +36,7 @@ __all__ = [
     "valuation_service",
     "podcast_service",
     "quota_service",
+    "upload_youtube_video",
     "create_task",
     "list_tasks",
     "get_task",
@@ -48,5 +50,3 @@ __all__ = [
     "log_execution",
     "list_logs",
 ]
-
-
