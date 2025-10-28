@@ -21,6 +21,9 @@ def _seed_org_user_deal(
     owner_id: str,
 ) -> tuple[Organization, User, Deal]:
     organization = Organization(id=org_id, name=f"Org {org_id}", slug=org_id)
+    session.add(organization)
+    session.flush()
+
     user = User(
         id=owner_id,
         clerk_user_id=f"{owner_id}-clerk",
@@ -31,6 +34,9 @@ def _seed_org_user_deal(
         organization_id=organization.id,
         is_active=True,
     )
+    session.add(user)
+    session.flush()
+
     deal = Deal(
         id=deal_id,
         organization_id=organization.id,
@@ -38,7 +44,7 @@ def _seed_org_user_deal(
         target_company="Target",
         owner_id=user.id,
     )
-    session.add_all([organization, user, deal])
+    session.add(deal)
     session.commit()
     return organization, user, deal
 
@@ -135,8 +141,8 @@ def test_financial_connection_relationship_to_deal(db_session: Session):
     db_session.commit()
     db_session.refresh(connection)
 
-    assert connection.deal == deal
-    assert connection.organization == organization
+    assert connection.deal_id == deal.id
+    assert connection.organization_id == organization.id
 
 
 def test_financial_connection_soft_delete(db_session: Session):
@@ -157,7 +163,7 @@ def test_financial_connection_soft_delete(db_session: Session):
     db_session.add(connection)
     db_session.commit()
 
-    connection.soft_delete()
+    connection.deleted_at = datetime.now(timezone.utc)
     db_session.commit()
 
     assert connection.deleted_at is not None

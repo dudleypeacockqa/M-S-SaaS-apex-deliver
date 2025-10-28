@@ -55,7 +55,7 @@ describe('ValuationSuite RED tests', () => {
   })
 
   // TODO: Add "Create New Valuation" form - component currently only displays existing valuations
-  it.skip('submits new valuation when form completed', async () => {
+  it('submits new valuation when form completed', async () => {
     const user = userEvent.setup()
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([])
     vi.mocked(valuationApi.createValuation).mockResolvedValueOnce({ id: 'val-1' })

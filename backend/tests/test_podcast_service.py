@@ -54,12 +54,12 @@ class TestPodcastService:
         """Creating a podcast episode should persist core metadata."""
 
         _ensure_org_and_user(
-        db,
-        organization_id=organization_id,
-        user_id=created_by,
-    )
+            db_session,
+            organization_id="org-abc",
+            user_id="user-123",
+        )
 
-    episode = podcast_service.create_episode(
+        episode = podcast_service.create_episode(
             db=db_session,
             title="Episode 1: Fundamentals",
             description="An intro to M&A",
@@ -71,10 +71,10 @@ class TestPodcastService:
             organization_id="org-abc",
         )
 
-    assert isinstance(episode, PodcastEpisode)
-    assert episode.title == "Episode 1: Fundamentals"
-    assert episode.status == "draft"
-    assert episode.organization_id == "org-abc"
+        assert isinstance(episode, PodcastEpisode)
+        assert episode.title == "Episode 1: Fundamentals"
+        assert episode.status == "draft"
+        assert episode.organization_id == "org-abc"
 
     def test_get_episodes_filters_by_status(self, db_session: Session):
         """Episodes should be filterable by publication status."""
