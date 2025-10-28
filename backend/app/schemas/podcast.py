@@ -40,3 +40,9 @@ class PodcastQuotaSummary(BaseModel):
     used: int
     is_unlimited: bool
     period: str
+    tier_label: Optional[str] = None
+    warning_status: Optional[str] = None
+    warning_message: Optional[str] = None
+    upgrade_required: bool = False
+    upgrade_message: Optional[str] = None
+    upgrade_cta_url: Optional[str] = None

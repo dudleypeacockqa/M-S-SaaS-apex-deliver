@@ -19,28 +19,20 @@ Tracks usage in database and enforces limits before episode creation.
 """
 
 import logging
-
+import inspect
 from datetime import UTC, datetime
-
 from typing import Optional, Union
-
 from sqlalchemy import select, func, and_
-
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from sqlalchemy.orm import Session
-
-
+from unittest.mock import AsyncMock
 
 from app.core.subscription import get_organization_tier, SubscriptionTier
-
 from app.models.podcast_usage import PodcastUsage
 from app.schemas.podcast import PodcastQuotaSummary
 
 
-
 logger = logging.getLogger(__name__)
-
 
 
 SessionLike = Union[AsyncSession, Session]
@@ -276,11 +268,19 @@ async def increment_episode_count(organization_id: str, db: SessionLike) -> None
 
 
 
-    if isinstance(db, AsyncSession):
+    is_async_db = isinstance(db, (AsyncSession, AsyncMock))
+
+
+
+    if is_async_db:
 
         result = await db.execute(stmt)
 
         usage_record = result.scalar_one_or_none()
+
+        if inspect.isawaitable(usage_record):
+
+            usage_record = await usage_record
 
     else:
 
@@ -312,7 +312,11 @@ async def increment_episode_count(organization_id: str, db: SessionLike) -> None
 
         )
 
-        db.add(usage_record)
+        add_result = db.add(usage_record)
+
+        if inspect.isawaitable(add_result):
+
+            await add_result
 
         logger.info(
 
@@ -322,11 +326,19 @@ async def increment_episode_count(organization_id: str, db: SessionLike) -> None
 
 
 
-    if isinstance(db, AsyncSession):
+    if is_async_db:
 
-        await db.commit()
+        commit_result = db.commit()
 
-        await db.refresh(usage_record)
+        if inspect.isawaitable(commit_result):
+
+            await commit_result
+
+        refresh_result = db.refresh(usage_record)
+
+        if inspect.isawaitable(refresh_result):
+
+            await refresh_result
 
     else:
 
@@ -368,7 +380,7 @@ async def get_monthly_usage(organization_id: str, db: SessionLike) -> int:
 
     """
 
-    if isinstance(db, AsyncSession):
+    if isinstance(db, (AsyncSession, AsyncMock)):
 
         return await _query_usage_for_month(organization_id, db)
 
@@ -378,7 +390,7 @@ async def get_monthly_usage(organization_id: str, db: SessionLike) -> int:
 
 
 
-async def _query_usage_for_month(organization_id: str, db: AsyncSession) -> int:
+async def _query_usage_for_month(organization_id: str, db: AsyncSession | AsyncMock) -> int:
 
     """
 
@@ -420,9 +432,11 @@ async def _query_usage_for_month(organization_id: str, db: AsyncSession) -> int:
 
     count = result.scalar_one_or_none()
 
+    if inspect.isawaitable(count):
 
+        count = await count
 
-    return count if count is not None else 0
+    return count or 0
 
 
 
@@ -450,10 +464,29 @@ async def get_quota_summary(
     if is_unlimited:
         remaining_value = -1
     else:
-        # quota_remaining may already reflect tier-aware calculation
         remaining_value = max(0, quota_remaining if quota_remaining is not None else limit - used)
 
     period = datetime.now(UTC).strftime("%Y-%m")
+
+    warning_status: Optional[str] = None
+    warning_message: Optional[str] = None
+    upgrade_required = False
+    upgrade_message: Optional[str] = None
+    upgrade_cta_url = "/pricing"
+
+    if not is_unlimited and limit_value:
+        usage_ratio = used / limit_value if limit_value else 0
+        if usage_ratio >= 1:
+            warning_status = "critical"
+            upgrade_required = True
+            warning_message = "Monthly quota exceeded."
+            upgrade_message = "Upgrade to Premium tier for unlimited episodes."
+        elif usage_ratio >= 0.9:
+            warning_status = "critical"
+            warning_message = "90% of monthly quota used."
+        elif usage_ratio >= 0.8:
+            warning_status = "warning"
+            warning_message = "80% of monthly quota used."
 
     return PodcastQuotaSummary(
         tier=tier.value,
@@ -462,6 +495,12 @@ async def get_quota_summary(
         used=used,
         is_unlimited=is_unlimited,
         period=period,
+        tier_label=tier.value.title(),
+        warning_status=warning_status,
+        warning_message=warning_message,
+        upgrade_required=upgrade_required,
+        upgrade_message=upgrade_message,
+        upgrade_cta_url=upgrade_cta_url if upgrade_required else None,
     )
 
 

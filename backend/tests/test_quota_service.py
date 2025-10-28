@@ -278,10 +278,16 @@ class TestGetQuotaSummary:
             summary = await get_quota_summary(org_id, tier=SubscriptionTier.PROFESSIONAL, db=mock_db_session)
 
         assert summary.tier == SubscriptionTier.PROFESSIONAL.value
+        assert summary.tier_label == "Professional"
         assert summary.limit == 10
         assert summary.used == 3
         assert summary.remaining == 7
         assert summary.is_unlimited is False
+        assert summary.warning_status is None
+        assert summary.warning_message is None
+        assert summary.upgrade_required is False
+        assert summary.upgrade_message is None
+        assert summary.upgrade_cta_url is None
         assert "-" in summary.period
 
     @async_test
@@ -300,11 +306,78 @@ class TestGetQuotaSummary:
             summary = await get_quota_summary(org_id, tier=SubscriptionTier.PREMIUM, db=mock_db_session)
 
         assert summary.tier == SubscriptionTier.PREMIUM.value
+        assert summary.tier_label == "Premium"
         assert summary.limit is None
         assert summary.used == 5
         assert summary.remaining == -1
         assert summary.is_unlimited is True
+        assert summary.warning_status is None
+        assert summary.warning_message is None
+        assert summary.upgrade_required is False
+        assert summary.upgrade_message is None
+        assert summary.upgrade_cta_url is None
 
+    @async_test
+    async def test_sets_warning_status_when_usage_exceeds_eighty_percent(self, mock_db_session: AsyncMock) -> None:
+        org_id = "org_warning"
+
+        with (
+            patch("app.services.quota_service.get_organization_tier", new_callable=AsyncMock) as mock_tier,
+            patch("app.services.quota_service.get_monthly_usage", new_callable=AsyncMock) as mock_usage,
+            patch("app.services.quota_service.get_remaining_quota", new_callable=AsyncMock) as mock_remaining,
+        ):
+            mock_tier.return_value = SubscriptionTier.PROFESSIONAL
+            mock_usage.return_value = 8
+            mock_remaining.return_value = 2
+
+            summary = await get_quota_summary(org_id, tier=SubscriptionTier.PROFESSIONAL, db=mock_db_session)
+
+        assert summary.warning_status == "warning"
+        assert "80%" in (summary.warning_message or "")
+        assert summary.upgrade_required is False
+        assert summary.remaining == 2
+
+    @async_test
+    async def test_sets_critical_status_when_usage_exceeds_ninety_percent(self, mock_db_session: AsyncMock) -> None:
+        org_id = "org_critical"
+
+        with (
+            patch("app.services.quota_service.get_organization_tier", new_callable=AsyncMock) as mock_tier,
+            patch("app.services.quota_service.get_monthly_usage", new_callable=AsyncMock) as mock_usage,
+            patch("app.services.quota_service.get_remaining_quota", new_callable=AsyncMock) as mock_remaining,
+        ):
+            mock_tier.return_value = SubscriptionTier.PROFESSIONAL
+            mock_usage.return_value = 9
+            mock_remaining.return_value = 1
+
+            summary = await get_quota_summary(org_id, tier=SubscriptionTier.PROFESSIONAL, db=mock_db_session)
+
+        assert summary.warning_status == "critical"
+        assert "90%" in (summary.warning_message or "")
+        assert summary.upgrade_required is False
+        assert summary.remaining == 1
+
+    @async_test
+    async def test_marks_quota_exceeded_as_upgrade_required(self, mock_db_session: AsyncMock) -> None:
+        org_id = "org_over"
+
+        with (
+            patch("app.services.quota_service.get_organization_tier", new_callable=AsyncMock) as mock_tier,
+            patch("app.services.quota_service.get_monthly_usage", new_callable=AsyncMock) as mock_usage,
+            patch("app.services.quota_service.get_remaining_quota", new_callable=AsyncMock) as mock_remaining,
+        ):
+            mock_tier.return_value = SubscriptionTier.PROFESSIONAL
+            mock_usage.return_value = 10
+            mock_remaining.return_value = 0
+
+            summary = await get_quota_summary(org_id, tier=SubscriptionTier.PROFESSIONAL, db=mock_db_session)
+
+        assert summary.warning_status == "critical"
+        assert summary.warning_message == "Monthly quota exceeded."
+        assert summary.upgrade_required is True
+        assert summary.upgrade_message is not None
+        assert summary.upgrade_cta_url == "/pricing"
+        assert summary.remaining == 0
 
 # Fixtures -----------------------------------------------------------------
 
@@ -327,4 +400,5 @@ def mock_sync_session() -> Mock:
     session.execute = Mock()
     session.refresh = Mock()
     return session
+
 

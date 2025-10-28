@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, patch, ANY
+from unittest.mock import AsyncMock, Mock, patch, ANY
 
 from app.services.quota_service import QuotaExceededError
 from app.schemas.podcast import PodcastQuotaSummary
@@ -279,6 +279,12 @@ class TestPodcastUsageEndpoint:
                     used=3,
                     is_unlimited=False,
                     period=expected_period,
+                    tier_label="Professional",
+                    warning_status=None,
+                    warning_message=None,
+                    upgrade_required=False,
+                    upgrade_message=None,
+                    upgrade_cta_url=None,
                 )
 
                 response = client.get("/api/podcasts/usage")
@@ -299,6 +305,12 @@ class TestPodcastUsageEndpoint:
                 "used": 3,
                 "is_unlimited": False,
                 "period": expected_period,
+                "tier_label": SubscriptionTier.PROFESSIONAL.value.title(),
+                "warning_status": None,
+                "warning_message": None,
+                "upgrade_required": False,
+                "upgrade_message": None,
+                "upgrade_cta_url": None,
             }
         finally:
             _clear_override()
@@ -336,6 +348,12 @@ class TestPodcastUsageEndpoint:
                     used=5,
                     is_unlimited=True,
                     period=expected_period,
+                    tier_label="Premium",
+                    warning_status=None,
+                    warning_message=None,
+                    upgrade_required=False,
+                    upgrade_message=None,
+                    upgrade_cta_url=None,
                 )
 
                 response = client.get("/api/podcasts/usage")
@@ -356,6 +374,12 @@ class TestPodcastUsageEndpoint:
                 "used": 5,
                 "is_unlimited": True,
                 "period": expected_period,
+                "tier_label": SubscriptionTier.PREMIUM.value.title(),
+                "warning_status": None,
+                "warning_message": None,
+                "upgrade_required": False,
+                "upgrade_message": None,
+                "upgrade_cta_url": None,
             }
         finally:
             _clear_override()
@@ -423,7 +447,7 @@ class TestPodcastFeatureAccessEndpoint:
                 new_callable=AsyncMock,
             ) as mock_check, patch(
                 "app.services.entitlement_service.get_required_tier",
-                new_callable=AsyncMock,
+                new_callable=Mock,
             ) as mock_required:
                 mock_tier.return_value = SubscriptionTier.PROFESSIONAL
                 mock_check.return_value = True
@@ -437,9 +461,15 @@ class TestPodcastFeatureAccessEndpoint:
                 "feature": "podcast_audio",
                 "has_access": True,
                 "tier": SubscriptionTier.PROFESSIONAL.value,
+                "tier_label": "Professional",
                 "required_tier": SubscriptionTier.PROFESSIONAL.value,
+                "required_tier_label": "Professional",
+                "upgrade_required": False,
+                "upgrade_message": None,
+                "upgrade_cta_url": None,
             }
             mock_check.assert_awaited_once_with(organization_id, "podcast_audio")
+            mock_required.assert_called_once_with("podcast_audio")
         finally:
             _clear_override()
 
@@ -460,7 +490,7 @@ class TestPodcastFeatureAccessEndpoint:
                 new_callable=AsyncMock,
             ) as mock_check, patch(
                 "app.services.entitlement_service.get_required_tier",
-                new_callable=AsyncMock,
+                new_callable=Mock,
             ) as mock_required:
                 mock_tier.return_value = SubscriptionTier.STARTER
                 mock_check.return_value = False
@@ -474,9 +504,15 @@ class TestPodcastFeatureAccessEndpoint:
                 "feature": "podcast_audio",
                 "has_access": False,
                 "tier": SubscriptionTier.STARTER.value,
+                "tier_label": "Starter",
                 "required_tier": SubscriptionTier.PROFESSIONAL.value,
+                "required_tier_label": "Professional",
+                "upgrade_required": True,
+                "upgrade_message": "Upgrade to Professional tier to unlock audio podcasting.",
+                "upgrade_cta_url": "/pricing",
             }
             mock_check.assert_awaited_once_with(organization_id, "podcast_audio")
+            mock_required.assert_called_once_with("podcast_audio")
         finally:
             _clear_override()
 
@@ -748,3 +784,5 @@ class TestPodcastDeleteEndpoint:
             assert response.status_code == status.HTTP_404_NOT_FOUND
         finally:
             _clear_override()
+
+
