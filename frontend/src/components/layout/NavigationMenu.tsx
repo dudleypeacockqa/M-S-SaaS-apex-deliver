@@ -28,6 +28,11 @@ const navigationItems: NavigationItem[] = [
     roles: ['solo', 'growth', 'enterprise', 'admin'],
   },
   {
+    to: '/podcast-studio',
+    label: 'Podcast Studio',
+    roles: ['growth', 'enterprise', 'admin'],
+  },
+  {
     to: '/admin/dashboard',
     label: 'Admin',
     roles: ['admin'],
