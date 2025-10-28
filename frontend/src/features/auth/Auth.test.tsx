@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { AppRoutes } from '../../App'
 
@@ -55,10 +56,20 @@ describe('Clerk authentication routing', () => {
   })
 
   it('redirects unauthenticated users from /dashboard to /sign-in', () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    })
+
     render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <AppRoutes />
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/dashboard']}>
+          <AppRoutes />
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
     expect(
@@ -74,10 +85,20 @@ describe('Clerk authentication routing', () => {
       user: { firstName: 'Ada', emailAddress: 'ada@example.com' },
     })
 
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    })
+
     render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <AppRoutes />
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/dashboard']}>
+          <AppRoutes />
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
     // The new dashboard has a personalized greeting instead of "Dashboard" heading
@@ -89,10 +110,20 @@ describe('Clerk authentication routing', () => {
   })
 
   it('renders the appropriate header action depending on auth state', () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    })
+
     const { rerender } = render(
-      <MemoryRouter>
-        <AppRoutes />
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <AppRoutes />
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
     // Marketing nav uses regular link, not Clerk's SignInButton
@@ -104,9 +135,11 @@ describe('Clerk authentication routing', () => {
     })
 
     rerender(
-      <MemoryRouter>
-        <AppRoutes />
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <AppRoutes />
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
     // Landing page still shows marketing nav (not the user name in header)

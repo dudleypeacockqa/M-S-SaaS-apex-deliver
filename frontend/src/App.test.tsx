@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import { AppRoutes } from "./App"
 
@@ -45,10 +46,20 @@ vi.mock("@clerk/clerk-react", () => ({
 }))
 
 const renderApp = (initialEntries: string[] = ["/"]) => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  })
+
   return render(
-    <MemoryRouter initialEntries={initialEntries}>
-      <AppRoutes />
-    </MemoryRouter>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <AppRoutes />
+      </MemoryRouter>
+    </QueryClientProvider>
   )
 }
 
