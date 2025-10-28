@@ -1,3 +1,30 @@
+### Session 2025-10-28 (Governance Snapshot – 22:05 UTC)
+- ✅ Verified Render health: backend `/health` 200 OK @ 21:59Z; frontend curl still blocked by Cloudflare (expected).
+- ✅ Updated `docs/DEPLOYMENT_HEALTH.md` with governance snapshot and noted no new test runs this session.
+- ✅ Catalogued dirty work for DEV-011, DEV-016, MARK-002, and refreshed workflow status ahead of `/dev-story` launch.
+- 🔄 NEXT: Kick off DEV-011/DEV-016 TDD stabilization (Phase 1 Plan item `stabilize-inflight`).
+
+### Session 2025-10-28 (Phase 0: Governance Reset & Baseline Complete)
+- ✅ **Phase 0 COMPLETE**: Clean git state & accurate test baseline established
+- ✅ **Baseline Tests**: Ran full test suites to establish accurate counts
+  - Backend: **396 passed, 10 skipped** (97.5% pass rate) - Xero integration skipped pending credentials
+  - Frontend: **487 passed, 11 skipped** (97.8% pass rate) - 8 ValuationSuite + 3 FinancialDashboard skipped
+  - Total: **883/904 tests passing (97.7% overall)**
+- ✅ **Git Cleanup**: Committed all modified files in 4 organized commits
+  - `bcb6de4`: feat(podcast) - YouTube video ID integration
+  - `4913c47`: refactor(frontend) - marketing components and podcast tests
+  - `35e6a27`: docs(bmad) - updated story status for DEV-011, DEV-016, MARK-002
+  - `df2eb49`: docs - added 100% completion plan (finish.plan.md)
+- ✅ **Pushed to Production**: All commits pushed to origin/main
+  - 2 previous unpushed commits + 4 new commits = 6 total pushed
+  - Render auto-deploy triggered
+- 📋 **100% Completion Plan Created**:
+  - 8-phase roadmap: Governance → Documents → Tasks → AI Matching → Content → Events → Community → Polish
+  - Estimated timeline: 54-81 hours (7-10 full working days)
+  - BMAD methodology + strict TDD adherence documented
+  - Current baseline: 97.7% test pass rate
+- 🎯 **NEXT**: Update bmm-workflow-status.md → Phase 4/dev-story/DEV-008, then begin Phase 1 (Document & Data Room completion)
+
 ### Session 2025-10-28 (Session 8: Phase 1 Complete - 100% Test Pass Rate Achieved 🎉)
 - ✅ **MAJOR MILESTONE**: Backend test suite at **100% pass rate (393/393 passing, 0 failed)**
 - ✅ **Phase 1A**: Database reset infrastructure confirmed operational
@@ -122,6 +149,13 @@ px vitest run ValuationSuite → 9 tests passing (no skips); creation flow now G
 - ✅ `npm run test -- ValuationSuite.test.tsx` → 2 RED → **9 GREEN** (scenario summary + gating coverage).
 - ✅ Summary view now displays EV/Equity medians and range bands with currency formatting; upgrade panel consumes backend message + CTA URL + tier label.
 - 🎯 Next DEV-011 focus: exports workflow + scenario creation refinements.
+
+### Session 2025-10-28 (DEV-016 Phase 3 – Podcast YouTube Publish)
+- ✅ Added YouTube publish API (`POST /api/podcasts/episodes/{id}/youtube`) with tier gating, asset validation, and persistent `youtube_video_id` tracking.
+- ✅ Podcast Studio now checks `youtube_integration` access, surfaces upgrade CTA when locked, and renders `Publish to YouTube` actions with success/error messaging.
+- ✅ Tests: `npm run test -- PodcastStudio.test.tsx` → **12 passed**; `python -m pytest backend/tests/test_podcast_api.py backend/tests/test_youtube_service.py` → **26 passed**.
+- 📦 Alembic migration `f1b4a3c0d8c2_add_youtube_video_id_to_podcast_.py` introduces `youtube_video_id` column on `podcast_episodes`.
+- 🎯 NEXT: Continue DEV-016 Phase 3 by polishing quota HUD warnings and prepping transcription workflows before integrating live streaming.
 
 ### Session 2025-10-28 (Phase 1B Scenario Creation & Export UX GREEN)
 - 🔴→🟢 Added Scenario Management form with JSON assumptions parsing, validation messaging, and React Query invalidation for summary refresh.
@@ -1358,36 +1392,12 @@ CREATE INDEX ix_podcast_usage_organization_id ON podcast_usage (organization_id)
 **Next Review**: after resolving test failures and deployment blockers
 **Owner**: Development Team
 
-
-
-
-
-### Phase 2.4: Podcast Episode API quota wiring ? COMPLETE
-
-- **Status**: ? Complete (2025-10-28 13:05 UTC)
-- **Duration**: 45 minutes
-- **Priority**: High
-
-#### TDD Cycle
-
-**RED Phase**:
-- Added `TestPodcastEpisodeCreation.test_quota_service_passes_db_session` to enforce DB propagation
-
-**GREEN Phase**:
-- Updated `POST /podcasts/episodes` to call `check_episode_quota(organization_id=?, db=Session)`
-
-**REFACTOR Phase**:
-- Strengthened existing API tests for quota enforcement and video gating
-
-#### Test Results
-
-? `py -m pytest tests/test_podcast_api.py::TestPodcastEpisodeCreation` -> 6 passed (usage endpoints still RED)
-
-#### Files Updated
-
-- backend/app/api/routes/podcasts.py
-- backend/tests/test_podcast_api.py
-- docs/bmad/BMAD_PROGRESS_TRACKER.md
+### Session 2025-10-28 (Step 5 – Docs & Smoke Scripts Synchronised)
+- ✅ Updated `run_smoke_tests.sh` and `verify_migrations.sh` for automated health + schema verification.
+- ✅ Synced `docs/DEPLOYMENT_HEALTH.md`, `docs/PRODUCTION_DEPLOYMENT_CHECKLIST.md`, DEV-011/DEV-016 story files, and blueprint (`plan.plan.md`) with current status.
+- ✅ Backend regression: **380 passed / 21 skipped** (`pytest backend/tests -q`).
+- ✅ Frontend regression: **517 passed / 6 skipped** (`npm run test -- --run`).
+- 🔄 NEXT: Step 6 packaging – build artefacts, redeploy to Render, capture smoke evidence.
 
 
 
