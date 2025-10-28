@@ -80,9 +80,10 @@ describe('Clerk authentication routing', () => {
       </MemoryRouter>
     )
 
+    // The new dashboard has a personalized greeting instead of "Dashboard" heading
     expect(
       screen.getByRole('heading', {
-        name: /dashboard/i,
+        name: /good (morning|afternoon|evening), ada/i,
       })
     ).toBeInTheDocument()
   })

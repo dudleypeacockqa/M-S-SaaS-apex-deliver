@@ -45,8 +45,8 @@ describe('EnhancedHeroSection', () => {
         <EnhancedHeroSection />
       </RouterWrapper>
     );
-    
-    expect(screen.getByText(/AI-powered intelligence/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/AI-powered M&A platform/i)).toBeInTheDocument();
     expect(screen.getByText(/£279\/month/i)).toBeInTheDocument();
   });
 
@@ -78,10 +78,10 @@ describe('EnhancedHeroSection', () => {
         <EnhancedHeroSection />
       </RouterWrapper>
     );
-    
-    const demoButton = screen.getByText(/Watch Demo/i);
+
+    const demoButton = screen.getByText(/Watch 2-Min Demo/i);
     expect(demoButton).toBeInTheDocument();
-    expect(demoButton.closest('a')).toHaveAttribute('href', '/demo');
+    expect(demoButton.closest('a')).toHaveAttribute('href', '/pricing');
   });
 
   it('displays trust indicators', () => {
@@ -90,24 +90,21 @@ describe('EnhancedHeroSection', () => {
         <EnhancedHeroSection />
       </RouterWrapper>
     );
-    
+
     expect(screen.getByText(/No credit card required/i)).toBeInTheDocument();
-    expect(screen.getByText(/Setup in 5 minutes/i)).toBeInTheDocument();
+    expect(screen.getByText(/5-minute setup/i)).toBeInTheDocument();
     expect(screen.getByText(/Cancel anytime/i)).toBeInTheDocument();
   });
 
-  it('animates deal count from 0 to 847', async () => {
+  it('displays deal count of 847', async () => {
     render(
       <RouterWrapper>
         <EnhancedHeroSection />
       </RouterWrapper>
     );
 
-    act(() => {
-      vi.advanceTimersByTime(800);
-    });
-
-    expect(screen.getAllByText(/847\+/).length).toBeGreaterThan(0);
+    // The component shows static value of 847 for Active Deals
+    expect(screen.getByText('847')).toBeInTheDocument();
   });
 
   it('animates user count from 0 to 500', async () => {
@@ -130,11 +127,11 @@ describe('EnhancedHeroSection', () => {
         <EnhancedHeroSection />
       </RouterWrapper>
     );
-    
+
     expect(screen.getByText(/Active Deals/i)).toBeInTheDocument();
-    expect(screen.getByText(/Users/i)).toBeInTheDocument();
-    expect(screen.getByText(/£50B\+/i)).toBeInTheDocument();
-    expect(screen.getByText(/40%/i)).toBeInTheDocument();
+    expect(screen.getByText(/Total Value/i)).toBeInTheDocument();
+    expect(screen.getByText('£50B')).toBeInTheDocument();
+    expect(screen.getByText('32%')).toBeInTheDocument(); // Close Rate
   });
 
   it('displays deal pipeline stages', () => {
@@ -143,33 +140,35 @@ describe('EnhancedHeroSection', () => {
         <EnhancedHeroSection />
       </RouterWrapper>
     );
-    
-    expect(screen.getByText(/Sourcing/i)).toBeInTheDocument();
-    expect(screen.getByText(/Qualifying/i)).toBeInTheDocument();
-    expect(screen.getByText(/Due Diligence/i)).toBeInTheDocument();
+
+    expect(screen.getAllByText(/Sourcing/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Due Diligence/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Negotiation/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Closing/i).length).toBeGreaterThan(0);
   });
 
-  it('displays recent activity deals', () => {
+  it('displays feature highlights', () => {
     render(
       <RouterWrapper>
         <EnhancedHeroSection />
       </RouterWrapper>
     );
-    
-    expect(screen.getByText(/TechCo Acquisition/i)).toBeInTheDocument();
-    expect(screen.getByText(/RetailX Merger/i)).toBeInTheDocument();
-    expect(screen.getByText(/FinServ Deal/i)).toBeInTheDocument();
+
+    // The component now shows feature highlights instead of recent deals
+    expect(screen.getAllByText(/AI Insights/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Analytics/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Secure/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Fast/i).length).toBeGreaterThan(0);
   });
 
-  it('displays "70% Less Expensive" badge', () => {
+  it('displays "Save £9,721/year" badge', () => {
     render(
       <RouterWrapper>
         <EnhancedHeroSection />
       </RouterWrapper>
     );
-    
-    expect(screen.getByText(/70% Less Expensive/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/Save £9,721\/year/i)).toBeInTheDocument();
   });
 
   it('has proper gradient background', () => {

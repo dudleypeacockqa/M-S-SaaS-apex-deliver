@@ -82,7 +82,8 @@ describe("Integration: routing", () => {
 
     render(<App />)
 
-    expect(screen.getByRole("heading", { name: /dashboard/i })).toBeInTheDocument()
+    // The new dashboard has a personalized greeting instead of "Dashboard" heading
+    expect(screen.getByRole("heading", { name: /good (morning|afternoon|evening), taylor/i })).toBeInTheDocument()
   })
 
   it("updates the header actions after sign-in", () => {

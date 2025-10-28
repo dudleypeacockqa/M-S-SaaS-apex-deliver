@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { StickyCTABar } from './StickyCTABar'
@@ -13,9 +13,19 @@ describe('StickyCTABar', () => {
     // Clear sessionStorage before each test
     sessionStorage.clear()
 
-    // Reset scroll
-    window.scrollY = 0
-    document.documentElement.scrollHeight = 2000
+    // Mock scroll properties
+    Object.defineProperty(window, 'scrollY', {
+      writable: true,
+      configurable: true,
+      value: 0,
+    })
+
+    Object.defineProperty(document.documentElement, 'scrollHeight', {
+      writable: true,
+      configurable: true,
+      value: 2000,
+    })
+
     Object.defineProperty(window, 'innerHeight', {
       writable: true,
       configurable: true,
@@ -33,7 +43,8 @@ describe('StickyCTABar', () => {
   it('should be hidden initially (before scrolling)', () => {
     renderWithRouter(<StickyCTABar />)
 
-    const container = screen.getByText(/Start Your 14-Day Free Trial/i).closest('div')
+    // Find the outer container div with fixed positioning
+    const container = document.querySelector('.fixed.bottom-0') as HTMLElement
     expect(container).toHaveClass('translate-y-full')
   })
 
@@ -49,7 +60,7 @@ describe('StickyCTABar', () => {
 
     fireEvent.scroll(window)
 
-    const container = screen.getByText(/Start Your 14-Day Free Trial/i).closest('div')
+    const container = document.querySelector('.fixed.bottom-0') as HTMLElement
     expect(container).toHaveClass('translate-y-0')
   })
 
@@ -72,7 +83,7 @@ describe('StickyCTABar', () => {
     })
     fireEvent.scroll(window)
 
-    const container = screen.getByText(/Start Your 14-Day Free Trial/i).closest('div')
+    const container = document.querySelector('.fixed.bottom-0') as HTMLElement
     expect(container).toHaveClass('translate-y-full')
   })
 
