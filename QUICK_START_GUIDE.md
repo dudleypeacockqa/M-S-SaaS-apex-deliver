@@ -30,6 +30,8 @@ C:\\Projects\\ma-saas-platform\\
 ```
 
 Note: `ma-saas-platform-v2/` is an archived snapshot; leave it untouched and work from the root directories above.
+> ⚠️  Refresh the backend environment: run `python -m venv .venv` (or reuse `backend/venv`) and `pip install -r backend/requirements.txt` so modules like `openai` are available before executing tests.
+
 
 ---
 

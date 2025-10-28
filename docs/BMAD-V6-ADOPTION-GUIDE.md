@@ -14,7 +14,7 @@
 
 **What Changed**:
 - Compiled agents + manifests refreshed via Installer/ManifestGenerator scripts
-- Codex + Claude Code integrations rebuilt (mad/docs/*-instructions.md)
+- Codex + Claude Code integrations rebuilt (mad/docs/*-instructions.md)
 - docs/bmad/bmm-workflow-status.md activated for Level 4 greenfield tracking
 
 **Next Actions**:
@@ -26,7 +26,7 @@
 
 ## Migration Snapshot (October 28, 2025)
 
-- CLI install path: _vendor/BMAD-METHOD › project root mad/
+- CLI install path: _vendor/BMAD-METHOD › project root mad/
 - Modules active: core, bmb, bmm, cis (bmd preserved)
 - IDE coverage: Codex CLI, Claude Code
 - Support scripts: installer.compileAgents + ManifestGenerator snippets recorded in CLAUDE.md
@@ -390,4 +390,5 @@ Give 1 point for each "Yes":
 **Last Updated**: October 28, 2025
 **Review Schedule**: Sprint 5 Planning (Q4 2025)
 **Maintained By**: Development Team
+
 
