@@ -44,6 +44,10 @@ os.environ.setdefault("STRIPE_PRICE_ENTERPRISE_MONTHLY", "price_enterprise_month
 os.environ.setdefault("STRIPE_PRICE_ENTERPRISE_ANNUAL", "price_enterprise_annual")
 os.environ.setdefault("STRIPE_PRICE_COMMUNITY_MONTHLY", "price_community_monthly")
 os.environ.setdefault("STRIPE_PRICE_COMMUNITY_ANNUAL", "price_community_annual")
+os.environ.setdefault("CELERY_BROKER_URL", "memory://")
+os.environ.setdefault("CELERY_RESULT_BACKEND", "cache+memory://")
+os.environ.setdefault("CELERY_TASK_ALWAYS_EAGER", "true")
+os.environ.setdefault("CELERY_TASK_EAGER_PROPAGATES", "true")
 
 from app.core.config import get_settings, settings  # noqa: E402
 from app.db import session as session_module  # noqa: E402

@@ -85,6 +85,7 @@ export interface PrecedentTransaction {
   weight: number
   is_stale: string
   announcement_date: string | null
+  notes: string | null
   created_at: string
   updated_at: string | null
 }

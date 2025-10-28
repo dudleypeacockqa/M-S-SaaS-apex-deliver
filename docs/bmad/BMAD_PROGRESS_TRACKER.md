@@ -1,21 +1,23 @@
 # BMAD Progress Tracker - M&A Intelligence Platform
 
-**Last Updated**: 2025-10-28 22:15 UTC
-**Methodology**: BMAD v6-alpha + TDD (tests-first)
-**Project Phase**: Sprint 6 – DEV-016 Podcast Studio Subscription Add-On (GREEN)
-**Deployment Status**: ✅ Backend subscription infrastructure complete
-**Sprint 5**: 🟡 DEV-011 backend analytics green (frontend TDD pending)
+**Last Updated**: 2025-10-28 10:05 UTC
+**Methodology**: BMAD v6-alpha (core + bmb + bmm + cis) + TDD (tests-first)
+**Project Phase**: Sprint 6 – DEV-016 Podcast Studio Subscription Add-On (BLOCKED)
+**Deployment Status**: ⚠️ Backend pytest halts on missing `openai`; frontend valuation workspace tests still RED
 **Sprint 1**: ✅ Complete (historical)
 **Sprint 2**: ✅ DEV-007 and DEV-008 complete
 **Sprint 3**: ✅ MARK-001 and DEV-009 complete
 **Sprint 4**: ✅ DEV-010 complete
 **Sprint 5**: 🟡 DEV-011 backend analytics green (frontend pending)
-**Sprint 6**: 🟢 DEV-016 Phase 1-2.4 complete (tier + entitlement + middleware + quota)
-**Latest Commit**: `4097536` feat(quota): implement episode quota enforcement service (TDD)
-**Test Suites**: 🟢 89/89 passing (17 subscription + 43 entitlement + 15 middleware + 14 quota)
-**GitHub**: ⏳ Ready to push (commits c785382 → 4097536)
-**CRITICAL SCOPE CHANGE**: 🚨 DEV-016 Podcast Studio redefined as subscription add-on feature
+**Sprint 6**: 🟠 DEV-016 entitlement stack implemented; quota + UI tests pending
+**Latest Commit**: `be524e6` chore: sync codebase with latest development progress
+**Test Suites**: 🔴 backend pytest collects 231 tests then errors on `ModuleNotFoundError: openai`; frontend `npm run test` runs 446 specs with 7 failures in `ValuationSuite`
+**BMAD CLI Refresh (2025-10-28)**
+- Modules active: core, bmb, bmm, cis (bmd retained)
+- Agents + manifests regenerated via installer.compileAgents + ManifestGenerator
+- Codex & Claude exports rebuilt (bmad/docs/codex-instructions.md, bmad/docs/claude-code-instructions.md)
 
+**CRITICAL SCOPE CHANGE**: 🚨 DEV-016 Podcast Studio redefined as subscription add-on feature
 ---
 
 ## CRITICAL SCOPE CHANGE: DEV-016 Podcast Studio (2025-10-28)
@@ -958,3 +960,6 @@ CREATE INDEX ix_podcast_usage_organization_id ON podcast_usage (organization_id)
 
 **Next Review**: after resolving test failures and deployment blockers
 **Owner**: Development Team
+
+
+

@@ -1173,3 +1173,18 @@ REDIS_URL=redis://localhost:6379/0
 **Product Owner**: User (M&A Platform Founder)
 **Story Created**: 2025-10-28
 **Last Updated**: 2025-10-28 16:30 UTC
+## Implementation Plan (BMAD v6-alpha Session – 2025-10-28)
+
+1. **Baseline Reset & Context**
+   - Restore repo to HEAD (`git status` clean) and refresh workflow status (`docs/bmad/bmm-workflow-status.md`).
+   - Align this story and PRD with subscription gating notes; update BMAD tracker after each milestone.
+2. **Backend Subscription Enforcement (TDD)**
+   - Add failing tests for Clerk tier fetch, entitlement service, quota enforcement, and podcast CRUD (403 guards).
+   - Implement supporting modules/services, migrations as required, then refactor for clarity.
+3. **Frontend Feature Gating (TDD)**
+   - Add failing tests for feature-access hooks and UI gating (upgrade prompts, quota counter).
+   - Implement React Query hooks/components, refactor for UX polish and accessibility.
+4. **Validation & Deployment Readiness**
+   - Run pytest, npm test/lint/build; regenerate BMAD manifests (installer.compileAgents + ManifestGenerator).
+   - Verify Render backend/marketing health, update story checklist and PR description.
+

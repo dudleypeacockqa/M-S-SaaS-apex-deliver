@@ -30,11 +30,12 @@ export const DealReadinessScore: React.FC<DealReadinessScoreProps> = ({
   const scoreColor = getScoreColor(score);
 
   // Color class mapping
-  const colorClasses = {
+  const colorClasses: Record<string, string> = {
     success: 'bg-green-100 border-green-500 text-green-900',
     warning: 'bg-yellow-100 border-yellow-500 text-yellow-900',
     danger: 'bg-red-100 border-red-500 text-red-900',
   };
+  const scoreClassName = colorClasses[scoreColor];
 
   // Calculate percentage for circular gauge
   const percentage = Math.min(Math.max(score, 0), 100);
@@ -75,7 +76,7 @@ export const DealReadinessScore: React.FC<DealReadinessScoreProps> = ({
             </svg>
 
             {/* Score display in center */}
-            <div className={`score-display absolute inset-0 flex flex-col items-center justify-center ${scoreColor}`}>
+            <div className={`score-display absolute inset-0 flex flex-col items-center justify-center p-4 border-2 rounded-full ${scoreClassName}`}>
               <div className="text-4xl font-bold">{score.toFixed(1)}</div>
               <div className="text-sm text-gray-600">/ 100</div>
             </div>

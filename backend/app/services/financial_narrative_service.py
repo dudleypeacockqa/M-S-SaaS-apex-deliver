@@ -13,20 +13,10 @@ from sqlalchemy import select, desc
 
 try:  # pragma: no cover - allow running without OpenAI installed (tests)
     from openai import AsyncOpenAI  # type: ignore
+    _OPENAI_AVAILABLE = True
 except ModuleNotFoundError:  # pragma: no cover
-    class AsyncOpenAI:  # type: ignore
-        """Minimal stub so tests can execute without OpenAI SDK."""
-
-        def __init__(self, *_, **__):
-            pass
-
-        class chat:  # noqa: N801
-            class completions:  # noqa: N801
-                @staticmethod
-                async def create(**_kwargs):
-                    raise RuntimeError(
-                        "OpenAI client not available. Install openai package or set OPENAI_API_KEY."
-                    )
+    AsyncOpenAI = None  # type: ignore
+    _OPENAI_AVAILABLE = False
 
 from app.models.financial_ratio import FinancialRatio
 from app.models.financial_statement import FinancialStatement
@@ -34,10 +24,29 @@ from app.models.financial_narrative import FinancialNarrative
 from app.models.deal import Deal
 
 
-# Initialize OpenAI client
-openai_client = AsyncOpenAI(
-    api_key=os.getenv("OPENAI_API_KEY", "dummy_key_for_tests")
-)
+# Lazy OpenAI client proxy so tests can patch without requiring the SDK
+_openai_client_instance = None
+
+
+class _OpenAIClientProxy:
+    """Proxy that lazily instantiates AsyncOpenAI when available."""
+
+    async def _ensure_async(self):  # pragma: no cover - convenience for async callers
+        return self
+
+    def __getattr__(self, name):
+        global _openai_client_instance
+        if _openai_client_instance is None:
+            if not _OPENAI_AVAILABLE:
+                raise ModuleNotFoundError("openai package is not installed. Install backend requirements before generating narratives.")
+            api_key = os.getenv("OPENAI_API_KEY")
+            if not api_key:
+                raise RuntimeError("OPENAI_API_KEY is not configured.")
+            _openai_client_instance = AsyncOpenAI(api_key=api_key)  # type: ignore[call-arg]
+        return getattr(_openai_client_instance, name)
+
+
+openai_client = _OpenAIClientProxy()
 
 
 def _build_narrative_prompt(ratios: FinancialRatio, statement: FinancialStatement) -> str:

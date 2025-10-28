@@ -22,7 +22,6 @@ import { CheckoutSuccess } from "./pages/checkout/CheckoutSuccess"
 import { CheckoutCancel } from "./pages/checkout/CheckoutCancel"
 
 // Marketing Pages
-import { LandingPage } from "./pages/marketing/LandingPage"
 import { EnhancedLandingPage } from "./pages/marketing/EnhancedLandingPage"
 import { PricingPage } from "./pages/marketing/PricingPage"
 import { FeaturesPage } from "./pages/marketing/FeaturesPage"
