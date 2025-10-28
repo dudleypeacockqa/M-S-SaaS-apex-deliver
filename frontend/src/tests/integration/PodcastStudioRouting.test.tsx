@@ -44,20 +44,32 @@ vi.mock("@clerk/clerk-react", () => ({
 }))
 
 // Mock podcast API calls
-vi.mock("../../services/api/podcasts", () => ({
+vi.mock('../../services/api/podcasts', () => ({
   checkFeatureAccess: vi.fn().mockResolvedValue({
-    feature: "podcast_audio",
-    tier: "Professional",
-    has_access: true,
-    required_tier: "Professional",
+    feature: 'podcast_audio',
+    tier: 'professional',
+    tierLabel: 'Professional',
+    hasAccess: true,
+    requiredTier: 'professional',
+    requiredTierLabel: 'Professional',
+    upgradeRequired: false,
+    upgradeMessage: null,
+    upgradeCtaUrl: null,
   }),
   getQuotaSummary: vi.fn().mockResolvedValue({
-    tier: "Professional",
+    tier: 'professional',
+    tierLabel: 'Professional',
     limit: 10,
     remaining: 5,
     used: 5,
-    unlimited: false,
-    period: "monthly",
+    isUnlimited: false,
+    period: 'monthly',
+    quotaState: 'normal',
+    warningStatus: null,
+    warningMessage: null,
+    upgradeRequired: false,
+    upgradeMessage: null,
+    upgradeCtaUrl: null,
   }),
   listEpisodes: vi.fn().mockResolvedValue([]),
 }))

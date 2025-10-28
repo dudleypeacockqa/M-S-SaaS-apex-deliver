@@ -48,6 +48,37 @@ FEATURE_ENTITLEMENTS: Dict[str, List[str]] = {
     "api_access": ["premium", "enterprise"],
 }
 
+FEATURE_UPGRADE_CTA: Dict[str, str] = {
+    "podcast_audio": "/pricing",
+    "podcast_video": "/pricing",
+    "transcription_basic": "/pricing",
+    "transcription_ai_enhanced": "/pricing",
+    "transcription_multi_language": "/pricing",
+    "youtube_integration": "/pricing",
+    "live_streaming": "/pricing",
+    "advanced_analytics": "/pricing",
+    "white_label": "/pricing",
+    "api_access": "/pricing",
+}
+
+TIER_LABELS: Dict[SubscriptionTier, str] = {
+    SubscriptionTier.STARTER: "Starter",
+    SubscriptionTier.PROFESSIONAL: "Professional",
+    SubscriptionTier.PREMIUM: "Premium",
+    SubscriptionTier.ENTERPRISE: "Enterprise",
+}
+
+DEFAULT_UPGRADE_CTA = "/pricing"
+
+def get_tier_label(tier: SubscriptionTier) -> str:
+    """Return human-friendly label for a subscription tier."""
+    return TIER_LABELS.get(tier, tier.value.title())
+
+def get_feature_upgrade_cta(feature: str) -> str:
+    """Return upgrade CTA URL for a feature."""
+    return FEATURE_UPGRADE_CTA.get(feature, DEFAULT_UPGRADE_CTA)
+
+
 
 async def check_feature_access(organization_id: str, feature: str) -> bool:
     """
@@ -206,7 +237,7 @@ def get_feature_upgrade_message(feature: str, current_tier: SubscriptionTier) ->
 
         feature_name = feature_names.get(feature, feature.replace("_", " "))
 
-        return f"Upgrade to {required_tier.value.title()} tier to unlock {feature_name}."
+        return f"Upgrade to {get_tier_label(required_tier)} tier to unlock {feature_name}."
 
     except FeatureNotFoundError:
         return f"This feature requires a subscription upgrade."

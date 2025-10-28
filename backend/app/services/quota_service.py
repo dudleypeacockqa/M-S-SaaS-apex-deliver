@@ -67,6 +67,9 @@ TIER_QUOTAS = {
 
 }
 
+DEFAULT_UPGRADE_CTA = "/pricing"
+
+
 
 
 
@@ -467,45 +470,48 @@ async def get_quota_summary(
         remaining_value = max(0, quota_remaining if quota_remaining is not None else limit - used)
 
     period = datetime.now(UTC).strftime("%Y-%m")
-
+    tier_label = tier.value.title()
+    quota_state = "unlimited" if is_unlimited else "normal"
     warning_status: Optional[str] = None
     warning_message: Optional[str] = None
     upgrade_required = False
     upgrade_message: Optional[str] = None
-    upgrade_cta_url = "/pricing"
+    upgrade_cta_url: Optional[str] = None
 
     if not is_unlimited and limit_value:
         usage_ratio = used / limit_value if limit_value else 0
         if usage_ratio >= 1:
+            quota_state = "exceeded"
             warning_status = "critical"
-            upgrade_required = True
             warning_message = "Monthly quota exceeded."
+            upgrade_required = True
             upgrade_message = "Upgrade to Premium tier for unlimited episodes."
+            upgrade_cta_url = DEFAULT_UPGRADE_CTA
+            remaining_value = 0
         elif usage_ratio >= 0.9:
+            quota_state = "critical"
             warning_status = "critical"
             warning_message = "90% of monthly quota used."
         elif usage_ratio >= 0.8:
+            quota_state = "warning"
             warning_status = "warning"
             warning_message = "80% of monthly quota used."
 
     return PodcastQuotaSummary(
         tier=tier.value,
+        tier_label=tier_label,
         limit=limit_value,
         remaining=remaining_value,
         used=used,
         is_unlimited=is_unlimited,
         period=period,
-        tier_label=tier.value.title(),
+        quota_state=quota_state,
         warning_status=warning_status,
         warning_message=warning_message,
         upgrade_required=upgrade_required,
         upgrade_message=upgrade_message,
-        upgrade_cta_url=upgrade_cta_url if upgrade_required else None,
+        upgrade_cta_url=upgrade_cta_url,
     )
-
-
-
-
 
 def _query_usage_for_month_sync(organization_id: str, db: Session) -> int:
 

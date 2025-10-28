@@ -9,7 +9,7 @@
  * - List episodes with CRUD operations
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { FeatureGate } from '../../components/podcast/FeatureGate';
 import {
@@ -46,7 +46,10 @@ function PodcastStudioContent() {
     queryFn: () => listEpisodes(),
   });
 
-  const isQuotaExceeded = quota && !quota.unlimited && quota.remaining === 0;
+  const isQuotaExceeded = Boolean(
+    quota && !quota.isUnlimited && (quota.remaining ?? 0) <= 0,
+  );
+  const isUpgradeRequired = quota?.upgradeRequired ?? false;
 
   if (quotaLoading || episodesLoading) {
     return (
@@ -84,13 +87,19 @@ function PodcastStudioContent() {
         <h2 className="text-xl font-semibold text-gray-900">Episodes</h2>
         <button
           type="button"
-          disabled={isQuotaExceeded}
+          disabled={isQuotaExceeded || isUpgradeRequired}
           className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-            isQuotaExceeded
+            isQuotaExceeded || isUpgradeRequired
               ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
           }`}
-          title={isQuotaExceeded ? 'Quota exceeded. Upgrade to Premium for unlimited episodes.' : ''}
+          title={
+            isUpgradeRequired
+              ? quota?.upgradeMessage ?? 'Upgrade required to create new episodes.'
+              : isQuotaExceeded
+                ? 'Quota exceeded. Upgrade to Premium for unlimited episodes.'
+                : ''
+          }
         >
           <svg
             className="mr-2 -ml-1 h-5 w-5"
@@ -116,6 +125,15 @@ function PodcastStudioContent() {
 }
 
 function QuotaCard({ quota }: { quota: QuotaSummary }) {
+  const stateStyles: Record<string, string> = {
+    normal: 'bg-green-100 text-green-800',
+    warning: 'bg-yellow-100 text-yellow-800',
+    critical: 'bg-red-100 text-red-800',
+  };
+
+  const badgeClass = stateStyles[quota.quotaState] ?? 'bg-gray-100 text-gray-800';
+  const showUpgradeCta = quota.upgradeRequired && quota.upgradeCtaUrl;
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
       <div className="flex items-center justify-between">
@@ -124,31 +142,37 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
             Episode Quota
           </h3>
           <p className="mt-2 text-3xl font-bold text-gray-900">
-            {quota.unlimited ? (
+            {quota.isUnlimited ? (
               'Unlimited'
             ) : (
-              `${quota.used} / ${quota.limit}`
+              `${quota.used} / ${quota.limit ?? 0}`
             )}
           </p>
           <p className="mt-1 text-sm text-gray-600">
-            {quota.unlimited
+            {quota.isUnlimited
               ? `Created ${quota.used} episodes this month`
               : `${quota.remaining} remaining this month`}
           </p>
+          {quota.warningMessage && (
+            <p className="mt-2 text-sm text-amber-700">{quota.warningMessage}</p>
+          )}
+          {quota.upgradeRequired && quota.upgradeMessage && (
+            <p className="mt-2 text-sm text-indigo-700">{quota.upgradeMessage}</p>
+          )}
         </div>
         <div className="flex flex-col items-end">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 capitalize">
-            {quota.tier}
+          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${badgeClass} capitalize`}>
+            {quota.tierLabel ?? quota.tier}
           </span>
-          {!quota.unlimited && (
+          {showUpgradeCta && (
             <button
               type="button"
               className="mt-3 text-sm text-indigo-600 hover:text-indigo-500 font-medium"
               onClick={() => {
-                window.location.href = '/pricing';
+                window.location.href = quota.upgradeCtaUrl ?? '/pricing';
               }}
             >
-              Upgrade to Premium
+              {quota.upgradeMessage ? 'View Upgrade Options' : 'Upgrade to Premium'}
             </button>
           )}
         </div>

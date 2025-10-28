@@ -12,8 +12,7 @@
  */
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { checkFeatureAccess } from '../../services/api/podcasts';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 
 interface FeatureGateProps {
   feature: string;
@@ -22,15 +21,15 @@ interface FeatureGateProps {
 
 export function FeatureGate({ feature, children }: FeatureGateProps) {
   const {
-    data: accessData,
+    hasAccess,
+    tierLabel,
+    requiredTierLabel,
+    upgradeRequired,
+    upgradeMessage,
+    upgradeCtaUrl,
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ['featureAccess', feature],
-    queryFn: () => checkFeatureAccess(feature),
-    // Cache for 5 minutes
-    staleTime: 5 * 60 * 1000,
-  });
+  } = useFeatureAccess({ feature });
 
   if (isLoading) {
     return (
@@ -41,12 +40,14 @@ export function FeatureGate({ feature, children }: FeatureGateProps) {
     );
   }
 
-  // Deny-by-default: If error or no access, show upgrade CTA
-  const hasAccess = accessData?.has_access === true;
+  const shouldShowUpgrade = error || upgradeRequired || !hasAccess;
 
-  if (!hasAccess || error) {
-    const requiredTier = accessData?.required_tier || 'Professional';
-    const currentTier = accessData?.tier || 'Starter';
+  if (shouldShowUpgrade) {
+    const requiredTier = requiredTierLabel ?? 'Professional';
+    const currentTier = tierLabel ?? 'Starter';
+    const message =
+      upgradeMessage ?? `Upgrade to ${requiredTier} to access ${feature.replace('_', ' ')}`;
+    const ctaUrl = upgradeCtaUrl ?? '/pricing';
 
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 max-w-2xl mx-auto">
@@ -72,9 +73,10 @@ export function FeatureGate({ feature, children }: FeatureGateProps) {
             </h3>
             <div className="mt-2 text-sm text-gray-600">
               <p>
-                This feature requires a <span className="font-semibold capitalize">{requiredTier}</span> tier
-                subscription or higher. You are currently on the{' '}
-                <span className="capitalize">{currentTier}</span> tier.
+                {message}
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                Current tier: <span className="font-semibold">{currentTier}</span>
               </p>
               {error && (
                 <p className="mt-2 text-xs text-red-600">
@@ -87,8 +89,7 @@ export function FeatureGate({ feature, children }: FeatureGateProps) {
                 type="button"
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 onClick={() => {
-                  // TODO: Navigate to pricing page or billing portal
-                  window.location.href = '/pricing';
+                  window.location.href = ctaUrl;
                 }}
               >
                 Upgrade to {requiredTier}

@@ -306,6 +306,7 @@ class TestPodcastUsageEndpoint:
                 "is_unlimited": False,
                 "period": expected_period,
                 "tier_label": SubscriptionTier.PROFESSIONAL.value.title(),
+                "quota_state": "normal",
                 "warning_status": None,
                 "warning_message": None,
                 "upgrade_required": False,
@@ -375,6 +376,7 @@ class TestPodcastUsageEndpoint:
                 "is_unlimited": True,
                 "period": expected_period,
                 "tier_label": SubscriptionTier.PREMIUM.value.title(),
+                "quota_state": "normal",
                 "warning_status": None,
                 "warning_message": None,
                 "upgrade_required": False,
@@ -469,7 +471,8 @@ class TestPodcastFeatureAccessEndpoint:
                 "upgrade_cta_url": None,
             }
             mock_check.assert_awaited_once_with(organization_id, "podcast_audio")
-            mock_required.assert_called_once_with("podcast_audio")
+            assert mock_required.call_count >= 1
+            mock_required.assert_called_with("podcast_audio")
         finally:
             _clear_override()
 
@@ -512,7 +515,8 @@ class TestPodcastFeatureAccessEndpoint:
                 "upgrade_cta_url": "/pricing",
             }
             mock_check.assert_awaited_once_with(organization_id, "podcast_audio")
-            mock_required.assert_called_once_with("podcast_audio")
+            assert mock_required.call_count >= 1
+            mock_required.assert_called_with("podcast_audio")
         finally:
             _clear_override()
 

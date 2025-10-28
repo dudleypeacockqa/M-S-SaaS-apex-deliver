@@ -49,8 +49,13 @@ describe('FeatureGate', () => {
       vi.mocked(checkFeatureAccess).mockResolvedValue({
         feature: 'podcast_audio',
         tier: 'professional',
-        has_access: true,
-        required_tier: 'professional',
+        tierLabel: 'Professional',
+        hasAccess: true,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
       });
 
       render(
@@ -69,8 +74,13 @@ describe('FeatureGate', () => {
       vi.mocked(checkFeatureAccess).mockResolvedValue({
         feature: 'podcast_audio',
         tier: 'premium',
-        has_access: true,
-        required_tier: 'professional',
+        tierLabel: 'Premium',
+        hasAccess: true,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
       });
 
       render(
@@ -93,8 +103,13 @@ describe('FeatureGate', () => {
       vi.mocked(checkFeatureAccess).mockResolvedValue({
         feature: 'podcast_audio',
         tier: 'starter',
-        has_access: false,
-        required_tier: 'professional',
+        tierLabel: 'Starter',
+        hasAccess: false,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: true,
+        upgradeMessage: 'Upgrade to Professional tier to unlock audio podcasting.',
+        upgradeCtaUrl: '/pricing',
       });
 
       render(
@@ -113,8 +128,13 @@ describe('FeatureGate', () => {
       vi.mocked(checkFeatureAccess).mockResolvedValue({
         feature: 'podcast_video',
         tier: 'professional',
-        has_access: false,
-        required_tier: 'premium',
+        tierLabel: 'Professional',
+        hasAccess: false,
+        requiredTier: 'premium',
+        requiredTierLabel: 'Premium',
+        upgradeRequired: true,
+        upgradeMessage: 'Upgrade to Premium tier to unlock video podcasting.',
+        upgradeCtaUrl: '/pricing',
       });
 
       render(
@@ -135,8 +155,13 @@ describe('FeatureGate', () => {
       vi.mocked(checkFeatureAccess).mockResolvedValue({
         feature: 'podcast_video',
         tier: 'professional',
-        has_access: false,
-        required_tier: 'premium',
+        tierLabel: 'Professional',
+        hasAccess: false,
+        requiredTier: 'premium',
+        requiredTierLabel: 'Premium',
+        upgradeRequired: true,
+        upgradeMessage: 'Upgrade to Premium tier to unlock video podcasting.',
+        upgradeCtaUrl: '/pricing',
       });
 
       render(

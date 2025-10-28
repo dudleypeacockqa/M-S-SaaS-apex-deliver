@@ -6,15 +6,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { featureQueryKey, useFeatureAccess } from './useFeatureAccess';
 
-vi.mock('../services/api', () => {
-  return {
-    api: {
-      get: vi.fn(),
-    },
-  };
-});
+vi.mock('../services/api/podcasts', () => ({
+  checkFeatureAccess: vi.fn(),
+}));
 
-const { api } = await import('../services/api');
+const { checkFeatureAccess } = await import('../services/api/podcasts');
 
 const createWrapper = () => {
   const queryClient = new QueryClient();
@@ -28,7 +24,17 @@ afterEach(() => {
 
 describe('useFeatureAccess', () => {
   it('returns hasAccess=false while loading', async () => {
-    api.get.mockResolvedValueOnce({ data: { hasAccess: false, tier: 'starter' } });
+    vi.mocked(checkFeatureAccess).mockResolvedValueOnce({
+      feature: 'podcast_audio',
+      tier: 'starter',
+      tierLabel: 'Starter',
+      hasAccess: false,
+      requiredTier: 'professional',
+      requiredTierLabel: 'Professional',
+      upgradeRequired: true,
+      upgradeMessage: 'Upgrade to Professional tier to unlock audio podcasting.',
+      upgradeCtaUrl: '/pricing',
+    });
 
     const { result } = renderHook(() => useFeatureAccess({ feature: 'podcast_audio' }), {
       wrapper: createWrapper(),
@@ -40,8 +46,16 @@ describe('useFeatureAccess', () => {
   });
 
   it('exposes access=true for professional tiers on podcast_audio', async () => {
-    api.get.mockResolvedValueOnce({
-      data: { hasAccess: true, tier: 'professional', requiredTier: 'professional' },
+    vi.mocked(checkFeatureAccess).mockResolvedValueOnce({
+      feature: 'podcast_audio',
+      tier: 'professional',
+      tierLabel: 'Professional',
+      hasAccess: true,
+      requiredTier: 'professional',
+      requiredTierLabel: 'Professional',
+      upgradeRequired: false,
+      upgradeMessage: null,
+      upgradeCtaUrl: null,
     });
 
     const { result } = renderHook(() => useFeatureAccess({ feature: 'podcast_audio' }), {
@@ -50,17 +64,21 @@ describe('useFeatureAccess', () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.hasAccess).toBe(true);
-    expect(result.current.tier).toBe('professional');
+    expect(result.current.tierLabel).toBe('Professional');
     expect(result.current.requiredTier).toBe('professional');
   });
 
   it('exposes access=false for professional tier requesting podcast_video', async () => {
-    api.get.mockResolvedValueOnce({
-      data: {
-        hasAccess: false,
-        tier: 'professional',
-        requiredTier: 'premium',
-      },
+    vi.mocked(checkFeatureAccess).mockResolvedValueOnce({
+      feature: 'podcast_video',
+      tier: 'professional',
+      tierLabel: 'Professional',
+      hasAccess: false,
+      requiredTier: 'premium',
+      requiredTierLabel: 'Premium',
+      upgradeRequired: true,
+      upgradeMessage: 'Upgrade to Premium tier to unlock video podcasting.',
+      upgradeCtaUrl: '/pricing',
     });
 
     const { result } = renderHook(() => useFeatureAccess({ feature: 'podcast_video' }), {
@@ -70,8 +88,8 @@ describe('useFeatureAccess', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.hasAccess).toBe(false);
-    expect(result.current.tier).toBe('professional');
-    expect(result.current.requiredTier).toBe('premium');
+    expect(result.current.requiredTierLabel).toBe('Premium');
+    expect(result.current.upgradeMessage).toMatch(/video podcasting/);
   });
 
   it('supports disabled state for lazy evaluation', () => {
@@ -82,7 +100,7 @@ describe('useFeatureAccess', () => {
       },
     );
 
-    expect(api.get).not.toHaveBeenCalled();
+    expect(checkFeatureAccess).not.toHaveBeenCalled();
     expect(result.current.isLoading).toBe(false);
     expect(result.current.tier).toBe('starter');
   });

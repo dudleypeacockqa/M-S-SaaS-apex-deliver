@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from functools import wraps
+from datetime import datetime, UTC
 from typing import Any, Awaitable, Callable
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -18,6 +19,7 @@ from app.services.quota_service import (
     get_remaining_quota,
     increment_episode_count,
 )
+from app.models.podcast_usage import PodcastUsage
 
 
 # Tests follow the TDD cadence: RED -> GREEN -> REFACTOR
@@ -159,85 +161,115 @@ class TestIncrementEpisodeCount:
     """Unit tests for `increment_episode_count`."""
 
     @async_test
-    async def test_increments_usage_count_in_database(self, mock_db_session: AsyncMock) -> None:
+    async def test_increments_usage_count_in_database(self, db_session) -> None:
         org_id = "org_123"
+        current_month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-        mock_usage_record = Mock()
-        mock_usage_record.episode_count = 5
+        usage = PodcastUsage(
+            organization_id=org_id,
+            month=current_month,
+            episode_count=5,
+        )
+        db_session.add(usage)
+        db_session.commit()
 
-        mock_result = AsyncMock()
-        mock_result.scalar_one_or_none.return_value = mock_usage_record
+        await increment_episode_count(org_id, db_session)
 
-        mock_db_session.execute = AsyncMock(return_value=mock_result)
-        mock_db_session.refresh = AsyncMock()
-
-        await increment_episode_count(org_id, mock_db_session)
-
-        mock_db_session.commit.assert_called_once()
-        assert mock_usage_record.episode_count == 6
+        refreshed = (
+            db_session.query(PodcastUsage)
+            .filter(
+                PodcastUsage.organization_id == org_id,
+                PodcastUsage.month == current_month,
+            )
+            .one()
+        )
+        assert refreshed.episode_count == 6
 
     @async_test
-    async def test_sync_session_increments_usage(self, mock_sync_session: Mock) -> None:
+    async def test_sync_session_increments_usage(self, db_session) -> None:
         org_id = "org_sync"
+        current_month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-        mock_usage_record = Mock()
-        mock_usage_record.episode_count = 2
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = mock_usage_record
-        mock_sync_session.execute.return_value = mock_result
+        usage = PodcastUsage(
+            organization_id=org_id,
+            month=current_month,
+            episode_count=2,
+        )
+        db_session.add(usage)
+        db_session.commit()
 
-        await increment_episode_count(org_id, mock_sync_session)
+        await increment_episode_count(org_id, db_session)
 
-        assert mock_usage_record.episode_count == 3
-        mock_sync_session.commit.assert_called_once()
-        mock_sync_session.refresh.assert_called_once_with(mock_usage_record)
+        refreshed = (
+            db_session.query(PodcastUsage)
+            .filter(
+                PodcastUsage.organization_id == org_id,
+                PodcastUsage.month == current_month,
+            )
+            .one()
+        )
+        assert refreshed.episode_count == 3
 
     @async_test
-    async def test_creates_new_usage_record_for_first_episode(self, mock_db_session: AsyncMock) -> None:
+    async def test_creates_new_usage_record_for_first_episode(self, db_session) -> None:
         org_id = "org_new"
+        current_month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-        mock_result = AsyncMock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db_session.execute = AsyncMock(return_value=mock_result)
-        mock_db_session.refresh = AsyncMock()
+        await increment_episode_count(org_id, db_session)
 
-        await increment_episode_count(org_id, mock_db_session)
-
-        mock_db_session.add.assert_called_once()
+        refreshed = (
+            db_session.query(PodcastUsage)
+            .filter(
+                PodcastUsage.organization_id == org_id,
+                PodcastUsage.month == current_month,
+            )
+            .one()
+        )
+        assert refreshed.episode_count == 1
 
 
 class TestGetMonthlyUsage:
     """Unit tests for `get_monthly_usage`."""
 
     @async_test
-    async def test_returns_current_month_usage_count(self, mock_db_session: AsyncMock) -> None:
+    async def test_returns_current_month_usage_count(self, db_session) -> None:
         org_id = "org_123"
+        current_month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-        with patch("app.services.quota_service._query_usage_for_month", new_callable=AsyncMock) as mock_query:
-            mock_query.return_value = 5
-            usage = await get_monthly_usage(org_id, mock_db_session)
+        usage_record = PodcastUsage(
+            organization_id=org_id,
+            month=current_month,
+            episode_count=5,
+        )
+        db_session.add(usage_record)
+        db_session.commit()
+
+        usage = await get_monthly_usage(org_id, db_session)
 
         assert usage == 5
 
     @async_test
-    async def test_sync_session_returns_usage(self, mock_sync_session: Mock) -> None:
+    async def test_sync_session_returns_usage(self, db_session) -> None:
         org_id = "org_sync"
+        current_month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = 4
-        mock_sync_session.execute.return_value = mock_result
+        usage_record = PodcastUsage(
+            organization_id=org_id,
+            month=current_month,
+            episode_count=4,
+        )
+        db_session.add(usage_record)
+        db_session.commit()
 
-        usage = await get_monthly_usage(org_id, mock_sync_session)
+        usage = await get_monthly_usage(org_id, db_session)
 
         assert usage == 4
 
     @async_test
-    async def test_returns_zero_when_no_usage_records(self, mock_db_session: AsyncMock) -> None:
+    async def test_returns_zero_when_no_usage_records(self, db_session) -> None:
         org_id = "org_new"
 
-        with patch("app.services.quota_service._query_usage_for_month", new_callable=AsyncMock) as mock_query:
-            mock_query.return_value = 0
-            usage = await get_monthly_usage(org_id, mock_db_session)
+        usage = await get_monthly_usage(org_id, db_session)
 
         assert usage == 0
 

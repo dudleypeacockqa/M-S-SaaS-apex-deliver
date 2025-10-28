@@ -54,8 +54,13 @@ describe('PodcastStudio', () => {
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
         feature: 'podcast_audio',
         tier: 'starter',
-        has_access: false,
-        required_tier: 'professional',
+        tierLabel: 'Starter',
+        hasAccess: false,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: true,
+        upgradeMessage: 'Upgrade to Professional tier to unlock audio podcasting.',
+        upgradeCtaUrl: '/pricing',
       });
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -70,16 +75,28 @@ describe('PodcastStudio', () => {
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
         feature: 'podcast_audio',
         tier: 'professional',
-        has_access: true,
-        required_tier: 'professional',
+        tierLabel: 'Professional',
+        hasAccess: true,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
       });
       vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
         tier: 'professional',
+        tierLabel: 'Professional',
         limit: 10,
         remaining: 7,
         used: 3,
-        unlimited: false,
+        isUnlimited: false,
         period: '2025-10',
+        quotaState: 'normal',
+        warningStatus: null,
+        warningMessage: null,
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
       });
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([]);
 
@@ -96,8 +113,13 @@ describe('PodcastStudio', () => {
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
         feature: 'podcast_audio',
         tier: 'professional',
-        has_access: true,
-        required_tier: 'professional',
+        tierLabel: 'Professional',
+        hasAccess: true,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
       });
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([]);
     });
@@ -105,11 +127,18 @@ describe('PodcastStudio', () => {
     it('should display quota usage for Professional tier', async () => {
       vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
         tier: 'professional',
+        tierLabel: 'Professional',
         limit: 10,
         remaining: 7,
         used: 3,
-        unlimited: false,
+        isUnlimited: false,
         period: '2025-10',
+        quotaState: 'normal',
+        warningStatus: null,
+        warningMessage: null,
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
       });
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -122,11 +151,18 @@ describe('PodcastStudio', () => {
     it('should display "Unlimited" for Premium tier', async () => {
       vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
         tier: 'premium',
+        tierLabel: 'Premium',
         limit: null,
-        remaining: null,
+        remaining: -1,
         used: 15,
-        unlimited: true,
+        isUnlimited: true,
         period: '2025-10',
+        quotaState: 'normal',
+        warningStatus: null,
+        warningMessage: null,
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
       });
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -142,16 +178,28 @@ describe('PodcastStudio', () => {
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
         feature: 'podcast_audio',
         tier: 'professional',
-        has_access: true,
-        required_tier: 'professional',
+        tierLabel: 'Professional',
+        hasAccess: true,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
       });
       vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
         tier: 'professional',
+        tierLabel: 'Professional',
         limit: 10,
         remaining: 7,
         used: 3,
-        unlimited: false,
+        isUnlimited: false,
         period: '2025-10',
+        quotaState: 'normal',
+        warningStatus: null,
+        warningMessage: null,
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
       });
     });
 
@@ -238,16 +286,28 @@ describe('PodcastStudio', () => {
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
         feature: 'podcast_audio',
         tier: 'professional',
-        has_access: true,
-        required_tier: 'professional',
+        tierLabel: 'Professional',
+        hasAccess: true,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
       });
       vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
         tier: 'professional',
+        tierLabel: 'Professional',
         limit: 10,
         remaining: 7,
         used: 3,
-        unlimited: false,
+        isUnlimited: false,
         period: '2025-10',
+        quotaState: 'normal',
+        warningStatus: null,
+        warningMessage: null,
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
       });
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([]);
     });
@@ -263,11 +323,18 @@ describe('PodcastStudio', () => {
     it('should disable "New Episode" button when quota exceeded', async () => {
       vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
         tier: 'professional',
+        tierLabel: 'Professional',
         limit: 10,
         remaining: 0,
         used: 10,
-        unlimited: false,
+        isUnlimited: false,
         period: '2025-10',
+        quotaState: 'normal',
+        warningStatus: null,
+        warningMessage: null,
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
       });
 
       render(<PodcastStudio />, { wrapper: createWrapper() });

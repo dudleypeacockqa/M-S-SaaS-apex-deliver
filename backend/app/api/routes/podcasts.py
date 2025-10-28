@@ -16,7 +16,12 @@ from app.schemas.podcast import (
     PodcastQuotaSummary,
 )
 from app.services import entitlement_service, podcast_service, quota_service
-from app.services.entitlement_service import FeatureNotFoundError
+from app.services.entitlement_service import (
+    FeatureNotFoundError,
+    get_feature_upgrade_cta,
+    get_feature_upgrade_message,
+    get_tier_label,
+)
 from app.services.quota_service import QuotaExceededError
 
 logger = logging.getLogger(__name__)
@@ -28,7 +33,7 @@ router = APIRouter(prefix="/podcasts", tags=["podcasts"])
 async def get_feature_access(
     feature: str,
     current_user: User = Depends(get_current_user),
-) -> dict[str, str | bool]:
+) -> dict[str, str | bool | None]:
     """Expose feature entitlement state for the current tenant."""
 
     organization_id = current_user.organization_id
@@ -40,16 +45,24 @@ async def get_feature_access(
     except FeatureNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
 
+    tier_label = get_tier_label(tier)
+    required_tier_label = get_tier_label(required_tier)
+    upgrade_required = not has_access
+
     return {
         "feature": feature,
         "tier": tier.value,
-        "tier_label": tier.value.title(),
+        "tier_label": tier_label,
         "has_access": has_access,
         "required_tier": required_tier.value,
-        "required_tier_label": required_tier.value.title(),
-        "upgrade_required": not has_access,
-        "upgrade_message": None if has_access else f"Upgrade to {required_tier.value.title()} to access {feature}",
-        "upgrade_cta_url": None if has_access else "/pricing",
+        "required_tier_label": required_tier_label,
+        "upgrade_required": upgrade_required,
+        "upgrade_message": None
+        if not upgrade_required
+        else get_feature_upgrade_message(feature, tier),
+        "upgrade_cta_url": None
+        if not upgrade_required
+        else get_feature_upgrade_cta(feature),
     }
 
 
