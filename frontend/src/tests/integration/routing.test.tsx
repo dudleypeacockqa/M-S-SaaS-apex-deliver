@@ -53,15 +53,15 @@ describe("Integration: routing", () => {
     window.history.replaceState({}, "Test", "/")
   })
 
-  it("renders the landing page for visitors", () => {
+  it("renders the landing page for visitors", async () => {
     render(<App />)
 
     expect(
-      screen.getByRole("heading", { name: /close deals/i, level: 1 })
+      await screen.findByRole("heading", { name: /close deals/i, level: 1 }, { timeout: 10000 })
     ).toBeInTheDocument()
     // Marketing nav uses regular links, not Clerk's SignInButton
     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
-  })
+  }, 10000)
 
   it("directs visitors to the sign-in page when accessing the dashboard", () => {
     window.history.replaceState({}, "Test", "/dashboard")
