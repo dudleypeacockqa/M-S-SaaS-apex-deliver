@@ -61,7 +61,7 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center gap-4 py-6">
+      <div className="flex flex-col items-center gap-4 py-6" role="status" aria-label="Loading valuations">
         <LoadingSpinner />
         <div className="w-full space-y-3">
           <div className={`${skeletonClass} w-32`}></div>
