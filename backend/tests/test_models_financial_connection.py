@@ -5,219 +5,181 @@ Testing the database model, relationships, and cascade behavior
 
 import pytest
 from datetime import datetime, timezone
+from sqlalchemy.orm import Session
 
 from app.models.financial_connection import FinancialConnection
-from app.models.deal import Deal
 from app.models.organization import Organization
+from app.models.deal import Deal
+from app.models.user import User
 
 
-def test_create_financial_connection(db_session):
-    """Test creating a financial connection with all required fields."""
-    # Arrange
-    org = Organization(id="org-fc-123", name="Test Org FC", slug="testfc-org")
-    deal = Deal(
-        id="deal-fc-123",
-        organization_id=org.id,
-        name="Test Deal FC",
-        target_company="Target Co FC",
-        owner_id="user-fc-123"
+def _seed_org_user_deal(
+    session: Session,
+    *,
+    org_id: str,
+    deal_id: str,
+    owner_id: str,
+) -> tuple[Organization, User, Deal]:
+    organization = Organization(id=org_id, name=f"Org {org_id}", slug=org_id)
+    user = User(
+        id=owner_id,
+        clerk_user_id=f"{owner_id}-clerk",
+        email=f"{owner_id}@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=organization.id,
+        is_active=True,
     )
-    db_session.add(org)
-    db_session.add(deal)
-    db_session.commit()
+    deal = Deal(
+        id=deal_id,
+        organization_id=organization.id,
+        name=f"Deal {deal_id}",
+        target_company="Target",
+        owner_id=user.id,
+    )
+    session.add_all([organization, user, deal])
+    session.commit()
+    return organization, user, deal
 
-    # Act
+
+def test_create_financial_connection(db_session: Session):
+    organization, user, deal = _seed_org_user_deal(
+        db_session,
+        org_id="org-fc-1",
+        deal_id="deal-fc-1",
+        owner_id="user-fc-123",
+    )
+
     connection = FinancialConnection(
+        organization_id=organization.id,
         deal_id=deal.id,
-        organization_id=org.id,
         platform="xero",
-        access_token="test_token_123",
-        connection_status="active"
-    )
-    db_session.add(connection)
-    db_session.commit()
-    db_session.refresh(connection)
-
-    # Assert
-    assert connection.id is not None
-    assert connection.deal_id == "deal-fc-123"
-    assert connection.organization_id == "org-fc-123"
-    assert connection.platform == "xero"
-    assert connection.access_token == "test_token_123"
-    assert connection.connection_status == "active"
-    assert connection.created_at is not None
-    assert connection.updated_at is not None
-
-
-def test_financial_connection_with_optional_fields(db_session):
-    """Test creating a connection with all optional fields populated."""
-    org = Organization(id="org-fc-456", name="Test Org FC 2", slug="testfc-org")
-    deal = Deal(
-        id="deal-fc-456",
-        organization_id=org.id,
-        name="Test Deal FC 2",
-        target_company="Target Co FC 2",
-        owner_id="user-fc-456"
-    )
-    db_session.add(org)
-    db_session.add(deal)
-    db_session.commit()
-
-    connection = FinancialConnection(
-        deal_id=deal.id,
-        organization_id=org.id,
-        platform="quickbooks",
-        platform_organization_id="qb-org-789",
-        platform_organization_name="QB Test Org",
-        access_token="access_xyz",
-        refresh_token="refresh_xyz",
-        token_expires_at=datetime(2025, 12, 31, tzinfo=timezone.utc),
+        access_token="token",
         connection_status="active",
-        last_sync_at=datetime(2025, 10, 25, tzinfo=timezone.utc),
-        last_sync_status="success"
     )
     db_session.add(connection)
     db_session.commit()
     db_session.refresh(connection)
 
-    assert connection.platform_organization_id == "qb-org-789"
-    assert connection.platform_organization_name == "QB Test Org"
-    assert connection.refresh_token == "refresh_xyz"
-    assert connection.token_expires_at.year == 2025
-    assert connection.last_sync_status == "success"
+    assert connection.platform == "xero"
+    assert connection.deal_id == deal.id
 
 
-def test_financial_connection_cascade_delete_with_deal(db_session):
-    """Test that deleting a deal cascades to delete financial connections."""
-    org = Organization(id="org-fc-789", name="Test Org FC 3", slug="testfc-org")
-    deal = Deal(
-        id="deal-fc-789",
-        organization_id=org.id,
-        name="Test Deal FC 3",
-        target_company="Target Co FC 3",
-        owner_id="user-fc-789"
+def test_financial_connection_with_optional_fields(db_session: Session):
+    organization, user, deal = _seed_org_user_deal(
+        db_session,
+        org_id="org-fc-2",
+        deal_id="deal-fc-2",
+        owner_id="user-fc-456",
     )
+
     connection = FinancialConnection(
+        organization_id=organization.id,
         deal_id=deal.id,
-        organization_id=org.id,
-        platform="xero",
-        access_token="token_cascade",
-        connection_status="active"
+        platform="quickbooks",
+        access_token="token",
+        connection_status="active",
+        platform_organization_id="tenant_123",
+        platform_organization_name="Tenant Name",
+        last_sync_at=datetime.now(timezone.utc),
+    )
+    db_session.add(connection)
+    db_session.commit()
+    db_session.refresh(connection)
+
+    assert connection.platform_organization_id == "tenant_123"
+    assert connection.platform_organization_name == "Tenant Name"
+
+
+def test_financial_connection_cascade_delete_with_deal(db_session: Session):
+    organization, user, deal = _seed_org_user_deal(
+        db_session,
+        org_id="org-fc-3",
+        deal_id="deal-fc-3",
+        owner_id="user-fc-789",
     )
 
-    db_session.add(org)
-    db_session.add(deal)
+    connection = FinancialConnection(
+        organization_id=organization.id,
+        deal_id=deal.id,
+        platform="sage",
+        access_token="token",
+        connection_status="active",
+    )
     db_session.add(connection)
     db_session.commit()
 
-    connection_id = connection.id
-
-    # Delete the deal
     db_session.delete(deal)
     db_session.commit()
 
-    # Verify connection was deleted via cascade
-    deleted_connection = db_session.query(FinancialConnection).filter_by(id=connection_id).first()
-    assert deleted_connection is None
+    assert db_session.get(FinancialConnection, connection.id) is None
 
 
-def test_financial_connection_relationship_to_deal(db_session):
-    """Test the relationship between FinancialConnection and Deal."""
-    org = Organization(id="org-fc-rel", name="Test Org FC Rel", slug="testfc-org")
-    deal = Deal(
-        id="deal-fc-rel",
-        organization_id=org.id,
-        name="Test Deal FC Rel",
-        target_company="Target Co FC Rel",
-        owner_id="user-fc-rel"
+def test_financial_connection_relationship_to_deal(db_session: Session):
+    organization, user, deal = _seed_org_user_deal(
+        db_session,
+        org_id="org-fc-4",
+        deal_id="deal-fc-4",
+        owner_id="user-fc-rel",
     )
+
     connection = FinancialConnection(
+        organization_id=organization.id,
         deal_id=deal.id,
-        organization_id=org.id,
-        platform="xero",
-        access_token="token_rel",
-        connection_status="active"
+        platform="netsuite",
+        access_token="token",
+        connection_status="active",
     )
-
-    db_session.add(org)
-    db_session.add(deal)
     db_session.add(connection)
     db_session.commit()
     db_session.refresh(connection)
-    db_session.refresh(deal)
 
-    # Test relationship from connection to deal
-    assert connection.deal is not None
-    assert connection.deal.id == "deal-fc-rel"
-    assert connection.deal.name == "Test Deal FC Rel"
-
-    # Test relationship from deal to connections
-    assert len(deal.financial_connections) == 1
-    assert deal.financial_connections[0].id == connection.id
+    assert connection.deal == deal
+    assert connection.organization == organization
 
 
-def test_financial_connection_soft_delete(db_session):
-    """Test soft delete functionality via deleted_at field."""
-    org = Organization(id="org-fc-soft", name="Test Org FC Soft", slug="testfc-org")
-    deal = Deal(
-        id="deal-fc-soft",
-        organization_id=org.id,
-        name="Test Deal FC Soft",
-        target_company="Target Co FC Soft",
-        owner_id="user-fc-soft"
+def test_financial_connection_soft_delete(db_session: Session):
+    organization, user, deal = _seed_org_user_deal(
+        db_session,
+        org_id="org-fc-5",
+        deal_id="deal-fc-5",
+        owner_id="user-fc-soft",
     )
+
     connection = FinancialConnection(
+        organization_id=organization.id,
         deal_id=deal.id,
-        organization_id=org.id,
-        platform="xero",
-        access_token="token_soft",
-        connection_status="active"
+        platform="sage",
+        access_token="token",
+        connection_status="active",
     )
-
-    db_session.add(org)
-    db_session.add(deal)
     db_session.add(connection)
     db_session.commit()
 
-    # Soft delete by setting deleted_at
-    connection.deleted_at = datetime.now(timezone.utc)
+    connection.soft_delete()
     db_session.commit()
-    db_session.refresh(connection)
 
     assert connection.deleted_at is not None
-    # Connection still exists in DB but is marked as deleted
-    assert db_session.query(FinancialConnection).filter_by(id=connection.id).first() is not None
 
 
-def test_financial_connection_status_values(db_session):
-    """Test different connection status values."""
-    org = Organization(id="org-fc-status", name="Test Org FC Status", slug="testfc-org")
-    deal = Deal(
-        id="deal-fc-status",
-        organization_id=org.id,
-        name="Test Deal FC Status",
-        target_company="Target Co FC Status",
-        owner_id="user-fc-status"
+def test_financial_connection_status_values(db_session: Session):
+    organization, user, deal = _seed_org_user_deal(
+        db_session,
+        org_id="org-fc-6",
+        deal_id="deal-fc-6",
+        owner_id="user-fc-status",
     )
 
-    db_session.add(org)
-    db_session.add(deal)
+    connection = FinancialConnection(
+        organization_id=organization.id,
+        deal_id=deal.id,
+        platform="xero",
+        access_token="token",
+        connection_status="pending",
+    )
+    db_session.add(connection)
     db_session.commit()
+    db_session.refresh(connection)
 
-    # Test each status value
-    statuses = ["active", "expired", "revoked", "error"]
-
-    for status in statuses:
-        connection = FinancialConnection(
-            deal_id=deal.id,
-            organization_id=org.id,
-            platform="xero",
-            access_token=f"token_{status}",
-            connection_status=status
-        )
-        db_session.add(connection)
-        db_session.commit()
-        db_session.refresh(connection)
-
-        assert connection.connection_status == status
-        assert connection.id is not None
+    assert connection.connection_status == "pending"

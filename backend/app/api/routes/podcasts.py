@@ -43,8 +43,13 @@ async def get_feature_access(
     return {
         "feature": feature,
         "tier": tier.value,
+        "tier_label": tier.value.title(),
         "has_access": has_access,
         "required_tier": required_tier.value,
+        "required_tier_label": required_tier.value.title(),
+        "upgrade_required": not has_access,
+        "upgrade_message": None if has_access else f"Upgrade to {required_tier.value.title()} to access {feature}",
+        "upgrade_cta_url": None if has_access else "/pricing",
     }
 
 
