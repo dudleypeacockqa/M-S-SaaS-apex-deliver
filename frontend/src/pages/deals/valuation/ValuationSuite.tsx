@@ -54,7 +54,12 @@ const TabButton = ({
 )
 
 const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
-  const { data: valuations, isLoading } = useQuery({
+  const {
+    data: valuations,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['valuations', dealId],
     queryFn: () => listValuations(dealId),
   })
@@ -68,6 +73,27 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
           <div className={`${skeletonClass} w-full`}></div>
           <div className={`${skeletonClass} w-3/4`}></div>
         </div>
+      </div>
+    )
+  }
+
+  if (isError || !valuations || valuations.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-16" role="alert" aria-live="assertive">
+        <div className="rounded-full bg-red-100 p-3">
+          <span className="text-sm font-semibold text-red-600">Valuations unavailable</span>
+        </div>
+        <p className="max-w-md text-center text-sm text-gray-600">
+          We couldn’t load valuations for this deal. Please refresh to try again or create a new valuation to get
+          started.
+        </p>
+        <button
+          type="button"
+          onClick={() => refetch()}
+          className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700"
+        >
+          Retry
+        </button>
       </div>
     )
   }
@@ -126,7 +152,7 @@ const MonteCarloPanel = ({ dealId, valuationId }: { dealId: string; valuationId:
 
   const handleRun = () => {
     const payload: MonteCarloRequest = { iterations }
-    if (seed !== '') payload.seed = seed
+    if (seed !== '') payload.seed = Number(seed)
     mutate(payload)
   }
 
