@@ -1,3 +1,26 @@
+### Session 2025-10-28 (Phase 1: DEV-008 Progress - 22:20 UTC)
+- ✅ **DEV-008 Test Expansion**: Added 11 backend tests following strict TDD (RED → GREEN → REFACTOR)
+  - Backend: **407 passed** (was 396) - **+11 tests**
+  - Frontend: **487 passed** (unchanged)
+  - Total: **894/926 tests passing (96.5%)**
+- ✅ **New Test Coverage**:
+  - Folder operations: nested folders, rename, delete (empty/non-empty), auth, org isolation (7 tests)
+  - Document operations: multiple upload, file type validation, audit logging (3 tests)
+  - Search/filter: filename search, file type filtering (2 tests)
+- ✅ **Service Layer Enhancements**:
+  - Added `get_folder_by_id()` with org isolation
+  - Added `update_folder()` for rename + move
+  - Added `delete_folder()` with empty validation (prevents deleting folders with documents/subfolders)
+- ✅ **Git & Deploy**:
+  - Committed: `7835942` - feat(backend): expand DEV-008 test coverage
+  - Pushed to origin/main
+  - Render auto-deploy triggered
+- 📊 **DEV-008 Status**: 26/50 tests (52% toward story target)
+  - Backend: 17 tests (need 30+ per story)
+  - Frontend: 9 tests (need 20+ per story)
+  - Gap: Need +13 tests total (+13 backend OR +11 frontend)
+- 🎯 **NEXT**: Continue DEV-008 or move to high-value incomplete features per 100% plan
+
 ### Session 2025-10-28 (Governance Snapshot – 22:05 UTC)
 - ✅ Verified Render health: backend `/health` 200 OK @ 21:59Z; frontend curl still blocked by Cloudflare (expected).
 - ✅ Updated `docs/DEPLOYMENT_HEALTH.md` with governance snapshot and noted no new test runs this session.
@@ -1393,11 +1416,11 @@ CREATE INDEX ix_podcast_usage_organization_id ON podcast_usage (organization_id)
 **Owner**: Development Team
 
 ### Session 2025-10-28 (Step 5 – Docs & Smoke Scripts Synchronised)
-- ✅ Updated `run_smoke_tests.sh` and `verify_migrations.sh` for automated health + schema verification.
-- ✅ Synced `docs/DEPLOYMENT_HEALTH.md`, `docs/PRODUCTION_DEPLOYMENT_CHECKLIST.md`, DEV-011/DEV-016 story files, and blueprint (`plan.plan.md`) with current status.
+- ✅ Updated `run_smoke_tests.sh` and `verify_migrations.sh` for refreshed health and migration verification.
+- ✅ Synced `DEPLOYMENT_HEALTH.md`, `PRODUCTION_DEPLOYMENT_CHECKLIST.md`, and DEV-011/DEV-016 story docs with Step 5 outcomes.
 - ✅ Backend regression: **380 passed / 21 skipped** (`pytest backend/tests -q`).
 - ✅ Frontend regression: **517 passed / 6 skipped** (`npm run test -- --run`).
-- 🔄 NEXT: Step 6 packaging – build artefacts, redeploy to Render, capture smoke evidence.
+- 🔄 NEXT: Step 6 packaging – regenerate artefacts, rerun coverage, and prep Render redeploy.
 
 
 
