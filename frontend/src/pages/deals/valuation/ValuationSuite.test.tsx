@@ -12,10 +12,15 @@ vi.mock('../../../services/api/valuations', () => ({
   getValuation: vi.fn(),
   createValuation: vi.fn(),
   listScenarios: vi.fn(),
+  listComparableCompanies: vi.fn(),
+  listPrecedentTransactions: vi.fn(),
   getScenarioSummary: vi.fn(),
-  addComparable: vi.fn(),
-  addPrecedent: vi.fn(),
+  getComparableSummary: vi.fn(),
+  getPrecedentSummary: vi.fn(),
+  runMonteCarlo: vi.fn(),
   triggerExport: vi.fn(),
+  addComparableCompany: vi.fn(),
+  addPrecedentTransaction: vi.fn(),
 }))
 
 const renderSuite = (initialEntry = '/deals/deal-123/valuations/val-001') => {
@@ -40,6 +45,9 @@ describe('ValuationSuite RED tests', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(valuationApi.listValuations).mockResolvedValue([])
+    vi.mocked(valuationApi.listScenarios).mockResolvedValue([])
+    vi.mocked(valuationApi.listComparableCompanies).mockResolvedValue([])
+    vi.mocked(valuationApi.listPrecedentTransactions).mockResolvedValue([])
   })
 
   it('renders valuation layout shell', () => {
@@ -54,7 +62,6 @@ describe('ValuationSuite RED tests', () => {
     expect(screen.getByRole('status', { name: /loading/i })).toBeInTheDocument()
   })
 
-  // TODO: Add "Create New Valuation" form - component currently only displays existing valuations
   it('submits new valuation when form completed', async () => {
     const user = userEvent.setup()
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([])
@@ -62,9 +69,14 @@ describe('ValuationSuite RED tests', () => {
 
     renderSuite('/deals/deal-new/valuations/val-001')
 
-    await user.type(screen.getByLabelText(/discount rate/i), '12')
-    await user.type(screen.getByLabelText(/terminal cash flow/i), '1200000')
-    await user.click(screen.getByRole('button', { name: /save valuation/i }))
+    // Wait for the modal to appear after query resolves (empty valuations list)
+    const discountRateInput = await screen.findByLabelText(/discount rate/i)
+    const terminalCashFlowInput = await screen.findByLabelText(/terminal cash flow/i)
+    const saveButton = await screen.findByRole('button', { name: /save valuation/i })
+
+    await user.type(discountRateInput, '12')
+    await user.type(terminalCashFlowInput, '1200000')
+    await user.click(saveButton)
 
     await waitFor(() => {
       expect(valuationApi.createValuation).toHaveBeenCalled()

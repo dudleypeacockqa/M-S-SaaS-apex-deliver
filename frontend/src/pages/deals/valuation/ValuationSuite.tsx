@@ -11,6 +11,7 @@ import {
   getPrecedentSummary,
   runMonteCarlo,
   triggerExport,
+  createValuation,
 } from '../../../services/api/valuations'
 
 // Import types separately
@@ -22,6 +23,7 @@ import type {
 
 import { formatCurrency } from '../../../services/api/deals'
 import { Spinner as LoadingSpinner } from '../../../components/ui'
+import { CreateValuationModal } from '../../../components/valuation/CreateValuationModal'
 
 const skeletonClass = 'animate-pulse rounded bg-gray-200 h-4'
 
@@ -54,6 +56,8 @@ const TabButton = ({
 )
 
 const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+
   const {
     data: valuations,
     isLoading,
@@ -78,23 +82,19 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
   }
 
   if (isError || !valuations || valuations.length === 0) {
+    // If no valuations exist, show the create modal directly
     return (
-      <div className="flex flex-col items-center gap-4 py-16" role="alert" aria-live="assertive">
-        <div className="rounded-full bg-red-100 p-3">
-          <span className="text-sm font-semibold text-red-600">Valuations unavailable</span>
-        </div>
-        <p className="max-w-md text-center text-sm text-gray-600">
-          We couldn’t load valuations for this deal. Please refresh to try again or create a new valuation to get
-          started.
-        </p>
-        <button
-          type="button"
-          onClick={() => refetch()}
-          className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700"
-        >
-          Retry
-        </button>
-      </div>
+      <>
+        {/* Show modal directly when no valuations */}
+        <CreateValuationModal
+          dealId={dealId}
+          isOpen={true}
+          onClose={() => {
+            // On close, refetch to check if a valuation was created
+            refetch()
+          }}
+        />
+      </>
     )
   }
 
