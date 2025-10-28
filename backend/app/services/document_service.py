@@ -29,6 +29,7 @@ from app.schemas.document import (
     DocumentUploadResponse,
     FolderCreate,
     FolderResponse,
+    FolderUpdate,
     PermissionCreate,
     PermissionResponse,
 )
@@ -261,6 +262,96 @@ def list_folders(
         return responses
 
     return build_tree(None)
+
+
+def get_folder_by_id(
+    db: Session,
+    *,
+    folder_id: str,
+    organization_id: str,
+) -> FolderResponse | None:
+    """Get a single folder by ID with org isolation."""
+    folder = db.get(Folder, folder_id)
+    if folder is None or folder.organization_id != organization_id:
+        return None
+
+    # Count documents in this folder
+    doc_count = (
+        db.query(func.count(Document.id))
+        .filter(Document.folder_id == folder_id)
+        .scalar()
+    ) or 0
+
+    return _folder_to_response(folder, document_count=doc_count)
+
+
+def update_folder(
+    db: Session,
+    *,
+    folder: FolderResponse,
+    folder_data: FolderUpdate,
+) -> FolderResponse:
+    """Update folder name or move it to a different parent."""
+    # Get the actual folder model from DB
+    folder_model = db.get(Folder, str(folder.id))
+    if folder_model is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Folder not found")
+
+    # Update fields
+    if folder_data.name is not None:
+        folder_model.name = folder_data.name.strip()
+
+    if folder_data.parent_folder_id is not None:
+        folder_model.parent_folder_id = str(folder_data.parent_folder_id)
+
+    db.add(folder_model)
+    db.commit()
+    db.refresh(folder_model)
+
+    # Count documents for response
+    doc_count = (
+        db.query(func.count(Document.id))
+        .filter(Document.folder_id == folder_model.id)
+        .scalar()
+    ) or 0
+
+    return _folder_to_response(folder_model, document_count=doc_count)
+
+
+def delete_folder(
+    db: Session,
+    *,
+    folder: FolderResponse,
+) -> None:
+    """Delete a folder (must be empty - no documents or subfolders)."""
+    # Get the actual folder model from DB
+    folder_model = db.get(Folder, str(folder.id))
+    if folder_model is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Folder not found")
+
+    # Check for documents
+    doc_count = (
+        db.query(func.count(Document.id))
+        .filter(Document.folder_id == folder_model.id)
+        .scalar()
+    ) or 0
+
+    if doc_count > 0:
+        raise ValueError("Folder is not empty - contains documents")
+
+    # Check for subfolders
+    subfolder_count = (
+        db.query(func.count(Folder.id))
+        .filter(Folder.parent_folder_id == folder_model.id)
+        .scalar()
+    ) or 0
+
+    if subfolder_count > 0:
+        raise ValueError("Folder is not empty - contains subfolders")
+
+    # Delete the folder
+    db.delete(folder_model)
+    db.commit()
 
 
 def get_document_by_id(
