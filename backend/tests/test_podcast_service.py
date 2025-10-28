@@ -110,7 +110,12 @@ class TestPodcastService:
             {"time": 35.0, "text": "Summary"},
         ]
 
-        with patch("app.services.podcast_service.AsyncOpenAI") as mock_openai:
+        with patch(
+            "app.services.podcast_service.check_feature_access",
+            new_callable=AsyncMock,
+            create=True,
+        ) as mock_access, patch("app.services.podcast_service.AsyncOpenAI") as mock_openai:
+            mock_access.return_value = True
             mock_openai.return_value = await self._mock_transcription(segments)
 
             transcript = await podcast_service.transcribe_episode(
@@ -125,6 +130,9 @@ class TestPodcastService:
         assert transcript.transcript_text.startswith("This is a sample transcript")
         assert len(transcript.timestamps) == len(segments)
 
+        mock_access.assert_awaited_once()
+        assert mock_access.await_args.args == ("org-abc", "transcription_basic")
+
         refreshed = podcast_service.get_episode(
             db=db_session,
             episode_id=episode.id,
@@ -132,6 +140,31 @@ class TestPodcastService:
         )
         assert refreshed.status == "processing"
         assert refreshed.transcript is not None
+
+    @pytest.mark.asyncio
+    async def test_transcribe_episode_requires_entitlement(self, db_session: Session, audio_file: Path):
+        """Transcription should be blocked when organization lacks entitlement."""
+
+        episode = create_test_episode(db_session, organization_id="org-abc")
+
+        with patch(
+            "app.services.podcast_service.check_feature_access",
+            new_callable=AsyncMock,
+            create=True,
+        ) as mock_access, patch("app.services.podcast_service.AsyncOpenAI") as mock_openai:
+            mock_access.return_value = False
+
+            with pytest.raises(PermissionError):
+                await podcast_service.transcribe_episode(
+                    db=db_session,
+                    episode_id=episode.id,
+                    audio_file_path=str(audio_file),
+                    organization_id="org-abc",
+                )
+
+        mock_access.assert_awaited_once()
+        assert mock_access.await_args.args == ("org-abc", "transcription_basic")
+        mock_openai.assert_not_called()
 
     def test_get_episode_analytics_aggregates_platform_totals(self, db_session: Session):
         """Analytics should aggregate listens/downloads across platforms."""

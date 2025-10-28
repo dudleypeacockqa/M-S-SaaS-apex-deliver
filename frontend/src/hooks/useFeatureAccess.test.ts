@@ -36,6 +36,7 @@ describe('useFeatureAccess', () => {
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.hasAccess).toBe(false);
+    expect(result.current.tier).toBe('starter');
   });
 
   it('exposes access=true for professional tiers on podcast_audio', async () => {
@@ -74,12 +75,16 @@ describe('useFeatureAccess', () => {
   });
 
   it('supports disabled state for lazy evaluation', () => {
-    const { result } = renderHook(() => useFeatureAccess({ feature: 'podcast_audio', enabled: false }), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderHook(
+      () => useFeatureAccess({ feature: 'podcast_audio', enabled: false }),
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     expect(api.get).not.toHaveBeenCalled();
     expect(result.current.isLoading).toBe(false);
+    expect(result.current.tier).toBe('starter');
   });
 
   it('provides stable query key helper', () => {

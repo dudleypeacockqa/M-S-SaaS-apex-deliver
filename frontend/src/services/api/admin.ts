@@ -5,18 +5,7 @@
  * All endpoints require admin role.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-/**
- * Get authorization headers with Clerk JWT token
- */
-async function getAuthHeaders(): Promise<HeadersInit> {
-  // In production, this would get the token from Clerk
-  // For now, we'll implement a basic version
-  return {
-    'Content-Type': 'application/json',
-  };
-}
+import { apiClient } from './client'
 
 /**
  * Dashboard Metrics Types
@@ -133,15 +122,7 @@ export interface SystemHealth {
  * Dashboard API Functions
  */
 export async function getDashboardMetrics(): Promise<DashboardMetrics> {
-  const response = await fetch(`${API_BASE_URL}/api/admin/dashboard`, {
-    headers: await getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch dashboard metrics: ${response.statusText}`);
-  }
-
-  return response.json();
+  return apiClient.get<DashboardMetrics>('/api/admin/dashboard')
 }
 
 /**

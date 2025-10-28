@@ -408,3 +408,246 @@ class TestPodcastUsageEndpoint:
 
 
 
+
+
+class TestPodcastListEndpoint:
+    """Tests for GET /podcasts/episodes endpoint."""
+
+    def test_list_episodes_returns_organizations_episodes(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="professional")
+        user = create_user(role=UserRole.growth, organization_id=org.id)
+        
+        _override_user(user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.services.podcast_service.get_episodes"
+            ) as mock_get:
+                mock_feature.return_value = True
+                mock_get.return_value = []
+                
+                response = client.get("/podcasts/episodes")
+                
+            assert response.status_code == status.HTTP_200_OK
+            mock_get.assert_called_once()
+            assert mock_get.call_args.kwargs["organization_id"] == org.id
+        finally:
+            _clear_override()
+    
+    def test_list_episodes_filters_by_status(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="professional")
+        user = create_user(role=UserRole.growth, organization_id=org.id)
+        
+        _override_user(user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.services.podcast_service.get_episodes"
+            ) as mock_get:
+                mock_feature.return_value = True
+                mock_get.return_value = []
+                
+                response = client.get("/podcasts/episodes?status=published")
+                
+            assert response.status_code == status.HTTP_200_OK
+            assert mock_get.call_args.kwargs["status"] == "published"
+        finally:
+            _clear_override()
+
+
+class TestPodcastGetSingleEndpoint:
+    """Tests for GET /podcasts/episodes/{episode_id} endpoint."""
+
+    def test_get_single_episode_returns_episode(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="professional")
+        user = create_user(role=UserRole.growth, organization_id=org.id)
+        episode_id = "ep-123"
+        
+        _override_user(user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.services.podcast_service.get_episode"
+            ) as mock_get:
+                mock_feature.return_value = True
+                mock_episode = SimpleNamespace(
+                    id=episode_id,
+                    title="Test Episode",
+                    organization_id=org.id,
+                    description="Test Description",
+                    episode_number=1,
+                    season_number=1,
+                    audio_file_url="https://example.com/audio.mp3",
+                    video_file_url=None,
+                    status="draft",
+                    created_by="user-123",
+                    created_at="2025-10-28T00:00:00Z",
+                )
+                mock_get.return_value = mock_episode
+                
+                response = client.get(f"/podcasts/episodes/{episode_id}")
+                
+            assert response.status_code == status.HTTP_200_OK
+            mock_get.assert_called_once_with(
+                db=ANY,
+                episode_id=episode_id,
+                organization_id=org.id,
+            )
+        finally:
+            _clear_override()
+    
+    def test_get_single_episode_returns_404_when_not_found(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="professional")
+        user = create_user(role=UserRole.growth, organization_id=org.id)
+        
+        _override_user(user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.services.podcast_service.get_episode"
+            ) as mock_get:
+                mock_feature.return_value = True
+                mock_get.return_value = None
+                
+                response = client.get("/podcasts/episodes/nonexistent")
+                
+            assert response.status_code == status.HTTP_404_NOT_FOUND
+        finally:
+            _clear_override()
+
+
+class TestPodcastUpdateEndpoint:
+    """Tests for PUT /podcasts/episodes/{episode_id} endpoint."""
+
+    def test_update_episode_modifies_fields(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="professional")
+        user = create_user(role=UserRole.growth, organization_id=org.id)
+        episode_id = "ep-123"
+        
+        _override_user(user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.services.podcast_service.update_episode"
+            ) as mock_update:
+                mock_feature.return_value = True
+                mock_episode = SimpleNamespace(
+                    id=episode_id,
+                    title="Updated Title",
+                    organization_id=org.id,
+                    description="New description",
+                    episode_number=1,
+                    season_number=1,
+                    audio_file_url="https://example.com/audio.mp3",
+                    video_file_url=None,
+                    status="draft",
+                    created_by="user-123",
+                    created_at="2025-10-28T00:00:00Z",
+                )
+                mock_update.return_value = mock_episode
+                
+                payload = {"title": "Updated Title", "description": "New description"}
+                response = client.put(f"/podcasts/episodes/{episode_id}", json=payload)
+                
+            assert response.status_code == status.HTTP_200_OK
+            mock_update.assert_called_once()
+            assert mock_update.call_args.kwargs["title"] == "Updated Title"
+        finally:
+            _clear_override()
+
+
+class TestPodcastDeleteEndpoint:
+    """Tests for DELETE /podcasts/episodes/{episode_id} endpoint."""
+
+    def test_delete_episode_removes_episode(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="professional")
+        user = create_user(role=UserRole.growth, organization_id=org.id)
+        episode_id = "ep-123"
+        
+        _override_user(user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.services.podcast_service.delete_episode"
+            ) as mock_delete:
+                mock_feature.return_value = True
+                mock_delete.return_value = True
+                
+                response = client.delete(f"/podcasts/episodes/{episode_id}")
+                
+            assert response.status_code == status.HTTP_204_NO_CONTENT
+            mock_delete.assert_called_once_with(
+                db=ANY,
+                episode_id=episode_id,
+                organization_id=org.id,
+            )
+        finally:
+            _clear_override()
+    
+    def test_delete_episode_returns_404_when_not_found(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ) -> None:
+        org = create_organization(subscription_tier="professional")
+        user = create_user(role=UserRole.growth, organization_id=org.id)
+        
+        _override_user(user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.services.podcast_service.delete_episode"
+            ) as mock_delete:
+                mock_feature.return_value = True
+                mock_delete.return_value = False
+                
+                response = client.delete("/podcasts/episodes/nonexistent")
+                
+            assert response.status_code == status.HTTP_404_NOT_FOUND
+        finally:
+            _clear_override()

@@ -19,6 +19,7 @@ except ModuleNotFoundError:
 
 from app.core.config import settings
 from app.models.podcast import PodcastAnalytics, PodcastEpisode, PodcastTranscript
+from app.services.entitlement_service import check_feature_access, get_required_tier
 
 
 def _base_episode_query() -> Select[PodcastEpisode]:
@@ -158,6 +159,13 @@ async def transcribe_episode(
     episode = get_episode(db=db, episode_id=episode_id, organization_id=organization_id)
     if episode is None:
         raise ValueError(f"Episode {episode_id} not found")
+
+    has_access = await check_feature_access(organization_id, "transcription_basic")
+    if not has_access:
+        required_tier = get_required_tier("transcription_basic")
+        raise PermissionError(
+            f"{required_tier.value.title()} tier required to unlock transcription features."
+        )
 
     api_key = settings.openai_api_key or os.getenv("OPENAI_API_KEY")
     if AsyncOpenAI is None:

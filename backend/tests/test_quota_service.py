@@ -9,335 +9,164 @@ Tests monthly episode limits based on subscription tiers:
 Following TDD: RED → GREEN → REFACTOR
 """
 
-import pytest
-
-
-
+import asyncio
 from datetime import datetime, timedelta
+from functools import wraps
+from unittest.mock import AsyncMock, Mock, patch
 
-
-
-from unittest.mock import patch, AsyncMock, Mock
-
-
-
+import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
-
-
-
-
-
+from app.core.subscription import SubscriptionTier
 from app.services.quota_service import (
+    QuotaExceededError,
     check_episode_quota,
-    get_remaining_quota,
-    increment_episode_count,
     get_monthly_usage,
     get_quota_summary,
-    QuotaExceededError,
+    get_remaining_quota,
+    increment_episode_count,
 )
 
 
+def async_test(fn):
+    """Simple decorator to run coroutine tests without pytest-asyncio."""
 
-from app.core.subscription import SubscriptionTier
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        return asyncio.run(fn(*args, **kwargs))
+
+    return wrapper
 
 
-
-
-
-
-
-
-
+TIER_SUMMARY = {
+    SubscriptionTier.STARTER: 0,
+    SubscriptionTier.PROFESSIONAL: 10,
+    SubscriptionTier.PREMIUM: -1,
+    SubscriptionTier.ENTERPRISE: -1,
+}
 
 
 class TestCheckEpisodeQuota:
-
-
-
     """Tests for check_episode_quota function."""
 
-
-
-
-
-
-
-    @pytest.mark.asyncio
-
-
-
+    @async_test
     async def test_professional_tier_allows_creation_within_quota(self):
-
-
-
         """Test Professional tier (10/month) allows episode creation when under limit."""
-
-
 
         org_id = "org_professional"
 
-
-
-
-
-
-
         with patch('app.services.quota_service.get_organization_tier', new_callable=AsyncMock) as mock_tier:
-
-
 
             with patch('app.services.quota_service.get_monthly_usage', new_callable=AsyncMock) as mock_usage:
 
-
-
                 mock_tier.return_value = SubscriptionTier.PROFESSIONAL
 
-
-
                 mock_usage.return_value = 5  # Under 10 limit
-
-
-
-
-
 
 
                 # Should not raise exception
 
 
-
                 can_create = await check_episode_quota(org_id)
-
 
 
                 assert can_create is True
 
 
 
-
-
-
-
-    @pytest.mark.asyncio
-
-
-
+    @async_test
     async def test_professional_tier_blocks_creation_at_quota_limit(self, mock_db_session):
-
-
-
         """Test Professional tier blocks episode creation at 10 episodes."""
-
-
 
         org_id = "org_professional"
 
-
-
-
-
-
-
         with patch('app.services.quota_service.get_organization_tier', new_callable=AsyncMock) as mock_tier:
-
-
 
             with patch('app.services.quota_service.get_monthly_usage', new_callable=AsyncMock) as mock_usage:
 
-
-
                 mock_tier.return_value = SubscriptionTier.PROFESSIONAL
 
-
-
                 mock_usage.return_value = 10  # At limit
-
-
-
-
-
 
 
                 with pytest.raises(QuotaExceededError) as exc_info:
 
 
-
                     await check_episode_quota(org_id, mock_db_session)
 
 
-
-
-
-
-
                 assert "exceeded" in str(exc_info.value).lower()
-
 
 
                 assert "10" in str(exc_info.value)  # Mentions limit
 
 
 
-
-
-
-
-    @pytest.mark.asyncio
-
-
-
+    @async_test
     async def test_premium_tier_unlimited_never_blocks(self):
-
-
-
         """Test Premium tier has unlimited episodes (never blocks)."""
-
-
 
         org_id = "org_premium"
 
-
-
-
-
-
-
         with patch('app.services.quota_service.get_organization_tier', new_callable=AsyncMock) as mock_tier:
-
-
 
             with patch('app.services.quota_service.get_monthly_usage', new_callable=AsyncMock) as mock_usage:
 
-
-
                 mock_tier.return_value = SubscriptionTier.PREMIUM
-
-
 
                 mock_usage.return_value = 999  # Very high usage
 
 
-
-
-
-
-
                 # Should never raise exception
 
 
-
                 can_create = await check_episode_quota(org_id)
-
 
 
                 assert can_create is True
 
 
 
-
-
-
-
-    @pytest.mark.asyncio
-
-
-
+    @async_test
     async def test_enterprise_tier_unlimited_never_blocks(self):
-
-
-
         """Test Enterprise tier has unlimited episodes (never blocks)."""
-
-
 
         org_id = "org_enterprise"
 
-
-
-
-
-
-
         with patch('app.services.quota_service.get_organization_tier', new_callable=AsyncMock) as mock_tier:
-
-
 
             with patch('app.services.quota_service.get_monthly_usage', new_callable=AsyncMock) as mock_usage:
 
-
-
                 mock_tier.return_value = SubscriptionTier.ENTERPRISE
-
-
 
                 mock_usage.return_value = 9999  # Extremely high usage
 
 
-
-
-
-
-
                 # Should never raise exception
 
 
-
                 can_create = await check_episode_quota(org_id)
-
 
 
                 assert can_create is True
 
 
 
-
-
-
-
-    @pytest.mark.asyncio
-
-
-
+    @async_test
     async def test_starter_tier_blocks_all_podcast_creation(self):
-
-
-
         """Test Starter tier has no podcast access (0 quota)."""
-
-
 
         org_id = "org_starter"
 
-
-
-
-
-
-
         with patch('app.services.quota_service.get_organization_tier', new_callable=AsyncMock) as mock_tier:
 
-
-
             mock_tier.return_value = SubscriptionTier.STARTER
-
-
-
-
-
 
 
             with pytest.raises(QuotaExceededError) as exc_info:
 
 
-
                 await check_episode_quota(org_id)
-
-
-
-
-
 
 
             assert "podcast access" in str(exc_info.value).lower()
@@ -364,7 +193,7 @@ class TestGetRemainingQuota:
 
 
 
-    @pytest.mark.asyncio
+    @async_test
 
 
 
@@ -416,7 +245,7 @@ class TestGetRemainingQuota:
 
 
 
-    @pytest.mark.asyncio
+    @async_test
 
 
 
@@ -464,7 +293,7 @@ class TestGetRemainingQuota:
 
 
 
-    @pytest.mark.asyncio
+    @async_test
 
 
 
@@ -532,7 +361,7 @@ class TestIncrementEpisodeCount:
 
 
 
-    @pytest.mark.asyncio
+    @async_test
 
 
 
@@ -624,7 +453,7 @@ class TestIncrementEpisodeCount:
 
 
 
-    @pytest.mark.asyncio
+    @async_test
 
 
 
@@ -688,7 +517,7 @@ class TestIncrementEpisodeCount:
 
 
 
-    @pytest.mark.asyncio
+    @async_test
 
 
 
@@ -768,7 +597,7 @@ class TestGetMonthlyUsage:
 
 
 
-    @pytest.mark.asyncio
+    @async_test
 
 
 
@@ -812,7 +641,7 @@ class TestGetMonthlyUsage:
 
 
 
-    @pytest.mark.asyncio
+    @async_test
 
 
 
@@ -856,7 +685,7 @@ class TestGetMonthlyUsage:
 
 
 
-    @pytest.mark.asyncio
+    @async_test
 
 
 
@@ -968,7 +797,7 @@ class TestQuotaExceededError:
 
 
 class TestGetQuotaSummary:
-    @pytest.mark.asyncio
+    @async_test
     async def test_returns_professional_summary(self, mock_db_session):
         org_id = "org_professional"
 
@@ -995,7 +824,7 @@ class TestGetQuotaSummary:
         assert summary.is_unlimited is False
         assert "-" in summary.period
 
-    @pytest.mark.asyncio
+    @async_test
     async def test_returns_unlimited_summary(self, mock_db_session):
         org_id = "org_premium"
 

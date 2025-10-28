@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import require_feature
@@ -107,3 +107,104 @@ async def _increment_episode_usage(organization_id: str, db: Session) -> None:
         logger.exception(
             "Unexpected error incrementing podcast quota for organization %s", organization_id
         )
+
+
+@router.get(
+    "/episodes",
+    response_model=list[PodcastEpisodeResponse],
+)
+async def list_podcast_episodes(
+    current_user: User = Depends(require_feature("podcast_audio")),
+    db: Session = Depends(get_db),
+    status: str | None = None,
+    limit: int = 50,
+) -> list[PodcastEpisodeResponse]:
+    """List all podcast episodes for the current organization."""
+
+    episodes = podcast_service.get_episodes(
+        db=db,
+        organization_id=current_user.organization_id,
+        status=status,
+        limit=limit,
+    )
+    return [PodcastEpisodeResponse.model_validate(ep) for ep in episodes]
+
+
+@router.get(
+    "/episodes/{episode_id}",
+    response_model=PodcastEpisodeResponse,
+)
+async def get_podcast_episode(
+    episode_id: str,
+    current_user: User = Depends(require_feature("podcast_audio")),
+    db: Session = Depends(get_db),
+) -> PodcastEpisodeResponse:
+    """Get a single podcast episode by ID."""
+
+    episode = podcast_service.get_episode(
+        db=db,
+        episode_id=episode_id,
+        organization_id=current_user.organization_id,
+    )
+    if episode is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Episode {episode_id} not found",
+        )
+    return PodcastEpisodeResponse.model_validate(episode)
+
+
+@router.put(
+    "/episodes/{episode_id}",
+    response_model=PodcastEpisodeResponse,
+)
+async def update_podcast_episode(
+    episode_id: str,
+    payload: dict,
+    current_user: User = Depends(require_feature("podcast_audio")),
+    db: Session = Depends(get_db),
+) -> PodcastEpisodeResponse:
+    """Update a podcast episode's metadata."""
+
+    try:
+        episode = podcast_service.update_episode(
+            db=db,
+            episode_id=episode_id,
+            organization_id=current_user.organization_id,
+            title=payload.get("title"),
+            description=payload.get("description"),
+            show_notes=payload.get("show_notes"),
+            status=payload.get("status"),
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(exc),
+        ) from exc
+
+    return PodcastEpisodeResponse.model_validate(episode)
+
+
+@router.delete(
+    "/episodes/{episode_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+)
+async def delete_podcast_episode(
+    episode_id: str,
+    current_user: User = Depends(require_feature("podcast_audio")),
+    db: Session = Depends(get_db),
+):
+    """Delete a podcast episode."""
+
+    deleted = podcast_service.delete_episode(
+        db=db,
+        episode_id=episode_id,
+        organization_id=current_user.organization_id,
+    )
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Episode {episode_id} not found",
+        )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
