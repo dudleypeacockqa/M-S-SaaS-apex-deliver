@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from typing import Callable
+import logging
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -11,6 +12,13 @@ from app.core.security import AuthError, decode_clerk_jwt
 from app.db.session import get_db
 from app.models.user import User, UserRole, get_role_level
 from app.services.user_service import get_user_by_clerk_id
+from app.services.entitlement_service import (
+    check_feature_access,
+    get_required_tier,
+    get_feature_upgrade_message,
+)
+
+logger = logging.getLogger(__name__)
 
 http_bearer = HTTPBearer(auto_error=False)
 
@@ -131,3 +139,83 @@ def require_min_role(minimum_role: UserRole) -> Callable:
         return current_user
 
     return permission_checker
+
+
+def require_feature(feature: str) -> Callable:
+    """
+    FastAPI dependency that enforces subscription tier-based feature access.
+
+    Returns 403 with upgrade guidance if user's tier is insufficient for the feature.
+
+    Args:
+        feature: Feature identifier (e.g., "podcast_audio", "youtube_integration")
+
+    Returns:
+        Dependency function that checks feature access and returns the user
+
+    Raises:
+        HTTPException: 403 if user's tier lacks access to the feature
+
+    Example:
+        >>> @router.post("/episodes")
+        >>> async def create_episode(
+        ...     current_user: User = Depends(require_feature("podcast_audio"))
+        ... ):
+        ...     # Only Professional+ users reach here
+        ...     return await podcast_service.create_episode(...)
+
+    Headers in 403 response:
+        - X-Required-Tier: Minimum tier needed (e.g., "professional")
+        - X-Upgrade-URL: URL to upgrade page (e.g., "/pricing")
+        - X-Feature-Locked: The feature that was locked
+    """
+    async def check_access(
+        current_user: User = Depends(get_current_user)
+    ) -> User:
+        # Check if user's organization has access to the feature
+        has_access = await check_feature_access(
+            current_user.organization_id,
+            feature
+        )
+
+        if not has_access:
+            # Get required tier and upgrade message
+            required_tier = get_required_tier(feature)
+
+            # Try to get current tier from user model for better messaging
+            # If user doesn't have subscription_tier attribute, pass None
+            current_tier = getattr(current_user, 'subscription_tier', None)
+
+            # Get user-friendly upgrade message
+            if current_tier:
+                upgrade_message = get_feature_upgrade_message(feature, current_tier)
+            else:
+                # Fallback message if tier not available
+                upgrade_message = f"Upgrade to {required_tier.value.title()} tier to unlock this feature."
+
+            # Log blocked request for analytics
+            logger.warning(
+                f"Feature access blocked: user_id={current_user.id}, "
+                f"org_id={current_user.organization_id}, feature={feature}, "
+                f"required_tier={required_tier.value}"
+            )
+
+            # Return 403 with upgrade guidance
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=upgrade_message,
+                headers={
+                    "X-Required-Tier": required_tier.value,
+                    "X-Upgrade-URL": "/pricing",
+                    "X-Feature-Locked": feature,
+                }
+            )
+
+        # Access granted - log for debugging
+        logger.debug(
+            f"Feature access granted: user_id={current_user.id}, feature={feature}"
+        )
+
+        return current_user
+
+    return check_access
