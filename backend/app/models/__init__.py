@@ -22,6 +22,7 @@ from .valuation import (
 )
 from .task import DealTask, TaskTemplate, TaskAutomationRule, TaskAutomationLog
 from .podcast import PodcastEpisode, PodcastTranscript, PodcastAnalytics
+from .podcast_usage import PodcastUsage
 
 __all__ = [
     "User",
@@ -54,4 +55,5 @@ __all__ = [
     "PodcastEpisode",
     "PodcastTranscript",
     "PodcastAnalytics",
+    "PodcastUsage",
 ]
