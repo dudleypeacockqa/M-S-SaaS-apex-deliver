@@ -10,14 +10,18 @@
  */
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { FeatureGate } from '../../components/podcast/FeatureGate';
 import {
   getQuotaSummary,
   listEpisodes,
+  publishEpisodeToYouTube,
   type PodcastEpisode,
   type QuotaSummary,
 } from '../../services/api/podcasts';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
+
+type FeatureAccessState = ReturnType<typeof useFeatureAccess>;
 
 export function PodcastStudio() {
   return (
@@ -45,6 +49,8 @@ function PodcastStudioContent() {
     queryKey: ['podcastEpisodes'],
     queryFn: () => listEpisodes(),
   });
+
+  const youtubeAccess = useFeatureAccess({ feature: 'youtube_integration' });
 
   const isQuotaExceeded = Boolean(
     quota && !quota.isUnlimited && (quota.remaining ?? 0) <= 0,
@@ -119,7 +125,7 @@ function PodcastStudioContent() {
       </div>
 
       {/* Episodes List */}
-      <EpisodesList episodes={episodes} />
+      <EpisodesList episodes={episodes} youtubeAccess={youtubeAccess} />
     </div>
   );
 }
@@ -181,7 +187,13 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
   );
 }
 
-function EpisodesList({ episodes }: { episodes: PodcastEpisode[] }) {
+function EpisodesList({
+  episodes,
+  youtubeAccess,
+}: {
+  episodes: PodcastEpisode[];
+  youtubeAccess: FeatureAccessState;
+}) {
   if (episodes.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
@@ -210,18 +222,45 @@ function EpisodesList({ episodes }: { episodes: PodcastEpisode[] }) {
     <div className="bg-white shadow overflow-hidden sm:rounded-md">
       <ul className="divide-y divide-gray-200">
         {episodes.map((episode) => (
-          <EpisodeListItem key={episode.id} episode={episode} />
+          <EpisodeListItem key={episode.id} episode={episode} youtubeAccess={youtubeAccess} />
         ))}
       </ul>
     </div>
   );
 }
 
-function EpisodeListItem({ episode }: { episode: PodcastEpisode }) {
+function EpisodeListItem({
+  episode,
+  youtubeAccess,
+}: {
+  episode: PodcastEpisode;
+  youtubeAccess: FeatureAccessState;
+}) {
   const statusColors = {
     draft: 'bg-yellow-100 text-yellow-800',
     published: 'bg-green-100 text-green-800',
     archived: 'bg-gray-100 text-gray-800',
+  };
+
+  const [youtubeSuccessMessage, setYoutubeSuccessMessage] = React.useState<string | null>(null);
+  const [youtubeErrorMessage, setYoutubeErrorMessage] = React.useState<string | null>(null);
+
+  const youtubeMutation = useMutation({
+    mutationFn: () => publishEpisodeToYouTube(episode.id),
+    onSuccess: () => {
+      setYoutubeErrorMessage(null);
+      setYoutubeSuccessMessage('Published to YouTube');
+    },
+    onError: () => {
+      setYoutubeSuccessMessage(null);
+      setYoutubeErrorMessage('Failed to publish to YouTube. Please try again.');
+    },
+  });
+
+  const handlePublish = () => {
+    setYoutubeSuccessMessage(null);
+    setYoutubeErrorMessage(null);
+    youtubeMutation.mutate();
   };
 
   return (
@@ -268,6 +307,46 @@ function EpisodeListItem({ episode }: { episode: PodcastEpisode }) {
             >
               Edit
             </button>
+            {episode.video_file_url && (
+              <div className="flex flex-col items-end gap-1">
+                {youtubeAccess.isLoading ? (
+                  <span className="text-xs text-gray-500" role="status">
+                    Checking YouTube access…
+                  </span>
+                ) : youtubeAccess.hasAccess ? (
+                  <button
+                    type="button"
+                    onClick={handlePublish}
+                    disabled={youtubeMutation.isPending}
+                    className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {youtubeMutation.isPending ? 'Publishing…' : 'Publish to YouTube'}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-500 bg-white cursor-not-allowed"
+                    title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
+                  >
+                    Upgrade for YouTube
+                  </button>
+                )}
+                {youtubeAccess.upgradeRequired && !youtubeAccess.hasAccess && youtubeAccess.upgradeMessage && (
+                  <p className="text-xs text-indigo-700 text-right">{youtubeAccess.upgradeMessage}</p>
+                )}
+                {youtubeSuccessMessage && (
+                  <p className="text-xs text-emerald-600" role="status">
+                    {youtubeSuccessMessage}
+                  </p>
+                )}
+                {youtubeErrorMessage && (
+                  <p className="text-xs text-red-600" role="alert">
+                    {youtubeErrorMessage}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

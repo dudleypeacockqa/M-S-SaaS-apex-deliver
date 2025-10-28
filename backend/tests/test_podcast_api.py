@@ -280,6 +280,7 @@ class TestPodcastUsageEndpoint:
                     is_unlimited=False,
                     period=expected_period,
                     tier_label="Professional",
+                    quota_state="normal",
                     warning_status=None,
                     warning_message=None,
                     upgrade_required=False,
@@ -313,6 +314,8 @@ class TestPodcastUsageEndpoint:
                 "upgrade_message": None,
                 "upgrade_cta_url": None,
             }
+            assert "X-Podcast-Quota-Warning" not in response.headers
+            assert "X-Podcast-Upgrade-Required" not in response.headers
         finally:
             _clear_override()
 
@@ -350,6 +353,7 @@ class TestPodcastUsageEndpoint:
                     is_unlimited=True,
                     period=expected_period,
                     tier_label="Premium",
+                    quota_state="normal",
                     warning_status=None,
                     warning_message=None,
                     upgrade_required=False,
@@ -383,6 +387,8 @@ class TestPodcastUsageEndpoint:
                 "upgrade_message": None,
                 "upgrade_cta_url": None,
             }
+            assert "X-Podcast-Quota-Warning" not in response.headers
+            assert "X-Podcast-Upgrade-Required" not in response.headers
         finally:
             _clear_override()
 
@@ -405,13 +411,12 @@ class TestPodcastUsageEndpoint:
             ) as mock_required, patch(
                 "app.api.dependencies.auth.get_feature_upgrade_message"
             ) as mock_message, patch(
-                "app.core.subscription.get_organization_tier",
+                "app.api.routes.podcasts.subscription.get_organization_tier",
                 new_callable=AsyncMock,
             ) as mock_tier, patch(
-                "app.services.quota_service.get_quota_summary",
+                "app.api.routes.podcasts.get_quota_summary",
                 new_callable=AsyncMock,
             ) as mock_summary:
-                mock_tier.return_value = SubscriptionTier.STARTER
                 mock_feature.return_value = False
                 mock_required.return_value = SubscriptionTier.PROFESSIONAL
                 mock_message.return_value = (
@@ -425,6 +430,110 @@ class TestPodcastUsageEndpoint:
             assert "Upgrade" in response.json()["detail"]
             mock_summary.assert_not_awaited()
             mock_tier.assert_not_called()
+        finally:
+            _clear_override()
+
+    def test_usage_endpoint_sets_warning_headers_when_near_limit(
+        self,
+        client,
+    ) -> None:
+        organization_id = "org_warning"
+        user = SimpleNamespace(id="user-warning", organization_id=organization_id)
+
+        _override_user(user)
+        expected_period = datetime.utcnow().strftime("%Y-%m")
+
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.subscription.get_organization_tier",
+                new_callable=AsyncMock,
+            ) as mock_tier, patch(
+                "app.api.routes.podcasts.get_quota_summary",
+                new_callable=AsyncMock,
+            ) as mock_summary:
+                mock_feature.return_value = True
+                mock_tier.return_value = SubscriptionTier.PROFESSIONAL
+                mock_summary.return_value = PodcastQuotaSummary(
+                    tier=SubscriptionTier.PROFESSIONAL.value,
+                    limit=10,
+                    remaining=2,
+                    used=8,
+                    is_unlimited=False,
+                    period=expected_period,
+                    tier_label="Professional",
+                    quota_state="warning",
+                    warning_status="warning",
+                    warning_message="80% of monthly quota used.",
+                    upgrade_required=False,
+                    upgrade_message=None,
+                    upgrade_cta_url=None,
+                )
+
+                response = client.get("/api/podcasts/usage")
+
+            assert response.status_code == status.HTTP_200_OK
+            assert response.headers["X-Podcast-Quota-Warning"] == "warning"
+            assert response.headers["X-Podcast-Quota-Warning-Message"] == "80% of monthly quota used."
+            assert "X-Podcast-Upgrade-Required" not in response.headers
+        finally:
+            _clear_override()
+
+    def test_usage_endpoint_sets_upgrade_headers_when_quota_exceeded(
+        self,
+        client,
+    ) -> None:
+        organization_id = "org_upgrade"
+        user = SimpleNamespace(id="user-upgrade", organization_id=organization_id)
+
+        _override_user(user)
+        expected_period = datetime.utcnow().strftime("%Y-%m")
+
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.subscription.get_organization_tier",
+                new_callable=AsyncMock,
+            ) as mock_tier, patch(
+                "app.api.routes.podcasts.get_quota_summary",
+                new_callable=AsyncMock,
+            ) as mock_summary:
+                mock_feature.return_value = True
+                mock_tier.return_value = SubscriptionTier.PROFESSIONAL
+                mock_summary.return_value = PodcastQuotaSummary(
+                    tier=SubscriptionTier.PROFESSIONAL.value,
+                    limit=10,
+                    remaining=0,
+                    used=10,
+                    is_unlimited=False,
+                    period=expected_period,
+                    tier_label="Professional",
+                    quota_state="critical",
+                    warning_status="critical",
+                    warning_message="Monthly quota exceeded.",
+                    upgrade_required=True,
+                    upgrade_message="Upgrade to Premium tier for unlimited episodes.",
+                    upgrade_cta_url="/pricing",
+                )
+
+                response = client.get("/api/podcasts/usage")
+
+            assert response.status_code == status.HTTP_200_OK
+            assert response.headers["X-Podcast-Quota-Warning"] == "critical"
+            assert (
+                response.headers["X-Podcast-Quota-Warning-Message"]
+                == "Monthly quota exceeded."
+            )
+            assert response.headers["X-Podcast-Upgrade-Required"] == "true"
+            assert (
+                response.headers["X-Podcast-Upgrade-Message"]
+                == "Upgrade to Premium tier for unlimited episodes."
+            )
+            assert response.headers["X-Podcast-Upgrade-CTA"] == "/pricing"
         finally:
             _clear_override()
 

@@ -48,6 +48,16 @@ async def get_feature_access(
     tier_label = get_tier_label(tier)
     required_tier_label = get_tier_label(required_tier)
     upgrade_required = not has_access
+    upgrade_message = (
+        None
+        if not upgrade_required
+        else get_feature_upgrade_message(feature, tier)
+    )
+    upgrade_cta_url = (
+        None
+        if not upgrade_required
+        else get_feature_upgrade_cta(feature)
+    )
 
     return {
         "feature": feature,
@@ -57,12 +67,8 @@ async def get_feature_access(
         "required_tier": required_tier.value,
         "required_tier_label": required_tier_label,
         "upgrade_required": upgrade_required,
-        "upgrade_message": None
-        if not upgrade_required
-        else get_feature_upgrade_message(feature, tier),
-        "upgrade_cta_url": None
-        if not upgrade_required
-        else get_feature_upgrade_cta(feature),
+        "upgrade_message": upgrade_message,
+        "upgrade_cta_url": upgrade_cta_url,
     }
 
 
@@ -125,6 +131,7 @@ async def create_podcast_episode(
     response_model=PodcastQuotaSummary,
 )
 async def get_podcast_usage_summary(
+    response: Response,
     current_user: User = Depends(require_feature("podcast_audio")),
     db: Session = Depends(get_db),
 ) -> PodcastQuotaSummary:
@@ -132,7 +139,20 @@ async def get_podcast_usage_summary(
 
     organization_id = current_user.organization_id
     tier = await subscription.get_organization_tier(organization_id)
-    return await get_quota_summary(organization_id=organization_id, tier=tier, db=db)
+    summary = await get_quota_summary(organization_id=organization_id, tier=tier, db=db)
+
+    if summary.warning_status:
+        response.headers["X-Podcast-Quota-Warning"] = summary.warning_status
+        if summary.warning_message:
+            response.headers["X-Podcast-Quota-Warning-Message"] = summary.warning_message
+    if summary.upgrade_required:
+        response.headers["X-Podcast-Upgrade-Required"] = "true"
+        if summary.upgrade_message:
+            response.headers["X-Podcast-Upgrade-Message"] = summary.upgrade_message
+        if summary.upgrade_cta_url:
+            response.headers["X-Podcast-Upgrade-CTA"] = summary.upgrade_cta_url
+
+    return summary
 
 
 async def _increment_episode_usage(organization_id: str, db: Session) -> None:

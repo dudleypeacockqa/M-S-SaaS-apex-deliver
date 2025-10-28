@@ -26,6 +26,7 @@ vi.mock('../../services/api/podcasts', () => ({
   createEpisode: vi.fn(),
   updateEpisode: vi.fn(),
   deleteEpisode: vi.fn(),
+  publishEpisodeToYouTube: vi.fn(),
 }));
 
 const createWrapper = () => {
@@ -171,6 +172,34 @@ describe('PodcastStudio', () => {
         expect(screen.getByText(/unlimited/i)).toBeInTheDocument();
       });
     });
+
+    it('should surface upgrade CTA when quota requires upgrade', async () => {
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
+        tier: 'professional',
+        tierLabel: 'Professional',
+        limit: 10,
+        remaining: 0,
+        used: 10,
+        isUnlimited: false,
+        period: '2025-10',
+        quotaState: 'critical',
+        warningStatus: 'critical',
+        warningMessage: 'Monthly quota exceeded.',
+        upgradeRequired: true,
+        upgradeMessage: 'Upgrade to Premium tier for unlimited episodes.',
+        upgradeCtaUrl: '/pricing',
+      });
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      await waitFor(() => {
+        expect(screen.getByText(/upgrade to premium tier for unlimited episodes/i)).toBeInTheDocument();
+      });
+
+      const newEpisodeButton = screen.getByRole('button', { name: /new episode/i });
+      expect(newEpisodeButton).toBeDisabled();
+      expect(screen.getByRole('button', { name: /view upgrade options/i })).toBeInTheDocument();
+    });
   });
 
   describe('Episode List', () => {
@@ -278,6 +307,124 @@ describe('PodcastStudio', () => {
         // Should have a status badge with "published" text
         expect(badges.length).toBeGreaterThan(0);
       });
+    });
+  });
+
+  describe('YouTube Integration', () => {
+    const audioAccess = {
+      feature: 'podcast_audio',
+      tier: 'professional',
+      tierLabel: 'Professional',
+      hasAccess: true,
+      requiredTier: 'professional',
+      requiredTierLabel: 'Professional',
+      upgradeRequired: false,
+      upgradeMessage: null,
+      upgradeCtaUrl: null,
+    } as const;
+
+    const youtubeAccessGranted = {
+      feature: 'youtube_integration',
+      tier: 'premium',
+      tierLabel: 'Premium',
+      hasAccess: true,
+      requiredTier: 'premium',
+      requiredTierLabel: 'Premium',
+      upgradeRequired: false,
+      upgradeMessage: null,
+      upgradeCtaUrl: null,
+    } as const;
+
+    const youtubeAccessDenied = {
+      feature: 'youtube_integration',
+      tier: 'professional',
+      tierLabel: 'Professional',
+      hasAccess: false,
+      requiredTier: 'premium',
+      requiredTierLabel: 'Premium',
+      upgradeRequired: true,
+      upgradeMessage: 'Upgrade to Premium tier to publish on YouTube.',
+      upgradeCtaUrl: '/pricing',
+    } as const;
+
+    beforeEach(() => {
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
+        tier: 'professional',
+        tierLabel: 'Professional',
+        limit: 10,
+        remaining: 7,
+        used: 3,
+        isUnlimited: false,
+        period: '2025-10',
+        quotaState: 'normal',
+        warningStatus: null,
+        warningMessage: null,
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
+      });
+    });
+
+    it('should show Publish to YouTube button for video episodes when integration access granted', async () => {
+      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(audioAccess);
+      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(youtubeAccessGranted);
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        {
+          id: 'ep-youtube-1',
+          title: 'Premium Video Episode',
+          description: 'Video episode ready for YouTube',
+          episode_number: 1,
+          season_number: 1,
+          audio_file_url: 'https://cdn.example.com/audio.mp3',
+          video_file_url: 'https://cdn.example.com/video.mp4',
+          status: 'draft',
+          created_by: 'user-1',
+          organization_id: 'org-1',
+          created_at: '2025-10-20T10:00:00Z',
+          show_notes: null,
+        },
+      ]);
+      vi.mocked(podcastApi.publishEpisodeToYouTube).mockResolvedValue({ videoId: 'YT_12345' });
+
+      const user = userEvent.setup();
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const publishButton = await screen.findByRole('button', { name: /publish to youtube/i });
+      expect(publishButton).toBeEnabled();
+
+      await user.click(publishButton);
+
+      await waitFor(() => {
+        expect(podcastApi.publishEpisodeToYouTube).toHaveBeenCalledWith('ep-youtube-1');
+      });
+      expect(await screen.findByText(/published to youtube/i)).toBeInTheDocument();
+    });
+
+    it('should show upgrade button when youtube integration access denied', async () => {
+      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(audioAccess);
+      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(youtubeAccessDenied);
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        {
+          id: 'ep-youtube-2',
+          title: 'Video Episode',
+          description: null,
+          episode_number: 2,
+          season_number: 1,
+          audio_file_url: 'https://cdn.example.com/audio.mp3',
+          video_file_url: 'https://cdn.example.com/video.mp4',
+          status: 'draft',
+          created_by: 'user-1',
+          organization_id: 'org-1',
+          created_at: '2025-10-21T10:00:00Z',
+          show_notes: null,
+        },
+      ]);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const upgradeButton = await screen.findByRole('button', { name: /upgrade for youtube/i });
+      expect(upgradeButton).toBeDisabled();
+      expect(screen.getByText(/upgrade to premium tier to publish on youtube/i)).toBeInTheDocument();
     });
   });
 
