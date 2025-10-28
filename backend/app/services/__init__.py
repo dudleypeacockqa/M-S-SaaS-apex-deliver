@@ -7,7 +7,7 @@ from .user_service import (
     update_user_from_clerk,
 )
 
-from . import valuation_service
+from . import valuation_service, podcast_service, quota_service
 from .task_service import (
     create_task,
     list_tasks,
@@ -33,6 +33,8 @@ __all__ = [
     "update_last_login",
     "update_user_from_clerk",
     "valuation_service",
+    "podcast_service",
+    "quota_service",
     "create_task",
     "list_tasks",
     "get_task",
@@ -46,4 +48,5 @@ __all__ = [
     "log_execution",
     "list_logs",
 ]
+
 

@@ -1,6 +1,9 @@
 # Cursor Pro Max - Complete CODEX Implementation Guide
 # M&A Intelligence Platform: DEV-016, DEV-017, DEV-018 Implementation
 
+> **Reality Check (2025-10-28 11:05 UTC):** Backend pytest runs (359 collected) but 21 valuation/task automation tests are still RED; `npm run test` reports 11 RED specs in `ValuationSuite`. Stabilize valuation APIs/UI before treating milestones as complete.
+
+
 **Created**: October 27, 2025
 **For**: Cursor Pro Max subscribers
 **Project**: M&A Intelligence Platform (Apex Deliver)

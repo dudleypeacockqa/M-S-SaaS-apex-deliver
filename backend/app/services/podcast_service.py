@@ -10,7 +10,12 @@ from typing import List, Optional
 from sqlalchemy import Select, and_, desc, select
 from sqlalchemy.orm import Session
 
-from openai import AsyncOpenAI
+try:
+    from openai import AsyncOpenAI
+    _OPENAI_AVAILABLE = True
+except ModuleNotFoundError:
+    AsyncOpenAI = None
+    _OPENAI_AVAILABLE = False
 
 from app.core.config import settings
 from app.models.podcast import PodcastAnalytics, PodcastEpisode, PodcastTranscript
@@ -155,6 +160,8 @@ async def transcribe_episode(
         raise ValueError(f"Episode {episode_id} not found")
 
     api_key = settings.openai_api_key or os.getenv("OPENAI_API_KEY")
+    if AsyncOpenAI is None:
+        raise ModuleNotFoundError("openai package is not installed. Run 'pip install -r backend/requirements.txt' before using podcast transcription.")
     client = AsyncOpenAI(api_key=api_key)
 
     with open(audio_file_path, "rb") as audio_file:

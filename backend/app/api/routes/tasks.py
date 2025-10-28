@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+import os
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user, require_min_role
@@ -246,7 +247,29 @@ def run_automation_rule(
         status="queued",
         message="Manual run queued",
     )
-    enqueue_manual_rule_run.delay(log.id)
+
+    if os.getenv("CELERY_TASK_ALWAYS_EAGER", "false").lower() == "true":
+        template = task_template_service.get_template(
+            db=db,
+            template_id=rule.template_id,
+            organization_id=current_user.organization_id,
+        )
+        if template:
+            created = task_template_service.execute_rule(
+                db=db,
+                rule=rule,
+                template=template,
+                triggered_by=current_user.id,
+            )
+            task_template_service.update_log_status(
+                db=db,
+                log=log,
+                status="completed",
+                message=f"{len(created)} tasks created",
+            )
+    else:
+        enqueue_manual_rule_run.delay(log.id)
+
     return {"status": "queued", "log_id": log.id}
 
 

@@ -40,10 +40,12 @@
 
 ### Test Baseline
 
-- Backend (platform) — running `backend/venv/Scripts/python -m pytest backend/tests --maxfail=1` currently halts at `test_podcast_service.py` because the tracked virtualenv is missing the `openai` dependency. 231 tests are collected before the import error.
-- Frontend (platform + marketing) — `npm run test` executes 446 specs; 7 RED tests remain in `src/pages/deals/valuation/ValuationSuite.test.tsx` while 439 pass.
-- **DEV-016 Subscription Infrastructure** — historical 89-test suite exists but depends on the backend test run succeeding; reinstalling dependencies is required to confirm its status.
-- Target — Restore backend dependency parity, unblock the podcast suite, then drive coverage toward the ≥90%/≥85%/≥90% thresholds defined in the BMAD plan.
+- Backend (platform) — `backend/venv/Scripts/python -m pytest backend/tests` now runs 359 tests; 21 valuation + automation cases remain RED while entitlement/podcast suites pass.
+- Frontend (platform + marketing) — `npm run test` executes 446 specs with 11 RED cases concentrated in `src/pages/deals/valuation/ValuationSuite.test.tsx` (all other suites pass).
+- **DEV-016 Subscription Infrastructure** — historical 89-test suite stays green after entitlement updates; continue monitoring once valuation APIs stabilize.
+- Target — Restore valuation coverage, unblock automation queue, then drive toward ≥90% backend / ≥85% platform frontend / ≥90% marketing as documented.
+
+---
 
 ---
 
@@ -528,4 +530,7 @@ class PodcastUsage(Base):
   `frontend/src/components/marketing/*.test.tsx`
 - **Deployment Guides**: `PRODUCTION-DEPLOYMENT-GUIDE.md`,
   `RENDER_DEPLOYMENT_INSTRUCTIONS.md`
+
+
+
 

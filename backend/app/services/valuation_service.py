@@ -716,7 +716,7 @@ def run_monte_carlo_simulation(
     simulated_values: List[float] = []
 
     for _ in range(iterations):
-        sampled_flows = [cash * (1 + rng.normal(0, 0.05)) for cash in base_cash_flows]
+        sampled_flows = [cash * (1 + rng.gauss(0, 0.05)) for cash in base_cash_flows]
         terminal_cash = sampled_flows[-1] * (1 + terminal_growth_rate)
         ev = _calculate_enterprise_value(
             cash_flows=sampled_flows,

@@ -8,6 +8,8 @@ import { FAQSection } from '../../components/marketing/FAQSection';
 import { TrustBadges } from '../../components/marketing/TrustBadges';
 import { CTASection } from '../../components/marketing/CTASection';
 import { SEO } from '../../components/common/SEO';
+import { ExitIntentPopup } from '../../components/marketing/ExitIntentPopup';
+import { StickyCTABar } from '../../components/marketing/StickyCTABar';
 
 export const EnhancedLandingPage: React.FC = () => {
   const features = [
@@ -333,6 +335,10 @@ export const EnhancedLandingPage: React.FC = () => {
 
       {/* Final CTA Section */}
       <CTASection />
+
+      {/* Conversion Optimization Components */}
+      <ExitIntentPopup />
+      <StickyCTABar />
     </MarketingLayout>
   );
 };

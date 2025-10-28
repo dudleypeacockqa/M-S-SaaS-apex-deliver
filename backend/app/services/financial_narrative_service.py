@@ -28,6 +28,18 @@ from app.models.deal import Deal
 _openai_client_instance = None
 
 
+
+
+class _MissingOpenAIClient:
+    """Placeholder when OpenAI SDK is unavailable."""
+
+    class chat:  # noqa: N801
+        class completions:  # noqa: N801
+            @staticmethod
+            async def create(*_args, **_kwargs):
+                raise ModuleNotFoundError("openai package is not installed. Install backend requirements before generating narratives.")
+
+
 class _OpenAIClientProxy:
     """Proxy that lazily instantiates AsyncOpenAI when available."""
 
@@ -35,14 +47,17 @@ class _OpenAIClientProxy:
         return self
 
     def __getattr__(self, name):
+        if name.startswith('_'):
+            raise AttributeError(name)
         global _openai_client_instance
         if _openai_client_instance is None:
             if not _OPENAI_AVAILABLE:
-                raise ModuleNotFoundError("openai package is not installed. Install backend requirements before generating narratives.")
-            api_key = os.getenv("OPENAI_API_KEY")
-            if not api_key:
-                raise RuntimeError("OPENAI_API_KEY is not configured.")
-            _openai_client_instance = AsyncOpenAI(api_key=api_key)  # type: ignore[call-arg]
+                _openai_client_instance = _MissingOpenAIClient()
+            else:
+                api_key = os.getenv("OPENAI_API_KEY")
+                if not api_key:
+                    raise RuntimeError("OPENAI_API_KEY is not configured.")
+                _openai_client_instance = AsyncOpenAI(api_key=api_key)  # type: ignore[call-arg]
         return getattr(_openai_client_instance, name)
 
 

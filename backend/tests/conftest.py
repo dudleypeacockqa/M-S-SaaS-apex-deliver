@@ -57,6 +57,13 @@ stripe_mock = MagicMock()
 stripe_module = stripe_mock
 sys.modules.setdefault("stripe", stripe_module)
 
+celery_mock = MagicMock()
+sys.modules.setdefault("celery", celery_mock)
+
+openai_mock = MagicMock()
+openai_mock.AsyncOpenAI = MagicMock()
+sys.modules.setdefault("openai", openai_mock)
+
 import importlib
 
 from app.main import app  # noqa: E402
@@ -546,3 +553,5 @@ def create_deal_for_org(db_session, create_user, create_organization, request):
         return deal, owner_user, org
 
     return _create
+
+
