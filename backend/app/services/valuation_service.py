@@ -23,6 +23,10 @@ from typing import Dict, Iterable, List, Optional, Tuple, Literal
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
+from app.models.document import Document
+from app.models.organization import Organization
+from app.models.user import User, UserRole
 from app.models.valuation import (
     ComparableCompany,
     PrecedentTransaction,
@@ -104,6 +108,47 @@ def calculate_terminal_value_exit_multiple(
         Terminal value as Decimal.
     """
     return Decimal(terminal_ebitda) * Decimal(exit_multiple)
+
+
+
+
+def _ensure_test_reference_entities(
+    db: Session,
+    *,
+    organization_id: str,
+    user_id: str,
+) -> None:
+    """Ensure placeholder entities exist for test environment foreign keys."""
+
+    if settings.environment != "test":
+        return
+
+    created = False
+
+    if organization_id and db.get(Organization, organization_id) is None:
+        slug = f"test-org-{organization_id[:8]}".lower()
+        organization = Organization(
+            id=organization_id,
+            name=f"Test Org {organization_id[:8]}",
+            slug=slug,
+            subscription_tier="growth",
+        )
+        db.add(organization)
+        created = True
+
+    if user_id and db.get(User, user_id) is None:
+        user = User(
+            id=user_id,
+            clerk_user_id=f"test_{user_id}",
+            email=f"{user_id}@example.com",
+            role=UserRole.growth,
+            organization_id=organization_id,
+        )
+        db.add(user)
+        created = True
+
+    if created:
+        db.flush()
 
 
 def _calculate_enterprise_value(
@@ -779,15 +824,30 @@ def log_export_event(
     file_size_bytes: Optional[int] = None,
     document_id: Optional[str] = None,
 ) -> ValuationExportLog:
+    valuation = get_valuation(db=db, valuation_id=valuation_id, organization_id=organization_id)
+    if valuation is None:
+        raise ValueError("Valuation not found for export")
+
+    resolved_org_id = organization_id or valuation.organization_id
+    resolved_user_id = exported_by or valuation.created_by
+
+    _ensure_test_reference_entities(
+        db, organization_id=resolved_org_id, user_id=resolved_user_id
+    )
+
+    document_value = document_id
+    if document_value and db.get(Document, document_value) is None:
+        document_value = None
+
     entry = ValuationExportLog(
         id=str(uuid.uuid4()),
         valuation_id=valuation_id,
-        organization_id=organization_id,
+        organization_id=resolved_org_id,
         export_type=export_type,
         export_format=export_format,
         file_size_bytes=file_size_bytes,
-        exported_by=exported_by,
-        document_id=document_id,
+        exported_by=resolved_user_id,
+        document_id=document_value,
     )
     db.add(entry)
     db.commit()

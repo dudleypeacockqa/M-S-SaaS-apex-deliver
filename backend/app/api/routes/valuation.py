@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -143,7 +143,11 @@ def list_comparables(
 ):
     _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
     _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
-    return []
+    return valuation_service.list_comparable_companies(
+        db=db,
+        valuation_id=valuation_id,
+        organization_id=current_user.organization_id,
+    )
 
 
 @router.post("/{valuation_id}/comparables", response_model=ComparableCompanyResponse, status_code=status.HTTP_201_CREATED)
@@ -174,7 +178,11 @@ def list_precedent_transactions(
 ):
     _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
     _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
-    return []
+    return valuation_service.list_precedent_transactions(
+        db=db,
+        valuation_id=valuation_id,
+        organization_id=current_user.organization_id,
+    )
 
 
 @router.post("/{valuation_id}/transactions", response_model=PrecedentTransactionResponse, status_code=status.HTTP_201_CREATED)
@@ -242,32 +250,49 @@ def get_scenario_summary(
 ):
     _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
     _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
-    # TODO: implement scenario summary endpoint once frontend requirements are finalized
-    return {"count": 0, "enterprise_value_range": {}, "equity_value_range": {}}
+    return valuation_service.calculate_scenario_summary(
+        db=db,
+        valuation_id=valuation_id,
+        organization_id=current_user.organization_id,
+    )
 
 
 @router.get("/{valuation_id}/comparables/summary")
 def get_comparable_summary(
     deal_id: str,
     valuation_id: str,
+    subject_revenue: Optional[float] = None,
+    subject_ebitda: Optional[float] = None,
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
+    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
     _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
-    # TODO: return actual summary once backend analytics are finalized
-    return {}
+    return valuation_service.calculate_comparable_multiples(
+        db=db,
+        valuation_id=valuation_id,
+        organization_id=current_user.organization_id,
+        subject_revenue=subject_revenue,
+        subject_ebitda=subject_ebitda,
+    )
 
 
 @router.get("/{valuation_id}/transactions/summary")
 def get_transaction_summary(
     deal_id: str,
     valuation_id: str,
+    subject_ebitda: Optional[float] = None,
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
+    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
     _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
-    # TODO: return actual summary once backend analytics are finalized
-    return {}
+    return valuation_service.calculate_precedent_multiples(
+        db=db,
+        valuation_id=valuation_id,
+        organization_id=current_user.organization_id,
+        subject_ebitda=subject_ebitda,
+    )
 
 
 @router.get("/{valuation_id}/valuation-summary")

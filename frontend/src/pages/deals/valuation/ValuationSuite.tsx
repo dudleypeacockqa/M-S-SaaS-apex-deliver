@@ -12,6 +12,7 @@ import {
   runMonteCarlo,
   triggerExport,
   createValuation,
+  addComparableCompany,
 } from '../../../services/api/valuations'
 
 // Import types separately
@@ -19,13 +20,31 @@ import type {
   MonteCarloRequest,
   ValuationExportResponse,
   ComparableSummaryMetrics,
+  ValuationCreateRequest,
 } from '../../../services/api/valuations'
 
 import { formatCurrency } from '../../../services/api/deals'
 import { Spinner as LoadingSpinner } from '../../../components/ui'
+import type { ChangeEvent, FormEvent } from 'react'
 import { CreateValuationModal } from '../../../components/valuation/CreateValuationModal'
 
 const skeletonClass = 'animate-pulse rounded bg-gray-200 h-4'
+
+type ValuationFormState = {
+  discountRate: string
+  terminalCashFlow: string
+  forecastYears: string
+  terminalGrowthRate: string
+  netDebt: string
+}
+
+const DEFAULT_VALUATION_FORM: ValuationFormState = {
+  discountRate: '12',
+  terminalCashFlow: '1200000',
+  forecastYears: '5',
+  terminalGrowthRate: '3',
+  netDebt: '0',
+}
 
 const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <section className="rounded-lg border border-gray-200 bg-white shadow-sm">
@@ -46,6 +65,10 @@ const TabButton = ({
   onClick: () => void
 }) => (
   <button
+    type="button"
+    role="tab"
+    aria-selected={active}
+    tabIndex={active ? 0 : -1}
     onClick={onClick}
     className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
       active ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'
@@ -56,8 +79,7 @@ const TabButton = ({
 )
 
 const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-
+  const queryClient = useQueryClient()
   const {
     data: valuations,
     isLoading,
@@ -67,6 +89,172 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
     queryKey: ['valuations', dealId],
     queryFn: () => listValuations(dealId),
   })
+
+  const [formValues, setFormValues] = useState<ValuationFormState>(DEFAULT_VALUATION_FORM)
+  const [formError, setFormError] = useState<string | null>(null)
+  const [formMessage, setFormMessage] = useState<string | null>(null)
+
+  const createValuationMutation = useMutation({
+    mutationFn: (payload: ValuationCreateRequest) => createValuation(dealId, payload),
+    onSuccess: () => {
+      setFormValues(DEFAULT_VALUATION_FORM)
+      setFormError(null)
+      setFormMessage('Valuation saved successfully.')
+      queryClient.invalidateQueries({ queryKey: ['valuations', dealId] })
+      void refetch()
+    },
+    onError: () => {
+      setFormMessage(null)
+      setFormError('Unable to save valuation. Please try again.')
+    },
+  })
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = event.target
+    setFormValues((previous) => ({ ...previous, [name]: value }))
+  }
+
+  const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setFormError(null)
+    setFormMessage(null)
+
+    const discountRateValue = Number(formValues.discountRate)
+    const terminalCashFlowValue = Number(formValues.terminalCashFlow)
+
+    if (Number.isNaN(discountRateValue) || Number.isNaN(terminalCashFlowValue)) {
+      setFormError('Please provide numerical values for discount rate and terminal cash flow.')
+      return
+    }
+
+    const forecastYearsValue = Math.max(1, Number(formValues.forecastYears) || 5)
+    const terminalGrowthRateValue =
+      formValues.terminalGrowthRate.trim() === '' ? null : Number(formValues.terminalGrowthRate)
+
+    if (terminalGrowthRateValue !== null && Number.isNaN(terminalGrowthRateValue)) {
+      setFormError('Terminal growth rate must be a number if provided.')
+      return
+    }
+
+    const step = terminalCashFlowValue / (forecastYearsValue + 1)
+    const cashFlows = Array.from({ length: forecastYearsValue }, (_, index) =>
+      Number(((index + 1) * step).toFixed(2)),
+    )
+
+    const payload: ValuationCreateRequest = {
+      forecast_years: forecastYearsValue,
+      discount_rate: discountRateValue / 100,
+      terminal_method: 'gordon_growth',
+      terminal_cash_flow: terminalCashFlowValue,
+      cash_flows,
+      net_debt: Number(formValues.netDebt || 0),
+    }
+
+    if (terminalGrowthRateValue !== null) {
+      payload.terminal_growth_rate = terminalGrowthRateValue / 100
+    }
+
+    createValuationMutation.mutate(payload)
+  }
+
+  const createForm = (
+    <SectionCard title="Create New Valuation">
+      <form className="grid gap-4 md:grid-cols-2" onSubmit={handleFormSubmit} noValidate>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700" htmlFor="discountRate">
+            Discount Rate (%)
+          </label>
+          <input
+            id="discountRate"
+            name="discountRate"
+            type="number"
+            step="0.1"
+            value={formValues.discountRate}
+            onChange={handleInputChange}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+            required
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700" htmlFor="terminalCashFlow">
+            Terminal Cash Flow (£)
+          </label>
+          <input
+            id="terminalCashFlow"
+            name="terminalCashFlow"
+            type="number"
+            step="1000"
+            value={formValues.terminalCashFlow}
+            onChange={handleInputChange}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+            required
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700" htmlFor="forecastYears">
+            Forecast Years
+          </label>
+          <input
+            id="forecastYears"
+            name="forecastYears"
+            type="number"
+            min="1"
+            max="10"
+            value={formValues.forecastYears}
+            onChange={handleInputChange}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700" htmlFor="terminalGrowthRate">
+            Terminal Growth Rate (%)
+          </label>
+          <input
+            id="terminalGrowthRate"
+            name="terminalGrowthRate"
+            type="number"
+            step="0.1"
+            value={formValues.terminalGrowthRate}
+            onChange={handleInputChange}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700" htmlFor="netDebt">
+            Net Debt (£)
+          </label>
+          <input
+            id="netDebt"
+            name="netDebt"
+            type="number"
+            step="1000"
+            value={formValues.netDebt}
+            onChange={handleInputChange}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+          />
+        </div>
+        <div className="flex items-end md:col-span-2">
+          <button
+            type="submit"
+            disabled={createValuationMutation.isPending}
+            className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {createValuationMutation.isPending ? 'Saving…' : 'Save Valuation'}
+          </button>
+        </div>
+        {formError && (
+          <p className="md:col-span-2 text-sm text-red-600" role="alert">
+            {formError}
+          </p>
+        )}
+        {formMessage && (
+          <p className="md:col-span-2 text-sm text-emerald-600" role="status" aria-live="polite">
+            {formMessage}
+          </p>
+        )}
+      </form>
+    </SectionCard>
+  )
 
   if (isLoading) {
     return (
@@ -81,27 +269,42 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
     )
   }
 
-  if (isError || !valuations || valuations.length === 0) {
-    // If no valuations exist, show the create modal directly
+  if (isError) {
     return (
-      <>
-        {/* Show modal directly when no valuations */}
-        <CreateValuationModal
-          dealId={dealId}
-          isOpen={true}
-          onClose={() => {
-            // On close, refetch to check if a valuation was created
-            refetch()
-          }}
-        />
-      </>
+      <div className="space-y-6">
+        {createForm}
+        <SectionCard title="Valuations">
+          <div className="space-y-3 text-sm text-gray-600">
+            <p>We couldn’t load valuations for this deal. Please retry.</p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-indigo-700"
+            >
+              Retry
+            </button>
+          </div>
+        </SectionCard>
+      </div>
     )
   }
 
-  const currentValuation = valuations?.find((valuation) => valuation.id === valuationId)
+  if (!valuations || valuations.length === 0) {
+    return (
+      <div className="space-y-6">
+        {createForm}
+        <SectionCard title="Valuations">
+          <p className="text-sm text-gray-600">No valuations created yet. Save your first valuation to populate this workspace.</p>
+        </SectionCard>
+      </div>
+    )
+  }
+
+  const currentValuation = valuations.find((valuation) => valuation.id === valuationId) ?? valuations[0]
 
   return (
     <div className="space-y-6">
+      {createForm}
       <SectionCard title="Valuation Summary">
         {currentValuation ? (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -131,14 +334,14 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
         )}
       </SectionCard>
 
-      <SectionCard title="Monte Carlo Simulation">
-        <MonteCarloPanel dealId={dealId} valuationId={valuationId} />
-      </SectionCard>
+      {currentValuation && (
+        <SectionCard title="Monte Carlo Simulation">
+          <MonteCarloPanel dealId={dealId} valuationId={currentValuation.id} />
+        </SectionCard>
+      )}
     </div>
   )
-}
-
-const MonteCarloPanel = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
+}const MonteCarloPanel = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
   const queryClient = useQueryClient()
   const [iterations, setIterations] = useState(500)
   const [seed, setSeed] = useState<number | ''>('')
@@ -222,6 +425,7 @@ const MonteCarloPanel = ({ dealId, valuationId }: { dealId: string; valuationId:
 }
 
 const ComparablesView = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
+  const queryClient = useQueryClient()
   const { data: comparables, isLoading } = useQuery({
     queryKey: ['valuations', dealId, valuationId, 'comparables'],
     queryFn: () => listComparableCompanies(dealId, valuationId),
@@ -232,16 +436,160 @@ const ComparablesView = ({ dealId, valuationId }: { dealId: string; valuationId:
     enabled: !!comparables?.length,
   })
 
+  const [formData, setFormData] = useState({
+    companyName: '',
+    evRevenue: '',
+    evEbitda: '',
+    weight: '1.00',
+    isOutlier: false,
+    notes: '',
+  })
+
+  const resetForm = () =>
+    setFormData({ companyName: '', evRevenue: '', evEbitda: '', weight: '1.00', isOutlier: false, notes: '' })
+
+  const toNullableNumber = (value: string) => {
+    if (value.trim() === '') return null
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+
+  const { mutateAsync, isPending, error } = useMutation({
+    mutationFn: () =>
+      addComparableCompany(dealId, valuationId, {
+        company_name: formData.companyName.trim(),
+        ev_revenue_multiple: toNullableNumber(formData.evRevenue) ?? undefined,
+        ev_ebitda_multiple: toNullableNumber(formData.evEbitda) ?? undefined,
+        weight: Number(formData.weight) || 0,
+        is_outlier: formData.isOutlier ? 'true' : 'false',
+        notes: formData.notes ? formData.notes.trim() : undefined,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['valuations', dealId, valuationId, 'comparables'] })
+      queryClient.invalidateQueries({ queryKey: ['valuations', dealId, valuationId, 'comparables', 'summary'] })
+      resetForm()
+    },
+  })
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!formData.companyName.trim()) {
+      return
+    }
+    await mutateAsync()
+  }
+
   if (isLoading) {
     return <p className="text-sm text-gray-600">Loading comparable companies...</p>
   }
 
-  if (!comparables || comparables.length === 0) {
-    return <p className="text-sm text-gray-600">No comparable companies added yet.</p>
-  }
-
   return (
     <div className="space-y-6">
+      <SectionCard title="Add Comparable Company">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <label htmlFor="comparable-company-name" className="block text-sm font-medium text-gray-700">
+              Company Name
+            </label>
+            <input
+              id="comparable-company-name"
+              type="text"
+              value={formData.companyName}
+              onChange={(event) => setFormData((current) => ({ ...current, companyName: event.target.value }))}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="comparable-ev-revenue" className="block text-sm font-medium text-gray-700">
+              EV/Revenue Multiple
+            </label>
+            <input
+              id="comparable-ev-revenue"
+              type="number"
+              step="0.1"
+              value={formData.evRevenue}
+              onChange={(event) => setFormData((current) => ({ ...current, evRevenue: event.target.value }))}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              placeholder="e.g. 4.5"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="comparable-ev-ebitda" className="block text-sm font-medium text-gray-700">
+              EV/EBITDA
+            </label>
+            <input
+              id="comparable-ev-ebitda"
+              type="number"
+              step="0.1"
+              value={formData.evEbitda}
+              onChange={(event) => setFormData((current) => ({ ...current, evEbitda: event.target.value }))}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="comparable-weight" className="block text-sm font-medium text-gray-700">
+              Weight
+            </label>
+            <input
+              id="comparable-weight"
+              type="number"
+              min="0"
+              step="0.1"
+              value={formData.weight}
+              onChange={(event) => setFormData((current) => ({ ...current, weight: event.target.value }))}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              id="comparable-outlier"
+              type="checkbox"
+              checked={formData.isOutlier}
+              onChange={(event) => setFormData((current) => ({ ...current, isOutlier: event.target.checked }))}
+              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+            />
+            <label htmlFor="comparable-outlier" className="text-sm text-gray-700">
+              Mark as outlier
+            </label>
+          </div>
+
+          <div className="md:col-span-2">
+            <label htmlFor="comparable-notes" className="block text-sm font-medium text-gray-700">
+              Notes (optional)
+            </label>
+            <textarea
+              id="comparable-notes"
+              value={formData.notes}
+              onChange={(event) => setFormData((current) => ({ ...current, notes: event.target.value }))}
+              rows={3}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+            />
+          </div>
+
+          {error && (
+            <p className="md:col-span-2 text-sm text-red-600" role="alert">
+              Unable to add comparable company. Please try again.
+            </p>
+          )}
+
+          <div className="md:col-span-2 flex justify-end">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isPending ? 'Saving...' : 'Add Comparable'}
+            </button>
+          </div>
+        </form>
+      </SectionCard>
+
       {summary && (
         <SectionCard title="Implied Valuation Range">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -252,8 +600,11 @@ const ComparablesView = ({ dealId, valuationId }: { dealId: string; valuationId:
       )}
 
       <SectionCard title="Comparable Companies">
+        {(!comparables || comparables.length === 0) && (
+          <p className="text-sm text-gray-600">No comparable companies added yet.</p>
+        )}
         <div className="grid grid-cols-1 gap-4">
-          {comparables.map((comparable) => (
+          {comparables?.map((comparable) => (
             <article key={comparable.id} className="rounded-lg border border-gray-200 p-4">
               <header className="flex items-center justify-between">
                 <h3 className="text-base font-semibold text-gray-900">{comparable.company_name}</h3>
@@ -584,7 +935,7 @@ export const ValuationSuite = () => {
           </div>
         </header>
 
-        <nav className="mt-6 flex flex-wrap gap-3">
+        <nav className="mt-6 flex flex-wrap gap-3" role="tablist" aria-label="Valuation suite sections">
           {TABS.map((tab) => (
             <TabButton key={tab} label={tab} active={activeTab === tab} onClick={() => setActiveTab(tab)} />
           ))}
@@ -595,5 +946,6 @@ export const ValuationSuite = () => {
     </main>
   )
 }
+
 
 

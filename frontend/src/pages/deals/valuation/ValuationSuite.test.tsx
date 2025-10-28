@@ -83,11 +83,10 @@ describe('ValuationSuite RED tests', () => {
     })
   })
 
-  // TODO: Test skipped - component has view-only Comparables tab, no "add" form yet
-  it.skip('allows adding comparable company to selected valuation', async () => {
+  it('allows adding comparable company to selected valuation', async () => {
     const user = userEvent.setup()
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
-      { id: 'val-1', enterprise_value: 10500000, equity_value: 8000000, deal_id: 'deal-compare', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
+      { id: 'val-001', enterprise_value: 10500000, equity_value: 8000000, deal_id: 'deal-compare', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
     ])
     vi.mocked(valuationApi.addComparableCompany).mockResolvedValueOnce({ id: 'comp-1', valuation_id: 'val-1', organization_id: 'org-1', company_name: 'PeerCo', ev_revenue_multiple: null, ev_ebitda_multiple: 9.0, weight: 1.0, is_outlier: 'false', notes: null, created_at: '2025-01-01', updated_at: null })
 
@@ -100,7 +99,7 @@ describe('ValuationSuite RED tests', () => {
     await user.click(screen.getByRole('button', { name: /add comparable/i }))
 
     await waitFor(() => {
-      expect(valuationApi.addComparableCompany).toHaveBeenCalledWith('deal-compare', 'val-1', expect.objectContaining({ company_name: 'PeerCo' }))
+      expect(valuationApi.addComparableCompany).toHaveBeenCalledWith('deal-compare', 'val-001', expect.objectContaining({ company_name: 'PeerCo' }))
     })
   })
 
@@ -131,8 +130,7 @@ describe('ValuationSuite RED tests', () => {
     renderSuite('/deals/deal-scenarios/valuations/val-scenario')
 
     await waitFor(() => expect(screen.getByText(/£10,500,000/i)).toBeInTheDocument())
-    // Tab buttons don't have role="tab", just regular buttons
-    await user.click(screen.getByRole('button', { name: /scenarios/i }))
+    await user.click(screen.getByRole('tab', { name: /scenarios/i }))
 
     await waitFor(() => expect(valuationApi.listScenarios).toHaveBeenCalled())
   })
@@ -147,8 +145,7 @@ describe('ValuationSuite RED tests', () => {
     renderSuite('/deals/deal-export/valuations/val-export')
 
     await waitFor(() => expect(screen.getByText(/£10,500,000/i)).toBeInTheDocument())
-    // Tab buttons don't have role="tab", just regular buttons
-    await user.click(screen.getByRole('button', { name: /exports/i }))
+    await user.click(screen.getByRole('tab', { name: /exports/i }))
     await user.click(screen.getByRole('button', { name: /queue export/i }))
 
     await waitFor(() => expect(valuationApi.triggerExport).toHaveBeenCalled())
