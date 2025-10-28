@@ -18,6 +18,12 @@ from app.schemas.podcast import (
 from app.services import entitlement_service, podcast_service, quota_service
 from app.services.entitlement_service import FeatureNotFoundError
 from app.services.quota_service import QuotaExceededError
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/podcasts", tags=["podcasts"])
+
+
 @router.get("/features/{feature}")
 async def get_feature_access(
     feature: str,
@@ -40,12 +46,6 @@ async def get_feature_access(
         "has_access": has_access,
         "required_tier": required_tier.value,
     }
-
-
-
-logger = logging.getLogger(__name__)
-
-router = APIRouter(prefix="/podcasts", tags=["podcasts"])
 
 
 async def get_quota_summary(*, organization_id: str, tier: subscription.SubscriptionTier, db: Session) -> PodcastQuotaSummary:
