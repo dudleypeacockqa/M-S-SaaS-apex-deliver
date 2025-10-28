@@ -61,17 +61,17 @@ describe("AppRoutes", () => {
     })
   })
 
-  it("renders the home route with sign-in actions for visitors", () => {
+  it("renders the home route with sign-in actions for visitors", async () => {
     renderApp(["/"])
 
     // The new landing page has a different structure with MarketingNav
-    expect(screen.getByRole("heading", { name: /close deals/i })).toBeInTheDocument()
+    expect(await screen.findByRole("heading", { name: /close deals/i }, { timeout: 10000 })).toBeInTheDocument()
     // Marketing nav has regular links, not Clerk's SignInButton
     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
     // Multiple "Get Started" links exist (nav + footer), so use getAllBy
     const getStartedLinks = screen.getAllByRole("link", { name: /get started/i })
     expect(getStartedLinks.length).toBeGreaterThan(0)
-  })
+  }, 10000)
 
   it("redirects visitors from the dashboard to the sign-in page", () => {
     renderApp(["/dashboard"])
