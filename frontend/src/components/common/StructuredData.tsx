@@ -12,7 +12,9 @@ export const StructuredData: React.FC<StructuredDataProps> = ({ json, id = 'stru
     }
 
     const existing = document.getElementById(id)
-    const script = existing ?? document.createElement('script')
+    const script: HTMLScriptElement = existing instanceof HTMLScriptElement
+      ? existing
+      : document.createElement('script')
 
     script.type = 'application/ld+json'
     script.id = id

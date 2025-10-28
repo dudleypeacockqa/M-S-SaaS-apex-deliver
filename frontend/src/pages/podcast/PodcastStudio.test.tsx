@@ -430,17 +430,17 @@ describe('PodcastStudio', () => {
 
   describe('Create Episode Button', () => {
     beforeEach(() => {
-      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
-        feature: 'podcast_audio',
-        tier: 'professional',
-        tierLabel: 'Professional',
+      vi.mocked(podcastApi.checkFeatureAccess).mockImplementation(async (feature: string) => ({
+        feature,
+        tier: feature === 'youtube_integration' ? 'premium' : 'professional',
+        tierLabel: feature === 'youtube_integration' ? 'Premium' : 'Professional',
         hasAccess: true,
-        requiredTier: 'professional',
-        requiredTierLabel: 'Professional',
+        requiredTier: feature === 'youtube_integration' ? 'premium' : 'professional',
+        requiredTierLabel: feature === 'youtube_integration' ? 'Premium' : 'Professional',
         upgradeRequired: false,
         upgradeMessage: null,
         upgradeCtaUrl: null,
-      });
+      }));
       vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
         tier: 'professional',
         tierLabel: 'Professional',
