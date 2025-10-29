@@ -1,33 +1,14 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteEpisode, type PodcastEpisode } from '../../services/api/podcasts';
+import type { PodcastEpisode } from '../../services/api/podcasts';
 
-interface DeleteConfirmationDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface DeleteEpisodeModalProps {
   episode: PodcastEpisode | null;
+  onClose: () => void;
+  onConfirm: () => void;
+  isSubmitting: boolean;
 }
 
-export function DeleteConfirmationDialog({ isOpen, onClose, episode }: DeleteConfirmationDialogProps) {
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: () => deleteEpisode(episode!.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
-      queryClient.invalidateQueries({ queryKey: ['podcastQuota'] });
-      onClose();
-    },
-    onError: (err: any) => {
-      // Error handling - could add toast notification here
-      console.error('Failed to delete episode:', err);
-    },
-  });
-
-  const handleDelete = () => {
-    mutate();
-  };
-
-  if (!isOpen || !episode) return null;
+export function DeleteEpisodeModal({ episode, onClose, onConfirm, isSubmitting }: DeleteEpisodeModalProps) {
+  if (!episode) return null;
 
   return (
     <div
@@ -75,18 +56,18 @@ export function DeleteConfirmationDialog({ isOpen, onClose, episode }: DeleteCon
           <button
             type="button"
             onClick={onClose}
-            disabled={isPending}
+            disabled={isSubmitting}
             className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
             Cancel
           </button>
           <button
             type="button"
-            onClick={handleDelete}
-            disabled={isPending}
+            onClick={onConfirm}
+            disabled={isSubmitting}
             className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isPending ? 'Deleting...' : 'Confirm Delete'}
+            {isSubmitting ? 'Deleting...' : 'Confirm Delete'}
           </button>
         </div>
       </div>

@@ -12,6 +12,9 @@
 import React from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FeatureGate } from '../../components/podcast/FeatureGate';
+import { CreateEpisodeModal } from '../../components/podcast/CreateEpisodeModal';
+import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
+import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal';
 import {
   getQuotaSummary,
   listEpisodes,
@@ -23,6 +26,9 @@ import {
   type QuotaSummary,
 } from '../../services/api/podcasts';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
+import { CreateEpisodeModal } from '../../components/podcast/CreateEpisodeModal';
+import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
+import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal';
 
 type FeatureAccessState = ReturnType<typeof useFeatureAccess>;
 type CreateEpisodePayload = Parameters<typeof createEpisode>[0];
@@ -273,9 +279,13 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
 function EpisodesList({
   episodes,
   youtubeAccess,
+  onEdit,
+  onDelete,
 }: {
   episodes: PodcastEpisode[];
   youtubeAccess: FeatureAccessState;
+  onEdit: (episode: PodcastEpisode) => void;
+  onDelete: (episode: PodcastEpisode) => void;
 }) {
   if (episodes.length === 0) {
     return (
@@ -305,7 +315,13 @@ function EpisodesList({
     <div className="bg-white shadow overflow-hidden sm:rounded-md">
       <ul className="divide-y divide-gray-200">
         {episodes.map((episode) => (
-          <EpisodeListItem key={episode.id} episode={episode} youtubeAccess={youtubeAccess} />
+          <EpisodeListItem
+            key={episode.id}
+            episode={episode}
+            youtubeAccess={youtubeAccess}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
         ))}
       </ul>
     </div>
@@ -315,9 +331,13 @@ function EpisodesList({
 function EpisodeListItem({
   episode,
   youtubeAccess,
+  onEdit,
+  onDelete,
 }: {
   episode: PodcastEpisode;
   youtubeAccess: FeatureAccessState;
+  onEdit: (episode: PodcastEpisode) => void;
+  onDelete: (episode: PodcastEpisode) => void;
 }) {
   const statusColors = {
     draft: 'bg-yellow-100 text-yellow-800',
@@ -386,9 +406,17 @@ function EpisodeListItem({
           <div className="ml-4 flex-shrink-0 flex gap-2">
             <button
               type="button"
+              onClick={() => onEdit(episode)}
               className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Edit
+            </button>
+            <button
+              type="button"
+              onClick={() => onDelete(episode)}
+              className="inline-flex items-center px-3 py-2 border border-red-200 shadow-sm text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Delete
             </button>
             {episode.video_file_url && (
               <div className="flex flex-col items-end gap-1">

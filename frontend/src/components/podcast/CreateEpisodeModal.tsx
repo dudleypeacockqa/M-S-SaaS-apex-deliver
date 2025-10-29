@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface CreateEpisodeModalProps {
   open: boolean;
@@ -15,17 +15,26 @@ interface CreateEpisodeModalProps {
   isSubmitting: boolean;
 }
 
+const DEFAULT_FORM_STATE = {
+  title: '',
+  description: '',
+  episodeNumber: '',
+  seasonNumber: '',
+  audioFileUrl: '',
+  videoFileUrl: '',
+  showNotes: '',
+};
+
 export function CreateEpisodeModal({ open, onClose, onSubmit, isSubmitting }: CreateEpisodeModalProps) {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    episodeNumber: '',
-    seasonNumber: '',
-    audioFileUrl: '',
-    videoFileUrl: '',
-    showNotes: '',
-  });
+  const [formData, setFormData] = useState(() => ({ ...DEFAULT_FORM_STATE }));
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) {
+      setFormData({ ...DEFAULT_FORM_STATE });
+      setError(null);
+    }
+  }, [open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,7 +143,7 @@ export function CreateEpisodeModal({ open, onClose, onSubmit, isSubmitting }: Cr
               id="audio-file-url"
               type="url"
               value={formData.audioFileUrl}
-              onChange={(e) => setFormData({ ...formData, audio_file_url: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, audioFileUrl: e.target.value })}
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
               placeholder="https://cdn.example.com/episode.mp3"
               required
@@ -149,8 +158,8 @@ export function CreateEpisodeModal({ open, onClose, onSubmit, isSubmitting }: Cr
             <input
               id="video-file-url"
               type="url"
-              value={formData.video_file_url}
-              onChange={(e) => setFormData({ ...formData, video_file_url: e.target.value })}
+              value={formData.videoFileUrl}
+              onChange={(e) => setFormData({ ...formData, videoFileUrl: e.target.value })}
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
               placeholder="https://cdn.example.com/episode.mp4"
             />
@@ -163,8 +172,8 @@ export function CreateEpisodeModal({ open, onClose, onSubmit, isSubmitting }: Cr
             </label>
             <textarea
               id="show-notes"
-              value={formData.show_notes}
-              onChange={(e) => setFormData({ ...formData, show_notes: e.target.value })}
+              value={formData.showNotes}
+              onChange={(e) => setFormData({ ...formData, showNotes: e.target.value })}
               rows={4}
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
             />
@@ -183,16 +192,16 @@ export function CreateEpisodeModal({ open, onClose, onSubmit, isSubmitting }: Cr
               type="button"
               onClick={onClose}
               className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              disabled={isPending}
+              disabled={isSubmitting}
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isSubmitting}
               className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isPending ? 'Creating...' : 'Create Episode'}
+              {isSubmitting ? 'Creating...' : 'Create Episode'}
             </button>
           </div>
         </form>

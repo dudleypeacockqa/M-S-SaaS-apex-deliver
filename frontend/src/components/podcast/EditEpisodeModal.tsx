@@ -1,15 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateEpisode, type PodcastEpisode } from '../../services/api/podcasts';
+import type { PodcastEpisode } from '../../services/api/podcasts';
 
 interface EditEpisodeModalProps {
-  isOpen: boolean;
-  onClose: () => void;
   episode: PodcastEpisode | null;
+  onClose: () => void;
+  onSubmit: (updates: {
+    title?: string;
+    description?: string;
+    show_notes?: string;
+    status?: 'draft' | 'published' | 'archived';
+  }) => void;
+  isSubmitting: boolean;
 }
 
-export function EditEpisodeModal({ isOpen, onClose, episode }: EditEpisodeModalProps) {
-  const queryClient = useQueryClient();
+export function EditEpisodeModal({ episode, onClose, onSubmit, isSubmitting }: EditEpisodeModalProps) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -31,24 +35,6 @@ export function EditEpisodeModal({ isOpen, onClose, episode }: EditEpisodeModalP
     }
   }, [episode]);
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: () =>
-      updateEpisode(episode!.id, {
-        title: formData.title,
-        description: formData.description || undefined,
-        show_notes: formData.show_notes || undefined,
-        status: formData.status,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
-      onClose();
-      setError(null);
-    },
-    onError: (err: any) => {
-      setError(err.response?.data?.detail || 'Failed to update episode. Please try again.');
-    },
-  });
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -59,10 +45,15 @@ export function EditEpisodeModal({ isOpen, onClose, episode }: EditEpisodeModalP
       return;
     }
 
-    mutate();
+    onSubmit({
+      title: formData.title,
+      description: formData.description || undefined,
+      show_notes: formData.show_notes || undefined,
+      status: formData.status,
+    });
   };
 
-  if (!isOpen || !episode) return null;
+  if (!episode) return null;
 
   return (
     <div
@@ -171,16 +162,16 @@ export function EditEpisodeModal({ isOpen, onClose, episode }: EditEpisodeModalP
               type="button"
               onClick={onClose}
               className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              disabled={isPending}
+              disabled={isSubmitting}
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isSubmitting}
               className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isPending ? 'Saving...' : 'Save Changes'}
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>
