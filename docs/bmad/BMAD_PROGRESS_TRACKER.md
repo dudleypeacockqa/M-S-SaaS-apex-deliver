@@ -17,9 +17,9 @@
 - ✅ Purged stale `__pycache__` for deal_matching routes; test discovery continues at 126 green before failure.
 - 🔄 NEXT: restore DealMatchingService helpers (or mark DEV-018 suite pending) to achieve full green baseline before moving to DEV-011/DEV-008 work.
 ### Session 2025-10-29 (DEV-008 RED cycle kickoff - 09:12 UTC)
--  Command: backend/venv/Scripts/pytest.exe backend/tests/test_document_endpoints.py -k  'permission or version' --maxfail=1 --disable-warnings  FAIL (stopped at test_max_versions_enforced). 
--  Failure: document_service.upload_document tries to refresh transient Document instance (InvalidRequestError) when enforcing 20-version retention.
--  NEXT: refactor upload_document to persist version rows inside transaction (delete oldest, commit, refresh) then rerun targeted pytest.
+- - Command: backend/venv/Scripts/pytest.exe backend/tests/test_document_endpoints.py -k  'permission or version' --maxfail=1 --disable-warnings  FAIL (stopped at test_max_versions_enforced). 
+- - Failure: document_service.upload_document tries to refresh transient Document instance (InvalidRequestError) when enforcing 20-version retention.
+- - NEXT: refactor upload_document to persist version rows inside transaction (delete oldest, commit, refresh) then rerun targeted pytest.
 
 ### Session 2025-10-29 (Completion Plan Step 1 – Baseline Sync 13:45 UTC)
 - ✅ Reviewed repo state (`git status -sb`) and confirmed outstanding story scopes (DEV-016, DEV-011, OPS-005) against plan.md.
