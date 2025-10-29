@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom';
 
 export interface PricingCardProps {
   name: string;
-  price: number;
+  price: number | string;
   currency: string;
   period: string;
+  setupFee?: number;
   description: string;
   features: string[];
   cta: string;
@@ -21,6 +22,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
   price,
   currency,
   period,
+  setupFee,
   description,
   features,
   cta,
@@ -75,9 +77,17 @@ export const PricingCard: React.FC<PricingCardProps> = ({
         {/* Price */}
         <div className="text-center mb-6">
           <div className="flex items-baseline justify-center">
-            <span className="text-4xl font-extrabold text-gray-900">{currency}{price.toLocaleString()}</span>
-            <span className="text-gray-600 ml-2">/ {period}</span>
+            <span className="text-4xl font-extrabold text-gray-900">{currency}{typeof price === 'number' ? price.toLocaleString() : price}</span>
+            {period && <span className="text-gray-600 ml-2">/ {period}</span>}
           </div>
+          {setupFee && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="text-sm font-semibold text-gray-700">One-Time Setup Fee</div>
+              <div className="text-2xl font-bold text-gray-900 mt-1">
+                £{setupFee.toLocaleString()}{setupFee >= 30000 && '+'}
+              </div>
+            </div>
+          )}
         </div>
         {/* Features */}
         <ul className="space-y-3 mb-8">
@@ -110,9 +120,17 @@ export const PricingCard: React.FC<PricingCardProps> = ({
       {/* Price */}
       <div className="text-center mb-6">
         <div className="flex items-baseline justify-center">
-          <span className="text-4xl font-extrabold text-gray-900">{currency}{price.toLocaleString()}</span>
-          <span className="text-gray-600 ml-2">/ {period}</span>
+          <span className="text-4xl font-extrabold text-gray-900">{currency}{typeof price === 'number' ? price.toLocaleString() : price}</span>
+          {period && <span className="text-gray-600 ml-2">/ {period}</span>}
         </div>
+        {setupFee && (
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="text-sm font-semibold text-gray-700">One-Time Setup Fee</div>
+            <div className="text-2xl font-bold text-gray-900 mt-1">
+              £{setupFee.toLocaleString()}{setupFee >= 30000 && '+'}
+            </div>
+          </div>
+        )}
       </div>
       {/* Features */}
       <ul className="space-y-3 mb-8">
