@@ -42,10 +42,12 @@ const mockMatchCriteria = [
 
 const mockMatches = [
   {
-    deal_id: 'deal-1',
-    deal_name: 'SaaS Startup Acquisition',
+    id: 'match-1',
+    dealId: 'deal-1',
+    matchedDealId: 'matched-deal-1',
+    dealName: 'SaaS Startup Acquisition',
     score: 85.5,
-    confidence: 'high',
+    confidence: 'high' as const,
     explanation: {
       industry_match: { score: 0.95, reason: 'Strong industry alignment' },
       size_match: { score: 0.85, reason: 'Deal size within range' },
@@ -54,10 +56,12 @@ const mockMatches = [
     },
   },
   {
-    deal_id: 'deal-2',
-    deal_name: 'FinTech Platform',
+    id: 'match-2',
+    dealId: 'deal-2',
+    matchedDealId: 'matched-deal-2',
+    dealName: 'FinTech Platform',
     score: 72.3,
-    confidence: 'medium',
+    confidence: 'medium' as const,
     explanation: {
       industry_match: { score: 0.70, reason: 'Related industry' },
       size_match: { score: 0.75, reason: 'Close to range' },
