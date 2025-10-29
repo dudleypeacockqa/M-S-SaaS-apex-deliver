@@ -38,26 +38,42 @@ describe('DocumentList', () => {
 
   it('should render document list with file details', async () => {
     const { listDocuments } = await import('../../services/api/documents');
-    vi.mocked(listDocuments).mockResolvedValue([
-      {
-        id: 'doc-1',
-        name: 'Financial_Statement_Q4.pdf',
-        size: 2048000,
-        version: 1,
-        uploaded_by: 'John Doe',
-        created_at: '2025-01-15T10:30:00Z',
-        folder_id: 'folder-1',
-      },
-      {
-        id: 'doc-2',
-        name: 'NDA_Template.docx',
-        size: 512000,
-        version: 3,
-        uploaded_by: 'Jane Smith',
-        created_at: '2025-01-10T14:20:00Z',
-        folder_id: 'folder-1',
-      },
-    ]);
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        {
+          id: 'doc-1',
+          name: 'Financial_Statement_Q4.pdf',
+          file_size: 2_048_000,
+          file_type: 'application/pdf',
+          version: 1,
+          uploaded_by: 'John Doe',
+          created_at: '2025-01-15T10:30:00Z',
+          folder_id: 'folder-1',
+          deal_id: 'deal-1',
+          organization_id: 'org-1',
+          updated_at: null,
+          archived_at: null,
+        },
+        {
+          id: 'doc-2',
+          name: 'NDA_Template.docx',
+          file_size: 512_000,
+          file_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          version: 3,
+          uploaded_by: 'Jane Smith',
+          created_at: '2025-01-10T14:20:00Z',
+          folder_id: 'folder-1',
+          deal_id: 'deal-1',
+          organization_id: 'org-1',
+          updated_at: null,
+          archived_at: null,
+        },
+      ],
+      total: 2,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
 
     renderWithProviders(
       <DocumentList
@@ -70,14 +86,14 @@ describe('DocumentList', () => {
     await waitFor(() => {
       expect(screen.getByText('Financial_Statement_Q4.pdf')).toBeInTheDocument();
       expect(screen.getByText('NDA_Template.docx')).toBeInTheDocument();
-      expect(screen.getByText('2.0 MB')).toBeInTheDocument();
+      expect(screen.getByText('1.95 MB')).toBeInTheDocument();
       expect(screen.getByText('v3')).toBeInTheDocument();
     });
   });
 
   it('should show empty state when no documents', async () => {
     const { listDocuments } = await import('../../services/api/documents');
-    vi.mocked(listDocuments).mockResolvedValue([]);
+    vi.mocked(listDocuments).mockResolvedValue({ items: [], total: 0, page: 1, per_page: 25, pages: 1 });
 
     renderWithProviders(
       <DocumentList
@@ -94,10 +110,16 @@ describe('DocumentList', () => {
 
   it('should sort documents by name', async () => {
     const { listDocuments } = await import('../../services/api/documents');
-    vi.mocked(listDocuments).mockResolvedValue([
-      { id: 'doc-1', name: 'Zebra.pdf', size: 1024, version: 1, created_at: '2025-01-01', folder_id: null },
-      { id: 'doc-2', name: 'Alpha.pdf', size: 1024, version: 1, created_at: '2025-01-02', folder_id: null },
-    ]);
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Zebra.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+        { id: 'doc-2', name: 'Alpha.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-02', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 2,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
 
     renderWithProviders(
       <DocumentList
@@ -120,10 +142,16 @@ describe('DocumentList', () => {
 
   it('should sort documents by date', async () => {
     const { listDocuments } = await import('../../services/api/documents');
-    vi.mocked(listDocuments).mockResolvedValue([
-      { id: 'doc-1', name: 'Old.pdf', size: 1024, version: 1, created_at: '2025-01-01T10:00:00Z', folder_id: null },
-      { id: 'doc-2', name: 'New.pdf', size: 1024, version: 1, created_at: '2025-01-15T10:00:00Z', folder_id: null },
-    ]);
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Old.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01T10:00:00Z', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+        { id: 'doc-2', name: 'New.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-15T10:00:00Z', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 2,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
 
     renderWithProviders(
       <DocumentList
@@ -146,10 +174,16 @@ describe('DocumentList', () => {
 
   it('should filter documents by search query', async () => {
     const { listDocuments } = await import('../../services/api/documents');
-    vi.mocked(listDocuments).mockResolvedValue([
-      { id: 'doc-1', name: 'Financial_Report.pdf', size: 1024, version: 1, created_at: '2025-01-01', folder_id: null },
-      { id: 'doc-2', name: 'Legal_Contract.pdf', size: 1024, version: 1, created_at: '2025-01-02', folder_id: null },
-    ]);
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Financial_Report.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+        { id: 'doc-2', name: 'Legal_Contract.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-02', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 2,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
 
     renderWithProviders(
       <DocumentList
@@ -170,9 +204,15 @@ describe('DocumentList', () => {
 
   it('should select single document with checkbox', async () => {
     const { listDocuments } = await import('../../services/api/documents');
-    vi.mocked(listDocuments).mockResolvedValue([
-      { id: 'doc-1', name: 'Document.pdf', size: 1024, version: 1, created_at: '2025-01-01', folder_id: null },
-    ]);
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Document.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 1,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
 
     const onSelectionChange = vi.fn();
 
@@ -187,15 +227,21 @@ describe('DocumentList', () => {
     const checkbox = await screen.findByRole('checkbox', { name: /select document\.pdf/i });
     fireEvent.click(checkbox);
 
-    expect(onSelectionChange).toHaveBeenCalledWith(['doc-1']);
+    await waitFor(() => expect(onSelectionChange).toHaveBeenCalledWith(['doc-1']));
   });
 
   it('should select all documents with header checkbox', async () => {
     const { listDocuments } = await import('../../services/api/documents');
-    vi.mocked(listDocuments).mockResolvedValue([
-      { id: 'doc-1', name: 'Doc1.pdf', size: 1024, version: 1, created_at: '2025-01-01', folder_id: null },
-      { id: 'doc-2', name: 'Doc2.pdf', size: 1024, version: 1, created_at: '2025-01-02', folder_id: null },
-    ]);
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Doc1.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+        { id: 'doc-2', name: 'Doc2.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-02', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 2,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
 
     const onSelectionChange = vi.fn();
 
@@ -210,14 +256,20 @@ describe('DocumentList', () => {
     const selectAllCheckbox = await screen.findByRole('checkbox', { name: /select all/i });
     fireEvent.click(selectAllCheckbox);
 
-    expect(onSelectionChange).toHaveBeenCalledWith(['doc-1', 'doc-2']);
+    await waitFor(() => expect(onSelectionChange).toHaveBeenCalledWith(['doc-1', 'doc-2']));
   });
 
   it('should show download button for each document', async () => {
     const { listDocuments } = await import('../../services/api/documents');
-    vi.mocked(listDocuments).mockResolvedValue([
-      { id: 'doc-1', name: 'Report.pdf', size: 1024, version: 1, created_at: '2025-01-01', folder_id: null },
-    ]);
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Report.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 1,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
 
     renderWithProviders(
       <DocumentList
@@ -234,9 +286,15 @@ describe('DocumentList', () => {
 
   it('should call download API when download button clicked', async () => {
     const { listDocuments, downloadDocument } = await import('../../services/api/documents');
-    vi.mocked(listDocuments).mockResolvedValue([
-      { id: 'doc-1', name: 'Contract.pdf', size: 1024, version: 1, created_at: '2025-01-01', folder_id: null },
-    ]);
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Contract.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 1,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
     vi.mocked(downloadDocument).mockResolvedValue('https://example.com/download-url');
 
     renderWithProviders(
@@ -251,15 +309,21 @@ describe('DocumentList', () => {
     fireEvent.click(downloadButton);
 
     await waitFor(() => {
-      expect(downloadDocument).toHaveBeenCalledWith('doc-1');
+      expect(downloadDocument).toHaveBeenCalledWith('deal-1', 'doc-1');
     });
   });
 
   it('should show delete button for each document', async () => {
     const { listDocuments } = await import('../../services/api/documents');
-    vi.mocked(listDocuments).mockResolvedValue([
-      { id: 'doc-1', name: 'Old_File.pdf', size: 1024, version: 1, created_at: '2025-01-01', folder_id: null },
-    ]);
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Old_File.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 1,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
 
     renderWithProviders(
       <DocumentList
@@ -276,9 +340,15 @@ describe('DocumentList', () => {
 
   it('should confirm before deleting document', async () => {
     const { listDocuments, deleteDocument } = await import('../../services/api/documents');
-    vi.mocked(listDocuments).mockResolvedValue([
-      { id: 'doc-1', name: 'ToDelete.pdf', size: 1024, version: 1, created_at: '2025-01-01', folder_id: null },
-    ]);
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'ToDelete.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 1,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
     vi.mocked(deleteDocument).mockResolvedValue(undefined);
 
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
@@ -296,7 +366,7 @@ describe('DocumentList', () => {
 
     await waitFor(() => {
       expect(confirmSpy).toHaveBeenCalled();
-      expect(deleteDocument).toHaveBeenCalledWith('doc-1');
+      expect(deleteDocument).toHaveBeenCalledWith('deal-1', 'doc-1');
     });
 
     confirmSpy.mockRestore();
@@ -304,7 +374,7 @@ describe('DocumentList', () => {
 
   it('should show loading state while fetching documents', () => {
     const { listDocuments } = vi.mocked(require('../../services/api/documents'));
-    listDocuments.mockImplementation(() => new Promise(() => {})); // Never resolves
+    listDocuments.mockImplementation(() => new Promise(() => {}));
 
     renderWithProviders(
       <DocumentList
