@@ -53,6 +53,159 @@ def _max_permission(current: str, candidate: str) -> str:
     candidate_key = _normalize_level(candidate)
     return current if _PERMISSION_RANK[current_key] >= _PERMISSION_RANK[candidate_key] else candidate
 
+
+def _resolve_folder_permission(
+    db: Session,
+    *,
+    folder: Optional[Folder],
+    user: User,
+    deal: Deal,
+) -> str:
+    """Resolve the effective permission level for a folder hierarchy."""
+
+    # Deal owners always have owner permission
+    if str(deal.owner_id) == str(user.id):
+        return PermissionLevel.OWNER
+
+    permission = PermissionLevel.VIEWER
+
+    current_folder = folder
+    while current_folder is not None:
+        perm = (
+            db.query(DocumentPermission)
+            .filter(
+                DocumentPermission.folder_id == current_folder.id,
+                DocumentPermission.user_id == str(user.id),
+                DocumentPermission.organization_id == current_folder.organization_id,
+            )
+            .one_or_none()
+        )
+        if perm:
+            permission = _max_permission(permission, perm.permission_level)
+
+        if current_folder.parent_folder_id:
+            current_folder = db.get(Folder, current_folder.parent_folder_id)
+        else:
+            current_folder = None
+
+    return permission
+
+
+def _resolve_document_permission(
+    db: Session,
+    *,
+    document: Document,
+    user: User,
+) -> str:
+    """Resolve the effective permission level for a specific document."""
+
+    if document.organization_id != str(user.organization_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    deal = db.get(Deal, document.deal_id)
+
+    # Deal owners and uploaders have implicit owner permission
+    if deal and str(deal.owner_id) == str(user.id):
+        return PermissionLevel.OWNER
+    if str(document.uploaded_by) == str(user.id):
+        return PermissionLevel.OWNER
+
+    permission = PermissionLevel.VIEWER
+
+    # Document-specific permission
+    doc_permission = (
+        db.query(DocumentPermission)
+        .filter(
+            DocumentPermission.document_id == document.id,
+            DocumentPermission.user_id == str(user.id),
+            DocumentPermission.organization_id == document.organization_id,
+        )
+        .one_or_none()
+    )
+    if doc_permission:
+        permission = _max_permission(permission, doc_permission.permission_level)
+
+    # Folder permissions (inherit from parent folders)
+    if document.folder_id:
+        folder = db.get(Folder, document.folder_id)
+        if folder:
+            folder_permission = _resolve_folder_permission(
+                db,
+                folder=folder,
+                user=user,
+                deal=deal or _ensure_deal_access(db, document.deal_id, user),
+            )
+            permission = _max_permission(permission, folder_permission)
+
+    return permission
+
+
+def _ensure_document_permission(
+    db: Session,
+    *,
+    document: Document,
+    user: User,
+    minimum_level: str,
+    allow_editor_for_own: bool = False,
+) -> str:
+    permission = _resolve_document_permission(db, document=document, user=user)
+
+    if (
+        allow_editor_for_own
+        and _normalize_level(permission) == PermissionLevel.EDITOR
+        and str(document.uploaded_by) == str(user.id)
+    ):
+        return permission
+
+    if _PERMISSION_RANK[_normalize_level(permission)] < _PERMISSION_RANK[_normalize_level(minimum_level)]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions for this document",
+        )
+    return permission
+
+
+def _ensure_folder_owner_permission(
+    db: Session,
+    *,
+    folder: Folder,
+    user: User,
+    deal: Deal,
+) -> None:
+    permission = _resolve_folder_permission(db, folder=folder, user=user, deal=deal)
+    if _PERMISSION_RANK[_normalize_level(permission)] < _PERMISSION_RANK[PermissionLevel.OWNER]:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions for this folder",
+        )
+
+
+def ensure_document_permission(
+    db: Session,
+    *,
+    document: Document,
+    user: User,
+    minimum_level: str,
+    allow_editor_for_own: bool = False,
+) -> str:
+    return _ensure_document_permission(
+        db,
+        document=document,
+        user=user,
+        minimum_level=minimum_level,
+        allow_editor_for_own=allow_editor_for_own,
+    )
+
+
+def ensure_folder_owner_permission(
+    db: Session,
+    *,
+    folder: Folder,
+    user: User,
+    deal: Deal,
+) -> None:
+    _ensure_folder_owner_permission(db, folder=folder, user=user, deal=deal)
+
 def _ensure_deal_access(db: Session, deal_id: str, user: User) -> Deal:
     deal = db.get(Deal, deal_id)
     if deal is None or deal.organization_id != user.organization_id:
@@ -86,6 +239,54 @@ def _folder_to_response(folder: Folder, *, document_count: int, children: Option
     )
 
 
+async def _trim_document_versions(
+    db: Session,
+    *,
+    base_document: Document,
+    storage,
+    max_versions: int = 20,
+) -> None:
+    """
+    Enforce maximum version limit by deleting oldest versions.
+
+    Keeps only the most recent max_versions for a document family.
+    Updates parent relationships if root versions are deleted.
+    """
+    # Find all versions of this document
+    root_id = base_document.parent_document_id if base_document.parent_document_id else base_document.id
+
+    all_versions = db.query(Document).filter(
+        Document.organization_id == base_document.organization_id,
+        (Document.id == root_id) | (Document.parent_document_id == root_id),
+        Document.archived_at.is_(None),
+    ).order_by(Document.version.desc()).all()
+
+    if len(all_versions) > max_versions:
+        # Keep only the latest max_versions
+        versions_to_keep = all_versions[:max_versions]
+        versions_to_delete = all_versions[max_versions:]
+
+        # After deletion, the oldest remaining version becomes the new root
+        if versions_to_keep:
+            new_root = versions_to_keep[-1]  # Oldest version we're keeping
+            # Update all kept versions to point to the new root as parent
+            for version in versions_to_keep:
+                if version.id != new_root.id:
+                    version.parent_document_id = new_root.id
+                else:
+                    # The new root has no parent
+                    version.parent_document_id = None
+                db.add(version)
+
+        # Delete old versions and their files
+        for old_version in versions_to_delete:
+            try:
+                await storage.delete_file(old_version.file_key, base_document.organization_id)
+            except Exception:
+                pass  # Continue even if file deletion fails
+            db.delete(old_version)
+
+
 def create_folder(
     db: Session,
     *,
@@ -95,6 +296,25 @@ def create_folder(
 ) -> FolderResponse:
     deal = _ensure_deal_access(db, deal_id, current_user)
     parent_folder = _ensure_folder_access(db, payload.parent_folder_id and str(payload.parent_folder_id), deal)
+
+    if parent_folder:
+        permission_level = _resolve_folder_permission(
+            db,
+            folder=parent_folder,
+            user=current_user,
+            deal=deal,
+        )
+        if _PERMISSION_RANK[_normalize_level(permission_level)] < _PERMISSION_RANK[PermissionLevel.EDITOR]:
+            raise HTTPException(
+                status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions to create a subfolder",
+            )
+    else:
+        if str(deal.owner_id) != str(current_user.id):
+            raise HTTPException(
+                status.HTTP_403_FORBIDDEN,
+                detail="Only deal owners can create top-level folders",
+            )
 
     folder = Folder(
         id=str(uuid4()),
@@ -121,6 +341,25 @@ async def upload_document(
 ) -> DocumentUploadResponse:
     deal = _ensure_deal_access(db, deal_id, current_user)
     folder = _ensure_folder_access(db, folder_id, deal)
+
+    if folder:
+        permission_level = _resolve_folder_permission(
+            db,
+            folder=folder,
+            user=current_user,
+            deal=deal,
+        )
+        if _PERMISSION_RANK[_normalize_level(permission_level)] < _PERMISSION_RANK[PermissionLevel.EDITOR]:
+            raise HTTPException(
+                status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions to upload to this folder",
+            )
+    else:
+        if str(deal.owner_id) != str(current_user.id):
+            raise HTTPException(
+                status.HTTP_403_FORBIDDEN,
+                detail="Only deal owners can upload to the root data room",
+            )
 
     if file.content_type not in ALLOWED_FILE_TYPES:
         raise HTTPException(
@@ -178,36 +417,6 @@ async def upload_document(
             # Latest doc is the root (v1), so it becomes the parent
             parent_doc_id = latest_doc.id
 
-        # Enforce max 20 versions - delete oldest versions if needed
-        MAX_VERSIONS = 20
-        if len(existing_docs) >= MAX_VERSIONS:
-            # Keep only the latest (MAX_VERSIONS - 1) versions, since we're adding one more
-            versions_to_keep = existing_docs[:MAX_VERSIONS - 1]
-            versions_to_delete = existing_docs[MAX_VERSIONS - 1:]
-
-            # After deletion, the oldest remaining version becomes the new root
-            if versions_to_keep:
-                new_root = versions_to_keep[-1]  # Oldest version we're keeping
-                # Update all kept versions to point to the new root as parent
-                for version in versions_to_keep:
-                    if version.id != new_root.id:
-                        version.parent_document_id = new_root.id
-                    else:
-                        # The new root has no parent
-                        version.parent_document_id = None
-                    db.add(version)
-
-                # Update parent_doc_id for the document we're about to create
-                parent_doc_id = new_root.id
-
-            # Delete old versions
-            for old_version in versions_to_delete:
-                try:
-                    await storage.delete_file(old_version.file_key, current_user.organization_id)
-                except Exception:
-                    pass  # Continue even if file deletion fails
-                db.delete(old_version)
-
     document = Document(
         id=str(uuid4()),
         name=filename,
@@ -223,6 +432,13 @@ async def upload_document(
     )
     db.add(document)
     db.flush()
+
+    await _trim_document_versions(
+        db,
+        base_document=document,
+        storage=storage,
+        max_versions=20,
+    )
 
     _log_access(db, document, current_user, action="upload")
 
@@ -245,6 +461,53 @@ async def upload_document(
         updated_at=document.updated_at,
         uploader_name=None,
     )
+
+
+async def _trim_document_versions(
+    db: Session,
+    *,
+    base_document: Document,
+    storage,
+    max_versions: int,
+) -> None:
+    """Ensure only the most recent `max_versions` remain for a document."""
+
+    versions_query = db.query(Document).filter(
+        Document.name == base_document.name,
+        Document.deal_id == base_document.deal_id,
+        Document.organization_id == base_document.organization_id,
+        Document.archived_at.is_(None),
+    )
+
+    if base_document.folder_id:
+        versions_query = versions_query.filter(Document.folder_id == base_document.folder_id)
+    else:
+        versions_query = versions_query.filter(Document.folder_id.is_(None))
+
+    versions = (
+        versions_query
+        .order_by(Document.created_at.desc(), Document.version.desc())
+        .all()
+    )
+
+    if len(versions) <= max_versions:
+        return
+
+    keep = versions[:max_versions]
+    purge = versions[max_versions:]
+
+    root = keep[-1]
+
+    for version in keep:
+        version.parent_document_id = root.id if version.id != root.id else None
+        db.add(version)
+
+    for old_version in purge:
+        try:
+            await storage.delete_file(old_version.file_key, base_document.organization_id)
+        except Exception:  # pragma: no cover - storage deletion best effort
+            pass
+        db.delete(old_version)
 
 
 def list_documents(
@@ -368,25 +631,38 @@ def update_folder(
     *,
     folder: FolderResponse,
     folder_data: FolderUpdate,
+    current_user: User,
 ) -> FolderResponse:
     """Update folder name or move it to a different parent."""
-    # Get the actual folder model from DB
     folder_model = db.get(Folder, str(folder.id))
     if folder_model is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Folder not found")
 
-    # Update fields
-    if folder_data.name is not None:
-        folder_model.name = folder_data.name.strip()
+    deal = db.get(Deal, folder_model.deal_id)
+    if deal is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deal not found")
+
+    _ensure_folder_owner_permission(db, folder=folder_model, user=current_user, deal=deal)
 
     if folder_data.parent_folder_id is not None:
+        new_parent = db.get(Folder, str(folder_data.parent_folder_id))
+        if new_parent is None or new_parent.deal_id != folder_model.deal_id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Parent folder not found")
+        parent_permission = _resolve_folder_permission(db, folder=new_parent, user=current_user, deal=deal)
+        if _PERMISSION_RANK[_normalize_level(parent_permission)] < _PERMISSION_RANK[PermissionLevel.OWNER]:
+            raise HTTPException(
+                status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions to move folder",
+            )
         folder_model.parent_folder_id = str(folder_data.parent_folder_id)
+
+    if folder_data.name is not None:
+        folder_model.name = folder_data.name.strip()
 
     db.add(folder_model)
     db.commit()
     db.refresh(folder_model)
 
-    # Count documents for response
     doc_count = (
         db.query(func.count(Document.id))
         .filter(Document.folder_id == folder_model.id)
@@ -400,34 +676,35 @@ def delete_folder(
     db: Session,
     *,
     folder: FolderResponse,
+    current_user: User,
 ) -> None:
     """Delete a folder (must be empty - no documents or subfolders)."""
-    # Get the actual folder model from DB
     folder_model = db.get(Folder, str(folder.id))
     if folder_model is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Folder not found")
 
-    # Check for documents
+    deal = db.get(Deal, folder_model.deal_id)
+    if deal is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deal not found")
+
+    _ensure_folder_owner_permission(db, folder=folder_model, user=current_user, deal=deal)
+
     doc_count = (
         db.query(func.count(Document.id))
         .filter(Document.folder_id == folder_model.id)
         .scalar()
     ) or 0
-
     if doc_count > 0:
         raise ValueError("Folder is not empty - contains documents")
 
-    # Check for subfolders
     subfolder_count = (
         db.query(func.count(Folder.id))
         .filter(Folder.parent_folder_id == folder_model.id)
         .scalar()
     ) or 0
-
     if subfolder_count > 0:
         raise ValueError("Folder is not empty - contains subfolders")
 
-    # Delete the folder
     db.delete(folder_model)
     db.commit()
 
@@ -633,6 +910,102 @@ def get_document_access_logs(
             created_at=log.created_at,
         )
         for log in logs
+    ]
+
+
+def grant_folder_permission(
+    db: Session,
+    *,
+    deal_id: str,
+    folder_id: str,
+    permission_data: PermissionCreate,
+    current_user: User,
+) -> PermissionResponse:
+    deal = _ensure_deal_access(db, deal_id, current_user)
+    folder = _ensure_folder_access(db, folder_id, deal)
+    if folder is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Folder not found")
+
+    _ensure_folder_owner_permission(db, folder=folder, user=current_user, deal=deal)
+
+    target_user = db.get(User, str(permission_data.user_id))
+    if target_user is None or target_user.organization_id != folder.organization_id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    permission = (
+        db.query(DocumentPermission)
+        .filter(
+            DocumentPermission.folder_id == folder.id,
+            DocumentPermission.user_id == str(permission_data.user_id),
+            DocumentPermission.organization_id == folder.organization_id,
+        )
+        .one_or_none()
+    )
+
+    if permission:
+        permission.permission_level = permission_data.permission_level
+        permission.granted_by = current_user.id
+    else:
+        permission = DocumentPermission(
+            id=str(uuid4()),
+            document_id=None,
+            folder_id=folder.id,
+            user_id=str(permission_data.user_id),
+            permission_level=permission_data.permission_level,
+            organization_id=folder.organization_id,
+            granted_by=current_user.id,
+        )
+        db.add(permission)
+
+    db.commit()
+    db.refresh(permission)
+
+    return PermissionResponse(
+        id=UUID(permission.id),
+        document_id=None,
+        folder_id=UUID(permission.folder_id) if permission.folder_id else None,
+        user_id=UUID(permission.user_id),
+        permission_level=permission.permission_level,
+        granted_by=UUID(permission.granted_by),
+        created_at=permission.created_at,
+    )
+
+
+def list_folder_permissions(
+    db: Session,
+    *,
+    deal_id: str,
+    folder_id: str,
+    current_user: User,
+) -> list[PermissionResponse]:
+    deal = _ensure_deal_access(db, deal_id, current_user)
+    folder = _ensure_folder_access(db, folder_id, deal)
+    if folder is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Folder not found")
+
+    _ensure_folder_owner_permission(db, folder=folder, user=current_user, deal=deal)
+
+    permissions = (
+        db.query(DocumentPermission)
+        .filter(
+            DocumentPermission.folder_id == folder.id,
+            DocumentPermission.organization_id == folder.organization_id,
+        )
+        .order_by(DocumentPermission.created_at.desc())
+        .all()
+    )
+
+    return [
+        PermissionResponse(
+            id=UUID(permission.id),
+            document_id=None,
+            folder_id=UUID(permission.folder_id) if permission.folder_id else None,
+            user_id=UUID(permission.user_id),
+            permission_level=permission.permission_level,
+            granted_by=UUID(permission.granted_by),
+            created_at=permission.created_at,
+        )
+        for permission in permissions
     ]
 
 
