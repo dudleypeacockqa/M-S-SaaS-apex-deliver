@@ -1,4 +1,6 @@
 - [x] Capture current repo state and refresh BMAD workflow/status docs before new work
+- [ ] Stabilise RED Vitest suites (BulkActions, DealDocuments, AnalyticsProvider, MatchingWorkspace) via TDD
+- [ ] Re-run full test + coverage sweep; sync BMAD/Deployment docs and Render smoke evidence
 - [ ] Finish DEV-016 backend services, webhooks, and pytest coverage under TDD
 - [ ] Complete podcast frontend entitlement UX and tests for DEV-016
 - [ ] Deliver remaining valuation suite functionality and tests

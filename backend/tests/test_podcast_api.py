@@ -1943,3 +1943,111 @@ class TestTranscriptDownload:
             assert response.status_code == status.HTTP_403_FORBIDDEN
         finally:
             _clear_override()
+
+
+
+class TestThumbnailGeneration:
+    """TDD RED phase: Video thumbnail generation tests (DEV-016 Production)."""
+
+    def test_generate_thumbnail_premium_success(
+        self, client, create_user, create_organization
+    ):
+        """Test Premium tier can generate video thumbnails."""
+        org = create_organization(subscription_tier="premium")
+        premium_user = create_user(role=UserRole.enterprise, organization_id=org.id)
+        premium_user.subscription_tier = SubscriptionTier.PREMIUM.value
+
+        _override_user(premium_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode, patch(
+                "app.api.routes.podcasts.podcast_service.update_episode"
+            ) as mock_update_episode, patch(
+                "app.api.routes.podcasts.generate_thumbnail"
+            ) as mock_generate:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-123",
+                    organization_id=premium_user.organization_id,
+                    title="Test Episode",
+                    video_file_url="/storage/podcast-video/ep-123/test.mp4",
+                )
+                mock_generate.return_value = "/storage/thumbnails/ep-123.jpg"
+
+                response = client.post(
+                    "/api/podcasts/episodes/ep-123/generate-thumbnail"
+                )
+
+            assert response.status_code == status.HTTP_200_OK
+            data = response.json()
+            assert "thumbnail_url" in data
+            assert data["thumbnail_url"].endswith(".jpg")
+            assert mock_update_episode.called
+        finally:
+            _clear_override()
+
+    def test_generate_thumbnail_requires_video(
+        self, client, create_user, create_organization
+    ):
+        """Test thumbnail generation requires video file."""
+        org = create_organization(subscription_tier="premium")
+        premium_user = create_user(role=UserRole.enterprise, organization_id=org.id)
+        premium_user.subscription_tier = SubscriptionTier.PREMIUM.value
+
+        _override_user(premium_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-123",
+                    organization_id=premium_user.organization_id,
+                    title="Test Episode",
+                    video_file_url=None,
+                )
+
+                response = client.post(
+                    "/api/podcasts/episodes/ep-123/generate-thumbnail"
+                )
+
+            assert response.status_code == status.HTTP_400_BAD_REQUEST
+            assert "video" in response.json()["detail"].lower()
+        finally:
+            _clear_override()
+
+    def test_generate_thumbnail_professional_blocked(
+        self, client, create_user, create_organization
+    ):
+        """Test Professional tier cannot generate thumbnails (video feature)."""
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(
+            role=UserRole.growth, organization_id=org.id
+        )
+        professional_user.subscription_tier = (
+            SubscriptionTier.PROFESSIONAL.value
+        )
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature:
+                mock_feature.return_value = False
+
+                response = client.post(
+                    "/api/podcasts/episodes/ep-123/generate-thumbnail"
+                )
+
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+        finally:
+            _clear_override()
+

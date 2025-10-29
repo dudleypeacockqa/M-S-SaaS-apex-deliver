@@ -15,6 +15,7 @@ import {
 } from '../../services/dealMatchingService';
 import { MatchCard } from '../../components/deal-matching/MatchCard';
 import { MatchDetailModal } from '../../components/deal-matching/MatchDetailModal';
+import { CriteriaBuilderModal } from '../../components/deal-matching/CriteriaBuilderModal';
 
 interface MatchingWorkspaceProps {
   dealId?: string;
@@ -30,6 +31,7 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
   const [activeTab, setActiveTab] = useState<'criteria' | 'matches'>(initialTab);
   const [selectedMatch, setSelectedMatch] = useState<DealMatch | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isCriteriaModalOpen, setIsCriteriaModalOpen] = useState(false);
   const criteriaTabRef = useRef<HTMLButtonElement | null>(null);
   const matchesTabRef = useRef<HTMLButtonElement | null>(null);
   const queryClient = useQueryClient();
@@ -203,7 +205,10 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
           <div>
             <div className="mb-6 flex justify-between items-center">
               <h2 className="text-lg font-semibold text-gray-900">Saved Criteria</h2>
-              <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium">
+              <button
+                onClick={() => setIsCriteriaModalOpen(true)}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium"
+              >
                 Create Criteria
               </button>
             </div>
@@ -311,6 +316,16 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
         onSave={handleSaveMatch}
         onPass={handlePassMatch}
         onRequestIntro={handleRequestIntro}
+      />
+
+      {/* Criteria Builder Modal */}
+      <CriteriaBuilderModal
+        isOpen={isCriteriaModalOpen}
+        onClose={() => setIsCriteriaModalOpen(false)}
+        onSuccess={() => {
+          setIsCriteriaModalOpen(false);
+          queryClient.invalidateQueries({ queryKey: ['matchCriteria'] });
+        }}
       />
     </div>
   );

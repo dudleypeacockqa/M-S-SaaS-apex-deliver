@@ -23,10 +23,11 @@ PHASE_4_COMPLETE: false
 
 ## Next Action
 
-NEXT_ACTION: Stabilise RED Vitest suites (DEV-008 BulkActions, DEV-018 MatchingWorkspace, MARK-002 AnalyticsProvider) before introducing new scope.
-NEXT_COMMAND: npm --prefix frontend run test src/components/documents/BulkActions.test.tsx src/pages/deals/MatchingWorkspace.test.tsx src/components/marketing/AnalyticsProvider.test.tsx
+NEXT_ACTION: Add RED tests for DEV-016 transcription endpoint (restore /transcribe contracts before implementation)
+NEXT_COMMAND: backend/venv/Scripts/python.exe -m pytest backend/tests/test_podcast_api.py::TestTranscription -k transcribe --maxfail=1
 NEXT_AGENT: dev
 TARGET: Sprint 2 - Feature Completion Runway
-STATUS: Backend 512/512 passing (38 skipped external integrations); Frontend 625/642 passing with 17 failures across BulkActions, DealDocuments, AnalyticsProvider, MatchingWorkspace tests.
+STATUS: Targeted podcast quota suites GREEN (71 passed) – transcription endpoint remains RED (404).
 
-LAST_UPDATED: 2025-10-29T17:30:00Z
+LAST_UPDATED: 2025-10-29T16:55:00Z
+

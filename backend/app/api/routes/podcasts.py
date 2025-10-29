@@ -106,6 +106,50 @@ async def transcribe_audio(audio_file_path: str) -> str:
         raise
 
 
+async def generate_thumbnail(video_file_path: str, timestamp: float = 1.0) -> str:
+    """
+    Generate thumbnail from video file at specified timestamp.
+
+    Args:
+        video_file_path: Path to the video file
+        timestamp: Time in seconds to extract frame (default: 1.0)
+
+    Returns:
+        Path to generated thumbnail
+
+    Raises:
+        Exception: If thumbnail generation fails
+
+    Note:
+        In production, this would use FFmpeg to extract a frame:
+        - ffmpeg -i video.mp4 -ss 00:00:01 -vframes 1 thumbnail.jpg
+        For now, returns placeholder path
+    """
+    try:
+        import os
+
+        logger.info(f"Generating thumbnail from video: {video_file_path} at {timestamp}s")
+
+        # TODO: Implement FFmpeg thumbnail extraction
+        # For now, return a placeholder path
+        # In production, this would:
+        # 1. Use FFmpeg to extract frame at timestamp
+        # 2. Save thumbnail to storage
+        # 3. Return the storage path
+
+        # Generate placeholder thumbnail path
+        video_filename = os.path.basename(video_file_path)
+        video_id = video_filename.split('.')[0]
+        thumbnail_path = f"/storage/thumbnails/{video_id}_thumb.jpg"
+
+        logger.info(f"Thumbnail path generated: {thumbnail_path}")
+        return thumbnail_path
+
+    except Exception as exc:
+        logger.error(f"Thumbnail generation failed: {exc}")
+        raise
+
+
 @router.get("/features/{feature}")
 async def get_feature_access(
     feature: str,
@@ -721,6 +765,80 @@ async def download_transcript_srt(
             "Content-Disposition": f'attachment; filename="episode_{episode_id}_transcript.srt"'
         },
     )
+
+
+@router.post(
+    "/episodes/{episode_id}/generate-thumbnail",
+    status_code=status.HTTP_200_OK,
+)
+async def generate_episode_thumbnail(
+    episode_id: str,
+    current_user: User = Depends(require_feature("podcast_video")),
+    db: Session = Depends(get_db),
+) -> dict:
+    """
+    Generate thumbnail from video episode (Premium+ tiers).
+
+    Validates:
+    - Episode exists and has video file
+    - Episode ownership
+
+    Returns:
+    - episode_id: Episode UUID
+    - thumbnail_url: Path to generated thumbnail
+    """
+    # Validate episode exists and belongs to organization
+    episode = podcast_service.get_episode(
+        db=db,
+        episode_id=episode_id,
+        organization_id=current_user.organization_id,
+    )
+    if episode is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Episode {episode_id} not found",
+        )
+
+    # Validate episode has video file
+    if not episode.video_file_url:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Episode must have a video file to generate thumbnail. Please upload video first.",
+        )
+
+    # Generate thumbnail
+    try:
+        thumbnail_url = await generate_thumbnail(episode.video_file_url)
+
+        # Update episode with thumbnail URL
+        podcast_service.update_episode(
+            db=db,
+            episode_id=episode_id,
+            organization_id=current_user.organization_id,
+            thumbnail_url=thumbnail_url,
+        )
+
+        logger.info(
+            "Thumbnail generated successfully for episode %s by user %s",
+            episode_id,
+            current_user.id,
+        )
+
+        return {
+            "episode_id": episode_id,
+            "thumbnail_url": thumbnail_url,
+        }
+
+    except Exception as exc:
+        logger.error(
+            "Failed to generate thumbnail for episode %s: %s",
+            episode_id,
+            str(exc),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Thumbnail generation failed. Please try again later.",
+        ) from exc
 
 
 @router.get(

@@ -1,3 +1,206 @@
+### Session 2025-10-29 (Regression Sweep – 11:15 UTC)
+- Ran full backend pytest (): 402 passed / 1 failed / 20 skipped. Failure in  confirming  lacks / fields for upcoming DEV-016 work.
+- Ran global Vitest suite (
+> ma-saas-frontend@2.0.0 test
+> vitest --run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.4 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+ [31m❯[39m src/services/api/documents.test.ts [2m([22m[2m7 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 30[2mms[22m[39m
+     [32m✓[39m creates a folder via POST /documents/folders[32m 11[2mms[22m[39m
+     [32m✓[39m uploads a document using multipart form data[32m 3[2mms[22m[39m
+     [32m✓[39m lists documents with query parameters[32m 1[2mms[22m[39m
+     [32m✓[39m downloads a document and returns blob URL[32m 4[2mms[22m[39m
+     [32m✓[39m adds a document permission via POST[32m 1[2mms[22m[39m
+[31m     [31m×[31m bulk downloads documents using deal-scoped endpoint[39m[32m 5[2mms[22m[39m
+[31m     [31m×[31m bulk deletes documents using deal-scoped endpoint[39m[32m 1[2mms[22m[39m
+ [31m❯[39m src/components/marketing/AnalyticsProvider.test.tsx [2m([22m[2m10 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 130[2mms[22m[39m
+       [32m✓[39m should inject GA4 script when measurement ID is provided[32m 52[2mms[22m[39m
+       [32m✓[39m should not inject GA4 script when measurement ID is missing[32m 11[2mms[22m[39m
+[31m       [31m×[31m should initialize gtag dataLayer[39m[32m 14[2mms[22m[39m
+[31m       [31m×[31m should inject Hotjar script when site ID is provided[39m[32m 7[2mms[22m[39m
+       [32m✓[39m should not inject Hotjar when site ID is missing[32m 5[2mms[22m[39m
+       [32m✓[39m should inject LinkedIn Insight Tag when partner ID is provided[32m 9[2mms[22m[39m
+       [32m✓[39m should not inject LinkedIn Insight Tag when partner ID is missing[32m 3[2mms[22m[39m
+       [32m✓[39m should inject LinkedIn noscript image tag[32m 7[2mms[22m[39m
+       [32m✓[39m should render children components[32m 9[2mms[22m[39m
+[31m       [31m×[31m should initialize all analytics when all IDs are provided[39m[32m 8[2mms[22m[39m
+ [32m✓[39m src/pages/deals/TaskBoard.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 1881[2mms[22m[39m
+     [33m[2m✓[22m[39m opens create task modal when "Add Task" button is clicked [33m 303[2mms[22m[39m
+     [33m[2m✓[22m[39m creates a new task when form is submitted [33m 835[2mms[22m[39m
+     [33m[2m✓[22m[39m updates task status when moved to different column [33m 328[2mms[22m[39m
+ [31m❯[39m src/pages/deals/DataRoom.test.tsx [2m([22m[2m11 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 2787[2mms[22m[39m
+     [32m✓[39m should display folder sidebar[32m 246[2mms[22m[39m
+     [32m✓[39m should list existing folders[32m 53[2mms[22m[39m
+     [32m✓[39m should show create folder button[32m 272[2mms[22m[39m
+     [32m✓[39m should create a new folder[32m 221[2mms[22m[39m
+     [32m✓[39m should filter documents by selected folder[32m 80[2mms[22m[39m
+     [32m✓[39m should show All Documents view when no folder selected[32m 158[2mms[22m[39m
+[31m     [31m×[31m shows upgrade message when listing documents responds with 403 entitlement error[39m[32m 74[2mms[22m[39m
+     [32m✓[39m should display upload button[32m 148[2mms[22m[39m
+     [32m✓[39m should show empty state when no documents[32m 32[2mms[22m[39m
+     [32m✓[39m should display document list[32m 47[2mms[22m[39m
+[31m     [31m×[31m allows selecting documents and triggers bulk actions[39m[33m 1453[2mms[22m[39m
+ [31m❯[39m src/components/documents/BulkActions.test.tsx [2m([22m[2m15 tests[22m[2m | [22m[31m10 failed[39m[2m)[22m[33m 1146[2mms[22m[39m
+       [32m✓[39m should not render when no documents selected[32m 23[2mms[22m[39m
+       [32m✓[39m should render action bar when documents selected[32m 98[2mms[22m[39m
+       [32m✓[39m should display bulk download button[32m 264[2mms[22m[39m
+       [32m✓[39m should display bulk delete button[32m 132[2mms[22m[39m
+       [32m✓[39m should display clear selection button[32m 124[2mms[22m[39m
+[31m       [31m×[31m should call bulkDownloadDocuments API when download clicked[39m[32m 29[2mms[22m[39m
+[31m       [31m×[31m should show loading state during download[39m[32m 58[2mms[22m[39m
+[31m       [31m×[31m should handle download errors gracefully[39m[32m 105[2mms[22m[39m
+[31m       [31m×[31m should show confirmation dialog before delete[39m[32m 44[2mms[22m[39m
+[31m       [31m×[31m should call bulkDeleteDocuments API when confirmed[39m[32m 72[2mms[22m[39m
+[31m       [31m×[31m should call onRefresh after successful delete[39m[32m 29[2mms[22m[39m
+[31m       [31m×[31m should call onClearSelection after successful delete[39m[32m 56[2mms[22m[39m
+[31m       [31m×[31m should handle partial delete failures[39m[32m 39[2mms[22m[39m
+[31m       [31m×[31m should not call API if user cancels confirmation[39m[32m 50[2mms[22m[39m
+[31m       [31m×[31m should call onClearSelection when clear button clicked[39m[32m 18[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[33m 4091[2mms[22m[39m
+       [33m[2m✓[22m[39m should create episode when form submitted with valid data [33m 1248[2mms[22m[39m
+       [33m[2m✓[22m[39m should update episode when edit form submitted [33m 671[2mms[22m[39m
+ [32m✓[39m src/components/marketing/TrustBadges.test.tsx [2m([22m[2m47 tests[22m[2m)[22m[33m 1647[2mms[22m[39m
+     [33m[2m✓[22m[39m displays all 6 integration logos [33m 326[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/LandingPage.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 547[2mms[22m[39m
+ [32m✓[39m src/components/billing/CancelSubscriptionModal.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 825[2mms[22m[39m
+ [31m❯[39m src/pages/deals/MatchingWorkspace.test.tsx [2m([22m[2m14 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 3588[2mms[22m[39m
+       [33m[2m✓[22m[39m should render matching workspace with title and tabs [33m 627[2mms[22m[39m
+       [32m✓[39m should show loading state while fetching data[32m 20[2mms[22m[39m
+       [32m✓[39m should display error message when fetch fails[32m 35[2mms[22m[39m
+       [32m✓[39m should list all saved criteria[32m 102[2mms[22m[39m
+       [32m✓[39m should show create criteria button[32m 110[2mms[22m[39m
+       [32m✓[39m should display criteria details (industries, size, geography)[32m 60[2mms[22m[39m
+[31m       [31m×[31m should display match results with scores[39m[33m 1048[2mms[22m[39m
+[31m       [31m×[31m should show confidence badges (high/medium/low)[39m[33m 1033[2mms[22m[39m
+       [32m✓[39m should display match explanation details[32m 36[2mms[22m[39m
+       [32m✓[39m should show empty state when no matches found[32m 35[2mms[22m[39m
+       [32m✓[39m should allow switching between tabs[32m 88[2mms[22m[39m
+       [32m✓[39m should trigger find matches action[32m 170[2mms[22m[39m
+       [32m✓[39m should show upgrade prompt for Starter tier users[32m 128[2mms[22m[39m
+       [32m✓[39m should allow access for Professional+ tier users[32m 88[2mms[22m[39m
+ [31m❯[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx [2m([22m[2m11 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 4490[2mms[22m[39m
+     [32m✓[39m should not render when isOpen is false[32m 47[2mms[22m[39m
+     [32m✓[39m should render modal when isOpen is true[32m 289[2mms[22m[39m
+     [32m✓[39m should display all required form fields[32m 64[2mms[22m[39m
+     [32m✓[39m should validate required fields on submit[32m 170[2mms[22m[39m
+     [32m✓[39m should validate minimum deal size is less than maximum[32m 107[2mms[22m[39m
+[31m     [31m×[31m should allow adding industries via input[39m[33m 1134[2mms[22m[39m
+[31m     [31m×[31m should allow removing industries by clicking X[39m[33m 1072[2mms[22m[39m
+[31m     [31m×[31m should submit form with valid data[39m[33m 1207[2mms[22m[39m
+     [32m✓[39m should show loading state during submission[32m 272[2mms[22m[39m
+     [32m✓[39m should call onClose when close button is clicked[32m 85[2mms[22m[39m
+     [32m✓[39m should close modal on backdrop click[32m 41[2mms[22m[39m
+ [32m✓[39m src/tests/integration/routing.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1645[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the landing page for visitors [33m 945[2mms[22m[39m
+     [33m[2m✓[22m[39m displays the dashboard when the user is authenticated [33m 616[2mms[22m[39m
+ [32m✓[39m src/components/podcast/VideoUploadModal.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 1382[2mms[22m[39m
+       [33m[2m✓[22m[39m should display file size [33m 595[2mms[22m[39m
+ [32m✓[39m src/App.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 2637[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the home route with sign-in actions for visitors [33m 1596[2mms[22m[39m
+     [33m[2m✓[22m[39m updates the header to show the user menu for authenticated users [33m 751[2mms[22m[39m
+[90mstdout[2m | src/pages/marketing/ContactPage.test.tsx[2m > [22m[2mContactPage[2m > [22m[2msubmits form and shows confirmation message
+[22m[39mForm submitted: {
+  name: [32m'Jane Doe'[39m,
+  email: [32m'jane@example.com'[39m,
+  subject: [32m'demo'[39m,
+  message: [32m'Looking for a demo next week.'[39m
+}
+
+ [32m✓[39m src/pages/marketing/ContactPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 5248[2mms[22m[39m
+     [33m[2m✓[22m[39m renders header, contact form, and information sections [33m 350[2mms[22m[39m
+     [33m[2m✓[22m[39m submits form and shows confirmation message [33m 4591[2mms[22m[39m
+ [32m✓[39m src/components/billing/ChangeTierModal.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 1307[2mms[22m[39m
+     [33m[2m✓[22m[39m should display loading state while changing tier [33m 842[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/PricingPage.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 1007[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/legal/__tests__/LegalPages.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 937[2mms[22m[39m
+     [33m[2m✓[22m[39m renders Terms of Service with last updated date and sections [33m 448[2mms[22m[39m
+ [32m✓[39m src/pages/deals/NewDealPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 6793[2mms[22m[39m
+     [33m[2m✓[22m[39m shows validation errors when required fields missing [33m 827[2mms[22m[39m
+     [33m[2m✓[22m[39m submits payload and navigates to deal details on success [33m 4744[2mms[22m[39m
+     [33m[2m✓[22m[39m displays backend error when createDeal rejects [33m 1214[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/EnhancedLandingPage.test.tsx [2m([22m[2m23 tests[22m[2m)[22m[33m 6426[2mms[22m[39m
+     [33m[2m✓[22m[39m renders without crashing [33m 720[2mms[22m[39m
+     [33m[2m✓[22m[39m renders EnhancedHeroSection [33m 376[2mms[22m[39m
+     [33m[2m✓[22m[39m renders Problem-Solution section [33m 876[2mms[22m[39m
+     [33m[2m✓[22m[39m displays all 9 feature cards [33m 563[2mms[22m[39m
+     [33m[2m✓[22m[39m displays PMI section with FinanceFlo.ai branding [33m 308[2mms[22m[39m
+     [33m[2m✓[22m[39m shows complete M&A lifecycle stages [33m 401[2mms[22m[39m
+     [33m[2m✓[22m[39m all CTAs link to sign-up page [33m 356[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 1787[2mms[22m[39m
+     [33m[2m✓[22m[39m should enter edit mode when Edit button is clicked [33m 363[2mms[22m[39m
+     [33m[2m✓[22m[39m should call updateDeal API when saving changes [33m 546[2mms[22m[39m
+ [32m✓[39m src/features/auth/Auth.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1717[2mms[22m[39m
+     [33m[2m✓[22m[39m redirects unauthenticated users from /dashboard to /sign-in [33m 428[2mms[22m[39m
+     [33m[2m✓[22m[39m shows dashboard content when the user is authenticated [33m 361[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the appropriate header action depending on auth state [33m 922[2mms[22m[39m
+ [32m✓[39m src/components/marketing/EnhancedTestimonials.test.tsx [2m([22m[2m36 tests[22m[2m)[22m[33m 772[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 11390[2mms[22m[39m
+     [33m[2m✓[22m[39m shows upgrade messaging when valuations endpoint rejects with entitlement error [33m 501[2mms[22m[39m
+     [33m[2m✓[22m[39m submits new valuation when form completed [33m 1885[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding comparable company to selected valuation [33m 1612[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding precedent transaction to selected valuation [33m 2165[2mms[22m[39m
+     [33m[2m✓[22m[39m allows creating a new scenario with JSON assumptions [33m 1712[2mms[22m[39m
+     [33m[2m✓[22m[39m shows validation error when scenario assumptions JSON is invalid [33m 968[2mms[22m[39m
+     [33m[2m✓[22m[39m shows detailed confirmation after queuing an export [33m 309[2mms[22m[39m
+     [33m[2m✓[22m[39m runs Monte Carlo simulation and displays percentile summary [33m 965[2mms[22m[39m
+ [32m✓[39m src/pages/deals/FinancialDashboard.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 593[2mms[22m[39m
+ [32m✓[39m src/tests/integration/PodcastStudioRouting.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 459[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/FeaturesPage.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 691[2mms[22m[39m
+     [33m[2m✓[22m[39m renders main heading [33m 301[2mms[22m[39m
+ [32m✓[39m src/components/marketing/FAQSection.test.tsx [2m([22m[2m41 tests[22m[2m)[22m[33m 1032[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 1101[2mms[22m[39m
+ [32m✓[39m src/components/marketing/ComparisonTable.test.tsx [2m([22m[2m40 tests[22m[2m)[22m[33m 1197[2mms[22m[39m
+ [32m✓[39m src/components/marketing/EnhancedHeroSection.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 1145[2mms[22m[39m
+ [32m✓[39m src/components/layout/PageSection.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[32m 129[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealPipeline.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1282[2mms[22m[39m
+ [32m✓[39m src/components/layout/NavigationMenu.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 566[2mms[22m[39m
+ [32m✓[39m src/components/marketing/HeroSection.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 315[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/AboutPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 530[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDocuments.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 566[2mms[22m[39m
+     [33m[2m✓[22m[39m renders document rows with formatted size, version badge, and action buttons [33m 401[2mms[22m[39m
+ [32m✓[39m src/components/marketing/ROICalculator.test.tsx [2m([22m[2m33 tests[22m[2m)[22m[33m 1279[2mms[22m[39m
+     [33m[2m✓[22m[39m updates deal count when slider changes [33m 317[2mms[22m[39m
+ [32m✓[39m src/pages/dashboard/BillingDashboard.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 873[2mms[22m[39m
+     [33m[2m✓[22m[39m opens customer portal and shows loading state [33m 389[2mms[22m[39m
+ [32m✓[39m src/components/financial/FinancialOverview.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 331[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/MatchCard.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 392[2mms[22m[39m
+ [32m✓[39m src/pages/checkout/CheckoutCancel.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 222[2mms[22m[39m
+ [32m✓[39m src/hooks/useDealMatches.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 114[2mms[22m[39m
+ [32m✓[39m src/components/layout/Breadcrumbs.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 547[2mms[22m[39m
+ [32m✓[39m src/components/podcast/FeatureGate.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 588[2mms[22m[39m
+ [32m✓[39m src/components/financial/FinancialRatiosDashboard.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 423[2mms[22m[39m
+ [32m✓[39m src/components/marketing/StickyCTABar.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 150[2mms[22m[39m
+ [32m✓[39m src/pages/checkout/CheckoutSuccess.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 245[2mms[22m[39m
+ [32m✓[39m src/components/marketing/PricingCard.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 297[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/MatchDetailModal.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 605[2mms[22m[39m
+ [32m✓[39m src/components/financial/FinancialNarrativeDisplay.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 580[2mms[22m[39m
+ [32m✓[39m src/components/marketing/FeatureCard.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 93[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthErrorBoundary.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 784[2mms[22m[39m
+     [33m[2m✓[22m[39m should provide a way to recover from error [33m 477[2mms[22m[39m
+ [32m✓[39m src/components/marketing/MarketingNav.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1103[2mms[22m[39m
+     [33m[2m✓[22m[39m displays navigation links [33m 890[2mms[22m[39m
+ [32m✓[39m src/components/marketing/ExitIntentPopup.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 204[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/MatchScoreBadge.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32m✓[39m src/services/api.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/services/billingService.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/components/layout/ContentContainer.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 108[2mms[22m[39m
+ [32m✓[39m src/components/common/SEO.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 147[2mms[22m[39m
+ [32m✓[39m src/components/ui/Spinner.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+ [32m✓[39m src/hooks/useFeatureAccess.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 205[2mms[22m[39m
+ [32m✓[39m src/components/podcast/VideoPlayer.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[32m 163[2mms[22m[39m
+ [32m✓[39m src/components/financial/DealReadinessScore.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 183[2mms[22m[39m
+ [32m✓[39m src/services/api/financial.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/components/auth/ProtectedRoute.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 117[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m6 failed[39m[22m[2m | [22m[1m[32m60 passed[39m[22m[90m (66)[39m
+[2m      Tests [22m [1m[31m22 failed[39m[22m[2m | [22m[1m[32m663 passed[39m[22m[90m (685)[39m
+[2m   Start at [22m 11:05:15
+[2m   Duration [22m 42.62s[2m (transform 16.44s, setup 121.78s, collect 49.14s, tests 83.72s, environment 302.18s, prepare 5.56s)[22m): 663 passed / 22 failed across AnalyticsProvider (3), CriteriaBuilderModal (3), BulkActions (10), MatchingWorkspace (async tab wait), and documents API client (2) plus dependent E2E flows.
+- NEXT: Prioritise backend quota summary implementation (add period bounds) then stabilise document/matching analytics specs before rerunning suites.
+
+test
 ### Session 2025-10-29 (DEV-008 frontend upload UI - 11:02 UTC)
 - ✅ Added DealDocuments Vitest coverage (list rendering, upload mutation, empty state).
 - ✅ Command: npm --prefix frontend run test -- src/pages/deals/DealDocuments.test.tsx → 3 passed.
@@ -195,6 +398,7 @@
 
 **Notes**:
 - Baseline check (`python -m pytest backend/tests/test_podcast_api.py backend/tests/test_quota_service.py`) → **58 passed / 5 failed** (`/transcribe` endpoint returning 404 across cases).
+- BMAD Cycle 2.A (2025-10-29 16:55 UTC): Added RED spec for quota period bounds, implemented period metadata in `quota_service`; re-run → **71 passed / 0 failed** on targeted suites.
 - Render health last verified 2025-10-29 10:15 UTC; fresh smoke logs required post-implementation.
 - Coverage targets remain ≥90% backend / ≥85% frontend for remaining feature stories.
 
