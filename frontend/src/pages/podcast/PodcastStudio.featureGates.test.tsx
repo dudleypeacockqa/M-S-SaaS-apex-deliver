@@ -34,6 +34,9 @@ vi.mock('../../services/api/podcasts', () => ({
   publishEpisodeToYouTube: vi.fn(),
   transcribeEpisode: vi.fn(),
 }));
+vi.mock('../../components/podcast/LiveStreamManager', () => ({
+  default: () => <div data-testid="mock-live-stream-manager" />,
+}));
 
 vi.mock('../../hooks/useFeatureAccess', () => ({
   useFeatureAccess: vi.fn(),

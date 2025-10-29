@@ -8,6 +8,15 @@ import workflowAutomationIcon from './icons/workflow-automation.svg'
 import professionalCommunityIcon from './icons/professional-community.svg'
 import postMergerIntegrationIcon from './icons/post-merger-integration.svg'
 
+import dealFlowIllustration from './illustrations/deal-flow-illustration.svg'
+import financialIntelligenceIllustration from './illustrations/financial-intelligence-illustration.svg'
+import valuationSuiteIllustration from './illustrations/valuation-suite-illustration.svg'
+import secureDataRoomIllustration from './illustrations/secure-data-room-illustration.svg'
+import aiDealMatchingIllustration from './illustrations/ai-deal-matching-illustration.svg'
+import documentAutomationIllustration from './illustrations/document-automation-illustration.svg'
+import workflowAutomationIllustration from './illustrations/workflow-automation-illustration.svg'
+import communityIllustration from './illustrations/community-illustration.svg'
+
 import jamesDavidsonAvatar from './avatars/james-davidson.svg'
 import sarahReynoldsAvatar from './avatars/sarah-reynolds.svg'
 import michaelParkAvatar from './avatars/michael-park.svg'
@@ -19,6 +28,9 @@ import horizonCapitalLogo from './logos/horizon-capital.svg'
 import sterlingAdvisorsLogo from './logos/sterling-advisors.svg'
 import pacificBridgeLogo from './logos/pacific-bridge.svg'
 import summitEquityLogo from './logos/summit-equity.svg'
+import northernRidgeLogo from './logos/northern-ridge.svg'
+import atlasConsultingLogo from './logos/atlas-consulting.svg'
+import zenithHoldingsLogo from './logos/zenith-holdings.svg'
 import integrationXeroLogo from './logos/integration-xero.svg'
 import integrationQuickBooksLogo from './logos/integration-quickbooks.svg'
 import integrationSageLogo from './logos/integration-sage.svg'
@@ -51,7 +63,10 @@ export const marketingPartnerLogos = [
   { src: horizonCapitalLogo, name: 'Horizon Capital' },
   { src: sterlingAdvisorsLogo, name: 'Sterling Advisors' },
   { src: pacificBridgeLogo, name: 'Pacific Bridge Capital' },
-  { src: summitEquityLogo, name: 'Summit Equity Group' }
+  { src: summitEquityLogo, name: 'Summit Equity Group' },
+  { src: northernRidgeLogo, name: 'Northern Ridge Partners' },
+  { src: atlasConsultingLogo, name: 'Atlas Consulting' },
+  { src: zenithHoldingsLogo, name: 'Zenith Holdings' }
 ] as const
 
 export const marketingIntegrationLogos = [
@@ -62,3 +77,14 @@ export const marketingIntegrationLogos = [
   { src: integrationStripeLogo, name: 'Stripe payment integration' },
   { src: integrationSlackLogo, name: 'Slack collaboration integration' }
 ] as const
+
+export const marketingIllustrations = {
+  dealFlow: { src: dealFlowIllustration, alt: 'Kanban style deal pipeline with multiple stages' },
+  financialIntelligence: { src: financialIntelligenceIllustration, alt: 'Financial analytics dashboard highlighting real-time ratios' },
+  valuationSuite: { src: valuationSuiteIllustration, alt: 'Valuation comparison across methods with sensitivity chart' },
+  secureDataRoom: { src: secureDataRoomIllustration, alt: 'Secure data room vault protecting confidential documents' },
+  aiDealMatching: { src: aiDealMatchingIllustration, alt: 'AI network linking buyer and seller profiles with match scores' },
+  documentAutomation: { src: documentAutomationIllustration, alt: 'Automated document workflow with AI-generated clauses' },
+  workflowAutomation: { src: workflowAutomationIllustration, alt: 'Connected automation nodes showing completed tasks' },
+  community: { src: communityIllustration, alt: 'Professional community feed with events and member spotlights' }
+} as const

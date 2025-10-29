@@ -1,38 +1,61 @@
+import { Suspense, lazy, type ComponentType, type LazyExoticComponent } from "react"
 import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom"
 import { SignedIn, SignedOut } from "@clerk/clerk-react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import { ErrorBoundary } from "./components/common"
-import { RootLayout } from "./layouts/RootLayout"
-import { SignInPage } from "./pages/SignInPage"
-import { SignUpPage } from "./pages/SignUpPage"
-import { DashboardPage } from "./pages/DashboardPage"
-import { AdminDashboard } from "./pages/admin/AdminDashboard"
-import { UserManagement } from "./pages/admin/UserManagement"
-import { OrganizationManagement } from "./pages/admin/OrganizationManagement"
-import { SystemHealth } from "./pages/admin/SystemHealth"
-import { DealPipeline } from "./pages/deals/DealPipeline"
-import { NewDealPage } from "./pages/deals/NewDealPage"
-import { DealDetails } from "./pages/deals/DealDetails"
-import { DataRoom } from "./pages/deals/DataRoom"
-import { ValuationSuite } from "./pages/deals/valuation/ValuationSuite"
-import FinancialDashboard from "./pages/deals/FinancialDashboard"
-import { PodcastStudio } from "./pages/podcast/PodcastStudio"
+import { LoadingSpinner } from "./components/common/LoadingSpinner"
 
-// Billing & Checkout Pages
-import { BillingDashboard } from "./pages/dashboard/BillingDashboard"
-import { CheckoutSuccess } from "./pages/checkout/CheckoutSuccess"
-import { CheckoutCancel } from "./pages/checkout/CheckoutCancel"
+const lazyNamed = <T extends ComponentType<any>>(
+  importer: () => Promise<Record<string, unknown>>,
+  exportName: string,
+): LazyExoticComponent<T> =>
+  lazy(async () => {
+    const module = await importer()
+    const component = module[exportName]
 
-// Marketing Pages
-import { EnhancedLandingPage } from "./pages/marketing/EnhancedLandingPage"
-import { PricingPage } from "./pages/marketing/PricingPage"
-import { FeaturesPage } from "./pages/marketing/FeaturesPage"
-import { AboutPage } from "./pages/marketing/AboutPage"
-import { ContactPage } from "./pages/marketing/ContactPage"
-import { TermsOfService } from "./pages/marketing/legal/TermsOfService"
-import { PrivacyPolicy } from "./pages/marketing/legal/PrivacyPolicy"
-import { CookiePolicy } from "./pages/marketing/legal/CookiePolicy"
+    if (!component) {
+      throw new Error(`Failed to lazy load component "${exportName}"`)
+    }
+
+    return { default: component as T }
+  })
+
+const lazyDefault = (importer: () => Promise<{ default: ComponentType<any> }>) => lazy(importer)
+
+const RouteLoader = () => (
+  <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 via-white to-indigo-50">
+    <LoadingSpinner size="lg" />
+    <span className="text-base font-medium text-slate-600">Preparing the ApexDeliver experience…</span>
+  </div>
+)
+
+const RootLayout = lazyNamed(() => import("./layouts/RootLayout"), "RootLayout")
+const SignInPage = lazyNamed(() => import("./pages/SignInPage"), "SignInPage")
+const SignUpPage = lazyNamed(() => import("./pages/SignUpPage"), "SignUpPage")
+const DashboardPage = lazyNamed(() => import("./pages/DashboardPage"), "DashboardPage")
+const AdminDashboard = lazyNamed(() => import("./pages/admin/AdminDashboard"), "AdminDashboard")
+const UserManagement = lazyNamed(() => import("./pages/admin/UserManagement"), "UserManagement")
+const OrganizationManagement = lazyNamed(() => import("./pages/admin/OrganizationManagement"), "OrganizationManagement")
+const SystemHealth = lazyNamed(() => import("./pages/admin/SystemHealth"), "SystemHealth")
+const DealPipeline = lazyNamed(() => import("./pages/deals/DealPipeline"), "DealPipeline")
+const NewDealPage = lazyNamed(() => import("./pages/deals/NewDealPage"), "NewDealPage")
+const DealDetails = lazyNamed(() => import("./pages/deals/DealDetails"), "DealDetails")
+const DataRoom = lazyNamed(() => import("./pages/deals/DataRoom"), "DataRoom")
+const ValuationSuite = lazyNamed(() => import("./pages/deals/valuation/ValuationSuite"), "ValuationSuite")
+const FinancialDashboard = lazyDefault(() => import("./pages/deals/FinancialDashboard"))
+const PodcastStudio = lazyNamed(() => import("./pages/podcast/PodcastStudio"), "PodcastStudio")
+const BillingDashboard = lazyNamed(() => import("./pages/dashboard/BillingDashboard"), "BillingDashboard")
+const CheckoutSuccess = lazyNamed(() => import("./pages/checkout/CheckoutSuccess"), "CheckoutSuccess")
+const CheckoutCancel = lazyNamed(() => import("./pages/checkout/CheckoutCancel"), "CheckoutCancel")
+const EnhancedLandingPage = lazyNamed(() => import("./pages/marketing/EnhancedLandingPage"), "EnhancedLandingPage")
+const PricingPage = lazyNamed(() => import("./pages/marketing/PricingPage"), "PricingPage")
+const FeaturesPage = lazyNamed(() => import("./pages/marketing/FeaturesPage"), "FeaturesPage")
+const AboutPage = lazyNamed(() => import("./pages/marketing/AboutPage"), "AboutPage")
+const ContactPage = lazyNamed(() => import("./pages/marketing/ContactPage"), "ContactPage")
+const TermsOfService = lazyNamed(() => import("./pages/marketing/legal/TermsOfService"), "TermsOfService")
+const PrivacyPolicy = lazyNamed(() => import("./pages/marketing/legal/PrivacyPolicy"), "PrivacyPolicy")
+const CookiePolicy = lazyNamed(() => import("./pages/marketing/legal/CookiePolicy"), "CookiePolicy")
 
 const DashboardRoute = () => {
   return (
@@ -109,7 +132,9 @@ const App = () => {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <AppRoutes />
+          <Suspense fallback={<RouteLoader />}>
+            <AppRoutes />
+          </Suspense>
         </BrowserRouter>
       </QueryClientProvider>
     </ErrorBoundary>

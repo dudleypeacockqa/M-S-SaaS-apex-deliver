@@ -16,6 +16,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { PodcastStudio } from './PodcastStudio';
 import * as podcastApi from '../../services/api/podcasts';
+import { useSubscriptionTier, type SubscriptionTier } from '../../hooks/useSubscriptionTier';
 
 // Mock the podcast API
 vi.mock('../../services/api/podcasts', () => ({
@@ -26,9 +27,41 @@ vi.mock('../../services/api/podcasts', () => ({
   createEpisode: vi.fn(),
   updateEpisode: vi.fn(),
   deleteEpisode: vi.fn(),
+  getYouTubeConnectionStatus: vi.fn(),
+  initiateYouTubeOAuth: vi.fn(),
   publishEpisodeToYouTube: vi.fn(),
   transcribeEpisode: vi.fn(),
 }));
+vi.mock('../../components/podcast/LiveStreamManager', () => ({
+  default: () => <div data-testid="mock-live-stream-manager" />,
+}));
+
+vi.mock('../../hooks/useSubscriptionTier', () => ({
+  useSubscriptionTier: vi.fn(),
+}));
+
+const tierRank: Record<SubscriptionTier, number> = {
+  starter: 0,
+  professional: 1,
+  premium: 2,
+  enterprise: 3,
+};
+
+let activeTier: SubscriptionTier = 'professional';
+
+const setSubscriptionTier = (tier: SubscriptionTier) => {
+  activeTier = tier;
+  vi.mocked(useSubscriptionTier).mockReturnValue({
+    tier,
+    label: tier.charAt(0).toUpperCase() + tier.slice(1),
+    isLoading: false,
+    isLoaded: true,
+    error: null,
+    hasOrganization: true,
+    isAtLeast: (requiredTier: SubscriptionTier) => tierRank[tier] >= tierRank[requiredTier],
+    requiresUpgrade: (requiredTier: SubscriptionTier) => tierRank[tier] < tierRank[requiredTier],
+  });
+};
 
 const defaultQuota: podcastApi.QuotaSummary = {
   tier: 'professional',
@@ -47,6 +80,15 @@ const defaultQuota: podcastApi.QuotaSummary = {
   upgradeRequired: false,
   upgradeMessage: null,
   upgradeCtaUrl: null,
+};
+
+const defaultYouTubeConnection: podcastApi.YouTubeConnectionStatus = {
+  isConnected: true,
+  channelName: 'ApexDeliver Media',
+  channelUrl: 'https://youtube.com/@apexdeliver',
+  requiresAction: false,
+  connectedAt: '2025-10-01T00:00:00Z',
+  lastPublishedAt: null,
 };
 
 const buildEpisode = (
@@ -92,16 +134,49 @@ const createWrapper = () => {
 describe('PodcastStudio', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    setSubscriptionTier('professional');
     vi.mocked(podcastApi.transcribeEpisode).mockResolvedValue({
       episodeId: 'ep-1',
       transcript: 'Generated transcript content.',
       transcriptLanguage: 'en',
       wordCount: 3,
     });
+    vi.mocked(podcastApi.getYouTubeConnectionStatus).mockResolvedValue(defaultYouTubeConnection);
+    vi.mocked(podcastApi.initiateYouTubeOAuth).mockResolvedValue({
+      authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
+      state: 'state-token',
+      expiresAt: '2025-10-31T12:00:00Z',
+    });
+    vi.mocked(podcastApi.publishEpisodeToYouTube).mockResolvedValue({ videoId: 'YT_DEFAULT' });
+    vi.mocked(podcastApi.checkFeatureAccess).mockImplementation(async (feature: string) => {
+      const requiredTierMap: Record<string, SubscriptionTier> = {
+        podcast_audio: 'professional',
+        podcast_video: 'premium',
+        transcription_basic: 'professional',
+        youtube_integration: 'premium',
+        live_streaming: 'enterprise',
+      };
+
+      const requiredTier = requiredTierMap[feature] ?? 'professional';
+      const hasAccess = tierRank[activeTier] >= tierRank[requiredTier];
+
+      return {
+        feature,
+        tier: activeTier,
+        tierLabel: activeTier.charAt(0).toUpperCase() + activeTier.slice(1),
+        hasAccess,
+        requiredTier,
+        requiredTierLabel: requiredTier.charAt(0).toUpperCase() + requiredTier.slice(1),
+        upgradeRequired: !hasAccess,
+        upgradeMessage: hasAccess ? null : `Upgrade to ${requiredTier.charAt(0).toUpperCase() + requiredTier.slice(1)} to access ${feature.replace('_', ' ')}`,
+        upgradeCtaUrl: '/pricing',
+      };
+    });
   });
 
   describe('Feature Access Gating', () => {
     it('should show upgrade prompt when user lacks podcast_audio access', async () => {
+      setSubscriptionTier('starter');
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
         feature: 'podcast_audio',
         tier: 'starter',
@@ -167,7 +242,7 @@ describe('PodcastStudio', () => {
       render(<PodcastStudio />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText(/3 \/ 10/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/3 \/ 10/i).length).toBeGreaterThan(0);
       });
     });
 
@@ -575,7 +650,7 @@ describe('PodcastStudio', () => {
       });
     });
 
-    it('should show Publish to YouTube button for video episodes when integration access granted', async () => {
+    it('allows editing metadata before publishing to YouTube when integration access granted', async () => {
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(audioAccess);
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(youtubeAccessGranted);
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
@@ -587,6 +662,10 @@ describe('PodcastStudio', () => {
         }),
       ]);
       vi.mocked(podcastApi.publishEpisodeToYouTube).mockResolvedValue({ videoId: 'YT_12345' });
+      vi.mocked(podcastApi.getYouTubeConnectionStatus).mockResolvedValue({
+        ...defaultYouTubeConnection,
+        isConnected: true,
+      });
 
       const user = userEvent.setup();
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -596,10 +675,82 @@ describe('PodcastStudio', () => {
 
       await user.click(publishButton);
 
+      const modalTitle = await screen.findByRole('heading', { name: /publish to youtube/i });
+      expect(modalTitle).toBeInTheDocument();
+
+      const titleInput = screen.getByLabelText(/video title/i);
+      expect(titleInput).toHaveValue('Premium Video Episode');
+      await user.clear(titleInput);
+      await user.type(titleInput, 'Investor Update Episode');
+
+      const tagsInput = screen.getByLabelText(/tags/i);
+      await user.clear(tagsInput);
+      await user.type(tagsInput, 'investor relations, earnings');
+
+      const privacySelect = screen.getByLabelText(/privacy/i);
+      await user.selectOptions(privacySelect, 'public');
+
+      await user.click(screen.getByRole('button', { name: /publish episode/i }));
+
       await waitFor(() => {
-        expect(podcastApi.publishEpisodeToYouTube).toHaveBeenCalledWith('ep-youtube-1');
+        expect(podcastApi.publishEpisodeToYouTube).toHaveBeenCalledWith('ep-youtube-1', {
+          title: 'Investor Update Episode',
+          description: 'Video episode ready for YouTube',
+          tags: ['investor relations', 'earnings'],
+          privacy: 'public',
+          scheduleTime: null,
+        });
       });
       expect(await screen.findByText(/published to youtube/i)).toBeInTheDocument();
+    });
+
+    it('initiates OAuth connect flow when YouTube account is not connected', async () => {
+      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(audioAccess);
+      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(youtubeAccessGranted);
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        buildEpisode({
+          id: 'ep-youtube-connect',
+          title: 'Video Episode',
+          video_file_url: 'https://cdn.example.com/video.mp4',
+        }),
+      ]);
+      vi.mocked(podcastApi.getYouTubeConnectionStatus).mockResolvedValue({
+        ...defaultYouTubeConnection,
+        isConnected: false,
+        channelName: null,
+        channelUrl: null,
+      });
+      vi.mocked(podcastApi.initiateYouTubeOAuth).mockResolvedValue({
+        authorizationUrl: 'https://accounts.google.com/o/oauth2/auth?client_id=test',
+        state: 'state-456',
+        expiresAt: '2025-11-01T00:00:00Z',
+      });
+
+      const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+      const user = userEvent.setup();
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const connectButton = await screen.findByRole('button', { name: /connect youtube/i });
+      await user.click(connectButton);
+
+      await waitFor(() => {
+        expect(podcastApi.initiateYouTubeOAuth).toHaveBeenCalledWith(
+          'ep-youtube-connect',
+          expect.any(String),
+        );
+      });
+
+      expect(openSpy).toHaveBeenCalledWith(
+        'https://accounts.google.com/o/oauth2/auth?client_id=test',
+        '_blank',
+        'noopener',
+      );
+      expect(
+        await screen.findByText(/complete the youtube connection in the popup/i),
+      ).toBeInTheDocument();
+
+      openSpy.mockRestore();
     });
 
     it('should show upgrade button when youtube integration access denied', async () => {
@@ -615,9 +766,10 @@ describe('PodcastStudio', () => {
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
 
-      const upgradeButton = await screen.findByRole('button', { name: /upgrade for youtube/i });
-      expect(upgradeButton).toBeDisabled();
-      expect(screen.getByText(/upgrade to premium tier to publish on youtube/i)).toBeInTheDocument();
+      const upgradeButtons = await screen.findAllByRole('button', { name: /upgrade for youtube/i });
+      expect(upgradeButtons.length).toBeGreaterThan(0);
+      upgradeButtons.forEach((button) => expect(button).toBeEnabled());
+      expect(screen.getAllByText(/upgrade to premium tier to publish on youtube/i).length).toBeGreaterThan(0);
     });
   });
 
@@ -861,3 +1013,4 @@ describe('PodcastStudio', () => {
     });
   });
 });
+

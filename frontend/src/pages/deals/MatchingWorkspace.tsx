@@ -3,7 +3,7 @@
  * Intelligent deal matching interface
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchMatchCriteria,
@@ -38,6 +38,17 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
   const matchesTabRef = useRef<HTMLButtonElement | null>(null);
   const queryClient = useQueryClient();
 
+  useEffect(() => {
+    setActiveTab((previous) => (previous === initialTab ? previous : initialTab));
+  }, [initialTab]);
+
+  useEffect(() => {
+    if (!dealId && activeTab === 'matches') {
+      setActiveTab('criteria');
+    }
+  }, [dealId, activeTab]);
+
+
   const hasAccess = userTier !== 'starter';
 
   const {
@@ -70,7 +81,7 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
 
   const saveMatchMutation = useMutation({
     mutationFn: (matchId: string) =>
-      recordMatchAction(matchId, { action: 'save', metadata: {} }),
+      recordMatchAction(matchId, { action: 'save', metadata: { source: 'matching_workspace' } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dealMatches', dealId] });
     },
@@ -78,16 +89,20 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
 
   const passMatchMutation = useMutation({
     mutationFn: (matchId: string) =>
-      recordMatchAction(matchId, { action: 'pass', metadata: {} }),
+      recordMatchAction(matchId, { action: 'pass', metadata: { source: 'matching_workspace' } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dealMatches', dealId] });
     },
   });
 
+  const viewMatchMutation = useMutation({
+    mutationFn: (matchId: string) =>
+      recordMatchAction(matchId, { action: 'view', metadata: { source: 'matching_workspace' } }),
+  });
+
   const handleViewDetails = (match: DealMatch) => {
-    // Record view action
     if (match.id) {
-      recordMatchAction(match.id, { action: 'view', metadata: {} });
+      viewMatchMutation.mutate(match.id);
     }
     setSelectedMatch(match);
     setIsDetailModalOpen(true);
@@ -110,12 +125,10 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
   };
 
   const handleRequestIntro = (matchId: string) => {
-    // Open the introduction request modal
-    const match = matches?.find(m => m.id === matchId);
+    const match = matches?.find((item) => item.id === matchId) ?? selectedMatch;
     if (match) {
       setSelectedMatch(match);
       setIsIntroModalOpen(true);
-      // Close detail modal if open
       if (isDetailModalOpen) {
         setIsDetailModalOpen(false);
       }
@@ -146,9 +159,47 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
   }
 
   const error = criteriaError || matchesError;
+  const isMatchesTab = activeTab === 'matches';
   const isInitialLoading = criteriaLoading && activeTab === 'criteria';
-  const showMatchesLoader = matchesLoading || criteriaLoading;
+  const showMatchesLoader = isMatchesTab && (matchesLoading || findMatchesMutation.isPending);
   const canFindMatches = criteria.length > 0;
+
+  const matchAnalytics = useMemo(() => {
+    if (!matches || matches.length === 0) {
+      return null;
+    }
+
+    const total = matches.length;
+    const totalScore = matches.reduce((sum, match) => {
+      const numericScore = typeof match.score === 'number' ? match.score : Number(match.score);
+      return sum + (Number.isFinite(numericScore) ? numericScore : 0);
+    }, 0);
+
+    const averageScore = total > 0 ? Math.round(totalScore / total) : 0;
+
+    const distribution = {
+      high: matches.filter((match) => match.score >= 80).length,
+      medium: matches.filter((match) => match.score >= 60 && match.score < 80).length,
+      low: matches.filter((match) => match.score < 60).length,
+    };
+
+    const normaliseStatus = (status?: string) => (status ? status.toLowerCase() : '');
+    const successStatuses = new Set(['saved', 'intro_requested', 'accepted', 'won', 'converted', 'intro_completed']);
+    const introStatuses = new Set(['intro_requested', 'intro_completed']);
+
+    const successCount = matches.filter((match) => successStatuses.has(normaliseStatus(match.status))).length;
+    const introCount = matches.filter((match) => introStatuses.has(normaliseStatus(match.status))).length;
+
+    const successRate = total ? Math.round((successCount / total) * 100) : 0;
+
+    return {
+      total,
+      averageScore: Number.isFinite(averageScore) ? averageScore : 0,
+      distribution,
+      successRate,
+      introCount,
+    };
+  }, [matches]);
 
   if (error) {
     return (
@@ -291,6 +342,87 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
                 )
               )}
             </div>
+
+            {matchAnalytics && !showMatchesLoader && (
+              <section
+                aria-label="Match analytics"
+                className="mb-6 rounded-lg border border-gray-200 bg-white/60 p-4 shadow-sm"
+              >
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                  Analytics Overview
+                </h3>
+                <div className="mt-3 grid gap-4 md:grid-cols-3">
+                  <div
+                    className="rounded-lg border border-indigo-200 bg-indigo-50 p-4"
+                    data-testid="analytics-average"
+                  >
+                    <p className="text-xs font-medium text-indigo-700 uppercase tracking-wide">
+                      Average Match Score
+                    </p>
+                    <p className="mt-1 text-2xl font-semibold text-indigo-900">
+                      {matchAnalytics.averageScore}%
+                    </p>
+                    <p className="mt-1 text-xs text-indigo-600">
+                      Across {matchAnalytics.total} matches
+                    </p>
+                  </div>
+                  <div
+                    className="rounded-lg border border-emerald-200 bg-emerald-50 p-4"
+                    data-testid="analytics-success-rate"
+                  >
+                    <p className="text-xs font-medium text-emerald-700 uppercase tracking-wide">
+                      Success Rate
+                    </p>
+                    <p className="mt-1 text-2xl font-semibold text-emerald-900">
+                      {matchAnalytics.successRate}%
+                    </p>
+                    <p className="mt-1 text-xs text-emerald-600">
+                      Saved or intro requested
+                    </p>
+                  </div>
+                  <div
+                    className="rounded-lg border border-blue-200 bg-blue-50 p-4"
+                    data-testid="analytics-intro-count"
+                  >
+                    <p className="text-xs font-medium text-blue-700 uppercase tracking-wide">
+                      Intro Requests
+                    </p>
+                    <p className="mt-1 text-2xl font-semibold text-blue-900">
+                      {matchAnalytics.introCount}
+                    </p>
+                    <p className="mt-1 text-xs text-blue-600">
+                      Awaiting responses
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                  <div
+                    className="rounded-md border border-gray-200 p-3"
+                    data-testid="analytics-distribution-high"
+                  >
+                    <p className="text-sm font-medium text-gray-700">
+                      {`High (>=80): ${matchAnalytics.distribution.high}`}
+                    </p>
+                  </div>
+                  <div
+                    className="rounded-md border border-gray-200 p-3"
+                    data-testid="analytics-distribution-medium"
+                  >
+                    <p className="text-sm font-medium text-gray-700">
+                      {`Medium (60-79): ${matchAnalytics.distribution.medium}`}
+                    </p>
+                  </div>
+                  <div
+                    className="rounded-md border border-gray-200 p-3"
+                    data-testid="analytics-distribution-low"
+                  >
+                    <p className="text-sm font-medium text-gray-700">
+                      {`Low (<60): ${matchAnalytics.distribution.low}`}
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
 
             {showMatchesLoader ? (
               <div className="text-center py-12 bg-gray-50 rounded-lg">

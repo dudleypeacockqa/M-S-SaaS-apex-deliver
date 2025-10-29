@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">Secure data room illustration</title>
+  <desc id="desc">Vault door protecting structured document folders with audit trail.</desc>
+  <defs>
+    <linearGradient id="secure-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ecfeff" />
+      <stop offset="100%" stop-color="#cffafe" />
+    </linearGradient>
+    <linearGradient id="vault-ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#0f172a" flood-opacity="0.16" />
+    </filter>
+  </defs>
+  <rect width="720" height="480" rx="32" fill="url(#secure-bg)" />
+  <g transform="translate(64,80)">
+    <rect width="592" height="320" rx="28" fill="#ffffff" filter="url(#shadow)" />
+    <rect x="56" y="72" width="232" height="192" rx="24" fill="#ecfeff" stroke="#0ea5e9" stroke-width="3" />
+    <g transform="translate(84,104)">
+      <rect width="176" height="60" rx="16" fill="#22d3ee" opacity="0.18" />
+      <rect y="76" width="176" height="60" rx="16" fill="#22d3ee" opacity="0.35" />
+      <rect y="152" width="176" height="60" rx="16" fill="#0ea5e9" />
+      <g fill="#ffffff" font-family="'Segoe UI', sans-serif" font-size="15">
+        <text x="24" y="40">Due diligence checklist.pdf</text>
+        <text x="24" y="116" opacity="0.7">Financial statements.xlsx</text>
+        <text x="24" y="188" font-weight="600">Confidential IM.pdf</text>
+      </g>
+    </g>
+
+    <g transform="translate(336,46)">
+      <circle cx="140" cy="140" r="140" fill="url(#vault-ring)" />
+      <circle cx="140" cy="140" r="108" fill="#e0f2fe" />
+      <circle cx="140" cy="140" r="72" fill="#0ea5e9" opacity="0.28" />
+      <g transform="translate(140,140)" fill="#ffffff">
+        <rect x="-10" y="-68" width="20" height="56" rx="8" />
+        <rect x="-10" y="12" width="20" height="56" rx="8" />
+        <rect x="12" y="-10" width="56" height="20" rx="8" />
+        <rect x="-68" y="-10" width="56" height="20" rx="8" />
+        <circle r="36" fill="#38bdf8" />
+        <circle r="12" fill="#ffffff" />
+      </g>
+      <circle cx="140" cy="140" r="140" fill="none" stroke="#38bdf8" stroke-width="6" stroke-dasharray="8 14" opacity="0.35" />
+    </g>
+
+    <g transform="translate(96,300)" font-family="'Segoe UI', sans-serif" font-size="14" fill="#0f172a">
+      <text font-weight="700">Audit trail</text>
+      <text y="28" opacity="0.7">08:14 &nbsp;•&nbsp; Access granted &mdash; Sarah R.</text>
+      <text y="56" opacity="0.7">08:32 &nbsp;•&nbsp; Document downloaded &mdash; James D.</text>
+      <text y="84" opacity="0.7">09:02 &nbsp;•&nbsp; Watermark applied &mdash; System</text>
+    </g>
+  </g>
+</svg>

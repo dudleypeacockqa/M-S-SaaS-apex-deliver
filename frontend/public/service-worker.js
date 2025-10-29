@@ -1,52 +1,117 @@
 'use strict'
 
-const CACHE_NAME = 'apexdeliver-marketing-cache-v1'
-const ASSETS = [
+const CACHE_VERSION = 'v2'
+const STATIC_CACHE = 'apexdeliver-static-' + CACHE_VERSION
+const RUNTIME_CACHE = 'apexdeliver-runtime-' + CACHE_VERSION
+
+const PRECACHE_ASSETS = [
   '/',
+  '/pricing',
+  '/features',
+  '/about',
+  '/contact',
+  '/legal/terms',
+  '/legal/privacy',
+  '/legal/cookies',
   '/sitemap.xml',
-  '/robots.txt'
+  '/robots.txt',
+  '/assets/brand/apexdeliver-wordmark.svg',
+  '/assets/dashboard-preview.webp',
+  '/assets/financial-analysis-visual.webp',
+  '/assets/hero-background.webp',
+  '/assets/pmi-integration-graphic.webp',
+  '/assets/security-trust-visual.webp',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/apple-touch-icon.png',
+  '/favicon.ico'
 ]
+
+const ASSET_PATTERN = /\.(?:js|css|webp|png|svg|ico|woff2?)$/i
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches
+      .open(STATIC_CACHE)
+      .then((cache) => cache.addAll(PRECACHE_ASSETS))
+      .then(() => self.skipWaiting())
   )
 })
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
+  const cleanCaches = caches.keys().then((keys) =>
+    Promise.all(
+      keys
+        .filter((key) => key !== STATIC_CACHE && key !== RUNTIME_CACHE)
+        .map((key) => caches.delete(key))
     )
   )
+
+  const tasks = [cleanCaches, self.clients.claim()]
+
+  if (self.registration.navigationPreload) {
+    tasks.push(self.registration.navigationPreload.enable())
+  }
+
+  event.waitUntil(Promise.all(tasks))
 })
 
+const cacheFirst = async (request) => {
+  const cache = await caches.open(STATIC_CACHE)
+  const cachedResponse = await cache.match(request)
+  if (cachedResponse) {
+    return cachedResponse
+  }
+
+  const response = await fetch(request)
+  cache.put(request, response.clone())
+  return response
+}
+
+const networkFirst = async (request, event) => {
+  const cache = await caches.open(RUNTIME_CACHE)
+  try {
+    if (event && event.preloadResponse) {
+      const preloadResponse = await event.preloadResponse
+      if (preloadResponse) {
+        cache.put(request, preloadResponse.clone())
+        return preloadResponse
+      }
+    }
+
+    const response = await fetch(request)
+    cache.put(request, response.clone())
+    return response
+  } catch (error) {
+    const cachedResponse = await cache.match(request)
+    if (cachedResponse) {
+      return cachedResponse
+    }
+    throw error
+  }
+}
+
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') {
+  const { request } = event
+
+  if (request.method !== 'GET') {
     return
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse
-      }
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      networkFirst(request, event).catch(async () => {
+        const cache = await caches.open(STATIC_CACHE)
+        return cache.match('/')
+      })
+    )
+    return
+  }
 
-      return caches.open(CACHE_NAME).then((cache) =>
-        fetch(event.request)
-          .then((response) => {
-            if (response.status === 200 && response.type === 'basic') {
-              cache.put(event.request, response.clone())
-            }
-            return response
-          })
-          .catch(() => cachedResponse)
-      )
-    })
-  )
+  if (ASSET_PATTERN.test(new URL(request.url).pathname)) {
+    event.respondWith(cacheFirst(request))
+    return
+  }
+
+  event.respondWith(networkFirst(request, event))
 })
-

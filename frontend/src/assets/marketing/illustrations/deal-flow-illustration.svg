@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">Deal flow pipeline illustration</title>
+  <desc id="desc">Stylised kanban pipeline with deal cards moving through stages.</desc>
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eef2ff" />
+      <stop offset="100%" stop-color="#dbeafe" />
+    </linearGradient>
+    <linearGradient id="card-gradient-a" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#4338ca" />
+    </linearGradient>
+    <linearGradient id="card-gradient-b" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee" />
+      <stop offset="100%" stop-color="#0ea5e9" />
+    </linearGradient>
+    <linearGradient id="card-gradient-c" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#312e81" flood-opacity="0.18" />
+    </filter>
+  </defs>
+  <rect width="720" height="480" fill="url(#bg-gradient)" rx="32" />
+  <g transform="translate(60,80)">
+    <rect x="0" y="0" width="600" height="320" rx="28" fill="#ffffff" filter="url(#shadow)" />
+    <g transform="translate(36,56)">
+      <rect x="0" y="0" width="160" height="220" rx="20" fill="#eef2ff" />
+      <rect x="0" y="0" width="160" height="48" rx="16" fill="#4338ca" opacity="0.1" />
+      <circle cx="32" cy="24" r="10" fill="#4f46e5" />
+      <rect x="52" y="16" width="88" height="16" rx="8" fill="#4f46e5" opacity="0.45" />
+      <rect x="24" y="72" width="112" height="60" rx="12" fill="url(#card-gradient-a)" />
+      <rect x="24" y="142" width="112" height="60" rx="12" fill="#c7d2fe" />
+    </g>
+    <g transform="translate(232,56)">
+      <rect x="0" y="0" width="160" height="220" rx="20" fill="#ecfeff" />
+      <rect x="0" y="0" width="160" height="48" rx="16" fill="#0891b2" opacity="0.12" />
+      <circle cx="32" cy="24" r="10" fill="#06b6d4" />
+      <rect x="52" y="16" width="88" height="16" rx="8" fill="#0ea5e9" opacity="0.5" />
+      <rect x="24" y="52" width="112" height="60" rx="12" fill="#bae6fd" />
+      <rect x="24" y="122" width="112" height="60" rx="12" fill="url(#card-gradient-b)" />
+      <path d="M132 82l36 24-36 24" fill="#0ea5e9" opacity="0.35" />
+    </g>
+    <g transform="translate(428,56)">
+      <rect x="0" y="0" width="160" height="220" rx="20" fill="#ecfdf5" />
+      <rect x="0" y="0" width="160" height="48" rx="16" fill="#047857" opacity="0.12" />
+      <circle cx="32" cy="24" r="10" fill="#10b981" />
+      <rect x="52" y="16" width="88" height="16" rx="8" fill="#10b981" opacity="0.55" />
+      <rect x="24" y="72" width="112" height="60" rx="12" fill="#bbf7d0" />
+      <rect x="24" y="142" width="112" height="60" rx="12" fill="url(#card-gradient-c)" />
+      <g transform="translate(46,154)" fill="#ffffff">
+        <rect x="0" y="0" width="52" height="8" rx="4" opacity="0.7" />
+        <rect x="0" y="16" width="36" height="8" rx="4" opacity="0.5" />
+      </g>
+    </g>
+    <path d="M232 170h-32l32 32" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M428 170h-32l32 32" fill="none" stroke="#34d399" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="328" cy="208" r="18" fill="#0ea5e9" opacity="0.2" />
+    <circle cx="524" cy="208" r="18" fill="#10b981" opacity="0.2" />
+  </g>
+</svg>

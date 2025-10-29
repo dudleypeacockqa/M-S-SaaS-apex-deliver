@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">Professional community illustration</title>
+  <desc id="desc">Community feed showing discussions, events, and member avatars.</desc>
+  <defs>
+    <linearGradient id="community-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdf2f8" />
+      <stop offset="100%" stop-color="#fce7f3" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#be185d" flood-opacity="0.14" />
+    </filter>
+  </defs>
+  <rect width="720" height="480" rx="32" fill="url(#community-bg)" />
+  <g transform="translate(72,72)">
+    <rect width="576" height="336" rx="28" fill="#ffffff" filter="url(#shadow)" />
+    <g transform="translate(92,88)">
+      <rect width="232" height="216" rx="24" fill="#fdf2f8" stroke="#f472b6" stroke-width="2" />
+      <text x="24" y="48" font-size="18" font-family="'Segoe UI', sans-serif" fill="#be185d">Leadership Forum</text>
+      <text x="24" y="78" font-size="14" font-family="'Segoe UI', sans-serif" fill="#be185d" opacity="0.6">Latest topics</text>
+      <rect x="24" y="100" width="184" height="14" rx="7" fill="#f472b6" opacity="0.4" />
+      <rect x="24" y="128" width="156" height="14" rx="7" fill="#f472b6" opacity="0.25" />
+      <rect x="24" y="156" width="132" height="14" rx="7" fill="#f472b6" opacity="0.25" />
+      <rect x="24" y="200" width="104" height="10" rx="5" fill="#f472b6" opacity="0.2" />
+    </g>
+
+    <g transform="translate(344,96)">
+      <rect width="176" height="84" rx="20" fill="#f9a8d4" />
+      <text x="24" y="44" font-size="18" font-family="'Segoe UI', sans-serif" fill="#831843">Upcoming Roundtable</text>
+      <text x="24" y="66" font-size="14" font-family="'Segoe UI', sans-serif" fill="#9d174d">Post-Merger Integration Clinic</text>
+    </g>
+
+    <g transform="translate(320,200)">
+      <rect width="220" height="136" rx="24" fill="#fce7f3" />
+      <text x="28" y="46" font-size="18" font-family="'Segoe UI', sans-serif" fill="#be185d">Member Spotlights</text>
+      <g transform="translate(28,68)" fill="#f472b6">
+        <circle cx="22" cy="22" r="22" fill="#f472b6" opacity="0.2" />
+        <circle cx="96" cy="22" r="22" opacity="0.35" />
+        <circle cx="170" cy="22" r="22" opacity="0.5" />
+      </g>
+      <text x="28" y="112" font-size="14" font-family="'Segoe UI', sans-serif" fill="#be185d" opacity="0.65">500+ vetted M&A leaders</text>
+    </g>
+
+    <g transform="translate(120,312)" font-size="14" font-family="'Segoe UI', sans-serif" fill="#be185d" opacity="0.75">
+      <text>Live events • Mastermind cohorts • Exclusive research drops • Deal exchange</text>
+    </g>
+  </g>
+</svg>

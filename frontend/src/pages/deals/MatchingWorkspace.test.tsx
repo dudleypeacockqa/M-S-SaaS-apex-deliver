@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import MatchingWorkspace from './MatchingWorkspace';
@@ -55,6 +55,7 @@ const mockMatches = [
       geography_match: { score: 0.80, reason: 'Target geography match' },
       description_match: { score: 0.75, reason: 'Semantic similarity detected' },
     },
+    status: 'saved',
   },
   {
     id: 'match-2',
@@ -69,6 +70,7 @@ const mockMatches = [
       geography_match: { score: 0.65, reason: 'Adjacent region' },
       description_match: { score: 0.78, reason: 'Partial description match' },
     },
+    status: 'viewed',
   },
 ];
 
@@ -258,6 +260,160 @@ describe('MatchingWorkspace', () => {
       await waitFor(() => {
         expect(findMatchesForDeal).toHaveBeenCalledWith('test-deal-1', expect.any(Object));
       });
+    });
+  });
+
+  describe('Match Actions Workflow', () => {
+    it('records view action and opens detail modal', async () => {
+      const { fetchMatchCriteria, listDealMatches, recordMatchAction } = await import('../../services/dealMatchingService');
+      vi.mocked(fetchMatchCriteria).mockResolvedValue(mockMatchCriteria);
+      vi.mocked(listDealMatches).mockResolvedValue(mockMatches);
+      const recordActionMock = vi.mocked(recordMatchAction).mockResolvedValue({
+        id: 'action-view',
+        match_id: 'match-1',
+        user_id: 'user-1',
+        action: 'view',
+        metadata: {},
+        created_at: '2025-10-29T12:00:00Z',
+      });
+
+      renderWithProviders(<MatchingWorkspace dealId="deal-123" activeTab="matches" />);
+
+      const viewButtons = await screen.findAllByRole('button', { name: /view details/i });
+      const viewButton = viewButtons[0];
+      fireEvent.click(viewButton);
+
+      await waitFor(() => {
+        expect(recordActionMock).toHaveBeenCalledWith('match-1', expect.objectContaining({ action: 'view' }));
+      });
+
+      const detailModal = await screen.findByRole('dialog');
+      expect(within(detailModal).getByText(mockMatches[0].dealName)).toBeInTheDocument();
+    });
+
+    it('records save and pass actions from match cards', async () => {
+      const { fetchMatchCriteria, listDealMatches, recordMatchAction } = await import('../../services/dealMatchingService');
+      vi.mocked(fetchMatchCriteria).mockResolvedValue(mockMatchCriteria);
+      vi.mocked(listDealMatches).mockResolvedValue(mockMatches);
+      const recordActionMock = vi.mocked(recordMatchAction).mockResolvedValue({
+        id: 'action-save',
+        match_id: 'match-1',
+        user_id: 'user-1',
+        action: 'save',
+        metadata: {},
+        created_at: '2025-10-29T12:05:00Z',
+      });
+
+      renderWithProviders(<MatchingWorkspace dealId="deal-123" activeTab="matches" />);
+
+      const saveButtons = await screen.findAllByRole('button', { name: /save match/i });
+      fireEvent.click(saveButtons[0]);
+
+      await waitFor(() => {
+        expect(recordActionMock).toHaveBeenCalledWith('match-1', expect.objectContaining({ action: 'save' }));
+      });
+
+      const passButtons = screen.getAllByRole('button', { name: /pass/i });
+      fireEvent.click(passButtons[0]);
+
+      await waitFor(() => {
+        expect(recordActionMock).toHaveBeenCalledWith('match-1', expect.objectContaining({ action: 'pass' }));
+      });
+    });
+
+    it('opens introduction request modal from detail view', async () => {
+      const { fetchMatchCriteria, listDealMatches, recordMatchAction } = await import('../../services/dealMatchingService');
+      vi.mocked(fetchMatchCriteria).mockResolvedValue(mockMatchCriteria);
+      vi.mocked(listDealMatches).mockResolvedValue(mockMatches);
+      vi.mocked(recordMatchAction).mockResolvedValue({
+        id: 'action-view',
+        match_id: 'match-1',
+        user_id: 'user-1',
+        action: 'view',
+        metadata: {},
+        created_at: '2025-10-29T12:10:00Z',
+      });
+
+      renderWithProviders(<MatchingWorkspace dealId="deal-123" activeTab="matches" />);
+
+      const viewButtons = await screen.findAllByRole('button', { name: /view details/i });
+      fireEvent.click(viewButtons[0]);
+
+      const detailModal = await screen.findByRole('dialog');
+      const requestIntroButton = within(detailModal).getByRole('button', { name: /request introduction/i });
+      fireEvent.click(requestIntroButton);
+
+      const introModal = await screen.findByRole('dialog', { name: /request introduction/i });
+      expect(within(introModal).getByLabelText(/introduction message/i)).toBeInTheDocument();
+    });
+  });
+
+  describe('Match Analytics', () => {
+    it('displays analytics widgets summarising matches', async () => {
+      const analyticsMatches = [
+        {
+          id: 'analytics-1',
+          dealId: 'deal-a',
+          matchedDealId: 'matched-a',
+          dealName: 'AI Automation Platform',
+          score: 90,
+          confidence: 'high' as const,
+          explanation: {
+            industry_match: { score: 0.9, reason: 'Category leader match' },
+            size_match: { score: 0.85, reason: 'Aligned revenue band' },
+            geography_match: { score: 0.8, reason: 'Same primary market' },
+            description_match: { score: 0.88, reason: 'High semantic similarity' },
+          },
+          status: 'saved',
+        },
+        {
+          id: 'analytics-2',
+          dealId: 'deal-b',
+          matchedDealId: 'matched-b',
+          dealName: 'FinOps SaaS',
+          score: 70,
+          confidence: 'medium' as const,
+          explanation: {
+            industry_match: { score: 0.7, reason: 'Same vertical' },
+            size_match: { score: 0.65, reason: 'Slightly smaller' },
+            geography_match: { score: 0.6, reason: 'Adjacent region' },
+            description_match: { score: 0.7, reason: 'Strong narrative overlap' },
+          },
+          status: 'intro_requested',
+        },
+        {
+          id: 'analytics-3',
+          dealId: 'deal-c',
+          matchedDealId: 'matched-c',
+          dealName: 'Legacy ERP Divestiture',
+          score: 50,
+          confidence: 'low' as const,
+          explanation: {
+            industry_match: { score: 0.45, reason: 'Adjacent industry' },
+            size_match: { score: 0.5, reason: 'Below preferred range' },
+            geography_match: { score: 0.4, reason: 'Different core region' },
+            description_match: { score: 0.55, reason: 'Moderate text similarity' },
+          },
+          status: 'passed',
+        },
+      ];
+
+      const { fetchMatchCriteria, listDealMatches } = await import('../../services/dealMatchingService');
+      vi.mocked(fetchMatchCriteria).mockResolvedValue(mockMatchCriteria);
+      vi.mocked(listDealMatches).mockResolvedValue(analyticsMatches);
+
+      renderWithProviders(<MatchingWorkspace dealId="analytics-deal" activeTab="matches" />);
+
+      await waitFor(() => {
+        expect(screen.getByText(/analytics overview/i)).toBeInTheDocument();
+      });
+
+      expect(screen.getByTestId('analytics-average')).toHaveTextContent('70%');
+      expect(screen.getByTestId('analytics-success-rate')).toHaveTextContent('67%');
+      expect(screen.getByTestId('analytics-intro-count')).toHaveTextContent('1');
+      expect(screen.getByTestId('analytics-distribution-high')).toHaveTextContent('High (>=80): 1');
+      expect(screen.getByTestId('analytics-distribution-medium')).toHaveTextContent('Medium (60-79): 1');
+      expect(screen.getByTestId('analytics-distribution-low')).toHaveTextContent('Low (<60): 1');
     });
   });
 

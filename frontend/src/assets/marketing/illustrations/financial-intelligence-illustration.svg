@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">Financial intelligence illustration</title>
+  <desc id="desc">Analytics dashboard with charts, ratios, and AI highlights.</desc>
+  <defs>
+    <linearGradient id="finance-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0f9ff" />
+      <stop offset="100%" stop-color="#e0f2fe" />
+    </linearGradient>
+    <linearGradient id="card-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <linearGradient id="sparkline" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#1d4ed8" flood-opacity="0.12" />
+    </filter>
+  </defs>
+  <rect width="720" height="480" rx="32" fill="url(#finance-bg)" />
+  <g transform="translate(64,68)">
+    <rect width="592" height="344" rx="28" fill="#ffffff" filter="url(#shadow)" />
+    <rect x="48" y="52" width="248" height="168" rx="20" fill="#f8fafc" />
+    <path d="M84 188c32-48 52-76 86-90 34-14 56-2 92 30" fill="none" stroke="url(#sparkline)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="92" cy="176" r="12" fill="#38bdf8" />
+    <circle cx="200" cy="110" r="14" fill="#a855f7" />
+
+    <rect x="340" y="52" width="212" height="120" rx="20" fill="#0f172a" />
+    <g transform="translate(364,80)" fill="none" stroke-width="4" stroke-linecap="round">
+      <path d="M0 64l48-32 36 20 48-40 44 28" stroke="#22d3ee" />
+      <circle cx="48" cy="32" r="6" fill="#22d3ee" />
+      <circle cx="84" cy="52" r="6" fill="#22d3ee" />
+      <circle cx="132" cy="12" r="6" fill="#22d3ee" />
+    </g>
+    <text x="364" y="76" font-size="16" font-family="'Segoe UI', sans-serif" fill="#cbd5f5">REAL-TIME RATIOS</text>
+    <rect x="364" y="148" width="28" height="10" rx="5" fill="#38bdf8" opacity="0.65" />
+    <rect x="400" y="148" width="56" height="10" rx="5" fill="#38bdf8" opacity="0.35" />
+    <rect x="464" y="148" width="68" height="10" rx="5" fill="#38bdf8" opacity="0.2" />
+
+    <rect x="340" y="200" width="212" height="132" rx="20" fill="#f8fafc" />
+    <g transform="translate(364,228)">
+      <rect width="72" height="64" rx="16" fill="url(#card-gradient)" />
+      <rect x="92" y="0" width="40" height="64" rx="16" fill="#38bdf8" opacity="0.45" />
+      <rect x="148" y="0" width="40" height="64" rx="16" fill="#38bdf8" opacity="0.25" />
+      <text x="8" y="40" font-family="'Segoe UI', sans-serif" font-size="32" font-weight="700" fill="#ffffff">47+</text>
+    </g>
+    <text x="364" y="312" fill="#1e293b" font-family="'Segoe UI', sans-serif" font-size="18" font-weight="600">Financial ratios calculated</text>
+    <text x="364" y="336" fill="#475569" font-family="'Segoe UI', sans-serif" font-size="14">Automated liquidity, leverage, profitability &amp; efficiency insights</text>
+
+    <rect x="48" y="248" width="248" height="84" rx="18" fill="#0ea5e9" />
+    <g transform="translate(72,272)" fill="#ffffff" font-family="'Segoe UI', sans-serif">
+      <text font-size="24" font-weight="700">AI Narrative Summary</text>
+      <text y="28" font-size="16" opacity="0.8">Deal readiness: <tspan font-weight="700">92%</tspan> &nbsp; • &nbsp; Risk score: <tspan font-weight="700">Low</tspan></text>
+    </g>
+    <g transform="translate(64,116)" fill="#cbd5f5">
+      <rect x="0" y="0" width="16" height="16" rx="8" />
+      <rect x="28" y="0" width="60" height="12" rx="6" />
+      <rect x="0" y="32" width="16" height="16" rx="8" />
+      <rect x="28" y="32" width="96" height="12" rx="6" />
+      <rect x="0" y="64" width="16" height="16" rx="8" />
+      <rect x="28" y="64" width="72" height="12" rx="6" />
+    </g>
+  </g>
+</svg>

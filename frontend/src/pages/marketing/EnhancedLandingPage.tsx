@@ -112,7 +112,11 @@ export const EnhancedLandingPage: React.FC = () => {
         keywords="M&A platform, deal flow management, financial intelligence, valuation software, M&A software, private equity tools, dealmaker platform, post-merger integration, PMI, ERP integration"
         ogTitle="ApexDeliver - Complete M&A Lifecycle Platform"
         ogDescription="From deal sourcing to Day 100 success. AI-powered M&A intelligence + seamless post-merger integration. 70% less than enterprise platforms."
+        ogImage="https://apexdeliver.com/assets/dashboard-preview.png"
         ogUrl="https://apexdeliver.com"
+        twitterTitle="ApexDeliver - Complete M&A Lifecycle Platform"
+        twitterDescription="AI-powered deal intelligence, valuations, secure collaboration, and PMI execution inside one modern platform."
+        twitterImage="https://apexdeliver.com/assets/dashboard-preview.png"
         canonical="https://apexdeliver.com"
       />
 
@@ -386,4 +390,3 @@ export const EnhancedLandingPage: React.FC = () => {
     </MarketingLayout>
   );
 };
-

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">Workflow automation illustration</title>
+  <desc id="desc">Automated task workflow with progress indicators and triggers.</desc>
+  <defs>
+    <linearGradient id="workflow-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eff6ff" />
+      <stop offset="100%" stop-color="#dbeafe" />
+    </linearGradient>
+    <linearGradient id="workflow-path" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#1d4ed8" flood-opacity="0.18" />
+    </filter>
+  </defs>
+  <rect width="720" height="480" rx="32" fill="url(#workflow-bg)" />
+  <g transform="translate(68,72)">
+    <rect width="584" height="336" rx="28" fill="#ffffff" filter="url(#shadow)" />
+    <g transform="translate(96,88)" stroke="url(#workflow-path)" stroke-width="10" stroke-linecap="round" fill="none">
+      <path d="M24 36h104c30 0 54 24 54 54 0 30 24 54 54 54h108" />
+      <path d="M266 198h108c30 0 54 24 54 54v34" />
+      <path d="M24 36v188c0 30 24 54 54 54h106" opacity="0.25" />
+    </g>
+
+    <g transform="translate(116,68)">
+      <rect width="148" height="96" rx="20" fill="#2563eb" />
+      <text x="24" y="42" font-size="16" fill="#bfdbfe" font-family="'Segoe UI', sans-serif">Stage Trigger</text>
+      <text x="24" y="70" font-size="22" font-weight="700" fill="#ffffff" font-family="'Segoe UI', sans-serif">Deal Qualified</text>
+    </g>
+
+    <g transform="translate(304,116)">
+      <rect width="172" height="116" rx="24" fill="#1e40af" />
+      <g transform="translate(24,32)" font-family="'Segoe UI', sans-serif">
+        <text font-size="18" font-weight="600" fill="#bfdbfe">Actions</text>
+        <text y="30" font-size="14" fill="#dbeafe" opacity="0.9">• Assign diligence checklist</text>
+        <text y="52" font-size="14" fill="#dbeafe" opacity="0.9">• Notify finance + legal teams</text>
+        <text y="74" font-size="14" fill="#dbeafe" opacity="0.9">• Launch data room workspace</text>
+      </g>
+    </g>
+
+    <g transform="translate(128,244)">
+      <rect width="164" height="108" rx="24" fill="#38bdf8" />
+      <text x="28" y="48" font-family="'Segoe UI', sans-serif" font-size="18" fill="#e0f2fe">Automation Status</text>
+      <text x="28" y="80" font-family="'Segoe UI', sans-serif" font-size="34" font-weight="700" fill="#ffffff">Completed</text>
+    </g>
+
+    <g transform="translate(344,260)">
+      <rect width="192" height="88" rx="24" fill="#eff6ff" />
+      <text x="28" y="46" font-size="18" font-family="'Segoe UI', sans-serif" fill="#1d4ed8">Tasks auto-generated</text>
+      <rect x="28" y="58" width="136" height="10" rx="5" fill="#2563eb" />
+    </g>
+
+    <g transform="translate(344,68)" fill="#1d4ed8" font-family="'Segoe UI', sans-serif" opacity="0.6">
+      <rect x="0" y="0" width="64" height="14" rx="7" />
+      <rect x="84" y="0" width="92" height="14" rx="7" />
+      <rect x="0" y="28" width="124" height="14" rx="7" />
+    </g>
+  </g>
+</svg>

@@ -1,10 +1,24 @@
 import { MarketingLayout } from '../../../components/marketing/MarketingLayout';
+import { SEO } from '../../../components/common/SEO';
 
 export const PrivacyPolicy: React.FC = () => {
   const lastUpdated = '2025-10-25';
 
   return (
     <MarketingLayout>
+      <SEO
+        title="Privacy Policy | ApexDeliver M&A Platform"
+        description="Learn how ApexDeliver collects, processes, and protects personal and deal data across the AI-powered M&A lifecycle platform."
+        keywords="ApexDeliver privacy policy, M&A software GDPR, data protection"
+        ogTitle="ApexDeliver Privacy Policy"
+        ogDescription="Transparency into data collection, storage, and usage within the ApexDeliver ecosystem."
+        ogUrl="https://apexdeliver.com/legal/privacy"
+        ogImage="https://apexdeliver.com/assets/security-trust-visual.webp"
+        twitterTitle="ApexDeliver Privacy Policy"
+        twitterDescription="Review data privacy commitments for ApexDeliver's M&A intelligence platform."
+        twitterImage="https://apexdeliver.com/assets/security-trust-visual.webp"
+        canonical="https://apexdeliver.com/legal/privacy"
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Privacy Policy</h1>
         <p className="text-gray-600 mb-8">Last updated: {lastUpdated}</p>

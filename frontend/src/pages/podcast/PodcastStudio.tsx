@@ -18,6 +18,7 @@ import { CreateEpisodeModal } from '../../components/podcast/CreateEpisodeModal'
 import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
 import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal';
 import VideoUploadModal from '../../components/podcast/VideoUploadModal';
+import { YouTubePublishModal } from '../../components/podcast/YouTubePublishModal';
 import {
   getQuotaSummary,
   listEpisodes,
@@ -26,8 +27,12 @@ import {
   createEpisode,
   updateEpisode,
   deleteEpisode,
+  getYouTubeConnectionStatus,
+  initiateYouTubeOAuth,
   type PodcastEpisode,
   type QuotaSummary,
+  type YouTubeConnectionStatus,
+  type YouTubePublishPayload,
 } from '../../services/api/podcasts';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 
@@ -93,6 +98,8 @@ function PodcastStudioContent() {
   const [deleteTarget, setDeleteTarget] = React.useState<PodcastEpisode | null>(null);
   const [videoUploadEpisode, setVideoUploadEpisode] = React.useState<PodcastEpisode | null>(null);
   const [notification, setNotification] = React.useState<NotificationState | null>(null);
+  const [episodeToPublish, setEpisodeToPublish] = React.useState<PodcastEpisode | null>(null);
+  const [publishError, setPublishError] = React.useState<string | null>(null);
   const notificationTimeoutRef = React.useRef<number | null>(null);
 
   const pushNotification = React.useCallback((type: NotificationState['type'], message: string) => {
@@ -118,27 +125,38 @@ function PodcastStudioContent() {
     data: quota,
     isLoading: quotaLoading,
     isError: quotaError,
-  } = useQuery({
+  } = useQuery<QuotaSummary, Error>({
     queryKey: ['podcastQuota'],
     queryFn: getQuotaSummary,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    keepPreviousData: true,
   });
 
   const {
     data: episodes = [],
     isLoading: episodesLoading,
     isError: episodesError,
-  } = useQuery({
+  } = useQuery<PodcastEpisode[], Error>({
     queryKey: ['podcastEpisodes'],
-    queryFn: () => listEpisodes(),
+    queryFn: listEpisodes,
     staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
-    keepPreviousData: true,
   });
 
   const youtubeAccess = useFeatureAccess({ feature: 'youtube_integration' });
+
+  const {
+    data: youtubeConnection,
+    isLoading: youtubeConnectionLoading,
+    isError: youtubeConnectionError,
+    refetch: refetchYouTubeConnection,
+  } = useQuery({
+    queryKey: ['youtubeConnection'],
+    queryFn: getYouTubeConnectionStatus,
+    enabled: youtubeAccess.hasAccess,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
   const createEpisodeMutation = useMutation({
     mutationFn: (payload: CreateEpisodePayload) => createEpisode(payload),
@@ -176,6 +194,70 @@ function PodcastStudioContent() {
       pushNotification('error', 'Failed to delete episode');
     },
   });
+
+  const initiateYouTubeOAuthMutation = useMutation({
+    mutationFn: ({ episodeId, redirectUri }: { episodeId: string; redirectUri: string }) =>
+      initiateYouTubeOAuth(episodeId, redirectUri),
+    onSuccess: (data) => {
+      window.open(data.authorizationUrl, '_blank', 'noopener');
+      pushNotification('info', 'Complete the YouTube connection in the popup to link your channel.');
+      window.setTimeout(() => {
+        refetchYouTubeConnection();
+      }, 3000);
+    },
+    onError: () => {
+      pushNotification('error', 'Failed to initiate YouTube connection');
+    },
+  });
+
+  const publishToYouTubeMutation = useMutation({
+    mutationFn: ({
+      episodeId,
+      payload,
+      episodeTitle,
+    }: {
+      episodeId: string;
+      payload: YouTubePublishPayload;
+      episodeTitle: string;
+    }) => publishEpisodeToYouTube(episodeId, payload),
+    onSuccess: (_, variables) => {
+      setPublishError(null);
+      pushNotification('success', `Episode "${variables.episodeTitle}" published to YouTube`);
+      setEpisodeToPublish(null);
+      queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
+      queryClient.invalidateQueries({ queryKey: ['youtubeConnection'] });
+    },
+    onError: () => {
+      setPublishError('Failed to publish to YouTube. Please try again.');
+      pushNotification('error', 'Failed to publish episode to YouTube');
+    },
+  });
+
+  const handleRequestPublish = React.useCallback(
+    (episode: PodcastEpisode) => {
+      setPublishError(null);
+      publishToYouTubeMutation.reset();
+      setEpisodeToPublish(episode);
+    },
+    [publishToYouTubeMutation],
+  );
+
+  const handleClosePublishModal = React.useCallback(() => {
+    setEpisodeToPublish(null);
+    setPublishError(null);
+    publishToYouTubeMutation.reset();
+  }, [publishToYouTubeMutation]);
+
+  const handleRequestYouTubeConnect = React.useCallback(
+    (episode: PodcastEpisode) => {
+      if (initiateYouTubeOAuthMutation.isPending) {
+        return;
+      }
+      const redirectUri = window.location.href;
+      initiateYouTubeOAuthMutation.mutate({ episodeId: episode.id, redirectUri });
+    },
+    [initiateYouTubeOAuthMutation],
+  );
 
   const isQuotaExceeded = Boolean(
     quota && !quota.isUnlimited && (quota.remaining ?? 0) <= 0,
@@ -246,6 +328,15 @@ function PodcastStudioContent() {
       {/* Quota Card */}
       {quota && <QuotaCard quota={quota} />}
 
+      {youtubeAccess.hasAccess && (
+        <YouTubeConnectionCard
+          connection={youtubeConnection}
+          isLoading={youtubeConnectionLoading}
+          isError={youtubeConnectionError}
+          onRefresh={refetchYouTubeConnection}
+        />
+      )}
+
       {/* Actions Bar */}
       <div className="mb-6 flex justify-between items-center">
         <h2 className="text-xl font-semibold text-gray-900">Episodes</h2>
@@ -298,6 +389,16 @@ function PodcastStudioContent() {
         <EpisodesList
           episodes={episodes}
           youtubeAccess={youtubeAccess}
+          youtubeConnection={youtubeConnection}
+          youtubeConnectionLoading={youtubeConnectionLoading}
+          youtubeConnectionError={youtubeConnectionError}
+          onRefreshYoutubeConnection={refetchYouTubeConnection}
+          onRequestPublish={handleRequestPublish}
+          onRequestYouTubeConnect={handleRequestYouTubeConnect}
+          youtubeInfoMessage={null}
+          infoEpisodeId={null}
+          lastPublishedEpisodeId={null}
+          isConnecting={initiateYouTubeOAuthMutation.isPending}
           onEdit={(episode) => setEditingEpisode(episode)}
           onDelete={(episode) => setDeleteTarget(episode)}
           onNotify={pushNotification}
@@ -688,8 +789,16 @@ function EpisodeListItem({
 
   const queryClient = useQueryClient();
 
+  const defaultPublishPayload = React.useMemo<YouTubePublishPayload>(() => ({
+    title: episode.title,
+    description: episode.description ?? '',
+    tags: [],
+    privacy: 'private',
+    scheduleTime: null,
+  }), [episode.description, episode.title]);
+
   const youtubeMutation = useMutation({
-    mutationFn: () => publishEpisodeToYouTube(episode.id),
+    mutationFn: () => publishEpisodeToYouTube(episode.id, defaultPublishPayload),
     onSuccess: () => {
       setYoutubeErrorMessage(null);
       setYoutubeSuccessMessage('Published to YouTube');

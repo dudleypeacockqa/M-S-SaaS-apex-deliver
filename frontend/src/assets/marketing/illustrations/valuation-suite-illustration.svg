@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">Valuation suite illustration</title>
+  <desc id="desc">Comparison of valuation methods with sensitivity analysis chart.</desc>
+  <defs>
+    <linearGradient id="valuation-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5f3ff" />
+      <stop offset="100%" stop-color="#ede9fe" />
+    </linearGradient>
+    <linearGradient id="valuation-card" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c3aed" />
+      <stop offset="100%" stop-color="#4c1d95" />
+    </linearGradient>
+    <linearGradient id="valuation-line" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#5b21b6" flood-opacity="0.18" />
+    </filter>
+  </defs>
+  <rect width="720" height="480" rx="32" fill="url(#valuation-bg)" />
+  <g transform="translate(68,72)">
+    <rect width="584" height="336" rx="28" fill="#ffffff" filter="url(#shadow)" />
+    <rect x="60" y="60" width="224" height="216" rx="24" fill="#ede9fe" />
+    <g transform="translate(92,92)" fill="#6d28d9">
+      <text x="0" y="0" font-family="'Segoe UI', sans-serif" font-size="15" font-weight="600">Valuation Methods</text>
+      <rect x="0" y="18" width="128" height="12" rx="6" opacity="0.35" />
+      <rect x="0" y="44" width="176" height="16" rx="8" opacity="0.18" />
+      <rect x="0" y="76" width="128" height="12" rx="6" opacity="0.18" />
+    </g>
+    <rect x="92" y="180" width="176" height="76" rx="20" fill="url(#valuation-card)" />
+    <text x="120" y="230" font-size="42" font-weight="700" fill="#ffffff" font-family="'Segoe UI', sans-serif">£48.2M</text>
+    <text x="120" y="254" font-size="16" fill="#ddd6fe" font-family="'Segoe UI', sans-serif">Weighted enterprise value</text>
+
+    <rect x="324" y="64" width="192" height="120" rx="24" fill="#ede9fe" />
+    <g transform="translate(352,96)">
+      <rect width="32" height="64" rx="12" fill="#c4b5fd" />
+      <rect x="48" y="-12" width="32" height="88" rx="12" fill="#a855f7" />
+      <rect x="96" y="16" width="32" height="60" rx="12" fill="#7c3aed" />
+      <text x="0" y="96" font-size="12" fill="#6b21a8" font-family="'Segoe UI', sans-serif">DCF</text>
+      <text x="48" y="96" font-size="12" fill="#6b21a8" font-family="'Segoe UI', sans-serif">Comps</text>
+      <text x="96" y="96" font-size="12" fill="#6b21a8" font-family="'Segoe UI', sans-serif">Deals</text>
+    </g>
+
+    <rect x="324" y="212" width="192" height="128" rx="24" fill="#f5f3ff" />
+    <g transform="translate(348,244)" stroke="url(#valuation-line)" stroke-width="6" fill="none" stroke-linecap="round">
+      <path d="M0 72c34-62 64-82 94-30 30 52 60 40 88-42" />
+      <circle cx="24" cy="50" r="9" fill="#a855f7" />
+      <circle cx="68" cy="24" r="9" fill="#c084fc" />
+      <circle cx="120" cy="60" r="9" fill="#38bdf8" />
+    </g>
+    <text x="348" y="336" font-family="'Segoe UI', sans-serif" font-size="16" fill="#5b21b6">Sensitivity analysis across scenarios</text>
+
+    <g transform="translate(96,120)" fill="#6d28d9" opacity="0.5">
+      <rect x="0" y="0" width="64" height="12" rx="6" />
+      <rect x="0" y="24" width="92" height="12" rx="6" />
+      <rect x="0" y="48" width="48" height="12" rx="6" />
+    </g>
+  </g>
+</svg>

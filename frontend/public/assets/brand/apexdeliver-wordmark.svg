@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" role="img" aria-labelledby="title desc">
+  <title id="title">ApexDeliver wordmark</title>
+  <desc id="desc">Gradient logomark with stylised apex symbol and wordmark.</desc>
+  <defs>
+    <linearGradient id="apex-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="50%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+  </defs>
+  <rect width="420" height="120" rx="24" fill="#0f172a" />
+  <g transform="translate(36,24)">
+    <g transform="translate(0,0)">
+      <circle cx="36" cy="36" r="36" fill="url(#apex-gradient)" />
+      <path d="M36 12l20 48H16z" fill="#ffffff" opacity="0.9" />
+      <circle cx="36" cy="36" r="14" fill="#0f172a" opacity="0.35" />
+    </g>
+    <text x="88" y="48" fill="#ffffff" font-size="40" font-family="'Segoe UI', 'Inter', sans-serif" font-weight="700">Apex</text>
+    <text x="194" y="48" fill="#38bdf8" font-size="40" font-family="'Segoe UI', 'Inter', sans-serif" font-weight="300">Deliver</text>
+    <text x="88" y="70" fill="#cbd5f5" font-size="14" font-family="'Segoe UI', 'Inter', sans-serif" letter-spacing="2">M&amp;A INTELLIGENCE PLATFORM</text>
+  </g>
+</svg>

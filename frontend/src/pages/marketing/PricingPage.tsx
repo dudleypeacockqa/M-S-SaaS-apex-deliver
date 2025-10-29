@@ -131,6 +131,10 @@ export const PricingPage: React.FC = () => {
         ogTitle="ApexDeliver Pricing - Professional M&A Tools from £279/month"
         ogDescription="Choose from 4 pricing tiers designed for solo dealmakers to large organizations. All plans include AI-powered intelligence and deal flow management."
         ogUrl="https://ma-saas-platform.onrender.com/pricing"
+        ogImage="https://apexdeliver.com/assets/financial-analysis-visual.png"
+        twitterTitle="ApexDeliver Pricing"
+        twitterDescription="Flexible plans covering deal pipeline management, valuations, data rooms, and AI-powered matching."
+        twitterImage="https://apexdeliver.com/assets/financial-analysis-visual.png"
         canonical="https://ma-saas-platform.onrender.com/pricing"
       />
       {/* Header Section */}

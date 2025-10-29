@@ -1,6 +1,7 @@
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { CTASection } from '../../components/marketing/CTASection';
 import { SEO } from '../../components/common/SEO';
+import { marketingIllustrations } from '../../assets/marketing';
 
 export const FeaturesPage: React.FC = () => {
   return (
@@ -10,6 +11,12 @@ export const FeaturesPage: React.FC = () => {
         description="Comprehensive M&A platform features: Deal pipeline management, financial intelligence engine (47+ ratios), multi-method valuation, secure data rooms, AI deal matching, and more."
         keywords="M&A features, deal pipeline, financial intelligence, valuation tools, data room, deal matching, M&A automation"
         ogUrl="https://ma-saas-platform.onrender.com/features"
+        ogTitle="ApexDeliver Feature Tour"
+        ogDescription="Explore deal pipeline automation, AI analytics, valuation workflows, secure data rooms, and professional community features."
+        ogImage="https://apexdeliver.com/assets/pmi-integration-graphic.png"
+        twitterTitle="ApexDeliver Feature Tour"
+        twitterDescription="From AI-assisted valuations to secure data rooms, see everything the ApexDeliver platform covers."
+        twitterImage="https://apexdeliver.com/assets/pmi-integration-graphic.png"
         canonical="https://ma-saas-platform.onrender.com/features"
       />
       {/* Header */}
@@ -53,8 +60,16 @@ export const FeaturesPage: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="bg-gray-100 rounded-lg p-8 text-center">
-              <p className="text-gray-500 italic">[Screenshot: Kanban board with deal cards]</p>
+            <div className="bg-gray-100 rounded-2xl p-4 shadow-inner">
+              <img
+                src={marketingIllustrations.dealFlow.src}
+                alt={marketingIllustrations.dealFlow.alt}
+                loading="lazy"
+                decoding="async"
+                width={720}
+                height={480}
+                className="w-full h-auto rounded-xl shadow-lg"
+              />
             </div>
           </div>
         </div>
@@ -64,8 +79,16 @@ export const FeaturesPage: React.FC = () => {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="order-2 md:order-1 bg-gray-100 rounded-lg p-8 text-center">
-              <p className="text-gray-500 italic">[Screenshot: Financial dashboard with ratios]</p>
+            <div className="order-2 md:order-1 bg-gray-100 rounded-2xl p-4 shadow-inner">
+              <img
+                src={marketingIllustrations.financialIntelligence.src}
+                alt={marketingIllustrations.financialIntelligence.alt}
+                loading="lazy"
+                decoding="async"
+                width={720}
+                height={480}
+                className="w-full h-auto rounded-xl shadow-lg"
+              />
             </div>
             <div className="order-1 md:order-2">
               <div className="text-4xl mb-4">🧠</div>
@@ -129,8 +152,16 @@ export const FeaturesPage: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="bg-gray-100 rounded-lg p-8 text-center">
-              <p className="text-gray-500 italic">[Screenshot: Valuation model with charts]</p>
+            <div className="bg-gray-100 rounded-2xl p-4 shadow-inner">
+              <img
+                src={marketingIllustrations.valuationSuite.src}
+                alt={marketingIllustrations.valuationSuite.alt}
+                loading="lazy"
+                decoding="async"
+                width={720}
+                height={480}
+                className="w-full h-auto rounded-xl shadow-lg"
+              />
             </div>
           </div>
         </div>
@@ -140,8 +171,16 @@ export const FeaturesPage: React.FC = () => {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="order-2 md:order-1 bg-gray-100 rounded-lg p-8 text-center">
-              <p className="text-gray-500 italic">[Screenshot: Data room with folder structure]</p>
+            <div className="order-2 md:order-1 bg-gray-100 rounded-2xl p-4 shadow-inner">
+              <img
+                src={marketingIllustrations.secureDataRoom.src}
+                alt={marketingIllustrations.secureDataRoom.alt}
+                loading="lazy"
+                decoding="async"
+                width={720}
+                height={480}
+                className="w-full h-auto rounded-xl shadow-lg"
+              />
             </div>
             <div className="order-1 md:order-2">
               <div className="text-4xl mb-4">🔒</div>
@@ -205,8 +244,16 @@ export const FeaturesPage: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="bg-gray-100 rounded-lg p-8 text-center">
-              <p className="text-gray-500 italic">[Screenshot: Deal matching results]</p>
+            <div className="bg-gray-100 rounded-2xl p-4 shadow-inner">
+              <img
+                src={marketingIllustrations.aiDealMatching.src}
+                alt={marketingIllustrations.aiDealMatching.alt}
+                loading="lazy"
+                decoding="async"
+                width={720}
+                height={480}
+                className="w-full h-auto rounded-xl shadow-lg"
+              />
             </div>
           </div>
         </div>
@@ -216,8 +263,16 @@ export const FeaturesPage: React.FC = () => {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="order-2 md:order-1 bg-gray-100 rounded-lg p-8 text-center">
-              <p className="text-gray-500 italic">[Screenshot: Document template library]</p>
+            <div className="order-2 md:order-1 bg-gray-100 rounded-2xl p-4 shadow-inner">
+              <img
+                src={marketingIllustrations.documentAutomation.src}
+                alt={marketingIllustrations.documentAutomation.alt}
+                loading="lazy"
+                decoding="async"
+                width={720}
+                height={480}
+                className="w-full h-auto rounded-xl shadow-lg"
+              />
             </div>
             <div className="order-1 md:order-2">
               <div className="text-4xl mb-4">📄</div>
@@ -281,8 +336,16 @@ export const FeaturesPage: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="bg-gray-100 rounded-lg p-8 text-center">
-              <p className="text-gray-500 italic">[Screenshot: Task checklist]</p>
+            <div className="bg-gray-100 rounded-2xl p-4 shadow-inner">
+              <img
+                src={marketingIllustrations.workflowAutomation.src}
+                alt={marketingIllustrations.workflowAutomation.alt}
+                loading="lazy"
+                decoding="async"
+                width={720}
+                height={480}
+                className="w-full h-auto rounded-xl shadow-lg"
+              />
             </div>
           </div>
         </div>
@@ -292,8 +355,16 @@ export const FeaturesPage: React.FC = () => {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="order-2 md:order-1 bg-gray-100 rounded-lg p-8 text-center">
-              <p className="text-gray-500 italic">[Screenshot: Community feed and discussions]</p>
+            <div className="order-2 md:order-1 bg-gray-100 rounded-2xl p-4 shadow-inner">
+              <img
+                src={marketingIllustrations.community.src}
+                alt={marketingIllustrations.community.alt}
+                loading="lazy"
+                decoding="async"
+                width={720}
+                height={480}
+                className="w-full h-auto rounded-xl shadow-lg"
+              />
             </div>
             <div className="order-1 md:order-2">
               <div className="text-4xl mb-4">👥</div>

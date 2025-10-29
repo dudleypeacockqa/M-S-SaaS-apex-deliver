@@ -108,6 +108,19 @@ export async function createMatchCriteria(payload: Omit<MatchCriteria, 'id' | 'u
   return data
 }
 
+export async function updateMatchCriteria(
+  criteriaId: string,
+  payload: Partial<Omit<MatchCriteria, 'id' | 'user_id' | 'organization_id' | 'created_at'>>
+): Promise<MatchCriteria> {
+  const { data } = await api.patch<MatchCriteriaDto>(`/match-criteria/${criteriaId}`, payload)
+  return data
+}
+
+export async function getMatchCriteria(criteriaId: string): Promise<MatchCriteria> {
+  const { data } = await api.get<MatchCriteriaDto>(`/match-criteria/${criteriaId}`)
+  return data
+}
+
 export async function findMatchesForDeal(
   dealId: string,
   request: FindMatchesRequest,

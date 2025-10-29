@@ -52,7 +52,8 @@ export function FeatureGate({
     ? requiredTier
     : normalizeTier(access.requiredTier ?? access.requiredTierLabel ?? 'professional');
 
-  const hasAccess = access.hasAccess && !access.error;
+  const hasAccessError = Boolean(access.error);
+  const hasAccess = access.hasAccess && !hasAccessError;
   const canRenderChildren = hasAccess || subscription.isAtLeast(resolvedRequiredTier);
 
   if (access.isLoading || subscription.isLoading) {
@@ -102,9 +103,9 @@ export function FeatureGate({
           <p className="mt-2 text-xs text-gray-500">
             Current tier: <span className="font-medium">{currentTierLabel}</span> · Required tier: <span className="font-medium">{requiredTierLabel}</span>
           </p>
-          {access.error && (
+          {hasAccessError ? (
             <p className="mt-2 text-xs text-red-600">We could not verify access at this time. Defaulting to a secure deny.</p>
-          )}
+          ) : null}
           <div className="mt-4 flex flex-wrap gap-3">
             <button
               type="button"

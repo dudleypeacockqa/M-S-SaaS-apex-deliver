@@ -187,7 +187,7 @@ export const EnhancedTestimonials: React.FC = () => {
           <p className="text-center text-sm text-gray-500 mb-8">
             Trusted by professionals from leading firms
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center opacity-80">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-8 items-center opacity-80">
             {marketingPartnerLogos.map((logo) => (
               <div key={logo.name} className="flex items-center justify-center">
                 <img src={logo.src} alt={`${logo.name} logo`} className="max-h-12 w-auto" loading="lazy" />
@@ -219,4 +219,3 @@ export const EnhancedTestimonials: React.FC = () => {
     </section>
   );
 };
-

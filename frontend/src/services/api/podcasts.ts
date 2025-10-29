@@ -43,6 +43,7 @@ export interface PodcastEpisode {
   season_number: number;
   audio_file_url: string;
   video_file_url: string | null;
+  thumbnail_url?: string | null;
   status: 'draft' | 'published' | 'archived';
   created_by: string;
   organization_id: string;
@@ -54,6 +55,7 @@ export interface PodcastEpisode {
   transcript_language: string | null;
   duration_seconds: number | null;
   youtube_video_id: string | null;
+  thumbnail_url?: string | null;
 }
 
 type ApiQuotaSummary = {
@@ -98,8 +100,46 @@ interface ApiYouTubeUploadResponse {
   video_id: string;
 }
 
+interface ApiYouTubeConnectionStatus {
+  is_connected: boolean;
+  channel_name?: string | null;
+  channel_url?: string | null;
+  requires_action?: boolean;
+  connected_at?: string | null;
+  last_published_at?: string | null;
+}
+
+interface ApiYouTubeOAuthResponse {
+  authorization_url: string;
+  state: string;
+  expires_at?: string | null;
+}
+
 export interface YouTubeUploadResponse {
   videoId: string;
+}
+
+export interface YouTubeConnectionStatus {
+  isConnected: boolean;
+  channelName: string | null;
+  channelUrl: string | null;
+  requiresAction: boolean;
+  connectedAt: string | null;
+  lastPublishedAt: string | null;
+}
+
+export interface YouTubeOAuthInitiation {
+  authorizationUrl: string;
+  state: string;
+  expiresAt: string | null;
+}
+
+export interface YouTubePublishPayload {
+  title: string;
+  description: string;
+  tags: string[];
+  privacy: 'private' | 'unlisted' | 'public';
+  scheduleTime: string | null;
 }
 
 interface ApiTranscriptionResponse {
@@ -246,18 +286,79 @@ export async function deleteEpisode(episodeId: string): Promise<void> {
   });
 }
 
-export async function publishEpisodeToYouTube(episodeId: string): Promise<YouTubeUploadResponse> {
-  const response = await axios.post<ApiYouTubeUploadResponse>(
-    `${API_BASE_URL}/api/podcasts/episodes/${episodeId}/youtube`,
-    undefined,
-    {
-      withCredentials: true,
-    }
-  );
+export async function getYouTubeConnectionStatus(): Promise<YouTubeConnectionStatus> {
+  const primaryUrl = `${API_BASE_URL}/api/v1/podcasts/youtube/connection`;
 
-  return {
-    videoId: response.data.video_id,
+  try {
+    const { data } = await axios.get<ApiYouTubeConnectionStatus>(primaryUrl, {
+      withCredentials: true,
+    });
+    return mapYouTubeConnectionStatus(data);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      const fallbackUrl = `${API_BASE_URL}/api/podcasts/youtube/connection`;
+      const { data } = await axios.get<ApiYouTubeConnectionStatus>(fallbackUrl, {
+        withCredentials: true,
+      });
+      return mapYouTubeConnectionStatus(data);
+    }
+    throw error;
+  }
+}
+
+export async function initiateYouTubeOAuth(
+  episodeId: string,
+  redirectUri: string,
+): Promise<YouTubeOAuthInitiation> {
+  const payload = { redirect_uri: redirectUri };
+  const primaryUrl = `${API_BASE_URL}/api/v1/podcasts/episodes/${episodeId}/youtube/connect`;
+
+  try {
+    const { data } = await axios.post<ApiYouTubeOAuthResponse>(primaryUrl, payload, {
+      withCredentials: true,
+    });
+    return mapYouTubeOAuthResponse(data);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      const fallbackUrl = `${API_BASE_URL}/api/podcasts/episodes/${episodeId}/youtube/connect`;
+      const { data } = await axios.post<ApiYouTubeOAuthResponse>(fallbackUrl, payload, {
+        withCredentials: true,
+      });
+      return mapYouTubeOAuthResponse(data);
+    }
+    throw error;
+  }
+}
+
+export async function publishEpisodeToYouTube(
+  episodeId: string,
+  payload: YouTubePublishPayload,
+): Promise<YouTubeUploadResponse> {
+  const body = {
+    title: payload.title,
+    description: payload.description,
+    tags: payload.tags,
+    privacy: payload.privacy,
+    schedule_time: payload.scheduleTime,
   };
+
+  const primaryUrl = `${API_BASE_URL}/api/v1/podcasts/episodes/${episodeId}/youtube/publish`;
+
+  try {
+    const response = await axios.post<ApiYouTubeUploadResponse>(primaryUrl, body, {
+      withCredentials: true,
+    });
+    return { videoId: response.data.video_id };
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      const legacyUrl = `${API_BASE_URL}/api/podcasts/episodes/${episodeId}/youtube`;
+      const response = await axios.post<ApiYouTubeUploadResponse>(legacyUrl, undefined, {
+        withCredentials: true,
+      });
+      return { videoId: response.data.video_id };
+    }
+    throw error;
+  }
 }
 
 export async function transcribeEpisode(episodeId: string, language?: string): Promise<TranscriptionResponse> {
@@ -275,5 +376,24 @@ export async function transcribeEpisode(episodeId: string, language?: string): P
     transcript: data.transcript,
     transcriptLanguage: data.transcript_language ?? 'en',
     wordCount: data.word_count ?? (data.transcript ? data.transcript.split(/\s+/).filter(Boolean).length : 0),
+  };
+}
+
+function mapYouTubeConnectionStatus(data: ApiYouTubeConnectionStatus): YouTubeConnectionStatus {
+  return {
+    isConnected: data.is_connected,
+    channelName: data.channel_name ?? null,
+    channelUrl: data.channel_url ?? null,
+    requiresAction: data.requires_action ?? false,
+    connectedAt: data.connected_at ?? null,
+    lastPublishedAt: data.last_published_at ?? null,
+  };
+}
+
+function mapYouTubeOAuthResponse(data: ApiYouTubeOAuthResponse): YouTubeOAuthInitiation {
+  return {
+    authorizationUrl: data.authorization_url,
+    state: data.state,
+    expiresAt: data.expires_at ?? null,
   };
 }

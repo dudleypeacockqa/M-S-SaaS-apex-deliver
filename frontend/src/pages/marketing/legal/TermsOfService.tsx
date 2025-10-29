@@ -1,10 +1,24 @@
 import { MarketingLayout } from '../../../components/marketing/MarketingLayout';
+import { SEO } from '../../../components/common/SEO';
 
 export const TermsOfService: React.FC = () => {
   const lastUpdated = '2025-10-25';
 
   return (
     <MarketingLayout>
+      <SEO
+        title="Terms of Service | ApexDeliver M&A Platform"
+        description="Review the terms of service governing ApexDeliver's AI-powered M&A intelligence platform, including subscriptions, user conduct, and compliance obligations."
+        keywords="ApexDeliver terms of service, M&A software terms, SaaS acceptable use policy"
+        ogTitle="ApexDeliver Terms of Service"
+        ogDescription="Understand the agreements that govern usage of ApexDeliver's complete M&A lifecycle platform."
+        ogUrl="https://apexdeliver.com/legal/terms"
+        ogImage="https://apexdeliver.com/assets/dashboard-preview.png"
+        twitterTitle="ApexDeliver Terms of Service"
+        twitterDescription="Detailed terms covering subscriptions, data handling, and fair use for the ApexDeliver platform."
+        twitterImage="https://apexdeliver.com/assets/dashboard-preview.png"
+        canonical="https://apexdeliver.com/legal/terms"
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
         <p className="text-gray-600 mb-8">Last updated: {lastUpdated}</p>

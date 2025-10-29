@@ -1,10 +1,24 @@
 import { MarketingLayout } from '../../../components/marketing/MarketingLayout';
+import { SEO } from '../../../components/common/SEO';
 
 export const CookiePolicy: React.FC = () => {
   const lastUpdated = '2025-10-25';
 
   return (
     <MarketingLayout>
+      <SEO
+        title="Cookie Policy | ApexDeliver M&A Platform"
+        description="Understand how ApexDeliver uses cookies and similar technologies to deliver secure, high-performance M&A workflows."
+        keywords="ApexDeliver cookie policy, M&A platform cookies, tracking preferences"
+        ogTitle="ApexDeliver Cookie Policy"
+        ogDescription="Details on cookie usage for personalization, analytics, and security across the ApexDeliver platform."
+        ogUrl="https://apexdeliver.com/legal/cookies"
+        ogImage="https://apexdeliver.com/assets/security-trust-visual.webp"
+        twitterTitle="ApexDeliver Cookie Policy"
+        twitterDescription="Manage cookie preferences for ApexDeliver's AI-enabled M&A platform."
+        twitterImage="https://apexdeliver.com/assets/security-trust-visual.webp"
+        canonical="https://apexdeliver.com/legal/cookies"
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Cookie Policy</h1>
         <p className="text-gray-600 mb-8">Last updated: {lastUpdated}</p>
