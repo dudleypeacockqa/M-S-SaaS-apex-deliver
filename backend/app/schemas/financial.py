@@ -63,6 +63,9 @@ class FinancialRatiosResponse(BaseModel):
 class FinancialDataInput(BaseModel):
     """Input schema for financial data to calculate ratios"""
 
+    # Period identifier (optional, for tracking historical calculations)
+    period: Optional[str] = Field(None, description="Period identifier (e.g., '2024-Q4', '2024-12')")
+
     # Balance Sheet
     current_assets: Optional[float] = Field(None, ge=0)
     current_liabilities: Optional[float] = Field(None, ge=0)

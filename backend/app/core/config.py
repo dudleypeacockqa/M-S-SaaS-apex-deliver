@@ -43,6 +43,15 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     anthropic_api_key: str = ""
 
+    # Storage Configuration
+    storage_path: str = "./storage"
+    use_s3_storage: bool = False
+    r2_endpoint_url: str = ""
+    r2_access_key_id: str = ""
+    r2_secret_access_key: str = ""
+    r2_bucket_name: str = "ma-saas-documents"
+    r2_region: str = "auto"
+
     # Feature Flags
     enable_ai_insights: bool = True
     enable_analytics: bool = True

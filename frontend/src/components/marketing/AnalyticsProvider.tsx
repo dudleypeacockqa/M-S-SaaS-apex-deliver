@@ -42,6 +42,19 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
       return
     }
 
+    if (!Array.isArray(window.dataLayer)) {
+      window.dataLayer = []
+    }
+
+    if (typeof window.gtag !== 'function') {
+      window.gtag = (...args: unknown[]) => {
+        window.dataLayer?.push(args)
+      }
+    }
+
+    window.gtag('js', new Date())
+    window.gtag('config', measurementId, { anonymize_ip: true })
+
     loadScriptOnce(GA_SCRIPT_ID, () => {
       const script = document.createElement('script')
       script.async = true
@@ -70,6 +83,20 @@ gtag('config', '${measurementId}', { anonymize_ip: true });`
       return
     }
 
+    if (typeof window.hj !== 'function') {
+      type HjFn = ((...args: unknown[]) => void) & { q?: unknown[][] }
+      const hj: HjFn = ((...args: unknown[]) => {
+        hj.q = hj.q || []
+        hj.q.push(args)
+      }) as HjFn
+      window.hj = hj
+    }
+
+    window._hjSettings = {
+      hjid: Number(hotjarId),
+      hjsv: Number(hotjarVersion),
+    }
+
     loadScriptOnce(HOTJAR_SCRIPT_ID, () => {
       const script = document.createElement('script')
       script.innerHTML = `window.hj=window.hj||function(){(hj.q=hj.q||[]).push(arguments)};
@@ -96,6 +123,15 @@ window._hjSettings={hjid:${hotjarId},hjsv:${hotjarVersion}};
     // Initialize partner IDs array
     window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || []
     window._linkedin_data_partner_ids.push(linkedInPartnerId)
+
+    if (typeof window.lintrk !== 'function') {
+      type LintrkFn = ((...args: unknown[]) => void) & { q?: unknown[][] }
+      const lintrk: LintrkFn = ((...args: unknown[]) => {
+        lintrk.q = lintrk.q || []
+        lintrk.q.push(args)
+      }) as LintrkFn
+      window.lintrk = lintrk
+    }
 
     loadScriptOnce(LINKEDIN_SCRIPT_ID, () => {
       const script = document.createElement('script')

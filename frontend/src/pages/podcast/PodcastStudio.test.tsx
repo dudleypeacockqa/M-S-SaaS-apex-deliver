@@ -29,6 +29,25 @@ vi.mock('../../services/api/podcasts', () => ({
   publishEpisodeToYouTube: vi.fn(),
 }));
 
+const defaultQuota: podcastApi.QuotaSummary = {
+  tier: 'professional',
+  tierLabel: 'Professional',
+  limit: 10,
+  remaining: 7,
+  used: 3,
+  isUnlimited: false,
+  period: '2025-10',
+  periodLabel: 'October 2025',
+  periodStart: '2025-10-01T00:00:00+00:00',
+  periodEnd: '2025-10-31T23:59:59+00:00',
+  quotaState: 'normal',
+  warningStatus: null,
+  warningMessage: null,
+  upgradeRequired: false,
+  upgradeMessage: null,
+  upgradeCtaUrl: null,
+};
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -84,21 +103,7 @@ describe('PodcastStudio', () => {
         upgradeMessage: null,
         upgradeCtaUrl: null,
       });
-      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
-        tier: 'professional',
-        tierLabel: 'Professional',
-        limit: 10,
-        remaining: 7,
-        used: 3,
-        isUnlimited: false,
-        period: '2025-10',
-        quotaState: 'normal',
-        warningStatus: null,
-        warningMessage: null,
-        upgradeRequired: false,
-        upgradeMessage: null,
-        upgradeCtaUrl: null,
-      });
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue(defaultQuota);
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([]);
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -126,21 +131,7 @@ describe('PodcastStudio', () => {
     });
 
     it('should display quota usage for Professional tier', async () => {
-      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
-        tier: 'professional',
-        tierLabel: 'Professional',
-        limit: 10,
-        remaining: 7,
-        used: 3,
-        isUnlimited: false,
-        period: '2025-10',
-        quotaState: 'normal',
-        warningStatus: null,
-        warningMessage: null,
-        upgradeRequired: false,
-        upgradeMessage: null,
-        upgradeCtaUrl: null,
-      });
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue(defaultQuota);
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
 
@@ -151,19 +142,12 @@ describe('PodcastStudio', () => {
 
     it('should show approaching quota banner when usage reaches warning threshold', async () => {
       vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
-        tier: 'professional',
-        tierLabel: 'Professional',
-        limit: 10,
+        ...defaultQuota,
         remaining: 2,
         used: 8,
-        isUnlimited: false,
-        period: '2025-10',
         quotaState: 'warning',
         warningStatus: 'warning',
         warningMessage: '80% of monthly quota used (8/10). 2 episodes remaining this month.',
-        upgradeRequired: false,
-        upgradeMessage: null,
-        upgradeCtaUrl: null,
       });
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -176,19 +160,12 @@ describe('PodcastStudio', () => {
 
     it('should show critical quota banner when usage reaches critical threshold', async () => {
       vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
-        tier: 'professional',
-        tierLabel: 'Professional',
-        limit: 10,
+        ...defaultQuota,
         remaining: 1,
         used: 9,
-        isUnlimited: false,
-        period: '2025-10',
-        quotaState: 'warning',
+        quotaState: 'critical',
         warningStatus: 'critical',
         warningMessage: '90% of monthly quota used (9/10). 1 episode remaining this month.',
-        upgradeRequired: false,
-        upgradeMessage: null,
-        upgradeCtaUrl: null,
       });
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -199,15 +176,28 @@ describe('PodcastStudio', () => {
       expect(screen.getByRole('button', { name: /new episode/i })).toBeEnabled();
     });
 
+    it('should display billing cycle with reset range when provided', async () => {
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue(defaultQuota);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      await waitFor(() => {
+        expect(screen.getByText(/october 2025 cycle/i)).toBeInTheDocument();
+      });
+
+      expect(
+        screen.getByText(/1 oct 2025 – 31 oct 2025 · resets at 11:59 pm/i)
+      ).toBeInTheDocument();
+    });
+
     it('should disable new episode creation and show upgrade CTA when quota requires upgrade', async () => {
       vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
+        ...defaultQuota,
         tier: 'starter',
         tierLabel: 'Starter',
         limit: 3,
         remaining: 0,
         used: 3,
-        isUnlimited: false,
-        period: '2025-10',
         quotaState: 'warning',
         warningStatus: 'critical',
         warningMessage: 'Monthly limit reached. Upgrade required to continue publishing.',

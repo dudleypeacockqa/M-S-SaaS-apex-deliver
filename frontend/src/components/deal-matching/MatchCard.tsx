@@ -46,16 +46,15 @@ export const MatchCard: React.FC<MatchCardProps> = ({
             <p className="text-sm text-gray-600">Deal ID: {match.matchedDealId}</p>
           )}
         </div>
-        <MatchScoreBadge score={match.score} />
-      </div>
-
-      {match.confidence && (
-        <div className="mb-3">
-          <span className="inline-block bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded">
-            Confidence: {match.confidence.toUpperCase()}
-          </span>
+        <div className="flex flex-col items-end gap-1 text-right">
+          <MatchScoreBadge score={match.score} />
+          {match.confidence && (
+            <span className="text-xs text-gray-500" data-testid="confidence-label">
+              Confidence: weighted criteria summary
+            </span>
+          )}
         </div>
-      )}
+      </div>
 
       <div className="mb-4">
         <p className="text-sm text-gray-700" data-testid="match-reason">

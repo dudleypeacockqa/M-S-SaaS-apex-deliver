@@ -96,6 +96,7 @@ def calculate_financial_ratios(
 
     # Convert Pydantic model to dict for calculation service
     financial_dict = financial_data.model_dump(exclude_none=True)
+    period = financial_dict.pop('period', None)  # Extract period if provided
 
     # Calculate all ratios using the pure calculation service
     calculated_ratios = calculate_all_ratios(financial_dict)
@@ -108,6 +109,42 @@ def calculate_financial_ratios(
         data_quality = "partial"
     else:
         data_quality = "minimal"
+
+    # Persist ratios to database (Task 1.1 - TDD GREEN)
+    from app.models.financial_ratio import FinancialRatio
+    from decimal import Decimal
+
+    db_ratio = FinancialRatio(
+        deal_id=deal_id,
+        organization_id=deal.organization_id,
+        period=period,
+        statement_id=None,  # No statement for standalone calculations
+        calculated_at=datetime.now(timezone.utc),
+        # Map all calculated ratios to database columns
+        current_ratio=Decimal(str(calculated_ratios['current_ratio'])) if calculated_ratios.get('current_ratio') is not None else None,
+        quick_ratio=Decimal(str(calculated_ratios['quick_ratio'])) if calculated_ratios.get('quick_ratio') is not None else None,
+        cash_ratio=Decimal(str(calculated_ratios['cash_ratio'])) if calculated_ratios.get('cash_ratio') is not None else None,
+        operating_cash_flow_ratio=Decimal(str(calculated_ratios['operating_cash_flow_ratio'])) if calculated_ratios.get('operating_cash_flow_ratio') is not None else None,
+        defensive_interval_ratio=Decimal(str(calculated_ratios['defensive_interval_ratio'])) if calculated_ratios.get('defensive_interval_ratio') is not None else None,
+        gross_profit_margin=Decimal(str(calculated_ratios['gross_profit_margin'])) if calculated_ratios.get('gross_profit_margin') is not None else None,
+        operating_profit_margin=Decimal(str(calculated_ratios['operating_profit_margin'])) if calculated_ratios.get('operating_profit_margin') is not None else None,
+        net_profit_margin=Decimal(str(calculated_ratios['net_profit_margin'])) if calculated_ratios.get('net_profit_margin') is not None else None,
+        return_on_assets=Decimal(str(calculated_ratios['return_on_assets'])) if calculated_ratios.get('return_on_assets') is not None else None,
+        return_on_equity=Decimal(str(calculated_ratios['return_on_equity'])) if calculated_ratios.get('return_on_equity') is not None else None,
+        return_on_invested_capital=Decimal(str(calculated_ratios['return_on_invested_capital'])) if calculated_ratios.get('return_on_invested_capital') is not None else None,
+        ebitda_margin=Decimal(str(calculated_ratios['ebitda_margin'])) if calculated_ratios.get('ebitda_margin') is not None else None,
+        ebit_margin=Decimal(str(calculated_ratios['ebit_margin'])) if calculated_ratios.get('ebit_margin') is not None else None,
+        debt_to_equity=Decimal(str(calculated_ratios['debt_to_equity'])) if calculated_ratios.get('debt_to_equity') is not None else None,
+        debt_to_assets=Decimal(str(calculated_ratios['debt_to_assets'])) if calculated_ratios.get('debt_to_assets') is not None else None,
+        equity_multiplier=Decimal(str(calculated_ratios['equity_multiplier'])) if calculated_ratios.get('equity_multiplier') is not None else None,
+        interest_coverage=Decimal(str(calculated_ratios['interest_coverage'])) if calculated_ratios.get('interest_coverage') is not None else None,
+        debt_service_coverage=Decimal(str(calculated_ratios['debt_service_coverage'])) if calculated_ratios.get('debt_service_coverage') is not None else None,
+        financial_leverage=Decimal(str(calculated_ratios['financial_leverage'])) if calculated_ratios.get('financial_leverage') is not None else None,
+    )
+
+    db.add(db_ratio)
+    db.commit()
+    db.refresh(db_ratio)
 
     # Build response
     response = FinancialRatiosResponse(

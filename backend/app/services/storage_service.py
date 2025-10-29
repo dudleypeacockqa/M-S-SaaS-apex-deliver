@@ -3,12 +3,67 @@ import hashlib
 import shutil
 import uuid
 from pathlib import Path
-from typing import BinaryIO, Optional
+from typing import BinaryIO, Optional, Protocol
 
 from app.core.config import get_settings
 
 
-class StorageService:
+class StorageServiceProtocol(Protocol):
+    """Protocol defining the storage service interface."""
+
+    def generate_file_key(
+        self,
+        organization_id: str,
+        deal_id: str,
+        filename: str,
+        user_id: str
+    ) -> str:
+        """Generate unique storage key for file."""
+        ...
+
+    async def save_file(
+        self,
+        file_key: str,
+        file_stream: BinaryIO,
+        organization_id: str
+    ) -> str:
+        """Save file to storage."""
+        ...
+
+    async def get_file_path(
+        self,
+        file_key: str,
+        organization_id: str
+    ) -> Path:
+        """Get file path for reading."""
+        ...
+
+    async def delete_file(
+        self,
+        file_key: str,
+        organization_id: str
+    ) -> bool:
+        """Delete file from storage."""
+        ...
+
+    async def file_exists(
+        self,
+        file_key: str,
+        organization_id: str
+    ) -> bool:
+        """Check if file exists."""
+        ...
+
+    def get_file_size(
+        self,
+        file_key: str,
+        organization_id: str
+    ) -> int:
+        """Get file size in bytes."""
+        ...
+
+
+class LocalStorageService:
     """
     File storage abstraction layer.
     Supports local filesystem with S3-ready architecture for future migration.
@@ -173,12 +228,24 @@ class StorageService:
 
 
 # Singleton instance
-_storage_service: Optional[StorageService] = None
+_storage_service: Optional[StorageServiceProtocol] = None
 
 
-def get_storage_service() -> StorageService:
-    """Get singleton storage service instance."""
+def get_storage_service() -> StorageServiceProtocol:
+    """
+    Get singleton storage service instance.
+
+    Returns LocalStorageService for local filesystem (development)
+    or S3StorageService for cloud storage (production) based on
+    USE_S3_STORAGE configuration flag.
+    """
     global _storage_service
     if _storage_service is None:
-        _storage_service = StorageService()
+        settings = get_settings()
+        if settings.use_s3_storage:
+            # Import here to avoid circular dependency and allow graceful degradation
+            from app.services.s3_storage_service import S3StorageService
+            _storage_service = S3StorageService()
+        else:
+            _storage_service = LocalStorageService()
     return _storage_service

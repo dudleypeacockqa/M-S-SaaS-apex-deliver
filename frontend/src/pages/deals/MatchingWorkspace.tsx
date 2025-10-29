@@ -16,6 +16,7 @@ import {
 import { MatchCard } from '../../components/deal-matching/MatchCard';
 import { MatchDetailModal } from '../../components/deal-matching/MatchDetailModal';
 import { CriteriaBuilderModal } from '../../components/deal-matching/CriteriaBuilderModal';
+import { IntroductionRequestModal } from '../../components/deal-matching/IntroductionRequestModal';
 
 interface MatchingWorkspaceProps {
   dealId?: string;
@@ -32,6 +33,7 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
   const [selectedMatch, setSelectedMatch] = useState<DealMatch | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCriteriaModalOpen, setIsCriteriaModalOpen] = useState(false);
+  const [isIntroModalOpen, setIsIntroModalOpen] = useState(false);
   const criteriaTabRef = useRef<HTMLButtonElement | null>(null);
   const matchesTabRef = useRef<HTMLButtonElement | null>(null);
   const queryClient = useQueryClient();
@@ -108,16 +110,24 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
   };
 
   const handleRequestIntro = (matchId: string) => {
-    // TODO: Phase 4 - Open IntroductionRequestModal
-    // For now, just record the action directly
-    recordMatchAction(matchId, {
-      action: 'request_intro',
-      metadata: { message: 'Introduction request sent' }
-    });
-    queryClient.invalidateQueries({ queryKey: ['dealMatches', dealId] });
-    if (isDetailModalOpen) {
-      handleCloseDetailModal();
+    // Open the introduction request modal
+    const match = matches?.find(m => m.id === matchId);
+    if (match) {
+      setSelectedMatch(match);
+      setIsIntroModalOpen(true);
+      // Close detail modal if open
+      if (isDetailModalOpen) {
+        setIsDetailModalOpen(false);
+      }
     }
+  };
+
+  const handleCloseIntroModal = () => {
+    setIsIntroModalOpen(false);
+  };
+
+  const handleIntroSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['dealMatches', dealId] });
   };
 
   if (!hasAccess) {
@@ -326,6 +336,15 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
           setIsCriteriaModalOpen(false);
           queryClient.invalidateQueries({ queryKey: ['matchCriteria'] });
         }}
+      />
+
+      {/* Introduction Request Modal */}
+      <IntroductionRequestModal
+        matchId={selectedMatch?.id ?? ''}
+        dealName={selectedMatch?.dealName ?? ''}
+        isOpen={isIntroModalOpen}
+        onClose={handleCloseIntroModal}
+        onSuccess={handleIntroSuccess}
       />
     </div>
   );

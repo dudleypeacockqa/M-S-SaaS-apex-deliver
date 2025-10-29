@@ -6,6 +6,8 @@ import {
   uploadDocument,
   downloadDocument,
   addDocumentPermission,
+  bulkDownloadDocuments,
+  bulkDeleteDocuments,
 } from "./documents"
 
 describe("documents API client", () => {

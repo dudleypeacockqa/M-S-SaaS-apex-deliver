@@ -3,16 +3,22 @@
  * TDD RED phase: Bulk document operations
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BulkActions } from './BulkActions';
 import * as documentsAPI from '../../services/api/documents';
 
 // Mock the documents API
-vi.mock('../../services/api/documents', () => ({
-  bulkDownloadDocuments: vi.fn(),
-  bulkDeleteDocuments: vi.fn(),
-}));
+vi.mock('../../services/api/documents', async () => {
+  const actual = await vi.importActual<typeof import('../../services/api/documents')>(
+    '../../services/api/documents'
+  );
+  return {
+    ...actual,
+    bulkDownloadDocuments: vi.fn(),
+    bulkDeleteDocuments: vi.fn(),
+  };
+});
 
 describe('BulkActions Component', () => {
   const mockSelectedDocuments = [
@@ -49,6 +55,10 @@ describe('BulkActions Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Rendering and Visibility', () => {
@@ -122,16 +132,11 @@ describe('BulkActions Component', () => {
     it('should call bulkDownloadDocuments API when download clicked', async () => {
       const mockBlobUrl = 'blob:http://localhost/fake-blob-url';
       (documentsAPI.bulkDownloadDocuments as any).mockResolvedValue(mockBlobUrl);
-
-      global.URL.createObjectURL = vi.fn(() => mockBlobUrl);
-      global.URL.revokeObjectURL = vi.fn();
-
-      const mockLink = document.createElement('a');
-      mockLink.click = vi.fn();
-      mockLink.remove = vi.fn();
-      vi.spyOn(document, 'createElement').mockReturnValue(mockLink);
-      vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink);
-      vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink);
+      const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+      if (typeof URL.revokeObjectURL !== 'function') {
+        (URL as unknown as { revokeObjectURL: (url: string) => void }).revokeObjectURL = () => {};
+      }
+      const revokeSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
 
       render(
         <BulkActions
@@ -147,12 +152,14 @@ describe('BulkActions Component', () => {
 
       await waitFor(() => {
         expect(documentsAPI.bulkDownloadDocuments).toHaveBeenCalledWith('deal-123', ['doc-1', 'doc-2']);
+        expect(clickSpy).toHaveBeenCalledTimes(1);
+        expect(revokeSpy).toHaveBeenCalledWith(mockBlobUrl);
       });
     });
 
     it('should show loading state during download', async () => {
       (documentsAPI.bulkDownloadDocuments as any).mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 1000))
+        () => new Promise((resolve) => setTimeout(resolve, 50))
       );
 
       render(
@@ -195,7 +202,7 @@ describe('BulkActions Component', () => {
 
   describe('Bulk Delete', () => {
     it('should show confirmation dialog before delete', () => {
-      global.confirm = vi.fn(() => false);
+      const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false as unknown as boolean);
 
       render(
         <BulkActions
@@ -209,13 +216,13 @@ describe('BulkActions Component', () => {
       const deleteButton = screen.getByRole('button', { name: /delete/i });
       fireEvent.click(deleteButton);
 
-      expect(global.confirm).toHaveBeenCalledWith(
+      expect(confirmSpy).toHaveBeenCalledWith(
         expect.stringContaining('2 documents')
       );
     });
 
     it('should call bulkDeleteDocuments API when confirmed', async () => {
-      global.confirm = vi.fn(() => true);
+      vi.spyOn(window, 'confirm').mockReturnValue(true as unknown as boolean);
       (documentsAPI.bulkDeleteDocuments as any).mockResolvedValue({
         deleted_count: 2,
         deleted_ids: ['doc-1', 'doc-2'],
@@ -241,7 +248,7 @@ describe('BulkActions Component', () => {
     });
 
     it('should call onRefresh after successful delete', async () => {
-      global.confirm = vi.fn(() => true);
+      vi.spyOn(window, 'confirm').mockReturnValue(true as unknown as boolean);
       (documentsAPI.bulkDeleteDocuments as any).mockResolvedValue({
         deleted_count: 2,
         deleted_ids: ['doc-1', 'doc-2'],
@@ -267,7 +274,7 @@ describe('BulkActions Component', () => {
     });
 
     it('should call onClearSelection after successful delete', async () => {
-      global.confirm = vi.fn(() => true);
+      vi.spyOn(window, 'confirm').mockReturnValue(true as unknown as boolean);
       (documentsAPI.bulkDeleteDocuments as any).mockResolvedValue({
         deleted_count: 2,
         deleted_ids: ['doc-1', 'doc-2'],
@@ -293,7 +300,7 @@ describe('BulkActions Component', () => {
     });
 
     it('should handle partial delete failures', async () => {
-      global.confirm = vi.fn(() => true);
+      vi.spyOn(window, 'confirm').mockReturnValue(true as unknown as boolean);
       (documentsAPI.bulkDeleteDocuments as any).mockResolvedValue({
         deleted_count: 1,
         deleted_ids: ['doc-1'],
@@ -321,7 +328,7 @@ describe('BulkActions Component', () => {
     });
 
     it('should not call API if user cancels confirmation', () => {
-      global.confirm = vi.fn(() => false);
+      vi.spyOn(window, 'confirm').mockReturnValue(false as unknown as boolean);
 
       render(
         <BulkActions

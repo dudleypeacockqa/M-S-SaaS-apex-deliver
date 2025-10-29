@@ -13,9 +13,13 @@ export interface CriteriaBuilderModalProps {
   onSuccess: () => void;
 }
 
+type CreateMatchCriteriaPayload = Parameters<typeof createMatchCriteria>[0]
+
+type DealType = CreateMatchCriteriaPayload['deal_type']
+
 interface FormData {
   name: string;
-  deal_type: 'buy_side' | 'sell_side';
+  deal_type: DealType;
   industries: string[];
   min_deal_size: string;
   max_deal_size: string;
@@ -51,7 +55,7 @@ export const CriteriaBuilderModal: React.FC<CriteriaBuilderModalProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
 
   const createMutation = useMutation({
-    mutationFn: createMatchCriteria,
+    mutationFn: async (payload: CreateMatchCriteriaPayload) => createMatchCriteria(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['matchCriteria'] });
       onSuccess();
@@ -110,7 +114,7 @@ export const CriteriaBuilderModal: React.FC<CriteriaBuilderModalProps> = ({
     createMutation.mutate({
       name: formData.name,
       deal_type: formData.deal_type,
-      industries: formData.industries,
+      industries: formData.industries.map((industry) => industry.toLowerCase()),
       min_deal_size: parseFloat(formData.min_deal_size),
       max_deal_size: parseFloat(formData.max_deal_size),
       geographies: formData.geographies,
@@ -121,12 +125,14 @@ export const CriteriaBuilderModal: React.FC<CriteriaBuilderModalProps> = ({
   const handleAddIndustry = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && industryInput.trim()) {
       e.preventDefault();
-      const normalized = industryInput.trim().toLowerCase();
-      if (!formData.industries.includes(normalized)) {
-        setFormData({
-          ...formData,
-          industries: [...formData.industries, normalized],
-        });
+      const value = industryInput.trim();
+      const exists = formData.industries.some((industry) => industry.toLowerCase() === value.toLowerCase());
+
+      if (!exists) {
+        setFormData((previous) => ({
+          ...previous,
+          industries: [...previous.industries, value],
+        }));
       }
       setIndustryInput('');
     }
@@ -257,7 +263,7 @@ export const CriteriaBuilderModal: React.FC<CriteriaBuilderModalProps> = ({
                     key={industry}
                     className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm"
                   >
-                    {industry.charAt(0).toUpperCase() + industry.slice(1)}
+                    {industry}
                     <button
                       type="button"
                       onClick={() => handleRemoveIndustry(industry)}

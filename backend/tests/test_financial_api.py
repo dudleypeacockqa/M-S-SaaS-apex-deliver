@@ -597,3 +597,165 @@ def test_get_readiness_score_no_narrative(client, test_deal, solo_user):
         assert "narrative" in response.json()["detail"].lower()
     finally:
         app.dependency_overrides.pop(get_current_user, None)
+
+
+# ============================================================================
+# RATIO PERSISTENCE TESTS (Task 1.1 - TDD RED Phase)
+# ============================================================================
+
+def test_calculate_ratios_persists_to_database(client, test_deal, solo_user, db_session):
+    """Test that calculate endpoint persists ratios to FinancialRatio table"""
+    from app.models.financial_ratio import FinancialRatio
+
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        financial_data = {
+            "current_assets": 100000,
+            "current_liabilities": 50000,
+            "revenue": 500000,
+            "net_income": 50000,
+            "period": "2024-Q4",
+        }
+
+        response = client.post(
+            f"/api/deals/{test_deal.id}/financial/calculate-ratios",
+            json=financial_data,
+        )
+
+        assert response.status_code == 200
+
+        # Verify ratios were persisted to database
+        saved_ratios = db_session.query(FinancialRatio).filter(
+            FinancialRatio.deal_id == test_deal.id,
+            FinancialRatio.period == "2024-Q4"
+        ).all()
+
+        assert len(saved_ratios) > 0, "No ratios persisted to database"
+
+        # Verify key fields are saved
+        ratio = saved_ratios[0]
+        assert ratio.current_ratio == Decimal("2.0")
+        assert ratio.net_profit_margin == Decimal("10.0")
+        assert ratio.calculated_at is not None
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_get_ratios_returns_latest_calculation(client, test_deal, solo_user, db_session):
+    """Test GET /deals/{id}/financial/ratios returns persisted ratios"""
+    from app.models.financial_ratio import FinancialRatio
+
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        # Create test ratio record
+        test_ratio = FinancialRatio(
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            period="2024-Q3",
+            current_ratio=Decimal("1.5"),
+            net_profit_margin=Decimal("12.5"),
+            return_on_equity=Decimal("18.0"),
+            calculated_at=datetime.now(timezone.utc),
+        )
+        db_session.add(test_ratio)
+        db_session.commit()
+
+        response = client.get(f"/api/deals/{test_deal.id}/financial/ratios")
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert isinstance(data, list)
+        assert len(data) >= 1
+
+        latest = data[0]
+        assert latest["period"] == "2024-Q3"
+        assert float(latest["current_ratio"]) == 1.5
+        assert float(latest["net_profit_margin"]) == 12.5
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_get_ratios_filters_by_period(client, test_deal, solo_user, db_session):
+    """Test GET /ratios with period query param returns filtered results"""
+    from app.models.financial_ratio import FinancialRatio
+
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        # Create ratios for different periods
+        for period in ["2024-Q1", "2024-Q2", "2024-Q3"]:
+            ratio = FinancialRatio(
+                deal_id=test_deal.id,
+                organization_id=test_deal.organization_id,
+                period=period,
+                current_ratio=Decimal("1.0"),
+                calculated_at=datetime.now(timezone.utc),
+            )
+            db_session.add(ratio)
+        db_session.commit()
+
+        # Query for specific period
+        response = client.get(
+            f"/api/deals/{test_deal.id}/financial/ratios",
+            params={"period": "2024-Q2"}
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert len(data) == 1
+        assert data[0]["period"] == "2024-Q2"
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_get_ratios_returns_empty_when_none_exist(client, test_deal, solo_user):
+    """Test GET /ratios returns empty list when no calculations exist"""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.get(f"/api/deals/{test_deal.id}/financial/ratios")
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert isinstance(data, list)
+        assert len(data) == 0
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_get_ratios_limits_results(client, test_deal, solo_user, db_session):
+    """Test GET /ratios respects limit query parameter"""
+    from app.models.financial_ratio import FinancialRatio
+
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        # Create 5 ratio records
+        for i in range(5):
+            ratio = FinancialRatio(
+                deal_id=test_deal.id,
+                organization_id=test_deal.organization_id,
+                period=f"2024-Q{i+1}",
+                current_ratio=Decimal("1.0"),
+                calculated_at=datetime.now(timezone.utc) - timedelta(days=i),
+            )
+            db_session.add(ratio)
+        db_session.commit()
+
+        # Request with limit
+        response = client.get(
+            f"/api/deals/{test_deal.id}/financial/ratios",
+            params={"limit": 2}
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert len(data) == 2
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)

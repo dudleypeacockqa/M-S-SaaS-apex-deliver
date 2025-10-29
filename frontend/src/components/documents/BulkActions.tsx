@@ -3,14 +3,15 @@
  * Bulk operations for selected documents (download ZIP, delete)
  */
 
-import React, { useState } from 'react';
-import { Document, bulkDownloadDocuments, bulkDeleteDocuments } from '../../services/api/documents';
+import React, { useRef, useState } from 'react'
+import { Document, bulkDeleteDocuments, bulkDownloadDocuments } from '../../services/api/documents'
 
 interface BulkActionsProps {
-  dealId: string;
-  selectedDocuments: Document[];
-  onClearSelection: () => void;
-  onRefresh: () => void;
+  dealId: string
+  selectedDocuments: Document[]
+  onClearSelection: () => void
+  onRefresh: () => void
+  autoClearOnDelete?: boolean
 }
 
 export const BulkActions: React.FC<BulkActionsProps> = ({
@@ -18,163 +19,135 @@ export const BulkActions: React.FC<BulkActionsProps> = ({
   selectedDocuments,
   onClearSelection,
   onRefresh,
+  autoClearOnDelete = true,
 }) => {
-  const [downloading, setDownloading] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const downloadLinkRef = useRef<HTMLAnchorElement | null>(null)
+  const [downloading, setDownloading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const documentIds = selectedDocuments.map((doc) => doc.id)
 
-  if (selectedDocuments.length === 0) {
-    return null;
+  if (documentIds.length === 0) {
+    return null
   }
 
   const handleDownload = async () => {
     try {
-      setDownloading(true);
-      setError(null);
+      setDownloading(true)
+      setError(null)
 
-      const documentIds = selectedDocuments.map((doc) => doc.id);
-      const blobUrl = await bulkDownloadDocuments(dealId, documentIds);
+      const blobUrl = await bulkDownloadDocuments(dealId, documentIds)
+      const existingLink = downloadLinkRef.current
+      const link = existingLink ?? document.createElement('a')
+      let appended = false
 
-      // Trigger download
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = `documents_${new Date().toISOString().split('T')[0]}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
+      if (!existingLink) {
+        link.style.display = 'none'
+        document.body.appendChild(link)
+        appended = true
+        downloadLinkRef.current = link
+      }
+
+      link.href = blobUrl
+      link.download = `deal-${dealId}-documents-${new Date().toISOString().split('T')[0]}.zip`
+      link.click()
+
+      if (appended) {
+        document.body.removeChild(link)
+      }
+
+      window.setTimeout(() => {
+        if (typeof URL?.revokeObjectURL === 'function') {
+          URL.revokeObjectURL(blobUrl)
+        }
+      }, 0)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to download documents');
+      const fallbackMessage = 'Failed to download documents'
+      const message = err instanceof Error ? err.message : fallbackMessage
+      setError(/failed to download/i.test(message) ? message : fallbackMessage)
     } finally {
-      setDownloading(false);
+      setDownloading(false)
     }
-  };
+  }
 
   const handleDelete = async () => {
     const confirmed = window.confirm(
       `Are you sure you want to delete ${selectedDocuments.length} documents? This action cannot be undone.`
-    );
+    )
 
     if (!confirmed) {
-      return;
+      return
     }
 
     try {
-      setDeleting(true);
-      setError(null);
+      setDeleting(true)
+      setError(null)
 
-      const documentIds = selectedDocuments.map((doc) => doc.id);
-      const result = await bulkDeleteDocuments(dealId, documentIds);
+      const result = await bulkDeleteDocuments(dealId, documentIds)
 
       if (result.failed_ids.length > 0) {
         const failedNames = selectedDocuments
           .filter((doc) => result.failed_ids.includes(doc.id))
           .map((doc) => `${doc.name}: ${result.failed_reasons[doc.id]}`)
-          .join(', ');
-        setError(`${result.failed_ids.length} documents failed to delete: ${failedNames}`);
+          .join(', ')
+
+        setError(`${result.failed_ids.length} documents failed to delete: ${failedNames}`)
       }
 
-      onRefresh();
-      onClearSelection();
+      onRefresh()
+      if (autoClearOnDelete && result.failed_ids.length === 0) {
+        onClearSelection()
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete documents');
+      setError(err instanceof Error ? err.message : 'Failed to delete documents')
     } finally {
-      setDeleting(false);
+      setDeleting(false)
     }
-  };
+  }
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: '2rem',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        backgroundColor: '#1f2937',
-        color: 'white',
-        padding: '1rem 2rem',
-        borderRadius: '0.5rem',
-        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1.5rem',
-        zIndex: 1000,
-      }}
-    >
-      <span style={{ fontWeight: 600 }}>
-        {selectedDocuments.length} documents selected
-      </span>
+    <div className="fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-3">
+      <a ref={downloadLinkRef} className="hidden" aria-hidden="true" />
 
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <button
-          onClick={handleDownload}
-          disabled={downloading || deleting}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: downloading ? '#6b7280' : '#10b981',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.375rem',
-            cursor: downloading || deleting ? 'not-allowed' : 'pointer',
-            fontWeight: 500,
-          }}
-        >
-          {downloading ? 'Downloading...' : '⬇️ Download ZIP'}
-        </button>
+      <div className="flex w-full max-w-3xl items-center gap-6 rounded-xl bg-slate-900 px-6 py-4 text-white shadow-2xl">
+        <span className="font-semibold">{selectedDocuments.length} documents selected</span>
 
-        <button
-          onClick={handleDelete}
-          disabled={downloading || deleting}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: deleting ? '#6b7280' : '#ef4444',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.375rem',
-            cursor: downloading || deleting ? 'not-allowed' : 'pointer',
-            fontWeight: 500,
-          }}
-        >
-          {deleting ? 'Deleting...' : '🗑️ Delete'}
-        </button>
+        <div className="flex flex-1 justify-end gap-3">
+          <button
+            onClick={handleDownload}
+            disabled={downloading || deleting}
+            className="inline-flex items-center justify-center rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium transition-colors hover:bg-emerald-600 disabled:cursor-not-allowed disabled:bg-slate-500"
+          >
+            {downloading ? 'Downloading...' : '⬇️ Download ZIP'}
+          </button>
 
-        <button
-          onClick={onClearSelection}
-          disabled={downloading || deleting}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: '#4b5563',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.375rem',
-            cursor: downloading || deleting ? 'not-allowed' : 'pointer',
-            fontWeight: 500,
-          }}
-        >
-          ✕ Clear
-        </button>
+          <button
+            onClick={handleDelete}
+            disabled={downloading || deleting}
+            className="inline-flex items-center justify-center rounded-lg bg-rose-500 px-4 py-2 text-sm font-medium transition-colors hover:bg-rose-600 disabled:cursor-not-allowed disabled:bg-slate-500"
+          >
+            {deleting ? 'Deleting...' : '🗑️ Delete'}
+          </button>
+
+          <button
+            onClick={onClearSelection}
+            disabled={downloading || deleting}
+            className="inline-flex items-center justify-center rounded-lg bg-slate-600 px-4 py-2 text-sm font-medium transition-colors hover:bg-slate-500 disabled:cursor-not-allowed disabled:bg-slate-500"
+          >
+            ✕ Clear
+          </button>
+        </div>
       </div>
 
       {error && (
         <div
-          style={{
-            position: 'absolute',
-            top: '-3.5rem',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            backgroundColor: '#fee2e2',
-            color: '#dc2626',
-            padding: '0.75rem 1rem',
-            borderRadius: '0.375rem',
-            whiteSpace: 'nowrap',
-            maxWidth: '600px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
+          role="status"
+          aria-live="assertive"
+          className="max-w-3xl rounded-lg bg-rose-100 px-4 py-3 text-sm font-medium text-rose-700 shadow-lg"
         >
           {error}
         </div>
       )}
     </div>
-  );
-};
+  )
+}

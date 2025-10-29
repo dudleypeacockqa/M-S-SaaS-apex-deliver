@@ -58,6 +58,9 @@ type ApiQuotaSummary = {
   used: number;
   is_unlimited: boolean;
   period: string;
+  period_label?: string | null;
+  period_start?: string | null;
+  period_end?: string | null;
   quota_state?: string;
   warning_status?: string | null;
   warning_message?: string | null;
@@ -74,6 +77,9 @@ export interface QuotaSummary {
   used: number;
   isUnlimited: boolean;
   period: string;
+  periodLabel: string | null;
+  periodStart: string | null;
+  periodEnd: string | null;
   quotaState: string;
   warningStatus: string | null;
   warningMessage: string | null;
@@ -133,6 +139,9 @@ export async function getQuotaSummary(): Promise<QuotaSummary> {
     used: data.used,
     isUnlimited: data.is_unlimited,
     period: data.period,
+    periodLabel: data.period_label ?? null,
+    periodStart: data.period_start ?? null,
+    periodEnd: data.period_end ?? null,
     quotaState: data.quota_state ?? 'normal',
     warningStatus: data.warning_status ?? null,
     warningMessage: data.warning_message ?? null,

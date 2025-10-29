@@ -244,6 +244,7 @@ export const DataRoom: React.FC = () => {
 
   if (entitlementGate) {
     const requiredTier = entitlementGate.requiredTierLabel || 'Growth'
+    const primaryMessage = `This data room is available to ${requiredTier} tier and above.`
     return (
       <section
         data-testid="data-room-entitlement"
@@ -263,9 +264,12 @@ export const DataRoom: React.FC = () => {
           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '1rem', color: '#1e293b' }}>
             Access Restricted
           </h2>
-          <p style={{ color: '#475569', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-            {entitlementGate.message || `This data room is available to ${requiredTier} tier and above.`}
-          </p>
+          <div style={{ color: '#475569', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+            <p>{primaryMessage}</p>
+            {entitlementGate.message && entitlementGate.message !== primaryMessage && (
+              <p style={{ marginTop: '0.75rem' }}>{entitlementGate.message}</p>
+            )}
+          </div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
             {entitlementGate.upgradeUrl && (
               <a
@@ -677,6 +681,7 @@ export const DataRoom: React.FC = () => {
         selectedDocuments={selectedDocuments}
         onClearSelection={clearSelection}
         onRefresh={fetchDocuments}
+        autoClearOnDelete={false}
       />
     </section>
   )

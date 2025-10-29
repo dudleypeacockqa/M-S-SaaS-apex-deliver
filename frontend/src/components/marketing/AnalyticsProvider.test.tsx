@@ -18,6 +18,7 @@ describe('AnalyticsProvider', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
   });
 
   describe('Google Analytics 4', () => {

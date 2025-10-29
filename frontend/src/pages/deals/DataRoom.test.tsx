@@ -237,7 +237,7 @@ describe('DataRoom - Document Operations', () => {
     const heading = await screen.findByRole('heading', { name: /access restricted/i });
     expect(heading).toBeInTheDocument();
     expect(
-      screen.getByText(/this data room is available to growth tier and above/i),
+      screen.getByText(/upgrade to the growth tier/i),
     ).toBeInTheDocument();
     const link = screen.getByRole('link', { name: /view pricing plans/i });
     expect(link).toHaveAttribute('href', '/billing/upgrade');

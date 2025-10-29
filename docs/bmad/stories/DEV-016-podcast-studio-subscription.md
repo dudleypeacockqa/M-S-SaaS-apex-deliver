@@ -21,6 +21,11 @@
 - ✅ Targeted pytest run: `python -m pytest backend/tests/test_podcast_api.py backend/tests/test_quota_service.py` → 71 passed / 0 failed.
 - 📝 Next: raise RED transcription endpoint tests (404 regression) and extend schema/service to surface transcript state + error messaging.
 
+**Cycle 2.B Result (2025-10-29 17:20 UTC)**:
+- ✅ Frontend quota HUD now displays billing cycle label and monthly reset window from new API fields.
+- ✅ Vitest: `npm --prefix frontend run test -- PodcastStudio.test.tsx` → 22 passed / 0 failed.
+- 🔄 NEXT: Align YouTube upload + video quota UI with refreshed quota metadata before moving to transcription UI polish.
+
 **Latest Update (2025-10-29 15:25 UTC)**:
 - ✅ Full Vitest suite (`npm run test:coverage`) passes with 554 tests, 85.1% lines after extending quota/Monte Carlo specs; DataRoom/auth legacy routes temporarily excluded pending integration coverage.
 - ✅ Backend regression (`python -m pytest --cov=app --cov-report=term`) remains green (431 passed) though coverage is 77%; entitlement/quota modules flagged for follow-up to reach ≥90%.

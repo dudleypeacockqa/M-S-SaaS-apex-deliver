@@ -106,7 +106,7 @@ async def transcribe_audio(audio_file_path: str) -> str:
         raise
 
 
-async def generate_thumbnail(video_file_path: str, timestamp: float = 1.0) -> str:
+async def _generate_thumbnail_impl(video_file_path: str, timestamp: float = 1.0) -> str:
     """
     Generate thumbnail from video file at specified timestamp.
 
@@ -148,6 +148,10 @@ async def generate_thumbnail(video_file_path: str, timestamp: float = 1.0) -> st
     except Exception as exc:
         logger.error(f"Thumbnail generation failed: {exc}")
         raise
+
+
+# Expose helper for tests and dependent routes
+generate_thumbnail = _generate_thumbnail_impl
 
 
 @router.get("/features/{feature}")

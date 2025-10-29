@@ -77,13 +77,13 @@ export const DealDocuments: React.FC = () => {
         />
         {uploadMutation.isPending && (
           <span className="text-sm text-slate-500" role="status">
-            Uploading...�
+            Uploading...
           </span>
         )}
       </div>
 
       {documentsQuery.isLoading ? (
-        <p className="text-sm text-slate-500">Loading documents…</p>
+        <p className="text-sm text-slate-500">Loading documents...</p>
       ) : documents.length === 0 ? (
         <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
           No documents uploaded yet. Use the upload action above to add your first file.

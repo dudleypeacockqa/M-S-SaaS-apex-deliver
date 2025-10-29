@@ -9,11 +9,12 @@ from app.utils.datetime import utc_now
 class FinancialRatio(Base):
     """Stores 47 calculated financial ratios."""
     __tablename__ = "financial_ratios"
-    
+
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    statement_id = Column(String(36), ForeignKey("financial_statements.id", ondelete="CASCADE"), nullable=False, index=True)
+    statement_id = Column(String(36), ForeignKey("financial_statements.id", ondelete="CASCADE"), nullable=True, index=True)  # Nullable for standalone calculations
     deal_id = Column(String(36), ForeignKey("deals.id", ondelete="CASCADE"), nullable=False, index=True)
     organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    period = Column(String(20), nullable=True)  # For standalone calculations (e.g., "2024-Q4", "2024-12")
     
     # Liquidity (5)
     current_ratio = Column(Numeric(10, 4), nullable=True)

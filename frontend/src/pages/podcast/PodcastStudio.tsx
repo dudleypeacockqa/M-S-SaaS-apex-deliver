@@ -272,6 +272,37 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
     critical: 'mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-900',
   };
 
+  const cycleLabel = quota.periodLabel ?? quota.period ?? 'Current cycle';
+  const periodDetails = React.useMemo(() => {
+    if (!quota.periodStart || !quota.periodEnd) {
+      return null;
+    }
+
+    const startDate = new Date(quota.periodStart);
+    const endDate = new Date(quota.periodEnd);
+
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      return null;
+    }
+
+    const dateFormatter = new Intl.DateTimeFormat(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+
+    const timeFormatter = new Intl.DateTimeFormat(undefined, {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+
+    return {
+      range: `${dateFormatter.format(startDate)} – ${dateFormatter.format(endDate)}`,
+      resetLabel: timeFormatter.format(endDate),
+    };
+  }, [quota.periodStart, quota.periodEnd]);
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
       <div className="flex items-center justify-between">
@@ -291,6 +322,14 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
               ? `Created ${quota.used} episodes this month`
               : `${quota.remaining} remaining this month`}
           </p>
+          <p className="mt-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
+            {cycleLabel} cycle
+          </p>
+          {periodDetails && (
+            <p className="mt-1 text-xs text-gray-500">
+              {periodDetails.range} · resets at {periodDetails.resetLabel.toLowerCase()}
+            </p>
+          )}
           {warningLevel && (
             <div
               role={warningRole}
