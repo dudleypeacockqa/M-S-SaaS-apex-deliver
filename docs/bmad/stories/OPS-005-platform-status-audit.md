@@ -4,6 +4,10 @@
 **Checked On**: 2025-10-24 14:08 UTC  
 **Prepared By**: Codex (BMAD Ops)
 
+**Update (2025-10-28 22:00 UTC)**:
+- Pending script adjustments captured for governance reset: `scripts/run_smoke_tests.sh` (adds podcast gating checks) and `scripts/verify_migrations.sh` (documents Alembic head verification).
+- See DEV-016 story for feature context; retain ops ownership for automation follow-up in Phase 7.
+
 ## Summary
 - Confirmed local git tree matches `origin/main` (latest commit `171329c merge: integrate admin portal frontend UI (DEV-006)`).
 - Enumerated outstanding workspace changes (WIP deal pipeline backend, updated admin UI/tests, documentation edits).

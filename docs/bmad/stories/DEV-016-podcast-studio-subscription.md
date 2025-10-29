@@ -1,6 +1,6 @@
 # DEV-016: Podcast Studio (Subscription Add-On)
 
-**Status**: 🟡 In Progress
+**Status**: 🟢 Phase 3 Gating Delivered – Quota Warning UX Pending
 **Priority**: High
 **Epic**: Phase 3 - Ecosystem & Network Effects
 **Started**: 2025-10-28
@@ -10,13 +10,11 @@
 
 ---
 
-**Latest Update (2025-10-28 22:00 UTC)**:
-- Catalogued active work-in-progress files tied to DEV-016 before restarting `/dev-story`:
-  - Backend enforcement: `backend/app/api/routes/podcasts.py`, `backend/app/models/podcast.py`, `backend/app/schemas/podcast.py`, `backend/app/services/quota_service.py`, `backend/tests/test_podcast_api.py`, `backend/tests/test_quota_service.py`, plus fixture updates in `backend/tests/conftest.py`.
-  - Story assets/scripts: `scripts/update_podcast_quota_summary_mocks.py`, `scripts/update_podcast_usage_assertions.py`, and `scripts/view_podcast_usage_block*.py` (usage inspection helpers).
-  - Frontend/UI gates: `frontend/src/pages/podcast/PodcastStudio.test.tsx` (quota + messaging specs) with partner updates queued for `PodcastStudio.tsx`.
-  - Alembic migration `backend/alembic/versions/de0a8956401c_add_podcast_usage_table_for_quota_.py` already staged; verify upgrade records during Phase 1 stabilization.
-- Next: resume TDD loop for quota HUD + entitlement CTAs once governance reset concludes.
+**Latest Update (2025-10-28 23:30 UTC)**:
+- Backend quota service/API now expose tier labels, upgrade messaging, and consistent quota states; `pytest backend/tests/test_quota_service.py` + `test_podcast_api.py` passing.
+- Frontend `useFeatureAccess`, `FeatureGate`, and `PodcastStudio` quota HUD aligned with new payloads; Vitest suite GREEN (517 passed / 6 skipped).
+- Smoke scripts refreshed to include podcast gating regression entry-points; upcoming work: quota warning thresholds (80/90/100%) and UX copy updates.
+- Active WIP tracked for governance reset: `backend/app/api/routes/podcasts.py`, `backend/app/models/podcast.py`, `backend/app/schemas/podcast.py`, `backend/app/services/quota_service.py`, `backend/tests/test_podcast_api.py`, `backend/tests/test_quota_service.py`, `frontend/src/pages/podcast/PodcastStudio.test.tsx`, and script utilities (`scripts/run_smoke_tests.sh`, `scripts/verify_migrations.sh`, quota data helpers).
 
 **Latest Update (2025-10-28 12:56 UTC)**:
 - Backend pytest suite now 369 passed / 1 skipped; frontend Vitest suite passing.
@@ -27,6 +25,12 @@
 - Baseline documentation refresh complete; backend podcast service/API TDD expansion underway.
 - Git workspace contains pending edits across podcasts API/service, quota tests, and frontend gating hook.
 - Render deployment status still pending manual confirmation; track in `PRODUCTION_DEPLOYMENT_2025-10-28.md`.
+
+**Latest Update (2025-10-28 22:07 UTC)**:
+- Implemented YouTube publish endpoint with entitlement enforcement and episode persistence; Alembic migration adds `youtube_video_id` column.
+- Podcast Studio UI now checks `youtube_integration` access, shows upgrade CTA when locked, and enables `Publish to YouTube` action with success messaging.
+- Tests executed: `npm run test -- PodcastStudio.test.tsx` (12 passed) and `python -m pytest backend/tests/test_podcast_api.py backend/tests/test_youtube_service.py` (26 passed).
+- Next focus: extend quota HUD warnings and transcription gating before tackling live streaming.
 
 **Latest Update (2025-10-28 18:24 UTC)**:
 - Dirty working tree holds entitlement-aware frontend gating updates (`FeatureGate`, `useFeatureAccess`) plus initial `youtube_service.py` scaffold awaiting coverage.
@@ -66,8 +70,8 @@
 - [ ] Clerk integration fetches subscription tier from organization metadata
 - [ ] Feature entitlement service validates access based on tier
 - [x] API middleware returns 403 for insufficient subscription tiers
-- [ ] Frontend hides/disables features for insufficient tiers
-- [ ] Upgrade CTAs displayed when locked features accessed
+- [x] Frontend hides/disables features for insufficient tiers
+- [x] Upgrade CTAs displayed when locked features accessed
 - [x] Quota enforcement prevents Professional tier exceeding 10 episodes/month (backend service + API tests)
 - [ ] 100% test coverage on tier validation logic
 - [ ] Zero security bypass vulnerabilities (penetration tested)
@@ -89,9 +93,9 @@
 
 #### YouTube Integration (Premium+ Tiers)
 - [ ] OAuth connection to YouTube account
-- [ ] Auto-publish episodes to YouTube
+- [x] Auto-publish episodes to YouTube
 - [ ] Sync metadata (title, description, tags)
-- [ ] Track YouTube video IDs and URLs
+- [x] Track YouTube video IDs and URLs
 - [ ] View YouTube analytics within platform
 
 #### Live Streaming (Enterprise Tier Only)
@@ -1015,7 +1019,7 @@ REDIS_URL=redis://localhost:6379/0
 
 - [ ] ≥30% of Professional+ subscribers use podcast regularly
 - [ ] ≥5% of Starter users upgraded to Professional
-- [ [ ] £50K+ additional MRR from podcast-driven upgrades
+- [ ] £50K+ additional MRR from podcast-driven upgrades
 - [ ] ≥100 episodes created per week
 - [ ] ≥50 YouTube videos published via platform
 

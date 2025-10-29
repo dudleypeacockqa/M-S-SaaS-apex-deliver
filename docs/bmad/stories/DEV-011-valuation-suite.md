@@ -5,12 +5,17 @@
 **Priority**: ⭐️⭐️⭐️⭐️⭐️ (Core Differentiator)  
 **Estimated Effort**: 20-24 hours (TDD end-to-end)  
 **Methodology**: BMAD v6-alpha + Test-Driven Development (strict RED → GREEN → REFACTOR)  
-**Status**: 🟢 Complete (Backend + UI verified 2025-10-28 23:55 UTC)
+**Status**: 🟠 Backend Complete – UI/Exports Pending (Updated 2025-10-28 23:35 UTC)
 
-**Latest Update (2025-10-28 23:55 UTC)**:
-- Backend `pytest backend/tests/test_valuation_api.py` + `test_valuation_crud.py` GREEN; full regression suite `backend/tests` now **393 passed / 10 skipped**.
-- Frontend `npm run test -- ValuationSuite.test.tsx` + full suite GREEN (510 passed / 3 skipped) validating Summary analytics, comparables/precedents, exports, and gating flows.
-- Documentation + BMAD trackers updated; DEV-011 acceptance criteria signed off and ready for release packaging.
+**Latest Update (2025-10-29 06:33 UTC)**:
+- RED → GREEN: `ValuationSuite.test.tsx` Monte Carlo accessibility + payload assertion now passes (`npm --prefix frontend test -- ValuationSuite.test.tsx` → 12/12 GREEN).
+- Added explicit label associations + input normalisation in `ValuationSuite.tsx` Monte Carlo panel to ensure deterministic payloads (iterations clamped ≥50, seed optional).
+- Catalogued active WIP for Phase 1 stabilization: `frontend/src/pages/deals/valuation/ValuationSuite.tsx`, `frontend/src/pages/deals/valuation/ValuationSuite.test.tsx`, `frontend/src/services/api/valuations.ts`, backend valuation routes/schemas/tests, and shared fixture tweaks in `backend/tests/conftest.py`.
+
+**Update (2025-10-28 23:35 UTC)**:
+- Monte Carlo API now typed (`MonteCarloRequest`/`MonteCarloResponse`) with deterministic seeding and validation. `pytest backend/tests/test_valuation_api.py` + `test_financial_models_sync.py` green.
+- Full backend regression (`pytest backend/tests -q`) passes with **380 passed / 21 skipped**; coverage steady at ~83%.
+- Frontend ValuationSuite wiring remains in progress (analytics cards, scenario editing, export CTA UX) — keep Vitest suite GREEN while adding new assertions.
 
 **Update (2025-10-28 21:47 UTC)**:
 - Ran RED → GREEN cycle on `ValuationSuite.test.tsx`, expanding analytics expectations to include EV/Equity range bands and dynamic upgrade messaging.

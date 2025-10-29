@@ -1,6 +1,6 @@
 # Production Deployment Checklist - M&A Intelligence Platform
 
-**Last Updated**: October 24, 2025
+**Last Updated**: October 28, 2025
 **Environment**: Production (Render)
 **Project**: M&A Intelligence Platform (ApexDeliver)
 
@@ -12,7 +12,7 @@
 
 - [x] Production PostgreSQL database created on Render
 - [x] Database credentials configured in environment variables
-- [x] Alembic migration applied successfully (revision: `8dcb6880a52b`)
+- [x] Alembic migration applied successfully (revision: `de0a8956401c`)
 - [x] Users table created with indexes
 
 **Database Connection**:
@@ -26,8 +26,8 @@ User: ma_saas_user
 **Migration Status**:
 
 ```bash
-Current Revision: 8dcb6880a52b (head)
-Applied: October 24, 2025
+Current Revision: de0a8956401c (head)
+Applied: October 28, 2025
 Status: SUCCESS
 ```
 
@@ -171,26 +171,13 @@ Content-Type: text/html; charset=utf-8
 
 ## Test Results (DEV-004)
 
-### Backend Tests
+### Regression Snapshot (2025-10-28)
 
 ```text
-Tests: 20/20 passing (100% pass rate)
-Coverage: 91% (exceeds 80% target)
-Test File: backend/tests/test_clerk_auth_complete.py
-```
-
-**Test Categories**:
-
-- Webhook event handling (10 tests)
-- JWT authentication (5 tests)
-- Edge case handling (5 tests)
-
-### Frontend Tests
-
-```text
-Tests: 21/21 passing (100% pass rate)
-Framework: Vitest
-Coverage: Frontend auth flows verified
+Backend: pytest backend/tests -q → 380 passed / 21 skipped (11.23s)
+Frontend: npm run test -- --run → 517 passed / 6 skipped (98.9%)
+Smoke: ./scripts/run_smoke_tests.sh production → backend health + smoke tests ✅
+Migrations: cd backend && ../scripts/verify_migrations.sh → revision de0a8956401c ✅
 ```
 
 ---
@@ -228,12 +215,12 @@ Coverage: Frontend auth flows verified
 ### Database Rollback
 
 ```bash
-# Connect to production database
+# Connect to production database (ensure DATABASE_URL points to Render PostgreSQL)
 cd backend
-alembic downgrade -1
+DATABASE_URL="$DATABASE_URL" alembic downgrade -1
 
 # Verify rollback
-alembic current
+DATABASE_URL="$DATABASE_URL" alembic current
 ```
 
 ### Deployment Rollback

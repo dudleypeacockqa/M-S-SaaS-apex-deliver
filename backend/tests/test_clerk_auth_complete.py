@@ -5,12 +5,14 @@ import hashlib
 import hmac
 import json
 from datetime import datetime, timezone
+from unittest.mock import patch
 
 import pytest
 from jose import jwt
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
+from app.models.organization import Organization
 from app.models.user import User, UserRole
 
 
@@ -270,6 +272,95 @@ def test_webhook_handles_missing_email_addresses(client, db_session: Session) ->
 
     user = db_session.query(User).filter_by(clerk_user_id="user_no_email").one()
     assert user.email == "fallback@example.com"
+
+
+def test_webhook_upserts_organization_metadata(client, db_session: Session) -> None:
+    """organization.updated should upsert organization and clear cache."""
+
+    org = Organization(id="org_123", name="Legacy Org", slug="legacy-org", subscription_tier="starter")
+    db_session.add(org)
+    db_session.commit()
+
+    payload = {
+        "type": "organization.updated",
+        "data": {
+            "id": "org_123",
+            "name": "Premium Org",
+            "slug": "premium-org",
+            "public_metadata": {"subscription_tier": "premium"},
+        },
+    }
+    signature, body = _sign_payload(payload)
+
+    with patch("app.api.webhooks.clerk.clear_tier_cache") as mock_clear:
+        response = client.post(
+            "/api/webhooks/clerk",
+            data=body,
+            headers={"svix-signature": signature, "content-type": "application/json"},
+        )
+
+    assert response.status_code == 200
+    db_session.refresh(org)
+    assert org.name == "Premium Org"
+    assert org.slug == "premium-org"
+    assert org.subscription_tier == "premium"
+    mock_clear.assert_called_once_with("org_123")
+
+
+def test_webhook_creates_organization_when_missing(client, db_session: Session) -> None:
+    """organization.created should create organization records."""
+
+    payload = {
+        "type": "organization.created",
+        "data": {
+            "id": "org_new",
+            "name": "New Org",
+            "slug": "new-org",
+            "public_metadata": {"subscription_tier": "enterprise"},
+        },
+    }
+    signature, body = _sign_payload(payload)
+
+    with patch("app.api.webhooks.clerk.clear_tier_cache") as mock_clear:
+        response = client.post(
+            "/api/webhooks/clerk",
+            data=body,
+            headers={"svix-signature": signature, "content-type": "application/json"},
+        )
+
+    assert response.status_code == 200
+    organization = db_session.query(Organization).filter_by(id="org_new").one()
+    assert organization.name == "New Org"
+    assert organization.slug == "new-org"
+    assert organization.subscription_tier == "enterprise"
+    assert organization.is_active is True
+    mock_clear.assert_called_once_with("org_new")
+
+
+def test_webhook_deactivates_organization_on_delete(client, db_session: Session) -> None:
+    """organization.deleted should mark organization inactive and clear cache."""
+
+    org = Organization(id="org_to_remove", name="Remove Org", slug="remove-org", subscription_tier="premium")
+    db_session.add(org)
+    db_session.commit()
+
+    payload = {
+        "type": "organization.deleted",
+        "data": {"id": "org_to_remove"},
+    }
+    signature, body = _sign_payload(payload)
+
+    with patch("app.api.webhooks.clerk.clear_tier_cache") as mock_clear:
+        response = client.post(
+            "/api/webhooks/clerk",
+            data=body,
+            headers={"svix-signature": signature, "content-type": "application/json"},
+        )
+
+    assert response.status_code == 200
+    db_session.refresh(org)
+    assert org.is_active is False
+    mock_clear.assert_called_once_with("org_to_remove")
 
 
 def test_webhook_handles_invalid_role_gracefully(client, db_session: Session) -> None:
