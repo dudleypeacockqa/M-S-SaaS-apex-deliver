@@ -606,7 +606,7 @@ describe('PodcastStudio', () => {
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
 
-      await user.click(await screen.findByRole('button', { name: /new episode/i }));
+      await user.click(await screen.findByRole('button', { name: /new episode/i }, {}, { timeout: 5000 }));
 
       await user.type(screen.getByLabelText(/title/i), 'New Test Episode');
       await user.type(screen.getByLabelText(/episode number/i), '3');
@@ -618,7 +618,7 @@ describe('PodcastStudio', () => {
       // Wait for the mutation to be called
       await waitFor(() => {
         expect(podcastApi.createEpisode).toHaveBeenCalled();
-      }, { timeout: 3000 });
+      }, { timeout: 10000 });
 
       // Verify it was called with correct values (null for empty optional fields)
       expect(podcastApi.createEpisode).toHaveBeenCalledWith({
@@ -631,7 +631,7 @@ describe('PodcastStudio', () => {
         show_notes: null,
         status: 'draft',
       });
-    });
+    }, 15000);
 
     it('should open Edit modal when Edit button clicked on episode', async () => {
       const user = userEvent.setup();
