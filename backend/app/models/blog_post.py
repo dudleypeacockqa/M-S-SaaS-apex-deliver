@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 from sqlalchemy import Column, String, Text, DateTime, Integer, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
-from app.database import Base
+from app.db.base import Base
 
 
 class BlogPost(Base):
