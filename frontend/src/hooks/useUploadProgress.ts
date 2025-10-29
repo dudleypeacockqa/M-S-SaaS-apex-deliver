@@ -86,30 +86,31 @@ export const useUploadProgress = (): UseUploadProgressReturn => {
 
       // Configure upload progress tracking
       xhr.upload.addEventListener('progress', (event: ProgressEvent) => {
-        if (event.lengthComputable) {
-          const percentComplete = Math.round((event.loaded / event.total) * 100);
-          setProgress(percentComplete);
-
-          // Calculate upload speed
-          const currentTime = Date.now();
-          if (lastTimeRef.current > 0) {
-            const timeDiff = (currentTime - lastTimeRef.current) / 1000; // seconds
-            const bytesDiff = event.loaded - lastLoadedRef.current;
-
-            if (timeDiff > 0) {
-              const speed = bytesDiff / timeDiff; // bytes per second
-              setUploadSpeed(speed);
-
-              // Calculate estimated time remaining
-              const bytesRemaining = event.total - event.loaded;
-              const timeRemaining = bytesRemaining / speed; // seconds
-              setEstimatedTimeRemaining(timeRemaining);
-            }
-          }
-
-          lastLoadedRef.current = event.loaded;
-          lastTimeRef.current = currentTime;
+        if (!event.lengthComputable) {
+          return;
         }
+
+        const percentComplete = Math.round((event.loaded / event.total) * 100);
+        setProgress(percentComplete);
+
+        const currentTime = Date.now();
+        if (lastTimeRef.current > 0) {
+          const timeDiffSeconds = (currentTime - lastTimeRef.current) / 1000;
+          const bytesDiff = event.loaded - lastLoadedRef.current;
+
+          if (timeDiffSeconds > 0 && bytesDiff >= 0) {
+            const speed = bytesDiff / timeDiffSeconds; // bytes per second
+            setUploadSpeed(speed);
+
+            const bytesRemaining = event.total - event.loaded;
+            const safeSpeed = speed > 0 ? speed : Number.EPSILON;
+            const timeRemaining = bytesRemaining / safeSpeed;
+            setEstimatedTimeRemaining(Number.isFinite(timeRemaining) ? timeRemaining : 0);
+          }
+        }
+
+        lastLoadedRef.current = event.loaded;
+        lastTimeRef.current = currentTime;
       });
 
       // Handle successful upload
