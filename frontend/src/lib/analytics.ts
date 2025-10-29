@@ -20,9 +20,24 @@ const emitHotjarEvent = (event: string, params: AnalyticsEventParams) => {
   }
 }
 
+const emitLinkedInEvent = (conversionId?: number) => {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  if (typeof window.lintrk === 'function') {
+    if (conversionId) {
+      window.lintrk('track', { conversion_id: conversionId })
+    } else {
+      window.lintrk('track', {})
+    }
+  }
+}
+
 export const trackMarketingEvent = (event: string, params: AnalyticsEventParams = {}) => {
   emitGtagEvent(event, params)
   emitHotjarEvent(event, params)
+  emitLinkedInEvent() // Track page-level event in LinkedIn
 }
 
 export const trackCtaClick = (ctaName: string, location: string) => {

@@ -11,6 +11,7 @@ interface ImportMetaEnv {
   readonly VITE_GA_MEASUREMENT_ID?: string
   readonly VITE_HOTJAR_ID?: string
   readonly VITE_HOTJAR_VERSION?: string
+  readonly VITE_LINKEDIN_PARTNER_ID?: string
 }
 
 interface ImportMeta {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { StructuredData } from '../common/StructuredData';
 
 export const FAQSection: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -46,8 +47,23 @@ export const FAQSection: React.FC = () => {
     }
   ];
 
+  // Generate FAQ structured data for SEO
+  const faqStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
+
   return (
     <section className="py-20 bg-white">
+      <StructuredData json={faqStructuredData} id="faq-schema" />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">

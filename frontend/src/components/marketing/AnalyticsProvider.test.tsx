@@ -140,7 +140,8 @@ describe('AnalyticsProvider', () => {
 
       const noscript = document.querySelector('noscript');
       expect(noscript).toBeTruthy();
-      expect(noscript?.innerHTML).toContain('snap.licdn.com/li.lms-analytics/insight.min.js');
+      expect(noscript?.innerHTML).toContain('px.ads.linkedin.com');
+      expect(noscript?.innerHTML).toContain(partnerId);
     });
   });
 
