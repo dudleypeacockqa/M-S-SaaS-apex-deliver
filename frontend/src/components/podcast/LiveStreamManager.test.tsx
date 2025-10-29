@@ -184,9 +184,7 @@ describe('LiveStreamManager - status handling', () => {
     ['live', /live/i],
     ['stopping', /stopping/i],
   ])('should display %s status text', async (status, matcher) => {
-    vi.mocked(fetchLiveStream).mockResolvedValueOnce(
-      createTestStream({ status })
-    );
+    vi.mocked(fetchLiveStream).mockResolvedValue(createTestStream({ status }));
 
     renderManager();
 

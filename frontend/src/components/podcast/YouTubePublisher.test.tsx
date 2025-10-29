@@ -301,7 +301,7 @@ describe('YouTubePublisher', () => {
       () =>
         new Promise((resolve) => {
           setTimeout(() => resolve({ videoId: 'YT_999' }), 50);
-        }) as unknown as ReturnType<typeof publishEpisodeToYouTube>
+        }) as unknown as ReturnType<typeof podcastApi.publishEpisodeToYouTube>
     );
     renderPublisher();
 

@@ -174,6 +174,8 @@ describe('DocumentEditor', () => {
       vi.advanceTimersByTime(1500)
     })
 
+    expect(documentApi.saveDocument).toHaveBeenCalled()
+
     await waitFor(() => {
       expect(documentApi.saveDocument).toHaveBeenCalledWith(DEFAULT_DOCUMENT_ID, {
         content: expect.stringContaining('Updated with new findings.'),

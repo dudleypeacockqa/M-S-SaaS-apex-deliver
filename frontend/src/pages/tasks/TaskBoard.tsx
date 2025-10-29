@@ -88,6 +88,7 @@ const TaskBoard: React.FC = () => {
   const skipNextRenderRef = useRef(false);
   const hasMountedRef = useRef(false);
   const isFetchingRef = useRef(false);
+  const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const markSkipNextRender = useCallback(() => {
     skipNextRenderRef.current = true;
@@ -125,10 +126,6 @@ const TaskBoard: React.FC = () => {
   }, [markSkipNextRender]);
 
   useEffect(() => {
-    void loadTaskBoard({ showSpinner: true });
-  }, [loadTaskBoard]);
-
-  useEffect(() => {
     if (!hasMountedRef.current) {
       hasMountedRef.current = true;
       return;
@@ -140,14 +137,20 @@ const TaskBoard: React.FC = () => {
     void loadTaskBoard();
   });
 
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return () => {};
+  const scheduleRefresh = useCallback(() => {
+    if (!hasMountedRef.current) {
+      return;
     }
-    const intervalId = window.setInterval(() => {
-      void loadTaskBoard();
+
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current);
+    }
+
+    refreshTimeoutRef.current = window.setTimeout(() => {
+      void loadTaskBoard().finally(() => {
+        scheduleRefresh();
+      });
     }, 45000);
-    return () => window.clearInterval(intervalId);
   }, [loadTaskBoard]);
 
   useEffect(() => {
@@ -166,6 +169,21 @@ const TaskBoard: React.FC = () => {
     window.addEventListener('keydown', handleKeydown);
     return () => window.removeEventListener('keydown', handleKeydown);
   }, [markSkipNextRender]);
+
+  useEffect(() => {
+    hasMountedRef.current = true;
+    (async () => {
+      await loadTaskBoard({ showSpinner: true });
+      scheduleRefresh();
+    })();
+
+    return () => {
+      hasMountedRef.current = false;
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
+  }, [loadTaskBoard, scheduleRefresh]);
 
   const handleFiltersChange = useCallback((nextFilters: TaskFiltersState) => {
     const normalisedFilters: TaskFiltersState = { ...nextFilters };
