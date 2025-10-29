@@ -29,8 +29,8 @@ export const ContactPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="Contact Us - ApexDeliver | Get in Touch"
-        description="Contact ApexDeliver for support, demo requests, or sales inquiries. Email: support@apexdeliver.com. We respond within 24 hours."
+        title="Contact | ApexDeliver + CapLiquify"
+        description="Get in touch with our team for demos, sales inquiries, or support. We respond within 24 hours and are here to help you transform your M&A and finance operations."
         keywords="contact ApexDeliver, M&A platform support, demo request, sales inquiry"
         ogTitle="Contact ApexDeliver"
         ogDescription="Speak with the ApexDeliver team about demos, onboarding, or partnership opportunities."
@@ -45,10 +45,10 @@ export const ContactPage: React.FC = () => {
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">
-            Get in Touch
+            Let's Talk About Your Growth Journey
           </h1>
           <p className="text-xl text-indigo-100 max-w-3xl mx-auto">
-            We're here to help. Reach out with questions, feedback, or demo requests.
+            Whether you need a demo, have questions about pricing, or want to discuss how ApexDeliver + CapLiquify can transform your operations, we're here to help.
           </p>
         </div>
       </section>

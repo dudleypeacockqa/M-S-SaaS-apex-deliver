@@ -58,6 +58,11 @@ const PricingPage = lazyNamed(() => import("./pages/marketing/PricingPage"), "Pr
 const FeaturesPage = lazyNamed(() => import("./pages/marketing/FeaturesPage"), "FeaturesPage")
 const AboutPage = lazyNamed(() => import("./pages/marketing/AboutPage"), "AboutPage")
 const ContactPage = lazyNamed(() => import("./pages/marketing/ContactPage"), "ContactPage")
+const TeamPage = lazyNamed(() => import("./pages/marketing/TeamPage"), "TeamPage")
+const PodcastPage = lazyNamed(() => import("./pages/marketing/PodcastPage"), "PodcastPage")
+const SecurityPage = lazyNamed(() => import("./pages/marketing/SecurityPage"), "SecurityPage")
+const BlogListingPage = lazyNamed(() => import("./pages/marketing/BlogListingPage"), "BlogListingPage")
+const BlogPostPage = lazyNamed(() => import("./pages/marketing/BlogPostPage"), "BlogPostPage")
 const TermsOfService = lazyNamed(() => import("./pages/marketing/legal/TermsOfService"), "TermsOfService")
 const PrivacyPolicy = lazyNamed(() => import("./pages/marketing/legal/PrivacyPolicy"), "PrivacyPolicy")
 const CookiePolicy = lazyNamed(() => import("./pages/marketing/legal/CookiePolicy"), "CookiePolicy")
@@ -103,6 +108,11 @@ export const AppRoutes = () => {
       <Route path="features" element={<FeaturesPage />} />
       <Route path="about" element={<AboutPage />} />
       <Route path="contact" element={<ContactPage />} />
+      <Route path="team" element={<TeamPage />} />
+      <Route path="podcast" element={<PodcastPage />} />
+      <Route path="security" element={<SecurityPage />} />
+      <Route path="blog" element={<BlogListingPage />} />
+      <Route path="blog/:slug" element={<BlogPostPage />} />
       <Route path="legal/terms" element={<TermsOfService />} />
       <Route path="legal/privacy" element={<PrivacyPolicy />} />
       <Route path="legal/cookies" element={<CookiePolicy />} />

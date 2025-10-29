@@ -21,10 +21,10 @@ export const PricingPage: React.FC = () => {
     setErrorTier(null);
 
     const tierMap: Record<string, SubscriptionTier> = {
-      Starter: 'starter',
-      Professional: 'professional',
-      Enterprise: 'enterprise',
-      'Community Leader': 'community',
+      'CapLiquify FP&A': 'starter',
+      'ApexDeliver Professional': 'professional',
+      'ApexDeliver Enterprise': 'enterprise',
+      'Portfolio / Community Leader': 'community',
     };
 
     try {
@@ -40,81 +40,79 @@ export const PricingPage: React.FC = () => {
   };
   const pricingTiers = [
     {
-      name: 'Starter',
-      price: 279,
+      name: 'CapLiquify FP&A',
+      price: 598,
       currency: '£',
       period: 'month',
-      description: 'For Solo Dealmakers',
+      description: 'For finance teams & businesses needing immediate cash flow visibility and pricing control',
       features: [
-        'Up to 10 active deals',
-        'Basic deal pipeline management',
-        'Financial Intelligence Engine (47+ ratios)',
-        'DCF valuation tool',
-        'Secure document storage (10GB)',
-        'Community access',
-        'Email support',
+        '13-Week Cash Forecasting',
+        'Working Capital Management',
+        'Advanced Pricing & Promotion Engine',
+        'B2B2C Customer Portals (up to 100 customers)',
+        'Lender & Board Pack Generation',
+        'ERP Integration (Sage, Odoo, CSV)',
+        'Email & Chat Support',
       ],
       cta: 'Get Started',
       highlighted: false,
     },
     {
-      name: 'Professional',
-      price: 598,
+      name: 'ApexDeliver Professional',
+      price: 1598,
       currency: '£',
       period: 'month',
-      description: 'For Growth Firms',
+      description: 'For growth firms and active dealmakers managing multiple M&A projects',
       features: [
-        'Unlimited deals',
-        'Advanced deal pipeline & collaboration',
-        'Full Financial Intelligence Engine',
-        'Multi-method valuation suite (DCF, Comps, Precedents)',
-        'Secure data room with watermarking (100GB)',
-        'AI-powered deal matching',
-        'Task & workflow automation',
-        'Premium community access',
-        'Priority support',
+        'Everything in CapLiquify FP&A',
+        'Unlimited Deals',
+        'Advanced Deal Pipeline & Collaboration',
+        'Full Financial Intelligence Engine (47+ ratios)',
+        'Multi-Method Valuation Suite (DCF, Comps, Precedents)',
+        'Secure Data Room with Watermarking (100GB)',
+        'AI-Powered Deal Matching',
+        'Task & Workflow Automation',
+        'Priority Support',
       ],
       cta: 'Get Started',
       highlighted: true,
     },
     {
-      name: 'Enterprise',
-      price: 1598,
+      name: 'ApexDeliver Enterprise',
+      price: 2997,
       currency: '£',
       period: 'month',
-      description: 'For Large Organizations',
+      description: 'For large organizations and private equity firms requiring advanced control and integration',
       features: [
-        'Everything in Professional',
-        'Unlimited team members',
-        'Advanced RBAC & permissions',
-        'Custom workflow templates',
-        'Automated document generation',
-        'API access & integrations',
-        'Unlimited storage',
-        'SSO & advanced security',
-        'Dedicated account manager',
-        'SLA guarantee (99.95% uptime)',
+        'Everything in ApexDeliver Professional',
+        'Unlimited Team Members',
+        'Advanced RBAC & Permissions',
+        'Custom Workflow Templates',
+        'Automated Document Generation',
+        'API Access & DataBlend iPaaS Integrations',
+        'Unlimited Storage',
+        'SSO & Advanced Security',
+        'Dedicated Account Manager',
+        'SLA Guarantee (99.95% uptime)',
       ],
       cta: 'Contact Sales',
       ctaLink: '/contact',
       highlighted: false,
     },
     {
-      name: 'Community Leader',
-      price: 2997,
-      currency: '£',
-      period: 'month',
-      description: 'For Event Organizers & Influencers',
+      name: 'Portfolio / Community Leader',
+      price: 'Contact',
+      currency: '',
+      period: '',
+      description: 'For PE Firms, Family Offices, and Industry Leaders managing a portfolio of businesses',
       features: [
-        'Everything in Enterprise',
-        'Event management hub',
-        'Content creation studio',
-        'Podcast & video production tools',
-        'Private community hosting',
-        'Member management & monetization',
-        'Custom branding',
-        'Advanced analytics & reporting',
-        'White-glove support',
+        'Everything in ApexDeliver Enterprise',
+        'Centralized Portfolio Management Dashboard',
+        'Cross-Company Analytics & Reporting',
+        'Content Creation & Podcast Studio',
+        'Private Community Hosting & Monetization',
+        'Custom Branding',
+        'White-Glove Support & Onboarding',
       ],
       cta: 'Contact Sales',
       ctaLink: '/contact',
@@ -125,8 +123,8 @@ export const PricingPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="Pricing - ApexDeliver M&A Platform | Plans from £279/month"
-        description="Transparent pricing for professional M&A tools. Starter (£279), Professional (£598), Enterprise (£1,598), Community Leader (£2,997). 70% less than enterprise competitors."
+        title="Pricing | ApexDeliver + CapLiquify"
+        description="Find the perfect plan to fuel your growth. Start with what you need today and scale as your ambitions grow. All plans backed by a 14-day money-back guarantee."
         keywords="M&A software pricing, deal management pricing, M&A platform cost, professional M&A tools pricing"
         ogTitle="ApexDeliver Pricing - Professional M&A Tools from £279/month"
         ogDescription="Choose from 4 pricing tiers designed for solo dealmakers to large organizations. All plans include AI-powered intelligence and deal flow management."
@@ -141,10 +139,10 @@ export const PricingPage: React.FC = () => {
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">
-            Choose Your Plan
+            Find the Perfect Plan to Fuel Your Growth
           </h1>
           <p className="text-xl text-indigo-100 max-w-3xl mx-auto">
-            Professional M&A tools at accessible pricing. All plans include core features, with advanced capabilities available as you grow.
+            Start with what you need today and scale as your ambitions grow. All plans are backed by our world-class support and a 14-day money-back guarantee.
           </p>
         </div>
       </section>

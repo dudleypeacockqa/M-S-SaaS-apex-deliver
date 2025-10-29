@@ -1,5 +1,6 @@
 import { MarketingNav } from './MarketingNav';
 import { Footer } from './Footer';
+import { OptInPopup } from './OptInPopup';
 import { AnalyticsProvider } from './AnalyticsProvider';
 import { StructuredData } from '../common/StructuredData';
 
@@ -52,6 +53,7 @@ export const MarketingLayout: React.FC<MarketingLayoutProps> = ({ children }) =>
           {children}
         </main>
         <Footer />
+        <OptInPopup />
       </AnalyticsProvider>
     </div>
   );

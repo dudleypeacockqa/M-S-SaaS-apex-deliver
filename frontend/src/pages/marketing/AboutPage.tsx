@@ -6,8 +6,8 @@ export const AboutPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="About ApexDeliver | Democratizing M&A Tools for Dealmakers"
-        description="Learn about ApexDeliver's mission to democratize professional M&A tools. Founded to make enterprise-grade deal intelligence accessible at £279/month vs £10k+ enterprise platforms."
+        title="About | ApexDeliver + CapLiquify"
+        description="Our mission: To empower ambitious businesses with financial intelligence. Learn about our journey from ERP specialists to building the end-to-end M&A intelligence platform."
         keywords="about ApexDeliver, M&A platform mission, dealmaker tools, M&A software company"
         ogTitle="About ApexDeliver"
         ogDescription="Meet the team transforming the M&A lifecycle with accessible, AI-first tooling."
@@ -22,10 +22,10 @@ export const AboutPage: React.FC = () => {
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">
-            About ApexDeliver
+            Our Mission: To Empower Ambitious Businesses with Financial Intelligence
           </h1>
           <p className="text-xl text-indigo-100 max-w-3xl mx-auto">
-            Democratizing access to professional M&A tools for dealmakers worldwide
+            Backed by 20+ years of experience and over 230+ successful business transformations
           </p>
         </div>
       </section>
@@ -35,18 +35,21 @@ export const AboutPage: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Our Mission</h2>
           <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-            ApexDeliver exists to democratize access to professional-grade M&A tools. For too long, solo dealmakers, small advisory firms, and emerging private equity funds have been priced out of the enterprise software market, forced to choose between prohibitively expensive platforms (£10,000+ annually) or cobbling together fragmented solutions that create inefficiency and risk.
+            We believe that every business, regardless of size, deserves access to the same level of financial and strategic tooling as the world's largest corporations. ApexDeliver was born from decades of hands-on experience in finance, technology, and M&A. We saw firsthand how disconnected systems, manual processes, and a lack of forward-looking data were holding businesses back.
           </p>
           <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-            We believe every M&A professional deserves access to the same quality of tools used by large investment banks and corporate development teams—regardless of their firm size or budget. By combining cutting-edge AI, intuitive design, and accessible pricing, we're leveling the playing field and empowering dealmakers to compete on merit, not on tool budgets.
+            Our founders, a team of seasoned ERP specialists, fractional CFOs, and AI engineers, set out to build a different kind of platform. One that doesn't just report on the past, but helps you shape the future. One that unifies the entire M&A and finance lifecycle, from the initial spark of a deal to the long-term value creation that follows.
+          </p>
+          <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+            Today, our platform is the engine behind hundreds of successful business transformations, delivering an average ROI of 300-500% for our clients. We're more than just a software company; we are your partners in growth.
           </p>
 
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center mt-12">Our Vision</h2>
           <p className="text-lg text-gray-700 leading-relaxed">
-            We envision a future where M&A execution is faster, smarter, and more accessible. Where AI-powered intelligence replaces hours of manual analysis. Where deal flow is driven by intelligent matching and network effects, not just who you know. Where secure collaboration happens seamlessly, and professional documents are generated in seconds, not days.
+            We envision a future where every business has the financial intelligence and strategic tools needed to thrive. Where cash flow is predictable, pricing is optimized, and M&A deals are executed with confidence and precision. Where technology empowers finance teams to be strategic partners, not just record-keepers.
           </p>
           <p className="text-lg text-gray-700 mt-6 leading-relaxed">
-            Beyond the platform itself, ApexDeliver is building an ecosystem—a professional community where dealmakers connect, learn, and grow together. Through premium events, exclusive content, and knowledge sharing, we're creating network effects that benefit every user.
+            By combining CapLiquify's forward-looking FP&A capabilities with ApexDeliver's comprehensive M&A suite, we're creating a unified platform that supports businesses at every stage of their growth journey—from stabilizing cash flow to executing transformational deals and beyond.
           </p>
         </div>
       </section>

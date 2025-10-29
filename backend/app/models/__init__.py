@@ -25,6 +25,7 @@ from .podcast import PodcastEpisode, PodcastTranscript, PodcastAnalytics
 from .podcast_usage import PodcastUsage
 
 from .deal_match import DealMatchCriteria, DealMatch, DealMatchAction
+from .blog_post import BlogPost
 
 __all__ = [
     "User",
@@ -61,4 +62,5 @@ __all__ = [
     "DealMatchCriteria",
     "DealMatch",
     "DealMatchAction",
+    "BlogPost",
 ]

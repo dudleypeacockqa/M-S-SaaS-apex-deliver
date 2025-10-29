@@ -39,6 +39,30 @@ export const MarketingNav: React.FC = () => {
             >
               Contact
             </Link>
+            <Link
+              to="/team"
+              className="text-gray-700 hover:text-indigo-900 font-medium transition-colors"
+            >
+              Team
+            </Link>
+            <Link
+              to="/podcast"
+              className="text-gray-700 hover:text-indigo-900 font-medium transition-colors"
+            >
+              Podcast
+            </Link>
+            <Link
+              to="/security"
+              className="text-gray-700 hover:text-indigo-900 font-medium transition-colors"
+            >
+              Security
+            </Link>
+            <Link
+              to="/blog"
+              className="text-gray-700 hover:text-indigo-900 font-medium transition-colors"
+            >
+              Blog
+            </Link>
           </div>
 
           {/* Auth CTAs */}

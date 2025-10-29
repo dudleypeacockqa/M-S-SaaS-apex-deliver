@@ -7,8 +7,8 @@ export const FeaturesPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="Features - ApexDeliver M&A Platform | AI-Powered Deal Intelligence"
-        description="Comprehensive M&A platform features: Deal pipeline management, financial intelligence engine (47+ ratios), multi-method valuation, secure data rooms, AI deal matching, and more."
+        title="Features | ApexDeliver + CapLiquify"
+        description="From CapLiquify FP&A to full M&A lifecycle management. Explore deal pipeline automation, financial intelligence, valuation tools, secure data rooms, and more."
         keywords="M&A features, deal pipeline, financial intelligence, valuation tools, data room, deal matching, M&A automation"
         ogUrl="https://ma-saas-platform.onrender.com/features"
         ogTitle="ApexDeliver Feature Tour"
@@ -23,10 +23,10 @@ export const FeaturesPage: React.FC = () => {
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">
-            Everything You Need for M&A Success
+            A Feature for Every Stage of Your Growth Journey
           </h1>
           <p className="text-xl text-indigo-100 max-w-3xl mx-auto">
-            From deal sourcing to post-merger integration, ApexDeliver provides a comprehensive suite of AI-powered tools designed for modern M&A professionals.
+            From cash flow forecasting to deal closing and beyond, ApexDeliver + CapLiquify provides everything you need to transform your M&A and finance operations.
           </p>
         </div>
       </section>
