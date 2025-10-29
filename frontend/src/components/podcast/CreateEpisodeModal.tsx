@@ -36,23 +36,23 @@ export function CreateEpisodeModal({ open, onClose, onSubmit, isSubmitting }: Cr
       setError('Title is required');
       return;
     }
-    if (!formData.episode_number || parseInt(formData.episode_number) < 1) {
+    if (!formData.episodeNumber || parseInt(formData.episodeNumber) < 1) {
       setError('Valid episode number is required');
       return;
     }
-    if (!formData.season_number || parseInt(formData.season_number) < 1) {
+    if (!formData.seasonNumber || parseInt(formData.seasonNumber) < 1) {
       setError('Valid season number is required');
       return;
     }
-    if (!formData.audio_file_url.trim()) {
+    if (!formData.audioFileUrl.trim()) {
       setError('Audio file URL is required');
       return;
     }
 
-    mutate();
+    onSubmit(formData);
   };
 
-  if (!isOpen) return null;
+  if (!open) return null;
 
   return (
     <div
@@ -103,8 +103,8 @@ export function CreateEpisodeModal({ open, onClose, onSubmit, isSubmitting }: Cr
                 id="episode-number"
                 type="number"
                 min="1"
-                value={formData.episode_number}
-                onChange={(e) => setFormData({ ...formData, episode_number: e.target.value })}
+                value={formData.episodeNumber}
+                onChange={(e) => setFormData({ ...formData, episodeNumber: e.target.value })}
                 className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 required
               />
@@ -117,8 +117,8 @@ export function CreateEpisodeModal({ open, onClose, onSubmit, isSubmitting }: Cr
                 id="season-number"
                 type="number"
                 min="1"
-                value={formData.season_number}
-                onChange={(e) => setFormData({ ...formData, season_number: e.target.value })}
+                value={formData.seasonNumber}
+                onChange={(e) => setFormData({ ...formData, seasonNumber: e.target.value })}
                 className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 required
               />
@@ -133,7 +133,7 @@ export function CreateEpisodeModal({ open, onClose, onSubmit, isSubmitting }: Cr
             <input
               id="audio-file-url"
               type="url"
-              value={formData.audio_file_url}
+              value={formData.audioFileUrl}
               onChange={(e) => setFormData({ ...formData, audio_file_url: e.target.value })}
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
               placeholder="https://cdn.example.com/episode.mp3"
