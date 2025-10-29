@@ -496,6 +496,16 @@ function PodcastStudioContent() {
           />
         )}
       </FeatureGate>
+
+      <YouTubePublishModal
+        open={Boolean(episodeToPublish)}
+        episode={episodeToPublish}
+        connection={youtubeConnection}
+        isSubmitting={publishToYouTubeMutation.isPending}
+        errorMessage={publishError}
+        onClose={handleClosePublishModal}
+        onSubmit={handleSubmitPublish}
+      />
     </div>
   );
 }
