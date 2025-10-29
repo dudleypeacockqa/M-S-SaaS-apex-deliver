@@ -1,8 +1,8 @@
 # Deployment Health Dashboard
 
-**Last Updated**: 2025-10-28 23:45 UTC
-**Status**: 🟢 Stabilising (Step 5 documentation & smoke scripts refreshed)
-**Latest Commit**: `10939d3` (baseline on origin/main) — working tree carries Step 5 doc+script updates
+**Last Updated**: 2025-10-29 06:45 UTC
+**Status**: 🟢 Stabilising (render health revalidated; documentation refresh in progress)
+**Latest Commit**: `3290b4d` (chore: sync tracker and podcast modal updates)
 
 ---
 
@@ -10,19 +10,19 @@
 
 | Service | Status | URL | Last Checked |
 |---------|--------|-----|--------------|
-| Backend API | ✅ Healthy | https://ma-saas-backend.onrender.com | 2025-10-28 23:40 |
-| Frontend | ⚠️ Cloudflare 403 (expected bot protection) | https://apexdeliver.com | 2025-10-28 23:40 |
-| Database | ✅ Connected | PostgreSQL (Render) | 2025-10-28 23:40 |
-| Redis | ✅ Configured | Redis (Render) | 2025-10-28 23:40 |
+| Backend API | ✅ Healthy | https://ma-saas-backend.onrender.com | 2025-10-29 06:45 |
+| Frontend | ⚠️ Cloudflare 403 (expected bot protection) | https://apexdeliver.com | 2025-10-29 06:45 |
+| Database | ✅ Connected | PostgreSQL (Render) | 2025-10-29 06:45 |
+| Redis | ✅ Configured | Redis (Render) | 2025-10-29 06:45 |
 
 **Frontend Note**: `curl -I` continues to trip Cloudflare 403. Use a headed browser (or the refreshed `run_smoke_tests.sh`) for end-user validation.
 
 ---
 
-### Governance Snapshot (2025-10-28 22:00 UTC)
-- Backend `/health` responded 200 OK (payload: `status="healthy"`, `clerk_configured=true`) at 21:59Z.
-- Frontend remains Cloudflare-guarded for automated requests; schedule a manual browser smoke before release sign-off.
-- No new pytest/Vitest runs this session; rely on the Step 5 metrics below until the next TDD cycle.
+### Governance Snapshot (2025-10-29 06:45 UTC)
+- Backend `/health` responded 200 OK with `clerk_configured=true`, `database_configured=true`, `webhook_configured=true`.
+- Frontend HEAD request blocked at Cloudflare 403 (expected); manual UX check still required before release.
+- No new pytest/Vitest runs captured since Step 5 baseline; tests must be re-run once valuation regressions addressed.
 
 ---
 

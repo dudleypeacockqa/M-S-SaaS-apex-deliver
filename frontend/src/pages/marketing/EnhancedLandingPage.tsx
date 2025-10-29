@@ -1,44 +1,18 @@
-import { lazy, Suspense, useMemo } from 'react';
+import { useMemo } from 'react';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { FeatureCard } from '../../components/marketing/FeatureCard';
 import { StructuredData } from '../../components/common/StructuredData';
 import { marketingFeatureIcons } from '../../assets/marketing';
 import { SEO } from '../../components/common/SEO';
-const EnhancedHeroSection = lazy(async () => ({
-  default: (await import('../../components/marketing/EnhancedHeroSection')).EnhancedHeroSection,
-}));
-
-const ROICalculator = lazy(async () => ({
-  default: (await import('../../components/marketing/ROICalculator')).ROICalculator,
-}));
-
-const ComparisonTable = lazy(async () => ({
-  default: (await import('../../components/marketing/ComparisonTable')).ComparisonTable,
-}));
-
-const EnhancedTestimonials = lazy(async () => ({
-  default: (await import('../../components/marketing/EnhancedTestimonials')).EnhancedTestimonials,
-}));
-
-const FAQSection = lazy(async () => ({
-  default: (await import('../../components/marketing/FAQSection')).FAQSection,
-}));
-
-const TrustBadges = lazy(async () => ({
-  default: (await import('../../components/marketing/TrustBadges')).TrustBadges,
-}));
-
-const CTASection = lazy(async () => ({
-  default: (await import('../../components/marketing/CTASection')).CTASection,
-}));
-
-const ExitIntentPopup = lazy(async () => ({
-  default: (await import('../../components/marketing/ExitIntentPopup')).ExitIntentPopup,
-}));
-
-const StickyCTABar = lazy(async () => ({
-  default: (await import('../../components/marketing/StickyCTABar')).StickyCTABar,
-}));
+import { EnhancedHeroSection } from '../../components/marketing/EnhancedHeroSection';
+import { ROICalculator } from '../../components/marketing/ROICalculator';
+import { ComparisonTable } from '../../components/marketing/ComparisonTable';
+import { EnhancedTestimonials } from '../../components/marketing/EnhancedTestimonials';
+import { FAQSection } from '../../components/marketing/FAQSection';
+import { TrustBadges } from '../../components/marketing/TrustBadges';
+import { CTASection } from '../../components/marketing/CTASection';
+import { ExitIntentPopup } from '../../components/marketing/ExitIntentPopup';
+import { StickyCTABar } from '../../components/marketing/StickyCTABar';
 
 export const EnhancedLandingPage: React.FC = () => {
   const features = useMemo(
@@ -143,9 +117,7 @@ export const EnhancedLandingPage: React.FC = () => {
       />
 
       {/* Enhanced Hero Section */}
-      <Suspense fallback={null}>
-        <EnhancedHeroSection />
-      </Suspense>
+      <EnhancedHeroSection />
 
       {/* Problem-Solution Section */}
       <section className="py-20 bg-white">
@@ -391,42 +363,26 @@ export const EnhancedLandingPage: React.FC = () => {
       </section>
 
       {/* ROI Calculator */}
-      <Suspense fallback={null}>
-        <ROICalculator />
-      </Suspense>
+      <ROICalculator />
 
       {/* Comparison Table */}
-      <Suspense fallback={null}>
-        <ComparisonTable />
-      </Suspense>
+      <ComparisonTable />
 
       {/* Enhanced Testimonials */}
-      <Suspense fallback={null}>
-        <EnhancedTestimonials />
-      </Suspense>
+      <EnhancedTestimonials />
 
       {/* Trust Badges & Security */}
-      <Suspense fallback={null}>
-        <TrustBadges />
-      </Suspense>
+      <TrustBadges />
 
       {/* FAQ Section */}
-      <Suspense fallback={null}>
-        <FAQSection />
-      </Suspense>
+      <FAQSection />
 
       {/* Final CTA Section */}
-      <Suspense fallback={null}>
-        <CTASection />
-      </Suspense>
+      <CTASection />
 
       {/* Conversion Optimization Components */}
-      <Suspense fallback={null}>
-        <ExitIntentPopup />
-      </Suspense>
-      <Suspense fallback={null}>
-        <StickyCTABar />
-      </Suspense>
+      <ExitIntentPopup />
+      <StickyCTABar />
     </MarketingLayout>
   );
 };
