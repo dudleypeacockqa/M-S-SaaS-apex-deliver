@@ -155,10 +155,8 @@ describe('CancelSubscriptionModal', () => {
     // Confirm cancellation
     await user.click(screen.getByText('Confirm Cancellation'));
 
-    // Should show loading state
-    await waitFor(() => {
-      expect(screen.getByText(/Canceling/i)).toBeInTheDocument();
-    });
+    // Should show loading state before the promise resolves
+    expect(screen.getByRole('button', { name: /Canceling\.{3}/i })).toBeInTheDocument();
 
     // Wait for completion
     await waitFor(() => {

@@ -1,108 +1,97 @@
 # 100% Project Completion Plan
 **Project**: M&A Intelligence Platform (ApexDeliver)
-**Last Updated**: 2025-10-29 08:50 UTC
+**Last Updated**: 2025-10-29 08:59 UTC
 **Methodology**: BMAD v6-alpha + TDD (RED -> GREEN -> REFACTOR)
 
 ---
 
 ## Current Delivery Snapshot
-- **Backend tests**: docs/DEPLOYMENT_HEALTH.md reports 431 passed / 38 skipped (run 2025-10-29 07:58 UTC). Re-run full pytest after stabilising current WIP because valuation, podcast, and deal-matching code changed locally.
-- **Frontend tests**: frontend/test-output.txt shows ValuationSuite gating assertions still failing ("upgrade required" banner missing). Global Vitest suite remains RED until entitlement UX is completed.
-- **Coverage**: Previous snapshot Backend 83 percent, Frontend 85 percent. Refresh after suites are green.
-- **Git state**: Branch main matches origin/main at 634280f (NetSuite OAuth). Working tree has extensive uncommitted backend, frontend, migration, and BMAD doc edits that must be attributed to specific stories.
-- **Migrations**: backend/alembic/versions/a0175dfc0ca0_add_deal_matching_tables_dev_018_phase_1.py staged but not applied. Validate dependencies and document rollout plan.
-- **Deployment**: Render redeploy pending (Clerk, AI keys, CORS). docs/DEPLOYMENT_HEALTH.md still records frontend Cloudflare 403 via curl; backend /health previously 200.
-- **BMAD artefacts**: docs/bmad/bmm-workflow-status.md updated (Phase 0.2 command). Progress tracker entry to be appended after next Vitest run.
+- **Backend tests**: `backend/venv/Scripts/pytest.exe backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py -q` GREEN (60 passed; warnings only). Full suite rerun pending validation of new database reset fixture.
+- **Frontend tests**: `npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx` GREEN (13/13) after Vitest config adjustments; full suite rerun once coverage settings verified.
+- **Coverage**: Backend 83%, Frontend 85% (last full run); refresh after the new fixture reset passes complete suites.
+- **Git state**: `main` == `origin/main`; dirty tree currently covers DEV-018 deal matching routes/schemas, shared test fixtures, Vitest config, and BMAD docs pending story alignment.
+- **Migrations**: `backend/alembic/versions/a0175dfc0ca0_add_deal_matching_tables_dev_018_phase_1.py` present; validate ordering before applying.
+- **Deployment**: Render backend/frontend redeploy pending (latest smoke logs pre-date commit 4411923; frontend curl still returns Cloudflare 403).
+- **BMAD artefacts**: `docs/bmad/BMAD_PROGRESS_TRACKER.md` and `docs/bmad/bmm-workflow-status.md` refreshed 2025-10-29 08:59 UTC with focused test results and Phase 0.3 governance next steps.
+
+### Dirty Tree Mapping (2025-10-29 08:59 UTC)
+- `backend/app/api/__init__.py` -> DEV-018 deal matching router inclusion (awaiting GREEN via new API tests).
+- `backend/app/api/routes/deal_matching.py` / `.future` -> DEV-018 route implementation stubs for upcoming RED->GREEN cycle.
+- `backend/app/schemas/deal_match.py` -> DEV-018 schema definitions requiring tests and documentation.
+- `backend/tests/conftest.py`, `backend/tests/test_database_reset.py` -> Phase 0 database reset hardening (governance).
+- `backend/tests/test_deal_matching_api.py.future` -> DEV-018 API TDD scaffold replacing legacy suite.
+- `frontend/vitest.config.ts` -> Phase 0 Vitest runner adjustments (coverage + single-thread execution).
+- `docs/DEPLOYMENT_HEALTH.md`, `docs/bmad/*` -> Governance documentation updates underway for Phase 0.3.
 
 ---
 
-## Critical Unfinished Workstreams
-1. **DEV-011 Valuation Suite (P0)**
-   - RED Vitest specs for scenarios, exports, gating; backend export logging/tests incomplete.
-   - Plan: reproduce failures, implement DCF/comparables/precedents enhancements, wire export queues, update story and tracker.
-2. **DEV-008 Secure Data Room (P0)**
-   - Remaining backend endpoints: version history, folder permissions, search, audit logs.
-   - Frontend UI: upload with progress, folder tree, permission modal, previews.
-   - Plan: add failing tests, implement minimal code, integrate Cloudflare R2 flow.
-3. **DEV-016 Podcast Studio (P0)**
-   - Quota banners, upgrade CTAs, video upload gating, transcription flow lacking.
-   - Plan: extend backend quota states, build frontend HUD, cover with Vitest, document gating behaviour.
-4. **Operations & Deployment (P0)**
-   - Render env drift, smoke tests, deployment checklist, release artefacts outstanding.
-   - Plan: align secrets, redeploy, capture smoke logs, update DEPLOYMENT_HEALTH.md and checklists.
-5. **DEV-012 Task Automation (P1)**
-   - No implementation; design task model/service, automation rules, Kanban UI.
-6. **DEV-018 Deal Matching (P1)**
-   - Models/migration staged; services, AI prompts, API, frontend workspace missing.
-7. **MARK-002 Marketing Site (P1)**
-   - Phases 3-10 pending (assets, SEO, analytics, CMS).
-8. **Future P2 Features**
-   - F-009 Doc generation, F-010 Content hub, F-012 Events, F-013 Community -> document stubs or MVPs after P0/P1 completion.
+## Critical Unfinished Workstreams (ordered)
+
+### 1. DEV-008 Secure Document & Data Room (P0)
+- **Status**: Backend/Frontend coverage at ~52%; permission matrix, search, previews, and audit logging incomplete.
+- **Actions**:
+  - Promote missing backend tests (folder permissions, audit log export, search filters) RED → GREEN and align Alembic migrations/fixtures.
+  - Deliver React components for folder tree navigation, permission modal, preview pane with Vitest coverage.
+  - Integrate document export logging with valuation/document services and update story artefacts.
+
+### 2. DEV-016 Podcast Studio Subscription Add-On (P0)
+- **Status**: Backend quota service hardened; frontend gating/quota HUD still missing warning UX, video upload, transcription, live streaming.
+- **Actions**:
+  - Implement quota warning banner (80/90/100%), upgrade CTAs, entitlement tests.
+  - Add audio/video upload pipeline with entitlement enforcement, YouTube metadata sync, transcription workflow.
+  - Reach ≥90% backend / ≥85% frontend coverage for accompanying logic; update story doc and BMAD tracker with evidence.
+
+### 3. DEV-012 Task Management & Workflow Automation (P1)
+- **Status**: Feature largely unimplemented; automation suites absent.
+- **Actions**:
+  - TDD Task model/service (CRUD, state transitions, automation triggers) and endpoints.
+  - Build frontend TaskBoard (drag-and-drop) plus notification hooks under Vitest.
+  - Document automation templates and update story acceptance criteria.
+
+### 4. DEV-018 Intelligent Deal Matching (P1)
+- **Status**: SQLAlchemy models/migration present; services/API/UI/AI prompt flows outstanding.
+- **Actions**:
+  - Complete service layer + API endpoints with scoring/explainability, backed by tests.
+  - Build MatchingWorkspace UI with gating analytics; integrate Claude prompts/mocks.
+  - Document workflows and ensure deployment/migration steps captured.
+
+### 5. MARK-002 Enhanced Marketing Website (P1)
+- **Status**: Phase 2 of 10 complete; assets, SEO, analytics and Lighthouse audits outstanding.
+- **Actions**:
+  - Finish phases 3–10 with Vitest + Lighthouse evidence; update marketing docs/asset inventory.
+  - Align Render preview assets and capture screenshots for release notes.
+
+### 6. Operations & Deployment Hardening (P0/P1)
+- **Status**: Render redeploy pending; smoke scripts partly updated; deployment checklists outdated.
+- **Actions**:
+  - Refresh `.env` alignment with Render secrets, rerun smoke tests (`scripts/run_smoke_tests.sh`), capture outputs in `DEPLOYMENT_HEALTH.md` & `PRODUCTION_DEPLOYMENT_CHECKLIST.md`.
+  - Apply outstanding migrations (including DEV-018), confirm worker configs, update monitoring alerts.
+  - Prepare release notes/PR summary once functional work converges.
+
+### 7. Final QA, Documentation, and Handover (P0)
+- **Status**: Dependent on upstream workstreams.
+- **Actions**:
+  - Run full backend pytest, full Vitest with coverage, `npm run lint`, `npm run build`, `uvicorn` + `npm run preview` smoke.
+  - Update BMAD tracker, workflow status, story artefacts, release notes, ops checklists.
+  - Confirm Render deployment health 100% (evidence: smoke logs, coverage reports, screenshots).
 
 ---
 
 ## BMAD Execution Roadmap
-1. **Phase 0 - Stabilise Foundations**
-   - Group dirty worktree by story; document intent in BMAD tracker.
-   - Run focused Vitest (
-> ma-saas-frontend@2.0.0 test
-> vitest --run src/pages/deals/valuation/ValuationSuite.test.tsx
-
-
-[1m[46m RUN [49m[22m [36mv4.0.4 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
-
- [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 15374[2mms[22m[39m
-     [33m[2m✓[22m[39m submits new valuation when form completed [33m 1709[2mms[22m[39m
-     [33m[2m✓[22m[39m allows adding comparable company to selected valuation [33m 1875[2mms[22m[39m
-     [33m[2m✓[22m[39m allows adding precedent transaction to selected valuation [33m 3384[2mms[22m[39m
-     [33m[2m✓[22m[39m allows creating a new scenario with JSON assumptions [33m 3437[2mms[22m[39m
-     [33m[2m✓[22m[39m shows validation error when scenario assumptions JSON is invalid [33m 1978[2mms[22m[39m
-     [33m[2m✓[22m[39m fetches scenario list when scenarios tab opened [33m 408[2mms[22m[39m
-     [33m[2m✓[22m[39m shows detailed confirmation after queuing an export [33m 526[2mms[22m[39m
-     [33m[2m✓[22m[39m runs Monte Carlo simulation and displays percentile summary [33m 1152[2mms[22m[39m
-
-[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
-[2m      Tests [22m [1m[32m13 passed[39m[22m[90m (13)[39m
-[2m   Start at [22m 08:55:20
-[2m   Duration [22m 28.27s[2m (transform 1.13s, setup 1.79s, collect 3.00s, tests 15.37s, environment 5.77s, prepare 27ms)[22m) and targeted pytest to capture current RED outputs.
-   - Update DEPLOYMENT_HEALTH.md with fresh timestamps once tests re-run.
-   - Execute Render env audit per RENDER-BACKEND-ENV-UPDATES.md and RENDER_DEPLOYMENT_INSTRUCTIONS.md.
-2. **Phase 1 - Complete P0 Stories (DEV-011, DEV-008, DEV-016, Ops)**
-   - Follow TDD loops for each story, enforcing RED -> GREEN -> REFACTOR.
-   - Update docs/bmad/stories, BMAD_PROGRESS_TRACKER.md, and workflow status after each green cycle.
-3. **Phase 2 - Deliver P1 Differentiators (DEV-012, DEV-018, MARK-002)**
-   - Use bmad-method dev-story workflow for each feature, maintain coverage targets (>=90 percent backend critical services, >=85 percent frontend).
-4. **Phase 3 - Stub/Plan P2 Features**
-   - Provide documented stubs or MVP implementations with failing tests converted to green where applicable.
-5. **Phase 4 - Verification & Release**
-   - Full pytest + Vitest + lint + build + smoke; capture coverage reports and screenshots.
-   - Complete PRODUCTION_DEPLOYMENT_CHECKLIST.md, DEPLOYMENT_HEALTH.md, release notes, and PR summary.
+1. **Governance Sync**: Continue reconciling documentation (progress tracker, story files, deployment health) with verified test outcomes.
+2. **BMM Phase 4 – Implementation Loops**: For each workstream above, execute `npx bmad-method run dev-story` to enforce RED → GREEN → REFACTOR, logging outputs in story docs.
+3. **BMM Phase 5 – Verification**: After each story reaches GREEN, rerun targeted suites and capture metrics/coverage deltas in `BMAD_PROGRESS_TRACKER.md`.
+4. **BMM Phase 6 – Release & Operations**: Execute Render deployment checklist, document smoke tests, and prepare Conventional Commit + PR package including BMAD shard/ticket references.
 
 ---
 
-## Immediate Next Actions (next 48 hours)
-- Re-run 
-> ma-saas-frontend@2.0.0 test
-> vitest --run src/pages/deals/valuation/ValuationSuite.test.tsx
+## Immediate Next Actions (Next 48 Hours)
+1. Update docs/DEPLOYMENT_HEALTH.md and related ops artefacts with today’s valuation/Vitest results and current redeploy blockers.
+2. Begin DEV-008 implementation loop: turn missing backend permission/search/audit tests RED and implement minimal code to go GREEN, updating story + tracker.
+3. Kick off DEV-016 frontend quota UX enhancements via TDD once DEV-008 backend progress is underway, coordinating with entitlement APIs.
+4. Review `backend/alembic/versions/a0175dfc0ca0_*` migration and integrate service/tests for DEV-018 as part of upcoming P1 work.
+5. Maintain BMAD artefacts (progress tracker, workflow status, story files) after each suite run to keep governance state accurate.
 
+---
 
-[1m[46m RUN [49m[22m [36mv4.0.4 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
-
- [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 5026[2mms[22m[39m
-     [33m[2m✓[22m[39m submits new valuation when form completed [33m 596[2mms[22m[39m
-     [33m[2m✓[22m[39m allows adding comparable company to selected valuation [33m 563[2mms[22m[39m
-     [33m[2m✓[22m[39m allows adding precedent transaction to selected valuation [33m 1104[2mms[22m[39m
-     [33m[2m✓[22m[39m allows creating a new scenario with JSON assumptions [33m 1051[2mms[22m[39m
-     [33m[2m✓[22m[39m shows validation error when scenario assumptions JSON is invalid [33m 571[2mms[22m[39m
-     [33m[2m✓[22m[39m runs Monte Carlo simulation and displays percentile summary [33m 344[2mms[22m[39m
-
-[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
-[2m      Tests [22m [1m[32m13 passed[39m[22m[90m (13)[39m
-[2m   Start at [22m 08:55:52
-[2m   Duration [22m 11.53s[2m (transform 530ms, setup 771ms, collect 826ms, tests 5.03s, environment 2.97s, prepare 31ms)[22m and archive output.
-- Catalogue uncommitted changes by story and update BMAD progress tracker.
-- Prepare backend targeted pytest (valuation, podcast) to confirm regression scope.
-- Execute Render environment update checklist before attempting new features.
-- Schedule BMAD governance review to confirm plan sign-off.
-
-Maintain strict BMAD plus TDD discipline: no implementation without a preceding failing test, document every GREEN cycle, and keep deployment evidence current before claiming completion.
+Strict adherence to BMAD + TDD remains mandatory: every functional change starts with a failing test, all documentation updates follow immediately after GREEN cycles, and deployment artefacts must be refreshed before claiming completion.

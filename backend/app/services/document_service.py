@@ -30,11 +30,28 @@ from app.schemas.document import (
     FolderCreate,
     FolderResponse,
     FolderUpdate,
+    PermissionLevel,
     PermissionCreate,
     PermissionResponse,
 )
 from app.services.storage_service import get_storage_service
 
+
+_PERMISSION_RANK = {
+    PermissionLevel.VIEWER: 1,
+    PermissionLevel.EDITOR: 2,
+    PermissionLevel.OWNER: 3,
+}
+
+
+def _normalize_level(level: str) -> str:
+    return level.lower()
+
+
+def _max_permission(current: str, candidate: str) -> str:
+    current_key = _normalize_level(current)
+    candidate_key = _normalize_level(candidate)
+    return current if _PERMISSION_RANK[current_key] >= _PERMISSION_RANK[candidate_key] else candidate
 
 def _ensure_deal_access(db: Session, deal_id: str, user: User) -> Deal:
     deal = db.get(Deal, deal_id)
@@ -131,9 +148,69 @@ async def upload_document(
 
     await storage.save_file(storage_key, file.file, current_user.organization_id)
 
+    # Check for existing document with same name in same location (versioning)
+    filename = file.filename or "document"
+    existing_docs_query = db.query(Document).filter(
+        Document.name == filename,
+        Document.deal_id == str(deal.id),
+        Document.archived_at.is_(None),
+    )
+    if folder_id:
+        existing_docs_query = existing_docs_query.filter(Document.folder_id == folder_id)
+    else:
+        existing_docs_query = existing_docs_query.filter(Document.folder_id.is_(None))
+
+    # Get all versions ordered by version number descending
+    existing_docs = existing_docs_query.order_by(Document.version.desc()).all()
+
+    version_number = 1
+    parent_doc_id = None
+
+    if existing_docs:
+        # Latest version is first (highest version number)
+        latest_doc = existing_docs[0]
+        version_number = latest_doc.version + 1
+
+        # Find the root parent (v1) or use the latest doc's parent if it exists
+        if latest_doc.parent_document_id:
+            parent_doc_id = latest_doc.parent_document_id
+        else:
+            # Latest doc is the root (v1), so it becomes the parent
+            parent_doc_id = latest_doc.id
+
+        # Enforce max 20 versions - delete oldest versions if needed
+        MAX_VERSIONS = 20
+        if len(existing_docs) >= MAX_VERSIONS:
+            # Keep only the latest (MAX_VERSIONS - 1) versions, since we're adding one more
+            versions_to_keep = existing_docs[:MAX_VERSIONS - 1]
+            versions_to_delete = existing_docs[MAX_VERSIONS - 1:]
+
+            # After deletion, the oldest remaining version becomes the new root
+            if versions_to_keep:
+                new_root = versions_to_keep[-1]  # Oldest version we're keeping
+                # Update all kept versions to point to the new root as parent
+                for version in versions_to_keep:
+                    if version.id != new_root.id:
+                        version.parent_document_id = new_root.id
+                    else:
+                        # The new root has no parent
+                        version.parent_document_id = None
+                    db.add(version)
+
+                # Update parent_doc_id for the document we're about to create
+                parent_doc_id = new_root.id
+
+            # Delete old versions
+            for old_version in versions_to_delete:
+                try:
+                    await storage.delete_file(old_version.file_key, current_user.organization_id)
+                except Exception:
+                    pass  # Continue even if file deletion fails
+                db.delete(old_version)
+
     document = Document(
         id=str(uuid4()),
-        name=file.filename or "document",
+        name=filename,
         file_key=storage_key,
         file_size=file_size,
         file_type=file.content_type or "application/octet-stream",
@@ -141,7 +218,8 @@ async def upload_document(
         folder_id=folder_id,
         organization_id=current_user.organization_id,
         uploaded_by=current_user.id,
-        version=1,
+        version=version_number,
+        parent_document_id=parent_doc_id,
     )
     db.add(document)
     db.flush()
@@ -371,9 +449,28 @@ def archive_document(
     *,
     document: Document,
 ) -> None:
-    document.archived_at = datetime.now(timezone.utc)
-    document.is_archived = True
-    db.add(document)
+    """
+    Archive a document and all its versions.
+
+    Sets archived_at timestamp for the document and all related versions.
+    """
+    archive_time = datetime.now(timezone.utc)
+
+    # Find the root parent
+    root_id = document.parent_document_id if document.parent_document_id else document.id
+
+    # Get all versions (root + all its children)
+    all_versions = db.query(Document).filter(
+        Document.organization_id == document.organization_id,
+        (Document.id == root_id) | (Document.parent_document_id == root_id),
+    ).all()
+
+    # Archive all versions
+    for version in all_versions:
+        version.archived_at = archive_time
+        version.is_archived = True
+        db.add(version)
+
     db.commit()
 
 
@@ -591,3 +688,160 @@ def _log_access(
         user_agent=user_agent,
     )
     db.add(entry)
+
+
+def get_document_versions(
+    db: Session,
+    *,
+    document_id: str,
+    organization_id: str,
+) -> List[DocumentMetadata]:
+    """
+    Get all versions of a document.
+
+    Returns all versions (including the specified document) in chronological order.
+    """
+    # Get the document to find its root parent
+    document = db.query(Document).filter(
+        Document.id == document_id,
+        Document.organization_id == organization_id,
+    ).first()
+
+    if not document:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    # Find the root parent (v1)
+    root_id = document.parent_document_id if document.parent_document_id else document.id
+
+    # Get all versions (root + all its children)
+    versions_query = db.query(Document).filter(
+        Document.organization_id == organization_id,
+        (Document.id == root_id) | (Document.parent_document_id == root_id),
+    ).order_by(Document.version.asc())
+
+    versions = versions_query.all()
+
+    return [
+        DocumentMetadata(
+            id=UUID(v.id),
+            name=v.name,
+            file_size=v.file_size,
+            file_type=v.file_type,
+            deal_id=v.deal_id,
+            folder_id=UUID(v.folder_id) if v.folder_id else None,
+            organization_id=UUID(v.organization_id),
+            uploaded_by=UUID(v.uploaded_by),
+            version=v.version,
+            parent_document_id=UUID(v.parent_document_id) if v.parent_document_id else None,
+            archived_at=v.archived_at,
+            created_at=v.created_at,
+            updated_at=v.updated_at,
+            uploader_name=None,
+        )
+        for v in versions
+    ]
+
+
+async def restore_document_version(
+    db: Session,
+    *,
+    document_id: str,
+    version_id: str,
+    organization_id: str,
+    current_user: User,
+) -> DocumentUploadResponse:
+    """
+    Restore a previous version of a document by creating a new version with the old content.
+
+    Args:
+        db: Database session
+        document_id: Current document ID (usually the latest version)
+        version_id: ID of the version to restore
+        organization_id: Organization ID for security
+        current_user: User performing the restore
+
+    Returns:
+        Newly created document version with restored content
+    """
+    # Get the version to restore
+    version_to_restore = db.query(Document).filter(
+        Document.id == version_id,
+        Document.organization_id == organization_id,
+    ).first()
+
+    if not version_to_restore:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Version not found")
+
+    # Get the current document to ensure it exists
+    current_doc = db.query(Document).filter(
+        Document.id == document_id,
+        Document.organization_id == organization_id,
+    ).first()
+
+    if not current_doc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    # Find the root parent and latest version number
+    root_id = current_doc.parent_document_id if current_doc.parent_document_id else current_doc.id
+    all_versions = db.query(Document).filter(
+        Document.organization_id == organization_id,
+        (Document.id == root_id) | (Document.parent_document_id == root_id),
+    ).order_by(Document.version.desc()).all()
+
+    latest_version_number = all_versions[0].version if all_versions else 1
+    new_version_number = latest_version_number + 1
+
+    # Copy the file from the version to restore
+    storage = get_storage_service()
+    old_file_path = await storage.get_file_path(version_to_restore.file_key, organization_id)
+
+    # Generate new storage key for the restored version
+    new_storage_key = storage.generate_file_key(
+        organization_id,
+        current_doc.deal_id,
+        version_to_restore.name,
+        current_user.id,
+    )
+
+    # Copy the file content
+    with open(old_file_path, 'rb') as source_file:
+        await storage.save_file(new_storage_key, source_file, organization_id)
+
+    # Create new document version
+    restored_document = Document(
+        id=str(uuid4()),
+        name=version_to_restore.name,
+        file_key=new_storage_key,
+        file_size=version_to_restore.file_size,
+        file_type=version_to_restore.file_type,
+        deal_id=current_doc.deal_id,
+        folder_id=current_doc.folder_id,
+        organization_id=organization_id,
+        uploaded_by=current_user.id,
+        version=new_version_number,
+        parent_document_id=root_id,
+    )
+    db.add(restored_document)
+    db.flush()
+
+    _log_access(db, restored_document, current_user, action="restore")
+
+    db.commit()
+    db.refresh(restored_document)
+
+    return DocumentUploadResponse(
+        id=UUID(restored_document.id),
+        name=restored_document.name,
+        file_size=restored_document.file_size,
+        file_type=restored_document.file_type,
+        deal_id=restored_document.deal_id,
+        folder_id=UUID(restored_document.folder_id) if restored_document.folder_id else None,
+        organization_id=UUID(restored_document.organization_id),
+        uploaded_by=UUID(restored_document.uploaded_by),
+        version=restored_document.version,
+        parent_document_id=UUID(restored_document.parent_document_id) if restored_document.parent_document_id else None,
+        archived_at=restored_document.archived_at,
+        created_at=restored_document.created_at,
+        updated_at=restored_document.updated_at,
+        uploader_name=None,
+    )

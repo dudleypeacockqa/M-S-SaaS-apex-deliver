@@ -13,7 +13,8 @@ from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from jose import jwt
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
+from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from _pytest.fixtures import FixtureLookupError
@@ -106,8 +107,48 @@ def engine():
     try:
         yield engine
     finally:
-        Base.metadata.drop_all(engine)
+        _safe_drop_schema(engine)
         engine.dispose()
+
+
+@pytest.fixture(autouse=True)
+def _reset_database(engine):
+    """Ensure a clean database state between tests."""
+
+    yield
+    _reset_metadata(engine)
+
+
+def _reset_metadata(engine) -> None:
+    """Drop all tables/views and recreate metadata from ORM mappings."""
+
+    _safe_drop_schema(engine)
+    Base.metadata.create_all(engine, checkfirst=True)
+
+
+def _safe_drop_schema(engine) -> None:
+    """Drop tables/views gracefully, ignoring missing objects."""
+
+    with engine.begin() as connection:
+        inspector = inspect(connection)
+
+        if engine.dialect.name == "sqlite":
+            connection.exec_driver_sql("PRAGMA foreign_keys=OFF")
+
+        for table_name in inspector.get_table_names():
+            connection.execute(text(f'DROP TABLE IF EXISTS "{table_name}"'))
+
+        for view_name in inspector.get_view_names():
+            connection.execute(text(f'DROP VIEW IF EXISTS "{view_name}"'))
+
+        if engine.dialect.name == "sqlite":
+            connection.exec_driver_sql("PRAGMA foreign_keys=ON")
+
+    try:
+        Base.metadata.drop_all(engine, checkfirst=True)
+    except (OperationalError, ProgrammingError):
+        # Some SQLite schemas may still reference missing tables; best-effort only.
+        pass
 
 
 @pytest.fixture()
@@ -140,6 +181,22 @@ def db_session(engine):
     finally:
         session.rollback()
         session.close()
+
+
+__all__ = [
+    "engine",
+    "client",
+    "db_session",
+    "create_user",
+    "create_organization",
+    "auth_headers_solo",
+    "auth_headers_growth",
+    "auth_headers_professional",
+    "auth_headers_admin",
+    "_reset_database",
+    "_reset_metadata",
+    "_safe_drop_schema",
+]
 
 def _make_token(clerk_user_id: str) -> str:
     payload = {
@@ -569,6 +626,49 @@ def create_deal_for_org(db_session, create_user, create_organization, request):
         return deal, owner_user, org
 
     return _create
+
+
+@pytest.fixture()
+def match_org(create_organization):
+    """Create organization for matching tests (professional tier for DEV-018)."""
+    return create_organization(name="Match Test Org", subscription_tier="professional")
+
+
+@pytest.fixture()
+def match_user(create_user, match_org):
+    """Create user for matching tests."""
+    return create_user(
+        clerk_user_id="clerk-match-test-1",
+        email="matchtest@example.com",
+        organization_id=match_org.id,
+    )
+
+
+@pytest.fixture()
+def match_deal(create_deal_for_org, match_org, match_user):
+    """Create deal for matching tests."""
+    deal, _, _ = create_deal_for_org(
+        organization=match_org,
+        owner=match_user,
+        name="Test Acquisition Target",
+        target_company="Acme SaaS Inc",
+        stage="evaluation",
+    )
+    return deal
+
+
+@pytest.fixture()
+def auth_headers_match(match_user):
+    """Provide auth headers for match_user (professional tier for DEV-018)."""
+    from app.api.dependencies.auth import get_current_user
+
+    def override_get_current_user():
+        return match_user
+
+    app.dependency_overrides[get_current_user] = override_get_current_user
+    headers = {"Authorization": "Bearer mock_match_token"}
+    yield headers
+    app.dependency_overrides.pop(get_current_user, None)
 
 
 

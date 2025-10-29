@@ -525,3 +525,46 @@ def get_access_logs(
         limit=limit
     )
     return logs
+
+
+@router.get("/documents/{document_id}/versions", response_model=List[DocumentMetadata])
+def get_document_versions(
+    deal_id: str,
+    document_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get all versions of a document.
+
+    Returns all versions in chronological order (oldest to newest).
+    """
+    versions = document_service.get_document_versions(
+        db=db,
+        document_id=document_id,
+        organization_id=current_user.organization_id,
+    )
+    return versions
+
+
+@router.post("/documents/{document_id}/restore/{version_id}", response_model=DocumentUploadResponse, status_code=status.HTTP_201_CREATED)
+async def restore_document_version(
+    deal_id: str,
+    document_id: str,
+    version_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Restore a previous version of a document.
+
+    Creates a new version with the content of the specified version.
+    """
+    restored_doc = await document_service.restore_document_version(
+        db=db,
+        document_id=document_id,
+        version_id=version_id,
+        organization_id=current_user.organization_id,
+        current_user=current_user,
+    )
+    return restored_doc

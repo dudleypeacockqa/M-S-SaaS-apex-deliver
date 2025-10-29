@@ -1,13 +1,8 @@
-- 2025-10-29 08:34 UTC: backend/venv/Scripts/pytest.exe --maxfail=1 --disable-warnings -> FAIL (deal fixture missing org_id); npm --prefix frontend run test -> PASS (533 passed / 3 skipped).
-- Latest local commit on `main`: 8f45f75 (test(deal-matching): achieve GREEN phase for DEV-018 Phase 1 (F-008)); local worktree dirty with BMAD documentation and test tweaks under review.
-- 2025-10-29 08:48 UTC: `bash scripts/run_smoke_tests.sh production` — backend `/health` 200 OK, frontend HEAD 403 (Cloudflare bot protection as expected).
-- Render production configuration still awaiting live secrets/webhook updates; latest deployment predates commit 8f45f75 (no auto-deploy triggered yet).
-- Smoke script now auto-detects backend venv Python, tolerates Cloudflare responses, and records missing smoke suite status for follow-up.
-# Deployment Health Dashboard
-
-**Last Updated**: 2025-10-29 08:48 UTC
-**Status**: 🟢 Stabilising (backend & frontend health reconfirmed; Render redeploy pending creds/push)
-**Latest Commit**: `8f45f75` (test(deal-matching): achieve GREEN phase for DEV-018 Phase 1 (F-008))
+- Latest local commit on `main`: 4411923 (feat(deal-matching): add DEV-018 Phase 1 models and migration); branch is aligned with origin/main.
+- 2025-10-29 08:59 UTC: `backend/venv/Scripts/pytest.exe backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py -q` -> 60 passed (warnings only).
+- 2025-10-29 08:34 UTC: `npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx` -> 13 passed; full Vitest sweep pending after runner configuration change.
+- Render production still awaiting redeploy with refreshed credentials; latest smoke evidence predates commit 4411923 and frontend curl continues to return Cloudflare 403.
+- NEXT: Catalogue dirty/untracked files per BMAD story, rerun full pytest/Vitest with coverage, then schedule Render redeploy and capture smoke outputs.
 
 ---
 
@@ -15,43 +10,37 @@
 
 | Service | Status | URL | Last Checked |
 |---------|--------|-----|--------------|
-| Backend API | ✅ Healthy (curl) | https://ma-saas-backend.onrender.com | 2025-10-29 08:48 |
-| Frontend | ⚠️ Cloudflare 403 (expected bot protection) | https://apexdeliver.com | 2025-10-29 08:48 |
-| Database | ✅ Connected | PostgreSQL (Render) | 2025-10-29 08:48 |
-| Redis | ✅ Configured | Redis (Render) | 2025-10-29 08:48 |
+| Backend API | Healthy (curl) | https://ma-saas-backend.onrender.com | 2025-10-29 07:11 |
+| Frontend | Cloudflare 403 (expected) | https://apexdeliver.com | 2025-10-29 07:11 |
+| Database | Connected | PostgreSQL (Render) | 2025-10-29 07:11 |
+| Redis | Configured | Redis (Render) | 2025-10-29 07:11 |
 
-**Frontend Note**: Cloudflare continues to block headless curl (HTTP 403). Use a headed browser (or allow-listed IP) during release smoke checks.
+**Frontend Note**: Headless curl continues to hit Cloudflare 403. Use a headed smoke run post-redeploy and log screenshots.
 
 ---
 
-### Governance Snapshot (2025-10-29 08:48 UTC)
-- Backend `/health` responded 200 OK with `clerk_configured=true`, `database_configured=true`, `webhook_configured=true`.
-- Frontend HEAD request returned 403 via Cloudflare edge; browser smoke still recommended post-redeploy or allow-listed IP.
-- Smoke script executed with backend venv interpreter; emitted warning because `backend/tests/smoke_tests.py` is missing from repository—follow-up required to reinstate coverage.
-- Regression sweeps staged for post-governance loop:
-  - `pytest backend/tests/test_quota_service.py backend/tests/test_podcast_api.py -vv` (latest run 2025-10-29 07:22 UTC, green).
-  - `pytest --maxfail=1 --disable-warnings` (full suite scheduled after current TDD loops).
-  - `npm --prefix frontend run test -- PodcastStudio.test.tsx` & `npm --prefix frontend run test -- ValuationSuite.test.tsx` (latest runs green; full Vitest sweep pending).
+### Governance Snapshot (2025-10-29 08:59 UTC)
+- Targeted backend (valuation plus podcast quota) and frontend (ValuationSuite) suites re-run and green; full regression still outstanding.
+- BMAD tracker (`docs/bmad/BMAD_PROGRESS_TRACKER.md`) and workflow status now reflect Phase 0.3 governance next steps.
+- Dirty tree currently spans DEV-018 deal matching routes/schemas and shared test fixtures; mapping captured in `docs/100-PERCENT-COMPLETION-PLAN.md`.
+- Render redeploy remains blocked on credential refresh and documentation updates.
 
 ---
 
 ## Step 5 Verification Results (2025-10-29)
 
-### ? Backend Tests
-- **Command**: `python -m pytest --maxfail=1 --disable-warnings`
-- **Total Tests**: 431 passed / 38 skipped (30.29s)
+### Backend Tests (targeted)
+- Command: `backend/venv/Scripts/pytest.exe backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py -q`
+- Result: 60 passed, 0 failed (warnings: Pydantic config deprecation, datetime.utcnow deprecation).
 
-### ? Frontend Tests
-- **Command**: `npm --prefix frontend run test`
-- **Total Tests**: 533 passed / 3 skipped (48.65s)
-
-### ? Frontend Build
-- **Command**: `npm --prefix frontend run build`
-- **Result**: Success (chunkSizeWarningLimit exceeded; monitor).
+### Frontend Tests (targeted)
+- Command: `npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx`
+- Result: 13 passed, 0 failed (duration ~24s).
 
 ---
 
 ## Outstanding Actions
-1. Capture Render environment secrets + redeploy backend/frontend from `main`.
-2. Execute smoke script (`scripts/run_smoke_tests.sh`) once network access approved; attach outputs to this file.
-3. Prepare GA release artifacts (coverage summaries, build outputs) and update release notes.
+1. Map remaining dirty/untracked files to their BMAD stories and either commit or stage follow-up work.
+2. Run full backend pytest with coverage once database reset fixture verified, then refresh this dashboard with coverage metrics.
+3. Execute full Vitest suite with coverage using updated runner settings; capture results.
+4. Refresh Render environment variables, trigger backend/frontend redeploy, and attach smoke evidence.

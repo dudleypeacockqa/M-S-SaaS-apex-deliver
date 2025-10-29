@@ -1,78 +1,45 @@
-### Session 2025-10-29 (Stabilisation - 09:58 UTC)
-- PASS npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx -> 13 passed (ValuationSuite GREEN).
-- PASS ./backend/venv/Scripts/python.exe -m pytest backend/tests/test_deal_matching_models.py -q -> 8 passed (DEV-018 models GREEN).
-- NEXT Expand stabilisation to full suites (frontend all, targeted backend) before resuming feature delivery.
+### Session 2025-10-29 (Phase 0.3 Governance Reset - 08:59 UTC)
+- OK Targeted backend valuation/podcast pytest run documented (60 passed; warnings only).
+- OK ValuationSuite Vitest focus rerun documented (13 passed).
+- NEXT Catalogue remaining dirty tree against DEV-018/Phase 0 and promote DEV-008 RED tests.
 
-### Session 2025-10-29 (Smoke Script Execution & Deployment Health Refresh – 08:48 UTC)
-- ✅ Ran `bash scripts/run_smoke_tests.sh production` using backend venv interpreter: backend `/health` 200 OK, frontend HEAD 403 (expected Cloudflare shield), backend smoke suite absent so script emitted warning.
-- ✅ Updated `scripts/run_smoke_tests.sh` to auto-detect repo venv, handle missing smoke suite gracefully, and normalise LF endings for cross-shell execution.
-- ✅ Refreshed `docs/DEPLOYMENT_HEALTH.md` with latest commit (`8f45f75`), new smoke script results, and updated service timestamps; recorded follow-up to restore `backend/tests/smoke_tests.py`.
-- ✅ Advanced `docs/bmad/bmm-workflow-status.md` NEXT_ACTION to DEV-016 quota completion loop (`npm --prefix frontend run test -- PodcastStudio.test.tsx`).
-- 🔄 NEXT: Complete DEV-016 quota gating TDD loop (Vitest + backend feature gate coverage) before re-running full regressions.
+### Session 2025-10-29 (Roadmap & Deployment Doc Refresh – 10:18 UTC)
+- ✅ Updated docs/100-PERCENT-COMPLETION-PLAN.md with verified test status, re-prioritised workstreams (DEV-008, DEV-016, DEV-012, DEV-018, MARK-002, ops, final QA).
+- ✅ Refreshed docs/DEPLOYMENT_HEALTH.md with targeted test commands, latest commit (1044b08), and outstanding redeploy actions.
+- 🔄 NEXT: Begin DEV-008 RED → GREEN loop per updated plan (backend permissions/search/audit tests).
+### Session 2025-10-29 (ValuationSuite Vitest – 09:02 UTC)
+### Session 2025-10-29 (ValuationSuite Vitest – 09:09 UTC)
+- ✅ Command: npm --prefix frontend run test -- --pool=forks --maxWorkers=1 src/pages/deals/valuation/ValuationSuite.test.tsx → 13 passed (forced single worker).
+- 🔄 NEXT: Add new RED spec covering upgrade banner entitlement messaging before implementing DEV-011 fixes.
 
-### Session 2025-10-29 (Deal stage endpoint TDD – 09:15 UTC)
-- ✅ Patched `create_deal_for_org` fixture to accept `org_id`/`user_id` aliases and keep tuple unpack compatibility across suites.
-- ✅ Implemented `/api/deals/{deal_id}/stage` FastAPI endpoint + `DealStageUpdate` schema and service helper to satisfy DEV-007 drag-and-drop tests.
-- ✅ pytest backend/tests/test_deal_endpoints.py → 25 passed (new stage cases GREEN).
-- 🔄 NEXT: Move into DEV-008 RED phase – add failing pytest coverage for versioning/permissions/audit flows per roadmap.
+- ❌ Command: npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx → runner error vitest-pool Timeout starting threads runner; suite did not execute.
+- 🛠️ NEXT: Re-run with controlled pool (npm --prefix frontend run test -- --pool=forks --maxWorkers=1 src/pages/deals/valuation/ValuationSuite.test.tsx) to capture true RED assertions per Phase 0 plan.
+### Session 2025-10-29 (Phase 0 Baseline – 12:00 UTC)
+- ✅ `npx bmad-method status` confirms BMAD v4.44.1 install (166 tracked files, all marked modified).
+- ❌ `backend/venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings` halted: ModuleNotFoundError for "numpy" from `app/services/deal_matching_service.py`.
+- ✅ Vitest spot checks passed: `ValuationSuite.test.tsx` (13) and `PodcastStudio.test.tsx` (20) all GREEN.
+- 🔄 NEXT: add/verify `numpy` in backend requirements + venv, rerun pytest, refresh deployment health snapshot.
+### Session 2025-10-29 (Valuation Regression - 10:22 UTC)
+- PASS ./backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py backend/tests/test_valuation_api.py -q -> 39 passed.
+- NOTE Valuation schemas still raise Pydantic 2 Config warnings; plan ConfigDict migration during refactor window.
+- NEXT Begin DEV-016 quota frontend enhancement TDD loop (write failing tests for quota banner / upgrade CTA).
 
-### Session 2025-10-29 (Governance Reset & Completion Plan Alignment)
-- ✅ Reviewed repository state (git log, deployment docs, story files) and confirmed outstanding RED suites: 21 backend valuation/automation tests, 11 frontend ValuationSuite specs.
-- ✅ Authored updated roadmap in docs/100-PERCENT-COMPLETION-PLAN.md covering DEV-011, DEV-008, DEV-016, DEV-012, DEV-018, marketing, and deployment hardening under BMAD + TDD discipline.
-- ✅ Updated bmm-workflow-status to set CURRENT_WORKFLOW=workflow-status and NEXT_COMMAND to npx bmad-method status.
-- 🔄 NEXT: Execute governance command and rerun DEV-011 pytest/Vitest suites before promoting fixes.
-### Session 2025-10-29 (Plan Refresh – 09:55 UTC)
-- ♻️ Reassessed repository state; confirmed ValuationSuite Vitest failure and DEV-018 pytest errors with UNIQUE constraints.
-- 📝 Created docs/bmad/SESSION-2025-10-29-PLAN-REFRESH.md and updated bmm-workflow-status NEXT_ACTION/NEXT_COMMAND for RED suite recovery.
-- 🔄 NEXT: Stabilise ValuationSuite Vitest and backend deal matching tests before resuming DEV-011/DEV-016 implementation.
-
-### Session 2025-10-29 (Phase 0 Reset – 09:25 UTC)
-- ✅ `npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx` → **13/13 GREEN** (Vitest 4.0.4).
-- ✅ `npm --prefix frontend run test -- src/App.test.tsx src/features/auth/Auth.test.tsx src/tests/integration/routing.test.tsx` → **10/10 GREEN**, Clerk init warnings only.
-- ✅ `pytest --maxfail=1 --disable-warnings` → **456 passed / 38 skipped / 0 failed** (25.52s) after updating fixtures; backend baseline restored.
-- ✅ Patched `backend/tests/conftest.py:create_deal_for_org` to gracefully accept `org_id`/`user_id` aliases and propagate extra deal fields.
-- 🔄 NEXT: Update `docs/DEPLOYMENT_HEALTH.md` with new baselines and audit Render env secrets per Phase 0 blueprint.
-
-### Session 2025-10-29 (Alignment Audit – 09:00 UTC)
-- ✅ `git status` → `main` matches `origin/main`; working tree holds WIP across deal endpoint tests, BMAD docs, podcast story, valuation tests, and smoke scripts.
-- ✅ `pytest backend/tests/test_deal_endpoints.py` → **25 passed / 3 failed** (missing `create_deal_for_org` import + stage update endpoint returning 404 instead of 403/422).
-- ✅ `npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx` → **13/13 GREEN** (Vitest 4.0.4).
-- ✅ Render health: backend `/health` reports healthy at `2025-10-29T08:48:19Z`; frontend root responds `200 OK` at `2025-10-29T08:48:28Z` via Cloudflare.
-- 🔄 NEXT: Restore deal stage fixtures/endpoints to satisfy pytest failures, then resume DEV-008/DEV-016 delivery per 100% completion blueprint.
-
-### Session 2025-10-29 (Codex Assessment – 11:45 UTC)
-- 🔍 Reviewed CODEX/BMAD playbooks and 100% completion roadmap to prepare updated delivery plan.
-- 📦 Captured repo state: HEAD 31f9f25 (chore: phase 0 stabilization) on main, branch is 2 commits ahead of origin/main with a large dirty working tree.
-- 🧪 Confirmed outstanding RED tests persist (see frontend/test-output.txt) and backend suite needs rerun after new migration a0175dfc0ca0.
-- 🚀 Noted Render redeploy pending; docs/DEPLOYMENT_HEALTH.md still references commit 0f512b9 rather than latest work.
-- 🔄 NEXT: Execute Phase 0 readiness plan (docs/100-PERCENT-COMPLETION-PLAN.md:19) — reconcile change sets, rerun pytest/Vitest baselines, refresh deployment health doc. ✅ (Completed via 09:25 UTC session; deployment doc refresh pending).
-
-- ✅ Patched `create_deal_for_org` fixture to accept both `organization_id` and `org_id`, reran full pytest, updated workflow status once GREEN (see 09:25 UTC session).
-
-### Session 2025-10-29 (Governance Reset – 08:38 UTC)
-- 🔍 Reviewed CODEX guides, BMAD playbooks, and current completion plans to align 100% delivery scope.
-- 📦 Repo snapshot: HEAD 4411923 (feat(deal-matching)...), 1 commit ahead of origin/main, extensive staged/untracked changes pending triage.
-- 🧪 Test status requires reset: ValuationSuite Vitest output still RED; backend suite not rerun since latest migrations (a0175dfc0ca0).
-- 🚀 Deployment: Render redeploy still pending credential refresh; last health record references commit 0f512b9, not latest changes.
-- 🔄 NEXT: Execute Phase 0 readiness plan (docs/100-PERCENT-COMPLETION-PLAN.md §Phase 0) — reconcile change sets, re-run baseline pytest/Vitest, update DEPLOYMENT_HEALTH.md with fresh results.
-
-### Session 2025-10-29 (Governance sync – 08:45 UTC)
-- ✅ Confirmed latest local commit `4411923` (feat(deal-matching)) on `main`; branch is ahead of origin by 1, pending push after verification.
-- ✅ Refreshed `docs/DEPLOYMENT_HEALTH.md` with current git status, test baselines, and Render health snapshot; marked backend/DB/Redis healthy, frontend behind Cloudflare 403.
-- ✅ Logged governance context in BMAD tracker, capturing outstanding deliverables for DEV-008, DEV-016, and MARK-002 prior to implementation loop.
-- 🔄 NEXT: Update story files (`docs/bmad/stories/DEV-016-*.md`, `docs/bmad/stories/DEV-008-*.md`) with remaining gaps, then proceed to backend RED tests for DEV-008.
-
-### Session 2025-10-29 (BMAD close-out planning – 08:30 UTC)
-- 🔍 Reviewed CODEX and BMAD artefacts to reconcile outstanding Phase 1/2 work (DEV-008 document room, DEV-016 podcast gating, DEV-012 tasks, DEV-018 deal matching).
-- 📘 Updated `docs/bmad/bmm-workflow-status.md` next action to reflect close-out planning pass prior to test reruns.
-- 🗂️ Prepared to refresh 100% completion roadmap and align future BMAD sessions with TDD checkpoints before resuming implementation.
-- 🔄 NEXT: Finalise consolidated delivery plan and schedule RED baseline tests (`pytest --maxfail=1 --disable-warnings`, `npm --prefix frontend run test`).
-
-### Session 2025-10-29 (Governance Reset & Backend Regression Triaged – 08:45 UTC)
-- ✅ Reviewed CODEX/BMAD completion guides to confirm remaining scope and dependencies.
-- ✅ `npm --prefix frontend run test -- --pool=forks --maxWorkers=1` → 533 passed / 3 skipped (baseline maintained).
-- ❌ `../backend/venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings` → fails on `tests/test_deal_endpoints.py::test_update_deal_stage_success` (fixture missing `org_id` kwarg).
-- 🔄 NEXT: Update `tests/conftest.py:create_deal_for_org` to accept `org_id`/`user_id`, rerun backend suite, then resume DEV-008 Document & Data Room tasks per 100% completion roadmap.
+### Session 2025-10-29 (Phase 0 Baseline – 12:00 UTC)
+- ✅ 
+px bmad-method status confirms BMAD v4.44.1 install (166 tracked files, all marked modified).
+- ❌ ackend/venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings halted: ModuleNotFoundError for "numpy" from 
+pp/services/deal_matching_service.py.
+- ✅ Vitest spot checks passed: ValuationSuite.test.tsx (13) and PodcastStudio.test.tsx (20) all GREEN.
+- 🔄 NEXT: add/verify 
+umpy in backend requirements + venv, rerun pytest, refresh deployment health snapshot.
+### Session 2025-10-29 (ValuationSuite Vitest Check – 10:12 UTC)
+- ✅ npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx → 13 passed, 0 failed (20.42s) under Vitest 4.0.4.
+- 🔍 Confirms frontend valuation workspace already GREEN; plan snapshot claiming 11 RED specs needs correction.
+- 🔄 NEXT: Update docs/100-PERCENT-COMPLETION-PLAN.md to reflect actual test status before prioritising remaining P0 stories (DEV-008, DEV-016).
+### Session 2025-10-29 (Valuation suite baseline – 10:10 UTC)
+- ✅ `pytest backend/tests/test_valuation_api.py backend/tests/test_valuation_service.py` → 39 passed / 0 failed (DEV-011 remains green).
+- 🧾 Captured warnings (pydantic config/json_encoders + httpx app shortcut) for later tech debt ticket—no action needed for completion scope.
+- 🔄 NEXT: Shift to DEV-008 RED phase per completion roadmap (author failing tests for versioning, permissions, audit trails).
 
 ### Session 2025-10-29 (DEV-016 Quota Messaging Alignment – 07:58 UTC)
 - ✅ Updated quota summary messaging to include usage fractions and remaining episodes, mirrored in API headers + frontend banner copy.
@@ -219,19 +186,22 @@
 
 
 ### Session 2025-10-29 (Baseline regression sweep - 08:34 UTC)
-- Ran ============================= test session starts =============================
-platform win32 -- Python 3.13.5, pytest-8.4.2, pluggy-1.6.0
-rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
-configfile: pytest.ini
-testpaths: backend/tests
-plugins: anyio-4.11.0, asyncio-1.2.0
-asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
-collected 480 items
-
-backend	ests	est_additional_ratios.py ...............                  [  3
-
-### Session 2025-10-29 (Baseline regression sweep - 08:34 UTC)
 - Ran backend/venv/Scripts/pytest.exe --maxfail=1 --disable-warnings -> FAIL fast on backend/tests/test_deal_endpoints.py::test_update_deal_stage_success (fixture signature mismatch: create_deal_for_org lacks org_id).
 - Ran npm --prefix frontend run test -> 533 passed / 3 skipped; Vitest suite green with current code.
 - Logged backend failure for DEV-002/DEV-004 scope reconciliation; need to restore fixture API before advancing Phase 1.
 - NEXT: Fix deal test fixture, rerun pytest to confirm green baseline ahead of DEV-008/DEV-016 implementation work.
+
+### Session 2025-10-29 (DEV-008 RED coverage – 10:14 UTC)
+- ✅ Authored failing pytest cases for document versioning (`test_upload_same_name_creates_new_version`), permission enforcement, and audit logging to drive DEV-008 implementation.
+- ❌ `pytest backend/tests/test_document_endpoints.py -k "version or permission" --maxfail=1 --disable-warnings` stops at `test_max_versions_enforced` (expected 20 versions, received 5) — confirms version retention not yet implemented.
+- 🔄 NEXT: Implement version incrementing, permission checks, and delete audit logging in document services/routes, then rerun targeted suite.
+
+
+
+
+
+
+
+
+
+
