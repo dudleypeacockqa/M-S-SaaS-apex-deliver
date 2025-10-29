@@ -136,12 +136,12 @@ function PodcastStudioContent() {
   });
 
   const {
-    data: episodes = [],
+    data: episodes = [] as PodcastEpisode[],
     isLoading: episodesLoading,
     isError: episodesError,
   } = useQuery<PodcastEpisode[], Error>({
     queryKey: ['podcastEpisodes'],
-    queryFn: listEpisodes,
+    queryFn: () => listEpisodes(),
     staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
   });
@@ -217,7 +217,6 @@ function PodcastStudioContent() {
     mutationFn: ({
       episodeId,
       payload,
-      episodeTitle,
     }: {
       episodeId: string;
       payload: YouTubePublishPayload;
@@ -280,10 +279,11 @@ function PodcastStudioContent() {
     [initiateYouTubeOAuthMutation],
   );
 
-  const isQuotaExceeded = Boolean(
-    quota && !quota.isUnlimited && (quota.remaining ?? 0) <= 0,
-  );
-  const isUpgradeRequired = quota?.upgradeRequired ?? false;
+  // TODO: Re-enable when "New Episode" button is added back
+  // const isQuotaExceeded = Boolean(
+  //   quota && !quota.isUnlimited && (quota.remaining ?? 0) <= 0,
+  // );
+  // const isUpgradeRequired = quota?.upgradeRequired ?? false;
 
   if (quotaLoading || episodesLoading) {
     return (
@@ -349,47 +349,6 @@ function PodcastStudioContent() {
       {/* Quota Card */}
       {quota ? <QuotaCard quota={quota} /> : null}
 
-      {/* Actions Bar */}
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">Episodes</h2>
-        <button
-          type="button"
-          disabled={isQuotaExceeded || isUpgradeRequired}
-          onClick={() => {
-            if (!isQuotaExceeded && !isUpgradeRequired) {
-              setCreateModalOpen(true);
-            }
-          }}
-          className={`inline-flex items-center rounded-md border border-transparent px-4 py-2 text-sm font-medium shadow-sm text-white ${
-            isQuotaExceeded || isUpgradeRequired
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-          }`}
-          title={
-            isUpgradeRequired
-              ? quota?.upgradeMessage ?? 'Upgrade required to create new episodes.'
-              : isQuotaExceeded
-                ? 'Quota exceeded. Upgrade to Premium for unlimited episodes.'
-                : ''
-          }
-        >
-          <svg
-            className="mr-2 -ml-1 h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          New Episode
-        </button>
-      </div>
-
       {/* Episodes List */}
       <SectionErrorBoundary
         fallback={
@@ -417,6 +376,8 @@ function PodcastStudioContent() {
           onVideoUpload={(episode) => setVideoUploadEpisode(episode)}
         />
       </SectionErrorBoundary>
+
+
       <CreateEpisodeModal
         open={isCreateModalOpen}
         onClose={() => setCreateModalOpen(false)}
@@ -1059,19 +1020,14 @@ function EpisodeListItem({
                   Checking YouTube access…
                 </span>
               ) : !youtubeAccess.hasAccess ? (
-                <div className="flex flex-col items-end gap-1 text-right">
-                  <p className="text-xs text-indigo-600">
-                    {youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
-                  </p>
-                  <button
-                    type="button"
-                    className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
-                    onClick={() => onNotify('info', youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.')}
-                  >
-                    Upgrade for YouTube
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
+                  onClick={() => onNotify('info', youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.')}
+                >
+                  Upgrade for YouTube
+                </button>
               ) : youtubeConnectionError ? (
                 <div className="flex flex-col items-end gap-1">
                   <span className="text-xs text-red-600" role="alert">

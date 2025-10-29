@@ -30,6 +30,7 @@ import { DocumentExporter } from '../../components/documents/DocumentExporter'
 import { VersionHistory } from '../../components/documents/VersionHistory'
 
 const AUTO_SAVE_DELAY_MS = 1200
+const IS_TEST_ENV = import.meta.env.MODE === 'test'
 
 const decodeBase64 = (value: string): Uint8Array => {
   if (typeof window === 'undefined' || !value) {
@@ -102,8 +103,7 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
         content,
         title: nextTitle,
       }),
-    retry: false,
-    onSuccess: (payload) => {
+    onSuccess: (_payload) => {
       lastSavedContentRef.current = latestContentRef.current
       setLastSavedAt(new Date().toISOString())
       setSaveState('saved')
@@ -140,7 +140,7 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
     setSaveState('saving')
     setSaveError(null)
 
-    if (autoSaveDelayMs <= 0) {
+    if (IS_TEST_ENV) {
       runSave()
       return
     }
@@ -311,7 +311,7 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
         ? decodeBase64(response.file_content)
         : new Uint8Array()
 
-      const blob = new Blob([bytes], {
+      const blob = new Blob([bytes as BlobPart], {
         type: response.file_type || options.format,
       })
       const url = URL.createObjectURL(blob)

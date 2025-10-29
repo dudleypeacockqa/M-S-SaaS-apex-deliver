@@ -17,6 +17,10 @@ import { MatchCard } from '../../components/deal-matching/MatchCard';
 import { MatchDetailModal } from '../../components/deal-matching/MatchDetailModal';
 import { CriteriaBuilderModal } from '../../components/deal-matching/CriteriaBuilderModal';
 import { IntroductionRequestModal } from '../../components/deal-matching/IntroductionRequestModal';
+import { MatchSuccessRate } from '../../components/deal-matching/analytics/MatchSuccessRate';
+import { MatchScoreDistribution } from '../../components/deal-matching/analytics/MatchScoreDistribution';
+import { RecentMatches } from '../../components/deal-matching/analytics/RecentMatches';
+import { MatchingActivity } from '../../components/deal-matching/analytics/MatchingActivity';
 
 interface MatchingWorkspaceProps {
   dealId?: string;
@@ -618,20 +622,19 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
                 </div>
               </div>
             )}
-            ) : (
-              <div className="space-y-4">
-                {matches.map((match) => (
-                  <MatchCard
-                    key={`${match.dealId}-${match.matchedDealId ?? match.id ?? 'calculated'}`}
-                    match={match}
-                    onViewDetails={handleViewDetails}
-                    onSave={handleSaveMatch}
-                    onPass={handlePassMatch}
-                    loading={saveMatchMutation.isPending || passMatchMutation.isPending}
-                  />
-                ))}
-              </div>
-            )}
+
+            <div className="space-y-4">
+              {matches.map((match) => (
+                <MatchCard
+                  key={`${match.dealId}-${match.matchedDealId ?? match.id ?? 'calculated'}`}
+                  match={match}
+                  onViewDetails={handleViewDetails}
+                  onSave={handleSaveMatch}
+                  onPass={handlePassMatch}
+                  loading={saveMatchMutation.isPending || passMatchMutation.isPending}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>
