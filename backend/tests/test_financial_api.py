@@ -5,7 +5,7 @@ Testing the /financial API endpoints
 
 import pytest
 from unittest.mock import Mock, patch
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 from app.main import app
@@ -151,7 +151,7 @@ def test_get_financial_connections_endpoint_returns_connections(client, test_dea
         platform="quickbooks",
         access_token="token",
         refresh_token="refresh",
-        token_expires_at=datetime.utcnow() + timedelta(hours=1),
+        token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
         platform_organization_name="QuickBooks Demo Co",
         connection_status="active",
     )
@@ -395,7 +395,7 @@ def test_quickbooks_oauth_callback_success(client, test_deal, solo_user):
     mock_connection.platform_organization_name = "QuickBooks Demo Co"
     mock_connection.last_sync_at = None
     mock_connection.last_sync_status = None
-    mock_connection.created_at = datetime.utcnow()
+    mock_connection.created_at = datetime.now(timezone.utc)
 
     try:
         with patch('app.api.routes.financial.handle_quickbooks_callback') as mock_callback:
@@ -444,7 +444,7 @@ def test_sync_quickbooks_financial_data_success(client, test_deal, db_session, s
         platform="quickbooks",
         access_token="token",
         refresh_token="refresh",
-        token_expires_at=datetime.utcnow() + timedelta(hours=1),
+        token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
         connection_status="active",
     )
     db_session.add(connection)
@@ -495,7 +495,7 @@ def test_quickbooks_connection_status(client, test_deal, db_session, solo_user):
         platform="quickbooks",
         access_token="token",
         refresh_token="refresh",
-        token_expires_at=datetime.utcnow() + timedelta(hours=1),
+        token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
         connection_status="active",
         platform_organization_name="QuickBooks Demo Co",
     )
@@ -527,7 +527,7 @@ def test_disconnect_quickbooks_connection(client, test_deal, db_session, solo_us
         platform="quickbooks",
         access_token="token",
         refresh_token="refresh",
-        token_expires_at=datetime.utcnow() + timedelta(hours=1),
+        token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
         connection_status="active",
     )
     db_session.add(connection)

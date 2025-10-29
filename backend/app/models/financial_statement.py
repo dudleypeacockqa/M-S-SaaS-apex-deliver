@@ -3,13 +3,14 @@ Financial Statement Model - DEV-010: Financial Intelligence Engine
 Stores imported financial data from accounting platforms
 """
 
-from datetime import datetime, date
+from datetime import date
 from sqlalchemy import Column, String, DateTime, Date, ForeignKey, Text, Numeric, Integer
 from sqlalchemy.orm import relationship
 import uuid
 
 from app.db.base import Base
 from app.db.types import JSONType
+from app.utils.datetime import utc_now
 
 
 class FinancialStatement(Base):
@@ -119,9 +120,9 @@ class FinancialStatement(Base):
     raw_data = Column(JSONType, nullable=True)
 
     # Audit fields
-    imported_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    imported_at = Column(DateTime(timezone=True), nullable=False, default=utc_now)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utc_now)
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=utc_now, onupdate=utc_now)
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships

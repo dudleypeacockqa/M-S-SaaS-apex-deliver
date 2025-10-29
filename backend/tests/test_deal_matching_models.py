@@ -135,6 +135,7 @@ class TestDealMatchModel:
         match = DealMatch(
             deal_id=match_deal.id,
             matched_deal_id=matched_deal.id,
+            organization_id=match_org.id,
             match_score=87.5,
             confidence="high",
             explanation={
@@ -171,6 +172,7 @@ class TestDealMatchModel:
         match = DealMatch(
             deal_id=match_deal.id,
             matched_deal_id=matched_deal.id,
+            organization_id=match_org.id,
             match_score=95.0,
             confidence="high",
             explanation={},
@@ -195,6 +197,7 @@ class TestDealMatchModel:
         match = DealMatch(
             deal_id=match_deal.id,
             matched_deal_id=matched_deal.id,
+            organization_id=match_org.id,
             match_score=75.0,
             confidence="medium",
             explanation={},
@@ -231,6 +234,7 @@ class TestDealMatchActionModel:
         match = DealMatch(
             deal_id=match_deal.id,
             matched_deal_id=matched_deal.id,
+            organization_id=match_org.id,
             match_score=85.0,
             confidence="high",
             explanation={},
@@ -270,6 +274,7 @@ class TestDealMatchActionModel:
         match = DealMatch(
             deal_id=match_deal.id,
             matched_deal_id=matched_deal.id,
+            organization_id=match_org.id,
             match_score=90.0,
             confidence="high",
             explanation={},

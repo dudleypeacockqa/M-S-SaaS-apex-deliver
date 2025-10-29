@@ -6,22 +6,20 @@
 ---
 
 ## Current Delivery Snapshot
-- **Backend tests**: `backend/venv/Scripts/pytest.exe backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py -q` GREEN (60 passed; warnings only). Full suite rerun pending validation of new database reset fixture.
-- **Frontend tests**: `npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx` GREEN (13/13) after Vitest config adjustments; full suite rerun once coverage settings verified.
-- **Coverage**: Backend 83%, Frontend 85% (last full run); refresh after the new fixture reset passes complete suites.
-- **Git state**: `main` == `origin/main`; dirty tree currently covers DEV-018 deal matching routes/schemas, shared test fixtures, Vitest config, and BMAD docs pending story alignment.
-- **Migrations**: `backend/alembic/versions/a0175dfc0ca0_add_deal_matching_tables_dev_018_phase_1.py` present; validate ordering before applying.
-- **Deployment**: Render backend/frontend redeploy pending (latest smoke logs pre-date commit 4411923; frontend curl still returns Cloudflare 403).
-- **BMAD artefacts**: `docs/bmad/BMAD_PROGRESS_TRACKER.md` and `docs/bmad/bmm-workflow-status.md` refreshed 2025-10-29 08:59 UTC with focused test results and Phase 0.3 governance next steps.
+- **Backend tests**: `../backend/venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings` GREEN (485 passed / 38 skipped / 0 failed; 32.9s).
+- **Frontend tests**: `npm --prefix frontend run test -- --pool=forks --maxWorkers=1` GREEN (533 passed / 3 skipped).
+- **Coverage**: Last recorded Backend 83%, Frontend 85%; regenerate reports now that suites are stable.
+- **Git state**: `main` == `origin/main`; working tree still dirty across DEV-008/DEV-018/marketing docs pending story alignment.
+- **Migrations**: `backend/alembic/versions/a0175dfc0ca0_add_deal_matching_tables_dev_018_phase_1.py` staged; verify dependencies before applying.
+- **Deployment**: Render redeploy pending (backend health 200 OK, frontend curl 403 via Cloudflare).
+- **BMAD artefacts**: Tracker/workflow refreshed 2025-10-29 09:35 UTC with baseline sweep + new DEV-008 action.
 
-### Dirty Tree Mapping (2025-10-29 08:59 UTC)
-- `backend/app/api/__init__.py` -> DEV-018 deal matching router inclusion (awaiting GREEN via new API tests).
-- `backend/app/api/routes/deal_matching.py` / `.future` -> DEV-018 route implementation stubs for upcoming RED->GREEN cycle.
-- `backend/app/schemas/deal_match.py` -> DEV-018 schema definitions requiring tests and documentation.
-- `backend/tests/conftest.py`, `backend/tests/test_database_reset.py` -> Phase 0 database reset hardening (governance).
-- `backend/tests/test_deal_matching_api.py.future` -> DEV-018 API TDD scaffold replacing legacy suite.
-- `frontend/vitest.config.ts` -> Phase 0 Vitest runner adjustments (coverage + single-thread execution).
-- `docs/DEPLOYMENT_HEALTH.md`, `docs/bmad/*` -> Governance documentation updates underway for Phase 0.3.
+### Dirty Tree Mapping (2025-10-29 09:35 UTC)
+- `backend/app/services/document_service.py`, `backend/app/models/document.py` -> DEV-008 version retention & audit work in progress.
+- `backend/app/api/routes/deal_matching.py`, `backend/app/models/deal_match.py`, `backend/tests/test_deal_matching_api.py` -> DEV-018 intelligent matching implementation.
+- `backend/tests/conftest.py`, `backend/tests/test_database_reset.py` -> Phase A baseline fixture hardening.
+- `frontend/vitest.config.ts`, `frontend/src/pages/deals/valuation/ValuationSuite.test.tsx` -> Phase A Vitest stabilisation artifacts.
+- `docs/DEPLOYMENT_HEALTH.md`, `docs/bmad/*` -> Governance artefacts aligned with latest baseline.
 
 ---
 
@@ -95,3 +93,4 @@
 ---
 
 Strict adherence to BMAD + TDD remains mandatory: every functional change starts with a failing test, all documentation updates follow immediately after GREEN cycles, and deployment artefacts must be refreshed before claiming completion.
+

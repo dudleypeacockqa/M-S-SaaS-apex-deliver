@@ -2,11 +2,11 @@
 
 Tracks monthly episode creation counts per organization for quota enforcement.
 """
-from datetime import datetime
 from sqlalchemy import Column, String, Integer, DateTime, Index
 import uuid
 
 from app.db.base import Base
+from app.utils.datetime import utc_now
 
 
 class PodcastUsage(Base):
@@ -22,8 +22,8 @@ class PodcastUsage(Base):
     organization_id = Column(String, nullable=False, index=True)
     month = Column(DateTime, nullable=False)  # First day of month (YYYY-MM-01)
     episode_count = Column(Integer, nullable=False, default=0)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=utc_now)
+    updated_at = Column(DateTime(timezone=True), default=utc_now, onupdate=utc_now)
 
     __table_args__ = (
         # Composite index for fast queries by organization + month

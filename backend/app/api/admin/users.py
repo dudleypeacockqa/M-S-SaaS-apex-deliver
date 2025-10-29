@@ -4,7 +4,7 @@ Admin User Management Endpoints
 Provides full CRUD operations for managing users across all organizations.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -170,7 +170,7 @@ def update_user(
     if user_update.last_name is not None:
         user.last_name = user_update.last_name
 
-    user.updated_at = datetime.now(datetime.UTC if hasattr(datetime, 'UTC') else None) if hasattr(datetime, 'UTC') else datetime.utcnow()
+    user.updated_at = datetime.now(timezone.utc)
 
     db.commit()
     db.refresh(user)
@@ -212,7 +212,7 @@ def soft_delete_user(
         raise HTTPException(status_code=400, detail="User is already deleted")
 
     # Soft delete
-    user.deleted_at = datetime.utcnow()
+    user.deleted_at = datetime.now(timezone.utc)
     db.commit()
 
     return {"message": "User soft deleted successfully", "user_id": str(user.id)}

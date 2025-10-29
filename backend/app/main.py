@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
@@ -65,7 +65,7 @@ async def health_check() -> dict[str, str | bool]:
     """Health check endpoint for Render."""
     return {
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "clerk_configured": bool(settings.clerk_secret_key),
         "database_configured": bool(settings.database_url),
         "webhook_configured": bool(settings.clerk_webhook_secret),

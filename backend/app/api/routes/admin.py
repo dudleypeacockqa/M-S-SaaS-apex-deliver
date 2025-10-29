@@ -10,7 +10,7 @@ All endpoints require admin role via get_current_admin_user dependency.
 """
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -65,8 +65,8 @@ def get_admin_dashboard(
 
     Requires: admin role
     """
-    now = datetime.utcnow()
-    month_start = datetime(now.year, now.month, 1)
+    now = datetime.now(timezone.utc)
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     thirty_days_ago = now - timedelta(days=30)
 
     # User metrics
@@ -259,7 +259,7 @@ def update_user(
     if user_update.last_name is not None:
         user.last_name = user_update.last_name
 
-    user.updated_at = datetime.utcnow()
+    user.updated_at = datetime.now(timezone.utc)
 
     db.commit()
     db.refresh(user)
@@ -290,7 +290,7 @@ def delete_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    user.deleted_at = datetime.utcnow()
+    user.deleted_at = datetime.now(timezone.utc)
     db.commit()
 
     return {"message": "User deleted successfully", "user_id": str(user.id)}

@@ -264,7 +264,7 @@ class TestValuationApi:
             headers=auth_headers_growth,
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         detail = response.json()["detail"]
         if isinstance(detail, dict):
             assert detail.get("code") == "INVALID_MONTE_CARLO"

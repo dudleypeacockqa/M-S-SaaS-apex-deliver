@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, field_serializer
 
 from app.models.user import UserRole
 
@@ -33,10 +33,11 @@ class UserRead(UserBase):
     updated_at: datetime
     organization_id: Optional[UUID] = None
 
-    model_config = ConfigDict(
-        from_attributes=True,
-        json_encoders={UUID: str}  # Serialize UUID as string in JSON responses
-    )
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('id', 'organization_id')
+    def _serialize_uuid(cls, value: Optional[UUID]):
+        return str(value) if value is not None else None
 
 
 class UserCreate(UserBase):

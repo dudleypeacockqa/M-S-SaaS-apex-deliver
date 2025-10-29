@@ -1,9 +1,10 @@
 """Financial Ratio Model - DEV-010."""
-from datetime import datetime
 from sqlalchemy import Column, String, DateTime, ForeignKey, Text, Numeric
 from sqlalchemy.orm import relationship
 import uuid
+
 from app.db.base import Base
+from app.utils.datetime import utc_now
 
 class FinancialRatio(Base):
     """Stores 47 calculated financial ratios."""
@@ -77,9 +78,9 @@ class FinancialRatio(Base):
     
     calculation_notes = Column(Text, nullable=True)
     warnings = Column(Text, nullable=True)
-    calculated_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    calculated_at = Column(DateTime(timezone=True), nullable=False, default=utc_now)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utc_now)
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=utc_now, onupdate=utc_now)
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships

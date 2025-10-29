@@ -6,7 +6,7 @@ Endpoints for financial analysis, ratio calculations, and AI narratives
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.session import get_db
 from app.models.user import User
@@ -113,7 +113,7 @@ def calculate_financial_ratios(
     response = FinancialRatiosResponse(
         deal_id=deal_id,
         organization_id=deal.organization_id,
-        calculated_at=datetime.utcnow(),
+        calculated_at=datetime.now(timezone.utc),
         data_quality=data_quality,
         **calculated_ratios  # Unpack all calculated ratios into response
     )

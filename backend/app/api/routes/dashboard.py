@@ -5,7 +5,7 @@ All endpoints are tenant-scoped (filtered by organization_id).
 """
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends
@@ -35,8 +35,8 @@ def get_dashboard_summary(
     Tenant-scoped: Only shows data for current user's organization
     """
     org_id = current_user.organization_id
-    now = datetime.utcnow()
-    month_start = datetime(now.year, now.month, 1)
+    now = datetime.now(timezone.utc)
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
     # For MVP: Return placeholder data
     # TODO: Implement real metrics when Deal and Document models are available

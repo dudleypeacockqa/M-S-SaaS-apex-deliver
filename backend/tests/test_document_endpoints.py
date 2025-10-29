@@ -872,7 +872,7 @@ def test_document_listing_requires_permission(client, auth_context, seeded_deal,
         viewer = create_user(
             email="viewer-no-access@example.com",
             organization_id=org_id,
-            role=UserRole.professional,
+            role=UserRole.growth,
         )
 
         viewer_headers = {"Authorization": f"Bearer mock_token_{viewer.id}"}
@@ -920,7 +920,7 @@ def test_granting_folder_permission_creates_audit_log(
         viewer = create_user(
             email="audit-inherit@example.com",
             organization_id=org_id,
-            role=UserRole.professional,
+            role=UserRole.growth,
         )
 
         perm_resp = client.post(
@@ -1156,8 +1156,243 @@ def test_access_logs_include_user_name(client, auth_context, seeded_deal):
         cleanup()
 
 
+# =============================================================================
+# Bulk Operations Tests (DEV-008 Phase 2)
+# =============================================================================
 
 
+def test_bulk_download_documents(client, auth_context, seeded_deal, db_session):
+    """Test bulk downloading multiple documents as a ZIP file."""
+    headers, cleanup, user, org_id = auth_context
+    try:
+        # Upload 3 test documents
+        doc_ids = []
+        for i in range(1, 4):
+            content = f"Document {i} content".encode()
+            response = client.post(
+                f"/api/deals/{seeded_deal.id}/documents",
+                headers=headers,
+                files={"file": (f"doc{i}.txt", io.BytesIO(content), "text/plain")},
+            )
+            assert response.status_code == 201
+            doc_ids.append(response.json()["id"])
 
+        # Bulk download the documents
+        response = client.post(
+            f"/api/deals/{seeded_deal.id}/documents/bulk-download",
+            headers=headers,
+            json={"document_ids": doc_ids},
+        )
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "application/zip"
+        assert "content-disposition" in response.headers
+        assert "documents.zip" in response.headers["content-disposition"]
+
+        # Verify ZIP contents
+        import zipfile
+        zip_content = io.BytesIO(response.content)
+        with zipfile.ZipFile(zip_content, "r") as zip_file:
+            file_list = zip_file.namelist()
+            assert len(file_list) == 3
+            assert "doc1.txt" in file_list
+            assert "doc2.txt" in file_list
+            assert "doc3.txt" in file_list
+
+            # Verify file contents
+            assert zip_file.read("doc1.txt") == b"Document 1 content"
+            assert zip_file.read("doc2.txt") == b"Document 2 content"
+            assert zip_file.read("doc3.txt") == b"Document 3 content"
+
+        # Verify access logs created for all downloads
+        logs = db_session.query(DocumentAccessLog).filter(
+            DocumentAccessLog.action == "bulk_download"
+        ).all()
+        assert len(logs) >= 3
+
+    finally:
+        cleanup()
+
+
+def test_bulk_download_requires_permission(client, auth_context, seeded_deal, db_session):
+    """Test that bulk download respects document permissions."""
+    headers, cleanup, user, org_id = auth_context
+    try:
+        # Upload document as owner
+        response = client.post(
+            f"/api/deals/{seeded_deal.id}/documents",
+            headers=headers,
+            files={"file": ("private.txt", io.BytesIO(b"secret"), "text/plain")},
+        )
+        assert response.status_code == 201
+        doc_id = response.json()["id"]
+
+        # Create another user without permission
+        from app.models.user import User
+        other_user = User(
+            id=str(uuid4()),
+            email="other@example.com",
+            clerk_user_id=f"clerk_{uuid4()}",
+            organization_id=org_id,
+            role=UserRole.enterprise,
+        )
+        db_session.add(other_user)
+        db_session.commit()
+
+        # Override auth to use other user
+        from app.api.dependencies.auth import get_current_user
+        from app.main import app
+        app.dependency_overrides[get_current_user] = lambda: other_user
+        other_headers = {"Authorization": f"Bearer mock_token_{other_user.id}"}
+
+        # Try to bulk download - should fail for documents without permission
+        response = client.post(
+            f"/api/deals/{seeded_deal.id}/documents/bulk-download",
+            headers=other_headers,
+            json={"document_ids": [doc_id]},
+        )
+        assert response.status_code == 403
+
+    finally:
+        cleanup()
+
+
+def test_bulk_delete_documents(client, auth_context, seeded_deal, db_session):
+    """Test bulk deleting multiple documents."""
+    headers, cleanup, user, org_id = auth_context
+    try:
+        # Upload 3 test documents
+        doc_ids = []
+        for i in range(1, 4):
+            content = f"Document {i}".encode()
+            response = client.post(
+                f"/api/deals/{seeded_deal.id}/documents",
+                headers=headers,
+                files={"file": (f"doc{i}.txt", io.BytesIO(content), "text/plain")},
+            )
+            assert response.status_code == 201
+            doc_ids.append(response.json()["id"])
+
+        # Bulk delete the documents
+        response = client.post(
+            f"/api/deals/{seeded_deal.id}/documents/bulk-delete",
+            headers=headers,
+            json={"document_ids": doc_ids},
+        )
+        assert response.status_code == 200
+        result = response.json()
+        assert result["deleted_count"] == 3
+        assert len(result["deleted_ids"]) == 3
+
+        # Verify documents are archived (soft deleted)
+        for doc_id in doc_ids:
+            doc = db_session.query(Document).filter(Document.id == doc_id).first()
+            assert doc is not None
+            assert doc.archived_at is not None
+
+        # Verify audit logs created
+        logs = db_session.query(DocumentAccessLog).filter(
+            DocumentAccessLog.action == "delete"
+        ).all()
+        assert len(logs) >= 3
+
+    finally:
+        cleanup()
+
+
+def test_bulk_delete_requires_owner_permission(client, auth_context, seeded_deal, db_session):
+    """Test that bulk delete requires owner permission for all documents."""
+    headers, cleanup, user, org_id = auth_context
+    try:
+        # Upload document as owner
+        response = client.post(
+            f"/api/deals/{seeded_deal.id}/documents",
+            headers=headers,
+            files={"file": ("doc.txt", io.BytesIO(b"content"), "text/plain")},
+        )
+        assert response.status_code == 201
+        doc_id = response.json()["id"]
+
+        # Create editor user
+        from app.models.user import User
+        editor = User(
+            id=str(uuid4()),
+            email="editor@example.com",
+            clerk_user_id=f"clerk_{uuid4()}",
+            organization_id=org_id,
+            role=UserRole.enterprise,
+        )
+        db_session.add(editor)
+        db_session.commit()
+
+        # Set editor permission on document
+        from app.services import document_service
+        from app.schemas.document import PermissionCreate
+        from uuid import UUID
+        doc = document_service.get_document_by_id(
+            db=db_session,
+            document_id=doc_id,
+            organization_id=org_id,
+        )
+        document_service.grant_document_permission(
+            db=db_session,
+            document=doc,
+            permission_data=PermissionCreate(
+                user_id=UUID(editor.id),
+                permission_level="editor"
+            ),
+            granter=user,
+        )
+
+        # Override auth to use editor
+        from app.api.dependencies.auth import get_current_user
+        from app.main import app
+        app.dependency_overrides[get_current_user] = lambda: editor
+        editor_headers = {"Authorization": f"Bearer mock_token_{editor.id}"}
+
+        # Try to bulk delete - should fail (editors can only delete own documents)
+        response = client.post(
+            f"/api/deals/{seeded_deal.id}/documents/bulk-delete",
+            headers=editor_headers,
+            json={"document_ids": [doc_id]},
+        )
+        assert response.status_code == 403
+
+    finally:
+        cleanup()
+
+
+def test_bulk_delete_partial_failure(client, auth_context, seeded_deal, db_session):
+    """Test bulk delete with mixed permissions (some succeed, some fail)."""
+    headers, cleanup, user, org_id = auth_context
+    try:
+        # Upload 2 documents
+        doc_ids = []
+        for i in range(1, 3):
+            response = client.post(
+                f"/api/deals/{seeded_deal.id}/documents",
+                headers=headers,
+                files={"file": (f"doc{i}.txt", io.BytesIO(f"content{i}".encode()), "text/plain")},
+            )
+            assert response.status_code == 201
+            doc_ids.append(response.json()["id"])
+
+        # Add a fake document ID that doesn't exist
+        fake_id = str(uuid4())
+        doc_ids.append(fake_id)
+
+        # Bulk delete - should succeed for valid docs, skip invalid
+        response = client.post(
+            f"/api/deals/{seeded_deal.id}/documents/bulk-delete",
+            headers=headers,
+            json={"document_ids": doc_ids},
+        )
+        assert response.status_code == 200
+        result = response.json()
+        assert result["deleted_count"] == 2
+        assert len(result["failed_ids"]) == 1
+        assert fake_id in result["failed_ids"]
+
+    finally:
+        cleanup()
 
 

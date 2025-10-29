@@ -74,7 +74,7 @@ class DealMatch(Base):
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     deal_id = Column(String(36), ForeignKey("deals.id", ondelete="CASCADE"), nullable=False, index=True)
     matched_deal_id = Column(String(36), ForeignKey("deals.id", ondelete="CASCADE"), nullable=False, index=True)
-    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=True, index=True)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
 
     # Match quality metrics
     match_score = Column(Float, nullable=False)  # 0-100

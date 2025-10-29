@@ -3,14 +3,12 @@ Financial Connection Model - DEV-010: Financial Intelligence Engine
 Stores OAuth connections to accounting platforms (Xero, QuickBooks)
 """
 
-from datetime import datetime
 from sqlalchemy import Column, String, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 import uuid
 
 from app.db.base import Base
-
-
+from app.utils.datetime import utc_now
 class FinancialConnection(Base):
     """
     Stores OAuth 2.0 connections to external accounting platforms.
@@ -42,8 +40,8 @@ class FinancialConnection(Base):
     last_sync_error = Column(Text, nullable=True)
 
     # Audit fields
-    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utc_now)
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=utc_now, onupdate=utc_now)
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 import pytest
@@ -23,7 +23,7 @@ def _task_payload(**overrides):
         "description": "Collect initial financials",
         "status": "todo",
         "priority": "high",
-        "due_date": (datetime.utcnow() + timedelta(days=3)).isoformat(),
+        "due_date": (datetime.now(timezone.utc) + timedelta(days=3)).isoformat(),
         "assignee_id": str(uuid4()),
         "stage_gate": "due_diligence",
     }
@@ -92,7 +92,7 @@ def test_update_task_allows_status_and_due_date_change(client, deal_context, aut
     )
     task_id = create_resp.json()["id"]
 
-    new_due_date = (datetime.utcnow() + timedelta(days=7)).isoformat()
+    new_due_date = (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
     patch_resp = client.patch(
         f"/api/api/deals/{deal.id}/tasks/{task_id}",
         headers=auth_headers_growth,
@@ -160,4 +160,3 @@ def test_cannot_access_tasks_from_other_org(client, create_deal_for_org, auth_he
         app.dependency_overrides.pop(get_current_user, None)
 
     assert forbidden_resp.status_code in {status.HTTP_403_FORBIDDEN, status.HTTP_404_NOT_FOUND}
-

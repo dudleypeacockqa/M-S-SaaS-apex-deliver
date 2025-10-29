@@ -1,0 +1,6 @@
+- [x] Fix SQLite metadata reset, rerun backend regression, and update BMAD trackers with new baseline
+- [x] Complete DEV-011 valuation backend and financial service fixes until tests green
+- [x] Finish DEV-016 backend/frontend entitlement features with full TDD coverage
+- [x] Raise frontend coverage and clear Vitest suite, including valuation UI
+- [x] Implement CI/CD smoke scripts, verify monitoring, and document outcomes
+- [ ] Run full regressions, redeploy to Render, and finalize production documentation

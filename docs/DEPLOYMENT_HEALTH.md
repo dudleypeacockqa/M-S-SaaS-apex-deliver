@@ -1,8 +1,10 @@
-- Latest backend regression (2025-10-29 12:45 UTC): `backend/venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings` → **485 passed / 0 failed / 38 skipped**.
-- Frontend spot checks (08:55–08:56 UTC): `ValuationSuite` + `PodcastStudio` specs all GREEN (33 tests); full Vitest sweep still pending due to fork runner issues.
-- BMAD workflow next action: `npm --prefix frontend run test -- --run` to capture remaining RED/skip state before continuing DEV-008 roadmap.
-- Render production still awaiting environment refresh; smoke script not rerun since credentials outstanding (last run recorded Cloudflare 403 on frontend).
-- NEXT: Finish frontend baseline, refresh this dashboard with Vitest results, then unblock Render redeploy + smoke validation.
+- Latest local commit on `main`: 8f45f75 (test(deal-matching): achieve GREEN phase for DEV-018 Phase 1) with extensive WIP in tree.
+- 2025-10-29 09:27 UTC: `backend/venv/Scripts/pytest.exe backend/tests/test_document_endpoints.py --maxfail=1 --disable-warnings` → 31 passed (DEV-008 version retention).
+- 2025-10-29 10:40 UTC: `./backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py backend/tests/test_database_reset.py backend/tests/test_deal_matching_models.py -q` → 98 passed (warnings only).
+- 2025-10-29 10:18 UTC: `npm --prefix frontend run test` → 536 passed / 0 failed (threads pool).
+- 2025-10-29 10:26 UTC: `npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx src/pages/podcast/PodcastStudio.test.tsx` → 34 passed targeted verification.
+- 2025-10-29 10:38 UTC: `bash scripts/run_smoke_tests.sh production` → Backend 200 OK, Frontend 403 (Cloudflare), backend smoke pytest (2 tests) passed.
+- NEXT: Capture headed frontend screenshots, resolve json_encoders/datetime.utcnow warnings, and rehearse Render redeploy once credentials refreshed.
 ---
 
 ## Service Status
@@ -29,8 +31,8 @@
 ## Step 5 Verification Results (2025-10-29)
 
 ### Backend Tests (targeted)
-- Command: `./backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py backend/tests/test_database_reset.py -q`
-- Result: 89 passed / 0 failed (warnings: Pydantic Config deprecations)
+- Command: `./backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py backend/tests/test_database_reset.py backend/tests/test_deal_matching_models.py -q`
+- Result: 98 passed / 0 failed (warnings: json_encoders + datetime.utcnow deprecations)
 
 ### Frontend Tests (full)
 - Command: `npm --prefix frontend run test`
@@ -43,5 +45,7 @@
 2. Run full backend pytest with coverage once database reset fixture verified, then refresh this dashboard with coverage metrics.
 3. Execute full Vitest suite with coverage using updated runner settings; capture results.
 4. Refresh Render environment variables, trigger backend/frontend redeploy, and attach smoke evidence.
+
+
 
 

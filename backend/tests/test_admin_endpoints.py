@@ -13,7 +13,7 @@ All tests are synchronous for simplicity and speed.
 
 import pytest
 from fastapi.testclient import TestClient
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.models.user import User
 from app.models.organization import Organization
@@ -307,7 +307,7 @@ def test_restore_deleted_user(client: TestClient, auth_headers_admin: dict, db_s
         last_name="User",
         role="solo",
         organization_id="restore-org",
-        deleted_at=datetime.utcnow()
+        deleted_at=datetime.now(timezone.utc)
     )
     db_session.add(test_user)
     db_session.commit()

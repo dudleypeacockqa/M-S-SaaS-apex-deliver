@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock, patch, ANY
 
@@ -257,7 +257,7 @@ class TestPodcastUsageEndpoint:
         )
 
         _override_user(professional_user)
-        expected_period = datetime.utcnow().strftime("%Y-%m")
+        expected_period = datetime.now(timezone.utc).strftime("%Y-%m")
 
         try:
             with patch(
@@ -330,7 +330,7 @@ class TestPodcastUsageEndpoint:
         )
 
         _override_user(premium_user)
-        expected_period = datetime.utcnow().strftime("%Y-%m")
+        expected_period = datetime.now(timezone.utc).strftime("%Y-%m")
 
         try:
             with patch(
@@ -441,7 +441,7 @@ class TestPodcastUsageEndpoint:
         user = SimpleNamespace(id="user-warning", organization_id=organization_id)
 
         _override_user(user)
-        expected_period = datetime.utcnow().strftime("%Y-%m")
+        expected_period = datetime.now(timezone.utc).strftime("%Y-%m")
 
         try:
             with patch(
@@ -492,7 +492,7 @@ class TestPodcastUsageEndpoint:
         user = SimpleNamespace(id="user-upgrade", organization_id=organization_id)
 
         _override_user(user)
-        expected_period = datetime.utcnow().strftime("%Y-%m")
+        expected_period = datetime.now(timezone.utc).strftime("%Y-%m")
 
         try:
             with patch(
@@ -1156,4 +1156,3 @@ class TestFeatureAccessEndpoint:
             assert response.status_code == status.HTTP_404_NOT_FOUND
         finally:
             _clear_override()
-
