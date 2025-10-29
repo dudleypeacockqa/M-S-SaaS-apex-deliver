@@ -5,6 +5,7 @@ TDD RED phase - Comprehensive endpoint testing
 
 import pytest
 from decimal import Decimal
+from unittest.mock import patch
 from app.models.deal_match import DealMatchCriteria, DealMatch, DealMatchAction
 
 
@@ -15,14 +16,14 @@ pytestmark = pytest.mark.usefixtures("match_org", "match_user", "match_deal")
 class TestDealMatchingCriteriaAPI:
     """Test suite for deal matching criteria CRUD endpoints."""
 
-    def test_create_criteria_success(self, client, match_user, match_org):
+    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    def test_create_criteria_success(self, mock_check_access, client, match_user, match_org):
         """Test creating new deal matching criteria."""
-        from app.api.dependencies.auth import get_current_user, require_feature
+        from app.api.dependencies.auth import get_current_user
         from app.main import app
 
-        # Mock both authentication dependencies
+        # Mock authentication
         app.dependency_overrides[get_current_user] = lambda: match_user
-        app.dependency_overrides[require_feature] = lambda feature: lambda: match_user
 
         response = client.post(
             "/api/match-criteria",
@@ -71,7 +72,8 @@ class TestDealMatchingCriteriaAPI:
 
         assert response.status_code == 401
 
-    def test_list_criteria(self, client, match_user, db_session):
+    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    def test_list_criteria(self, mock_check_access, client, match_user, db_session):
         """Test listing all criteria for current user."""
         from app.api.dependencies.auth import get_current_user
         from app.main import app
@@ -118,11 +120,12 @@ class TestDealMatchingCriteriaAPI:
 class TestDealMatchingAPI:
     """Test suite for deal matching operations endpoints."""
 
+    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
     def test_find_matches_for_deal(
-        self, client, match_user, match_deal, create_deal_for_org, match_org, db_session
+        self, mock_check_access, client, match_user, match_deal, create_deal_for_org, match_org, db_session
     ):
         """Test finding matches for a specific deal."""
-        from app.api.dependencies.auth import get_current_user, require_feature
+        from app.api.dependencies.auth import get_current_user
         from app.main import app
 
         # Create candidate deals
@@ -142,7 +145,6 @@ class TestDealMatchingAPI:
         )
 
         app.dependency_overrides[get_current_user] = lambda: match_user
-        app.dependency_overrides[require_feature] = lambda feature: lambda: match_user
 
         response = client.post(
             f"/api/deals/{match_deal.id}/find-matches",
@@ -183,8 +185,9 @@ class TestDealMatchingAPI:
 
         assert response.status_code == 401
 
+    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
     def test_list_matches_for_deal(
-        self, client, match_user, match_deal, create_deal_for_org, match_org, db_session
+        self, mock_check_access, client, match_user, match_deal, create_deal_for_org, match_org, db_session
     ):
         """Test listing all matches for a specific deal."""
         from app.api.dependencies.auth import get_current_user
@@ -249,7 +252,8 @@ class TestDealMatchingAPI:
 
         assert response.status_code == 401
 
-    def test_list_matches_deal_not_found(self, client, match_user):
+    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    def test_list_matches_deal_not_found(self, mock_check_access, client, match_user):
         """Test listing matches for non-existent deal."""
         from app.api.dependencies.auth import get_current_user
         from app.main import app
@@ -265,13 +269,13 @@ class TestDealMatchingAPI:
 
         app.dependency_overrides.clear()
 
-    def test_find_matches_deal_not_found(self, client, match_user):
+    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    def test_find_matches_deal_not_found(self, mock_check_access, client, match_user):
         """Test finding matches for non-existent deal."""
-        from app.api.dependencies.auth import get_current_user, require_feature
+        from app.api.dependencies.auth import get_current_user
         from app.main import app
 
         app.dependency_overrides[get_current_user] = lambda: match_user
-        app.dependency_overrides[require_feature] = lambda feature: lambda: match_user
 
         response = client.post(
             "/api/deals/nonexistent-deal-id/find-matches",
@@ -294,15 +298,15 @@ class TestDealMatchingAPI:
 class TestDealMatchingIntegration:
     """Integration tests for end-to-end matching workflow."""
 
+    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
     def test_create_criteria_and_find_matches_workflow(
-        self, client, match_user, match_deal, create_deal_for_org, match_org
+        self, mock_check_access, client, match_user, match_deal, create_deal_for_org, match_org
     ):
         """Test complete workflow: create criteria, find matches, verify results."""
-        from app.api.dependencies.auth import get_current_user, require_feature
+        from app.api.dependencies.auth import get_current_user
         from app.main import app
 
         app.dependency_overrides[get_current_user] = lambda: match_user
-        app.dependency_overrides[require_feature] = lambda feature: lambda: match_user
 
         # Step 1: Create matching criteria
         create_response = client.post(
