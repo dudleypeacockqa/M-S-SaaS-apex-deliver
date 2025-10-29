@@ -18,6 +18,7 @@ export const MarketingNav: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const navItems: NavItem[] = [
     {
@@ -117,10 +118,31 @@ export const MarketingNav: React.FC = () => {
   ];
 
   const handleMouseEnter = (label: string) => {
+    // Clear any pending close timeout
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
     setOpenDropdown(label);
   };
 
   const handleMouseLeave = () => {
+    // Add a small delay before closing to allow mouse to move to dropdown
+    closeTimeoutRef.current = setTimeout(() => {
+      setOpenDropdown(null);
+    }, 150);
+  };
+
+  const handleDropdownEnter = () => {
+    // Cancel close if mouse enters dropdown
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  };
+
+  const handleDropdownLeave = () => {
+    // Close when leaving dropdown
     setOpenDropdown(null);
   };
 
@@ -145,6 +167,9 @@ export const MarketingNav: React.FC = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -197,9 +222,13 @@ export const MarketingNav: React.FC = () => {
                   </button>
                 )}
 
-                {/* Dropdown Menu */}
+                {/* Dropdown Menu - NO GAP */}
                 {item.dropdown && openDropdown === item.label && (
-                  <div className="absolute left-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                  <div 
+                    className="absolute left-0 mt-0 w-80 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50"
+                    onMouseEnter={handleDropdownEnter}
+                    onMouseLeave={handleDropdownLeave}
+                  >
                     {item.dropdown.map((dropdownItem) => (
                       <Link
                         key={dropdownItem.href}
