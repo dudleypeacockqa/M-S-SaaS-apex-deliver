@@ -9,7 +9,7 @@ from typing import List, Optional, Tuple
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException, UploadFile, status
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.deal import Deal
@@ -230,6 +230,54 @@ def _ensure_deal_access(db: Session, deal_id: str, user: User) -> Deal:
     if deal is None or deal.organization_id != user.organization_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deal not found")
     return deal
+
+
+def _user_has_document_listing_access(db: Session, *, deal: Deal, user: User) -> bool:
+    """Return True when the user can list documents for the given deal."""
+
+    if str(deal.owner_id) == str(user.id):
+        return True
+
+    doc_perm_exists = (
+        db.query(DocumentPermission.id)
+        .join(Document, DocumentPermission.document_id == Document.id)
+        .filter(
+            DocumentPermission.user_id == str(user.id),
+            DocumentPermission.organization_id == str(deal.organization_id),
+            Document.deal_id == str(deal.id),
+        )
+        .first()
+        is not None
+    )
+    if doc_perm_exists:
+        return True
+
+    folder_perm_exists = (
+        db.query(DocumentPermission.id)
+        .join(Folder, DocumentPermission.folder_id == Folder.id)
+        .filter(
+            DocumentPermission.user_id == str(user.id),
+            DocumentPermission.organization_id == str(deal.organization_id),
+            Folder.deal_id == str(deal.id),
+        )
+        .first()
+        is not None
+    )
+    if folder_perm_exists:
+        return True
+
+    uploaded_exists = (
+        db.query(Document.id)
+        .filter(
+            Document.deal_id == str(deal.id),
+            Document.organization_id == str(deal.organization_id),
+            Document.uploaded_by == str(user.id),
+        )
+        .first()
+        is not None
+    )
+
+    return uploaded_exists
 
 
 def _ensure_folder_access(
@@ -511,9 +559,16 @@ def list_documents(
     params: DocumentListParams,
     current_user: User,
 ) -> tuple[list[DocumentMetadata], int]:
+    deal = _ensure_deal_access(db, deal_id, current_user)
+    if not _user_has_document_listing_access(db, deal=deal, user=current_user):
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions to list documents",
+        )
+
     query = db.query(Document).filter(
-        Document.deal_id == deal_id,
-        Document.organization_id == organization_id,
+        Document.deal_id == str(deal.id),
+        Document.organization_id == str(deal.organization_id),
     )
 
     if params.folder_id:
@@ -1336,6 +1391,7 @@ async def bulk_download_documents(
     storage = get_storage_service()
     zip_buffer = io.BytesIO()
     filename_counts: dict[str, int] = {}
+    added_any = False
 
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         for doc_id in document_ids:
@@ -1392,6 +1448,7 @@ async def bulk_download_documents(
 
                 # Add file to ZIP
                 zip_file.writestr(unique_name, file_content)
+                added_any = True
 
                 # Log bulk download action
                 _log_access(db, document, current_user, action="bulk_download")
@@ -1399,6 +1456,12 @@ async def bulk_download_documents(
             except Exception:
                 # Skip documents that fail (e.g., file not found, permission denied)
                 continue
+
+    if not added_any:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            detail="No documents available with your current permissions.",
+        )
 
     db.commit()
 

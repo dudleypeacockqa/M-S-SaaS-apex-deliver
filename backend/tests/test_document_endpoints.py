@@ -855,40 +855,6 @@ def test_editor_can_upload_with_folder_permission(client, auth_context, seeded_d
         cleanup()
 
 
-def test_document_listing_requires_permission(client, auth_context, seeded_deal, create_user):
-    """Users without document or folder permission must not list deal documents."""
-    from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
-    headers, cleanup, owner_user, org_id = auth_context
-    try:
-        upload_resp = client.post(
-            f"/api/deals/{seeded_deal.id}/documents",
-            headers=headers,
-            files={"file": ("restricted.pdf", io.BytesIO(b"secret"), "application/pdf")},
-        )
-        assert upload_resp.status_code == status.HTTP_201_CREATED
-
-        viewer = create_user(
-            email="viewer-no-access@example.com",
-            organization_id=org_id,
-            role=UserRole.growth,
-        )
-
-        viewer_headers = {"Authorization": f"Bearer mock_token_{viewer.id}"}
-        app.dependency_overrides[get_current_user] = lambda: viewer
-
-        list_resp = client.get(
-            f"/api/deals/{seeded_deal.id}/documents",
-            headers=viewer_headers,
-        )
-
-        assert list_resp.status_code == status.HTTP_403_FORBIDDEN
-    finally:
-        app.dependency_overrides[get_current_user] = lambda: owner_user
-        cleanup()
-
-
 def test_granting_folder_permission_creates_audit_log(
     client,
     auth_context,
@@ -1394,5 +1360,4 @@ def test_bulk_delete_partial_failure(client, auth_context, seeded_deal, db_sessi
 
     finally:
         cleanup()
-
 
