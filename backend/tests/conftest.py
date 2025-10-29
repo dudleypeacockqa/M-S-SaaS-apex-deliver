@@ -581,6 +581,27 @@ def create_deal_for_org(db_session, create_user, create_organization, request):
     return _create
 
 
+def _safe_drop_schema(engine) -> None:
+    """Drop all tables/views without raising errors."""
+    from sqlalchemy import inspect
+    from sqlalchemy.exc import OperationalError
+
+    inspector = inspect(engine)
+    with engine.begin() as connection:
+        for table_name in inspector.get_table_names():
+            connection.exec_driver_sql(f'DROP TABLE IF EXISTS "{table_name}"')
+    try:
+        Base.metadata.drop_all(bind=engine)
+    except OperationalError:
+        pass
+
+
+def _reset_metadata(engine) -> None:
+    """Reset database schema to match current models."""
+    _safe_drop_schema(engine)
+    Base.metadata.create_all(bind=engine)
+
+
 @pytest.fixture(autouse=True)
 def _reset_database(engine):
     """Reset schema before each test for deterministic state."""
