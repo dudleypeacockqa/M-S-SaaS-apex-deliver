@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { QueryClient, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 import { BulkActions } from '../../components/documents/BulkActions'
 import { DocumentList } from '../../components/documents/DocumentList'

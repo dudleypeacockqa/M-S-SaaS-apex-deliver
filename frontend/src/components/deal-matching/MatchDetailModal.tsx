@@ -19,7 +19,6 @@ export interface MatchDetailModalProps {
   onRequestIntro: (matchId: string) => void;
   actionLoading?: boolean;
 }
-}
 
 export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
   match,
