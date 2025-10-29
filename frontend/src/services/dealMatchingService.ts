@@ -127,3 +127,25 @@ export async function listDealMatches(dealId: string): Promise<DealMatch[]> {
   const { data } = await api.get<MatchDto[]>(`/deals/${dealId}/matches`)
   return (data || []).map(transformMatch)
 }
+
+export interface MatchActionRequest {
+  action: 'view' | 'save' | 'pass' | 'request_intro'
+  metadata?: Record<string, unknown>
+}
+
+export interface MatchActionResponse {
+  id: string
+  match_id: string
+  user_id: string
+  action: string
+  metadata: Record<string, unknown>
+  created_at: string
+}
+
+export async function recordMatchAction(
+  matchId: string,
+  request: MatchActionRequest,
+): Promise<MatchActionResponse> {
+  const { data } = await api.post<MatchActionResponse>(`/matches/${matchId}/actions`, request)
+  return data
+}

@@ -9,9 +9,11 @@ import {
   fetchMatchCriteria,
   listDealMatches,
   findMatchesForDeal,
+  recordMatchAction,
   type MatchCriteria,
   type DealMatch,
 } from '../../services/dealMatchingService';
+import { MatchCard } from '../../components/deal-matching/MatchCard';
 
 interface MatchingWorkspaceProps {
   dealId?: string;
@@ -58,6 +60,39 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
       queryClient.invalidateQueries({ queryKey: ['dealMatches', dealId] });
     },
   });
+
+  const saveMatchMutation = useMutation({
+    mutationFn: (matchId: string) =>
+      recordMatchAction(matchId, { action: 'save', metadata: {} }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dealMatches', dealId] });
+    },
+  });
+
+  const passMatchMutation = useMutation({
+    mutationFn: (matchId: string) =>
+      recordMatchAction(matchId, { action: 'pass', metadata: {} }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dealMatches', dealId] });
+    },
+  });
+
+  const handleViewDetails = (match: DealMatch) => {
+    // Record view action
+    if (match.id) {
+      recordMatchAction(match.id, { action: 'view', metadata: {} });
+    }
+    // TODO: Open MatchDetailModal in Phase 2
+    console.log('View details:', match);
+  };
+
+  const handleSaveMatch = (matchId: string) => {
+    saveMatchMutation.mutate(matchId);
+  };
+
+  const handlePassMatch = (matchId: string) => {
+    passMatchMutation.mutate(matchId);
+  };
 
   if (!hasAccess) {
     return (
@@ -229,56 +264,14 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
             ) : (
               <div className="space-y-4">
                 {matches.map((match) => (
-                  <div
-                    key={`${match.dealId}-${match.matchedDealId ?? 'calculated'}`}
-                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{match.dealName}</h3>
-                        <div className="flex items-center gap-3 mt-1">
-                          <span className="text-2xl font-bold text-indigo-600">{match.score.toFixed(1)}</span>
-                          <span
-                            className={`px-2 py-1 rounded text-xs font-medium ${
-                              match.confidence === 'high'
-                                ? 'bg-green-100 text-green-800'
-                                : match.confidence === 'medium'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }`}
-                          >
-                            {match.confidence.toUpperCase()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Industry Match</span>
-                        <span className="font-medium">
-                          {(match.explanation.industry_match.score * 100).toFixed(0)}%
-                        </span>
-                      </div>
-                      <p className="text-gray-500 text-xs">{match.explanation.industry_match.reason}</p>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Size Match</span>
-                        <span className="font-medium">
-                          {(match.explanation.size_match.score * 100).toFixed(0)}%
-                        </span>
-                      </div>
-                      <p className="text-gray-500 text-xs">{match.explanation.size_match.reason}</p>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Geography Match</span>
-                        <span className="font-medium">
-                          {(match.explanation.geography_match.score * 100).toFixed(0)}%
-                        </span>
-                      </div>
-                      <p className="text-gray-500 text-xs">{match.explanation.geography_match.reason}</p>
-                    </div>
-                  </div>
+                  <MatchCard
+                    key={`${match.dealId}-${match.matchedDealId ?? match.id ?? 'calculated'}`}
+                    match={match}
+                    onViewDetails={handleViewDetails}
+                    onSave={handleSaveMatch}
+                    onPass={handlePassMatch}
+                    loading={saveMatchMutation.isPending || passMatchMutation.isPending}
+                  />
                 ))}
               </div>
             )}

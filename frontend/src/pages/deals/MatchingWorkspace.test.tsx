@@ -15,6 +15,7 @@ vi.mock('../../services/dealMatchingService', () => ({
   createMatchCriteria: vi.fn(),
   findMatchesForDeal: vi.fn(),
   listDealMatches: vi.fn(),
+  recordMatchAction: vi.fn(),
 }));
 
 const mockMatchCriteria = [
@@ -164,7 +165,8 @@ describe('MatchingWorkspace', () => {
 
   describe('Match Discovery', () => {
     it('should display match results with scores', async () => {
-      const { listDealMatches } = await import('../../services/dealMatchingService');
+      const { fetchMatchCriteria, listDealMatches } = await import('../../services/dealMatchingService');
+      vi.mocked(fetchMatchCriteria).mockResolvedValue(mockMatchCriteria);
       vi.mocked(listDealMatches).mockResolvedValue(mockMatches);
 
       renderWithProviders(<MatchingWorkspace dealId="test-deal-1" activeTab="matches" />);
@@ -177,7 +179,8 @@ describe('MatchingWorkspace', () => {
     });
 
     it('should show confidence badges (high/medium/low)', async () => {
-      const { listDealMatches } = await import('../../services/dealMatchingService');
+      const { fetchMatchCriteria, listDealMatches } = await import('../../services/dealMatchingService');
+      vi.mocked(fetchMatchCriteria).mockResolvedValue(mockMatchCriteria);
       vi.mocked(listDealMatches).mockResolvedValue(mockMatches);
 
       renderWithProviders(<MatchingWorkspace dealId="test-deal-1" activeTab="matches" />);
@@ -189,7 +192,8 @@ describe('MatchingWorkspace', () => {
     });
 
     it('should display match explanation details', async () => {
-      const { listDealMatches } = await import('../../services/dealMatchingService');
+      const { fetchMatchCriteria, listDealMatches } = await import('../../services/dealMatchingService');
+      vi.mocked(fetchMatchCriteria).mockResolvedValue(mockMatchCriteria);
       vi.mocked(listDealMatches).mockResolvedValue(mockMatches);
 
       renderWithProviders(<MatchingWorkspace dealId="test-deal-1" activeTab="matches" />);
@@ -200,7 +204,8 @@ describe('MatchingWorkspace', () => {
     });
 
     it('should show empty state when no matches found', async () => {
-      const { listDealMatches } = await import('../../services/dealMatchingService');
+      const { fetchMatchCriteria, listDealMatches } = await import('../../services/dealMatchingService');
+      vi.mocked(fetchMatchCriteria).mockResolvedValue(mockMatchCriteria);
       vi.mocked(listDealMatches).mockResolvedValue([]);
 
       renderWithProviders(<MatchingWorkspace dealId="test-deal-1" activeTab="matches" />);

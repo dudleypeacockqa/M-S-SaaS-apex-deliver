@@ -293,3 +293,38 @@ export function getFileIcon(fileType: string): string {
 
   return iconMap[fileType] || "📎"
 }
+
+// Bulk operations
+export interface BulkDeleteResponse {
+  deleted_count: number
+  deleted_ids: string[]
+  failed_ids: string[]
+  failed_reasons: Record<string, string>
+}
+
+export async function bulkDownloadDocuments(dealId: string, documentIds: string[]): Promise<string> {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/api/documents/bulk-download`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ document_ids: documentIds }),
+  })
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: response.statusText }))
+    throw new Error(error.detail || "Failed to download documents")
+  }
+
+  const blob = await response.blob()
+  const url = window.URL.createObjectURL(blob)
+  return url
+}
+
+export async function bulkDeleteDocuments(dealId: string, documentIds: string[]): Promise<BulkDeleteResponse> {
+  const headers = await getAuthHeaders()
+  return request<BulkDeleteResponse>(`${API_BASE_URL}/api/documents/bulk-delete`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ document_ids: documentIds }),
+  })
+}

@@ -30,6 +30,23 @@
 **Backend Health Check**: `/health` ✅ **CORRECT**  
 **Frontend Health Check**: `/` ⚠️ **Should be removed** (static site doesn't need health checks)
 
+### Issue 4: CORS Block on Production Domains ❌
+**Error**: Browser console reports missing Access-Control-Allow-Origin when calling https://ma-saas-backend.onrender.com from marketing domains.
+
+**Root Cause**: Backend CORS allowlist only included localhost; Render environment variable CORS_ORIGINS was not refreshed with production URLs.
+
+**Impact**: Production frontend cannot reach API (requests blocked by CORS).
+
+---
+
+### Solution 4: Update CORS Origins
+
+1. **Code**: Updated defaults in ackend/app/core/config.py to include production domains.
+2. **.env**: CORS_ORIGINS now lists https://100daysandbeyond.com,https://www.100daysandbeyond.com,https://apexdeliver.com,https://www.apexdeliver.com,https://ma-saas-platform.onrender.com,https://app.100daysandbeyond.com.
+3. **Render Dashboard**: In **ma-saas-backend → Settings → Environment**, set CORS_ORIGINS to the same comma-separated list and redeploy.
+4. **Verification**: After redeploy, run scripts/run_smoke_tests.sh production or curl -I -H "Origin: https://100daysandbeyond.com" https://ma-saas-backend.onrender.com/api/deals.
+
+---
 ---
 
 ## 🔧 Solutions
@@ -385,4 +402,5 @@ Health Check: (none) ✅
 ---
 
 **Ready to proceed? Let me know and I'll create the backend files and push them to GitHub!** 🚀
+
 

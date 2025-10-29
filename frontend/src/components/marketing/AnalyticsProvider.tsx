@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 const GA_SCRIPT_ID = 'ga4-script'
 const GA_CONFIG_ID = 'ga4-config'
 const HOTJAR_SCRIPT_ID = 'hotjar-script'
+const LINKEDIN_SCRIPT_ID = 'linkedin-insight-tag'
 
 const loadScriptOnce = (id: string, create: () => HTMLScriptElement) => {
   if (typeof document === 'undefined') {
@@ -24,10 +25,16 @@ declare global {
     gtag?: (...args: unknown[]) => void
     hj?: (...args: unknown[]) => void
     _hjSettings?: { hjid: number; hjsv: number }
+    _linkedin_data_partner_ids?: string[]
+    lintrk?: (...args: unknown[]) => void
   }
 }
 
-export const AnalyticsProvider: React.FC = () => {
+interface AnalyticsProviderProps {
+  children?: React.ReactNode
+}
+
+export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }) => {
   useEffect(() => {
     const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID
 
@@ -78,6 +85,41 @@ window._hjSettings={hjid:${hotjarId},hjsv:${hotjarVersion}};
     })
   }, [])
 
-  return null
+  // LinkedIn Insight Tag
+  useEffect(() => {
+    const linkedInPartnerId = import.meta.env.VITE_LINKEDIN_PARTNER_ID
+
+    if (!linkedInPartnerId) {
+      return
+    }
+
+    // Initialize partner IDs array
+    window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || []
+    window._linkedin_data_partner_ids.push(linkedInPartnerId)
+
+    loadScriptOnce(LINKEDIN_SCRIPT_ID, () => {
+      const script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.innerHTML = `(function(l) {
+if (!l){window.lintrk = function(a,b){window.lintrk.q.push([a,b])};
+window.lintrk.q=[]}
+var s = document.getElementsByTagName("script")[0];
+var b = document.createElement("script");
+b.type = "text/javascript";b.async = true;
+b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
+s.parentNode.insertBefore(b, s);})(window.lintrk);`
+      return script
+    })
+
+    // Add noscript image tag for LinkedIn
+    if (typeof document !== 'undefined' && !document.getElementById('linkedin-noscript')) {
+      const noscript = document.createElement('noscript')
+      noscript.id = 'linkedin-noscript'
+      noscript.innerHTML = `<img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid=${linkedInPartnerId}&fmt=gif" />`
+      document.body.appendChild(noscript)
+    }
+  }, [])
+
+  return <>{children}</>
 }
 
