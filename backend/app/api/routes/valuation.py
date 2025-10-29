@@ -357,7 +357,7 @@ def trigger_export(
     db: Session = Depends(get_db),
 ):
     valuation = _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
-    valuation_service.log_export_event(
+    export_log = valuation_service.log_export_event(
         db=db,
         valuation_id=valuation.id,
         organization_id=current_user.organization_id,
@@ -376,5 +376,5 @@ def trigger_export(
         task_id=task["task_id"],
         export_type=export_request.export_type,
         export_format=export_request.export_format,
+        export_log_id=export_log.id,
     )
- 

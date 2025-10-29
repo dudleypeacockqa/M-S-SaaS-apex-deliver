@@ -12,9 +12,24 @@ export interface FeatureAccessOptions {
   enabled?: boolean;
 }
 
+export interface FeatureAccessState {
+  feature: string;
+  hasAccess: boolean;
+  tier: string;
+  tierLabel: string;
+  requiredTier: string | null;
+  requiredTierLabel: string | null;
+  upgradeRequired: boolean;
+  upgradeMessage: string | null;
+  upgradeCtaUrl: string | null;
+  isLoading: boolean;
+  isFetched: boolean;
+  error: unknown;
+}
+
 export const featureQueryKey = (feature: string) => ['feature-access', feature] as const;
 
-export const useFeatureAccess = ({ feature, enabled = true }: FeatureAccessOptions) => {
+export const useFeatureAccess = ({ feature, enabled = true }: FeatureAccessOptions): FeatureAccessState => {
   const query = useQuery<FeatureAccessResponse>({
     queryKey: featureQueryKey(feature),
     enabled,
@@ -22,8 +37,9 @@ export const useFeatureAccess = ({ feature, enabled = true }: FeatureAccessOptio
     queryFn: () => checkFeatureAccess(feature),
   });
 
-  return useMemo(
+  return useMemo<FeatureAccessState>(
     () => ({
+      feature,
       hasAccess: query.data?.hasAccess ?? false,
       tier: query.data?.tier ?? 'starter',
       tierLabel: query.data?.tierLabel ?? query.data?.tier ?? 'Starter',
@@ -36,6 +52,6 @@ export const useFeatureAccess = ({ feature, enabled = true }: FeatureAccessOptio
       isFetched: query.isFetched,
       error: query.error,
     }),
-    [query.data, query.error, query.isFetched, query.isLoading],
+    [feature, query.data, query.error, query.isFetched, query.isLoading],
   );
 };

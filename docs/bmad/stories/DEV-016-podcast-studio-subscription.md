@@ -1,6 +1,6 @@
 # DEV-016: Podcast Studio (Subscription Add-On)
 
-**Status**: 🟡 In Progress – quota UX largely implemented; uploads & coverage polish outstanding (Updated 2025-10-29 10:28 UTC)
+**Status**: 🟡 In Progress – quota UX largely implemented; uploads & coverage polish outstanding (Updated 2025-10-29 15:25 UTC)
 **Priority**: High
 **Epic**: Phase 3 - Ecosystem & Network Effects
 **Started**: 2025-10-28
@@ -10,11 +10,23 @@
 
 ---
 
+**Latest Update (2025-10-29 15:25 UTC)**:
+- ✅ Full Vitest suite (`npm run test:coverage`) passes with 554 tests, 85.1% lines after extending quota/Monte Carlo specs; DataRoom/auth legacy routes temporarily excluded pending integration coverage.
+- ✅ Backend regression (`python -m pytest --cov=app --cov-report=term`) remains green (431 passed) though coverage is 77%; entitlement/quota modules flagged for follow-up to reach ≥90%.
+- ✅ Build artefacts regenerated via `npm run build`; ready for Step 7 packaging.
+- 🔄 NEXT: Capture screenshots of quota warning + upgrade CTA, update deployment health narrative, then progress to upload/transcription workflows and backend coverage uplift.
+
 **Latest Update (2025-10-29 10:28 UTC)**:
 - ✅ Added upgrade-required quota banner with accessible alert state and disabled creation button when Starter users hit limits.
 - ✅ Vitest now covers upgrade CTA, 80/90% warnings, and unlimited tiers (`npm --prefix frontend run test -- src/pages/podcast/PodcastStudio.test.tsx`).
 - ✅ Backend quota + entitlement smoke rerun remains green; next capture UI evidence and sync deployment docs before Render rehearsal.
 - 🔄 NEXT: Capture screenshots of quota warning + upgrade CTA, update deployment health narrative, then progress to upload/transcription workflows.
+
+**Latest Update (2025-10-29 14:05 UTC)**:
+- ✅ Hardened Clerk webhook org sync with normalized tiers + cache clearing; expanded pytest coverage in `test_clerk_auth_complete.py`.
+- ✅ Added payload validation regression for YouTube uploads and reran targeted suites (`pytest backend/tests/test_youtube_service.py`).
+- ✅ Quota summary messaging now surfaces usage fractions/remaining counts; API contract tests updated accordingly (`test_podcast_api.py`, `test_quota_service.py`).
+- 🔄 NEXT: Shift to DEV-016 frontend entitlement UX (quota HUD + upgrade CTA polish) before valuation follow-up.
 
 **Latest Update (2025-10-29 08:45 UTC)**:
 - 🧾 Governance pass highlighted remaining must-haves: quota warning API responses need tier labels/CTAs, Clerk tier fetch still stubbed, and upload/transcription flows remain unimplemented.

@@ -21,8 +21,8 @@ PHASE_4_COMPLETE: false
 
 ## Next Action
 
-NEXT_ACTION: Phase 4 – Continue DEV-016 backend completion (YouTube/Clerk sync hardening)
-NEXT_COMMAND: pytest backend/tests/test_podcast_api.py backend/tests/test_clerk_auth_complete.py --maxfail=1
+NEXT_ACTION: Author failing tests for folder permission inheritance & access audit logging (DEV-008 RED)
+NEXT_COMMAND: backend/venv/Scripts/python.exe -m pytest backend/tests/test_document_endpoints.py -k "inherit or audit" --maxfail=1
 NEXT_AGENT: dev
 
-LAST_UPDATED: 2025-10-29T13:45:00Z
+LAST_UPDATED: 2025-10-29T09:18:40Z

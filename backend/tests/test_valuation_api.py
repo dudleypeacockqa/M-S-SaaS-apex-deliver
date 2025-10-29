@@ -193,6 +193,49 @@ class TestValuationApi:
         assert body["task_id"] == "abc123"
         assert captured["valuation_id"] == valuation_id
 
+    def test_generate_export_returns_log_id_and_persists_entry(
+        self,
+        client,
+        create_deal_for_org,
+        auth_headers_growth,
+        db_session,
+        monkeypatch,
+    ):
+        from app.models.valuation import ValuationExportLog
+
+        deal, growth_user, _ = create_deal_for_org()
+        create_resp = _create_valuation(client, deal.id, auth_headers_growth, VALUATION_PAYLOAD)
+        valuation_id = create_resp.json()["id"]
+
+        def fake_trigger_export_task(**kwargs):
+            return {"task_id": "export-task-001", "status": "queued", **kwargs}
+
+        monkeypatch.setattr(
+            "app.services.valuation_service.trigger_export_task",
+            fake_trigger_export_task,
+        )
+
+        response = client.post(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/exports",
+            json={"export_type": "pdf", "export_format": "summary"},
+            headers=auth_headers_growth,
+        )
+
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        payload = response.json()
+        assert payload["status"] == "queued"
+        assert payload["task_id"] == "export-task-001"
+        log_id = payload.get("export_log_id")
+        assert log_id, "export_log_id should be returned to the client"
+
+        log_entry = db_session.get(ValuationExportLog, log_id)
+        assert log_entry is not None
+        assert log_entry.valuation_id == valuation_id
+        assert log_entry.organization_id == growth_user.organization_id
+        assert log_entry.export_type == "pdf"
+        assert log_entry.export_format == "summary"
+        assert log_entry.exported_by == growth_user.id
+
     def test_run_monte_carlo_simulation(self, client, create_deal_for_org, auth_headers_growth):
         deal, _, _ = create_deal_for_org()
         create_resp = _create_valuation(client, deal.id, auth_headers_growth, VALUATION_PAYLOAD)

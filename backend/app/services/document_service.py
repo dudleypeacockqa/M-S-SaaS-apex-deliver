@@ -5,12 +5,12 @@ import math
 import os
 from collections import defaultdict
 from datetime import datetime, timezone
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException, UploadFile, status
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.deal import Deal
 from app.models.document import (
@@ -23,6 +23,7 @@ from app.models.user import User
 from app.schemas.document import (
     ALLOWED_FILE_TYPES,
     MAX_FILE_SIZE,
+    MAX_VERSIONS_PER_DOCUMENT,
     DocumentAccessLogEntry,
     DocumentListParams,
     DocumentMetadata,
@@ -42,6 +43,21 @@ _PERMISSION_RANK = {
     PermissionLevel.EDITOR: 2,
     PermissionLevel.OWNER: 3,
 }
+
+
+def _user_display_name(user: Optional[User]) -> Optional[str]:
+    """Return a display name for a user (first + last fallback to email)."""
+
+    if user is None:
+        return None
+
+    parts = [user.first_name or "", user.last_name or ""]
+    name = " ".join(part for part in parts if part).strip()
+    if name:
+        return name
+
+    # Fall back to email if available
+    return getattr(user, "email", None)
 
 
 def _normalize_level(level: str) -> str:
@@ -239,54 +255,6 @@ def _folder_to_response(folder: Folder, *, document_count: int, children: Option
     )
 
 
-async def _trim_document_versions(
-    db: Session,
-    *,
-    base_document: Document,
-    storage,
-    max_versions: int = 20,
-) -> None:
-    """
-    Enforce maximum version limit by deleting oldest versions.
-
-    Keeps only the most recent max_versions for a document family.
-    Updates parent relationships if root versions are deleted.
-    """
-    # Find all versions of this document
-    root_id = base_document.parent_document_id if base_document.parent_document_id else base_document.id
-
-    all_versions = db.query(Document).filter(
-        Document.organization_id == base_document.organization_id,
-        (Document.id == root_id) | (Document.parent_document_id == root_id),
-        Document.archived_at.is_(None),
-    ).order_by(Document.version.desc()).all()
-
-    if len(all_versions) > max_versions:
-        # Keep only the latest max_versions
-        versions_to_keep = all_versions[:max_versions]
-        versions_to_delete = all_versions[max_versions:]
-
-        # After deletion, the oldest remaining version becomes the new root
-        if versions_to_keep:
-            new_root = versions_to_keep[-1]  # Oldest version we're keeping
-            # Update all kept versions to point to the new root as parent
-            for version in versions_to_keep:
-                if version.id != new_root.id:
-                    version.parent_document_id = new_root.id
-                else:
-                    # The new root has no parent
-                    version.parent_document_id = None
-                db.add(version)
-
-        # Delete old versions and their files
-        for old_version in versions_to_delete:
-            try:
-                await storage.delete_file(old_version.file_key, base_document.organization_id)
-            except Exception:
-                pass  # Continue even if file deletion fails
-            db.delete(old_version)
-
-
 def create_folder(
     db: Session,
     *,
@@ -432,18 +400,28 @@ async def upload_document(
     )
     db.add(document)
     db.flush()
+    document_id = document.id
 
     await _trim_document_versions(
         db,
         base_document=document,
         storage=storage,
-        max_versions=20,
+        max_versions=MAX_VERSIONS_PER_DOCUMENT,
     )
 
     _log_access(db, document, current_user, action="upload")
-
+    db.flush()
     db.commit()
-    db.refresh(document)
+
+    document = (
+        db.query(Document)
+        .filter(Document.id == document_id)
+        .one_or_none()
+    )
+    if document is None:
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Document upload failed")
+
+    uploader_name = _user_display_name(current_user)
 
     return DocumentUploadResponse(
         id=UUID(document.id),
@@ -459,7 +437,7 @@ async def upload_document(
         archived_at=document.archived_at,
         created_at=document.created_at,
         updated_at=document.updated_at,
-        uploader_name=None,
+        uploader_name=uploader_name,
     )
 
 
@@ -486,20 +464,27 @@ async def _trim_document_versions(
 
     versions = (
         versions_query
-        .order_by(Document.created_at.desc(), Document.version.desc())
+        .order_by(Document.version.desc(), Document.created_at.desc())
         .all()
     )
 
     if len(versions) <= max_versions:
         return
 
-    keep = versions[:max_versions]
-    purge = versions[max_versions:]
+    # Ensure the freshly uploaded document is preserved before trimming
+    def _sort_key(doc: Document):
+        created = doc.created_at or datetime(1970, 1, 1, tzinfo=timezone.utc)
+        return (0 if str(doc.id) == str(base_document.id) else 1, -(doc.version or 0), created)
 
-    root = keep[-1]
+    ordered_versions = sorted(versions, key=_sort_key)
+    keep = ordered_versions[:max_versions]
+    purge = ordered_versions[max_versions:]
+
+    # Determine new root (oldest version among the ones we keep)
+    root = min(keep, key=lambda v: v.version)
 
     for version in keep:
-        version.parent_document_id = root.id if version.id != root.id else None
+        version.parent_document_id = None if version.id == root.id else root.id
         db.add(version)
 
     for old_version in purge:
@@ -508,6 +493,8 @@ async def _trim_document_versions(
         except Exception:  # pragma: no cover - storage deletion best effort
             pass
         db.delete(old_version)
+
+    db.flush()
 
 
 def list_documents(
@@ -746,10 +733,7 @@ def archive_document(
     # Archive all versions
     for version in all_versions:
         version.archived_at = archive_time
-        version.is_archived = True
         db.add(version)
-
-    db.commit()
 
     if performed_by:
         _log_access(
@@ -758,6 +742,10 @@ def archive_document(
             user=performed_by,
             action="delete",
         )
+        db.commit()
+
+    db.flush()
+    db.commit()
 
 
 def restore_document(
@@ -766,7 +754,6 @@ def restore_document(
     document: Document,
 ) -> None:
     document.archived_at = None
-    document.is_archived = False
     db.add(document)
     db.commit()
 
@@ -844,6 +831,17 @@ def grant_document_permission(
     permission_data: PermissionCreate,
     granter: User,
 ) -> PermissionResponse:
+    ensure_document_permission(
+        db,
+        document=document,
+        user=granter,
+        minimum_level=PermissionLevel.OWNER,
+    )
+
+    target_user = db.get(User, str(permission_data.user_id))
+    if target_user is None or target_user.organization_id != document.organization_id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
+
     existing_permission = (
         db.query(DocumentPermission)
         .filter(
@@ -878,8 +876,10 @@ def grant_document_permission(
         document_id=UUID(permission.document_id) if permission.document_id else None,
         folder_id=UUID(permission.folder_id) if permission.folder_id else None,
         user_id=UUID(permission.user_id),
+        user_name=_user_display_name(target_user),
         permission_level=permission.permission_level,
         granted_by=UUID(permission.granted_by),
+        granter_name=_user_display_name(granter),
         created_at=permission.created_at,
     )
 
@@ -906,8 +906,10 @@ def list_document_permissions(
             document_id=UUID(permission.document_id) if permission.document_id else None,
             folder_id=UUID(permission.folder_id) if permission.folder_id else None,
             user_id=UUID(permission.user_id),
+            user_name=_user_display_name(permission.user),
             permission_level=permission.permission_level,
             granted_by=UUID(permission.granted_by),
+            granter_name=_user_display_name(permission.granter),
             created_at=permission.created_at,
         )
         for permission in permissions
@@ -923,11 +925,12 @@ def get_document_access_logs(
 ) -> list[DocumentAccessLogEntry]:
     query = (
         db.query(DocumentAccessLog)
+        .options(joinedload(DocumentAccessLog.user))
         .filter(
             DocumentAccessLog.document_id == document_id,
             DocumentAccessLog.organization_id == organization_id,
         )
-        .order_by(DocumentAccessLog.created_at.desc())
+         .order_by(DocumentAccessLog.created_at.desc(), DocumentAccessLog.id.desc())
         .limit(limit)
     )
 
@@ -937,6 +940,7 @@ def get_document_access_logs(
             id=UUID(log.id),
             document_id=UUID(log.document_id),
             user_id=UUID(log.user_id),
+            user_name=_user_display_name(log.user),
             action=log.action,
             ip_address=log.ip_address,
             user_agent=log.user_agent,
@@ -998,8 +1002,10 @@ def grant_folder_permission(
         document_id=None,
         folder_id=UUID(permission.folder_id) if permission.folder_id else None,
         user_id=UUID(permission.user_id),
+        user_name=_user_display_name(target_user),
         permission_level=permission.permission_level,
         granted_by=UUID(permission.granted_by),
+        granter_name=_user_display_name(current_user),
         created_at=permission.created_at,
     )
 
@@ -1034,8 +1040,10 @@ def list_folder_permissions(
             document_id=None,
             folder_id=UUID(permission.folder_id) if permission.folder_id else None,
             user_id=UUID(permission.user_id),
+            user_name=_user_display_name(permission.user),
             permission_level=permission.permission_level,
             granted_by=UUID(permission.granted_by),
+            granter_name=_user_display_name(permission.granter),
             created_at=permission.created_at,
         )
         for permission in permissions
@@ -1051,27 +1059,26 @@ def log_document_access(
     ip_address: Optional[str] = None,
     user_agent: Optional[str] = None,
 ) -> DocumentAccessLogEntry:
-    log_entry = DocumentAccessLog(
-        id=str(uuid4()),
-        document_id=document.id,
-        user_id=user.id,
+    entry = _log_access(
+        db,
+        document=document,
+        user=user,
         action=action,
-        organization_id=document.organization_id,
         ip_address=ip_address,
         user_agent=user_agent,
     )
-    db.add(log_entry)
     db.commit()
-    db.refresh(log_entry)
+    db.refresh(entry)
 
     return DocumentAccessLogEntry(
-        id=UUID(log_entry.id),
-        document_id=UUID(log_entry.document_id),
-        user_id=UUID(log_entry.user_id),
-        action=log_entry.action,
-        ip_address=log_entry.ip_address,
-        user_agent=log_entry.user_agent,
-        created_at=log_entry.created_at,
+        id=UUID(entry.id),
+        document_id=UUID(entry.document_id),
+        user_id=UUID(entry.user_id),
+        user_name=_user_display_name(entry.user),
+        action=entry.action,
+        ip_address=entry.ip_address,
+        user_agent=entry.user_agent,
+        created_at=entry.created_at,
     )
 
 
@@ -1083,17 +1090,20 @@ def _log_access(
     action: str,
     ip_address: Optional[str] = None,
     user_agent: Optional[str] = None,
-) -> None:
+) -> DocumentAccessLog:
     entry = DocumentAccessLog(
         id=str(uuid4()),
         document_id=document.id,
         user_id=user.id,
         action=action,
         organization_id=document.organization_id,
+        created_at=datetime.now(timezone.utc),
         ip_address=ip_address,
         user_agent=user_agent,
     )
     db.add(entry)
+    db.flush()
+    return entry
 
 
 def get_document_versions(
@@ -1142,7 +1152,7 @@ def get_document_versions(
             archived_at=v.archived_at,
             created_at=v.created_at,
             updated_at=v.updated_at,
-            uploader_name=None,
+            uploader_name=_user_display_name(v.uploader),
         )
         for v in versions
     ]
@@ -1230,24 +1240,35 @@ async def restore_document_version(
     db.add(restored_document)
     db.flush()
 
+    await _trim_document_versions(
+        db,
+        base_document=restored_document,
+        storage=storage,
+        max_versions=20,
+    )
+
     _log_access(db, restored_document, current_user, action="restore")
+    db.flush()
 
     db.commit()
-    db.refresh(restored_document)
+    persisted_document = db.get(Document, restored_document.id)
 
     return DocumentUploadResponse(
-        id=UUID(restored_document.id),
-        name=restored_document.name,
-        file_size=restored_document.file_size,
-        file_type=restored_document.file_type,
-        deal_id=restored_document.deal_id,
-        folder_id=UUID(restored_document.folder_id) if restored_document.folder_id else None,
-        organization_id=UUID(restored_document.organization_id),
-        uploaded_by=UUID(restored_document.uploaded_by),
-        version=restored_document.version,
-        parent_document_id=UUID(restored_document.parent_document_id) if restored_document.parent_document_id else None,
-        archived_at=restored_document.archived_at,
-        created_at=restored_document.created_at,
-        updated_at=restored_document.updated_at,
-        uploader_name=None,
+        id=UUID(persisted_document.id),
+        name=persisted_document.name,
+        file_size=persisted_document.file_size,
+        file_type=persisted_document.file_type,
+        deal_id=persisted_document.deal_id,
+        folder_id=UUID(persisted_document.folder_id) if persisted_document.folder_id else None,
+        organization_id=UUID(persisted_document.organization_id),
+        uploaded_by=UUID(persisted_document.uploaded_by),
+        version=persisted_document.version,
+        parent_document_id=UUID(persisted_document.parent_document_id) if persisted_document.parent_document_id else None,
+        archived_at=persisted_document.archived_at,
+        created_at=persisted_document.created_at,
+        updated_at=persisted_document.updated_at,
+        uploader_name=_user_display_name(current_user),
     )
+
+
+

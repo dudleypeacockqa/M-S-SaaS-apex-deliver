@@ -674,6 +674,9 @@ def test_max_versions_enforced(client, auth_context, seeded_deal, db_session):
                 files={"file": ("policy.pdf", io.BytesIO(content), "application/pdf")},
             )
             # Keep updating to get the latest document ID
+            if response.status_code != 201:
+                print(f"Upload {i} failed: {response.status_code}, {response.json()}")
+            assert response.status_code == 201, f"Upload {i} failed: {response.json()}"
             latest_doc_id = response.json()["id"]
 
         # List versions using the latest document ID
@@ -1048,7 +1051,6 @@ def test_access_logs_include_user_name(client, auth_context, seeded_deal):
         )
         doc_id = upload_resp.json()["id"]
 
-        # Trigger an additional access event so we exercise ordering and data population
         download_resp = client.post(
             f"/api/deals/{seeded_deal.id}/documents/{doc_id}/download",
             headers=headers,
@@ -1070,4 +1072,7 @@ def test_access_logs_include_user_name(client, auth_context, seeded_deal):
         assert latest.get("user_name") == "Doc Owner"
     finally:
         cleanup()
+
+
+
 

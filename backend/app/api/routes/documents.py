@@ -410,6 +410,7 @@ def delete_document(
     document_service.archive_document(
         db=db,
         document=document,
+        performed_by=current_user,
     )
 
 
@@ -504,6 +505,7 @@ def archive_document_endpoint(
     document_service.archive_document(
         db=db,
         document=document,
+        performed_by=current_user,
     )
 
 

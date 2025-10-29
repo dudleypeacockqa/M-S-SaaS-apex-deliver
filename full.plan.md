@@ -1,0 +1,6 @@
+- [x] Capture current repo state and refresh BMAD workflow/status docs before new work
+- [ ] Finish DEV-016 backend services, webhooks, and pytest coverage under TDD
+- [ ] Complete podcast frontend entitlement UX and tests for DEV-016
+- [ ] Deliver remaining valuation suite functionality and tests
+- [ ] Close MARK-002 marketing/test gaps and align helper scripts
+- [ ] Run full QA/coverage, update BMAD docs, and verify Render deployment health

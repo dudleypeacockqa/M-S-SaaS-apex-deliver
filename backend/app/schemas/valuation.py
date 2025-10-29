@@ -90,6 +90,7 @@ class ValuationExportResponse(BaseModel):
     task_id: str
     export_type: Literal["pdf", "excel"]
     export_format: Optional[str] = None
+    export_log_id: str
 
 
 class MonteCarloRequest(BaseModel):

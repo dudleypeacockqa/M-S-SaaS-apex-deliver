@@ -8,7 +8,7 @@ from datetime import datetime, UTC
 from decimal import Decimal
 from typing import Dict, List, Optional
 from sqlalchemy import Column, String, Float, DateTime, ForeignKey, DECIMAL, Text, JSON
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 
 from app.db.base import Base
 
@@ -50,6 +50,12 @@ class DealMatchCriteria(Base):
     def __repr__(self):
         return f"<DealMatchCriteria(id={self.id}, name={self.name}, deal_type={self.deal_type})>"
 
+    @validates("organization_id")
+    def _validate_organization(self, key, value):
+        if not value:
+            raise ValueError("organization_id is required for deal matching criteria")
+        return value
+
 
 class DealMatch(Base):
     """
@@ -63,6 +69,7 @@ class DealMatch(Base):
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     deal_id = Column(String(36), ForeignKey("deals.id", ondelete="CASCADE"), nullable=False, index=True)
     matched_deal_id = Column(String(36), ForeignKey("deals.id", ondelete="CASCADE"), nullable=False, index=True)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=True, index=True)
 
     # Match quality metrics
     match_score = Column(Float, nullable=False)  # 0-100
@@ -80,10 +87,18 @@ class DealMatch(Base):
     # Relationships
     deal = relationship("Deal", foreign_keys=[deal_id], back_populates="matches_as_source")
     matched_deal = relationship("Deal", foreign_keys=[matched_deal_id], back_populates="matches_as_target")
+    organization = relationship("Organization")
+    organization = relationship("Organization")
     actions = relationship("DealMatchAction", back_populates="match", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<DealMatch(id={self.id}, score={self.match_score}, confidence={self.confidence}, status={self.status})>"
+
+    @validates("organization_id")
+    def _validate_organization(self, key, value):
+        if not value:
+            raise ValueError("organization_id is required for stored deal matches")
+        return value
 
 
 class DealMatchAction(Base):

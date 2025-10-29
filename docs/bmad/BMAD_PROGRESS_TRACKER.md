@@ -1,3 +1,27 @@
+### Session 2025-10-29 (DEV-008 Permissions Baseline – 09:18 UTC)
+- ✅ backend/venv/Scripts/python.exe -m pytest backend/tests/test_document_endpoints.py -k permission --maxfail=1 → all current permission tests GREEN.
+- 🔄 NEXT: Draft new failing tests covering folder inheritance + audit log creation before implementing DEV-008 backlog items.
+
+### Session 2025-10-29 (Valuation Export Logging GREEN – 09:16 UTC)
+- ✅ backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_api.py -k export --maxfail=1 → 2 passed (export_log_id present).
+- 🔄 NEXT: Extend valuation export response docs/story with audit entry details and proceed to DEV-008 RED tests per plan.
+
+### Session 2025-10-29 (Smoke & Deployment Snapshot - 10:32 UTC)
+- PASS bash scripts/run_smoke_tests.sh production -> backend 200 OK, frontend 403 (expected Cloudflare), smoke pytest skipped (missing backend/tests/smoke_tests.py).
+- NOTE Updated deployment-health action items to capture full frontend/frontend regressions and smoke evidence.
+- NEXT Capture headed frontend screenshots post-redeploy and restore backend smoke test module.
+
+### Session 2025-10-29 (Valuation Export Logging RED – 09:13 UTC)
+- ❌ backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_api.py -k export --maxfail=1 → fails (export_log_id missing from response).
+- 🛠️ NEXT: Update valuation export endpoint/response to include export_log_id and persist log entry in same transaction.
+
+### Session 2025-10-29 (Step 6 – Regression & Coverage Sync 15:25 UTC)
+- ✅ Backend regression: `python -m pytest --cov=app --cov-report=term` → **431 passed / 38 skipped / 0 failed** (overall coverage 77%; OAuth integrations still pending targeted tests).
+- ✅ Frontend regression: `npm run test:coverage` → **554 passed / 0 failed**, Vite coverage **85.1% lines** (DataRoom, SignIn/SignUp, Dashboard legacy surfaces excluded pending integration tests).
+- ✅ Production build confirmed via `npm run build` (vite bundle generated without errors).
+- ⚠️ Backend coverage remains at 77% due to third-party OAuth stubs. Schedule focused tests for entitlement/quota modules to cross the ≥90% target.
+- 🔄 NEXT: Step 7 packaging – gather smoke artefacts (`./scripts/run_smoke_tests.sh production`), refresh Render deployments, and capture evidence for release notes.
+
 ### Session 2025-10-29 (DEV-018 Phase 1 Complete - 09:45 UTC)
 
 **DEV-018 PHASE 1 COMPLETE: Database Models & Schema**
@@ -17,9 +41,9 @@
 - ✅ Purged stale `__pycache__` for deal_matching routes; test discovery continues at 126 green before failure.
 - 🔄 NEXT: restore DealMatchingService helpers (or mark DEV-018 suite pending) to achieve full green baseline before moving to DEV-011/DEV-008 work.
 ### Session 2025-10-29 (DEV-008 RED cycle kickoff - 09:12 UTC)
-- - Command: backend/venv/Scripts/pytest.exe backend/tests/test_document_endpoints.py -k  'permission or version' --maxfail=1 --disable-warnings  FAIL (stopped at test_max_versions_enforced). 
-- - Failure: document_service.upload_document tries to refresh transient Document instance (InvalidRequestError) when enforcing 20-version retention.
-- - NEXT: refactor upload_document to persist version rows inside transaction (delete oldest, commit, refresh) then rerun targeted pytest.
+- Command: backend/venv/Scripts/pytest.exe backend/tests/test_document_endpoints.py -k  'permission or version' --maxfail=1 --disable-warnings  FAIL (stopped at test_max_versions_enforced). 
+- Failure: document_service.upload_document tries to refresh transient Document instance (InvalidRequestError) when enforcing 20-version retention.
+- NEXT: refactor upload_document to persist version rows inside transaction (delete oldest, commit, refresh) then rerun targeted pytest.
 
 ### Session 2025-10-29 (Completion Plan Step 1 – Baseline Sync 13:45 UTC)
 - ✅ Reviewed repo state (`git status -sb`) and confirmed outstanding story scopes (DEV-016, DEV-011, OPS-005) against plan.md.
@@ -235,6 +259,11 @@ umpy in backend requirements + venv, rerun pytest, refresh deployment health sna
 - ✅ Authored failing pytest cases for document versioning (`test_upload_same_name_creates_new_version`), permission enforcement, and audit logging to drive DEV-008 implementation.
 - ❌ `pytest backend/tests/test_document_endpoints.py -k "version or permission" --maxfail=1 --disable-warnings` stops at `test_max_versions_enforced` (expected 20 versions, received 5) — confirms version retention not yet implemented.
 - 🔄 NEXT: Implement version incrementing, permission checks, and delete audit logging in document services/routes, then rerun targeted suite.
+
+### Session 2025-10-29 (Completion Plan Step 3 – Frontend Lint Attempt 15:42 UTC)
+- ⚠️ Attempted `npm --prefix frontend run lint`; ESLint 9 scanned bundled outputs (`dist/`, service-worker) and reported 2,381 existing violations (unicorn defaults, Node fetch polyfills, etc.).
+- 📌 No new issues introduced by current work; failures stem from legacy config gap (missing lint ignore/flat config).
+- 🔄 NEXT: Scope lint to `src/` (update ESLint config/ignore) before re-running as part of Step 3 completion.
 
 
 
