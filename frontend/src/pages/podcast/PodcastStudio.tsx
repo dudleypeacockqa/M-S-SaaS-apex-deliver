@@ -10,18 +10,23 @@
  */
 
 import React from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FeatureGate } from '../../components/podcast/FeatureGate';
 import {
   getQuotaSummary,
   listEpisodes,
   publishEpisodeToYouTube,
+  createEpisode,
+  updateEpisode,
+  deleteEpisode,
   type PodcastEpisode,
   type QuotaSummary,
 } from '../../services/api/podcasts';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 
 type FeatureAccessState = ReturnType<typeof useFeatureAccess>;
+type CreateEpisodePayload = Parameters<typeof createEpisode>[0];
+type UpdateEpisodePayload = Parameters<typeof updateEpisode>[1];
 
 export function PodcastStudio() {
   return (
@@ -32,6 +37,11 @@ export function PodcastStudio() {
 }
 
 function PodcastStudioContent() {
+  const queryClient = useQueryClient();
+  const [isCreateModalOpen, setCreateModalOpen] = React.useState(false);
+  const [editingEpisode, setEditingEpisode] = React.useState<PodcastEpisode | null>(null);
+  const [deleteTarget, setDeleteTarget] = React.useState<PodcastEpisode | null>(null);
+
   const {
     data: quota,
     isLoading: quotaLoading,
@@ -51,6 +61,31 @@ function PodcastStudioContent() {
   });
 
   const youtubeAccess = useFeatureAccess({ feature: 'youtube_integration' });
+
+  const createEpisodeMutation = useMutation({
+    mutationFn: (payload: CreateEpisodePayload) => createEpisode(payload),
+    onSuccess: () => {
+      setCreateModalOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
+    },
+  });
+
+  const updateEpisodeMutation = useMutation({
+    mutationFn: ({ episodeId, updates }: { episodeId: string; updates: UpdateEpisodePayload }) =>
+      updateEpisode(episodeId, updates),
+    onSuccess: () => {
+      setEditingEpisode(null);
+      queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
+    },
+  });
+
+  const deleteEpisodeMutation = useMutation({
+    mutationFn: (episodeId: string) => deleteEpisode(episodeId),
+    onSuccess: () => {
+      setDeleteTarget(null);
+      queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
+    },
+  });
 
   const isQuotaExceeded = Boolean(
     quota && !quota.isUnlimited && (quota.remaining ?? 0) <= 0,
@@ -94,6 +129,11 @@ function PodcastStudioContent() {
         <button
           type="button"
           disabled={isQuotaExceeded || isUpgradeRequired}
+          onClick={() => {
+            if (!isQuotaExceeded && !isUpgradeRequired) {
+              setCreateModalOpen(true);
+            }
+          }}
           className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
             isQuotaExceeded || isUpgradeRequired
               ? 'bg-gray-400 cursor-not-allowed'
@@ -125,7 +165,50 @@ function PodcastStudioContent() {
       </div>
 
       {/* Episodes List */}
-      <EpisodesList episodes={episodes} youtubeAccess={youtubeAccess} />
+      <EpisodesList
+        episodes={episodes}
+        youtubeAccess={youtubeAccess}
+        onEdit={(episode) => setEditingEpisode(episode)}
+        onDelete={(episode) => setDeleteTarget(episode)}
+      />
+
+      <CreateEpisodeModal
+        open={isCreateModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSubmit={(values) =>
+          createEpisodeMutation.mutate({
+            title: values.title,
+            description: values.description || null,
+            episode_number: Number(values.episodeNumber),
+            season_number: Number(values.seasonNumber),
+            audio_file_url: values.audioFileUrl,
+            video_file_url: values.videoFileUrl || null,
+            show_notes: values.showNotes || null,
+            status: 'draft',
+          })
+        }
+        isSubmitting={createEpisodeMutation.isPending}
+      />
+
+      <EditEpisodeModal
+        episode={editingEpisode}
+        onClose={() => setEditingEpisode(null)}
+        onSubmit={(updates) =>
+          editingEpisode &&
+          updateEpisodeMutation.mutate({
+            episodeId: editingEpisode.id,
+            updates,
+          })
+        }
+        isSubmitting={updateEpisodeMutation.isPending}
+      />
+
+      <DeleteEpisodeModal
+        episode={deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => deleteTarget && deleteEpisodeMutation.mutate(deleteTarget.id)}
+        isSubmitting={deleteEpisodeMutation.isPending}
+      />
     </div>
   );
 }

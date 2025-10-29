@@ -492,4 +492,209 @@ describe('PodcastStudio', () => {
       });
     });
   });
+
+  describe('CRUD Operations (TDD)', () => {
+    beforeEach(() => {
+      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
+        feature: 'podcast_audio',
+        tier: 'professional',
+        tierLabel: 'Professional',
+        hasAccess: true,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
+      });
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
+        tier: 'professional',
+        tierLabel: 'Professional',
+        limit: 10,
+        remaining: 7,
+        used: 3,
+        isUnlimited: false,
+        period: '2025-10',
+        quotaState: 'normal',
+        warningStatus: null,
+        warningMessage: null,
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
+      });
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([]);
+    });
+
+    it('should open Create Episode modal when New Episode button clicked', async () => {
+      const user = userEvent.setup();
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const newButton = await screen.findByRole('button', { name: /new episode/i });
+      await user.click(newButton);
+
+      expect(await screen.findByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/episode number/i)).toBeInTheDocument();
+    });
+
+    it('should create episode when form submitted with valid data', async () => {
+      const user = userEvent.setup();
+      const newEpisode = {
+        id: 'ep-new',
+        title: 'New Test Episode',
+        description: 'Test description',
+        episode_number: 3,
+        season_number: 1,
+        audio_file_url: 'https://cdn.example.com/ep3.mp3',
+        video_file_url: null,
+        status: 'draft' as const,
+        created_by: 'user-1',
+        organization_id: 'org-1',
+        created_at: '2025-10-28T12:00:00Z',
+        show_notes: null,
+      };
+      vi.mocked(podcastApi.createEpisode).mockResolvedValue(newEpisode);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      await user.click(await screen.findByRole('button', { name: /new episode/i }));
+
+      await user.type(screen.getByLabelText(/title/i), 'New Test Episode');
+      await user.type(screen.getByLabelText(/episode number/i), '3');
+      await user.type(screen.getByLabelText(/season number/i), '1');
+      await user.type(screen.getByLabelText(/audio file url/i), 'https://cdn.example.com/ep3.mp3');
+
+      await user.click(screen.getByRole('button', { name: /create episode/i }));
+
+      await waitFor(() => {
+        expect(podcastApi.createEpisode).toHaveBeenCalled();
+      });
+    });
+
+    it('should open Edit modal when Edit button clicked on episode', async () => {
+      const user = userEvent.setup();
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        {
+          id: 'ep-1',
+          title: 'Episode to Edit',
+          description: 'Original description',
+          episode_number: 1,
+          season_number: 1,
+          audio_file_url: 'https://cdn.example.com/ep1.mp3',
+          video_file_url: null,
+          status: 'draft',
+          created_by: 'user-1',
+          organization_id: 'org-1',
+          created_at: '2025-10-28T10:00:00Z',
+          show_notes: null,
+        },
+      ]);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const editButton = await screen.findByRole('button', { name: /edit/i });
+      await user.click(editButton);
+
+      expect(await screen.findByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('Episode to Edit')).toBeInTheDocument();
+    });
+
+    it('should update episode when edit form submitted', async () => {
+      const user = userEvent.setup();
+      const existingEpisode = {
+        id: 'ep-1',
+        title: 'Original Title',
+        description: 'Original description',
+        episode_number: 1,
+        season_number: 1,
+        audio_file_url: 'https://cdn.example.com/ep1.mp3',
+        video_file_url: null,
+        status: 'draft' as const,
+        created_by: 'user-1',
+        organization_id: 'org-1',
+        created_at: '2025-10-28T10:00:00Z',
+        show_notes: null,
+      };
+
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([existingEpisode]);
+      vi.mocked(podcastApi.updateEpisode).mockResolvedValue({
+        ...existingEpisode,
+        title: 'Updated Title',
+      });
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      await user.click(await screen.findByRole('button', { name: /edit/i }));
+
+      const titleInput = screen.getByDisplayValue('Original Title');
+      await user.clear(titleInput);
+      await user.type(titleInput, 'Updated Title');
+
+      await user.click(screen.getByRole('button', { name: /save changes/i }));
+
+      await waitFor(() => {
+        expect(podcastApi.updateEpisode).toHaveBeenCalledWith(
+          'ep-1',
+          expect.objectContaining({ title: 'Updated Title' })
+        );
+      });
+    });
+
+    it('should show delete confirmation when delete button clicked', async () => {
+      const user = userEvent.setup();
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        {
+          id: 'ep-del',
+          title: 'Episode to Delete',
+          description: null,
+          episode_number: 1,
+          season_number: 1,
+          audio_file_url: 'https://cdn.example.com/ep-del.mp3',
+          video_file_url: null,
+          status: 'draft',
+          created_by: 'user-1',
+          organization_id: 'org-1',
+          created_at: '2025-10-28T10:00:00Z',
+          show_notes: null,
+        },
+      ]);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const deleteButton = await screen.findByRole('button', { name: /delete/i });
+      await user.click(deleteButton);
+
+      expect(await screen.findByText(/are you sure/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /confirm delete/i })).toBeInTheDocument();
+    });
+
+    it('should delete episode when deletion confirmed', async () => {
+      const user = userEvent.setup();
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        {
+          id: 'ep-del',
+          title: 'Episode to Delete',
+          description: null,
+          episode_number: 1,
+          season_number: 1,
+          audio_file_url: 'https://cdn.example.com/ep-del.mp3',
+          video_file_url: null,
+          status: 'draft',
+          created_by: 'user-1',
+          organization_id: 'org-1',
+          created_at: '2025-10-28T10:00:00Z',
+          show_notes: null,
+        },
+      ]);
+      vi.mocked(podcastApi.deleteEpisode).mockResolvedValue(undefined);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      await user.click(await screen.findByRole('button', { name: /delete/i }));
+      await user.click(await screen.findByRole('button', { name: /confirm delete/i }));
+
+      await waitFor(() => {
+        expect(podcastApi.deleteEpisode).toHaveBeenCalledWith('ep-del');
+      });
+    });
+  });
 });

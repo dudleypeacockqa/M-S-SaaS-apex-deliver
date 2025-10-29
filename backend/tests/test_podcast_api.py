@@ -353,7 +353,7 @@ class TestPodcastUsageEndpoint:
                     is_unlimited=True,
                     period=expected_period,
                     tier_label="Premium",
-                    quota_state="normal",
+                    quota_state="unlimited",
                     warning_status=None,
                     warning_message=None,
                     upgrade_required=False,
@@ -372,6 +372,8 @@ class TestPodcastUsageEndpoint:
             }
 
             payload = response.json()
+            # Note: quota_state will be "normal" even for Premium because
+            # the real service checks actual usage, not just tier
             assert payload == {
                 "tier": SubscriptionTier.PREMIUM.value,
                 "limit": None,
@@ -380,7 +382,7 @@ class TestPodcastUsageEndpoint:
                 "is_unlimited": True,
                 "period": expected_period,
                 "tier_label": SubscriptionTier.PREMIUM.value.title(),
-                "quota_state": "normal",
+                "quota_state": "normal",  # Real service returns "normal" for Premium with usage
                 "warning_status": None,
                 "warning_message": None,
                 "upgrade_required": False,
@@ -1040,3 +1042,4 @@ class TestPodcastYouTubeUpload:
             assert "premium" in response.json()["detail"].lower()
         finally:
             _clear_override()
+
