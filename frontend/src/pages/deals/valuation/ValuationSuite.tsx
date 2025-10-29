@@ -24,6 +24,7 @@ import type {
   ComparableSummaryMetrics,
   ValuationCreateRequest,
   ScenarioCreateRequest,
+  PrecedentTransaction,
 } from '../../../services/api/valuations'
 
 import { formatCurrency } from '../../../services/api/deals'
@@ -467,7 +468,7 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
 
 const MonteCarloPanel = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
   const queryClient = useQueryClient()
-  const [iterations, setIterations] = useState(500)
+  const [iterationsInput, setIterationsInput] = useState('500')
   const [seed, setSeed] = useState<number | ''>('')
 
   const { data: simulation, isPending, mutate } = useMutation({
@@ -478,7 +479,11 @@ const MonteCarloPanel = ({ dealId, valuationId }: { dealId: string; valuationId:
   })
 
   const handleRun = () => {
-    const payload: MonteCarloRequest = { iterations }
+    const parsedIterations = Number.parseInt(iterationsInput, 10)
+    const safeIterations = Number.isNaN(parsedIterations) ? 500 : Math.max(50, parsedIterations)
+    setIterationsInput(safeIterations.toString())
+
+    const payload: MonteCarloRequest = { iterations: safeIterations }
     if (seed !== '') payload.seed = Number(seed)
     mutate(payload)
   }
@@ -487,19 +492,25 @@ const MonteCarloPanel = ({ dealId, valuationId }: { dealId: string; valuationId:
     <div className="space-y-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-end">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Iterations</label>
+          <label className="block text-sm font-medium text-gray-700" htmlFor="monte-carlo-iterations">
+            Iterations
+          </label>
           <input
+            id="monte-carlo-iterations"
             type="number"
             min={50}
             step={50}
-            value={iterations}
-            onChange={(event) => setIterations(parseInt(event.target.value, 10))}
+            value={iterationsInput}
+            onChange={(event) => setIterationsInput(event.target.value)}
             className="mt-1 w-36 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Seed (optional)</label>
+          <label className="block text-sm font-medium text-gray-700" htmlFor="monte-carlo-seed">
+            Seed (optional)
+          </label>
           <input
+            id="monte-carlo-seed"
             type="number"
             value={seed}
             onChange={(event) => setSeed(event.target.value === '' ? '' : parseInt(event.target.value, 10))}
@@ -1005,7 +1016,7 @@ const PrecedentsView = ({ dealId, valuationId }: { dealId: string; valuationId: 
           <p className="text-sm text-gray-600">No precedent transactions recorded yet.</p>
         )}
         <div className="space-y-4">
-          {transactions?.map((transaction) => (
+          {transactions?.map((transaction: PrecedentTransaction) => (
             <article key={transaction.id} className="rounded-lg border border-gray-200 p-4">
               <header className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
                 <div>

@@ -238,6 +238,28 @@ export async function getComparableSummary(
   return response.data
 }
 
+export async function listPrecedentTransactions(
+  dealId: string,
+  valuationId: string,
+): Promise<PrecedentTransaction[]> {
+  const response = await api.get<PrecedentTransaction[]>(
+    `/api/deals/${dealId}/valuations/${valuationId}/transactions`,
+  )
+  return response.data
+}
+
+export async function addPrecedentTransaction(
+  dealId: string,
+  valuationId: string,
+  payload: PrecedentTransactionCreate,
+): Promise<PrecedentTransaction> {
+  const response = await api.post<PrecedentTransaction>(
+    `/api/deals/${dealId}/valuations/${valuationId}/transactions`,
+    payload,
+  )
+  return response.data
+}
+
 export async function getPrecedentSummary(
   dealId: string,
   valuationId: string,

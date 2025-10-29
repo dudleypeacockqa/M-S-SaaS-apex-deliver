@@ -294,6 +294,66 @@ describe('ValuationSuite RED tests', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /view pricing plans/i })).toHaveAttribute('href', '/billing/upgrade')
   })
+
+  it('runs Monte Carlo simulation and displays percentile summary', async () => {
+    const user = userEvent.setup()
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
+      {
+        id: 'val-sim',
+        enterprise_value: 10500000,
+        equity_value: 8000000,
+        deal_id: 'deal-sim',
+        organization_id: 'org-1',
+        forecast_years: 5,
+        discount_rate: 12,
+        terminal_growth_rate: 2.5,
+        terminal_method: 'gordon_growth',
+        cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000],
+        terminal_cash_flow: 1500000,
+        net_debt: 500000,
+        shares_outstanding: 1000000,
+        implied_share_price: 75.0,
+        created_by: 'user-1',
+        created_at: '2025-01-01',
+        updated_at: null,
+      },
+    ])
+    vi.mocked(valuationApi.runMonteCarlo).mockResolvedValueOnce({
+      iterations: 250,
+      seed: 42,
+      mean_enterprise_value: 12500000,
+      percentiles: {
+        p10: 9000000,
+        p50: 12000000,
+        p90: 15000000,
+      },
+    })
+
+    renderSuite('/deals/deal-sim/valuations/val-sim')
+
+    await waitFor(() => expect(screen.getByText(/£10,500,000/i)).toBeInTheDocument())
+
+    const iterationsInput = screen.getByLabelText(/iterations/i)
+    await user.clear(iterationsInput)
+    await user.type(iterationsInput, '250')
+
+    const seedInput = screen.getByLabelText(/seed/i)
+    await user.type(seedInput, '42')
+
+    await user.click(screen.getByRole('button', { name: /run simulation/i }))
+
+    await waitFor(() => {
+      expect(valuationApi.runMonteCarlo).toHaveBeenCalledWith('deal-sim', 'val-sim', {
+        iterations: 250,
+        seed: 42,
+      })
+    })
+
+    expect(await screen.findByText('250')).toBeInTheDocument()
+    expect(await screen.findByText('£12,500,000')).toBeInTheDocument()
+    expect(await screen.findByText('£9,000,000')).toBeInTheDocument()
+    expect(await screen.findByText('£15,000,000')).toBeInTheDocument()
+  })
 })
 
 
