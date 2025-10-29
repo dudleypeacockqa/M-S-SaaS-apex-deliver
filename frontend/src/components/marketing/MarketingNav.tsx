@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { trackCtaClick } from '../../lib/analytics';
 
@@ -17,6 +17,7 @@ interface NavItem {
 export const MarketingNav: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
 
   const navItems: NavItem[] = [
     {
@@ -123,8 +124,32 @@ export const MarketingNav: React.FC = () => {
     setOpenDropdown(null);
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpenDropdown(null);
+        setMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
+
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm" aria-label="Primary">
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm" aria-label="Primary" ref={navRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Brand */}
@@ -158,6 +183,7 @@ export const MarketingNav: React.FC = () => {
                     className="px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1"
                     aria-expanded={openDropdown === item.label}
                     aria-haspopup="true"
+                    onClick={() => setOpenDropdown(openDropdown === item.label ? null : item.label)}
                   >
                     {item.label}
                     <svg

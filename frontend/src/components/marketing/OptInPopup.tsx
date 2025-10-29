@@ -11,10 +11,10 @@ export const OptInPopup: React.FC = () => {
     const hasSeenPopup = localStorage.getItem('apexdeliver_optin_seen');
     if (hasSeenPopup) return;
 
-    // Show popup after 30 seconds
+    // Show popup after 90 seconds (less aggressive)
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 30000);
+    }, 90000);
 
     return () => clearTimeout(timer);
   }, []);
