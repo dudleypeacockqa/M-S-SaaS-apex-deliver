@@ -145,4 +145,45 @@ describe("documents API client", () => {
     )
     expect(result).toEqual(mockResponse)
   })
+
+  it("bulk downloads documents using deal-scoped endpoint", async () => {
+    const blob = new Blob(["zip"], { type: "application/zip" })
+    ;(fetch as unknown as vi.Mock).mockResolvedValueOnce(
+      new Response(blob, { status: 200, headers: { "Content-Type": "application/zip" } })
+    )
+
+    await bulkDownloadDocuments("deal-1", ["doc-1", "doc-2"])
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringMatching(/\/api\/deals\/deal-1\/documents\/bulk-download$/),
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ document_ids: ["doc-1", "doc-2"] }),
+      })
+    )
+  })
+
+  it("bulk deletes documents using deal-scoped endpoint", async () => {
+    const mockResponse = {
+      deleted_count: 1,
+      deleted_ids: ["doc-1"],
+      failed_ids: [],
+      failed_reasons: {},
+    }
+
+    ;(fetch as unknown as vi.Mock).mockResolvedValueOnce(
+      new Response(JSON.stringify(mockResponse), { status: 200 })
+    )
+
+    const result = await bulkDeleteDocuments("deal-1", ["doc-1"])
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringMatching(/\/api\/deals\/deal-1\/documents\/bulk-delete$/),
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ document_ids: ["doc-1"] }),
+      })
+    )
+    expect(result).toEqual(mockResponse)
+  })
 })

@@ -46,6 +46,11 @@ export const DataRoom: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedDocuments, setSelectedDocuments] = useState<Document[]>([])
+  const [entitlementGate, setEntitlementGate] = useState<{
+    message: string
+    requiredTierLabel?: string
+    upgradeUrl?: string
+  } | null>(null)
 
   const flattenedFolders = useMemo(() => folders, [folders])
 
@@ -80,6 +85,7 @@ export const DataRoom: React.FC = () => {
     try {
       setLoading(true)
       setError(null)
+      setEntitlementGate(null)
 
       const data = await listDocuments(dealId, {
         page: pagination.page,
@@ -100,7 +106,17 @@ export const DataRoom: React.FC = () => {
         prev.filter((selected) => data.items.some((doc) => doc.id === selected.id))
       )
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load documents')
+      const status = (err as any)?.status ?? (err as any)?.response?.status
+      if (status === 403) {
+        const detail = (err as any)?.data?.detail ?? (err as any)?.response?.data?.detail ?? {}
+        setEntitlementGate({
+          message: detail.message ?? 'This data room is available to Growth tier and above.',
+          requiredTierLabel: detail.required_tier_label,
+          upgradeUrl: detail.upgrade_cta_url,
+        })
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to load documents')
+      }
     } finally {
       setLoading(false)
     }
@@ -222,6 +238,67 @@ export const DataRoom: React.FC = () => {
     return (
       <section data-testid="data-room">
         <p>Error: Deal ID not found</p>
+      </section>
+    )
+  }
+
+  if (entitlementGate) {
+    const requiredTier = entitlementGate.requiredTierLabel || 'Growth'
+    return (
+      <section
+        data-testid="data-room-entitlement"
+        style={{ padding: '4rem 2rem', display: 'flex', justifyContent: 'center' }}
+      >
+        <div
+          style={{
+            maxWidth: '560px',
+            width: '100%',
+            backgroundColor: '#f8fafc',
+            border: '1px solid #cbd5f5',
+            borderRadius: '0.75rem',
+            padding: '2rem',
+            textAlign: 'center',
+          }}
+        >
+          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '1rem', color: '#1e293b' }}>
+            Access Restricted
+          </h2>
+          <p style={{ color: '#475569', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+            {entitlementGate.message || `This data room is available to ${requiredTier} tier and above.`}
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+            {entitlementGate.upgradeUrl && (
+              <a
+                href={entitlementGate.upgradeUrl}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  backgroundColor: '#3b82f6',
+                  color: 'white',
+                  borderRadius: '0.5rem',
+                  textDecoration: 'none',
+                  fontWeight: 600,
+                }}
+              >
+                View Pricing Plans
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={() => navigate('/billing/upgrade')}
+              style={{
+                padding: '0.75rem 1.5rem',
+                backgroundColor: '#6366f1',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.5rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Upgrade Now
+            </button>
+          </div>
+        </div>
       </section>
     )
   }

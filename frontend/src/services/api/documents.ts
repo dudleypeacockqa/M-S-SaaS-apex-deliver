@@ -30,10 +30,19 @@ async function request<T>(url: string, options: FetchOptions = {}): Promise<T> {
   const response = await fetch(url, options)
 
   if (!response.ok) {
-    const error = await response
+    const errorBody = await response
       .json()
       .catch(() => ({ detail: response.statusText || "Request failed" }))
-    throw new Error(error.detail || "Request failed")
+
+    const error = new Error(errorBody.detail || "Request failed") as Error & {
+      status?: number
+      data?: unknown
+      detail?: string
+    }
+    error.status = response.status
+    error.data = errorBody
+    error.detail = errorBody.detail
+    throw error
   }
 
   return response.json() as Promise<T>

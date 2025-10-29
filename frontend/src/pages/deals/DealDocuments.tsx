@@ -59,20 +59,25 @@ export const DealDocuments: React.FC = () => {
       </header>
 
       <div className="flex items-center gap-4">
-        <label className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus-within:outline focus-within:outline-2 focus-within:outline-indigo-500">
-          <span>Upload document</span>
-          <input
-            ref={fileInputRef}
-            type="file"
-            aria-label="Upload document"
-            className="absolute h-0 w-0 opacity-0"
-            onChange={handleFileChange}
-            disabled={uploadMutation.isPending}
-          />
-        </label>
+        <button
+          type="button"
+          onClick={openFilePicker}
+          disabled={uploadMutation.isPending}
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          Upload document
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          aria-label="Upload document"
+          className="sr-only"
+          onChange={handleFileChange}
+          disabled={uploadMutation.isPending}
+        />
         {uploadMutation.isPending && (
           <span className="text-sm text-slate-500" role="status">
-            Uploading…
+            Uploading...�
           </span>
         )}
       </div>

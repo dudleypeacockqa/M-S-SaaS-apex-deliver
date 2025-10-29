@@ -47,18 +47,60 @@ async def transcribe_audio(audio_file_path: str) -> str:
         Exception: If Whisper API call fails
     """
     try:
-        # TODO: Implement OpenAI Whisper API integration
-        # For now, return a placeholder
-        # In production, this would call:
-        # - openai.Audio.transcribe() with the audio file
-        # - Handle API authentication, rate limiting, file size limits
-        # - Process response and extract transcript text
+        import os
+        from openai import AsyncOpenAI
 
         logger.info(f"Transcribing audio file: {audio_file_path}")
 
-        # Placeholder implementation
-        return "Placeholder transcription - OpenAI Whisper API not yet integrated"
+        # Initialize OpenAI client
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            logger.warning("OPENAI_API_KEY not set, using placeholder transcription")
+            return "Placeholder transcription - OpenAI API key not configured"
 
+        client = AsyncOpenAI(api_key=api_key)
+
+        # Get the actual file path from storage
+        storage = get_storage_service()
+
+        # For now, check if file exists locally (development mode)
+        # In production with S3, this would download from S3 first
+        file_path = audio_file_path.replace("/storage/", "storage/")
+
+        if not os.path.exists(file_path):
+            logger.error(f"Audio file not found at {file_path}")
+            raise FileNotFoundError(f"Audio file not found: {audio_file_path}")
+
+        # Check file size (Whisper API has 25MB limit)
+        file_size = os.path.getsize(file_path)
+        max_size = 25 * 1024 * 1024  # 25MB
+
+        if file_size > max_size:
+            logger.warning(f"Audio file too large ({file_size} bytes), chunking required")
+            # TODO: Implement chunking for large files
+            raise ValueError(f"Audio file too large ({file_size / 1024 / 1024:.1f}MB). Maximum: 25MB")
+
+        # Transcribe using Whisper API
+        with open(file_path, "rb") as audio_file:
+            response = await client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file,
+                response_format="text",
+                language="en",  # Auto-detect or specify
+            )
+
+        transcript = response if isinstance(response, str) else response.text
+
+        logger.info(f"Successfully transcribed {file_size / 1024:.1f}KB audio file, {len(transcript)} characters")
+
+        return transcript
+
+    except FileNotFoundError as exc:
+        logger.error(f"Audio file not found: {exc}")
+        raise
+    except ValueError as exc:
+        logger.error(f"File validation error: {exc}")
+        raise
     except Exception as exc:
         logger.error(f"Whisper API transcription failed: {exc}")
         raise

@@ -1,3 +1,14 @@
+### Session 2025-10-29 (DEV-008 frontend upload UI - 11:02 UTC)
+- ✅ Added DealDocuments Vitest coverage (list rendering, upload mutation, empty state).
+- ✅ Command: npm --prefix frontend run test -- src/pages/deals/DealDocuments.test.tsx → 3 passed.
+- ✅ Implemented DealDocuments React Query integration with upload button + formatted table.
+- 🔄 NEXT: Extend data room tests to cover bulk download interactions and entitlement states.
+
+### Session 2025-10-29 (Plan Refresh – 11:45 UTC)
+- Reviewed BMAD artefacts and repository scope; recorded updated completion roadmap in docs/bmad/PROJECT_COMPLETION_PLAN.md aligning workstreams with DEV-016 and DEV-018 priorities.
+- Verified valuation backend suite locally (test_valuation_api.py, 13/13) and ValuationSuite Vitest (14/14) to confirm current implementation remains green.
+- NEXT: Run full backend and frontend regression suites, capture coverage, and sync BMAD workflow status before opening new RED tests for DEV-016 monthly reset.
+
 ### Session 2025-10-29 (📊 Sprint 1.3: MARK-002 Marketing Analytics & SEO – 10:55 UTC)
 
 **✅ SPRINT 1.3 COMPLETE: Marketing Critical Items (3.5 hours)**
@@ -697,6 +708,15 @@ umpy in backend requirements + venv, rerun pytest, refresh deployment health sna
 - ✅ Targeted: `../backend/venv/Scripts/python.exe -m pytest tests/test_document_endpoints.py -k "revoking_document_permission_creates_audit_log" --maxfail=1 --disable-warnings` → passed.
 - ✅ Audit/permission sweep → 9 passed; full backend → 501 passed / 38 skipped.
 - 🔄 NEXT: Extend auditing coverage to folder permission revocation & document access retrieval (write RED specs).
+
+### Session 2025-10-29 (DEV-008 Folder Revocation RED→GREEN – 10:05 UTC)
+- ✅ Added `test_revoking_folder_permission_creates_audit_log` (RED) to enforce audit logging when folder access is removed.
+- ✅ Implemented `revoke_folder_permission` service + DELETE route; per-document `permission_revoked` entries now logged.
+- ✅ Targeted: `../backend/venv/Scripts/python.exe -m pytest tests/test_document_endpoints.py -k "revoking_folder_permission_creates_audit_log" --maxfail=1 --disable-warnings` → passed.
+- ✅ Permission/audit sweep: `../backend/venv/Scripts/python.exe -m pytest tests/test_document_endpoints.py -k "permission or audit" --maxfail=1 --disable-warnings` → 10 passed.
+- ❌ Full suite rerun surfaced pre-existing failure `tests/test_quota_service.py::TestGetQuotaSummary::test_includes_period_bounds_for_monthly_reset` (missing `period_start` on `PodcastQuotaSummary`).
+- 🔄 NEXT: Schedule quota summary fix while proceeding to deployment health doc refresh.
+
 
 
 

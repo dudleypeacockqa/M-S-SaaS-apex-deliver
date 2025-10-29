@@ -41,6 +41,9 @@ class PodcastQuotaSummary(BaseModel):
     used: int
     is_unlimited: bool
     period: str
+    period_start: Optional[str] = None
+    period_end: Optional[str] = None
+    period_label: Optional[str] = None
     tier_label: Optional[str] = None
     quota_state: str = "normal"
     warning_status: Optional[str] = None

@@ -299,6 +299,9 @@ class TestPodcastUsageEndpoint:
             }
 
             payload = response.json()
+            assert payload["period_start"] is None
+            assert payload["period_end"] is None
+            assert payload["period_label"] is None
             assert payload == {
                 "tier": SubscriptionTier.PROFESSIONAL.value,
                 "limit": 10,
@@ -313,6 +316,9 @@ class TestPodcastUsageEndpoint:
                 "upgrade_required": False,
                 "upgrade_message": None,
                 "upgrade_cta_url": None,
+                "period_start": None,
+                "period_end": None,
+                "period_label": None,
             }
             assert "X-Podcast-Quota-Warning" not in response.headers
             assert "X-Podcast-Upgrade-Required" not in response.headers
@@ -372,6 +378,9 @@ class TestPodcastUsageEndpoint:
             }
 
             payload = response.json()
+            assert payload["period_start"] is None
+            assert payload["period_end"] is None
+            assert payload["period_label"] is None
             assert payload == {
                 "tier": SubscriptionTier.PREMIUM.value,
                 "limit": None,
@@ -386,6 +395,9 @@ class TestPodcastUsageEndpoint:
                 "upgrade_required": False,
                 "upgrade_message": None,
                 "upgrade_cta_url": None,
+                "period_start": None,
+                "period_end": None,
+                "period_label": None,
             }
             assert "X-Podcast-Quota-Warning" not in response.headers
             assert "X-Podcast-Upgrade-Required" not in response.headers

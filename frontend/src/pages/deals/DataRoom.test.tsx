@@ -216,8 +216,9 @@ describe('DataRoom - Document Operations', () => {
   });
 
   it('shows upgrade message when listing documents responds with 403 entitlement error', async () => {
-    (documentsAPI.listDocuments as any).mockRejectedValueOnce({
-      response: {
+    const entitlementError = Object.assign(
+      new Error('Forbidden'),
+      {
         status: 403,
         data: {
           detail: {
@@ -226,8 +227,10 @@ describe('DataRoom - Document Operations', () => {
             upgrade_cta_url: '/billing/upgrade',
           },
         },
-      },
-    });
+      }
+    )
+
+    ;(documentsAPI.listDocuments as any).mockRejectedValueOnce(entitlementError)
 
     renderDataRoom();
 
@@ -286,5 +289,77 @@ describe('DataRoom - Document Operations', () => {
     await waitFor(() => {
       expect(screen.getByText('Business Plan.pdf')).toBeInTheDocument();
     });
+  });
+
+  it('allows selecting documents and triggers bulk actions', async () => {
+    const mockDocuments = {
+      items: [
+        {
+          id: 'doc-1',
+          name: 'Doc One.pdf',
+          file_size: 1024,
+          file_type: 'application/pdf',
+          deal_id: 'test-deal-123',
+          folder_id: null,
+          organization_id: 'org-1',
+          uploaded_by: 'user-1',
+          version: 1,
+          created_at: new Date().toISOString(),
+          updated_at: null,
+        },
+        {
+          id: 'doc-2',
+          name: 'Doc Two.pdf',
+          file_size: 2048,
+          file_type: 'application/pdf',
+          deal_id: 'test-deal-123',
+          folder_id: null,
+          organization_id: 'org-1',
+          uploaded_by: 'user-1',
+          version: 1,
+          created_at: new Date().toISOString(),
+          updated_at: null,
+        },
+      ],
+      total: 2,
+      page: 1,
+      per_page: 20,
+      pages: 1,
+    };
+
+    (documentsAPI.listDocuments as any).mockResolvedValue(mockDocuments);
+
+    renderDataRoom();
+
+    await waitFor(() => {
+      expect(screen.getByText('Doc One.pdf')).toBeInTheDocument();
+      expect(screen.getByText('Doc Two.pdf')).toBeInTheDocument();
+    });
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+    fireEvent.click(checkboxes[1]);
+
+    expect(screen.getByText(/2 documents selected/i)).toBeInTheDocument();
+
+    const downloadButton = screen.getByRole('button', { name: /download zip/i });
+    fireEvent.click(downloadButton);
+
+    await waitFor(() => {
+      expect(documentsAPI.bulkDownloadDocuments).toHaveBeenCalledWith('test-deal-123', ['doc-1', 'doc-2']);
+    });
+
+    window.confirm = vi.fn(() => true);
+    const deleteButton = screen.getByRole('button', { name: /delete/i });
+    fireEvent.click(deleteButton);
+
+    await waitFor(() => {
+      expect(documentsAPI.bulkDeleteDocuments).toHaveBeenCalledWith('test-deal-123', ['doc-1', 'doc-2']);
+    });
+
+    const clearButton = screen.getByRole('button', { name: /clear/i });
+    fireEvent.click(clearButton);
+
+    expect(screen.queryByText(/documents selected/i)).not.toBeInTheDocument();
   });
 });

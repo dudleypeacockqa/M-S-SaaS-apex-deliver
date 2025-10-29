@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import inspect
 import logging
+import calendar
 from datetime import datetime, timezone
 from typing import Optional, Union
 
@@ -253,7 +254,14 @@ async def get_quota_summary(
                 f"80% of monthly quota used ({used}/{limit_value}). {_remaining_phrase(remaining_count)}"
             )
 
-    period = datetime.now(timezone.utc).strftime("%Y-%m")
+    now = datetime.now(timezone.utc)
+    period = now.strftime("%Y-%m")
+    current_year = now.year
+    current_month = now.month
+    period_start_dt = datetime(current_year, current_month, 1, tzinfo=timezone.utc)
+    last_day = calendar.monthrange(current_year, current_month)[1]
+    period_end_dt = datetime(current_year, current_month, last_day, 23, 59, 59, tzinfo=timezone.utc)
+    period_label = period_start_dt.strftime("%B %Y")
 
     return PodcastQuotaSummary(
         tier=tier.value,
@@ -263,6 +271,9 @@ async def get_quota_summary(
         used=used,
         is_unlimited=is_unlimited,
         period=period,
+        period_start=period_start_dt.isoformat(),
+        period_end=period_end_dt.isoformat(),
+        period_label=period_label,
         quota_state=quota_state,
         warning_status=warning_status,
         warning_message=warning_message,
