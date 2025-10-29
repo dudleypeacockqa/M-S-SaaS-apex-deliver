@@ -15,7 +15,7 @@ export const MarketingLayout: React.FC<MarketingLayoutProps> = ({ children }) =>
     name: 'ApexDeliver',
     alternateName: 'M&A Intelligence Platform',
     url: 'https://apexdeliver.com',
-    logo: 'https://apexdeliver.com/logo.png',
+    logo: 'https://apexdeliver.com/assets/brand/apexdeliver-wordmark.svg',
     description: 'ApexDeliver is the only end-to-end M&A intelligence platform combining deal flow management, AI-powered financial analysis, intelligent deal matching, and post-merger integration tools—all in one affordable subscription.',
     foundingDate: '2025',
     contactPoint: {
