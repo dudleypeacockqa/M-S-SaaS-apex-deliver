@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import logging
+import uuid
+from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user, require_feature
@@ -24,6 +26,7 @@ from app.services.entitlement_service import (
     get_tier_label,
 )
 from app.services.quota_service import QuotaExceededError
+from app.services.storage_service import get_storage_service
 
 logger = logging.getLogger(__name__)
 
@@ -245,6 +248,114 @@ async def publish_episode_to_youtube(
     )
 
     return PodcastYouTubeUploadResponse(video_id=video_id)
+
+
+@router.post(
+    "/episodes/{episode_id}/upload-audio",
+    status_code=status.HTTP_200_OK,
+)
+async def upload_audio_file(
+    episode_id: str,
+    file: UploadFile = File(...),
+    current_user: User = Depends(require_feature("podcast_audio")),
+    db: Session = Depends(get_db),
+) -> dict:
+    """
+    Upload audio file for an episode (Professional+ tiers).
+
+    Validates:
+    - File format (MP3, WAV, M4A only)
+    - File size (max 500MB)
+    - Episode ownership
+
+    Returns:
+    - episode_id: Episode UUID
+    - audio_url: Storage path to uploaded file
+    """
+    # Validate episode exists and belongs to organization
+    episode = podcast_service.get_episode(
+        db=db,
+        episode_id=episode_id,
+        organization_id=current_user.organization_id,
+    )
+    if episode is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Episode {episode_id} not found",
+        )
+
+    # Validate file format
+    if not file.filename:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Filename is required",
+        )
+
+    file_ext = Path(file.filename).suffix.lower()
+    allowed_formats = {".mp3", ".wav", ".m4a"}
+    if file_ext not in allowed_formats:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid audio format. Allowed formats: MP3, WAV, M4A. Got: {file_ext}",
+        )
+
+    # Validate file size (500MB max)
+    MAX_SIZE = 500 * 1024 * 1024  # 500MB in bytes
+    file_content = await file.read()
+    file_size = len(file_content)
+
+    if file_size > MAX_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"File too large. Maximum size: 500MB. Got: {file_size / 1024 / 1024:.2f}MB",
+        )
+
+    # Generate unique file key
+    storage = get_storage_service()
+    file_key = f"podcast-audio/{episode_id}/{uuid.uuid4()}{file_ext}"
+
+    # Save file to storage
+    try:
+        # Create BytesIO from content for storage service
+        from io import BytesIO
+        file_stream = BytesIO(file_content)
+        storage_path = await storage.save_file(
+            file_key=file_key,
+            file_stream=file_stream,
+            organization_id=current_user.organization_id,
+        )
+
+        # Update episode with audio URL
+        podcast_service.update_episode(
+            db=db,
+            episode_id=episode_id,
+            organization_id=current_user.organization_id,
+            audio_file_url=f"/storage/{file_key}",
+        )
+
+        logger.info(
+            "Audio uploaded successfully for episode %s by user %s",
+            episode_id,
+            current_user.id,
+        )
+
+        return {
+            "episode_id": episode_id,
+            "audio_url": f"/storage/{file_key}",
+            "file_size": file_size,
+            "filename": file.filename,
+        }
+
+    except IOError as exc:
+        logger.error(
+            "Failed to save audio file for episode %s: %s",
+            episode_id,
+            str(exc),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to save audio file",
+        ) from exc
 
 
 @router.get(
