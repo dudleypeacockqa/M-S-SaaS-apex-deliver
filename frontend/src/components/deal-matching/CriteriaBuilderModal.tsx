@@ -115,8 +115,8 @@ export const CriteriaBuilderModal: React.FC<CriteriaBuilderModalProps> = ({
       name: formData.name,
       deal_type: formData.deal_type,
       industries: formData.industries.map((industry) => industry.toLowerCase()),
-      min_deal_size: formData.min_deal_size || '0',
-      max_deal_size: formData.max_deal_size || '0',
+      min_deal_size: Number(formData.min_deal_size || 0),
+      max_deal_size: Number(formData.max_deal_size || 0),
       geographies: formData.geographies,
       structures: formData.structures,
     });
