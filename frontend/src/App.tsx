@@ -67,6 +67,7 @@ const FAQPage = lazyNamed(() => import("./pages/marketing/FAQPage"), "FAQPage");
 const CapLiquifyFPAPage = lazyNamed(() => import("./pages/marketing/CapLiquifyFPAPage"), "CapLiquifyFPAPage");
 const FourStageCyclePage = lazyNamed(() => import("./pages/marketing/FourStageCyclePage"), "FourStageCyclePage");
 const SalesPromotionPricingPage = lazyNamed(() => import("./pages/marketing/SalesPromotionPricingPage"), "SalesPromotionPricingPage");
+const CaseStudiesPage = lazyNamed(() => import("./pages/marketing/CaseStudiesPage"), "CaseStudiesPage");
 const TermsOfService = lazyNamed(() => import("./pages/marketing/legal/TermsOfService"), "TermsOfService")
 const PrivacyPolicy = lazyNamed(() => import("./pages/marketing/legal/PrivacyPolicy"), "PrivacyPolicy")
 const CookiePolicy = lazyNamed(() => import("./pages/marketing/legal/CookiePolicy"), "CookiePolicy")
@@ -121,6 +122,7 @@ export const AppRoutes = () => {
       <Route path="capliquify-fpa" element={<CapLiquifyFPAPage />} />
       <Route path="4-stage-cycle" element={<FourStageCyclePage />} />
       <Route path="sales-promotion-pricing" element={<SalesPromotionPricingPage />} />
+      <Route path="case-studies" element={<CaseStudiesPage />} />
       <Route path="legal/terms" element={<TermsOfService />} />
       <Route path="legal/privacy" element={<PrivacyPolicy />} />
       <Route path="legal/cookies" element={<CookiePolicy />} />

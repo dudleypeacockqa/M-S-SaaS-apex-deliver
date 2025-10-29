@@ -10,6 +10,7 @@ import { CTASection } from '../../components/marketing/CTASection';
 import { ExitIntentPopup } from '../../components/marketing/ExitIntentPopup';
 import { StickyCTABar } from '../../components/marketing/StickyCTABar';
 import { trackCtaClick } from '../../lib/analytics';
+import { DashboardMockup } from '../../components/marketing/DashboardMockup';
 
 export const EnhancedLandingPage: React.FC = () => {
   const features = useMemo(
@@ -105,6 +106,9 @@ export const EnhancedLandingPage: React.FC = () => {
               Trusted by dealmakers, finance leaders, and private equity firms worldwide. Backed by 20+ years of experience and over 230+ successful business transformations.
             </p>
           </div>
+          
+          {/* Dashboard Mockup */}
+          <DashboardMockup />
         </div>
       </section>
 

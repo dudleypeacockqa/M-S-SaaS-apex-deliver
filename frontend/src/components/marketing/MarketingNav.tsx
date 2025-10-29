@@ -16,6 +16,7 @@ interface NavItem {
 
 export const MarketingNav: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems: NavItem[] = [
     {
@@ -66,6 +67,11 @@ export const MarketingNav: React.FC = () => {
     {
       label: 'Resources',
       dropdown: [
+        {
+          label: 'Case Studies',
+          href: '/case-studies',
+          description: 'Customer success stories',
+        },
         {
           label: 'Blog',
           href: '/blog',
@@ -187,8 +193,23 @@ export const MarketingNav: React.FC = () => {
             ))}
           </div>
 
+          {/* Mobile Menu Button */}
+          <button
+            className="lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+
           {/* Auth CTAs */}
-          <div className="flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-4">
             <Link
               to="/sign-in"
               className="text-gray-700 hover:text-indigo-900 font-medium transition-colors"
@@ -205,6 +226,81 @@ export const MarketingNav: React.FC = () => {
             </Link>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-gray-200 py-4">
+            {navItems.map((item) => (
+              <div key={item.label} className="px-4 py-2">
+                {item.href ? (
+                  <Link
+                    to={item.href}
+                    className="block py-2 text-gray-700 hover:text-indigo-900 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <>
+                    <button
+                      className="w-full text-left py-2 text-gray-700 hover:text-indigo-900 font-medium flex justify-between items-center"
+                      onClick={() => setOpenDropdown(openDropdown === item.label ? null : item.label)}
+                    >
+                      {item.label}
+                      <svg
+                        className={`w-4 h-4 transition-transform ${openDropdown === item.label ? 'rotate-180' : ''}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {item.dropdown && openDropdown === item.label && (
+                      <div className="pl-4 mt-2 space-y-2">
+                        {item.dropdown.map((dropdownItem) => (
+                          <Link
+                            key={dropdownItem.href}
+                            to={dropdownItem.href}
+                            className="block py-2 text-sm text-gray-600 hover:text-indigo-900"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setOpenDropdown(null);
+                            }}
+                          >
+                            {dropdownItem.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            ))}
+            <div className="px-4 py-4 space-y-2 border-t border-gray-200 mt-4">
+              <Link
+                to="/sign-in"
+                className="block w-full text-center py-2 text-gray-700 hover:text-indigo-900 font-medium"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  trackCtaClick('sign-in', 'mobile-nav');
+                }}
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/sign-up"
+                className="block w-full text-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-2 rounded-md font-semibold"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  trackCtaClick('get-started', 'mobile-nav');
+                }}
+              >
+                Start Free Trial
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
