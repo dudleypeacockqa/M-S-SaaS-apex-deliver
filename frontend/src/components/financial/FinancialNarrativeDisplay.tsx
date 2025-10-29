@@ -19,11 +19,15 @@ export interface FinancialNarrative {
 export interface FinancialNarrativeDisplayProps {
   narrative: FinancialNarrative | null;
   onRegenerate?: () => void;
+  onGenerate?: () => void;
+  isGenerating?: boolean;
 }
 
 export const FinancialNarrativeDisplay: React.FC<FinancialNarrativeDisplayProps> = ({
   narrative,
   onRegenerate,
+  onGenerate,
+  isGenerating = false,
 }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -40,7 +44,16 @@ export const FinancialNarrativeDisplay: React.FC<FinancialNarrativeDisplayProps>
       <div className="financial-narrative-display p-6 bg-white rounded-lg shadow">
         <div className="empty-state text-center py-12">
           <p className="text-gray-500 text-lg mb-4">No narrative available</p>
-          <p className="text-gray-400 text-sm">Generate a financial narrative from your data</p>
+          <p className="text-gray-400 text-sm mb-6">Generate an AI-powered financial narrative from your data</p>
+          {onGenerate && (
+            <button
+              onClick={onGenerate}
+              disabled={isGenerating}
+              className="btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isGenerating ? 'Generating Narrative...' : 'Generate Financial Narrative'}
+            </button>
+          )}
         </div>
       </div>
     );
@@ -53,9 +66,10 @@ export const FinancialNarrativeDisplay: React.FC<FinancialNarrativeDisplayProps>
         {onRegenerate && (
           <button
             onClick={onRegenerate}
-            className="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm"
+            disabled={isGenerating}
+            className="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Regenerate
+            {isGenerating ? 'Regenerating...' : 'Regenerate'}
           </button>
         )}
       </div>

@@ -761,3 +761,167 @@ def test_get_ratios_limits_results(client, test_deal, solo_user, db_session):
         assert len(data) == 2
     finally:
         app.dependency_overrides.pop(get_current_user, None)
+
+
+# ============================================================================
+# NARRATIVE GENERATION TESTS (Task 1.2 - TDD RED Phase)
+# ============================================================================
+
+def test_generate_narrative_creates_narrative(client, test_deal, solo_user, db_session):
+    """Test POST /narrative/generate creates narrative from ratios"""
+    from app.models.financial_ratio import FinancialRatio
+    from app.models.financial_narrative import FinancialNarrative
+
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        # First, create some ratios to generate narrative from
+        ratio = FinancialRatio(
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            period="2024-Q4",
+            current_ratio=Decimal("2.0"),
+            quick_ratio=Decimal("1.6"),
+            net_profit_margin=Decimal("10.0"),
+            return_on_equity=Decimal("20.0"),
+            debt_to_equity=Decimal("0.8"),
+            calculated_at=datetime.now(timezone.utc),
+        )
+        db_session.add(ratio)
+        db_session.commit()
+
+        # Generate narrative
+        response = client.post(
+            f"/api/deals/{test_deal.id}/financial/narrative/generate"
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+
+        # Verify response structure
+        assert data["deal_id"] == test_deal.id
+        assert "summary" in data
+        assert "strengths" in data
+        assert "weaknesses" in data
+        assert "red_flags" in data
+        assert "readiness_score" in data
+        assert isinstance(data["readiness_score"], (int, float))
+        assert 0 <= data["readiness_score"] <= 100
+
+        # Verify narrative was persisted to database
+        saved_narrative = db_session.query(FinancialNarrative).filter(
+            FinancialNarrative.deal_id == test_deal.id
+        ).first()
+
+        assert saved_narrative is not None
+        assert saved_narrative.summary is not None
+        assert saved_narrative.readiness_score is not None
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_generate_narrative_requires_financial_data(client, test_deal, solo_user):
+    """Test generate fails gracefully when no ratios available"""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.post(
+            f"/api/deals/{test_deal.id}/financial/narrative/generate"
+        )
+
+        assert response.status_code == 400
+        assert "ratio" in response.json()["detail"].lower()
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_generate_narrative_saves_readiness_score_breakdown(client, test_deal, solo_user, db_session):
+    """Test readiness score breakdown is calculated and saved"""
+    from app.models.financial_ratio import FinancialRatio
+    from app.models.financial_narrative import FinancialNarrative
+
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        # Create comprehensive ratios
+        ratio = FinancialRatio(
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            period="2024-Q4",
+            current_ratio=Decimal("2.5"),
+            quick_ratio=Decimal("2.0"),
+            net_profit_margin=Decimal("15.0"),
+            return_on_equity=Decimal("25.0"),
+            debt_to_equity=Decimal("0.5"),
+            calculated_at=datetime.now(timezone.utc),
+        )
+        db_session.add(ratio)
+        db_session.commit()
+
+        response = client.post(
+            f"/api/deals/{test_deal.id}/financial/narrative/generate"
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+
+        # Verify score breakdown exists
+        assert "readiness_score_breakdown" in data
+        assert data["readiness_score_breakdown"] is not None
+
+        # Verify all breakdown components exist
+        breakdown = data["readiness_score_breakdown"]
+        assert "data_quality" in breakdown
+        assert "financial_health" in breakdown
+        assert "growth_trajectory" in breakdown
+        assert "risk_assessment" in breakdown
+
+        # Verify scores are reasonable
+        assert isinstance(breakdown["data_quality"], (int, float))
+        assert 0 <= breakdown["data_quality"] <= 100
+        assert 0 <= breakdown["financial_health"] <= 100
+        assert 0 <= breakdown["growth_trajectory"] <= 100
+        assert 0 <= breakdown["risk_assessment"] <= 100
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_get_narrative_returns_generated_narrative(client, test_deal, solo_user, db_session):
+    """Test GET endpoint returns previously generated narrative"""
+    from app.models.financial_narrative import FinancialNarrative
+
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        # Create a narrative directly
+        narrative = FinancialNarrative(
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            summary="Strong financial position with healthy liquidity.",
+            strengths=["Excellent current ratio and profitability."],
+            weaknesses=["Limited growth trajectory."],
+            red_flags=["None identified."],
+            growth_signals=["Positive cash flow trends."],
+            readiness_score=Decimal("85.0"),
+            data_quality_score=Decimal("90.0"),
+            financial_health_score=Decimal("88.0"),
+            growth_trajectory_score=Decimal("70.0"),
+            risk_assessment_score=Decimal("92.0"),
+            ai_model="gpt-4",
+            generated_at=datetime.now(timezone.utc),
+        )
+        db_session.add(narrative)
+        db_session.commit()
+
+        response = client.get(
+            f"/api/deals/{test_deal.id}/financial/narrative"
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert data["deal_id"] == test_deal.id
+        assert data["summary"] == "Strong financial position with healthy liquidity."
+        assert float(data["readiness_score"]) == 85.0
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
