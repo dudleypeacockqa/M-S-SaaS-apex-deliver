@@ -11,22 +11,9 @@ import type {
   YouTubeConnectionStatus,
   YouTubePublishPayload,
 } from '../../services/api/podcasts';
+import * as podcastApiModule from '../../services/api/podcasts';
 
 type YouTubePublishStatus = 'not_published' | 'uploading' | 'processing' | 'published' | 'failed';
-
-const getYouTubeConnectionStatus = vi.fn();
-const initiateYouTubeOAuth = vi.fn();
-const disconnectYouTubeChannel = vi.fn();
-const publishEpisodeToYouTube = vi.fn();
-const getYouTubePublishStatus = vi.fn();
-
-vi.mock('../../services/api/podcasts', () => ({
-  getYouTubeConnectionStatus,
-  initiateYouTubeOAuth,
-  disconnectYouTubeChannel,
-  publishEpisodeToYouTube,
-  getYouTubePublishStatus,
-}));
 
 type FeatureAccessState = {
   feature: string;
@@ -42,6 +29,16 @@ type FeatureAccessState = {
   isFetched: boolean;
   error: unknown;
 };
+
+vi.mock('../../services/api/podcasts', () => ({
+  getYouTubeConnectionStatus: vi.fn(),
+  initiateYouTubeOAuth: vi.fn(),
+  disconnectYouTubeChannel: vi.fn(),
+  publishEpisodeToYouTube: vi.fn(),
+  getYouTubePublishStatus: vi.fn(),
+}));
+
+const podcastApi = vi.mocked(podcastApiModule);
 
 const buildAccessState = (overrides: Partial<FeatureAccessState> = {}): FeatureAccessState => ({
   feature: 'youtube_integration',
@@ -116,8 +113,8 @@ const renderPublisher = (options: {
     status = 'not_published',
   } = options;
 
-  getYouTubeConnectionStatus.mockResolvedValue(connection);
-  getYouTubePublishStatus.mockResolvedValue({
+  podcastApi.getYouTubeConnectionStatus.mockResolvedValue(connection);
+  podcastApi.getYouTubePublishStatus.mockResolvedValue({
     status,
     lastCheckedAt: '2025-10-28T12:30:00Z',
   });
@@ -130,21 +127,21 @@ const renderPublisher = (options: {
 describe('YouTubePublisher', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    getYouTubeConnectionStatus.mockResolvedValue(defaultConnection);
-    getYouTubePublishStatus.mockResolvedValue({
+    podcastApi.getYouTubeConnectionStatus.mockResolvedValue(defaultConnection);
+    podcastApi.getYouTubePublishStatus.mockResolvedValue({
       status: 'not_published',
       lastCheckedAt: '2025-10-28T12:30:00Z',
     });
-    initiateYouTubeOAuth.mockResolvedValue({
+    podcastApi.initiateYouTubeOAuth.mockResolvedValue({
       authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
       state: 'state-token',
       expiresAt: '2025-10-28T13:00:00Z',
     });
-    publishEpisodeToYouTube.mockResolvedValue({ videoId: 'YT_123' });
+    podcastApi.publishEpisodeToYouTube.mockResolvedValue({ videoId: 'YT_123' });
   });
 
   it('shows connect call-to-action when YouTube is not connected and triggers OAuth flow', async () => {
-    getYouTubeConnectionStatus.mockResolvedValue({
+    podcastApi.getYouTubeConnectionStatus.mockResolvedValue({
       ...defaultConnection,
       isConnected: false,
       channelName: null,
@@ -158,7 +155,7 @@ describe('YouTubePublisher', () => {
     await userEvent.click(connectButton);
 
     await waitFor(() => {
-      expect(initiateYouTubeOAuth).toHaveBeenCalledWith('ep-1', expect.stringMatching(/^https?:/));
+      expect(podcastApi.initiateYouTubeOAuth).toHaveBeenCalledWith('ep-1', expect.stringMatching(/^https?:/));
     });
     expect(openSpy).toHaveBeenCalledWith('https://accounts.google.com/o/oauth2/auth', '_blank', 'noopener');
     openSpy.mockRestore();
@@ -209,7 +206,7 @@ describe('YouTubePublisher', () => {
     await userEvent.click(screen.getByRole('button', { name: /publish episode/i }));
 
     await waitFor(() => {
-      expect(publishEpisodeToYouTube).toHaveBeenCalledWith('ep-1', {
+      expect(podcastApi.publishEpisodeToYouTube).toHaveBeenCalledWith('ep-1', {
         title: 'Investor Relations Update',
         description: 'Highlights from the board meeting.',
         tags: ['investor relations', 'earnings'],
@@ -224,7 +221,7 @@ describe('YouTubePublisher', () => {
     const statuses: YouTubePublishStatus[] = ['uploading', 'processing', 'published', 'failed'];
 
     for (const status of statuses) {
-      getYouTubePublishStatus.mockResolvedValueOnce({
+      podcastApi.getYouTubePublishStatus.mockResolvedValueOnce({
         status,
         lastCheckedAt: '2025-10-28T12:30:00Z',
       });
@@ -235,7 +232,7 @@ describe('YouTubePublisher', () => {
   });
 
   it('handles publish failure path with actionable messaging', async () => {
-    publishEpisodeToYouTube.mockRejectedValue(new Error('quota exceeded'));
+    podcastApi.publishEpisodeToYouTube.mockRejectedValue(new Error('quota exceeded'));
     renderPublisher();
 
     const publishButton = await screen.findByRole('button', { name: /publish episode/i });
@@ -263,18 +260,18 @@ describe('YouTubePublisher', () => {
     renderPublisher();
 
     const disconnectButton = await screen.findByRole('button', { name: /disconnect channel/i });
-    disconnectYouTubeChannel.mockResolvedValue({ success: true });
+    podcastApi.disconnectYouTubeChannel.mockResolvedValue({ success: true });
 
     await userEvent.click(disconnectButton);
 
     await waitFor(() => {
-      expect(disconnectYouTubeChannel).toHaveBeenCalledWith('ep-1');
+      expect(podcastApi.disconnectYouTubeChannel).toHaveBeenCalledWith('ep-1');
     });
     expect(await screen.findByRole('button', { name: /connect youtube/i })).toBeInTheDocument();
   });
 
   it('displays retry action when connection requires re-authentication', async () => {
-    getYouTubeConnectionStatus.mockResolvedValue({ ...defaultConnection, requiresAction: true });
+    podcastApi.getYouTubeConnectionStatus.mockResolvedValue({ ...defaultConnection, requiresAction: true });
     renderPublisher();
 
     expect(await screen.findByText(/re-authentication required/i)).toBeInTheDocument();
@@ -282,7 +279,7 @@ describe('YouTubePublisher', () => {
     await userEvent.click(retryButton);
 
     await waitFor(() => {
-      expect(initiateYouTubeOAuth).toHaveBeenCalledWith('ep-1', expect.any(String));
+      expect(podcastApi.initiateYouTubeOAuth).toHaveBeenCalledWith('ep-1', expect.any(String));
     });
   });
 
@@ -300,7 +297,7 @@ describe('YouTubePublisher', () => {
   });
 
   it('shows processing indicator while publish mutation is in flight', async () => {
-    publishEpisodeToYouTube.mockImplementation(
+    podcastApi.publishEpisodeToYouTube.mockImplementation(
       () =>
         new Promise((resolve) => {
           setTimeout(() => resolve({ videoId: 'YT_999' }), 50);

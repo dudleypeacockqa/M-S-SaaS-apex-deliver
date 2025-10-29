@@ -156,8 +156,6 @@ export function YouTubePublisher({ episode, youtubeAccess }: YouTubePublisherPro
     const scheduleIso = allowSchedule
       ? new Date((metadata.scheduleTime || '') + ':00Z').toISOString()
       : null;
-      ? new Date(metadata.scheduleTime + ':00Z').toISOString()
-      : null;
 
     const payload: YouTubePublishPayload = {
       title: trimmedTitle,

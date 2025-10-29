@@ -1,4 +1,6 @@
 import { MatchScoreBadge } from './MatchScoreBadge'
+import { SaveMatchButton } from './SaveMatchButton'
+import { PassMatchButton } from './PassMatchButton'
 
 import type { DealMatch } from '../../services/dealMatchingService'
 
@@ -71,24 +73,18 @@ export const MatchCard: React.FC<MatchCardProps> = ({
           View Details
         </button>
         {onSave && (
-          <button
-            type="button"
+          <SaveMatchButton
             onClick={() => onSave(match.id ?? match.dealId)}
-            disabled={loading}
-            className="flex-1 px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Save Match
-          </button>
+            loading={loading}
+            className="flex-1"
+          />
         )}
         {onPass && (
-          <button
-            type="button"
+          <PassMatchButton
             onClick={() => onPass(match.id ?? match.dealId)}
-            disabled={loading}
-            className="px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Pass
-          </button>
+            loading={loading}
+            className="flex-1"
+          />
         )}
       </div>
     </div>

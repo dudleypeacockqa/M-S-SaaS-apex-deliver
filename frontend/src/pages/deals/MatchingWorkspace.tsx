@@ -677,6 +677,7 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
         onSave={handleSaveMatch}
         onPass={handlePassMatch}
         onRequestIntro={handleRequestIntro}
+        actionLoading={saveMatchMutation.isPending || passMatchMutation.isPending}
       />
 
       <CriteriaBuilderModal

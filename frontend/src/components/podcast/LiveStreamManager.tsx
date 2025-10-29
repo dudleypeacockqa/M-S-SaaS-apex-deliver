@@ -151,7 +151,17 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
       postProcessing: next.postProcessing ?? [],
     };
     setRecordingSettings(normalized);
-    updatePreferences({ recording: normalized });
+
+    const recordingPayload: Partial<RecordingSettings> = {
+      enabled: normalized.enabled,
+      retentionDays: normalized.retentionDays,
+      storageLocation: normalized.storageLocation,
+    };
+    if (normalized.postProcessing.length > 0) {
+      recordingPayload.postProcessing = normalized.postProcessing;
+    }
+
+    updatePreferences({ recording: recordingPayload });
   };
 
   const handleQualityChange = (quality: StreamQuality) => {

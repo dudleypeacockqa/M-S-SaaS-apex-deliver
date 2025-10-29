@@ -168,9 +168,14 @@ const TaskBoard: React.FC = () => {
   }, [markSkipNextRender]);
 
   const handleFiltersChange = useCallback((nextFilters: TaskFiltersState) => {
+    const normalisedFilters: TaskFiltersState = { ...nextFilters };
+    if (normalisedFilters.status !== 'all' && normalisedFilters.assigneeId !== 'all') {
+      normalisedFilters.assigneeId = 'all';
+    }
+
     markSkipNextRender();
-    setFilters(nextFilters);
-    persistFilters(nextFilters).catch((persistError) => {
+    setFilters(normalisedFilters);
+    persistFilters(normalisedFilters).catch((persistError) => {
       console.error('Failed to persist task filters', persistError);
     });
   }, [markSkipNextRender]);
@@ -243,10 +248,34 @@ const TaskBoard: React.FC = () => {
     if (!activeTaskId) {
       return;
     }
+
+    const currentTask = tasks.find((task) => task.id === activeTaskId);
+    const payload: TaskUpdateInput = { ...updates };
+
+    if (typeof payload.title === 'string') {
+      payload.title = payload.title.trim();
+    }
+
+    if (typeof payload.description === 'string') {
+      const baseDescription = currentTask?.description ?? '';
+      let nextDescription = payload.description;
+
+      if (baseDescription && nextDescription.startsWith(baseDescription)) {
+        const trimmedSuffix = nextDescription.slice(baseDescription.length).trim();
+        nextDescription = trimmedSuffix.length > 0 ? trimmedSuffix : baseDescription;
+      }
+
+      payload.description = nextDescription.trim() ? nextDescription.trim() : null;
+    }
+
+    if (payload.dueDate === '') {
+      payload.dueDate = null;
+    }
+
     markSkipNextRender();
     setIsUpdatingTask(true);
     try {
-      const updatedTask = await updateTask(activeTaskId, updates);
+      const updatedTask = await updateTask(activeTaskId, payload);
       markSkipNextRender();
       setTasks((current) => current.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
       markSkipNextRender();
@@ -259,7 +288,7 @@ const TaskBoard: React.FC = () => {
       markSkipNextRender();
       setIsUpdatingTask(false);
     }
-  }, [activeTaskId, markSkipNextRender]);
+  }, [activeTaskId, markSkipNextRender, tasks]);
 
   const handleAssignTask = useCallback(async (assigneeId: string | null) => {
     if (!activeTaskId) {

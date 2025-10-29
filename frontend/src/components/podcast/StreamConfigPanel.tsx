@@ -46,6 +46,7 @@ export function StreamConfigPanel({ stream, onCopyServerUrl, onCopyStreamKey }: 
               Copy Server URL
             </button>
           </div>
+          <span className="mt-1 block break-all text-xs text-slate-500">{stream.serverUrl}</span>
         </div>
 
         <div>
@@ -75,6 +76,7 @@ export function StreamConfigPanel({ stream, onCopyServerUrl, onCopyStreamKey }: 
               Copy Stream Key
             </button>
           </div>
+          <span className="mt-1 block break-all text-xs text-slate-500">{stream.streamKey}</span>
         </div>
       </div>
 

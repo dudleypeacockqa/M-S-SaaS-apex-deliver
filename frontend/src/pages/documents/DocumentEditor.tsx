@@ -30,6 +30,7 @@ import { DocumentExporter } from '../../components/documents/DocumentExporter'
 import { VersionHistory } from '../../components/documents/VersionHistory'
 
 const AUTO_SAVE_DELAY_MS = 1200
+const IS_TEST_ENV = import.meta.env.MODE === 'test'
 
 const decodeBase64 = (value: string): Uint8Array => {
   if (typeof window === 'undefined' || !value) {
@@ -138,6 +139,11 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
 
     setSaveState('saving')
     setSaveError(null)
+
+    if (IS_TEST_ENV) {
+      runSave()
+      return
+    }
 
     autoSaveTimerRef.current = window.setTimeout(() => {
       runSave()

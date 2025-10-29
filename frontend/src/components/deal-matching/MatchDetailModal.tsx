@@ -6,6 +6,9 @@
 import React from 'react';
 import type { DealMatch } from '../../services/dealMatchingService';
 import { MatchScoreBadge } from './MatchScoreBadge';
+import { SaveMatchButton } from './SaveMatchButton';
+import { PassMatchButton } from './PassMatchButton';
+import { RequestIntroButton } from './RequestIntroButton';
 
 export interface MatchDetailModalProps {
   match: DealMatch | null;
@@ -14,6 +17,8 @@ export interface MatchDetailModalProps {
   onSave: (matchId: string) => void;
   onPass: (matchId: string) => void;
   onRequestIntro: (matchId: string) => void;
+  actionLoading?: boolean;
+}
 }
 
 export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
@@ -23,6 +28,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
   onSave,
   onPass,
   onRequestIntro,
+  actionLoading = false,
 }) => {
   if (!isOpen || !match) return null;
 
@@ -187,24 +193,20 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
 
         {/* Action Buttons */}
         <div className="flex gap-3 border-t border-gray-200 pt-6">
-          <button
+          <SaveMatchButton
             onClick={() => match.id && onSave(match.id)}
-            className="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors"
-          >
-            Save Match
-          </button>
-          <button
+            loading={actionLoading}
+            className="flex-1"
+          />
+          <RequestIntroButton
             onClick={() => match.id && onRequestIntro(match.id)}
-            className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors"
-          >
-            Request Introduction
-          </button>
-          <button
+            className="flex-1"
+          />
+          <PassMatchButton
             onClick={() => match.id && onPass(match.id)}
-            className="px-4 py-3 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
-          >
-            Pass
-          </button>
+            loading={actionLoading}
+            className="flex-1"
+          />
         </div>
       </div>
     </div>
