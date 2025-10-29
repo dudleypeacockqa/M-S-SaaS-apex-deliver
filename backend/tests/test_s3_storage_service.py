@@ -535,8 +535,8 @@ class TestS3StorageServiceContentTypes:
 
         service = S3StorageService()
 
-        # Act
-        content_type = service._guess_content_type("unknown.xyz")
+        # Act - use truly unknown extension that won't be recognized
+        content_type = service._guess_content_type("unknown.unknownext123")
 
         # Assert
         assert content_type == "application/octet-stream"

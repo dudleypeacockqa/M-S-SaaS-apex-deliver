@@ -20,7 +20,7 @@ def override_storage(tmp_path):
 
     from app.services import storage_service as storage_module
 
-    storage_module._storage_service = storage_module.StorageService(base_path=tmp_path)  # type: ignore[attr-defined]
+    storage_module._storage_service = storage_module.LocalStorageService(base_path=tmp_path)  # type: ignore[attr-defined]
     yield
     storage_module._storage_service = None  # type: ignore[attr-defined]
 
