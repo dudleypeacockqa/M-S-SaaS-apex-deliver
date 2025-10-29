@@ -5,7 +5,7 @@ Endpoints for financial analysis, ratio calculations, and AI narratives
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from datetime import datetime, timezone
 
 from app.db.session import get_db
@@ -160,12 +160,17 @@ def calculate_financial_ratios(
 
 @router.get(
     "/deals/{deal_id}/financial/ratios",
-    response_model=FinancialRatiosResponse,
-    summary="Get latest calculated ratios for a deal",
+    response_model=list[FinancialRatiosResponse],
+    summary="Get calculated ratios for a deal",
     description="""
-    Retrieve the most recently calculated financial ratios for a deal.
+    Retrieve financial ratios for a deal with optional filtering.
 
-    Returns ratios from the latest financial statement sync or manual calculation.
+    Returns ratios from financial statement syncs or manual calculations.
+    Results are ordered by calculated_at (most recent first).
+
+    **Query Parameters**:
+    - period: Filter by specific period (e.g., "2024-Q4")
+    - limit: Limit number of results (default: 10)
 
     **Authentication**: Required
     **Authorization**: User must have access to the deal's organization
@@ -174,29 +179,33 @@ def calculate_financial_ratios(
 )
 def get_financial_ratios(
     deal_id: str,
+    period: Optional[str] = None,
+    limit: int = 10,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """
-    Get latest financial ratios for a deal.
+    Get financial ratios for a deal (Task 1.1 - TDD GREEN).
 
-    Currently returns a stub response. In future iterations, this will:
-    1. Query the FinancialRatio model for latest ratios
-    2. Return calculated values from the database
-    3. Include historical trend data
+    Queries the FinancialRatio model for persisted calculations.
+    Supports filtering by period and limiting results.
 
     Args:
         deal_id: ID of the deal
+        period: Optional period filter (e.g., "2024-Q4")
+        limit: Maximum number of results to return
         db: Database session
         current_user: Authenticated user
 
     Returns:
-        FinancialRatiosResponse with latest ratios
+        List of FinancialRatiosResponse with persisted ratios
 
     Raises:
-        HTTPException 404: Deal not found or no ratios calculated
+        HTTPException 404: Deal not found
         HTTPException 403: User doesn't have access to deal's organization
     """
+    from app.models.financial_ratio import FinancialRatio
+
     # Verify deal exists and user has access
     deal = db.query(Deal).filter(Deal.id == deal_id).first()
 
@@ -213,12 +222,47 @@ def get_financial_ratios(
             detail="You don't have access to this deal's organization"
         )
 
-    # TODO: Query FinancialRatio model for latest ratios
-    # For now, return stub indicating no ratios calculated yet
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="No financial ratios have been calculated for this deal yet. Use POST /deals/{deal_id}/financial/calculate-ratios to calculate them."
-    )
+    # Query FinancialRatio model with optional period filter
+    query = db.query(FinancialRatio).filter(FinancialRatio.deal_id == deal_id)
+
+    if period:
+        query = query.filter(FinancialRatio.period == period)
+
+    # Order by most recent first and apply limit
+    ratios = query.order_by(FinancialRatio.calculated_at.desc()).limit(limit).all()
+
+    # Convert database models to response schema
+    results = []
+    for ratio in ratios:
+        results.append(FinancialRatiosResponse(
+            deal_id=ratio.deal_id,
+            organization_id=ratio.organization_id,
+            calculated_at=ratio.calculated_at,
+            data_quality="complete",  # Simplified - could calculate based on non-null fields
+            period=ratio.period,
+            # Map all ratio fields
+            current_ratio=float(ratio.current_ratio) if ratio.current_ratio else None,
+            quick_ratio=float(ratio.quick_ratio) if ratio.quick_ratio else None,
+            cash_ratio=float(ratio.cash_ratio) if ratio.cash_ratio else None,
+            operating_cash_flow_ratio=float(ratio.operating_cash_flow_ratio) if ratio.operating_cash_flow_ratio else None,
+            defensive_interval_ratio=float(ratio.defensive_interval_ratio) if ratio.defensive_interval_ratio else None,
+            gross_profit_margin=float(ratio.gross_profit_margin) if ratio.gross_profit_margin else None,
+            operating_profit_margin=float(ratio.operating_profit_margin) if ratio.operating_profit_margin else None,
+            net_profit_margin=float(ratio.net_profit_margin) if ratio.net_profit_margin else None,
+            return_on_assets=float(ratio.return_on_assets) if ratio.return_on_assets else None,
+            return_on_equity=float(ratio.return_on_equity) if ratio.return_on_equity else None,
+            return_on_invested_capital=float(ratio.return_on_invested_capital) if ratio.return_on_invested_capital else None,
+            ebitda_margin=float(ratio.ebitda_margin) if ratio.ebitda_margin else None,
+            ebit_margin=float(ratio.ebit_margin) if ratio.ebit_margin else None,
+            debt_to_equity=float(ratio.debt_to_equity) if ratio.debt_to_equity else None,
+            debt_to_assets=float(ratio.debt_to_assets) if ratio.debt_to_assets else None,
+            equity_multiplier=float(ratio.equity_multiplier) if ratio.equity_multiplier else None,
+            interest_coverage=float(ratio.interest_coverage) if ratio.interest_coverage else None,
+            debt_service_coverage=float(ratio.debt_service_coverage) if ratio.debt_service_coverage else None,
+            financial_leverage=float(ratio.financial_leverage) if ratio.financial_leverage else None,
+        ))
+
+    return results
 
 
 @router.get(

@@ -13,6 +13,7 @@ class FinancialRatiosResponse(BaseModel):
 
     deal_id: str = Field(..., description="Deal ID these ratios belong to")
     organization_id: str = Field(..., description="Organization ID")
+    period: Optional[str] = Field(None, description="Period identifier (e.g., '2024-Q4')")
 
     # Liquidity Ratios (5)
     current_ratio: Optional[float] = Field(None, description="Current Assets / Current Liabilities")

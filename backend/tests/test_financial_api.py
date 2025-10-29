@@ -174,7 +174,7 @@ def test_get_financial_connections_endpoint_returns_connections(client, test_dea
 
 
 def test_get_financial_ratios_not_found(client, test_deal, solo_user):
-    """Test GET /deals/{id}/financial/ratios returns 404 when no ratios exist"""
+    """Test GET /deals/{id}/financial/ratios returns empty list when no ratios exist"""
     app.dependency_overrides[get_current_user] = lambda: solo_user
 
     try:
@@ -182,8 +182,10 @@ def test_get_financial_ratios_not_found(client, test_deal, solo_user):
             f"/api/deals/{test_deal.id}/financial/ratios",
         )
 
-        assert response.status_code == 404
-        assert "calculated" in response.json()["detail"].lower()
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        assert len(data) == 0
     finally:
         app.dependency_overrides.pop(get_current_user, None)
 
