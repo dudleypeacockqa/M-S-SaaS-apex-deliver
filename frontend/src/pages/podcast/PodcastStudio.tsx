@@ -323,7 +323,7 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
             </div>
           )}
           {quota.upgradeRequired && quota.upgradeMessage && (
-            <p className="mt-2 text-sm text-indigo-700">{quota.upgradeMessage}</p>
+            <p className="mt-2 text-sm text-indigo-700" role="alert">{quota.upgradeMessage}</p>
           )}
         </div>
         <div className="flex flex-col items-end">
@@ -553,29 +553,44 @@ function EpisodeListItem({
                 </button>
               ) : (
                 <>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500">Transcript ready</span>
-                    {episode.transcript_language && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                        {episode.transcript_language.toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <a
-                      href={`data:text/plain;charset=utf-8,${encodeURIComponent(episode.transcript)}`}
-                      download={`${episode.title.replace(/\s+/g, '_')}_transcript.txt`}
-                      className="text-xs text-indigo-600 hover:text-indigo-800 underline"
+                  <div className="flex flex-col gap-1 max-w-md">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">Transcript ready</span>
+                      {episode.transcript_language && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                          {episode.transcript_language.toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-700 line-clamp-2">
+                      {episode.transcript}
+                    </p>
+                    <div className="flex gap-2">
+                      <a
+                        href={`/api/podcasts/episodes/${episode.id}/transcript`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-indigo-600 hover:text-indigo-800 underline"
+                      >
+                        Download Transcript (TXT)
+                      </a>
+                      <a
+                        href={`/api/podcasts/episodes/${episode.id}/transcript.srt`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-indigo-600 hover:text-indigo-800 underline"
+                      >
+                        Download Transcript (SRT)
+                      </a>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleTranscribe}
+                      disabled={transcriptionMutation.isPending}
+                      className="text-xs text-indigo-600 hover:text-indigo-800 underline text-left"
                     >
-                      Download Transcript (TXT)
-                    </a>
-                    <a
-                      href={`data:text/plain;charset=utf-8,${encodeURIComponent(episode.transcript)}`}
-                      download={`${episode.title.replace(/\s+/g, '_')}_transcript.srt`}
-                      className="text-xs text-indigo-600 hover:text-indigo-800 underline"
-                    >
-                      Download Transcript (SRT)
-                    </a>
+                      {transcriptionMutation.isPending ? 'Regenerating…' : 'Regenerate Transcript'}
+                    </button>
                   </div>
                 </>
               )}
