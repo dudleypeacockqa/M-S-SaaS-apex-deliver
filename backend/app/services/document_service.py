@@ -39,6 +39,7 @@ from app.services.storage_service import get_storage_service
 
 
 _PERMISSION_RANK = {
+    PermissionLevel.NONE: 0,
     PermissionLevel.VIEWER: 1,
     PermissionLevel.EDITOR: 2,
     PermissionLevel.OWNER: 3,
@@ -60,11 +61,13 @@ def _user_display_name(user: Optional[User]) -> Optional[str]:
     return getattr(user, "email", None)
 
 
-def _normalize_level(level: str) -> str:
+def _normalize_level(level: Optional[str]) -> str:
+    if not level:
+        return PermissionLevel.NONE
     return level.lower()
 
 
-def _max_permission(current: str, candidate: str) -> str:
+def _max_permission(current: Optional[str], candidate: Optional[str]) -> Optional[str]:
     current_key = _normalize_level(current)
     candidate_key = _normalize_level(candidate)
     return current if _PERMISSION_RANK[current_key] >= _PERMISSION_RANK[candidate_key] else candidate
@@ -83,7 +86,7 @@ def _resolve_folder_permission(
     if str(deal.owner_id) == str(user.id):
         return PermissionLevel.OWNER
 
-    permission = PermissionLevel.VIEWER
+    permission: Optional[str] = PermissionLevel.NONE
 
     current_folder = folder
     while current_folder is not None:
@@ -104,7 +107,7 @@ def _resolve_folder_permission(
         else:
             current_folder = None
 
-    return permission
+    return permission or PermissionLevel.NONE
 
 
 def _resolve_document_permission(
@@ -126,7 +129,7 @@ def _resolve_document_permission(
     if str(document.uploaded_by) == str(user.id):
         return PermissionLevel.OWNER
 
-    permission = PermissionLevel.VIEWER
+    permission: Optional[str] = PermissionLevel.NONE
 
     # Document-specific permission
     doc_permission = (
@@ -153,7 +156,7 @@ def _resolve_document_permission(
             )
             permission = _max_permission(permission, folder_permission)
 
-    return permission
+    return permission or PermissionLevel.NONE
 
 
 def _ensure_document_permission(
@@ -506,6 +509,7 @@ def list_documents(
     deal_id: str,
     organization_id: str,
     params: DocumentListParams,
+    current_user: User,
 ) -> tuple[list[DocumentMetadata], int]:
     query = db.query(Document).filter(
         Document.deal_id == deal_id,
@@ -522,13 +526,25 @@ def list_documents(
     if not params.include_archived:
         query = query.filter(Document.archived_at.is_(None))
 
-    total = query.count()
-    items = (
-        query.order_by(Document.created_at.desc())
-        .offset((params.page - 1) * params.per_page)
-        .limit(params.per_page)
-        .all()
-    )
+    candidate_documents = query.order_by(Document.created_at.desc()).all()
+    accessible_documents: list[Document] = []
+    for document in candidate_documents:
+        permission = _resolve_document_permission(db, document=document, user=current_user)
+        if _PERMISSION_RANK[_normalize_level(permission)] >= _PERMISSION_RANK[PermissionLevel.VIEWER]:
+            accessible_documents.append(document)
+
+    total_candidates = len(candidate_documents)
+    accessible_total = len(accessible_documents)
+
+    if accessible_total == 0 and total_candidates > 0:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to view documents for this deal.",
+        )
+
+    start_index = (params.page - 1) * params.per_page
+    end_index = start_index + params.per_page
+    page_documents = accessible_documents[start_index:end_index]
 
     metadata_items = [
         DocumentMetadata(
@@ -547,10 +563,10 @@ def list_documents(
             updated_at=item.updated_at,
             uploader_name=None,
         )
-        for item in items
+        for item in page_documents
     ]
 
-    return metadata_items, total
+    return metadata_items, accessible_total
 
 
 def list_folders(
@@ -997,6 +1013,25 @@ def grant_folder_permission(
         )
         db.add(permission)
 
+    db.flush()
+
+    affected_documents = (
+        db.query(Document)
+        .filter(
+            Document.folder_id == folder.id,
+            Document.organization_id == folder.organization_id,
+        )
+        .all()
+    )
+
+    for document in affected_documents:
+        _log_access(
+            db,
+            document=document,
+            user=current_user,
+            action="permission_granted",
+        )
+
     db.commit()
     db.refresh(permission)
 
@@ -1274,6 +1309,160 @@ async def restore_document_version(
     )
 
 
+# =============================================================================
+# Bulk Operations (DEV-008 Phase 2)
+# =============================================================================
 
 
+async def bulk_download_documents(
+    *,
+    db: Session,
+    document_ids: List[str],
+    organization_id: str,
+    current_user: User,
+) -> Tuple[bytes, str]:
+    """
+    Download multiple documents as a single ZIP archive.
 
+    Only includes documents the user has viewer permission for.
+    Silently skips documents without permission.
+
+    Returns:
+        Tuple of (zip_content_bytes, filename)
+    """
+    import io
+    import zipfile
+
+    storage = get_storage_service()
+    zip_buffer = io.BytesIO()
+    filename_counts: dict[str, int] = {}
+
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for doc_id in document_ids:
+            try:
+                # Get document and check permission
+                document = db.query(Document).filter(
+                    Document.id == doc_id,
+                    Document.organization_id == organization_id,
+                    Document.archived_at.is_(None),
+                ).first()
+
+                if not document:
+                    continue
+
+                # Check user has at least viewer permission
+                try:
+                    permission = _resolve_document_permission(
+                        db,
+                        document=document,
+                        user=current_user,
+                    )
+
+                    if _PERMISSION_RANK.get(_normalize_level(permission), 0) < _PERMISSION_RANK[PermissionLevel.VIEWER]:
+                        continue
+                except HTTPException:
+                    # User doesn't have permission, skip this document
+                    continue
+
+                # Read file from storage
+                try:
+                    file_path = await storage.get_file_path(document.file_key, organization_id)
+                except Exception:
+                    # Skip files that can't be retrieved
+                    continue
+
+                with open(file_path, 'rb') as f:
+                    file_content = f.read()
+
+                # Handle filename collisions
+                base_name = document.name
+                if base_name not in filename_counts:
+                    filename_counts[base_name] = 0
+                filename_counts[base_name] += 1
+
+                if filename_counts[base_name] > 1:
+                    # Add counter to duplicate filenames
+                    name_parts = base_name.rsplit('.', 1)
+                    if len(name_parts) == 2:
+                        unique_name = f"{name_parts[0]}_({filename_counts[base_name] - 1}).{name_parts[1]}"
+                    else:
+                        unique_name = f"{base_name}_({filename_counts[base_name] - 1})"
+                else:
+                    unique_name = base_name
+
+                # Add file to ZIP
+                zip_file.writestr(unique_name, file_content)
+
+                # Log bulk download action
+                _log_access(db, document, current_user, action="bulk_download")
+
+            except Exception:
+                # Skip documents that fail (e.g., file not found, permission denied)
+                continue
+
+    db.commit()
+
+    zip_buffer.seek(0)
+    return zip_buffer.getvalue(), "documents.zip"
+
+
+def bulk_delete_documents(
+    *,
+    db: Session,
+    document_ids: List[str],
+    organization_id: str,
+    current_user: User,
+) -> Tuple[List[str], List[str], dict]:
+    """
+    Soft delete (archive) multiple documents.
+
+    Requirements:
+    - Deal owners can delete any document in their deals
+    - Uploaders can delete their own documents
+    - All other users cannot delete
+
+    Returns:
+        Tuple of (deleted_ids, failed_ids, failed_reasons)
+    """
+    deleted_ids = []
+    failed_ids = []
+    failed_reasons = {}
+
+    for doc_id in document_ids:
+        try:
+            # Get document
+            document = db.query(Document).filter(
+                Document.id == doc_id,
+                Document.organization_id == organization_id,
+                Document.archived_at.is_(None),
+            ).first()
+
+            if not document:
+                failed_ids.append(doc_id)
+                failed_reasons[doc_id] = "Document not found or already deleted"
+                continue
+
+            # Check permission - only deal owner or uploader can delete
+            deal = db.get(Deal, document.deal_id)
+            is_deal_owner = deal and str(deal.owner_id) == str(current_user.id)
+            is_uploader = str(document.uploaded_by) == str(current_user.id)
+
+            if not (is_deal_owner or is_uploader):
+                failed_ids.append(doc_id)
+                failed_reasons[doc_id] = "Permission denied - only deal owner or document uploader can delete"
+                continue
+
+            # Archive the document (soft delete)
+            archive_document(
+                db=db,
+                document=document,
+                performed_by=current_user,
+            )
+
+            deleted_ids.append(doc_id)
+
+        except Exception as e:
+            failed_ids.append(doc_id)
+            failed_reasons[doc_id] = str(e)
+
+    return deleted_ids, failed_ids, failed_reasons
