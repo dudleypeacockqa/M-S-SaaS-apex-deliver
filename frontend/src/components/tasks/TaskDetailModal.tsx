@@ -152,6 +152,9 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         <header className="mb-4 flex items-start justify-between">
           <div>
             <h2 id="task-details-heading" className="text-lg font-semibold text-gray-900">Task details</h2>
+            {task && (
+              <p className="text-base font-semibold text-gray-900">{task.title}</p>
+            )}
             {task?.deal && (
               <p className="text-sm text-gray-500">Linked deal: <span className="font-medium text-gray-700">{task.deal.name}</span></p>
             )}

@@ -160,10 +160,13 @@ describe('MatchingWorkspace', () => {
       renderWithProviders(<MatchingWorkspace />);
 
       await waitFor(() => {
-        expect(screen.getByText(/saas/i)).toBeInTheDocument();
-        expect(screen.getByText(/fintech/i)).toBeInTheDocument();
-        expect(screen.getByText(/Â£1\.0M - Â£10\.0M/i)).toBeInTheDocument();
+        const card = screen.getByText('Tech Acquisitions Q4').closest('div');
+        expect(card?.textContent).toMatch(/Industries:\s*saas, fintech/i);
+        expect(card?.textContent).toMatch(/Size:\s*£1\.0M\s+–\s+£10\.0M/);
+        expect(card?.textContent).toMatch(/Geography:\s*UK, EU/);
+        expect(card?.textContent).toMatch(/integration:\s*Salesforce/i);
       });
+    });
     });
   });
 

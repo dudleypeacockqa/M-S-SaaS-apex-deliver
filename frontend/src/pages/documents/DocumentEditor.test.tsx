@@ -118,6 +118,7 @@ describe('DocumentEditor', () => {
       file_name: 'Acquisition Overview.pdf',
       file_type: 'application/pdf',
       download_url: 'https://example.com/documents/doc-123.pdf',
+      file_content: 'VGhpcyBpcyBhIHNpbXVsYXRlZCBwZGYgZmlsZS4=',
     })
 
     vi.mocked(documentApi.listDocumentVersions).mockResolvedValue([

@@ -1,8 +1,9 @@
 import { beforeAll, beforeEach, describe, expect, it, vi, afterEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
+import React from 'react';
 import TaskBoard from './TaskBoard';
 import * as taskService from '../../services/tasksService';
 import type { Task, TaskFiltersState, TaskAssignee } from '../../services/tasksService';
@@ -246,7 +247,18 @@ describe('TaskBoard', () => {
     vi.clearAllMocks();
   });
 
-  const renderTaskBoard = () => render(<TaskBoard />, { wrapper: createWrapper() });
+const renderTaskBoard = () => {
+  let utils = render(<TaskBoard />, { wrapper: createWrapper() });
+  return {
+    ...utils,
+    rerender: (ui?: React.ReactElement) => {
+      cleanup();
+      utils = render(ui ?? <TaskBoard />, { wrapper: createWrapper() });
+      return utils;
+    },
+  };
+};
+
 
   it('renders task board with required columns and tasks', async () => {
     renderTaskBoard();
@@ -552,6 +564,7 @@ describe('TaskBoard', () => {
     });
 
     vi.advanceTimersByTime(45000);
+    // console.log('calls after advance', vi.mocked(taskService.fetchTaskBoardData).mock.calls.length);
 
     await waitFor(() => {
       expect(taskService.fetchTaskBoardData).toHaveBeenCalledTimes(2);

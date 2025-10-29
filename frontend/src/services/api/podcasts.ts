@@ -114,6 +114,12 @@ interface ApiYouTubeOAuthResponse {
   expires_at?: string | null;
 }
 
+interface ApiYouTubeStatusResponse {
+  status: string;
+  last_checked_at?: string | null;
+  video_id?: string | null;
+}
+
 export interface YouTubeUploadResponse {
   videoId: string;
 }
@@ -139,6 +145,14 @@ export interface YouTubePublishPayload {
   tags: string[];
   privacy: 'private' | 'unlisted' | 'public';
   scheduleTime: string | null;
+}
+
+export type YouTubePublishStatus = 'not_published' | 'uploading' | 'processing' | 'published' | 'failed';
+
+export interface YouTubePublishState {
+  status: YouTubePublishStatus;
+  lastCheckedAt: string | null;
+  videoId: string | null;
 }
 
 interface ApiTranscriptionResponse {
@@ -329,6 +343,37 @@ export async function initiateYouTubeOAuth(
   }
 }
 
+export async function disconnectYouTubeChannel(episodeId: string): Promise<void> {
+  const primaryUrl = `${API_BASE_URL}/api/v1/podcasts/episodes/${episodeId}/youtube/connect`;
+
+  try {
+    await axios.delete(primaryUrl, { withCredentials: true });
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      const fallbackUrl = `${API_BASE_URL}/api/podcasts/episodes/${episodeId}/youtube/connect`;
+      await axios.delete(fallbackUrl, { withCredentials: true });
+      return;
+    }
+    throw error;
+  }
+}
+
+export async function getYouTubePublishStatus(episodeId: string): Promise<YouTubePublishState> {
+  const primaryUrl = `${API_BASE_URL}/api/v1/podcasts/episodes/${episodeId}/youtube/status`;
+
+  try {
+    const { data } = await axios.get<ApiYouTubeStatusResponse>(primaryUrl, { withCredentials: true });
+    return mapYouTubeStatus(data);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      const fallbackUrl = `${API_BASE_URL}/api/podcasts/episodes/${episodeId}/youtube/status`;
+      const { data } = await axios.get<ApiYouTubeStatusResponse>(fallbackUrl, { withCredentials: true });
+      return mapYouTubeStatus(data);
+    }
+    throw error;
+  }
+}
+
 export async function publishEpisodeToYouTube(
   episodeId: string,
   payload: YouTubePublishPayload,
@@ -394,5 +439,24 @@ function mapYouTubeOAuthResponse(data: ApiYouTubeOAuthResponse): YouTubeOAuthIni
     authorizationUrl: data.authorization_url,
     state: data.state,
     expiresAt: data.expires_at ?? null,
+  };
+}
+
+function mapYouTubeStatus(data: ApiYouTubeStatusResponse): YouTubePublishState {
+  const normalised = (data.status || 'not_published').toLowerCase();
+  const knownStatuses: Record<string, YouTubePublishStatus> = {
+    not_published: 'not_published',
+    pending: 'not_published',
+    uploading: 'uploading',
+    processing: 'processing',
+    published: 'published',
+    failed: 'failed',
+    error: 'failed',
+  };
+
+  return {
+    status: knownStatuses[normalised] ?? 'not_published',
+    lastCheckedAt: data.last_checked_at ?? null,
+    videoId: data.video_id ?? null,
   };
 }

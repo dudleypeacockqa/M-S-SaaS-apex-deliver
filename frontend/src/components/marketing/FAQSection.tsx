@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { trackCtaClick } from '../../lib/analytics';
 import { StructuredData } from '../common/StructuredData';
 
 export const FAQSection: React.FC = () => {
@@ -130,6 +131,7 @@ export const FAQSection: React.FC = () => {
             <a
               href="/contact"
               className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={() => trackCtaClick('contact-sales', 'faq-cta')}
             >
               <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
@@ -140,6 +142,7 @@ export const FAQSection: React.FC = () => {
             <a
               href="/demo"
               className="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg border-2 border-blue-600 hover:bg-blue-50 transition-colors"
+              onClick={() => trackCtaClick('book-demo', 'faq-cta')}
             >
               <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />

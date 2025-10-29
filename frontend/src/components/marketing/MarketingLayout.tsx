@@ -41,8 +41,16 @@ export const MarketingLayout: React.FC<MarketingLayoutProps> = ({ children }) =>
     <div className="min-h-screen flex flex-col">
       <StructuredData json={organizationSchema} id="organization-schema" />
       <AnalyticsProvider>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-indigo-900 focus:shadow-lg"
+        >
+          Skip to main content
+        </a>
         <MarketingNav />
-        <main className="flex-grow">{children}</main>
+        <main id="main-content" tabIndex={-1} className="flex-grow" aria-label="Main content">
+          {children}
+        </main>
         <Footer />
       </AnalyticsProvider>
     </div>

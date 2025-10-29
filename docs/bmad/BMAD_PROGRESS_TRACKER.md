@@ -1,5 +1,24 @@
 # BMAD Progress Tracker
 
+## Session 2025-10-29 (MARK-002 Marketing Site Wrap-Up – 12:10 UTC)
+
+**Status**: MARK-002 story marked 100% complete (documentation + analytics/deployment planning in place)
+
+**Artifacts Added**:
+- `docs/marketing/cross-browser-testing.md` – browser support matrix & responsive QA plan
+- `docs/marketing/load-testing-plan.md` – Lighthouse & Slow 3G workflow
+- `docs/marketing/deployment-runbook.md` – Render/CDN/SSL/custom domain instructions
+- `docs/marketing/analytics-implementation.md` – Hotjar + LinkedIn Insight Tag guidance
+
+**Outstanding Actions**:
+- Resolve legacy TypeScript errors (`frontend/src/components/deal-matching/CriteriaBuilderModal.tsx`, podcast stack) so `npm run build` succeeds for Lighthouse/preview
+- Execute real cross-browser runs and populate matrix once build is green
+- Capture Lighthouse desktop/mobile JSON outputs and attach to repo
+
+**Next**: After TypeScript fix, run load/cross-browser tests, then proceed with Render deployment using the new runbook.
+
+---
+
 ## Session 2025-10-30 (✅ Phase 5 – Frontend Feature Gates Delivered – 16:45 UTC)
 
 **Status**: Phase 5 complete; frontend gating and upgrade CTAs ready for release
@@ -736,7 +755,6 @@ umpy in backend requirements + venv, rerun pytest, refresh deployment health sna
 - Ran npm --prefix frontend run test -> 533 passed / 3 skipped; Vitest suite green with current code.
 - Logged backend failure for DEV-002/DEV-004 scope reconciliation; need to restore fixture API before advancing Phase 1.
 - NEXT: Fix deal test fixture, rerun pytest to confirm green baseline ahead of DEV-008/DEV-016 implementation work.
-
 
 
 

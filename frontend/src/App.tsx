@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import { ErrorBoundary } from "./components/common"
 import { LoadingSpinner } from "./components/common/LoadingSpinner"
+import { usePageAnalytics } from "./hooks/usePageAnalytics"
 
 const lazyNamed = <T extends ComponentType<any>>(
   importer: () => Promise<Record<string, unknown>>,
@@ -24,7 +25,11 @@ const lazyNamed = <T extends ComponentType<any>>(
 const lazyDefault = (importer: () => Promise<{ default: ComponentType<any> }>) => lazy(importer)
 
 const RouteLoader = () => (
-  <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 via-white to-indigo-50">
+  <div
+    className="flex min-h-[40vh] flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 via-white to-indigo-50"
+    role="status"
+    aria-live="polite"
+  >
     <LoadingSpinner size="lg" />
     <span className="text-base font-medium text-slate-600">Preparing the ApexDeliver experience…</span>
   </div>
@@ -56,6 +61,7 @@ const ContactPage = lazyNamed(() => import("./pages/marketing/ContactPage"), "Co
 const TermsOfService = lazyNamed(() => import("./pages/marketing/legal/TermsOfService"), "TermsOfService")
 const PrivacyPolicy = lazyNamed(() => import("./pages/marketing/legal/PrivacyPolicy"), "PrivacyPolicy")
 const CookiePolicy = lazyNamed(() => import("./pages/marketing/legal/CookiePolicy"), "CookiePolicy")
+const DocumentEditor = lazyNamed(() => import("./pages/documents/DocumentEditor"), "DocumentEditor")
 
 const DashboardRoute = () => {
   return (
@@ -76,7 +82,19 @@ const FinancialDashboardRoute = () => {
   return <FinancialDashboard dealId={dealId} />;
 }
 
+const DocumentEditorRoute = () => {
+  const { dealId, documentId } = useParams<{ dealId: string; documentId: string }>()
+
+  if (!dealId || !documentId) {
+    return <Navigate to="/deals" replace />
+  }
+
+  return <DocumentEditor documentId={documentId} dealId={dealId} />
+}
+
 export const AppRoutes = () => {
+  usePageAnalytics()
+
   return (
     <Routes>
       {/* Marketing Routes (No RootLayout - uses MarketingLayout) */}
@@ -108,6 +126,7 @@ export const AppRoutes = () => {
         <Route path="deals/:dealId/data-room" element={<SignedIn><DataRoom /></SignedIn>} />
         <Route path="deals/:dealId/valuation" element={<SignedIn><ValuationSuite /></SignedIn>} />
         <Route path="deals/:dealId/financial" element={<SignedIn><FinancialDashboardRoute /></SignedIn>} />
+        <Route path="deals/:dealId/documents/:documentId/editor" element={<SignedIn><DocumentEditorRoute /></SignedIn>} />
 
         {/* Podcast Routes */}
         <Route path="podcast-studio" element={<SignedIn><PodcastStudio /></SignedIn>} />

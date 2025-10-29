@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import TaskCard from '../../components/tasks/TaskCard';
 import TaskFilters from '../../components/tasks/TaskFilters';
 import TaskFormModal from '../../components/tasks/TaskFormModal';
@@ -17,7 +16,7 @@ import {
   updateTaskStatus,
   type Task,
   type TaskAssignee,
-  type TaskBoardData,
+  type TaskBoardMetadata,
   type TaskCreateInput,
   type TaskFiltersState,
   type TaskPriority,
@@ -38,6 +37,28 @@ const priorityWeights: Record<TaskPriority, number> = {
   urgent: 4,
 };
 
+const FALLBACK_FILTERS: TaskFiltersState = {
+  assigneeId: 'all',
+  status: 'all',
+  priority: 'all',
+  sortBy: 'priority',
+  sortDirection: 'desc',
+  dueDateBefore: null,
+  dueDateAfter: null,
+};
+
+const resolveDefaultFilters = (): TaskFiltersState => {
+  try {
+    const defaults = getDefaultFilters();
+    if (defaults) {
+      return { ...defaults };
+    }
+  } catch (resolutionError) {
+    console.warn('Falling back to default task filters', resolutionError);
+  }
+  return { ...FALLBACK_FILTERS };
+};
+
 const isEditableElement = (target: EventTarget | null): boolean => {
   if (!(target instanceof HTMLElement)) {
     return false;
@@ -47,35 +68,87 @@ const isEditableElement = (target: EventTarget | null): boolean => {
 };
 
 const TaskBoard: React.FC = () => {
-  const queryClient = useQueryClient();
-  const [filters, setFilters] = useState<TaskFiltersState>(() => getDefaultFilters());
+  const [filters, setFilters] = useState<TaskFiltersState>(() => resolveDefaultFilters());
   const [tasks, setTasks] = useState<Task[]>([]);
   const [assignees, setAssignees] = useState<TaskAssignee[]>([]);
+  const [metadata, setMetadata] = useState<TaskBoardMetadata | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
-  const filtersInitialisedRef = useRef(false);
+  const [isCreatingTask, setIsCreatingTask] = useState(false);
+  const [isUpdatingTask, setIsUpdatingTask] = useState(false);
+  const [isAssigningTask, setIsAssigningTask] = useState(false);
+  const [isDeletingTask, setIsDeletingTask] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  const { data, isLoading, isError, error } = useQuery<TaskBoardData>({
-    queryKey: ['taskBoard'],
-    queryFn: fetchTaskBoardData,
-    refetchInterval: 45000,
-    refetchIntervalInBackground: true,
+  const filtersInitialisedRef = useRef(false);
+  const skipNextRenderRef = useRef(false);
+  const hasMountedRef = useRef(false);
+  const isFetchingRef = useRef(false);
+
+  const markSkipNextRender = useCallback(() => {
+    skipNextRenderRef.current = true;
+  }, []);
+
+  const loadTaskBoard = useCallback(async ({ showSpinner = false } = {}) => {
+    if (isFetchingRef.current) {
+      return;
+    }
+
+    isFetchingRef.current = true;
+    if (showSpinner) {
+      setIsLoading(true);
+    }
+
+    try {
+      const data = await fetchTaskBoardData();
+      markSkipNextRender();
+      setTasks(data.tasks);
+      setAssignees(data.assignees);
+      setMetadata(data.metadata);
+      if (!filtersInitialisedRef.current) {
+        setFilters(data.filters ?? resolveDefaultFilters());
+        filtersInitialisedRef.current = true;
+      }
+      setLoadError(null);
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : 'Failed to load tasks');
+    } finally {
+      if (showSpinner) {
+        setIsLoading(false);
+      }
+      isFetchingRef.current = false;
+    }
+  }, [markSkipNextRender]);
+
+  useEffect(() => {
+    void loadTaskBoard({ showSpinner: true });
+  }, [loadTaskBoard]);
+
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
+    if (skipNextRenderRef.current) {
+      skipNextRenderRef.current = false;
+      return;
+    }
+    void loadTaskBoard();
   });
 
   useEffect(() => {
-    if (!data) {
-      return;
+    if (typeof window === 'undefined') {
+      return () => {};
     }
-    setAssignees(data.assignees);
-    setTasks(data.tasks);
-    if (!filtersInitialisedRef.current) {
-      setFilters(data.filters);
-      filtersInitialisedRef.current = true;
-    }
-  }, [data]);
+    const intervalId = window.setInterval(() => {
+      void loadTaskBoard();
+    }, 45000);
+    return () => window.clearInterval(intervalId);
+  }, [loadTaskBoard]);
 
   useEffect(() => {
     const handleKeydown = (event: KeyboardEvent) => {
@@ -86,124 +159,164 @@ const TaskBoard: React.FC = () => {
         return;
       }
       event.preventDefault();
+      markSkipNextRender();
       setIsCreateModalOpen(true);
     };
 
     window.addEventListener('keydown', handleKeydown);
     return () => window.removeEventListener('keydown', handleKeydown);
-  }, []);
+  }, [markSkipNextRender]);
 
-  const applyTasksUpdate = useCallback((updater: (current: Task[]) => Task[]) => {
-    let computed: Task[] | undefined;
-    setTasks((current) => {
-      computed = updater(current);
-      return computed;
+  const handleFiltersChange = useCallback((nextFilters: TaskFiltersState) => {
+    markSkipNextRender();
+    setFilters(nextFilters);
+    persistFilters(nextFilters).catch((persistError) => {
+      console.error('Failed to persist task filters', persistError);
     });
-    queryClient.setQueryData<TaskBoardData | undefined>(['taskBoard'], (current) => {
-      if (!current) {
-        return current;
-      }
-      const nextTasks = computed ?? updater(current.tasks);
-      return {
-        ...current,
-        tasks: nextTasks,
-      };
+  }, [markSkipNextRender]);
+
+  const handleClearFilters = useCallback(() => {
+    const defaults = resolveDefaultFilters();
+    markSkipNextRender();
+    setFilters(defaults);
+    persistFilters(defaults).catch((persistError) => {
+      console.error('Failed to persist task filters', persistError);
     });
-  }, [queryClient]);
-
-  const createTaskMutation = useMutation({
-    mutationFn: (payload: TaskCreateInput) => createTask(payload),
-    onSuccess: (createdTask) => {
-      applyTasksUpdate((current) => [...current, createdTask]);
-    },
-  });
-
-  const updateTaskMutation = useMutation({
-    mutationFn: ({ taskId, updates }: { taskId: string; updates: TaskUpdateInput }) => updateTask(taskId, updates),
-    onSuccess: (updatedTask) => {
-      applyTasksUpdate((current) => current.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
-      setActiveTask((existing) => (existing?.id === updatedTask.id ? updatedTask : existing));
-    },
-  });
-
-  const updateTaskStatusMutation = useMutation({
-    mutationFn: ({ taskId, status, position }: { taskId: string; status: TaskStatus; position: number }) =>
-      updateTaskStatus(taskId, status, position),
-    onSuccess: (updatedTask) => {
-      applyTasksUpdate((current) => current.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
-      setActiveTask((existing) => (existing?.id === updatedTask.id ? updatedTask : existing));
-    },
-  });
-
-  const assignTaskMutation = useMutation({
-    mutationFn: ({ taskId, assigneeId }: { taskId: string; assigneeId: string | null }) =>
-      assignTask(taskId, assigneeId),
-    onSuccess: (updatedTask) => {
-      applyTasksUpdate((current) => current.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
-      setActiveTask((existing) => (existing?.id === updatedTask.id ? updatedTask : existing));
-    },
-  });
-
-  const deleteTaskMutation = useMutation({
-    mutationFn: (taskId: string) => deleteTask(taskId),
-    onSuccess: (_, taskId) => {
-      applyTasksUpdate((current) => current.filter((task) => task.id !== taskId));
-      setIsDetailOpen(false);
-      setActiveTaskId(null);
-      setActiveTask(null);
-      setIsDetailLoading(false);
-    },
-  });
+  }, [markSkipNextRender]);
 
   const handleCreateTask = useCallback(async (payload: TaskCreateInput) => {
-    await createTaskMutation.mutateAsync(payload);
-  }, [createTaskMutation]);
+    markSkipNextRender();
+    setIsCreatingTask(true);
+    try {
+      const newTask = await createTask(payload);
+      markSkipNextRender();
+      setTasks((current) => [...current, newTask]);
+      setMetadata((current) => (
+        current
+          ? {
+              ...current,
+              total: current.total + 1,
+              lastUpdated: new Date().toISOString(),
+            }
+          : current
+      ));
+      setLoadError(null);
+    } catch (error) {
+      console.error('Failed to create task', error);
+      throw error;
+    } finally {
+      markSkipNextRender();
+      setIsCreatingTask(false);
+    }
+  }, [markSkipNextRender]);
 
   const handleTaskCardClick = useCallback(async (task: Task) => {
+    markSkipNextRender();
     setActiveTaskId(task.id);
     setActiveTask(task);
     setIsDetailOpen(true);
+    markSkipNextRender();
     setIsDetailLoading(true);
     try {
       const detailedTask = await getTask(task.id);
+      markSkipNextRender();
       setActiveTask(detailedTask);
-      applyTasksUpdate((current) =>
-        current.map((currentTask) => (currentTask.id === detailedTask.id ? detailedTask : currentTask)),
-      );
-    } catch (detailError) {
-      console.error('Failed to load task details', detailError);
+      setTasks((current) => current.map((item) => (item.id === detailedTask.id ? detailedTask : item)));
+    } catch (error) {
+      console.error('Failed to load task details', error);
     } finally {
+      markSkipNextRender();
       setIsDetailLoading(false);
     }
-  }, [applyTasksUpdate]);
+  }, [markSkipNextRender]);
 
   const handleCloseDetail = useCallback(() => {
+    markSkipNextRender();
     setIsDetailOpen(false);
+    markSkipNextRender();
     setActiveTaskId(null);
+    markSkipNextRender();
     setActiveTask(null);
-    setIsDetailLoading(false);
-  }, []);
+  }, [markSkipNextRender]);
 
   const handleSaveTask = useCallback(async (updates: TaskUpdateInput) => {
     if (!activeTaskId) {
       return;
     }
-    await updateTaskMutation.mutateAsync({ taskId: activeTaskId, updates });
-  }, [activeTaskId, updateTaskMutation]);
+    markSkipNextRender();
+    setIsUpdatingTask(true);
+    try {
+      const updatedTask = await updateTask(activeTaskId, updates);
+      markSkipNextRender();
+      setTasks((current) => current.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
+      markSkipNextRender();
+      setActiveTask(updatedTask);
+      setLoadError(null);
+    } catch (error) {
+      console.error('Failed to update task', error);
+      throw error;
+    } finally {
+      markSkipNextRender();
+      setIsUpdatingTask(false);
+    }
+  }, [activeTaskId, markSkipNextRender]);
 
   const handleAssignTask = useCallback(async (assigneeId: string | null) => {
     if (!activeTaskId) {
       return;
     }
-    await assignTaskMutation.mutateAsync({ taskId: activeTaskId, assigneeId });
-  }, [activeTaskId, assignTaskMutation]);
+    markSkipNextRender();
+    setIsAssigningTask(true);
+    try {
+      const updatedTask = await assignTask(activeTaskId, assigneeId);
+      markSkipNextRender();
+      setTasks((current) => current.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
+      markSkipNextRender();
+      setActiveTask(updatedTask);
+      setLoadError(null);
+    } catch (error) {
+      console.error('Failed to assign task', error);
+      throw error;
+    } finally {
+      markSkipNextRender();
+      setIsAssigningTask(false);
+    }
+  }, [activeTaskId, markSkipNextRender]);
 
   const handleDeleteTask = useCallback(async () => {
     if (!activeTaskId) {
       return;
     }
-    await deleteTaskMutation.mutateAsync(activeTaskId);
-  }, [activeTaskId, deleteTaskMutation]);
+    markSkipNextRender();
+    setIsDeletingTask(true);
+    try {
+      await deleteTask(activeTaskId);
+      markSkipNextRender();
+      setTasks((current) => current.filter((task) => task.id !== activeTaskId));
+      markSkipNextRender();
+      setMetadata((current) => (
+        current
+          ? {
+              ...current,
+              total: Math.max(0, current.total - 1),
+              lastUpdated: new Date().toISOString(),
+            }
+          : current
+      ));
+      markSkipNextRender();
+      setActiveTask(null);
+      markSkipNextRender();
+      setActiveTaskId(null);
+      markSkipNextRender();
+      setIsDetailOpen(false);
+    } catch (error) {
+      console.error('Failed to delete task', error);
+      throw error;
+    } finally {
+      markSkipNextRender();
+      setIsDeletingTask(false);
+    }
+  }, [activeTaskId, markSkipNextRender]);
 
   const handleDragEnd = useCallback((result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -223,36 +336,23 @@ const TaskBoard: React.FC = () => {
       return;
     }
 
-    applyTasksUpdate((current) =>
-      current.map((task) => (task.id === draggableId ? { ...task, status: destinationStatus } : task)),
-    );
+    markSkipNextRender();
+    setTasks((current) => current.map((task) => (task.id === draggableId ? { ...task, status: destinationStatus } : task)));
 
-    updateTaskStatusMutation.mutate(
-      { taskId: draggableId, status: destinationStatus, position: destination.index },
-      {
-        onError: () => {
-          applyTasksUpdate((current) =>
-            current.map((task) => (task.id === draggableId ? { ...task, status: sourceStatus } : task)),
-          );
-        },
-      },
-    );
-  }, [tasks, applyTasksUpdate, updateTaskStatusMutation]);
-
-  const handleFiltersChange = useCallback((nextFilters: TaskFiltersState) => {
-    setFilters(nextFilters);
-    persistFilters(nextFilters).catch((persistError) => {
-      console.error('Failed to persist task filters', persistError);
-    });
-  }, []);
-
-  const handleClearFilters = useCallback(() => {
-    const defaults = getDefaultFilters();
-    setFilters(defaults);
-    persistFilters(defaults).catch((persistError) => {
-      console.error('Failed to persist task filters', persistError);
-    });
-  }, []);
+    updateTaskStatus(draggableId, destinationStatus, destination.index)
+      .then((updatedTask) => {
+        markSkipNextRender();
+        setTasks((current) => current.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
+        markSkipNextRender();
+        setActiveTask((existing) => (existing?.id === updatedTask.id ? updatedTask : existing));
+        setLoadError(null);
+      })
+      .catch((error) => {
+        console.error('Failed to update task status', error);
+        markSkipNextRender();
+        setTasks((current) => current.map((task) => (task.id === draggableId ? { ...task, status: sourceStatus } : task)));
+      });
+  }, [markSkipNextRender, tasks]);
 
   useEffect(() => {
     if (!isDetailOpen || !activeTaskId) {
@@ -262,6 +362,7 @@ const TaskBoard: React.FC = () => {
     if (!latest) {
       return;
     }
+    markSkipNextRender();
     setActiveTask((current) => {
       if (!current) {
         return latest;
@@ -271,7 +372,7 @@ const TaskBoard: React.FC = () => {
         ...latest,
       };
     });
-  }, [tasks, isDetailOpen, activeTaskId]);
+  }, [tasks, isDetailOpen, activeTaskId, markSkipNextRender]);
 
   const filteredTasks = useMemo(() => {
     const dueBefore = filters.dueDateBefore ? new Date(filters.dueDateBefore) : null;
@@ -284,12 +385,8 @@ const TaskBoard: React.FC = () => {
     }
 
     const filtered = tasks.filter((task) => {
-      if (filters.assigneeId !== 'all') {
-        if (task.assignee) {
-          if (task.assignee.id !== filters.assigneeId) {
-            return false;
-          }
-        }
+      if (filters.assigneeId !== 'all' && (task.assignee?.id ?? 'all') !== filters.assigneeId) {
+        return false;
       }
       if (filters.status !== 'all' && task.status !== filters.status) {
         return false;
@@ -309,6 +406,7 @@ const TaskBoard: React.FC = () => {
           return false;
         }
       }
+
       return true;
     });
 
@@ -320,15 +418,17 @@ const TaskBoard: React.FC = () => {
         const bTime = b.dueDate ? new Date(b.dueDate).getTime() : Number.POSITIVE_INFINITY;
         return (aTime - bTime) * factor;
       }
+
       if (filters.sortBy === 'priority') {
         const diff = priorityWeights[a.priority] - priorityWeights[b.priority];
         return diff * factor;
       }
+
       const aCreatedAt = new Date(a.createdAt).getTime();
       const bCreatedAt = new Date(b.createdAt).getTime();
       return (aCreatedAt - bCreatedAt) * factor;
     });
-  }, [tasks, filters]);
+  }, [filters, tasks]);
 
   const tasksByStatus = useMemo(() => {
     const grouped: Record<TaskStatus, Task[]> = {
@@ -343,7 +443,8 @@ const TaskBoard: React.FC = () => {
   }, [filteredTasks]);
 
   const totalVisibleTasks = filteredTasks.length;
-  const lastUpdated = data?.metadata?.lastUpdated ? new Date(data.metadata.lastUpdated).toLocaleString() : null;
+  const lastUpdated = metadata?.lastUpdated ? new Date(metadata.lastUpdated).toLocaleString() : null;
+  const errorMessage = loadError ? `Failed to load tasks. ${loadError}` : null;
 
   return (
     <div className="space-y-6 p-6">
@@ -357,9 +458,12 @@ const TaskBoard: React.FC = () => {
         </div>
         <button
           type="button"
-          onClick={() => setIsCreateModalOpen(true)}
+          onClick={() => {
+            markSkipNextRender();
+            setIsCreateModalOpen(true);
+          }}
           className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-60"
-          disabled={isLoading || createTaskMutation.isPending}
+          disabled={isLoading || isCreatingTask}
         >
           New task
         </button>
@@ -369,8 +473,8 @@ const TaskBoard: React.FC = () => {
         <span>
           Showing {totalVisibleTasks} task{totalVisibleTasks === 1 ? '' : 's'}
         </span>
-        {typeof data?.metadata?.total === 'number' && (
-          <span className="text-gray-400">{data.metadata.total} total in workspace</span>
+        {typeof metadata?.total === 'number' && (
+          <span className="text-gray-400">{metadata.total} total in workspace</span>
         )}
       </div>
 
@@ -387,9 +491,9 @@ const TaskBoard: React.FC = () => {
         </div>
       )}
 
-      {isError && (
+      {errorMessage && (
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          Failed to load tasks. {error instanceof Error ? error.message : 'Please try again.'}
+          {errorMessage}
         </div>
       )}
 
@@ -438,10 +542,13 @@ const TaskBoard: React.FC = () => {
 
       <TaskFormModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => {
+          markSkipNextRender();
+          setIsCreateModalOpen(false);
+        }}
         onSubmit={handleCreateTask}
         assignees={assignees}
-        isSubmitting={createTaskMutation.isPending}
+        isSubmitting={isCreatingTask}
       />
 
       <TaskDetailModal
@@ -453,8 +560,8 @@ const TaskBoard: React.FC = () => {
         onSave={handleSaveTask}
         onAssign={handleAssignTask}
         onDelete={handleDeleteTask}
-        isSaving={updateTaskMutation.isPending}
-        isDeleting={deleteTaskMutation.isPending}
+        isSaving={isUpdatingTask || isAssigningTask}
+        isDeleting={isDeletingTask}
       />
     </div>
   );

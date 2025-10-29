@@ -115,7 +115,7 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
           </div>
         )}
 
-        <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
+        <form className="mt-4 space-y-4" onSubmit={handleSubmit} noValidate>
           <div>
             <label htmlFor="task-title" className="mb-1 block text-sm font-medium text-gray-700">Title</label>
             <input
