@@ -1,7 +1,17 @@
+### Session 2025-10-29 (DEV-016 backend quota hardening)
+- ✅ Added regression coverage for quota warnings and entitlement API outputs (pytest backend/tests/test_quota_service.py & backend/tests/test_podcast_api.py).
+- ✅ Hardened test fixtures to drop stray tables via SQLAlchemy inspector to prevent sqlite teardown regressions.
+- ✅ pytest backend/tests/test_quota_service.py backend/tests/test_podcast_api.py -vv → GREEN.
+- 🔄 NEXT: Implement podcast frontend gating/quota banner components and add Vitest coverage before moving to Render validation.
+
 ### Session 2025-10-29 (Phase 4 Stabilisation - 06:50 UTC)
-- RED Targeted pytest (backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_api.py backend/tests/test_podcast_api.py) failed: _reset_database fixture references missing _reset_metadata (NameError) blocking 36 valuation and podcast API cases.
-- GREEN npm --prefix frontend test -- ValuationSuite.test.tsx PodcastStudio.test.tsx -> 30 tests passing (ValuationSuite 12, PodcastStudio 18).
-- ACTION Restore _reset_metadata helper in backend/tests/conftest.py and rerun valuation and podcast API suites before next DEV-016 TDD loop.
+- 🔴 Targeted pytest (backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_api.py backend/tests/test_podcast_api.py) failed: _reset_database fixture references missing _reset_metadata (NameError) blocking 36 valuation and podcast API cases.
+- ✅ npm --prefix frontend test -- ValuationSuite.test.tsx PodcastStudio.test.tsx -> 30 tests passing (ValuationSuite 12, PodcastStudio 18).
+- 📌 Restore _reset_metadata helper in backend/tests/conftest.py and rerun valuation and podcast API suites before next DEV-016 TDD loop.
+
+### Session 2025-10-29 (ValuationSuite Regression GREEN – 06:59 UTC)
+- ✅ `npm --prefix frontend run test -- ValuationSuite.test.tsx` → **12 passed / 0 failed**; DEV-011 workspace confirmed stable after governance reset.
+- 🔄 NEXT: Resume DEV-016 Phase 3 focus (quota warning UX + transcription gating) per updated workflow status.
 
 ### Session 2025-10-28 (Phase D0 Podcast Quota Baseline)
 - ✅ Fixed podcast professional quota assertion (ackend/tests/test_podcast_api.py) after schema update (quota_state now "normal").
@@ -275,6 +285,11 @@ px vitest run ValuationSuite → 9 tests passing (no skips); creation flow now G
 - 🔴→🟢 Enhanced export queue feedback with type/format + task ID display and graceful error handling.
 - ✅ `npm run test -- ValuationSuite.test.tsx` → 11/11 GREEN (new scenario creation, validation, and export confirmation specs).
 - 🎯 Next: implement scenario edit flows + export activity history to close DEV-011 UI backlog.
+
+### Session 2025-10-29 (Phase 1B Monte Carlo Accessibility GREEN)
+- ✅ `npm --prefix frontend run test -- ValuationSuite.test.tsx` → 12/12 GREEN (added Monte Carlo payload assertion + percentile checks).
+- 🔧 Monte Carlo panel now normalises iterations input, enforces accessible labels, and ensures deterministic payloads (seed optional, clamped ≥50 iterations).
+- 🎯 Next: continue DEV-011 scenario editing + export history work under `/bmad:bmm:workflows:dev-story`.
 
 ### Session 2025-10-28 (Governance Baseline Refresh – 21:42Z)
 - ✅ `npx bmad-method status` confirms v4.44.1 install with Cursor + Claude integrations intact (166 files tracked).
