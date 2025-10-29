@@ -84,3 +84,21 @@ class DealMatchResponse(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class MatchActionCreate(BaseModel):
+    """Request model for recording match action"""
+    action: str = Field(..., description="Action type: view, save, pass, request_intro")
+    metadata: Optional[Dict] = Field(default_factory=dict, description="Additional action metadata")
+
+
+class MatchActionResponse(BaseModel):
+    """Response model for match action"""
+    id: str
+    match_id: str
+    user_id: str
+    action: str
+    metadata: Dict
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)

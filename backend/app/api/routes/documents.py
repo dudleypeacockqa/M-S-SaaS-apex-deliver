@@ -652,6 +652,24 @@ def list_permissions(
     return permissions
 
 
+@router.delete("/documents/{document_id}/permissions/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def revoke_document_permission(
+    deal_id: str,
+    document_id: str,
+    user_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    document_service.revoke_document_permission(
+        db=db,
+        document_id=document_id,
+        target_user_id=user_id,
+        organization_id=current_user.organization_id,
+        current_user=current_user,
+    )
+
+
+
 # ============================================================================
 # ACCESS LOG ENDPOINTS
 # ============================================================================

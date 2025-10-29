@@ -11,12 +11,14 @@ from sqlalchemy.orm import Session
 from app.api.dependencies.auth import get_current_user, require_feature
 from app.db.session import get_db
 from app.models.deal import Deal
-from app.models.deal_match import DealMatch, DealMatchCriteria
+from app.models.deal_match import DealMatch, DealMatchAction, DealMatchCriteria
 from app.models.user import User
 from app.schemas.deal_match import (
     DealMatchResponse,
     FindMatchesRequest,
     FindMatchesResponse,
+    MatchActionCreate,
+    MatchActionResponse,
     MatchCriteriaCreate,
     MatchCriteriaResponse,
 )
@@ -201,4 +203,52 @@ def _serialize_criteria(model: DealMatchCriteria) -> MatchCriteriaResponse:
         negative_filters=model.negative_filters or {},
         weights=model.weights or {},
         created_at=model.created_at,
+    )
+
+
+@router.post("/matches/{match_id}/actions", response_model=MatchActionResponse, status_code=status.HTTP_201_CREATED)
+async def record_match_action(
+    match_id: str,
+    payload: MatchActionCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Record a user action on a deal match (view, save, pass, request_intro)."""
+    # Verify match exists and belongs to user's organization
+    match = (
+        db.query(DealMatch)
+        .filter(DealMatch.id == match_id, DealMatch.organization_id == current_user.organization_id)
+        .first()
+    )
+    if match is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Match not found")
+
+    # Create action record
+    action = DealMatchAction(
+        id=str(uuid4()),
+        match_id=match_id,
+        user_id=current_user.id,
+        action=payload.action,
+        metadata=payload.metadata or {},
+    )
+    db.add(action)
+
+    # Update match status based on action
+    if payload.action == "pass":
+        match.status = "declined"
+        db.add(match)
+    elif payload.action == "request_intro":
+        match.status = "introduced"
+        db.add(match)
+
+    db.commit()
+    db.refresh(action)
+
+    return MatchActionResponse(
+        id=action.id,
+        match_id=action.match_id,
+        user_id=action.user_id,
+        action=action.action,
+        metadata=action.metadata or {},
+        created_at=action.created_at,
     )

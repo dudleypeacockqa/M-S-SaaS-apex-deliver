@@ -990,6 +990,47 @@ def list_document_permissions(
     ]
 
 
+def revoke_document_permission(
+    db: Session,
+    *,
+    document_id: str,
+    target_user_id: str,
+    organization_id: str,
+    current_user: User,
+) -> None:
+    document = db.query(Document).filter(
+        Document.id == document_id,
+        Document.organization_id == organization_id,
+    ).first()
+
+    if document is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    ensure_document_permission(
+        db=db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.OWNER,
+    )
+
+    permission = (
+        db.query(DocumentPermission)
+        .filter(
+            DocumentPermission.document_id == document.id,
+            DocumentPermission.user_id == target_user_id,
+            DocumentPermission.organization_id == organization_id,
+        )
+        .one_or_none()
+    )
+
+    if permission is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Permission not found")
+
+    db.delete(permission)
+    _log_access(db, document, current_user, action="permission_revoked")
+    db.commit()
+
+
 def get_document_access_logs(
     db: Session,
     *,
