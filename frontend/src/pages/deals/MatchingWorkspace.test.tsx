@@ -249,18 +249,23 @@ describe('MatchingWorkspace', () => {
       });
     });
 
-    it('should trigger find matches action', async () => {
+    it('should trigger find matches action with the selected preset', async () => {
       const { fetchMatchCriteria, findMatchesForDeal } = await import('../../services/dealMatchingService');
       vi.mocked(fetchMatchCriteria).mockResolvedValue(mockMatchCriteria);
       vi.mocked(findMatchesForDeal).mockResolvedValue({ matches: mockMatches, total_count: 2 });
 
       renderWithProviders(<MatchingWorkspace dealId="test-deal-1" activeTab="matches" />);
 
+      const presetRadio = await screen.findByLabelText(/select healthcare deals preset/i);
+      fireEvent.click(presetRadio);
+
       const findButton = await screen.findByRole('button', { name: /find matches/i });
       fireEvent.click(findButton);
 
       await waitFor(() => {
-        expect(findMatchesForDeal).toHaveBeenCalledWith('test-deal-1', expect.any(Object));
+        expect(findMatchesForDeal).toHaveBeenCalledWith('test-deal-1', expect.objectContaining({
+          criteria_id: 'criteria-2',
+        }));
       });
     });
   });

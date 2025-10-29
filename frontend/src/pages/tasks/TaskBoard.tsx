@@ -93,9 +93,7 @@ const TaskBoard: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeydown);
   }, []);
 
-  const applyTasksUpdate = useCallback(
-    (updater: (current: Task[]) => Task[]),
-  ) => {
+  const applyTasksUpdate = useCallback((updater: (current: Task[]) => Task[]) => {
     let computed: Task[] | undefined;
     setTasks((current) => {
       computed = updater(current);

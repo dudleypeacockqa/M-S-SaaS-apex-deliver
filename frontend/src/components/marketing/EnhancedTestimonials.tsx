@@ -196,6 +196,7 @@ export const EnhancedTestimonials: React.FC = () => {
           <button
             onClick={() => setActiveTestimonial((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
             className="p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 transition-colors"
+            aria-label="Show previous testimonial"
           >
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -210,6 +211,8 @@ export const EnhancedTestimonials: React.FC = () => {
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
                   index === activeTestimonial ? 'bg-blue-600 w-8' : 'bg-gray-300 hover:bg-gray-400'
                 }`}
+                aria-label={`Show testimonial ${index + 1}`}
+                aria-pressed={index === activeTestimonial}
               />
             ))}
           </div>
@@ -217,6 +220,7 @@ export const EnhancedTestimonials: React.FC = () => {
           <button
             onClick={() => setActiveTestimonial((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))}
             className="p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 transition-colors"
+            aria-label="Show next testimonial"
           >
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
