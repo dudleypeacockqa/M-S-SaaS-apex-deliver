@@ -757,3 +757,4 @@ test('file type filter works', ...)
 - ✅ Frontend API client aligned to new routes with Vitest coverage (documents.ts + documents.test.ts makeover)
 - ✅ Data Room UI updated to render folder sidebar, upload actions, and document table using live API client
 - ✅ Vitest suite (99 tests) and npm run build executed locally on 2025-10-25
+

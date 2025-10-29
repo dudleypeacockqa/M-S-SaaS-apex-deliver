@@ -1,6 +1,6 @@
 - Latest local commit on `main`: 8f45f75 (test(deal-matching): achieve GREEN phase for DEV-018 Phase 1) with extensive WIP in tree.
 - 2025-10-29 09:27 UTC: `backend/venv/Scripts/pytest.exe backend/tests/test_document_endpoints.py --maxfail=1 --disable-warnings` → 31 passed (DEV-008 version retention).
-- 2025-10-29 10:40 UTC: `./backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py backend/tests/test_database_reset.py backend/tests/test_deal_matching_models.py -q` → 98 passed (warnings only).
+- 2025-10-29 10:48 UTC: `./backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py backend/tests/test_database_reset.py backend/tests/test_deal_matching_models.py backend/tests/smoke_tests.py -q` → 100 passed (no warnings).
 - 2025-10-29 10:18 UTC: `npm --prefix frontend run test` → 536 passed / 0 failed (threads pool).
 - 2025-10-29 10:26 UTC: `npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx src/pages/podcast/PodcastStudio.test.tsx` → 34 passed targeted verification.
 - 2025-10-29 10:38 UTC: `bash scripts/run_smoke_tests.sh production` → Backend 200 OK, Frontend 403 (Cloudflare), backend smoke pytest (2 tests) passed.
@@ -31,8 +31,8 @@
 ## Step 5 Verification Results (2025-10-29)
 
 ### Backend Tests (targeted)
-- Command: `./backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py backend/tests/test_database_reset.py backend/tests/test_deal_matching_models.py -q`
-- Result: 98 passed / 0 failed (warnings: json_encoders + datetime.utcnow deprecations)
+- Command: `./backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py backend/tests/test_database_reset.py backend/tests/test_deal_matching_models.py backend/tests/smoke_tests.py -q`
+- Result: 100 passed / 0 failed (warnings resolved)
 
 ### Frontend Tests (full)
 - Command: `npm --prefix frontend run test`

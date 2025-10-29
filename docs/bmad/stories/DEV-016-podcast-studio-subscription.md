@@ -119,10 +119,10 @@
 
 #### Audio Podcasting (Professional+ Tiers)
 - [x] Create audio-only podcast episodes (POST /podcasts/episodes)
-- [ ] Upload audio files (MP3, WAV, M4A formats, max 500MB)
-- [ ] Edit episode metadata (title, description, show notes)
-- [ ] Delete podcast episodes
-- [ ] List all episodes with filtering and sorting
+- [x] Upload audio files (MP3, WAV, M4A formats, max 500MB) - **Completed 2025-10-29**
+- [x] Edit episode metadata (title, description, show notes)
+- [x] Delete podcast episodes
+- [x] List all episodes with filtering and sorting
 - [ ] Basic transcription using OpenAI Whisper API
 - [ ] Download transcripts as TXT/SRT files
 

@@ -134,10 +134,10 @@ class DocumentVersionInfo(BaseModel):
 class PermissionLevel(str):
     """Document permission levels."""
 
+    NONE = "none"
     VIEWER = "viewer"
     EDITOR = "editor"
     OWNER = "owner"
-
 
 class PermissionCreate(BaseModel):
     """Schema for creating a permission."""
@@ -227,3 +227,7 @@ class BulkDeleteResponse(BaseModel):
     deleted_ids: List[str]
     failed_ids: List[str] = []
     failed_reasons: dict[str, str] = {}
+
+
+
+

@@ -40,7 +40,8 @@ export function FeatureGate({ feature, children }: FeatureGateProps) {
     );
   }
 
-  const shouldShowUpgrade = error || upgradeRequired || !hasAccess;
+  const hasError = Boolean(error);
+  const shouldShowUpgrade = hasError || upgradeRequired || !hasAccess;
 
   if (shouldShowUpgrade) {
     const requiredTier = requiredTierLabel ?? 'Professional';
@@ -78,7 +79,7 @@ export function FeatureGate({ feature, children }: FeatureGateProps) {
               <p className="mt-1 text-xs text-gray-500">
                 Current tier: <span className="font-semibold">{currentTier}</span>
               </p>
-              {error && (
+              {hasError && (
                 <p className="mt-2 text-xs text-red-600">
                   Error checking feature access. Please try again later.
                 </p>

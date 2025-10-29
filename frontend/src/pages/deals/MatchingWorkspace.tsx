@@ -198,14 +198,8 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
                   onClick={() => {
                     if (criteria.length > 0) {
                       findMatchesMutation.mutate({
-                        criteria: {
-                          deal_type: 'buy_side',
-                          industries: criteria[0].industries,
-                          min_deal_size: parseFloat(criteria[0].min_deal_size),
-                          max_deal_size: parseFloat(criteria[0].max_deal_size),
-                          geographies: criteria[0].geographies,
-                        },
-                        limit: 10,
+                        criteria_id: criteria[0].id,
+                        top_n: 10,
                         min_score: 40,
                       });
                     }
@@ -236,12 +230,12 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
               <div className="space-y-4">
                 {matches.map((match) => (
                   <div
-                    key={match.deal_id}
+                    key={`${match.dealId}-${match.matchedDealId ?? 'calculated'}`}
                     className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <h3 className="font-semibold text-gray-900">{match.deal_name}</h3>
+                        <h3 className="font-semibold text-gray-900">{match.dealName}</h3>
                         <div className="flex items-center gap-3 mt-1">
                           <span className="text-2xl font-bold text-indigo-600">{match.score.toFixed(1)}</span>
                           <span

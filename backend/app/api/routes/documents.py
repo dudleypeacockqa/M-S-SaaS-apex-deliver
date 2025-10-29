@@ -1,6 +1,7 @@
 """Document and Folder API endpoints for secure data room functionality."""
 from __future__ import annotations
 
+import io
 import math
 from typing import List, Optional
 
@@ -14,7 +15,7 @@ from fastapi import (
     UploadFile,
     status,
 )
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user
@@ -293,6 +294,34 @@ def list_documents(
         "per_page": per_page,
         "pages": math.ceil(total / per_page) if total > 0 else 1,
     }
+
+
+@router.post(
+    "/documents/bulk-download",
+    response_class=StreamingResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def bulk_download_documents(
+    deal_id: str,
+    payload: BulkDownloadRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Download multiple documents as a single ZIP archive (DEV-008)."""
+
+    zip_bytes, filename = await document_service.bulk_download_documents(
+        db=db,
+        document_ids=[str(doc_id) for doc_id in payload.document_ids],
+        organization_id=current_user.organization_id,
+        current_user=current_user,
+    )
+
+    response = StreamingResponse(
+        io.BytesIO(zip_bytes),
+        media_type="application/zip",
+    )
+    response.headers["Content-Disposition"] = f"attachment; filename=\"{filename}\""
+    return response
 
 
 @router.get("/documents/{document_id}", response_model=DocumentMetadata)

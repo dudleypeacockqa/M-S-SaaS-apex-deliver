@@ -16,6 +16,7 @@ import { FeatureGate } from '../../components/podcast/FeatureGate';
 import { CreateEpisodeModal } from '../../components/podcast/CreateEpisodeModal';
 import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
 import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal';
+import AudioUploadModal from '../../components/podcast/AudioUploadModal';
 import {
   getQuotaSummary,
   listEpisodes,
@@ -45,6 +46,7 @@ function PodcastStudioContent() {
   const [isCreateModalOpen, setCreateModalOpen] = React.useState(false);
   const [editingEpisode, setEditingEpisode] = React.useState<PodcastEpisode | null>(null);
   const [deleteTarget, setDeleteTarget] = React.useState<PodcastEpisode | null>(null);
+  const [uploadTarget, setUploadTarget] = React.useState<PodcastEpisode | null>(null);
 
   const {
     data: quota,
@@ -174,6 +176,7 @@ function PodcastStudioContent() {
         youtubeAccess={youtubeAccess}
         onEdit={(episode) => setEditingEpisode(episode)}
         onDelete={(episode) => setDeleteTarget(episode)}
+        onUploadAudio={(episode) => setUploadTarget(episode)}
       />
 
       <CreateEpisodeModal
@@ -217,6 +220,19 @@ function PodcastStudioContent() {
         onConfirm={() => deleteTarget && deleteEpisodeMutation.mutate(deleteTarget.id)}
         isSubmitting={deleteEpisodeMutation.isPending}
       />
+
+      {uploadTarget && (
+        <AudioUploadModal
+          open={Boolean(uploadTarget)}
+          onClose={() => setUploadTarget(null)}
+          episodeId={uploadTarget.id}
+          episodeName={uploadTarget.title}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
+            setUploadTarget(null);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -328,11 +344,13 @@ function EpisodesList({
   youtubeAccess,
   onEdit,
   onDelete,
+  onUploadAudio,
 }: {
   episodes: PodcastEpisode[];
   youtubeAccess: FeatureAccessState;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
+  onUploadAudio: (episode: PodcastEpisode) => void;
 }) {
   if (episodes.length === 0) {
     return (
@@ -368,6 +386,7 @@ function EpisodesList({
             youtubeAccess={youtubeAccess}
             onEdit={onEdit}
             onDelete={onDelete}
+            onUploadAudio={onUploadAudio}
           />
         ))}
       </ul>
@@ -380,11 +399,13 @@ function EpisodeListItem({
   youtubeAccess,
   onEdit,
   onDelete,
+  onUploadAudio,
 }: {
   episode: PodcastEpisode;
   youtubeAccess: FeatureAccessState;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
+  onUploadAudio: (episode: PodcastEpisode) => void;
 }) {
   const statusColors = {
     draft: 'bg-yellow-100 text-yellow-800',
@@ -457,6 +478,27 @@ function EpisodeListItem({
               className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Edit
+            </button>
+            <button
+              type="button"
+              onClick={() => onUploadAudio(episode)}
+              className="inline-flex items-center px-3 py-2 border border-indigo-200 shadow-sm text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              title="Upload audio file for this episode"
+            >
+              <svg
+                className="mr-1.5 h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+              Upload Audio
             </button>
             <button
               type="button"
