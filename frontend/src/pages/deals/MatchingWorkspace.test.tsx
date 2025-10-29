@@ -13,6 +13,7 @@ import MatchingWorkspace from './MatchingWorkspace';
 vi.mock('../../services/dealMatchingService', () => ({
   fetchMatchCriteria: vi.fn(),
   createMatchCriteria: vi.fn(),
+  updateMatchCriteria: vi.fn(),
   findMatchesForDeal: vi.fn(),
   listDealMatches: vi.fn(),
   recordMatchAction: vi.fn(),
@@ -27,6 +28,7 @@ const mockMatchCriteria = [
     min_deal_size: '1000000',
     max_deal_size: '10000000',
     geographies: ['UK', 'EU'],
+    structures: ['integration::Salesforce'],
     created_at: '2025-10-29T10:00:00Z',
   },
   {
@@ -147,7 +149,7 @@ describe('MatchingWorkspace', () => {
       renderWithProviders(<MatchingWorkspace />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /create criteria/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /new criteria/i })).toBeInTheDocument();
       });
     });
 
@@ -436,7 +438,7 @@ describe('MatchingWorkspace', () => {
 
       await waitFor(() => {
         expect(screen.queryByText(/upgrade to professional/i)).not.toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /create criteria/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /new criteria/i })).toBeInTheDocument();
       });
     });
   });

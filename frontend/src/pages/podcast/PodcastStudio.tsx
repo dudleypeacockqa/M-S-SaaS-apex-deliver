@@ -703,8 +703,13 @@ function EpisodesList({
   youtubeAccess,
   youtubeConnection,
   youtubeConnectionLoading,
+  youtubeConnectionError,
+  onRefreshYoutubeConnection,
   onRequestPublish,
   onRequestYouTubeConnect,
+  youtubeInfoMessage,
+  infoEpisodeId,
+  lastPublishedEpisodeId,
   isConnecting,
   onEdit,
   onDelete,
@@ -715,8 +720,13 @@ function EpisodesList({
   youtubeAccess: FeatureAccessState;
   youtubeConnection: YouTubeConnectionStatus | undefined;
   youtubeConnectionLoading: boolean;
+  youtubeConnectionError: boolean;
+  onRefreshYoutubeConnection: () => Promise<unknown>;
   onRequestPublish: (episode: PodcastEpisode) => void;
   onRequestYouTubeConnect: (episode: PodcastEpisode) => void;
+  youtubeInfoMessage: string | null;
+  infoEpisodeId: string | null;
+  lastPublishedEpisodeId: string | null;
   isConnecting: boolean;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
@@ -757,8 +767,13 @@ function EpisodesList({
             youtubeAccess={youtubeAccess}
             youtubeConnection={youtubeConnection}
             youtubeConnectionLoading={youtubeConnectionLoading}
+            youtubeConnectionError={youtubeConnectionError}
+            onRefreshYoutubeConnection={onRefreshYoutubeConnection}
             onRequestPublish={onRequestPublish}
             onRequestYouTubeConnect={onRequestYouTubeConnect}
+            youtubeInfoMessage={youtubeInfoMessage}
+            infoEpisodeId={infoEpisodeId}
+            lastPublishedEpisodeId={lastPublishedEpisodeId}
             isConnecting={isConnecting}
             onEdit={onEdit}
             onDelete={onDelete}

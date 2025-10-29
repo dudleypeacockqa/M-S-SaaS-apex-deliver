@@ -197,7 +197,9 @@ const TaskBoard: React.FC = () => {
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
       if (filters.assigneeId !== 'all') {
-        if ((task.assignee?.id ?? '') !== filters.assigneeId) return false;
+        if (task.assignee) {
+          if (task.assignee.id !== filters.assigneeId) return false;
+        }
       }
       if (filters.status !== 'all' && task.status !== filters.status) return false;
       if (filters.priority !== 'all' && task.priority !== filters.priority) return false;
