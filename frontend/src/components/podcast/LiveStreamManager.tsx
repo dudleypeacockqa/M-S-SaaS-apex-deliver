@@ -66,7 +66,12 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
     if (!stream) {
       return;
     }
-    setRecordingSettings(stream.recording);
+    setRecordingSettings({
+      enabled: stream.recording.enabled,
+      retentionDays: stream.recording.retentionDays,
+      storageLocation: stream.recording.storageLocation,
+      postProcessing: stream.recording.postProcessing ?? [],
+    });
     setSelectedLanguages(stream.languages);
     setAutoTranslate(true);
     setSubtitles(true);
@@ -141,8 +146,12 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
   };
 
   const handleRecordingChange = (next: RecordingSettings) => {
-    setRecordingSettings(next);
-    updatePreferences({ recording: next });
+    const normalized: RecordingSettings = {
+      ...next,
+      postProcessing: next.postProcessing ?? [],
+    };
+    setRecordingSettings(normalized);
+    updatePreferences({ recording: normalized });
   };
 
   const handleQualityChange = (quality: StreamQuality) => {
@@ -276,3 +285,5 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
     </div>
   );
 }
+
+

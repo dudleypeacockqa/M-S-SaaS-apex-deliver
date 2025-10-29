@@ -11,6 +11,7 @@ import {
   type PodcastEpisode,
   type YouTubePublishPayload,
   type YouTubePublishState,
+  type YouTubeConnectionStatus,
 } from '../../services/api/podcasts';
 import { YouTubeMetadataForm, type YouTubeMetadataValues, type YouTubeMetadataErrors } from './YouTubeMetadataForm';
 import { YouTubePublishButton } from './YouTubePublishButton';
@@ -59,14 +60,14 @@ export function YouTubePublisher({ episode, youtubeAccess }: YouTubePublisherPro
     });
   }, []);
 
-  const connectionQuery = useQuery({
+  const connectionQuery = useQuery<YouTubeConnectionStatus>({
     queryKey: ['youtubeConnection'],
     queryFn: getYouTubeConnectionStatus,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
-  const statusQuery = useQuery({
+  const statusQuery = useQuery<YouTubePublishState>({
     queryKey: ['youtubeStatus', episode.id],
     queryFn: () => getYouTubePublishStatus(episode.id),
     refetchOnWindowFocus: false,
@@ -120,7 +121,6 @@ export function YouTubePublisher({ episode, youtubeAccess }: YouTubePublisherPro
       }
       return next;
     });
-    handleErrorChange(field, null);
   }, [handleErrorChange]);
 
   const validateMetadata = React.useCallback((): YouTubeMetadataErrors => {
@@ -152,7 +152,10 @@ export function YouTubePublisher({ episode, youtubeAccess }: YouTubePublisherPro
     }
 
     const trimmedTitle = metadata.title.trim();
-    const scheduleIso = metadata.scheduleTime && metadata.privacy !== 'private'
+    const allowSchedule = metadata.privacy !== 'private' && metadata.scheduleTime;
+    const scheduleIso = allowSchedule
+      ? new Date((metadata.scheduleTime || '') + ':00Z').toISOString()
+      : null;
       ? new Date(metadata.scheduleTime + ':00Z').toISOString()
       : null;
 
@@ -290,7 +293,7 @@ export function YouTubePublisher({ episode, youtubeAccess }: YouTubePublisherPro
           ) : null}
         </div>
 
-        <YouTubeMetadataForm values={metadata} errors={errors} onFieldChange={handleFieldChange} />
+        <YouTubeMetadataForm values={metadata} errors={errors} onFieldChange={handleFieldChange} onErrorChange={handleErrorChange} />
 
         <div className="flex items-center justify-between">
           {isPublishing ? (

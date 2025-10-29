@@ -22,6 +22,8 @@ const postProcessingOptions: Array<{ label: string; value: string }> = [
 ];
 
 export function StreamRecordingOptions({ settings, isSaving, onChange }: StreamRecordingOptionsProps) {
+  const postProcessingSelections = settings.postProcessing ?? [];
+
   const handleToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...settings, enabled: event.target.checked });
   };
@@ -36,9 +38,9 @@ export function StreamRecordingOptions({ settings, isSaving, onChange }: StreamR
 
   const handlePostProcessingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    const next = settings.postProcessing.includes(value)
-      ? settings.postProcessing.filter((option) => option !== value)
-      : [...settings.postProcessing, value];
+    const next = postProcessingSelections.includes(value)
+      ? postProcessingSelections.filter((option) => option !== value)
+      : [...postProcessingSelections, value];
     onChange({ ...settings, postProcessing: next });
   };
 
@@ -110,7 +112,7 @@ export function StreamRecordingOptions({ settings, isSaving, onChange }: StreamR
               <input
                 type="checkbox"
                 value={option.value}
-                checked={settings.postProcessing.includes(option.value)}
+                checked={postProcessingSelections.includes(option.value)}
                 onChange={handlePostProcessingChange}
                 className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
               />

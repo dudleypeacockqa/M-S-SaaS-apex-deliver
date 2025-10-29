@@ -174,6 +174,10 @@ describe('DocumentEditor', () => {
       vi.advanceTimersByTime(1500)
     })
 
+    // Debug
+    // eslint-disable-next-line no-console
+    console.log('saveDocument calls after typing', vi.mocked(documentApi.saveDocument).mock.calls.length)
+
     await waitFor(() => {
       expect(documentApi.saveDocument).toHaveBeenCalledWith(DEFAULT_DOCUMENT_ID, {
         content: expect.stringContaining('Updated with new findings.'),

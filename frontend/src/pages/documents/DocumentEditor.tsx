@@ -122,6 +122,28 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
     [mutateDocument, title]
   )
 
+  const scheduleAutoSave = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    if (autoSaveTimerRef.current) {
+      window.clearTimeout(autoSaveTimerRef.current)
+    }
+
+    if (latestContentRef.current === lastSavedContentRef.current) {
+      setSaveState('idle')
+      return
+    }
+
+    setSaveState('saving')
+    setSaveError(null)
+
+    autoSaveTimerRef.current = window.setTimeout(() => {
+      runSave()
+    }, autoSaveDelayMs)
+  }, [autoSaveDelayMs, runSave])
+
   useEffect(() => {
     if (!documentQuery.data) {
       return
@@ -145,34 +167,12 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
     }
   }, [editorHtml])
 
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    if (autoSaveTimerRef.current) {
+  useEffect(() => () => {
+    if (typeof window !== 'undefined' && autoSaveTimerRef.current) {
       window.clearTimeout(autoSaveTimerRef.current)
+      autoSaveTimerRef.current = null
     }
-
-    if (latestContentRef.current === lastSavedContentRef.current) {
-      setSaveState('idle')
-      return
-    }
-
-    setSaveState('saving')
-    setSaveError(null)
-
-    autoSaveTimerRef.current = window.setTimeout(() => {
-      runSave()
-    }, autoSaveDelayMs)
-
-    return () => {
-      if (autoSaveTimerRef.current) {
-        window.clearTimeout(autoSaveTimerRef.current)
-        autoSaveTimerRef.current = null
-      }
-    }
-  }, [editorHtml, autoSaveDelayMs, runSave])
+  }, [])
 
   useEffect(() => {
     if (!documentId) {
@@ -223,7 +223,9 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
 
   const handleEditorInput = (event: React.FormEvent<HTMLDivElement>) => {
     const value = event.currentTarget.innerHTML
+    latestContentRef.current = value
     setEditorHtml(value)
+    scheduleAutoSave()
   }
 
   const handleUseTemplate = async (templateId: string) => {
@@ -235,9 +237,11 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
       }
 
       const response = await applyTemplateToDocument(documentId, templateId, options)
-      setEditorHtml(response.content || '')
+      const nextContent = response.content || ''
+      latestContentRef.current = nextContent
+      setEditorHtml(nextContent)
       setSaveState('saving')
-      runSave(response.content || '')
+      runSave(nextContent)
     } catch (error) {
       console.error('Failed to apply template', error)
     }
@@ -250,8 +254,10 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
       if (accepted) {
         setEditorHtml((current) => {
           const updated = current + '<p>' + accepted.content + '</p>'
+          latestContentRef.current = updated
           return updated
         })
+        scheduleAutoSave()
       }
       setSuggestions((current) => current.filter((item) => item.id !== suggestionId))
     } catch (error) {
@@ -328,6 +334,7 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
       latestContentRef.current = restored.content || ''
       queryClient.invalidateQueries({ queryKey: ['document-editor', documentId] })
       queryClient.invalidateQueries({ queryKey: ['document-versions', documentId] })
+      scheduleAutoSave()
     } catch (error) {
       console.error('Failed to restore version', error)
     }

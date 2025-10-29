@@ -564,7 +564,6 @@ const renderTaskBoard = () => {
     });
 
     vi.advanceTimersByTime(45000);
-    // console.log('calls after advance', vi.mocked(taskService.fetchTaskBoardData).mock.calls.length);
 
     await waitFor(() => {
       expect(taskService.fetchTaskBoardData).toHaveBeenCalledTimes(2);
