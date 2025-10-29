@@ -55,7 +55,6 @@ export interface PodcastEpisode {
   transcript_language: string | null;
   duration_seconds: number | null;
   youtube_video_id: string | null;
-  thumbnail_url?: string | null;
 }
 
 type ApiQuotaSummary = {

@@ -17,7 +17,7 @@ vi.mock('@hello-pangea/dnd', () => {
   };
 
   const Droppable = ({ children, droppableId }: any) => (
-    <div data-testid={'droppable-' + droppableId} data-droppable-id={droppableId}>
+    <div data-droppable-id={droppableId}>
       {children({
         droppableProps: {
           'data-droppable-id': droppableId,

@@ -292,19 +292,19 @@ function PodcastStudioContent() {
         </p>
       </div>
 
-      {notification && (
+      {notification ? (
         <NotificationBanner
           notification={notification}
           onDismiss={() => setNotification(null)}
         />
-      )}
+      ) : null}
 
-      {quota && (
+      {quota ? (
         <>
           <QuotaHud quota={quota} />
           <QuotaWarning quota={quota} threshold={QUOTA_WARNING_THRESHOLD} />
         </>
-      )}
+      ) : null}
 
       {/* Video feature gate */}
       <div className="mb-6">
@@ -326,16 +326,16 @@ function PodcastStudioContent() {
       </div>
 
       {/* Quota Card */}
-      {quota && <QuotaCard quota={quota} />}
+      {quota ? <QuotaCard quota={quota} /> : null}
 
-      {youtubeAccess.hasAccess && (
+      {youtubeAccess.hasAccess ? (
         <YouTubeConnectionCard
           connection={youtubeConnection}
           isLoading={youtubeConnectionLoading}
           isError={youtubeConnectionError}
           onRefresh={refetchYouTubeConnection}
         />
-      )}
+      ) : null}
 
       {/* Actions Bar */}
       <div className="mb-6 flex justify-between items-center">
@@ -391,13 +391,8 @@ function PodcastStudioContent() {
           youtubeAccess={youtubeAccess}
           youtubeConnection={youtubeConnection}
           youtubeConnectionLoading={youtubeConnectionLoading}
-          youtubeConnectionError={youtubeConnectionError}
-          onRefreshYoutubeConnection={refetchYouTubeConnection}
           onRequestPublish={handleRequestPublish}
           onRequestYouTubeConnect={handleRequestYouTubeConnect}
-          youtubeInfoMessage={null}
-          infoEpisodeId={null}
-          lastPublishedEpisodeId={null}
           isConnecting={initiateYouTubeOAuthMutation.isPending}
           onEdit={(episode) => setEditingEpisode(episode)}
           onDelete={(episode) => setDeleteTarget(episode)}
@@ -706,6 +701,11 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
 function EpisodesList({
   episodes,
   youtubeAccess,
+  youtubeConnection,
+  youtubeConnectionLoading,
+  onRequestPublish,
+  onRequestYouTubeConnect,
+  isConnecting,
   onEdit,
   onDelete,
   onNotify,
@@ -713,6 +713,11 @@ function EpisodesList({
 }: {
   episodes: PodcastEpisode[];
   youtubeAccess: FeatureAccessState;
+  youtubeConnection: YouTubeConnectionStatus | undefined;
+  youtubeConnectionLoading: boolean;
+  onRequestPublish: (episode: PodcastEpisode) => void;
+  onRequestYouTubeConnect: (episode: PodcastEpisode) => void;
+  isConnecting: boolean;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
   onNotify: (type: NotificationState['type'], message: string) => void;
@@ -750,6 +755,11 @@ function EpisodesList({
             key={episode.id}
             episode={episode}
             youtubeAccess={youtubeAccess}
+            youtubeConnection={youtubeConnection}
+            youtubeConnectionLoading={youtubeConnectionLoading}
+            onRequestPublish={onRequestPublish}
+            onRequestYouTubeConnect={onRequestYouTubeConnect}
+            isConnecting={isConnecting}
             onEdit={onEdit}
             onDelete={onDelete}
             onNotify={onNotify}
@@ -764,6 +774,16 @@ function EpisodesList({
 function EpisodeListItem({
   episode,
   youtubeAccess,
+  youtubeConnection,
+  youtubeConnectionLoading,
+  youtubeConnectionError,
+  onRefreshYoutubeConnection,
+  onRequestPublish,
+  onRequestYouTubeConnect,
+  youtubeInfoMessage,
+  infoEpisodeId,
+  lastPublishedEpisodeId,
+  isConnecting,
   onEdit,
   onDelete,
   onNotify,
@@ -771,6 +791,16 @@ function EpisodeListItem({
 }: {
   episode: PodcastEpisode;
   youtubeAccess: FeatureAccessState;
+  youtubeConnection: YouTubeConnectionStatus | undefined;
+  youtubeConnectionLoading: boolean;
+  youtubeConnectionError: boolean;
+  onRefreshYoutubeConnection: () => Promise<unknown>;
+  onRequestPublish: (episode: PodcastEpisode) => void;
+  onRequestYouTubeConnect: (episode: PodcastEpisode) => void;
+  youtubeInfoMessage: string | null;
+  infoEpisodeId: string | null;
+  lastPublishedEpisodeId: string | null;
+  isConnecting: boolean;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
   onNotify: (type: NotificationState['type'], message: string) => void;
@@ -782,34 +812,10 @@ function EpisodeListItem({
     archived: 'bg-gray-100 text-gray-800',
   };
 
-  const [youtubeSuccessMessage, setYoutubeSuccessMessage] = React.useState<string | null>(null);
-  const [youtubeErrorMessage, setYoutubeErrorMessage] = React.useState<string | null>(null);
   const [transcribeSuccessMessage, setTranscribeSuccessMessage] = React.useState<string | null>(null);
   const [transcribeErrorMessage, setTranscribeErrorMessage] = React.useState<string | null>(null);
 
   const queryClient = useQueryClient();
-
-  const defaultPublishPayload = React.useMemo<YouTubePublishPayload>(() => ({
-    title: episode.title,
-    description: episode.description ?? '',
-    tags: [],
-    privacy: 'private',
-    scheduleTime: null,
-  }), [episode.description, episode.title]);
-
-  const youtubeMutation = useMutation({
-    mutationFn: () => publishEpisodeToYouTube(episode.id, defaultPublishPayload),
-    onSuccess: () => {
-      setYoutubeErrorMessage(null);
-      setYoutubeSuccessMessage('Published to YouTube');
-      onNotify('success', `Episode "${episode.title}" is live on YouTube`);
-    },
-    onError: () => {
-      setYoutubeSuccessMessage(null);
-      setYoutubeErrorMessage('Failed to publish to YouTube. Please try again.');
-      onNotify('error', 'Failed to publish episode to YouTube');
-    },
-  });
 
   const transcribeMutation = useMutation({
     mutationFn: () => transcribeEpisode(episode.id),
@@ -826,11 +832,18 @@ function EpisodeListItem({
     },
   });
 
-  const handlePublish = () => {
-    setYoutubeSuccessMessage(null);
-    setYoutubeErrorMessage(null);
-    youtubeMutation.mutate();
-  };
+  const handleRetryConnection = React.useCallback(async () => {
+    try {
+      await onRefreshYoutubeConnection();
+    } catch (error) {
+      onNotify('error', 'Failed to refresh YouTube connection');
+    }
+  }, [onRefreshYoutubeConnection, onNotify]);
+
+  const isVideoEpisode = Boolean(episode.video_file_url);
+  const showPublishSuccess = lastPublishedEpisodeId === episode.id;
+  const infoMessage = infoEpisodeId === episode.id ? youtubeInfoMessage : null;
+  const isConnected = youtubeConnection?.isConnected ?? false;
 
   const handleTranscribe = () => {
     setTranscribeSuccessMessage(null);

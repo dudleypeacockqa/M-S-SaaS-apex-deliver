@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { marketingAvatars, marketingPartnerLogos } from '../../assets/marketing';
+import { StructuredData } from '../common/StructuredData';
 
 export const EnhancedTestimonials: React.FC = () => {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -79,8 +80,49 @@ export const EnhancedTestimonials: React.FC = () => {
 
   const current = testimonials[activeTestimonial];
 
+  const reviewStructuredData = useMemo(
+    () => ({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: testimonials.map((testimonial, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'Review',
+          name: `${testimonial.name} review of ApexDeliver`,
+          reviewBody: testimonial.content,
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: testimonial.rating.toString(),
+            bestRating: '5',
+          },
+          author: {
+            '@type': 'Person',
+            name: testimonial.name,
+            jobTitle: testimonial.role,
+            worksFor: {
+              '@type': 'Organization',
+              name: testimonial.company,
+            },
+          },
+          itemReviewed: {
+            '@type': 'Product',
+            name: 'ApexDeliver M&A Platform',
+            brand: {
+              '@type': 'Organization',
+              name: 'ApexDeliver',
+            },
+            category: 'BusinessApplication',
+          },
+        },
+      })),
+    }),
+    [testimonials]
+  );
+
   return (
     <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+      <StructuredData json={reviewStructuredData} id="testimonial-reviews" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">

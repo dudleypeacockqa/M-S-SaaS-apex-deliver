@@ -32,7 +32,13 @@ export const ContactPage: React.FC = () => {
         title="Contact Us - ApexDeliver | Get in Touch"
         description="Contact ApexDeliver for support, demo requests, or sales inquiries. Email: support@apexdeliver.com. We respond within 24 hours."
         keywords="contact ApexDeliver, M&A platform support, demo request, sales inquiry"
+        ogTitle="Contact ApexDeliver"
+        ogDescription="Speak with the ApexDeliver team about demos, onboarding, or partnership opportunities."
         ogUrl="https://ma-saas-platform.onrender.com/contact"
+        ogImage="https://apexdeliver.com/assets/security-trust-visual.png"
+        twitterTitle="Contact ApexDeliver"
+        twitterDescription="Reach the ApexDeliver team for demos, sales questions, and platform support."
+        twitterImage="https://apexdeliver.com/assets/security-trust-visual.png"
         canonical="https://ma-saas-platform.onrender.com/contact"
       />
       {/* Header */}

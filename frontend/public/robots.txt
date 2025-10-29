@@ -4,5 +4,10 @@
 
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /admin/
+Disallow: /deals/
+Disallow: /podcast-studio
+Disallow: /checkout/
 
 Sitemap: https://apexdeliver.com/sitemap.xml

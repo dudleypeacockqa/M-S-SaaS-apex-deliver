@@ -9,7 +9,13 @@ export const AboutPage: React.FC = () => {
         title="About ApexDeliver | Democratizing M&A Tools for Dealmakers"
         description="Learn about ApexDeliver's mission to democratize professional M&A tools. Founded to make enterprise-grade deal intelligence accessible at £279/month vs £10k+ enterprise platforms."
         keywords="about ApexDeliver, M&A platform mission, dealmaker tools, M&A software company"
+        ogTitle="About ApexDeliver"
+        ogDescription="Meet the team transforming the M&A lifecycle with accessible, AI-first tooling."
         ogUrl="https://ma-saas-platform.onrender.com/about"
+        ogImage="https://apexdeliver.com/assets/brand/apexdeliver-wordmark.svg"
+        twitterTitle="About ApexDeliver"
+        twitterDescription="Discover why ApexDeliver exists and how we help modern dealmakers win."
+        twitterImage="https://apexdeliver.com/assets/brand/apexdeliver-wordmark.svg"
         canonical="https://ma-saas-platform.onrender.com/about"
       />
       {/* Header */}
