@@ -1,6 +1,6 @@
 import React from 'react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { screen, waitFor, fireEvent } from '@testing-library/react'
+import { screen, waitFor, fireEvent, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { renderWithQueryClient } from '../../setupTests'
@@ -170,7 +170,9 @@ describe('DocumentEditor', () => {
     await userEvent.click(editorRegion)
     await userEvent.type(editorRegion, ' Updated with new findings.')
 
-    vi.advanceTimersByTime(1500)
+    await act(async () => {
+      vi.advanceTimersByTime(1500)
+    })
 
     await waitFor(() => {
       expect(documentApi.saveDocument).toHaveBeenCalledWith(DEFAULT_DOCUMENT_ID, {
@@ -332,7 +334,9 @@ describe('DocumentEditor', () => {
     const editorRegion = await screen.findByRole('textbox', { name: /document content editor/i })
     await userEvent.type(editorRegion, ' Trigger save error')
 
-    vi.advanceTimersByTime(1500)
+    await act(async () => {
+      vi.advanceTimersByTime(1500)
+    })
 
     await waitFor(() => {
       expect(screen.getByText(/auto-save failed/i)).toBeInTheDocument()

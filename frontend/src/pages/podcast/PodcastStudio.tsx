@@ -313,31 +313,6 @@ function PodcastStudioContent() {
         </p>
       </div>
 
-      <div
-        role="tablist"
-        aria-label="Podcast studio sections"
-        className="mb-6 flex flex-wrap items-center gap-3 border-b border-gray-200 pb-2"
-      >
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeSection === 'episodes'}
-          className={`rounded-md px-4 py-2 text-sm font-medium transition ${activeSection === 'episodes' ? 'bg-indigo-600 text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-          onClick={() => setActiveSection('episodes')}
-        >
-          Episodes
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeSection === 'liveStreaming'}
-          className={`rounded-md px-4 py-2 text-sm font-medium transition ${activeSection === 'liveStreaming' ? 'bg-indigo-600 text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-          onClick={() => setActiveSection('liveStreaming')}
-        >
-          Live streaming
-        </button>
-      </div>
-
       {notification ? (
         <NotificationBanner
           notification={notification}
@@ -345,14 +320,62 @@ function PodcastStudioContent() {
         />
       ) : null}
 
-      {activeSection === 'episodes' ? (
+      {quota ? (
         <>
-          {quota ? (
-            <>
-              <QuotaHud quota={quota} />
-              <QuotaWarning quota={quota} threshold={QUOTA_WARNING_THRESHOLD} />
-            </>
-          ) : null}
+          <QuotaHud quota={quota} />
+          <QuotaWarning quota={quota} threshold={QUOTA_WARNING_THRESHOLD} />
+        </>
+      ) : null}
+
+      {/* Video feature gate */}
+      <div className="mb-6">
+        <FeatureGate
+          feature="podcast_video"
+          requiredTier="premium"
+          upgradeMessage={UPGRADE_MESSAGES.video}
+          lockedTitle="Video features locked"
+          lockedDescription="Video production is locked on your current plan."
+          ctaLabel="Explore Premium video options"
+        >
+          <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
+            <h3 className="text-sm font-semibold text-purple-800">Video uploads enabled</h3>
+            <p className="mt-1 text-sm text-purple-700">
+              Upload ready-to-share video episodes and syndicate directly to YouTube.
+            </p>
+          </div>
+        </FeatureGate>
+      </div>
+
+      {/* Quota Card */}
+      {quota ? <QuotaCard quota={quota} /> : null}
+
+      {/* Episodes List */}
+      <SectionErrorBoundary
+        fallback={
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            We couldn't load your episodes just now. Please refresh the page or try again later.
+          </div>
+        }
+      >
+        <EpisodesList
+          episodes={episodes}
+          youtubeAccess={youtubeAccess}
+          youtubeConnection={youtubeConnection}
+          youtubeConnectionLoading={youtubeConnectionLoading}
+          youtubeConnectionError={youtubeConnectionError}
+          onRefreshYoutubeConnection={refetchYouTubeConnection}
+          onRequestPublish={handleRequestPublish}
+          onRequestYouTubeConnect={handleRequestYouTubeConnect}
+          youtubeInfoMessage={youtubeInfoMessage}
+          infoEpisodeId={infoEpisodeId}
+          lastPublishedEpisodeId={lastPublishedEpisodeId}
+          isConnecting={initiateYouTubeOAuthMutation.isPending}
+          onEdit={(episode) => setEditingEpisode(episode)}
+          onDelete={(episode) => setDeleteTarget(episode)}
+          onNotify={pushNotification}
+          onVideoUpload={(episode) => setVideoUploadEpisode(episode)}
+        />
+      </SectionErrorBoundary>
           
           {/* Video feature gate */}
           <div className="mb-6">

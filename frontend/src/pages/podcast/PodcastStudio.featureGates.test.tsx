@@ -376,7 +376,11 @@ describe('PodcastStudio feature gates', () => {
       }),
     });
 
+    const user = userEvent.setup();
+
     render(<PodcastStudio />, { wrapper: createWrapper() });
+
+    await user.click(screen.getByRole('tab', { name: /live streaming/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/live streaming locked/i)).toBeInTheDocument();

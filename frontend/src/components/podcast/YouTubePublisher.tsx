@@ -49,6 +49,16 @@ export function YouTubePublisher({ episode, youtubeAccess }: YouTubePublisherPro
   const [errors, setErrors] = React.useState<YouTubeMetadataErrors>({});
   const [banner, setBanner] = React.useState<NotificationBanner | null>(null);
 
+  const handleErrorChange = React.useCallback((field: keyof YouTubeMetadataValues, message: string | null) => {
+    setErrors((prev) => {
+      if (!message) {
+        const { [field]: _omit, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [field]: message };
+    });
+  }, []);
+
   const connectionQuery = useQuery({
     queryKey: ['youtubeConnection'],
     queryFn: getYouTubeConnectionStatus,
@@ -106,11 +116,12 @@ export function YouTubePublisher({ episode, youtubeAccess }: YouTubePublisherPro
       const next: YouTubeMetadataValues = { ...prev, [field]: value };
       if (field === 'privacy' && value === 'private') {
         next.scheduleTime = '';
+        handleErrorChange('scheduleTime', null);
       }
       return next;
     });
-    setErrors((prev) => ({ ...prev, [field]: undefined }));
-  }, []);
+    handleErrorChange(field, null);
+  }, [handleErrorChange]);
 
   const validateMetadata = React.useCallback((): YouTubeMetadataErrors => {
     const validation: YouTubeMetadataErrors = {};
