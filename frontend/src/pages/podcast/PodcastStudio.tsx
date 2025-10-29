@@ -391,8 +391,13 @@ function PodcastStudioContent() {
           youtubeAccess={youtubeAccess}
           youtubeConnection={youtubeConnection}
           youtubeConnectionLoading={youtubeConnectionLoading}
+          youtubeConnectionError={youtubeConnectionError}
+          onRefreshYoutubeConnection={refetchYouTubeConnection}
           onRequestPublish={handleRequestPublish}
           onRequestYouTubeConnect={handleRequestYouTubeConnect}
+          youtubeInfoMessage={youtubeInfoMessage}
+          infoEpisodeId={infoEpisodeId}
+          lastPublishedEpisodeId={lastPublishedEpisodeId}
           isConnecting={initiateYouTubeOAuthMutation.isPending}
           onEdit={(episode) => setEditingEpisode(episode)}
           onDelete={(episode) => setDeleteTarget(episode)}
