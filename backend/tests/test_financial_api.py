@@ -925,3 +925,56 @@ def test_get_narrative_returns_generated_narrative(client, test_deal, solo_user,
         assert float(data["readiness_score"]) == 85.0
     finally:
         app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_quickbooks_profit_loss_parser(test_deal, db_session):
+    """Test QuickBooks P&L parser creates income statement correctly"""
+    from app.models.financial_connection import FinancialConnection
+    from app.services.quickbooks_oauth_service import _parse_quickbooks_profit_loss
+
+    # Create a QuickBooks connection
+    connection = FinancialConnection(
+        id="conn-qbo-pl",
+        deal_id=test_deal.id,
+        organization_id=test_deal.organization_id,
+        platform="quickbooks",
+        access_token="token",
+        refresh_token="refresh",
+        token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+        connection_status="active",
+    )
+    db_session.add(connection)
+    db_session.commit()
+
+    # Mock QuickBooks P&L report data
+    pl_data = {
+        "Income": [
+            {"Name": "Sales Revenue", "Balance": 500000},
+            {"Name": "Service Revenue", "Balance": 100000},
+        ],
+        "CostOfGoodsSold": [
+            {"Name": "Product Costs", "Balance": 200000},
+        ],
+        "Expenses": [
+            {"Name": "Salaries", "Balance": 80000},
+            {"Name": "Rent", "Balance": 20000},
+            {"Name": "Interest Expense", "Balance": 5000},
+        ],
+    }
+
+    # Parse P&L
+    statement = _parse_quickbooks_profit_loss(pl_data, connection, db_session)
+
+    # Verify income statement was created
+    assert statement is not None
+    assert statement.statement_type == "income_statement"
+    assert statement.deal_id == test_deal.id
+
+    # Verify financial calculations
+    assert statement.revenue == Decimal("600000")  # 500000 + 100000
+    assert statement.cost_of_goods_sold == Decimal("200000")
+    assert statement.gross_profit == Decimal("400000")  # 600000 - 200000
+    assert statement.total_operating_expenses == Decimal("100000")  # 80000 + 20000 (excluding interest)
+    assert statement.operating_income == Decimal("300000")  # 400000 - 100000
+    assert statement.interest_expense == Decimal("5000")
+    assert statement.net_income == Decimal("295000")  # 300000 - 5000

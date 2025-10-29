@@ -533,6 +533,23 @@ def fetch_quickbooks_statements(connection_id: str, db: Session) -> List[Financi
     except Exception as e:
         print(f"Error fetching QuickBooks balance sheet: {e}")
 
+    # Fetch Profit & Loss (Income Statement)
+    try:
+        profit_loss_data = quickbooks_client.get_report(
+            platform_organization_id=connection.platform_organization_id,
+            access_token=connection.access_token,
+            refresh_token=connection.refresh_token,
+            report_type="ProfitAndLoss"
+        )
+
+        # Parse P&L and create statement
+        statement = _parse_quickbooks_profit_loss(profit_loss_data, connection, db)
+        if statement:
+            statements.append(statement)
+
+    except Exception as e:
+        print(f"Error fetching QuickBooks profit & loss: {e}")
+
     # Update last sync time
     connection.last_sync_at = datetime.now(timezone.utc)
     db.commit()
@@ -587,6 +604,85 @@ def _parse_quickbooks_balance_sheet(data: Dict, connection: FinancialConnection,
 
     except Exception as e:
         print(f"Error parsing QuickBooks balance sheet: {e}")
+        return None
+
+
+def _parse_quickbooks_profit_loss(data: Dict, connection: FinancialConnection, db: Session) -> Optional[FinancialStatement]:
+    """
+    Parse QuickBooks Profit & Loss report into FinancialStatement.
+
+    Args:
+        data: QuickBooks P&L report data
+        connection: FinancialConnection object
+        db: Database session
+
+    Returns:
+        Created FinancialStatement or None if parsing fails
+    """
+    try:
+        # Extract income and expense data from QuickBooks P&L report
+        # QuickBooks P&L structure: Rows with account details
+        total_revenue = Decimal("0")
+        cost_of_goods_sold = Decimal("0")
+        operating_expenses = Decimal("0")
+        interest_expense = Decimal("0")
+
+        # Parse revenue (Income section)
+        income_accounts = data.get("Income", [])
+        for account in income_accounts:
+            amount = Decimal(str(account.get("Balance", 0)))
+            total_revenue += amount
+
+        # Parse COGS
+        cogs_accounts = data.get("CostOfGoodsSold", [])
+        for account in cogs_accounts:
+            amount = Decimal(str(account.get("Balance", 0)))
+            cost_of_goods_sold += amount
+
+        # Parse operating expenses
+        expense_accounts = data.get("Expenses", [])
+        for account in expense_accounts:
+            amount = Decimal(str(account.get("Balance", 0)))
+            account_name = account.get("Name", "").lower()
+
+            # Classify interest expense separately
+            if "interest" in account_name:
+                interest_expense += amount
+            else:
+                operating_expenses += amount
+
+        # Calculate derived fields
+        gross_profit = total_revenue - cost_of_goods_sold
+        operating_income = gross_profit - operating_expenses
+        net_income = operating_income - interest_expense
+
+        # Create income statement
+        statement = FinancialStatement(
+            connection_id=connection.id,
+            deal_id=connection.deal_id,
+            organization_id=connection.organization_id,
+            statement_type="income_statement",
+            period_start=datetime(2024, 1, 1).date(),
+            period_end=datetime(2024, 12, 31).date(),
+            period_type="annual",
+            currency="USD",  # QuickBooks default
+            revenue=total_revenue,
+            cost_of_goods_sold=cost_of_goods_sold,
+            gross_profit=gross_profit,
+            total_operating_expenses=operating_expenses,
+            operating_income=operating_income,
+            interest_expense=interest_expense,
+            net_income=net_income,
+        )
+
+        db.add(statement)
+        db.commit()
+        db.refresh(statement)
+
+        return statement
+
+    except Exception as e:
+        print(f"Error parsing QuickBooks profit & loss: {e}")
         return None
 
 
