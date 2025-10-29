@@ -4,6 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
+import { notifyOwner } from "./_core/notification";
 
 export const appRouter = router({
   system: systemRouter,
@@ -45,7 +46,16 @@ export const appRouter = router({
         message: z.string().min(10),
       }))
       .mutation(async ({ input }) => {
+        // Save to database
         await db.createContactSubmission(input);
+        
+        // Send notification to owner
+        const companyInfo = input.company ? ` from ${input.company}` : '';
+        await notifyOwner({
+          title: `New Contact Form Submission${companyInfo}`,
+          content: `**Name:** ${input.name}\n**Email:** ${input.email}\n**Company:** ${input.company || 'Not provided'}\n\n**Message:**\n${input.message}`,
+        });
+        
         return { success: true };
       }),
   }),

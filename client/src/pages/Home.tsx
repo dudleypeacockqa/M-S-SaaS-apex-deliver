@@ -5,10 +5,16 @@ import { ArrowRight, BarChart3, Building2, LineChart, TrendingUp } from "lucide-
 import { Link } from "wouter";
 import MarketingFooter from "@/components/MarketingFooter";
 import MarketingNav from "@/components/MarketingNav";
+import SEO from "@/components/SEO";
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
+      <SEO 
+        title="Home"
+        description="The end-to-end M&A intelligence platform. From deal flow to cash flow, ApexDeliver + CapLiquify unifies your entire M&A lifecycle into a single, intelligent, and automated platform."
+        keywords="M&A software, deal flow management, due diligence, valuation, FP&A, cash flow forecasting, ApexDeliver, CapLiquify"
+      />
       <MarketingNav />
 
       {/* Hero Section */}
