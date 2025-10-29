@@ -20,7 +20,7 @@ export const FAQSection: React.FC = () => {
     },
     {
       question: 'Can I integrate ApexDeliver with my existing tools?',
-      answer: 'Yes! ApexDeliver integrates with major accounting platforms (Xero, QuickBooks, Sage, NetSuite) for automatic financial data sync. We also offer API access for custom integrations, webhook support for real-time notifications, and export capabilities (Excel, PDF, CSV). Our team can help with custom integration requirements for enterprise clients.'
+      answer: 'Yes! CapLiquify + ApexDeliver integrates with Sage Intacct and Odoo ERP for automatic financial data sync at MVP. We also support CSV imports for manual data upload. Enterprise customers get API access for custom integrations and iPaaS connectors. We prioritize integrations based on customer demand and focus on mid-market ERPs used by PE-backed businesses. Export capabilities include Excel, PDF, and CSV formats.'
     },
     {
       question: 'What if I need help or training?',
