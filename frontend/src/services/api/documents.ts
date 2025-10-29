@@ -304,7 +304,7 @@ export interface BulkDeleteResponse {
 
 export async function bulkDownloadDocuments(dealId: string, documentIds: string[]): Promise<string> {
   const headers = await getAuthHeaders()
-  const response = await fetch(`${API_BASE_URL}/api/documents/bulk-download`, {
+  const response = await fetch(buildDealUrl(dealId, "/documents/bulk-download"), {
     method: "POST",
     headers,
     body: JSON.stringify({ document_ids: documentIds }),
@@ -322,9 +322,10 @@ export async function bulkDownloadDocuments(dealId: string, documentIds: string[
 
 export async function bulkDeleteDocuments(dealId: string, documentIds: string[]): Promise<BulkDeleteResponse> {
   const headers = await getAuthHeaders()
-  return request<BulkDeleteResponse>(`${API_BASE_URL}/api/documents/bulk-delete`, {
+  return request<BulkDeleteResponse>(buildDealUrl(dealId, "/documents/bulk-delete"), {
     method: "POST",
     headers,
     body: JSON.stringify({ document_ids: documentIds }),
   })
 }
+

@@ -907,6 +907,66 @@ def test_granting_folder_permission_creates_audit_log(
         cleanup()
 
 
+def test_revoking_folder_permission_creates_audit_log(
+    client,
+    auth_context,
+    seeded_deal,
+    create_user,
+):
+    """Revoking folder permission should append a permission_revoked entry."""
+    headers, cleanup, owner_user, org_id = auth_context
+    from app.api.dependencies.auth import get_current_user
+    from app.main import app
+
+    try:
+        # Create folder and document
+        folder_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/folders",
+            headers=headers,
+            json={"name": "Revocation Room"},
+        )
+        assert folder_resp.status_code == status.HTTP_201_CREATED
+        folder_id = folder_resp.json()["id"]
+
+        doc_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/documents?folder_id={folder_id}",
+            headers=headers,
+            files={"file": ("folder-doc.pdf", io.BytesIO(b"audit"), "application/pdf")},
+        )
+        assert doc_resp.status_code == status.HTTP_201_CREATED
+        document_id = doc_resp.json()["id"]
+
+        viewer = create_user(
+            email="folder-viewer@example.com",
+            role=UserRole.growth,
+            organization_id=org_id,
+        )
+
+        grant_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/folders/{folder_id}/permissions",
+            headers=headers,
+            json={"user_id": str(viewer.id), "permission_level": "viewer"},
+        )
+        assert grant_resp.status_code == status.HTTP_201_CREATED
+
+        revoke_resp = client.delete(
+            f"/api/deals/{seeded_deal.id}/folders/{folder_id}/permissions/{viewer.id}",
+            headers=headers,
+        )
+        assert revoke_resp.status_code == status.HTTP_204_NO_CONTENT
+
+        logs_resp = client.get(
+            f"/api/deals/{seeded_deal.id}/documents/{document_id}/access-logs",
+            headers=headers,
+        )
+        assert logs_resp.status_code == status.HTTP_200_OK
+        actions = {entry["action"] for entry in logs_resp.json()}
+        assert "permission_revoked" in actions
+    finally:
+        app.dependency_overrides[get_current_user] = lambda: owner_user
+        cleanup()
+
+
 def test_revoking_document_permission_creates_audit_log(
     client,
     auth_context,

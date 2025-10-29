@@ -17,6 +17,8 @@ vi.mock('../../services/api/documents', () => ({
   uploadDocument: vi.fn(),
   downloadDocument: vi.fn(),
   archiveDocument: vi.fn(),
+  bulkDownloadDocuments: vi.fn(),
+  bulkDeleteDocuments: vi.fn(),
   formatFileSize: vi.fn((bytes) => `${bytes} bytes`),
   getFileIcon: vi.fn(() => '📄'),
   ALLOWED_FILE_TYPES: ['application/pdf'],
@@ -204,6 +206,38 @@ describe('DataRoom - Document Operations', () => {
       per_page: 20,
       pages: 1,
     });
+    (documentsAPI.bulkDownloadDocuments as any).mockResolvedValue('blob:mock');
+    (documentsAPI.bulkDeleteDocuments as any).mockResolvedValue({
+      deleted_count: 0,
+      deleted_ids: [],
+      failed_ids: [],
+      failed_reasons: {},
+    });
+  });
+
+  it('shows upgrade message when listing documents responds with 403 entitlement error', async () => {
+    (documentsAPI.listDocuments as any).mockRejectedValueOnce({
+      response: {
+        status: 403,
+        data: {
+          detail: {
+            message: 'Upgrade to the Growth tier to unlock secure data room access.',
+            required_tier_label: 'Growth',
+            upgrade_cta_url: '/billing/upgrade',
+          },
+        },
+      },
+    });
+
+    renderDataRoom();
+
+    const heading = await screen.findByRole('heading', { name: /access restricted/i });
+    expect(heading).toBeInTheDocument();
+    expect(
+      screen.getByText(/this data room is available to growth tier and above/i),
+    ).toBeInTheDocument();
+    const link = screen.getByRole('link', { name: /view pricing plans/i });
+    expect(link).toHaveAttribute('href', '/billing/upgrade');
   });
 
   it('should display upload button', async () => {

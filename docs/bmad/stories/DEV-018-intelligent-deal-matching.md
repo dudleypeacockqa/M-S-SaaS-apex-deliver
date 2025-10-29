@@ -5,7 +5,7 @@
 **Priority**: ⭐⭐⭐⭐⭐ (Core Differentiator - F-008)
 **Estimated Effort**: 20-28 hours (TDD end-to-end)
 **Methodology**: BMAD v6-alpha + Test-Driven Development (strict RED → GREEN → REFACTOR)
-**Status**: 🟢 90% PRODUCTION READY (2025-10-29 16:45 UTC)
+**Status**: 🟡 In Progress – Phase 4 frontend regressions outstanding (Updated 2025-10-29 10:55 UTC)
 
 **✅ Phase 1 Complete**: Database Models & Schema
 - ✅ DealMatchCriteria model (3 tests passing)
@@ -36,20 +36,17 @@
 - ✅ RBAC tier gating (Professional+ only)
 - **Tests: 10/10 GREEN**
 
-**✅ Phase 4 Complete**: Frontend MatchingWorkspace
-- ✅ Criteria management tab with list view
-- ✅ Matches discovery tab with scoring
-- ✅ Confidence badges (high/medium/low color-coded)
-- ✅ Match explanation panels
-- ✅ Tier gating with upgrade prompts
-- ✅ React Query integration
-- ✅ API service layer
-- **Tests: 10/14 GREEN (71%)**
+**🔄 Phase 4 In Progress**: Frontend MatchingWorkspace
+- ✅ Criteria list + matches tab skeleton in place
+- ✅ Tier gating + React Query wiring implemented
+- ⚠️ Match actions (view/save/pass/request intro) partially wired; lacking modals/analytics UX
+- ❌ Vitest suite currently failing (4 files, 15 assertions) due to asynchronous waits and duplicate text queries
+- 🚧 Criteria builder modal + analytics dashboard not yet implemented
 
-**Overall Test Results**:
+**Overall Test Results (2025-10-29)**:
 - Backend: 33/33 tests GREEN (100%)
-- Frontend: 10/14 tests GREEN (71%)
-- **Total: 43/47 tests passing (91%)**
+- Frontend: 10/14 suites implemented but **15 assertions failing** (Vitest run: `npm --prefix frontend run test`)
+- **Total:** Pending until frontend suites stabilized – treat story as in-progress.
 
 **Remaining Polish (10%)**:
 - Fix 4 frontend timing/async test failures

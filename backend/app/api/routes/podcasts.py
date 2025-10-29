@@ -33,6 +33,37 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/podcasts", tags=["podcasts"])
 
 
+async def transcribe_audio(audio_file_path: str) -> str:
+    """
+    Transcribe audio file using OpenAI Whisper API.
+
+    Args:
+        audio_file_path: Path to the audio file to transcribe
+
+    Returns:
+        Transcribed text
+
+    Raises:
+        Exception: If Whisper API call fails
+    """
+    try:
+        # TODO: Implement OpenAI Whisper API integration
+        # For now, return a placeholder
+        # In production, this would call:
+        # - openai.Audio.transcribe() with the audio file
+        # - Handle API authentication, rate limiting, file size limits
+        # - Process response and extract transcript text
+
+        logger.info(f"Transcribing audio file: {audio_file_path}")
+
+        # Placeholder implementation
+        return "Placeholder transcription - OpenAI Whisper API not yet integrated"
+
+    except Exception as exc:
+        logger.error(f"Whisper API transcription failed: {exc}")
+        raise
+
+
 @router.get("/features/{feature}")
 async def get_feature_access(
     feature: str,
@@ -464,6 +495,190 @@ async def upload_video_file(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to save video file",
         ) from exc
+
+
+@router.post(
+    "/episodes/{episode_id}/transcribe",
+    status_code=status.HTTP_200_OK,
+)
+async def transcribe_episode_audio(
+    episode_id: str,
+    current_user: User = Depends(require_feature("podcast_audio")),
+    db: Session = Depends(get_db),
+) -> dict:
+    """
+    Transcribe episode audio using OpenAI Whisper API (Professional+ tiers).
+
+    Validates:
+    - Episode exists and has audio file
+    - Episode ownership
+
+    Returns:
+    - episode_id: Episode UUID
+    - transcript: Transcribed text
+    """
+    # Validate episode exists and belongs to organization
+    episode = podcast_service.get_episode(
+        db=db,
+        episode_id=episode_id,
+        organization_id=current_user.organization_id,
+    )
+    if episode is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Episode {episode_id} not found",
+        )
+
+    # Validate episode has audio file
+    if not episode.audio_file_url:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Episode must have an audio file to transcribe. Please upload audio first.",
+        )
+
+    # Transcribe audio
+    try:
+        transcript = await transcribe_audio(episode.audio_file_url)
+
+        # Update episode with transcript
+        podcast_service.update_episode(
+            db=db,
+            episode_id=episode_id,
+            organization_id=current_user.organization_id,
+            transcript=transcript,
+        )
+
+        logger.info(
+            "Audio transcribed successfully for episode %s by user %s",
+            episode_id,
+            current_user.id,
+        )
+
+        return {
+            "episode_id": episode_id,
+            "transcript": transcript,
+        }
+
+    except Exception as exc:
+        logger.error(
+            "Failed to transcribe audio for episode %s: %s",
+            episode_id,
+            str(exc),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Transcription failed. Please try again later.",
+        ) from exc
+
+
+@router.get(
+    "/episodes/{episode_id}/transcript",
+    status_code=status.HTTP_200_OK,
+)
+async def download_transcript_txt(
+    episode_id: str,
+    current_user: User = Depends(require_feature("podcast_audio")),
+    db: Session = Depends(get_db),
+) -> Response:
+    """
+    Download episode transcript in TXT format (Professional+ tiers).
+
+    Returns plain text transcript file.
+    """
+    # Validate episode exists and belongs to organization
+    episode = podcast_service.get_episode(
+        db=db,
+        episode_id=episode_id,
+        organization_id=current_user.organization_id,
+    )
+    if episode is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Episode {episode_id} not found",
+        )
+
+    # Validate transcript exists
+    if not episode.transcript:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Transcript not available. Please transcribe the episode first.",
+        )
+
+    # Return transcript as plain text
+    return Response(
+        content=episode.transcript,
+        media_type="text/plain",
+        headers={
+            "Content-Disposition": f'attachment; filename="episode_{episode_id}_transcript.txt"'
+        },
+    )
+
+
+@router.get(
+    "/episodes/{episode_id}/transcript.srt",
+    status_code=status.HTTP_200_OK,
+)
+async def download_transcript_srt(
+    episode_id: str,
+    current_user: User = Depends(require_feature("podcast_audio")),
+    db: Session = Depends(get_db),
+) -> Response:
+    """
+    Download episode transcript in SRT format (Professional+ tiers).
+
+    Returns SubRip subtitle file with timestamps.
+    """
+    # Validate episode exists and belongs to organization
+    episode = podcast_service.get_episode(
+        db=db,
+        episode_id=episode_id,
+        organization_id=current_user.organization_id,
+    )
+    if episode is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Episode {episode_id} not found",
+        )
+
+    # Validate transcript exists
+    if not episode.transcript:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Transcript not available. Please transcribe the episode first.",
+        )
+
+    # Convert transcript to SRT format
+    # Simple implementation: split by sentences, assign timestamps
+    # In production, Whisper API provides word-level timestamps
+    lines = episode.transcript.split(". ")
+    srt_content = []
+    seconds_per_line = 10  # Estimate 10 seconds per sentence
+
+    for idx, line in enumerate(lines, 1):
+        start_time = (idx - 1) * seconds_per_line
+        end_time = idx * seconds_per_line
+
+        # Format timestamps as HH:MM:SS,mmm
+        start_h, start_remainder = divmod(start_time, 3600)
+        start_m, start_s = divmod(start_remainder, 60)
+        end_h, end_remainder = divmod(end_time, 3600)
+        end_m, end_s = divmod(end_remainder, 60)
+
+        srt_content.append(f"{idx}\n")
+        srt_content.append(
+            f"{start_h:02d}:{start_m:02d}:{start_s:02d},000 --> "
+            f"{end_h:02d}:{end_m:02d}:{end_s:02d},000\n"
+        )
+        srt_content.append(f"{line.strip()}\n\n")
+
+    # Return SRT file
+    return Response(
+        content="".join(srt_content),
+        media_type="application/x-subrip",
+        headers={
+            "Content-Disposition": f'attachment; filename="episode_{episode_id}_transcript.srt"'
+        },
+    )
 
 
 @router.get(

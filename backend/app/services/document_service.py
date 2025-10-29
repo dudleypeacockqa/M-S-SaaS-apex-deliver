@@ -1184,6 +1184,56 @@ def list_folder_permissions(
     ]
 
 
+def revoke_folder_permission(
+    db: Session,
+    *,
+    deal_id: str,
+    folder_id: str,
+    target_user_id: str,
+    current_user: User,
+) -> None:
+    deal = _ensure_deal_access(db, deal_id, current_user)
+    folder = _ensure_folder_access(db, folder_id, deal)
+    if folder is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Folder not found")
+
+    _ensure_folder_owner_permission(db, folder=folder, user=current_user, deal=deal)
+
+    permission = (
+        db.query(DocumentPermission)
+        .filter(
+            DocumentPermission.folder_id == folder.id,
+            DocumentPermission.user_id == target_user_id,
+            DocumentPermission.organization_id == folder.organization_id,
+        )
+        .one_or_none()
+    )
+
+    if permission is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Permission not found")
+
+    db.delete(permission)
+
+    affected_documents = (
+        db.query(Document)
+        .filter(
+            Document.folder_id == folder.id,
+            Document.organization_id == folder.organization_id,
+        )
+        .all()
+    )
+
+    for document in affected_documents:
+        _log_access(
+            db,
+            document=document,
+            user=current_user,
+            action="permission_revoked",
+        )
+
+    db.commit()
+
+
 def log_document_access(
     db: Session,
     *,

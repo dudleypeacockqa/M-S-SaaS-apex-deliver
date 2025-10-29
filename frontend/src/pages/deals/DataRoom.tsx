@@ -21,6 +21,7 @@ import {
   ALLOWED_FILE_TYPES,
   MAX_FILE_SIZE,
 } from '../../services/api/documents'
+import { BulkActions } from '../../components/documents/BulkActions'
 
 export const DataRoom: React.FC = () => {
   const { dealId } = useParams<{ dealId: string }>()
@@ -44,6 +45,7 @@ export const DataRoom: React.FC = () => {
   const [uploadProgress, setUploadProgress] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedDocuments, setSelectedDocuments] = useState<Document[]>([])
 
   const flattenedFolders = useMemo(() => folders, [folders])
 
@@ -94,11 +96,26 @@ export const DataRoom: React.FC = () => {
         total: data.total,
         pages: data.pages,
       })
+      setSelectedDocuments((prev) =>
+        prev.filter((selected) => data.items.some((doc) => doc.id === selected.id))
+      )
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load documents')
     } finally {
       setLoading(false)
     }
+  }
+
+  const clearSelection = () => setSelectedDocuments([])
+
+  const toggleDocumentSelection = (document: Document) => {
+    setSelectedDocuments((prev) => {
+      const exists = prev.some((item) => item.id === document.id)
+      if (exists) {
+        return prev.filter((item) => item.id !== document.id)
+      }
+      return [...prev, document]
+    })
   }
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -191,11 +208,13 @@ export const DataRoom: React.FC = () => {
 
   const handleFolderClick = (folderId: string) => {
     setSelectedFolderId(folderId)
+    clearSelection()
     setPagination((prev) => ({ ...prev, page: 1 }))
   }
 
   const handleShowAllDocuments = () => {
     setSelectedFolderId(null)
+    clearSelection()
     setPagination((prev) => ({ ...prev, page: 1 }))
   }
 
@@ -465,22 +484,29 @@ export const DataRoom: React.FC = () => {
           {!loading && documents.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {documents.map((doc) => (
-                <div
-                  key={doc.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '1rem',
-                    backgroundColor: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '0.5rem',
-                    gap: '1rem',
-                  }}
-                >
-                  <span style={{ fontSize: '2rem' }}>{getFileIcon(doc.file_type)}</span>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ fontWeight: '600', marginBottom: '0.25rem' }}>{doc.name}</p>
-                    <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+            <div
+              key={doc.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '1rem',
+                backgroundColor: selectedDocuments.some((item) => item.id === doc.id) ? '#eef2ff' : 'white',
+                border: selectedDocuments.some((item) => item.id === doc.id) ? '1px solid #6366f1' : '1px solid #e5e7eb',
+                borderRadius: '0.5rem',
+                gap: '1rem',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={selectedDocuments.some((item) => item.id === doc.id)}
+                onChange={() => toggleDocumentSelection(doc)}
+                aria-label={`Select ${doc.name}`}
+                style={{ width: '1.25rem', height: '1.25rem', cursor: 'pointer' }}
+              />
+              <span style={{ fontSize: '2rem' }}>{getFileIcon(doc.file_type)}</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontWeight: '600', marginBottom: '0.25rem' }}>{doc.name}</p>
+                <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
                       {formatFileSize(doc.file_size)} • Version {doc.version} •{' '}
                       {new Date(doc.created_at).toLocaleDateString()}
                     </p>
@@ -569,6 +595,12 @@ export const DataRoom: React.FC = () => {
           )}
         </div>
       </div>
+      <BulkActions
+        dealId={dealId}
+        selectedDocuments={selectedDocuments}
+        onClearSelection={clearSelection}
+        onRefresh={fetchDocuments}
+      />
     </section>
   )
 }

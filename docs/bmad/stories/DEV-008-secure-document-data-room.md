@@ -7,17 +7,15 @@
 **Estimated Effort**: 12-16 hours (remaining 8-10 hours)
 **Actual Effort To Date**: 16 hours
 **Dependencies**: DEV-007 (Deal Pipeline CRUD) ✓
-**Status**: 🟢 100% COMPLETE - All features implemented, 37/37 tests passing (Updated 2025-10-29 19:00 UTC)
+**Status**: 🟡 In Progress – Backend stable, frontend document workspace outstanding (Updated 2025-10-29 10:55 UTC)
 
 ---
 
-## Latest Update (2025-10-29 19:00 UTC)
-- ✅ **DEV-008 COMPLETE** - All backend features fully implemented and tested
-- ✅ **API endpoints added**: Bulk download (`POST /documents/bulk-download`) and bulk delete (`POST /documents/bulk-delete`)
-- ✅ **Permission system enhanced**: Proper NONE baseline, explicit permission requirements, 403 on unauthorized access
-- ✅ **Test suite: 37/37 passing (100%)** - All tests GREEN, production ready
-- ✅ **Features complete**: Folders, permissions, versioning (20-limit), audit logs, search/filter, bulk operations
-- 📦 **Production Ready**: All acceptance criteria met, comprehensive test coverage, secure by default
+## Latest Update (2025-10-29 10:55 UTC)
+- ⚠️ Governance review revealed frontend implementation still missing critical components (`FolderTree`, `DocumentList`, `PermissionModal`, upload UX) and Vitest coverage. Current workspace renders placeholder data only.
+- ❌ Vitest baseline shows 15 failing tests (deal matching suite) resulting from ongoing DEV-018/DEV-008 work; no frontend evidence yet for document room interactions.
+- ✅ Backend endpoints (versioning, permissions, audit logs, bulk ops) remain green under `pytest`, providing stable foundation for frontend development.
+- 🔄 NEXT: Drive DEV-008 Phase 4 frontend UI under BMAD dev-story workflow – author RED Vitest specs for folder navigation, permission changes, upload flow, then implement components and wire to APIs.
 
 ## Latest Update (2025-10-29 08:45 UTC)
 - ⚠️ Governance review shows no RED pytest coverage for document versioning, folder permissions, or audit logging; story marked "PRODUCTION READY" prematurely.

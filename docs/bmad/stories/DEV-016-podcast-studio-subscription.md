@@ -10,6 +10,12 @@
 
 ---
 
+**Latest Update (2025-10-29 16:40 UTC)**:
+- 🧭 Re-baselined workstream: outstanding items mapped to monthly quota reset, transcription pipeline, video upload, YouTube metadata sync, and enterprise streaming backlog.
+- 🧪 Next BMAD cycle will begin with RED tests for monthly quota reset + transcription gating to restore strict TDD.
+- 📓 Documentation refresh queued (BMAD tracker, workflow status) along with Render smoke evidence once implementation lands.
+- 🔴 Baseline regression: `python -m pytest backend/tests/test_podcast_api.py backend/tests/test_quota_service.py` → 58 passed / 5 failed (transcription endpoint returning HTTP 404).
+
 **Latest Update (2025-10-29 15:25 UTC)**:
 - ✅ Full Vitest suite (`npm run test:coverage`) passes with 554 tests, 85.1% lines after extending quota/Monte Carlo specs; DataRoom/auth legacy routes temporarily excluded pending integration coverage.
 - ✅ Backend regression (`python -m pytest --cov=app --cov-report=term`) remains green (431 passed) though coverage is 77%; entitlement/quota modules flagged for follow-up to reach ≥90%.

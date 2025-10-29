@@ -1592,3 +1592,342 @@ class TestVideoUpload:
             assert call_kwargs["video_file_url"].startswith("/storage/podcast-video/")
         finally:
             _clear_override()
+
+
+class TestTranscription:
+    """TDD RED phase: Whisper API transcription endpoint tests (DEV-016 Phase 3)."""
+
+    def test_transcribe_audio_professional_success(
+        self, client, create_user, create_organization
+    ):
+        """Test Professional+ tier can transcribe audio files."""
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(
+            role=UserRole.growth, organization_id=org.id
+        )
+        professional_user.subscription_tier = (
+            SubscriptionTier.PROFESSIONAL.value
+        )
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode, patch(
+                "app.api.routes.podcasts.podcast_service.update_episode"
+            ) as mock_update_episode, patch(
+                "app.api.routes.podcasts.transcribe_audio"
+            ) as mock_transcribe:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-123",
+                    organization_id=professional_user.organization_id,
+                    title="Test Episode",
+                    audio_file_url="/storage/podcast-audio/ep-123/test.mp3",
+                )
+                mock_transcribe.return_value = "This is the transcribed text."
+
+                response = client.post(
+                    "/api/podcasts/episodes/ep-123/transcribe"
+                )
+
+            assert response.status_code == status.HTTP_200_OK
+            data = response.json()
+            assert "transcript" in data
+            assert data["transcript"] == "This is the transcribed text."
+            assert mock_update_episode.called
+        finally:
+            _clear_override()
+
+    def test_transcribe_starter_blocked(
+        self, client, create_user, create_organization
+    ):
+        """Test Starter tier cannot transcribe (403)."""
+        org = create_organization(subscription_tier="starter")
+        starter_user = create_user(role=UserRole.solo, organization_id=org.id)
+        starter_user.subscription_tier = SubscriptionTier.STARTER.value
+
+        _override_user(starter_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature:
+                mock_feature.return_value = False
+
+                response = client.post(
+                    "/api/podcasts/episodes/ep-123/transcribe"
+                )
+
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+        finally:
+            _clear_override()
+
+    def test_transcribe_requires_audio_file(
+        self, client, create_user, create_organization
+    ):
+        """Test transcription requires audio file to be uploaded first."""
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(
+            role=UserRole.growth, organization_id=org.id
+        )
+        professional_user.subscription_tier = (
+            SubscriptionTier.PROFESSIONAL.value
+        )
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-123",
+                    organization_id=professional_user.organization_id,
+                    title="Test Episode",
+                    audio_file_url=None,  # No audio file
+                )
+
+                response = client.post(
+                    "/api/podcasts/episodes/ep-123/transcribe"
+                )
+
+            assert response.status_code == status.HTTP_400_BAD_REQUEST
+            assert "audio file" in response.json()["detail"].lower()
+        finally:
+            _clear_override()
+
+    def test_transcribe_updates_episode_transcript(
+        self, client, create_user, create_organization
+    ):
+        """Test successful transcription updates episode's transcript field."""
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(
+            role=UserRole.growth, organization_id=org.id
+        )
+        professional_user.subscription_tier = (
+            SubscriptionTier.PROFESSIONAL.value
+        )
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode, patch(
+                "app.api.routes.podcasts.podcast_service.update_episode"
+            ) as mock_update_episode, patch(
+                "app.api.routes.podcasts.transcribe_audio"
+            ) as mock_transcribe:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-123",
+                    organization_id=professional_user.organization_id,
+                    title="Test Episode",
+                    audio_file_url="/storage/podcast-audio/ep-123/test.mp3",
+                )
+                mock_transcribe.return_value = "Transcribed content here."
+
+                response = client.post(
+                    "/api/podcasts/episodes/ep-123/transcribe"
+                )
+
+            # Verify update_episode was called with transcript
+            assert response.status_code == status.HTTP_200_OK
+            assert mock_update_episode.called
+            call_kwargs = mock_update_episode.call_args.kwargs
+            assert "transcript" in call_kwargs
+            assert call_kwargs["transcript"] == "Transcribed content here."
+        finally:
+            _clear_override()
+
+    def test_transcribe_handles_whisper_api_error(
+        self, client, create_user, create_organization
+    ):
+        """Test graceful handling of Whisper API errors."""
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(
+            role=UserRole.growth, organization_id=org.id
+        )
+        professional_user.subscription_tier = (
+            SubscriptionTier.PROFESSIONAL.value
+        )
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode, patch(
+                "app.api.routes.podcasts.transcribe_audio"
+            ) as mock_transcribe:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-123",
+                    organization_id=professional_user.organization_id,
+                    title="Test Episode",
+                    audio_file_url="/storage/podcast-audio/ep-123/test.mp3",
+                )
+                mock_transcribe.side_effect = Exception("Whisper API failed")
+
+                response = client.post(
+                    "/api/podcasts/episodes/ep-123/transcribe"
+                )
+
+            assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+            assert "transcription failed" in response.json()["detail"].lower()
+        finally:
+            _clear_override()
+
+
+class TestTranscriptDownload:
+    """TDD RED phase: Transcript download endpoint tests (DEV-016 Phase 4)."""
+
+    def test_download_transcript_txt_success(
+        self, client, create_user, create_organization
+    ):
+        """Test downloading transcript in TXT format."""
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(
+            role=UserRole.growth, organization_id=org.id
+        )
+        professional_user.subscription_tier = (
+            SubscriptionTier.PROFESSIONAL.value
+        )
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-123",
+                    organization_id=professional_user.organization_id,
+                    title="Test Episode",
+                    transcript="This is the transcript text.",
+                )
+
+                response = client.get(
+                    "/api/podcasts/episodes/ep-123/transcript"
+                )
+
+            assert response.status_code == status.HTTP_200_OK
+            assert response.headers["content-type"] == "text/plain; charset=utf-8"
+            assert "This is the transcript text." in response.text
+        finally:
+            _clear_override()
+
+    def test_download_transcript_srt_success(
+        self, client, create_user, create_organization
+    ):
+        """Test downloading transcript in SRT format."""
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(
+            role=UserRole.growth, organization_id=org.id
+        )
+        professional_user.subscription_tier = (
+            SubscriptionTier.PROFESSIONAL.value
+        )
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-123",
+                    organization_id=professional_user.organization_id,
+                    title="Test Episode",
+                    transcript="This is the transcript text.",
+                )
+
+                response = client.get(
+                    "/api/podcasts/episodes/ep-123/transcript.srt"
+                )
+
+            assert response.status_code == status.HTTP_200_OK
+            assert response.headers["content-type"] == "application/x-subrip"
+            # SRT format should contain sequence numbers and timestamps
+            assert "1\n" in response.text  # Sequence number
+            assert "-->" in response.text  # Timestamp separator
+        finally:
+            _clear_override()
+
+    def test_download_transcript_requires_transcript(
+        self, client, create_user, create_organization
+    ):
+        """Test downloading transcript when none exists."""
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(
+            role=UserRole.growth, organization_id=org.id
+        )
+        professional_user.subscription_tier = (
+            SubscriptionTier.PROFESSIONAL.value
+        )
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-123",
+                    organization_id=professional_user.organization_id,
+                    title="Test Episode",
+                    transcript=None,  # No transcript
+                )
+
+                response = client.get(
+                    "/api/podcasts/episodes/ep-123/transcript"
+                )
+
+            assert response.status_code == status.HTTP_404_NOT_FOUND
+            assert "transcript" in response.json()["detail"].lower()
+        finally:
+            _clear_override()
+
+    def test_download_transcript_starter_blocked(
+        self, client, create_user, create_organization
+    ):
+        """Test Starter tier cannot download transcripts."""
+        org = create_organization(subscription_tier="starter")
+        starter_user = create_user(role=UserRole.solo, organization_id=org.id)
+        starter_user.subscription_tier = SubscriptionTier.STARTER.value
+
+        _override_user(starter_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature:
+                mock_feature.return_value = False
+
+                response = client.get(
+                    "/api/podcasts/episodes/ep-123/transcript"
+                )
+
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+        finally:
+            _clear_override()

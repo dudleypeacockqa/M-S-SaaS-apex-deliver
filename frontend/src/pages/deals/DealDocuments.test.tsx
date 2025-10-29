@@ -4,10 +4,10 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import * as documentsApi from '../../../services/api/documents'
+import * as documentsApi from '../../services/api/documents'
 import { DealDocuments } from './DealDocuments'
 
-vi.mock('../../../services/api/documents', async (original) => {
+vi.mock('../../services/api/documents', async (original) => {
   const actual = await original()
   return {
     ...actual,
@@ -79,7 +79,7 @@ describe('DealDocuments', () => {
 
     await waitFor(() => expect(mockedDocuments.listDocuments).toHaveBeenCalledTimes(1))
 
-    const table = screen.getByRole('table', { name: /documents/i })
+    const table = await screen.findByRole('table', { name: /documents/i })
     const row = within(table).getByRole('row', { name: /financials\.pdf/i })
     expect(within(row).getByText('financials.pdf')).toBeInTheDocument()
     expect(within(row).getByText('1 MB')).toBeInTheDocument()
@@ -106,6 +106,6 @@ describe('DealDocuments', () => {
     renderDocuments()
 
     expect(await screen.findByText(/no documents uploaded yet/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /upload document/i })).toBeEnabled()
+    expect(await screen.findByRole('button', { name: /upload document/i })).toBeEnabled()
   })
 })

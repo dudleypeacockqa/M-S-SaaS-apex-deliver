@@ -205,6 +205,26 @@ def grant_folder_permission(
     return permission
 
 
+@router.delete(
+    "/folders/{folder_id}/permissions/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def revoke_folder_permission(
+    deal_id: str,
+    folder_id: str,
+    user_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    document_service.revoke_folder_permission(
+        db=db,
+        deal_id=deal_id,
+        folder_id=folder_id,
+        target_user_id=user_id,
+        current_user=current_user,
+    )
+
+
 @router.get("/folders/{folder_id}/permissions", response_model=List[PermissionResponse])
 def list_folder_permissions(
     deal_id: str,

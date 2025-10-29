@@ -14,6 +14,7 @@ import {
   type DealMatch,
 } from '../../services/dealMatchingService';
 import { MatchCard } from '../../components/deal-matching/MatchCard';
+import { MatchDetailModal } from '../../components/deal-matching/MatchDetailModal';
 
 interface MatchingWorkspaceProps {
   dealId?: string;
@@ -27,6 +28,8 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
   userTier = 'professional',
 }) => {
   const [activeTab, setActiveTab] = useState<'criteria' | 'matches'>(initialTab);
+  const [selectedMatch, setSelectedMatch] = useState<DealMatch | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const criteriaTabRef = useRef<HTMLButtonElement | null>(null);
   const matchesTabRef = useRef<HTMLButtonElement | null>(null);
   const queryClient = useQueryClient();
@@ -82,8 +85,13 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
     if (match.id) {
       recordMatchAction(match.id, { action: 'view', metadata: {} });
     }
-    // TODO: Open MatchDetailModal in Phase 2
-    console.log('View details:', match);
+    setSelectedMatch(match);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedMatch(null);
   };
 
   const handleSaveMatch = (matchId: string) => {
@@ -92,6 +100,22 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
 
   const handlePassMatch = (matchId: string) => {
     passMatchMutation.mutate(matchId);
+    if (isDetailModalOpen) {
+      handleCloseDetailModal();
+    }
+  };
+
+  const handleRequestIntro = (matchId: string) => {
+    // TODO: Phase 4 - Open IntroductionRequestModal
+    // For now, just record the action directly
+    recordMatchAction(matchId, {
+      action: 'request_intro',
+      metadata: { message: 'Introduction request sent' }
+    });
+    queryClient.invalidateQueries({ queryKey: ['dealMatches', dealId] });
+    if (isDetailModalOpen) {
+      handleCloseDetailModal();
+    }
   };
 
   if (!hasAccess) {
@@ -278,6 +302,16 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
           </div>
         )}
       </div>
+
+      {/* Match Detail Modal */}
+      <MatchDetailModal
+        match={selectedMatch}
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseDetailModal}
+        onSave={handleSaveMatch}
+        onPass={handlePassMatch}
+        onRequestIntro={handleRequestIntro}
+      />
     </div>
   );
 };
