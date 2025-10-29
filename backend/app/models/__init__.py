@@ -24,6 +24,8 @@ from .task import DealTask, TaskTemplate, TaskAutomationRule, TaskAutomationLog
 from .podcast import PodcastEpisode, PodcastTranscript, PodcastAnalytics
 from .podcast_usage import PodcastUsage
 
+from .deal_match import DealMatchCriteria, DealMatch, DealMatchAction
+
 __all__ = [
     "User",
     "UserRole",
@@ -56,4 +58,7 @@ __all__ = [
     "PodcastTranscript",
     "PodcastAnalytics",
     "PodcastUsage",
+    "DealMatchCriteria",
+    "DealMatch",
+    "DealMatchAction",
 ]
