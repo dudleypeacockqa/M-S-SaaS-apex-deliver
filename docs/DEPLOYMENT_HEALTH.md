@@ -28,7 +28,7 @@
 ### Governance Snapshot (2025-10-29 07:36 UTC)
 - Backend `/health` responded 200 OK with `clerk_configured=true`, `database_configured=true`, `webhook_configured=true`.
 - Frontend HEAD request blocked at Cloudflare 403 (expected); manual UX check still required before release.
-- Full backend pytest (`backend\\venv\\Scripts\\python.exe -m pytest`) now 417 passed / 19 skipped after valuation coverage uplift.
+- Targeted regression pass @07:36 UTC: `pytest backend/tests/test_podcast_api.py -q` (24 passed) and `pytest backend/tests/test_valuation_service.py -q` (27 passed).
 - Frontend quota validation remains green from prior pass: `npm --prefix frontend run test -- PodcastStudio.test.tsx` (20 passed @07:22 UTC).
 
 ---

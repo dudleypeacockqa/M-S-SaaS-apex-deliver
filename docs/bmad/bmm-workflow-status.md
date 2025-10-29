@@ -21,8 +21,8 @@ PHASE_4_COMPLETE: false
 
 ## Next Action
 
-NEXT_ACTION: Run updated smoke suite to capture Render frontend/backend snapshot post-quota banner work
-NEXT_COMMAND: ./scripts/run_smoke_tests.sh production
-NEXT_AGENT: ops
+NEXT_ACTION: Start DEV-011 export logging & scenario editing RED tests (add failing coverage before implementation)
+NEXT_COMMAND: pytest backend/tests/test_valuation_api.py -k export --maxfail=1
+NEXT_AGENT: dev
 
-LAST_UPDATED: 2025-10-29T07:24:00Z
+LAST_UPDATED: 2025-10-29T07:36:00Z
