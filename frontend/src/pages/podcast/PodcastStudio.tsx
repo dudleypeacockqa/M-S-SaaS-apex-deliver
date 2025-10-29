@@ -1036,51 +1036,69 @@ function EpisodeListItem({
                 )}
               </div>
             </FeatureGate>
-            {episode.video_file_url && (
-              <FeatureGate
-                feature="youtube_integration"
-                requiredTier="premium"
-                lockedTitle="YouTube publishing locked"
-                lockedDescription="Publish video episodes to YouTube with a Premium plan."
-                ctaLabel="Upgrade for YouTube"
-              >
+          {isVideoEpisode ? (
+            <div className="flex flex-col items-end gap-2">
+              {youtubeAccess.isLoading || youtubeConnectionLoading ? (
+                <span className="text-xs text-gray-500" role="status">
+                  Checking YouTube access…
+                </span>
+              ) : !youtubeAccess.hasAccess ? (
+                <button
+                  type="button"
+                  disabled
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-500 bg-white cursor-not-allowed"
+                  title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
+                >
+                  Upgrade for YouTube
+                </button>
+              ) : youtubeConnectionError ? (
                 <div className="flex flex-col items-end gap-1">
-                  {youtubeAccess.isLoading ? (
-                    <span className="text-xs text-gray-500" role="status">
-                      Checking YouTube access…
-                    </span>
-                  ) : youtubeAccess.hasAccess ? (
-                    <button
-                      type="button"
-                      onClick={handlePublish}
-                      disabled={youtubeMutation.isPending}
-                      className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:opacity-70"
-                    >
-                      {youtubeMutation.isPending ? 'Publishing…' : 'Publish to YouTube'}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      disabled
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-500 bg-white cursor-not-allowed"
-                      title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
-                    >
-                      Upgrade for YouTube
-                    </button>
-                  )}
-                  {youtubeSuccessMessage && (
-                    <p className="text-xs text-emerald-600" role="status">
-                      {youtubeSuccessMessage}
-                    </p>
-                  )}
-                  {youtubeErrorMessage && (
-                    <p className="text-xs text-red-600" role="alert">
-                      {youtubeErrorMessage}
-                    </p>
-                  )}
+                  <span className="text-xs text-red-600" role="alert">
+                    We couldn't verify your YouTube connection.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRetryConnection}
+                    className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-600 bg-white hover:bg-gray-50"
+                  >
+                    Retry connection
+                  </button>
                 </div>
-              </FeatureGate>
-            )}
+              ) : !isConnected ? (
+                <button
+                  type="button"
+                  onClick={() => onRequestYouTubeConnect(episode)}
+                  disabled={isConnecting}
+                  className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isConnecting && infoEpisodeId === episode.id ? 'Connecting…' : 'Connect YouTube'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onRequestPublish(episode)}
+                  className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  Publish to YouTube
+                </button>
+              )}
+              {isConnected && youtubeConnection?.channelName ? (
+                <span className="text-xs text-gray-500">
+                  Connected as {youtubeConnection.channelName}
+                </span>
+              ) : null}
+              {infoMessage ? (
+                <p className="text-xs text-indigo-600 text-right" role="status">
+                  {infoMessage}
+                </p>
+              ) : null}
+              {showPublishSuccess ? (
+                <p className="text-xs text-emerald-600" role="status">
+                  Published to YouTube
+                </p>
+              ) : null}
+            </div>
+          ) : null}
           </div>
         </div>
       </div>
