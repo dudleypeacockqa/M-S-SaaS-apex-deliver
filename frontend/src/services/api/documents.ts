@@ -2,7 +2,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
 
 type JsonHeaders = Record<string, string>
 
-type HttpMethod = "GET" | "POST" | "PUT" | "DELETE"
+type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
 
 export type PermissionLevel = "viewer" | "editor" | "owner"
 
@@ -76,7 +76,8 @@ export interface Folder {
   id: string
   name: string
   deal_id: string
-  parent_id: string | null
+  parent_folder_id: string | null
+  parent_id?: string | null
   organization_id: string
   created_by: string
   created_at: string
@@ -104,12 +105,8 @@ export interface PaginatedDocuments {
 
 export interface CreateFolderPayload {
   name: string
+  parent_id?: string | null
   parent_folder_id?: string | null
-}
-
-export interface PermissionPayload {
-  user_email: string
-  role: PermissionLevel
 }
 
 export interface DocumentPermission {
@@ -121,18 +118,51 @@ export interface DocumentPermission {
   created_at: string
 }
 
+type LegacyPermissionResponse = DocumentPermissionResponse
+
+const normalisePermission = (permission: DocumentPermissionResponse): DocumentPermission => ({
+  id: permission.id,
+  document_id: permission.document_id,
+  user_id: permission.user_id,
+  user_email: permission.user_email ?? permission.user_id,
+  role: permission.permission_level,
+  created_at: permission.created_at,
+})
+
+export interface DocumentPermissionResponse {
+  id: string
+  document_id: string
+  folder_id?: string | null
+  user_id: string
+  user_email?: string
+  permission_level: PermissionLevel
+  created_at: string
+}
+
+function mapPermissionResponse(permission: DocumentPermissionResponse): DocumentPermission {
+  return {
+    id: permission.id,
+    document_id: permission.document_id,
+    user_id: permission.user_id,
+    user_email: permission.user_email ?? '',
+    role: permission.permission_level,
+    created_at: permission.created_at,
+  }
+}
+
 export async function createFolder(
   dealId: string,
-  payload: { name: string; parent_id: string | null }
+  payload: CreateFolderPayload
 ): Promise<Folder> {
   const headers = await getAuthHeaders("json")
+  const parentId = payload.parent_id ?? payload.parent_folder_id ?? null
 
   return request<Folder>(buildDealUrl(dealId, "/folders"), {
     method: "POST",
     headers,
     body: JSON.stringify({
       name: payload.name,
-      parent_id: payload.parent_id,
+      parent_folder_id: parentId,
     }),
   })
 }
@@ -149,14 +179,19 @@ export async function listFolders(dealId: string): Promise<Folder[]> {
 export async function updateFolder(
   dealId: string,
   folderId: string,
-  payload: Partial<{ name: string; parent_id: string | null }>
+  payload: Partial<{ name: string; parent_id: string | null; parent_folder_id: string | null }>
 ): Promise<Folder> {
   const headers = await getAuthHeaders("json")
+
+  const bodyPayload: Record<string, unknown> = {}
+  if (payload.name !== undefined) bodyPayload.name = payload.name
+  const parent = payload.parent_id ?? payload.parent_folder_id
+  if (parent !== undefined) bodyPayload.parent_folder_id = parent
 
   return request<Folder>(buildDealUrl(dealId, `/folders/${folderId}`), {
     method: "PATCH",
     headers,
-    body: JSON.stringify(payload),
+    body: JSON.stringify(bodyPayload),
   })
 }
 
@@ -269,55 +304,120 @@ export async function restoreDocument(dealId: string, documentId: string): Promi
   })
 }
 
-export async function listPermissions(documentId: string): Promise<DocumentPermission[]> {
-  const headers = await getAuthHeaders("json")
-
-  const response = await request<DocumentPermission[]>(
-    `${API_BASE_URL}/api/documents/${documentId}/permissions`,
-    {
-      method: "GET",
-      headers,
-    }
-  )
-
-  return response
-}
-
-export async function addPermission(
-  documentId: string,
-  payload: { user_email: string; role: PermissionLevel }
-): Promise<DocumentPermission> {
-  const headers = await getAuthHeaders("json")
-
-  return request<DocumentPermission>(`${API_BASE_URL}/api/documents/${documentId}/permissions`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(payload),
-  })
-}
-
-export async function updatePermission(
-  permissionId: string,
-  payload: { role: PermissionLevel }
-): Promise<DocumentPermission> {
-  const headers = await getAuthHeaders("json")
-
-  return request<DocumentPermission>(`${API_BASE_URL}/api/permissions/${permissionId}`, {
-    method: "PATCH",
-    headers,
-    body: JSON.stringify(payload),
-  })
-}
-
-export async function removePermission(permissionId: string): Promise<void> {
-  const headers = await getAuthHeaders("json")
-
-  await request<void>(`${API_BASE_URL}/api/permissions/${permissionId}`, {
-    method: "DELETE",
-    headers,
-  })
-}
-
+export async function listPermissions(documentId: string): Promise<DocumentPermission[]> {
+  const headers = await getAuthHeaders("json")
+
+  const response = await request<DocumentPermissionResponse[]>(
+    API_BASE_URL + "/api/documents/" + documentId + "/permissions",
+    {
+      method: "GET",
+      headers,
+    }
+  )
+
+  return response.map(normalisePermission)
+}
+
+export async function addPermission(
+  documentId: string,
+  payload: { user_email: string; role: PermissionLevel }
+): Promise<DocumentPermission> {
+  const headers = await getAuthHeaders("json")
+
+  const response = await request<DocumentPermissionResponse>(
+    API_BASE_URL + "/api/documents/" + documentId + "/permissions",
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        user_email: payload.user_email,
+        permission_level: payload.role,
+      }),
+    }
+  )
+
+  return normalisePermission(response)
+}
+
+export async function updatePermission(
+  permissionId: string,
+  payload: { role: PermissionLevel }
+): Promise<DocumentPermission> {
+  const headers = await getAuthHeaders("json")
+
+  const response = await request<DocumentPermissionResponse>(
+    API_BASE_URL + "/api/permissions/" + permissionId,
+    {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify({ permission_level: payload.role }),
+    }
+  )
+
+  return normalisePermission(response)
+}
+
+export async function removePermission(permissionId: string): Promise<void> {
+  const headers = await getAuthHeaders("json")
+
+  await request<void>(API_BASE_URL + "/api/permissions/" + permissionId, {
+    method: "DELETE",
+    headers,
+  })
+}
+
+export async function listDocumentPermissions(
+  dealId: string,
+  documentId: string
+): Promise<DocumentPermissionResponse[]> {
+  const headers = await getAuthHeaders("json")
+
+  return request<DocumentPermissionResponse[]>(
+    buildDealUrl(dealId, "/documents/" + documentId + "/permissions"),
+    {
+      method: "GET",
+      headers,
+    }
+  )
+}
+
+export async function addDocumentPermission(
+  dealId: string,
+  documentId: string,
+  payload: { user_id: string; permission_level: PermissionLevel }
+): Promise<DocumentPermissionResponse> {
+  const headers = await getAuthHeaders("json")
+
+  return request<DocumentPermissionResponse>(
+    buildDealUrl(dealId, "/documents/" + documentId + "/permissions"),
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload),
+    }
+  )
+}
+
+export async function updateDocumentPermission(
+  permissionId: string,
+  payload: { permission_level: PermissionLevel }
+): Promise<DocumentPermissionResponse> {
+  const headers = await getAuthHeaders("json")
+
+  return request<DocumentPermissionResponse>(
+    API_BASE_URL + "/api/permissions/" + permissionId,
+    {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify(payload),
+    }
+  )
+}
+
+export async function removeDocumentPermission(permissionId: string): Promise<void> {
+  await removePermission(permissionId)
+}
+
 export const ALLOWED_FILE_TYPES = [
   "application/pdf",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
