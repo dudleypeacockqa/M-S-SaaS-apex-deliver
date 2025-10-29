@@ -87,6 +87,18 @@ class Deal(Base):
         back_populates="deal",
         cascade="all, delete-orphan",
     )
+    matches_as_source = relationship(
+        "DealMatch",
+        foreign_keys="[DealMatch.deal_id]",
+        back_populates="deal",
+        cascade="all, delete-orphan",
+    )
+    matches_as_target = relationship(
+        "DealMatch",
+        foreign_keys="[DealMatch.matched_deal_id]",
+        back_populates="matched_deal",
+        cascade="all, delete-orphan",
+    )
     task_automation_logs = relationship(
         "TaskAutomationLog",
         back_populates="deal",
