@@ -1,5 +1,5 @@
 """
-Test suite for Deal Matching models - DEV-018 Phase 1 (RED)
+Test suite for Deal Matching models - DEV-018 Phase 1 (TDD GREEN)
 Tests for DealMatchCriteria, DealMatch, and DealMatchAction models
 """
 
@@ -15,50 +15,31 @@ from app.models.deal import Deal
 
 
 @pytest.fixture
-def test_user(db_session: Session) -> User:
-    """Create a test user."""
-    user = User(
-        id="user-test-match-1",
+def match_org(create_organization):
+    """Create organization for matching tests."""
+    return create_organization(name="Match Test Org", subscription_tier="professional")
+
+
+@pytest.fixture
+def match_user(create_user, match_org):
+    """Create user for matching tests."""
+    return create_user(
+        clerk_user_id="clerk-match-test-1",
         email="matchtest@example.com",
-        organization_id="org-test-match-1",
+        organization_id=match_org.id,
     )
-    db_session.add(user)
-    db_session.commit()
-    db_session.refresh(user)
-    return user
 
 
 @pytest.fixture
-def test_organization(db_session: Session) -> Organization:
-    """Create a test organization."""
-    org = Organization(
-        id="org-test-match-1",
-        name="Match Test Org",
-        slug="match-test-org",
-        subscription_tier="professional",
-    )
-    db_session.add(org)
-    db_session.commit()
-    db_session.refresh(org)
-    return org
-
-
-@pytest.fixture
-def test_deal(db_session: Session, test_organization: Organization) -> Deal:
-    """Create a test deal."""
-    deal = Deal(
-        id="deal-test-match-1",
-        organization_id=test_organization.id,
+def match_deal(create_deal_for_org, match_org, match_user):
+    """Create deal for matching tests."""
+    deal, _, _ = create_deal_for_org(
+        organization=match_org,
+        owner=match_user,
         name="Test Acquisition Target",
-            target_company="Matched Target",
+        target_company="Acme SaaS Inc",
         stage="evaluation",
-        description="SaaS company in fintech sector",
-        deal_size=Decimal("5000000"),
-        currency="GBP",
     )
-    db_session.add(deal)
-    db_session.commit()
-    db_session.refresh(deal)
     return deal
 
 
@@ -66,12 +47,12 @@ class TestDealMatchCriteriaModel:
     """Test suite for DealMatchCriteria model."""
 
     def test_create_deal_match_criteria_with_required_fields(
-        self, db_session: Session, test_user: User, test_organization: Organization
+        self, db_session: Session, match_user: User, match_org: Organization
     ):
         """Test creating DealMatchCriteria with minimum required fields."""
         criteria = DealMatchCriteria(
-            user_id=test_user.id,
-            organization_id=test_organization.id,
+            user_id=match_user.id,
+            organization_id=match_org.id,
             name="Tech Acquisitions Q4 2025",
             deal_type="buy_side",
             industries=["saas", "fintech"],
@@ -91,12 +72,12 @@ class TestDealMatchCriteriaModel:
         assert criteria.created_at is not None
 
     def test_create_criteria_with_optional_fields(
-        self, db_session: Session, test_user: User, test_organization: Organization
+        self, db_session: Session, match_user: User, match_org: Organization
     ):
         """Test creating DealMatchCriteria with optional fields."""
         criteria = DealMatchCriteria(
-            user_id=test_user.id,
-            organization_id=test_organization.id,
+            user_id=match_user.id,
+            organization_id=match_org.id,
             name="European Tech Deals",
             deal_type="sell_side",
             industries=["saas"],
@@ -117,12 +98,12 @@ class TestDealMatchCriteriaModel:
         assert criteria.weights == {"industry": 0.4, "size": 0.3, "geography": 0.2, "structure": 0.1}
 
     def test_criteria_enforces_organization_isolation(
-        self, db_session: Session, test_user: User
+        self, db_session: Session, match_user: User
     ):
         """Test that criteria must belong to an organization."""
         with pytest.raises(Exception):  # Will be IntegrityError or similar
             criteria = DealMatchCriteria(
-                user_id=test_user.id,
+                user_id=match_user.id,
                 organization_id=None,  # Missing required field
                 name="Invalid Criteria",
                 deal_type="buy_side",
@@ -138,26 +119,21 @@ class TestDealMatchModel:
     """Test suite for DealMatch model."""
 
     def test_create_deal_match(
-        self, db_session: Session, test_deal: Deal, test_organization: Organization
+        self, db_session: Session, match_deal: Deal, create_deal_for_org, match_org: Organization, match_user: User
     ):
         """Test creating a DealMatch between two deals."""
         # Create a second deal to match against
-        matched_deal = Deal(
-            id="deal-test-match-2",
-            organization_id=test_organization.id,
+        matched_deal, _, _ = create_deal_for_org(
+            organization=match_org,
+            owner=match_user,
             name="Matching Target",
-            target_company="Matched Target",
+            target_company="Fintech SaaS Ltd",
             stage="sourcing",
-            description="Fintech SaaS platform",
-            deal_size=Decimal("4500000"),
-            currency="GBP",
         )
-        db_session.add(matched_deal)
-        db_session.commit()
 
         # Create match
         match = DealMatch(
-            deal_id=test_deal.id,
+            deal_id=match_deal.id,
             matched_deal_id=matched_deal.id,
             match_score=87.5,
             confidence="high",
@@ -180,22 +156,20 @@ class TestDealMatchModel:
         assert match.created_at is not None
 
     def test_match_score_validation(
-        self, db_session: Session, test_deal: Deal, test_organization: Organization
+        self, db_session: Session, match_deal: Deal, create_deal_for_org, match_org: Organization, match_user: User
     ):
         """Test that match scores are within valid range (0-100)."""
-        matched_deal = Deal(
-            id="deal-test-match-3",
-            organization_id=test_organization.id,
+        matched_deal, _, _ = create_deal_for_org(
+            organization=match_org,
+            owner=match_user,
             name="Another Target",
-            target_company="Matched Target",
+            target_company="Test Co",
             stage="sourcing",
         )
-        db_session.add(matched_deal)
-        db_session.commit()
 
         # Valid score
         match = DealMatch(
-            deal_id=test_deal.id,
+            deal_id=match_deal.id,
             matched_deal_id=matched_deal.id,
             match_score=95.0,
             confidence="high",
@@ -207,21 +181,19 @@ class TestDealMatchModel:
         assert match.match_score == 95.0
 
     def test_match_status_tracking(
-        self, db_session: Session, test_deal: Deal, test_organization: Organization
+        self, db_session: Session, match_deal: Deal, create_deal_for_org, match_org: Organization, match_user: User
     ):
         """Test tracking match status changes."""
-        matched_deal = Deal(
-            id="deal-test-match-4",
-            organization_id=test_organization.id,
+        matched_deal, _, _ = create_deal_for_org(
+            organization=match_org,
+            owner=match_user,
             name="Status Test Deal",
-            target_company="Matched Target",
+            target_company="Status Co",
             stage="sourcing",
         )
-        db_session.add(matched_deal)
-        db_session.commit()
 
         match = DealMatch(
-            deal_id=test_deal.id,
+            deal_id=match_deal.id,
             matched_deal_id=matched_deal.id,
             match_score=75.0,
             confidence="medium",
@@ -244,21 +216,20 @@ class TestDealMatchActionModel:
     """Test suite for DealMatchAction model."""
 
     def test_create_match_action(
-        self, db_session: Session, test_user: User, test_deal: Deal, test_organization: Organization
+        self, db_session: Session, match_user: User, match_deal: Deal, create_deal_for_org, match_org: Organization
     ):
         """Test creating a DealMatchAction to track user actions."""
         # Create match first
-        matched_deal = Deal(
-            id="deal-test-match-5",
-            organization_id=test_organization.id,
+        matched_deal, _, _ = create_deal_for_org(
+            organization=match_org,
+            owner=match_user,
             name="Action Test Deal",
-            target_company="Matched Target",
+            target_company="Action Co",
             stage="sourcing",
         )
-        db_session.add(matched_deal)
 
         match = DealMatch(
-            deal_id=test_deal.id,
+            deal_id=match_deal.id,
             matched_deal_id=matched_deal.id,
             match_score=85.0,
             confidence="high",
@@ -271,7 +242,7 @@ class TestDealMatchActionModel:
         # Create action
         action = DealMatchAction(
             match_id=match.id,
-            user_id=test_user.id,
+            user_id=match_user.id,
             action="view",
             action_metadata={"source": "email_notification", "device": "desktop"},
         )
@@ -285,20 +256,19 @@ class TestDealMatchActionModel:
         assert action.created_at is not None
 
     def test_track_multiple_actions_on_match(
-        self, db_session: Session, test_user: User, test_deal: Deal, test_organization: Organization
+        self, db_session: Session, match_user: User, match_deal: Deal, create_deal_for_org, match_org: Organization
     ):
         """Test tracking multiple user actions on a single match."""
-        matched_deal = Deal(
-            id="deal-test-match-6",
-            organization_id=test_organization.id,
+        matched_deal, _, _ = create_deal_for_org(
+            organization=match_org,
+            owner=match_user,
             name="Multi-Action Test Deal",
-            target_company="Matched Target",
+            target_company="Multi Co",
             stage="sourcing",
         )
-        db_session.add(matched_deal)
 
         match = DealMatch(
-            deal_id=test_deal.id,
+            deal_id=match_deal.id,
             matched_deal_id=matched_deal.id,
             match_score=90.0,
             confidence="high",
@@ -310,9 +280,9 @@ class TestDealMatchActionModel:
 
         # Track multiple actions
         actions = [
-            DealMatchAction(match_id=match.id, user_id=test_user.id, action="view", action_metadata={}),
-            DealMatchAction(match_id=match.id, user_id=test_user.id, action="save", action_metadata={"list": "favorites"}),
-            DealMatchAction(match_id=match.id, user_id=test_user.id, action="request_intro", action_metadata={"message": "Interested in learning more"}),
+            DealMatchAction(match_id=match.id, user_id=match_user.id, action="view", action_metadata={}),
+            DealMatchAction(match_id=match.id, user_id=match_user.id, action="save", action_metadata={"list": "favorites"}),
+            DealMatchAction(match_id=match.id, user_id=match_user.id, action="request_intro", action_metadata={"message": "Interested in learning more"}),
         ]
         for action in actions:
             db_session.add(action)
