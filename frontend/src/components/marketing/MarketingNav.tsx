@@ -63,6 +63,12 @@ export const MarketingNav: React.FC = () => {
             >
               Blog
             </Link>
+            <Link
+              to="/faq"
+              className="text-gray-700 hover:text-indigo-900 font-medium transition-colors"
+            >
+              FAQ
+            </Link>
           </div>
 
           {/* Auth CTAs */}
