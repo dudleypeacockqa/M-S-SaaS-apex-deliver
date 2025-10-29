@@ -284,8 +284,12 @@ const TaskBoard: React.FC = () => {
     }
 
     const filtered = tasks.filter((task) => {
-      if (filters.assigneeId !== 'all' && (task.assignee?.id ?? 'all') !== filters.assigneeId) {
-        return false;
+      if (filters.assigneeId !== 'all') {
+        if (task.assignee) {
+          if (task.assignee.id !== filters.assigneeId) {
+            return false;
+          }
+        }
       }
       if (filters.status !== 'all' && task.status !== filters.status) {
         return false;

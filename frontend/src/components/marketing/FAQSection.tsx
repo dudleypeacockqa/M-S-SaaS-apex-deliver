@@ -83,6 +83,9 @@ export const FAQSection: React.FC = () => {
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
                 className="w-full flex items-center justify-between p-6 text-left"
+                aria-expanded={openIndex === index}
+                aria-controls={`faq-panel-${index}`}
+                id={`faq-toggle-${index}`}
               >
                 <span className="text-lg font-semibold text-gray-900 pr-8">
                   {faq.question}
@@ -100,6 +103,9 @@ export const FAQSection: React.FC = () => {
               </button>
               
               <div
+                id={`faq-panel-${index}`}
+                role="region"
+                aria-labelledby={`faq-toggle-${index}`}
                 className={`overflow-hidden transition-all duration-300 ${
                   openIndex === index ? 'max-h-96' : 'max-h-0'
                 }`}
