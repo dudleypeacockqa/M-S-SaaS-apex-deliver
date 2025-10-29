@@ -1,9 +1,10 @@
 """Podcast API request/response schemas."""
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, HttpUrl, Field, ConfigDict
+from pydantic import BaseModel, Field, HttpUrl, ConfigDict, constr
 
 
 class PodcastEpisodeCreate(BaseModel):
@@ -29,7 +30,17 @@ class PodcastEpisodeResponse(BaseModel):
     season_number: int
     audio_file_url: HttpUrl
     video_file_url: Optional[HttpUrl]
+    show_notes: Optional[str] = None
+    status: str = "draft"
+    organization_id: str
+    transcript: Optional[str] = None
+    transcript_language: Optional[str] = None
+    duration_seconds: Optional[int] = None
     youtube_video_id: Optional[str] = None
+    created_by: str
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    published_at: Optional[datetime] = None
 
 
 class PodcastQuotaSummary(BaseModel):
@@ -53,7 +64,22 @@ class PodcastQuotaSummary(BaseModel):
     upgrade_cta_url: Optional[str] = None
 
 
+class PodcastTranscriptionRequest(BaseModel):
+    """Request payload for initiating a podcast transcription."""
+
+    language: Optional[str] = None
+
+
 class PodcastYouTubeUploadResponse(BaseModel):
     """Response model for YouTube publish endpoint."""
 
     video_id: str
+
+
+class PodcastTranscriptionRequest(BaseModel):
+    """Request payload for initiating podcast transcription."""
+
+    language: Optional[constr(strip_whitespace=True, min_length=2, max_length=10)] = Field(
+        default=None,
+        description="ISO language code for transcript (defaults to 'en').",
+    )

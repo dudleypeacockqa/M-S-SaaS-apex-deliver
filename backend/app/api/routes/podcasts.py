@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import logging
+import os
 import uuid
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
+from fastapi import APIRouter, Body, Depends, File, HTTPException, Response, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user, require_feature
@@ -16,6 +17,7 @@ from app.schemas.podcast import (
     PodcastEpisodeCreate,
     PodcastEpisodeResponse,
     PodcastQuotaSummary,
+    PodcastTranscriptionRequest,
     PodcastYouTubeUploadResponse,
 )
 from app.services import entitlement_service, podcast_service, quota_service, youtube_service
@@ -33,7 +35,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/podcasts", tags=["podcasts"])
 
 
-async def transcribe_audio(audio_file_path: str) -> str:
+async def transcribe_audio(audio_file_path: str, *, language: str = "en") -> str:
     """
     Transcribe audio file using OpenAI Whisper API.
 
@@ -47,7 +49,6 @@ async def transcribe_audio(audio_file_path: str) -> str:
         Exception: If Whisper API call fails
     """
     try:
-        import os
         from openai import AsyncOpenAI
 
         logger.info(f"Transcribing audio file: {audio_file_path}")
@@ -73,21 +74,49 @@ async def transcribe_audio(audio_file_path: str) -> str:
 
         # Check file size (Whisper API has 25MB limit)
         file_size = os.path.getsize(file_path)
-        max_size = 25 * 1024 * 1024  # 25MB
 
-        if file_size > max_size:
-            logger.warning(f"Audio file too large ({file_size} bytes), chunking required")
-            # TODO: Implement chunking for large files
-            raise ValueError(f"Audio file too large ({file_size / 1024 / 1024:.1f}MB). Maximum: 25MB")
+        # Handle large files with chunking (DEV-016 Phase 1.2)
+        from app.services.audio_chunking_service import get_audio_chunking_service
+        from pathlib import Path
 
-        # Transcribe using Whisper API
+        chunking_service = get_audio_chunking_service()
+
+        if chunking_service.needs_chunking(file_size):
+            logger.info(f"Audio file ({file_size / 1024 / 1024:.1f}MB) exceeds 25MB limit, using chunking")
+
+            try:
+                # Chunk the audio file
+                audio_path = Path(file_path)
+                chunk_paths = await chunking_service.chunk_audio_file(audio_path)
+
+                # Transcribe all chunks and combine
+                transcript = await chunking_service.transcribe_chunks(
+                    chunk_paths,
+                    api_key,
+                    language=language,
+                )
+
+                # Cleanup temporary chunk files
+                await chunking_service.cleanup_chunks(chunk_paths)
+
+                logger.info(f"Successfully transcribed {len(chunk_paths)} chunks, {len(transcript)} characters")
+
+                return transcript
+
+            except Exception as e:
+                logger.error(f"Chunked transcription failed: {e}")
+                raise ValueError(f"Failed to transcribe large file: {str(e)}")
+
+        # Normal transcription for files under 25MB
         with open(file_path, "rb") as audio_file:
-            response = await client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file,
-                response_format="text",
-                language="en",  # Auto-detect or specify
-            )
+            kwargs = {
+                "model": "whisper-1",
+                "file": audio_file,
+                "response_format": "text",
+            }
+            if language:
+                kwargs["language"] = language
+            response = await client.audio.transcriptions.create(**kwargs)
 
         transcript = response if isinstance(response, str) else response.text
 
@@ -106,48 +135,58 @@ async def transcribe_audio(audio_file_path: str) -> str:
         raise
 
 
-async def _generate_thumbnail_impl(video_file_path: str, timestamp: float = 1.0) -> str:
+async def _generate_thumbnail_impl(
+    video_file_path: str,
+    organization_id: str,
+    episode_id: str,
+    timestamp: float = 1.0
+) -> str:
     """
-    Generate thumbnail from video file at specified timestamp.
+    Generate thumbnail from video file at specified timestamp using FFmpeg (DEV-016 Phase 2.1).
 
     Args:
         video_file_path: Path to the video file
+        organization_id: Organization UUID for storage isolation
+        episode_id: Episode UUID for unique thumbnail naming
         timestamp: Time in seconds to extract frame (default: 1.0)
 
     Returns:
-        Path to generated thumbnail
+        Storage path to generated thumbnail
 
     Raises:
-        Exception: If thumbnail generation fails
-
-    Note:
-        In production, this would use FFmpeg to extract a frame:
-        - ffmpeg -i video.mp4 -ss 00:00:01 -vframes 1 thumbnail.jpg
-        For now, returns placeholder path
+        FileNotFoundError: If video file doesn't exist
+        RuntimeError: If FFmpeg or thumbnail generation fails
     """
     try:
-        import os
+        import app.services.thumbnail_service as thumbnail_module
 
         logger.info(f"Generating thumbnail from video: {video_file_path} at {timestamp}s")
 
-        # TODO: Implement FFmpeg thumbnail extraction
-        # For now, return a placeholder path
-        # In production, this would:
-        # 1. Use FFmpeg to extract frame at timestamp
-        # 2. Save thumbnail to storage
-        # 3. Return the storage path
+        file_path = video_file_path.replace("/storage/", "storage/")
+        video_path = thumbnail_module.Path(file_path)
 
-        # Generate placeholder thumbnail path
-        video_filename = os.path.basename(video_file_path)
-        video_id = video_filename.split('.')[0]
-        thumbnail_path = f"/storage/thumbnails/{video_id}_thumb.jpg"
+        # Use ThumbnailService to generate real thumbnail
+        thumbnail_service = thumbnail_module.get_thumbnail_service()
 
-        logger.info(f"Thumbnail path generated: {thumbnail_path}")
-        return thumbnail_path
+        storage_path = await thumbnail_service.generate_thumbnail(
+            video_path=video_path,
+            organization_id=organization_id,
+            episode_id=episode_id,
+            timestamp=timestamp
+        )
 
-    except Exception as exc:
+        logger.info(f"Thumbnail generated successfully: {storage_path}")
+        return storage_path
+
+    except FileNotFoundError as exc:
+        logger.error(f"Video file not found: {exc}")
+        raise
+    except RuntimeError as exc:
         logger.error(f"Thumbnail generation failed: {exc}")
         raise
+    except Exception as exc:
+        logger.error(f"Unexpected thumbnail generation error: {exc}")
+        raise RuntimeError(f"Failed to generate thumbnail: {exc}")
 
 
 # Expose helper for tests and dependent routes
@@ -451,7 +490,7 @@ async def upload_audio_file(
             db=db,
             episode_id=episode_id,
             organization_id=current_user.organization_id,
-            audio_file_url=f"/storage/{file_key}",
+            audio_file_url=storage_path,
         )
 
         logger.info(
@@ -462,7 +501,7 @@ async def upload_audio_file(
 
         return {
             "episode_id": episode_id,
-            "audio_url": f"/storage/{file_key}",
+            "audio_url": storage_path,
             "file_size": file_size,
             "filename": file.filename,
         }
@@ -554,12 +593,29 @@ async def upload_video_file(
             organization_id=current_user.organization_id,
         )
 
-        # Update episode with video URL
+        # Generate thumbnail and update episode
+        thumbnail_url: str | None = None
+        try:
+            thumbnail_url = await generate_thumbnail(
+                video_file_path=storage_path,
+                organization_id=current_user.organization_id,
+                episode_id=episode_id,
+                timestamp=1.0,
+            )
+        except Exception as exc:  # pragma: no cover - thumbnail failure should not block upload
+            logger.warning("Thumbnail generation failed for %s: %s", episode_id, exc)
+
+        update_payload = {
+            "video_file_url": storage_path,
+        }
+        if thumbnail_url:
+            update_payload["thumbnail_url"] = thumbnail_url
+
         podcast_service.update_episode(
             db=db,
             episode_id=episode_id,
             organization_id=current_user.organization_id,
-            video_file_url=f"/storage/{file_key}",
+            **update_payload,
         )
 
         logger.info(
@@ -570,7 +626,8 @@ async def upload_video_file(
 
         return {
             "episode_id": episode_id,
-            "video_url": f"/storage/{file_key}",
+            "video_url": storage_path,
+            "thumbnail_url": thumbnail_url,
             "file_size": file_size,
             "filename": file.filename,
         }
@@ -593,6 +650,7 @@ async def upload_video_file(
 )
 async def transcribe_episode_audio(
     episode_id: str,
+    payload: PodcastTranscriptionRequest | None = Body(default=None),
     current_user: User = Depends(require_feature("podcast_audio")),
     db: Session = Depends(get_db),
 ) -> dict:
@@ -626,9 +684,51 @@ async def transcribe_episode_audio(
             detail="Episode must have an audio file to transcribe. Please upload audio first.",
         )
 
+    requested_language = (payload.language if payload else None) or "en"
+    requested_language = requested_language.lower()
+
+    supported_languages = {
+        "en",  # English default
+        "es",  # Spanish
+        "fr",  # French
+        "de",  # German
+        "it",  # Italian
+        "pt",  # Portuguese
+    }
+    if requested_language not in supported_languages:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "Unsupported transcript language. Supported values: "
+                + ", ".join(sorted(supported_languages))
+            ),
+        )
+
+    if requested_language != "en":
+        has_multi_language_access = await entitlement_service.check_feature_access(
+            current_user.organization_id,
+            "transcription_multi_language",
+        )
+        if not has_multi_language_access:
+            required_tier = entitlement_service.get_required_tier(
+                "transcription_multi_language"
+            )
+            required_label = get_tier_label(required_tier)
+            message = (
+                f"{required_label} tier required to transcribe audio into "
+                f"'{requested_language}'. Please upgrade to access multi-language transcription."
+            )
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=message,
+            )
+
     # Transcribe audio
     try:
-        transcript = await transcribe_audio(episode.audio_file_url)
+        transcript = await transcribe_audio(
+            episode.audio_file_url,
+            language=requested_language,
+        )
 
         # Update episode with transcript
         podcast_service.update_episode(
@@ -636,6 +736,7 @@ async def transcribe_episode_audio(
             episode_id=episode_id,
             organization_id=current_user.organization_id,
             transcript=transcript,
+            transcript_language=requested_language,
         )
 
         logger.info(
@@ -644,9 +745,13 @@ async def transcribe_episode_audio(
             current_user.id,
         )
 
+        word_count = len(transcript.split()) if transcript else 0
+
         return {
             "episode_id": episode_id,
             "transcript": transcript,
+            "transcript_language": requested_language,
+            "word_count": word_count,
         }
 
     except Exception as exc:
@@ -812,7 +917,11 @@ async def generate_episode_thumbnail(
 
     # Generate thumbnail
     try:
-        thumbnail_url = await generate_thumbnail(episode.video_file_url)
+        thumbnail_url = await generate_thumbnail(
+            episode.video_file_url,
+            current_user.organization_id,
+            episode_id
+        )
 
         # Update episode with thumbnail URL
         podcast_service.update_episode(

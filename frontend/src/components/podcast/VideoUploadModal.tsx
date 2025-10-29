@@ -1,17 +1,17 @@
 /**
- * VideoUploadModal - Upload video files for podcast episodes (DEV-016)
- * Supports MP4, MOV formats up to 2GB
+ * VideoUploadModal - Upload video files for podcast episodes (DEV-016 Phase 2.2)
+ * Supports MP4, MOV formats up to 2GB with real-time upload progress
  */
 
 import React, { useState, useEffect } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
+import { useUploadProgress } from '../../hooks/useUploadProgress';
 
 interface VideoUploadModalProps {
   open: boolean;
   onClose: () => void;
   episodeId: string;
   episodeName: string;
-  onUpload?: (file: File) => Promise<UploadResponse>;
   onSuccess?: (response: UploadResponse) => void;
 }
 
@@ -31,69 +31,61 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
   onClose,
   episodeId,
   episodeName,
-  onUpload,
   onSuccess,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const queryClient = useQueryClient();
+
+  // Use the real-time upload progress hook (Phase 2.2)
+  const {
+    progress,
+    isUploading,
+    error: uploadError,
+    uploadSpeed,
+    estimatedTimeRemaining,
+    upload,
+    cancel,
+    reset,
+  } = useUploadProgress();
+
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState<boolean>(false);
+
+  // Combined error state
+  const error = validationError || uploadError;
 
   // Reset state when modal opens/closes
   useEffect(() => {
     if (!open) {
       setSelectedFile(null);
-      setError(null);
-      setUploadProgress(0);
+      setValidationError(null);
+      setUploadSuccess(false);
+      reset();
     }
-  }, [open]);
+  }, [open, reset]);
 
-  const uploadMutation = useMutation({
-    mutationFn: async (file: File) => {
-      if (onUpload) {
-        return onUpload(file);
-      }
+  const handleUploadSuccess = (response: UploadResponse) => {
+    setUploadSuccess(true);
+    queryClient.invalidateQueries({ queryKey: ['podcast-episodes'] });
+    queryClient.invalidateQueries({ queryKey: ['podcast-episode', episodeId] });
 
-      // Default upload implementation
-      const formData = new FormData();
-      formData.append('file', file);
+    if (onSuccess) {
+      onSuccess(response);
+    }
 
-      const response = await fetch(`/api/podcasts/episodes/${episodeId}/upload-video`, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-      });
+    // Close modal after short delay to show success
+    setTimeout(() => {
+      onClose();
+    }, 1500);
+  };
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Upload failed');
-      }
-
-      return response.json();
-    },
-    onSuccess: (data: UploadResponse) => {
-      setUploadProgress(100);
-      queryClient.invalidateQueries({ queryKey: ['podcast-episodes'] });
-      queryClient.invalidateQueries({ queryKey: ['podcast-episode', episodeId] });
-
-      if (onSuccess) {
-        onSuccess(data);
-      }
-
-      // Close modal after short delay to show success
-      setTimeout(() => {
-        onClose();
-      }, 1500);
-    },
-    onError: (err: Error) => {
-      setError(err.message);
-      setUploadProgress(0);
-    },
-  });
+  const handleUploadError = (err: Error) => {
+    setValidationError(err.message);
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    setError(null);
+    setValidationError(null);
 
     if (!file) {
       setSelectedFile(null);
@@ -103,14 +95,14 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
     // Validate file format
     const fileExt = `.${file.name.split('.').pop()?.toLowerCase()}`;
     if (!ALLOWED_FORMATS.includes(fileExt)) {
-      setError(`Invalid file format. Allowed formats: ${ALLOWED_FORMATS.join(', ')}`);
+      setValidationError(`Invalid file format. Allowed formats: ${ALLOWED_FORMATS.join(', ')}`);
       setSelectedFile(null);
       return;
     }
 
     // Validate mime type when provided
     if (file.type && !ALLOWED_MIME_TYPES.includes(file.type)) {
-      setError(`Unsupported file type. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}`);
+      setValidationError(`Unsupported file type. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}`);
       setSelectedFile(null);
       return;
     }
@@ -118,7 +110,7 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
-      setError(`File too large (${sizeMB}MB). Maximum size: 2GB`);
+      setValidationError(`File too large (${sizeMB}MB). Maximum size: 2GB`);
       setSelectedFile(null);
       return;
     }
@@ -129,8 +121,27 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
   const handleUpload = () => {
     if (!selectedFile) return;
 
-    setUploadProgress(10);
-    uploadMutation.mutate(selectedFile);
+    // Get auth token from cookies or headers
+    const headers: Record<string, string> = {
+      // Note: credentials: 'include' will send cookies automatically
+      // Add any additional headers if needed
+    };
+
+    // Start real-time upload with progress tracking (Phase 2.2)
+    upload(
+      selectedFile,
+      `/api/podcasts/episodes/${episodeId}/upload-video`,
+      headers,
+      handleUploadSuccess,
+      handleUploadError
+    );
+  };
+
+  const handleCancel = () => {
+    if (isUploading) {
+      cancel();
+    }
+    onClose();
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -138,12 +149,26 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
     return `${mb.toFixed(1)} MB`;
   };
 
+  const formatSpeed = (bytesPerSecond: number | null): string => {
+    if (!bytesPerSecond) return '---';
+    const mbps = bytesPerSecond / (1024 * 1024);
+    return `${mbps.toFixed(2)} MB/s`;
+  };
+
+  const formatTime = (seconds: number | null): string => {
+    if (!seconds || !isFinite(seconds)) return '---';
+    if (seconds < 60) return `${Math.round(seconds)}s`;
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.round(seconds % 60);
+    return `${minutes}m ${secs}s`;
+  };
+
   if (!open) return null;
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      onClick={onClose}
+      onClick={handleCancel}
     >
       <div
         className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 p-6"
@@ -171,11 +196,11 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
               className="hidden"
               accept={ALLOWED_FORMATS.join(',')}
               onChange={handleFileChange}
-              disabled={uploadMutation.isPending}
+              disabled={isUploading}
             />
             <label
               htmlFor="video-file-input"
-              className="cursor-pointer inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium"
+              className="cursor-pointer inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium disabled:bg-gray-400"
             >
               Choose File
             </label>
@@ -197,26 +222,37 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
           </div>
         </div>
 
-        {uploadMutation.isPending && (
+        {isUploading && (
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700">Uploading...</span>
-              <span className="text-sm text-gray-600">{uploadProgress}%</span>
+              <span className="text-sm text-gray-600">{progress}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
               <div
                 className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
                 role="progressbar"
-                aria-valuenow={uploadProgress}
+                aria-valuenow={progress}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                style={{ width: `${uploadProgress}%` }}
+                style={{ width: `${progress}%` }}
               />
+            </div>
+            {/* Real-time upload statistics (Phase 2.2) */}
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-gray-600">Speed:</span>
+                <span className="ml-2 font-medium text-gray-900">{formatSpeed(uploadSpeed)}</span>
+              </div>
+              <div>
+                <span className="text-gray-600">Time remaining:</span>
+                <span className="ml-2 font-medium text-gray-900">{formatTime(estimatedTimeRemaining)}</span>
+              </div>
             </div>
           </div>
         )}
 
-        {uploadMutation.isSuccess && (
+        {uploadSuccess && (
           <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
             <p className="text-sm font-medium text-green-800">Upload successful!</p>
           </div>
@@ -225,19 +261,19 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
         <div className="flex justify-end space-x-3">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleCancel}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            disabled={uploadMutation.isPending}
+            disabled={isUploading}
           >
-            Cancel
+            {isUploading ? 'Cancel Upload' : 'Cancel'}
           </button>
           <button
             type="button"
             onClick={handleUpload}
-            disabled={!selectedFile || uploadMutation.isPending}
+            disabled={!selectedFile || isUploading}
             className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {uploadMutation.isPending ? 'Uploading...' : 'Upload'}
+            {isUploading ? 'Uploading...' : 'Upload'}
           </button>
         </div>
       </div>

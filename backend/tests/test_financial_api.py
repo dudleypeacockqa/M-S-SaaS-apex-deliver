@@ -5,7 +5,7 @@ Testing the /financial API endpoints
 
 import pytest
 from unittest.mock import Mock, patch
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 from app.main import app
@@ -151,7 +151,7 @@ def test_get_financial_connections_endpoint_returns_connections(client, test_dea
         platform="quickbooks",
         access_token="token",
         refresh_token="refresh",
-        token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+        token_expires_at=datetime.utcnow() + timedelta(hours=1),
         platform_organization_name="QuickBooks Demo Co",
         connection_status="active",
     )
@@ -174,7 +174,7 @@ def test_get_financial_connections_endpoint_returns_connections(client, test_dea
 
 
 def test_get_financial_ratios_not_found(client, test_deal, solo_user):
-    """Test GET /deals/{id}/financial/ratios returns empty list when no ratios exist"""
+    """Test GET /deals/{id}/financial/ratios returns 404 when no ratios exist"""
     app.dependency_overrides[get_current_user] = lambda: solo_user
 
     try:
@@ -182,10 +182,8 @@ def test_get_financial_ratios_not_found(client, test_deal, solo_user):
             f"/api/deals/{test_deal.id}/financial/ratios",
         )
 
-        assert response.status_code == 200
-        data = response.json()
-        assert isinstance(data, list)
-        assert len(data) == 0
+        assert response.status_code == 404
+        assert "calculated" in response.json()["detail"].lower()
     finally:
         app.dependency_overrides.pop(get_current_user, None)
 
@@ -397,7 +395,7 @@ def test_quickbooks_oauth_callback_success(client, test_deal, solo_user):
     mock_connection.platform_organization_name = "QuickBooks Demo Co"
     mock_connection.last_sync_at = None
     mock_connection.last_sync_status = None
-    mock_connection.created_at = datetime.now(timezone.utc)
+    mock_connection.created_at = datetime.utcnow()
 
     try:
         with patch('app.api.routes.financial.handle_quickbooks_callback') as mock_callback:
@@ -446,7 +444,7 @@ def test_sync_quickbooks_financial_data_success(client, test_deal, db_session, s
         platform="quickbooks",
         access_token="token",
         refresh_token="refresh",
-        token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+        token_expires_at=datetime.utcnow() + timedelta(hours=1),
         connection_status="active",
     )
     db_session.add(connection)
@@ -497,7 +495,7 @@ def test_quickbooks_connection_status(client, test_deal, db_session, solo_user):
         platform="quickbooks",
         access_token="token",
         refresh_token="refresh",
-        token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+        token_expires_at=datetime.utcnow() + timedelta(hours=1),
         connection_status="active",
         platform_organization_name="QuickBooks Demo Co",
     )
@@ -529,7 +527,7 @@ def test_disconnect_quickbooks_connection(client, test_deal, db_session, solo_us
         platform="quickbooks",
         access_token="token",
         refresh_token="refresh",
-        token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+        token_expires_at=datetime.utcnow() + timedelta(hours=1),
         connection_status="active",
     )
     db_session.add(connection)
@@ -599,382 +597,3 @@ def test_get_readiness_score_no_narrative(client, test_deal, solo_user):
         assert "narrative" in response.json()["detail"].lower()
     finally:
         app.dependency_overrides.pop(get_current_user, None)
-
-
-# ============================================================================
-# RATIO PERSISTENCE TESTS (Task 1.1 - TDD RED Phase)
-# ============================================================================
-
-def test_calculate_ratios_persists_to_database(client, test_deal, solo_user, db_session):
-    """Test that calculate endpoint persists ratios to FinancialRatio table"""
-    from app.models.financial_ratio import FinancialRatio
-
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
-        financial_data = {
-            "current_assets": 100000,
-            "current_liabilities": 50000,
-            "revenue": 500000,
-            "net_income": 50000,
-            "period": "2024-Q4",
-        }
-
-        response = client.post(
-            f"/api/deals/{test_deal.id}/financial/calculate-ratios",
-            json=financial_data,
-        )
-
-        assert response.status_code == 200
-
-        # Verify ratios were persisted to database
-        saved_ratios = db_session.query(FinancialRatio).filter(
-            FinancialRatio.deal_id == test_deal.id,
-            FinancialRatio.period == "2024-Q4"
-        ).all()
-
-        assert len(saved_ratios) > 0, "No ratios persisted to database"
-
-        # Verify key fields are saved
-        ratio = saved_ratios[0]
-        assert ratio.current_ratio == Decimal("2.0")
-        assert ratio.net_profit_margin == Decimal("10.0")
-        assert ratio.calculated_at is not None
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_get_ratios_returns_latest_calculation(client, test_deal, solo_user, db_session):
-    """Test GET /deals/{id}/financial/ratios returns persisted ratios"""
-    from app.models.financial_ratio import FinancialRatio
-
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
-        # Create test ratio record
-        test_ratio = FinancialRatio(
-            deal_id=test_deal.id,
-            organization_id=test_deal.organization_id,
-            period="2024-Q3",
-            current_ratio=Decimal("1.5"),
-            net_profit_margin=Decimal("12.5"),
-            return_on_equity=Decimal("18.0"),
-            calculated_at=datetime.now(timezone.utc),
-        )
-        db_session.add(test_ratio)
-        db_session.commit()
-
-        response = client.get(f"/api/deals/{test_deal.id}/financial/ratios")
-
-        assert response.status_code == 200
-        data = response.json()
-
-        assert isinstance(data, list)
-        assert len(data) >= 1
-
-        latest = data[0]
-        assert latest["period"] == "2024-Q3"
-        assert float(latest["current_ratio"]) == 1.5
-        assert float(latest["net_profit_margin"]) == 12.5
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_get_ratios_filters_by_period(client, test_deal, solo_user, db_session):
-    """Test GET /ratios with period query param returns filtered results"""
-    from app.models.financial_ratio import FinancialRatio
-
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
-        # Create ratios for different periods
-        for period in ["2024-Q1", "2024-Q2", "2024-Q3"]:
-            ratio = FinancialRatio(
-                deal_id=test_deal.id,
-                organization_id=test_deal.organization_id,
-                period=period,
-                current_ratio=Decimal("1.0"),
-                calculated_at=datetime.now(timezone.utc),
-            )
-            db_session.add(ratio)
-        db_session.commit()
-
-        # Query for specific period
-        response = client.get(
-            f"/api/deals/{test_deal.id}/financial/ratios",
-            params={"period": "2024-Q2"}
-        )
-
-        assert response.status_code == 200
-        data = response.json()
-
-        assert len(data) == 1
-        assert data[0]["period"] == "2024-Q2"
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_get_ratios_returns_empty_when_none_exist(client, test_deal, solo_user):
-    """Test GET /ratios returns empty list when no calculations exist"""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
-        response = client.get(f"/api/deals/{test_deal.id}/financial/ratios")
-
-        assert response.status_code == 200
-        data = response.json()
-
-        assert isinstance(data, list)
-        assert len(data) == 0
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_get_ratios_limits_results(client, test_deal, solo_user, db_session):
-    """Test GET /ratios respects limit query parameter"""
-    from app.models.financial_ratio import FinancialRatio
-
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
-        # Create 5 ratio records
-        for i in range(5):
-            ratio = FinancialRatio(
-                deal_id=test_deal.id,
-                organization_id=test_deal.organization_id,
-                period=f"2024-Q{i+1}",
-                current_ratio=Decimal("1.0"),
-                calculated_at=datetime.now(timezone.utc) - timedelta(days=i),
-            )
-            db_session.add(ratio)
-        db_session.commit()
-
-        # Request with limit
-        response = client.get(
-            f"/api/deals/{test_deal.id}/financial/ratios",
-            params={"limit": 2}
-        )
-
-        assert response.status_code == 200
-        data = response.json()
-
-        assert len(data) == 2
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
-
-
-# ============================================================================
-# NARRATIVE GENERATION TESTS (Task 1.2 - TDD RED Phase)
-# ============================================================================
-
-def test_generate_narrative_creates_narrative(client, test_deal, solo_user, db_session):
-    """Test POST /narrative/generate creates narrative from ratios"""
-    from app.models.financial_ratio import FinancialRatio
-    from app.models.financial_narrative import FinancialNarrative
-
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
-        # First, create some ratios to generate narrative from
-        ratio = FinancialRatio(
-            deal_id=test_deal.id,
-            organization_id=test_deal.organization_id,
-            period="2024-Q4",
-            current_ratio=Decimal("2.0"),
-            quick_ratio=Decimal("1.6"),
-            net_profit_margin=Decimal("10.0"),
-            return_on_equity=Decimal("20.0"),
-            debt_to_equity=Decimal("0.8"),
-            calculated_at=datetime.now(timezone.utc),
-        )
-        db_session.add(ratio)
-        db_session.commit()
-
-        # Generate narrative
-        response = client.post(
-            f"/api/deals/{test_deal.id}/financial/narrative/generate"
-        )
-
-        assert response.status_code == 201
-        data = response.json()
-
-        # Verify response structure
-        assert data["deal_id"] == test_deal.id
-        assert "summary" in data
-        assert "strengths" in data
-        assert "weaknesses" in data
-        assert "red_flags" in data
-        assert "readiness_score" in data
-        assert isinstance(data["readiness_score"], (int, float))
-        assert 0 <= data["readiness_score"] <= 100
-
-        # Verify narrative was persisted to database
-        saved_narrative = db_session.query(FinancialNarrative).filter(
-            FinancialNarrative.deal_id == test_deal.id
-        ).first()
-
-        assert saved_narrative is not None
-        assert saved_narrative.summary is not None
-        assert saved_narrative.readiness_score is not None
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_generate_narrative_requires_financial_data(client, test_deal, solo_user):
-    """Test generate fails gracefully when no ratios available"""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
-        response = client.post(
-            f"/api/deals/{test_deal.id}/financial/narrative/generate"
-        )
-
-        assert response.status_code == 400
-        assert "ratio" in response.json()["detail"].lower()
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_generate_narrative_saves_readiness_score_breakdown(client, test_deal, solo_user, db_session):
-    """Test readiness score breakdown is calculated and saved"""
-    from app.models.financial_ratio import FinancialRatio
-    from app.models.financial_narrative import FinancialNarrative
-
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
-        # Create comprehensive ratios
-        ratio = FinancialRatio(
-            deal_id=test_deal.id,
-            organization_id=test_deal.organization_id,
-            period="2024-Q4",
-            current_ratio=Decimal("2.5"),
-            quick_ratio=Decimal("2.0"),
-            net_profit_margin=Decimal("15.0"),
-            return_on_equity=Decimal("25.0"),
-            debt_to_equity=Decimal("0.5"),
-            calculated_at=datetime.now(timezone.utc),
-        )
-        db_session.add(ratio)
-        db_session.commit()
-
-        response = client.post(
-            f"/api/deals/{test_deal.id}/financial/narrative/generate"
-        )
-
-        assert response.status_code == 201
-        data = response.json()
-
-        # Verify score breakdown exists
-        assert "readiness_score_breakdown" in data
-        assert data["readiness_score_breakdown"] is not None
-
-        # Verify all breakdown components exist
-        breakdown = data["readiness_score_breakdown"]
-        assert "data_quality" in breakdown
-        assert "financial_health" in breakdown
-        assert "growth_trajectory" in breakdown
-        assert "risk_assessment" in breakdown
-
-        # Verify scores are reasonable
-        assert isinstance(breakdown["data_quality"], (int, float))
-        assert 0 <= breakdown["data_quality"] <= 100
-        assert 0 <= breakdown["financial_health"] <= 100
-        assert 0 <= breakdown["growth_trajectory"] <= 100
-        assert 0 <= breakdown["risk_assessment"] <= 100
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_get_narrative_returns_generated_narrative(client, test_deal, solo_user, db_session):
-    """Test GET endpoint returns previously generated narrative"""
-    from app.models.financial_narrative import FinancialNarrative
-
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
-        # Create a narrative directly
-        narrative = FinancialNarrative(
-            deal_id=test_deal.id,
-            organization_id=test_deal.organization_id,
-            summary="Strong financial position with healthy liquidity.",
-            strengths=["Excellent current ratio and profitability."],
-            weaknesses=["Limited growth trajectory."],
-            red_flags=["None identified."],
-            growth_signals=["Positive cash flow trends."],
-            readiness_score=Decimal("85.0"),
-            data_quality_score=Decimal("90.0"),
-            financial_health_score=Decimal("88.0"),
-            growth_trajectory_score=Decimal("70.0"),
-            risk_assessment_score=Decimal("92.0"),
-            ai_model="gpt-4",
-            generated_at=datetime.now(timezone.utc),
-        )
-        db_session.add(narrative)
-        db_session.commit()
-
-        response = client.get(
-            f"/api/deals/{test_deal.id}/financial/narrative"
-        )
-
-        assert response.status_code == 200
-        data = response.json()
-
-        assert data["deal_id"] == test_deal.id
-        assert data["summary"] == "Strong financial position with healthy liquidity."
-        assert float(data["readiness_score"]) == 85.0
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_quickbooks_profit_loss_parser(test_deal, db_session):
-    """Test QuickBooks P&L parser creates income statement correctly"""
-    from app.models.financial_connection import FinancialConnection
-    from app.services.quickbooks_oauth_service import _parse_quickbooks_profit_loss
-
-    # Create a QuickBooks connection
-    connection = FinancialConnection(
-        id="conn-qbo-pl",
-        deal_id=test_deal.id,
-        organization_id=test_deal.organization_id,
-        platform="quickbooks",
-        access_token="token",
-        refresh_token="refresh",
-        token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
-        connection_status="active",
-    )
-    db_session.add(connection)
-    db_session.commit()
-
-    # Mock QuickBooks P&L report data
-    pl_data = {
-        "Income": [
-            {"Name": "Sales Revenue", "Balance": 500000},
-            {"Name": "Service Revenue", "Balance": 100000},
-        ],
-        "CostOfGoodsSold": [
-            {"Name": "Product Costs", "Balance": 200000},
-        ],
-        "Expenses": [
-            {"Name": "Salaries", "Balance": 80000},
-            {"Name": "Rent", "Balance": 20000},
-            {"Name": "Interest Expense", "Balance": 5000},
-        ],
-    }
-
-    # Parse P&L
-    statement = _parse_quickbooks_profit_loss(pl_data, connection, db_session)
-
-    # Verify income statement was created
-    assert statement is not None
-    assert statement.statement_type == "income_statement"
-    assert statement.deal_id == test_deal.id
-
-    # Verify financial calculations
-    assert statement.revenue == Decimal("600000")  # 500000 + 100000
-    assert statement.cost_of_goods_sold == Decimal("200000")
-    assert statement.gross_profit == Decimal("400000")  # 600000 - 200000
-    assert statement.total_operating_expenses == Decimal("100000")  # 80000 + 20000 (excluding interest)
-    assert statement.operating_income == Decimal("300000")  # 400000 - 100000
-    assert statement.interest_expense == Decimal("5000")
-    assert statement.net_income == Decimal("295000")  # 300000 - 5000

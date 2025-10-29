@@ -3,7 +3,7 @@
  * Bulk operations for selected documents (download ZIP, delete)
  */
 
-import React, { useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { Document, bulkDeleteDocuments, bulkDownloadDocuments } from '../../services/api/documents'
 
 interface BulkActionsProps {
@@ -25,7 +25,8 @@ export const BulkActions: React.FC<BulkActionsProps> = ({
   const [downloading, setDownloading] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const documentIds = selectedDocuments.map((doc) => doc.id)
+
+  const documentIds = useMemo(() => selectedDocuments.map((doc) => doc.id), [selectedDocuments])
 
   if (documentIds.length === 0) {
     return null
@@ -45,7 +46,6 @@ export const BulkActions: React.FC<BulkActionsProps> = ({
         link.style.display = 'none'
         document.body.appendChild(link)
         appended = true
-        downloadLinkRef.current = link
       }
 
       link.href = blobUrl
@@ -79,6 +79,8 @@ export const BulkActions: React.FC<BulkActionsProps> = ({
       return
     }
 
+    let shouldClearSelection = false
+
     try {
       setDeleting(true)
       setError(null)
@@ -94,16 +96,19 @@ export const BulkActions: React.FC<BulkActionsProps> = ({
         setError(`${result.failed_ids.length} documents failed to delete: ${failedNames}`)
       }
 
+      shouldClearSelection = autoClearOnDelete && result.failed_ids.length === 0
       onRefresh()
-      if (autoClearOnDelete && result.failed_ids.length === 0) {
-        onClearSelection()
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete documents')
     } finally {
       setDeleting(false)
+      if (shouldClearSelection) {
+        onClearSelection()
+      }
     }
   }
+
+  const disableActions = downloading || deleting
 
   return (
     <div className="fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-3">
@@ -115,7 +120,7 @@ export const BulkActions: React.FC<BulkActionsProps> = ({
         <div className="flex flex-1 justify-end gap-3">
           <button
             onClick={handleDownload}
-            disabled={downloading || deleting}
+            disabled={disableActions}
             className="inline-flex items-center justify-center rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium transition-colors hover:bg-emerald-600 disabled:cursor-not-allowed disabled:bg-slate-500"
           >
             {downloading ? 'Downloading...' : '⬇️ Download ZIP'}
@@ -123,7 +128,7 @@ export const BulkActions: React.FC<BulkActionsProps> = ({
 
           <button
             onClick={handleDelete}
-            disabled={downloading || deleting}
+            disabled={disableActions}
             className="inline-flex items-center justify-center rounded-lg bg-rose-500 px-4 py-2 text-sm font-medium transition-colors hover:bg-rose-600 disabled:cursor-not-allowed disabled:bg-slate-500"
           >
             {deleting ? 'Deleting...' : '🗑️ Delete'}
@@ -131,7 +136,7 @@ export const BulkActions: React.FC<BulkActionsProps> = ({
 
           <button
             onClick={onClearSelection}
-            disabled={downloading || deleting}
+            disabled={disableActions}
             className="inline-flex items-center justify-center rounded-lg bg-slate-600 px-4 py-2 text-sm font-medium transition-colors hover:bg-slate-500 disabled:cursor-not-allowed disabled:bg-slate-500"
           >
             ✕ Clear

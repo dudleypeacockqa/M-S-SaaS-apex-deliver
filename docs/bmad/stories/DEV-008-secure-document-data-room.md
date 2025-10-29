@@ -7,9 +7,15 @@
 **Estimated Effort**: 12-16 hours (remaining 8-10 hours)
 **Actual Effort To Date**: 16 hours
 **Dependencies**: DEV-007 (Deal Pipeline CRUD) ✓
-**Status**: 🟡 In Progress – Backend stable, frontend document workspace outstanding (Updated 2025-10-29 10:55 UTC)
+**Status**: 🟡 In Progress – Backend stable, frontend document workspace outstanding (Updated 2025-10-29 15:55 UTC)
 
 ---
+
+## Latest Update (2025-10-29 15:55 UTC)
+- ✅ Version retention policy evidenced via `python -m pytest tests/test_document_endpoints.py::test_max_versions_enforced -q` (passes in 0.59s; httpx transport deprecation warning only). Added reference to BMAD progress tracker.
+- ✅ Documented temporary storage isolation fixtures supporting DEV-008 backend tests.
+- ⚠️ Frontend data room components (`FolderTree`, `DocumentList`, `PermissionModal`, upload UX) still outstanding; Vitest coverage yet to be authored.
+- 🔄 NEXT: Capture audit log screenshots + author RED Vitest specs for upload/version flows before implementing React workspace.
 
 ## Latest Update (2025-10-29 10:55 UTC)
 - ⚠️ Governance review revealed frontend implementation still missing critical components (`FolderTree`, `DocumentList`, `PermissionModal`, upload UX) and Vitest coverage. Current workspace renders placeholder data only.

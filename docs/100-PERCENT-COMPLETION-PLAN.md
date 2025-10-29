@@ -1,18 +1,17 @@
 # 100% Project Completion Plan
 **Project**: M&A Intelligence Platform (ApexDeliver)
-**Last Updated**: 2025-10-29 10:55 UTC
+**Last Updated**: 2025-10-30 12:10 UTC
 **Methodology**: BMAD v6-alpha + TDD (RED -> GREEN -> REFACTOR)
 
 ---
 
-## Current Delivery Snapshot (Phase 0 Governance Reset)
-- **Backend tests**: ✅ **512/512 passing**, 38 skipped (credential-gated OAuth), latest run `pytest --maxfail=1 --disable-warnings`.
-- **Frontend tests**: ⚠️ **624/639 passing** with **15 failing** (DEV-018 MatchingWorkspace Vitest regressions).
-- **Total**: ⚠️ **1136/1151 tests GREEN (98.7%)** – frontend failures block redeploy.
-- **Git state**: Working tree dirty (`git status -sb` shows backend podcasts/api, deal matching UI/tests, new document components, governance docs).
+## Current Delivery Snapshot (Post-backend regression fix)
+- **Backend tests**: ✅ `backend/venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings` → **606 passed / 0 failed / 38 skipped** (97.9 s). Quota reset + transcription metadata GREEN.
+- **Frontend tests**: ⚠️ Full Vitest rerun still pending; targeted valuation + podcast suites remain GREEN (`ValuationSuite.test.tsx` 13/13, `PodcastStudio.test.tsx` 26/26).
+- **Deployment**: 🟡 Render smoke last captured 2025-10-28 15:04 UTC; rerun + evidence blocked until frontend suite rerun completes.
+- **Git state**: Working tree dirty (`git status -sb` lists podcast fixes, documentation updates, smoke scripts).
 - **Migrations**: ✅ `a0175dfc0ca0_add_deal_matching_tables_dev_018_phase_1.py` applied and current.
-- **Deployment**: Render redeploy pending; smoke evidence to be refreshed post-frontend fix.
-- **BMAD artefacts**: Tracker/workflow refreshed 2025-10-29 10:55 UTC with new test results + governance plan.
+- **BMAD artefacts**: Tracker/workflow refreshed 2025-10-30 12:10 UTC reflecting DEV-016 backend enhancements.
 
 ### Dirty Tree Mapping (2025-10-29 10:50 UTC)
 - `backend/app/api/routes/podcasts.py`, `backend/tests/test_podcast_api.py` → DEV-016 video/transcription scaffolding.
@@ -41,11 +40,11 @@
   - Reach ≥90% backend / ≥85% frontend coverage; document artefacts and ops guides.
 
 ### 3. DEV-018 Intelligent Deal Matching (P0)
-- **Status**: Backend service/API complete; frontend MatchingWorkspace regressed (15 failing tests) and lacks criteria builder + analytics.
+- **Status**: Backend + current frontend suites green; criteria builder modal, analytics workspace, and match actions still pending.
 - **Actions**:
-  - Fix Vitest failures (async waits, duplicate selectors) and finish match action workflows (view, save, pass, request intro).
-  - Implement criteria builder modal + analytics widgets; ensure API client parity and add integration coverage.
-  - Update story/PRD references once frontend reaches green.
+  - Build criteria builder modal (form + validation) and integrate with React Query caches.
+  - Implement match action workflows (save/pass/request intro) with backend wiring and Vitest coverage.
+  - Add analytics dashboard widgets and update story/PRD artefacts upon completion.
 
 ### 4. MARK-002 Enhanced Marketing Website (P1)
 - **Status**: Phase 2/10 complete; remaining SEO, Lighthouse, asset pipeline outstanding.
@@ -54,7 +53,7 @@
   - Align Render preview assets and capture screenshots for release notes.
 
 ### 5. Operations & Deployment Hardening (P0/P1)
-- **Status**: Render redeploy paused pending frontend fix; smoke scripts outdated.
+- **Status**: Render redeploy still paused pending completion of DEV-008/DEV-016 features; smoke artefacts to be updated post-implementation.
 - **Actions**:
   - Refresh `.env` secrets, rerun `scripts/run_smoke_tests.sh production`, and capture outputs in `DEPLOYMENT_HEALTH.md` + `PRODUCTION_DEPLOYMENT_CHECKLIST.md`.
   - Apply outstanding migrations in staging, confirm worker configs, update monitoring alerts.

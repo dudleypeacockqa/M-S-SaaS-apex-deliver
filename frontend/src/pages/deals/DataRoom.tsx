@@ -211,7 +211,7 @@ export const DataRoom: React.FC = () => {
     try {
       await createFolder(dealId, {
         name: newFolderName.trim(),
-        parent_folder_id: selectedFolderId,
+        parent_id: selectedFolderId ?? null,
       })
       setNewFolderName('')
       setIsCreateFolderVisible(false)

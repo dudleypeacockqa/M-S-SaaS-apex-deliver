@@ -42,11 +42,21 @@ class TestPodcastService:
         """Helper to create a mocked Whisper response."""
 
         mock_client = AsyncMock()
-        mock_response = AsyncMock()
-        mock_response.text = "This is a sample transcript"
-        mock_response.segments = []
+        from types import SimpleNamespace
+
+        mock_segments = []
         if segments:
-            mock_response.segments = [AsyncMock(start=seg["time"], text=seg["text"]) for seg in segments]
+            mock_segments = [
+                SimpleNamespace(start=seg["time"], text=seg["text"])
+                for seg in segments
+            ]
+
+        mock_response = SimpleNamespace(
+            text="This is a sample transcript",
+            language="en",
+            segments=mock_segments,
+        )
+
         mock_client.audio.transcriptions.create.return_value = mock_response
         return mock_client
 

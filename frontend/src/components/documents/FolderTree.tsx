@@ -14,7 +14,7 @@ interface FolderTreeProps {
   onFolderSelect: (folderId: string | null) => void
 }
 
-interface FolderNode extends Omit<Folder, 'parent_folder_id'> {
+interface FolderNode extends Folder {
   parent_id: string | null
   document_count: number
   children?: FolderNode[]
@@ -78,8 +78,8 @@ export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId
   }, [dealId, queryClient])
 
   const createMutation = useMutation({
-    mutationFn: (payload: { name: string; parent_id: string | null }) =>
-      createFolder(dealId, { name: payload.name, parent_id: payload.parent_id }),
+    mutationFn: (payload: { name: string; parent_folder_id: string | null }) =>
+      createFolder(dealId, { name: payload.name, parent_folder_id: payload.parent_folder_id }),
     onSuccess: () => invalidateFolders(),
   })
 
@@ -113,7 +113,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId
       return
     }
 
-    await createMutation.mutateAsync({ name: newFolderName.trim(), parent_id: null })
+    await createMutation.mutateAsync({ name: newFolderName.trim(), parent_folder_id: null })
     setIsCreating(false)
     setNewFolderName('')
   }

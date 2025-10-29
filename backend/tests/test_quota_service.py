@@ -18,7 +18,9 @@ from app.services.quota_service import (
     get_quota_summary,
     get_remaining_quota,
     increment_episode_count,
+    TIER_QUOTAS,
 )
+import app.services.quota_service as quota_service
 from app.models.podcast_usage import PodcastUsage
 
 
@@ -429,6 +431,35 @@ class TestGetQuotaSummary:
         assert summary.period_label == "October 2025"
 
     @async_test
+    async def test_usage_resets_when_new_month_starts(self, db_session) -> None:
+        """Ensure previous month usage does not count toward current month quota."""
+
+        org_id = "org_reset"
+        previous_month = datetime(2025, 9, 1, tzinfo=UTC)
+        usage_record = PodcastUsage(
+            organization_id=org_id,
+            month=previous_month,
+            episode_count=10,
+        )
+        db_session.add(usage_record)
+        db_session.commit()
+
+        class FixedDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return datetime(2025, 10, 5, tzinfo=tz or UTC)
+
+        with (
+            patch("app.services.quota_service.datetime", FixedDatetime),
+            patch("app.services.quota_service.get_organization_tier", return_value=SubscriptionTier.PROFESSIONAL),
+        ):
+            summary = await get_quota_summary(org_id, tier=SubscriptionTier.PROFESSIONAL, db=db_session)
+
+        assert summary.used == 0
+        assert summary.remaining == 10
+        assert summary.period == "2025-10"
+
+    @async_test
     async def test_marks_quota_exceeded_as_upgrade_required(self, mock_db_session: AsyncMock) -> None:
         org_id = "org_over"
 
@@ -453,6 +484,71 @@ class TestGetQuotaSummary:
         assert summary.upgrade_message == "Upgrade to Premium tier for unlimited episodes."
         assert summary.upgrade_cta_url == "/pricing"
         assert summary.remaining == 0
+
+
+class TestResetMonthlyUsage:
+    """Pending implementation: ensure monthly quota reset helper exists."""
+
+    def test_reset_monthly_usage_helper_is_defined(self) -> None:
+        reset_fn = getattr(quota_service, "reset_monthly_usage", None)
+        assert reset_fn is not None, "Expected quota_service.reset_monthly_usage to be implemented (RED)"
+
+    @async_test
+    async def test_reset_monthly_usage_creates_zero_record(self, db_session) -> None:
+        org_id = "org_reset_helper"
+        previous_month = datetime(2025, 9, 1, tzinfo=UTC)
+
+        usage_record = PodcastUsage(
+            organization_id=org_id,
+            month=previous_month,
+            episode_count=7,
+        )
+        db_session.add(usage_record)
+        db_session.commit()
+
+        october = datetime(2025, 10, 10, tzinfo=UTC)
+
+        with patch("app.services.quota_service.datetime") as mock_datetime:
+            mock_datetime.now.return_value = october
+            mock_datetime.side_effect = lambda *args, **kwargs: datetime(*args, **kwargs) if args else october
+
+            usage = await quota_service.reset_monthly_usage(org_id, db_session)
+
+        assert usage.month == datetime(2025, 10, 1)
+        assert usage.episode_count == 0
+
+        refreshed = (
+            db_session.query(PodcastUsage)
+            .filter(
+                PodcastUsage.organization_id == org_id,
+                PodcastUsage.month == datetime(2025, 10, 1),
+            )
+            .one()
+        )
+        assert refreshed.episode_count == 0
+
+    @async_test
+    async def test_reset_monthly_usage_is_idempotent(self, db_session) -> None:
+        org_id = "org_reset_idempotent"
+        current_month = datetime(2025, 10, 1, tzinfo=UTC)
+
+        usage_record = PodcastUsage(
+            organization_id=org_id,
+            month=current_month,
+            episode_count=3,
+        )
+        db_session.add(usage_record)
+        db_session.commit()
+
+        october = datetime(2025, 10, 5, tzinfo=UTC)
+
+        with patch("app.services.quota_service.datetime") as mock_datetime:
+            mock_datetime.now.return_value = october
+            mock_datetime.side_effect = lambda *args, **kwargs: datetime(*args, **kwargs) if args else october
+
+            usage = await quota_service.reset_monthly_usage(org_id, db_session)
+
+        assert usage.episode_count == 3
 
 
 class TestMonthlyQuotaReset:
@@ -491,6 +587,17 @@ class TestMonthlyQuotaReset:
             can_create = await check_episode_quota(org_id, db_session)
 
         assert can_create is True, "Should allow creation in new billing cycle"
+
+        # New month record should be created with zero usage
+        refreshed = (
+            db_session.query(PodcastUsage)
+            .filter(
+                PodcastUsage.organization_id == org_id,
+                PodcastUsage.month == datetime(2025, 10, 1),
+            )
+            .one()
+        )
+        assert refreshed.episode_count == 0
 
     @async_test
     async def test_usage_count_returns_zero_in_new_month(self, db_session) -> None:

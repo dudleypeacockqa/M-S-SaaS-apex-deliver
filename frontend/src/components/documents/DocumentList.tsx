@@ -11,7 +11,11 @@ import {
 interface DocumentListProps {
   dealId: string
   folderId: string | null
-  onSelectionChange: (documentIds: string[]) => void
+  onSelectionChange?: (documents: Document[]) => void
+  onError?: (error: unknown) => void
+  onDocumentsLoaded?: (documents: Document[]) => void
+  resetSelectionSignal?: number
+  onManagePermissions?: (document: Document) => void
 }
 
 type SortKey = 'name' | 'date'
@@ -27,14 +31,22 @@ function formatDate(value: string): string {
   }).format(date)
 }
 
-export const DocumentList: React.FC<DocumentListProps> = ({ dealId, folderId, onSelectionChange }) => {
+export const DocumentList: React.FC<DocumentListProps> = ({
+  dealId,
+  folderId,
+  onSelectionChange,
+  onError,
+  onDocumentsLoaded,
+  resetSelectionSignal,
+  onManagePermissions,
+}) => {
   const queryClient = useQueryClient()
   const [searchTerm, setSearchTerm] = useState('')
   const [sortKey, setSortKey] = useState<SortKey>('date')
   const [sortDesc, setSortDesc] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['deal-documents', dealId, folderId],
     queryFn: () => listDocuments(dealId, { folder_id: folderId ?? undefined }),
   })
@@ -43,11 +55,25 @@ export const DocumentList: React.FC<DocumentListProps> = ({ dealId, folderId, on
 
   useEffect(() => {
     setSelectedIds([])
-  }, [folderId])
+  }, [folderId, resetSelectionSignal])
 
   useEffect(() => {
-    onSelectionChange(selectedIds)
-  }, [selectedIds, onSelectionChange])
+    if (!onSelectionChange) return
+    const selectedDocuments = documents.filter((doc) => selectedIds.includes(doc.id))
+    onSelectionChange(selectedDocuments)
+  }, [documents, selectedIds, onSelectionChange])
+
+  useEffect(() => {
+    if (error && onError) {
+      onError(error)
+    }
+  }, [error, onError])
+
+  useEffect(() => {
+    if (onDocumentsLoaded) {
+      onDocumentsLoaded(documents)
+    }
+  }, [documents, onDocumentsLoaded])
 
   const filteredDocuments = useMemo(() => {
     const term = searchTerm.trim().toLowerCase()
@@ -104,6 +130,15 @@ export const DocumentList: React.FC<DocumentListProps> = ({ dealId, folderId, on
     } else {
       setSelectedIds(filteredDocuments.map((doc) => doc.id))
     }
+  }
+
+  if (error) {
+    const message = error instanceof Error ? error.message : 'Failed to load documents'
+    return (
+      <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-600">
+        {message}
+      </div>
+    )
   }
 
   if (isLoading) {
@@ -235,6 +270,16 @@ export const DocumentList: React.FC<DocumentListProps> = ({ dealId, folderId, on
                       >
                         Delete
                       </button>
+                      {onManagePermissions && (
+                        <button
+                          type="button"
+                          className="rounded border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                          onClick={() => onManagePermissions(doc)}
+                          aria-label={`Manage permissions for ${doc.name}`}
+                        >
+                          Manage access
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

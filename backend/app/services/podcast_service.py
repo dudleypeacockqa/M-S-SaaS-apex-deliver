@@ -108,6 +108,8 @@ def update_episode(
     show_notes: Optional[str] = None,
     status: Optional[str] = None,
     youtube_video_id: Optional[str] = None,
+    transcript: Optional[str] = None,
+    transcript_language: Optional[str] = None,
 ) -> PodcastEpisode:
     """Mutate simple episode fields and persist changes."""
 
@@ -127,6 +129,10 @@ def update_episode(
             episode.published_at = datetime.now(timezone.utc)
     if youtube_video_id is not None:
         episode.youtube_video_id = youtube_video_id
+    if transcript is not None:
+        episode.transcript = transcript
+    if transcript_language is not None:
+        episode.transcript_language = transcript_language
 
     db.add(episode)
     db.commit()
@@ -184,6 +190,11 @@ async def transcribe_episode(
         )
 
     transcript_text = response.text
+    raw_language = getattr(response, "language", None)
+    if isinstance(raw_language, str) and raw_language.strip():
+        transcript_language = raw_language.lower()
+    else:
+        transcript_language = "en"
     timestamps = [
         {"time": segment.start, "text": segment.text}
         for segment in getattr(response, "segments", []) or []
@@ -194,10 +205,11 @@ async def transcribe_episode(
         episode_id=episode_id,
         transcript_text=transcript_text,
         timestamps=timestamps,
-        language="en",
+        language=transcript_language,
     )
 
     episode.transcript = transcript_text
+    episode.transcript_language = transcript_language
     episode.status = "processing"
 
     db.add(transcript)

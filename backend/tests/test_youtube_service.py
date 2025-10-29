@@ -29,8 +29,16 @@ async def test_upload_video_allowed_for_premium():
         "app.services.youtube_service._youtube_client",
         new_callable=AsyncMock,
         create=True,
-    ) as mock_client:
+    ) as mock_client, patch(
+        "app.services.youtube_service.generate_video_metadata"
+    ) as mock_metadata:
         mock_access.return_value = True
+        mock_metadata.return_value = {
+            "title": payload["title"],
+            "description": payload["description"],
+            "tags": ["m&a"],
+            "categoryId": "22",
+        }
 
         api_client = MagicMock()
         videos_resource = MagicMock()
@@ -48,6 +56,7 @@ async def test_upload_video_allowed_for_premium():
 
     mock_access.assert_awaited_once_with("org_premium", "youtube_integration")
     assert video_id.startswith("YT_")
+    mock_metadata.assert_called_once()
 
 
 @pytest.mark.asyncio

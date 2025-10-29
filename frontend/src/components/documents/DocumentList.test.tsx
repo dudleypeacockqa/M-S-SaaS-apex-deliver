@@ -80,11 +80,7 @@ describe('DocumentList', () => {
     });
 
     renderWithProviders(
-      <DocumentList
-        dealId="deal-1"
-        folderId="folder-1"
-        onSelectionChange={vi.fn()}
-      />
+      <DocumentList dealId="deal-1" folderId="folder-1" />
     );
 
     await waitFor(() => {
@@ -99,13 +95,7 @@ describe('DocumentList', () => {
     const { listDocuments } = await import('../../services/api/documents');
     vi.mocked(listDocuments).mockResolvedValue({ items: [], total: 0, page: 1, per_page: 25, pages: 1 });
 
-    renderWithProviders(
-      <DocumentList
-        dealId="deal-1"
-        folderId={null}
-        onSelectionChange={vi.fn()}
-      />
-    );
+    renderWithProviders(<DocumentList dealId="deal-1" folderId={null} />);
 
     await waitFor(() => {
       expect(screen.getByText(/no documents found/i)).toBeInTheDocument();
@@ -125,13 +115,7 @@ describe('DocumentList', () => {
       pages: 1,
     });
 
-    renderWithProviders(
-      <DocumentList
-        dealId="deal-1"
-        folderId={null}
-        onSelectionChange={vi.fn()}
-      />
-    );
+    renderWithProviders(<DocumentList dealId="deal-1" folderId={null} />);
 
     // Click sort by name header
     const nameHeader = await screen.findByRole('button', { name: /sort by name/i });
@@ -157,13 +141,7 @@ describe('DocumentList', () => {
       pages: 1,
     });
 
-    renderWithProviders(
-      <DocumentList
-        dealId="deal-1"
-        folderId={null}
-        onSelectionChange={vi.fn()}
-      />
-    );
+    renderWithProviders(<DocumentList dealId="deal-1" folderId={null} />);
 
     // Click sort by date header
     const dateHeader = await screen.findByRole('button', { name: /sort by date/i });
@@ -189,13 +167,7 @@ describe('DocumentList', () => {
       pages: 1,
     });
 
-    renderWithProviders(
-      <DocumentList
-        dealId="deal-1"
-        folderId={null}
-        onSelectionChange={vi.fn()}
-      />
-    );
+    renderWithProviders(<DocumentList dealId="deal-1" folderId={null} />);
 
     const searchInput = await screen.findByPlaceholderText(/search documents/i);
     fireEvent.change(searchInput, { target: { value: 'Financial' } });
@@ -231,7 +203,12 @@ describe('DocumentList', () => {
     const checkbox = await screen.findByRole('checkbox', { name: /select document\.pdf/i });
     fireEvent.click(checkbox);
 
-    await waitFor(() => expect(onSelectionChange).toHaveBeenCalledWith(['doc-1']));
+    await waitFor(() => expect(onSelectionChange).toHaveBeenCalled())
+    const selectedDocs = onSelectionChange.mock.calls.at(-1)?.[0] as Array<{
+      id: string
+    }>
+    expect(selectedDocs).toHaveLength(1)
+    expect(selectedDocs[0].id).toBe('doc-1')
   });
 
   it('should select all documents with header checkbox', async () => {
@@ -260,7 +237,13 @@ describe('DocumentList', () => {
     const selectAllCheckbox = await screen.findByRole('checkbox', { name: /select all/i });
     fireEvent.click(selectAllCheckbox);
 
-    await waitFor(() => expect(onSelectionChange).toHaveBeenCalledWith(['doc-1', 'doc-2']));
+    await waitFor(() => expect(onSelectionChange).toHaveBeenCalled())
+    const selectedDocs = onSelectionChange.mock.calls.at(-1)?.[0] as Array<{
+      id: string
+    }>
+    expect(Array.isArray(selectedDocs)).toBe(true)
+    expect(selectedDocs).toHaveLength(2)
+    expect(selectedDocs.map((doc) => doc.id)).toEqual(['doc-1', 'doc-2'])
   });
 
   it('should show download button for each document', async () => {
@@ -275,13 +258,7 @@ describe('DocumentList', () => {
       pages: 1,
     });
 
-    renderWithProviders(
-      <DocumentList
-        dealId="deal-1"
-        folderId={null}
-        onSelectionChange={vi.fn()}
-      />
-    );
+    renderWithProviders(<DocumentList dealId="deal-1" folderId={null} />);
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /download report\.pdf/i })).toBeInTheDocument();

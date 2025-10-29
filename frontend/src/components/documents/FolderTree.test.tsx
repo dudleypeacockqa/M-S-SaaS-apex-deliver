@@ -185,7 +185,7 @@ describe('FolderTree', () => {
     await waitFor(() => {
       expect(createFolder).toHaveBeenCalledWith('deal-1', {
         name: 'New Folder',
-        parent_id: null,
+        parent_folder_id: null,
       });
     });
   });

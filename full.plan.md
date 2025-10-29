@@ -1,8 +1,6 @@
-- [x] Capture current repo state and refresh BMAD workflow/status docs before new work
-- [ ] Stabilise RED Vitest suites (BulkActions, DealDocuments, AnalyticsProvider, MatchingWorkspace) via TDD
-- [ ] Re-run full test + coverage sweep; sync BMAD/Deployment docs and Render smoke evidence
-- [ ] Finish DEV-016 backend services, webhooks, and pytest coverage under TDD
-- [ ] Complete podcast frontend entitlement UX and tests for DEV-016
-- [ ] Deliver remaining valuation suite functionality and tests
-- [ ] Close MARK-002 marketing/test gaps and align helper scripts
-- [ ] Run full QA/coverage, update BMAD docs, and verify Render deployment health
+- [x] Stabilise RED Vitest suites (BulkActions, DealDocuments, AnalyticsProvider, MatchingWorkspace)
+- [x] Implement FolderTree/DocumentList/PermissionModal components with updated documents API
+- [ ] Integrate new document workspace components into `DataRoom` (folder tree + list + permissions)
+- [ ] Wire document permission modal into BulkActions/DataRoom flows and add end-to-end tests
+- [ ] Run full QA coverage sweep, update BMAD docs, and refresh Render smoke evidence
+- [ ] Resume DEV-016/DEV-018 feature work (transcription metadata, matching UX) once document workspace is green

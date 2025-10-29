@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, Mock, patch, ANY
+from unittest.mock import AsyncMock, Mock, MagicMock, patch, ANY
 
 from app.services.quota_service import QuotaExceededError
 from app.schemas.podcast import PodcastQuotaSummary
@@ -1217,8 +1217,12 @@ class TestAudioUpload:
             assert response.status_code == status.HTTP_200_OK
             data = response.json()
             assert "audio_url" in data
-            assert data["audio_url"].endswith(".mp3")
+            assert data["audio_url"] == "/storage/path/file.mp3"
             assert mock_update_episode.called
+            assert (
+                mock_update_episode.call_args.kwargs["audio_file_url"]
+                == "/storage/path/file.mp3"
+            )
         finally:
             _clear_override()
 
@@ -1557,6 +1561,100 @@ class TestVideoUpload:
         finally:
             _clear_override()
 
+    def test_upload_video_generates_thumbnail(
+        self, client, create_user, create_organization
+    ):
+        """Uploading video should trigger thumbnail generation and persist thumbnail_url."""
+        org = create_organization(subscription_tier="premium")
+        premium_user = create_user(role=UserRole.enterprise, organization_id=org.id)
+        premium_user.subscription_tier = SubscriptionTier.PREMIUM.value
+
+        _override_user(premium_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode, patch(
+                "app.api.routes.podcasts.get_storage_service"
+            ) as mock_storage, patch(
+                "app.api.routes.podcasts.generate_thumbnail"
+            ) as mock_generate_thumb, patch(
+                "app.api.routes.podcasts.podcast_service.update_episode"
+            ) as mock_update_episode:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-thumb",
+                    organization_id=premium_user.organization_id,
+                    title="Episode with Thumbnail",
+                )
+                storage_instance = Mock()
+                storage_instance.save_file = AsyncMock(return_value="/storage/video.mp4")
+                mock_storage.return_value = storage_instance
+                mock_generate_thumb.return_value = "/storage/thumbnails/ep-thumb.jpg"
+
+                response = client.post(
+                    "/api/podcasts/episodes/ep-thumb/upload-video",
+                    files={"file": ("episode.mp4", b"video", "video/mp4")},
+                )
+
+            assert response.status_code == status.HTTP_200_OK
+            mock_generate_thumb.assert_called_once()
+            mock_update_episode.assert_called()
+            update_kwargs = mock_update_episode.call_args.kwargs
+            assert update_kwargs["video_file_url"] == "/storage/video.mp4"
+            assert update_kwargs["thumbnail_url"] == "/storage/thumbnails/ep-thumb.jpg"
+        finally:
+            _clear_override()
+
+    def test_upload_video_accepts_mov_format(
+        self, client, create_user, create_organization
+    ):
+        """MOV uploads should be accepted for premium users."""
+        org = create_organization(subscription_tier="premium")
+        premium_user = create_user(role=UserRole.enterprise, organization_id=org.id)
+        premium_user.subscription_tier = SubscriptionTier.PREMIUM.value
+
+        _override_user(premium_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode, patch(
+                "app.api.routes.podcasts.get_storage_service"
+            ) as mock_storage, patch(
+                "app.api.routes.podcasts.podcast_service.update_episode"
+            ) as mock_update_episode:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-mov",
+                    organization_id=premium_user.organization_id,
+                    title="MOV Episode",
+                )
+                storage_instance = Mock()
+                storage_instance.save_file = AsyncMock(return_value="/media/podcasts/ep-mov/video.mov")
+                mock_storage.return_value = storage_instance
+
+                files = {"file": ("episode.mov", b"content", "video/quicktime")}
+                response = client.post(
+                    "/api/podcasts/episodes/ep-mov/upload-video",
+                    files=files,
+                )
+
+            assert response.status_code == status.HTTP_200_OK
+            payload = response.json()
+            assert payload["video_url"] == "/media/podcasts/ep-mov/video.mov"
+            mock_update_episode.assert_called_once()
+            assert (
+                mock_update_episode.call_args.kwargs["video_file_url"]
+                == "/media/podcasts/ep-mov/video.mov"
+            )
+        finally:
+            _clear_override()
+
     def test_upload_video_updates_episode_video_url(
         self, client, create_user, create_organization
     ):
@@ -1601,7 +1699,8 @@ class TestVideoUpload:
             assert mock_update_episode.called
             call_kwargs = mock_update_episode.call_args.kwargs
             assert "video_file_url" in call_kwargs
-            assert call_kwargs["video_file_url"].startswith("/storage/podcast-video/")
+            assert call_kwargs["video_file_url"] == "/storage/path/file.mp4"
+            assert response.json()["video_url"] == "/storage/path/file.mp4"
         finally:
             _clear_override()
 
@@ -1798,6 +1897,146 @@ class TestTranscription:
 
             assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
             assert "transcription failed" in response.json()["detail"].lower()
+        finally:
+            _clear_override()
+
+    def test_transcribe_multi_language_requires_enterprise(
+        self, client, create_user, create_organization
+    ) -> None:
+        """Requesting non-English transcription should require enterprise tier."""
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(
+            role=UserRole.growth, organization_id=org.id
+        )
+        professional_user.subscription_tier = SubscriptionTier.PROFESSIONAL.value
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode, patch(
+                "app.api.routes.podcasts.entitlement_service.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_multi:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-123",
+                    organization_id=professional_user.organization_id,
+                    title="Episode",
+                    audio_file_url="/storage/podcast-audio/ep-123/audio.mp3",
+                )
+                mock_multi.return_value = False
+
+                response = client.post(
+                    "/api/podcasts/episodes/ep-123/transcribe",
+                    json={"language": "es"},
+                )
+
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            detail = response.json().get("detail", "")
+            assert "Enterprise" in detail or "upgrade" in detail.lower()
+        finally:
+            _clear_override()
+
+    def test_transcribe_multi_language_enterprise_success(
+        self, client, create_user, create_organization
+    ) -> None:
+        """Enterprise tier can transcribe with alternate language and persist metadata."""
+        org = create_organization(subscription_tier="enterprise")
+        enterprise_user = create_user(
+            role=UserRole.growth, organization_id=org.id
+        )
+        enterprise_user.subscription_tier = SubscriptionTier.ENTERPRISE.value
+
+        _override_user(enterprise_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode, patch(
+                "app.api.routes.podcasts.podcast_service.update_episode"
+            ) as mock_update_episode, patch(
+                "app.api.routes.podcasts.entitlement_service.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_multi, patch(
+                "app.api.routes.podcasts.transcribe_audio"
+            ) as mock_transcribe:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-999",
+                    organization_id=enterprise_user.organization_id,
+                    title="Enterprise Episode",
+                    audio_file_url="/storage/podcast-audio/ep-999/audio.mp3",
+                )
+                mock_multi.return_value = True
+                mock_transcribe.return_value = "Hola mundo desde Whisper"
+
+                response = client.post(
+                    "/api/podcasts/episodes/ep-999/transcribe",
+                    json={"language": "es"},
+                )
+
+            assert response.status_code == status.HTTP_200_OK
+            payload = response.json()
+            assert payload.get("transcript_language") == "es"
+            assert payload.get("word_count") == 4
+            mock_update_episode.assert_called_once()
+            update_kwargs = mock_update_episode.call_args.kwargs
+            assert update_kwargs.get("transcript_language") == "es"
+        finally:
+            _clear_override()
+
+    def test_transcribe_response_includes_metadata(
+        self, client, create_user, create_organization
+    ):
+        """Transcription response should include language + word count metadata."""
+        org = create_organization(subscription_tier="professional")
+        professional_user = create_user(
+            role=UserRole.growth, organization_id=org.id
+        )
+        professional_user.subscription_tier = (
+            SubscriptionTier.PROFESSIONAL.value
+        )
+
+        _override_user(professional_user)
+        try:
+            with patch(
+                "app.api.dependencies.auth.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_feature, patch(
+                "app.api.routes.podcasts.podcast_service.get_episode"
+            ) as mock_get_episode, patch(
+                "app.api.routes.podcasts.podcast_service.update_episode"
+            ) as mock_update_episode, patch(
+                "app.api.routes.podcasts.transcribe_audio"
+            ) as mock_transcribe:
+                mock_feature.return_value = True
+                mock_get_episode.return_value = SimpleNamespace(
+                    id="ep-456",
+                    organization_id=professional_user.organization_id,
+                    title="Metadata Episode",
+                    audio_file_url="/storage/podcast-audio/ep-456/audio.mp3",
+                )
+                mock_transcribe.return_value = "Hello world from Whisper"
+
+                response = client.post(
+                    "/api/podcasts/episodes/ep-456/transcribe"
+                )
+
+            assert response.status_code == status.HTTP_200_OK
+            payload = response.json()
+            assert payload.get("transcript_language") == "en", (
+                "Expected transcription response to include detected language metadata"
+            )
+            assert payload.get("word_count") == 4, (
+                "Expected transcription response to include basic word count metadata"
+            )
+            assert mock_update_episode.called
         finally:
             _clear_override()
 
