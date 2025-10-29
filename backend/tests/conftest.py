@@ -13,10 +13,9 @@ from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from jose import jwt
-from sqlalchemy import create_engine, inspect
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-from sqlalchemy.exc import OperationalError
 from _pytest.fixtures import FixtureLookupError
 
 # Ensure repository and backend directories are on sys.path for "app" imports
@@ -53,7 +52,6 @@ os.environ.setdefault("CELERY_RESULT_BACKEND", "cache+memory://")
 os.environ.setdefault("CELERY_TASK_ALWAYS_EAGER", "true")
 os.environ.setdefault("CELERY_TASK_EAGER_PROPAGATES", "true")
 
-from app.core import database as core_database  # noqa: E402
 from app.core.config import get_settings, settings  # noqa: E402
 from app.db import session as session_module  # noqa: E402
 from app.db.base import Base  # noqa: E402
@@ -88,37 +86,6 @@ if not Base.metadata.tables:  # pragma: no cover - sanity check
 get_settings.cache_clear()
 
 
-def _safe_drop_schema(engine) -> None:
-    """Drop known tables/views without failing if metadata is stale."""
-
-    inspector = inspect(engine)
-    with engine.begin() as connection:
-        for table_name in inspector.get_table_names():
-            connection.exec_driver_sql(f'DROP TABLE IF EXISTS "{table_name}"')
-
-        get_view_names = getattr(inspector, "get_view_names", None)
-        if callable(get_view_names):
-            for view_name in get_view_names():  # pragma: no cover - sqlite usually has none
-                connection.exec_driver_sql(f'DROP VIEW IF EXISTS "{view_name}"')
-
-    try:
-        Base.metadata.drop_all(bind=engine)
-    except OperationalError:
-        # Drop any remaining tables that SQLAlchemy metadata did not track
-        with engine.begin() as connection:
-            for table_name in inspector.get_table_names():
-                connection.exec_driver_sql(f'DROP TABLE IF EXISTS "{table_name}"')
-
-
-def _reset_metadata(engine) -> None:
-    """Ensure metadata matches the declared models for the provided engine."""
-
-    _safe_drop_schema(engine)
-    Base.metadata.create_all(bind=engine)
-
-
-__all__ = ["_safe_drop_schema", "_reset_metadata"]
-
 
 @pytest.fixture()
 def engine():
@@ -135,16 +102,12 @@ def engine():
     session_factory = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
     session_module.engine = engine
     session_module.SessionLocal = session_factory
-    core_database.engine = engine
-    core_database.SessionLocal = session_factory
 
     try:
         yield engine
     finally:
         Base.metadata.drop_all(engine)
         engine.dispose()
-        core_database.engine = None
-        core_database.SessionLocal = None
 
 
 @pytest.fixture()
@@ -580,33 +543,5 @@ def create_deal_for_org(db_session, create_user, create_organization, request):
 
     return _create
 
-
-def _safe_drop_schema(engine) -> None:
-    """Drop all tables/views without raising errors."""
-    from sqlalchemy import inspect
-    from sqlalchemy.exc import OperationalError
-
-    inspector = inspect(engine)
-    with engine.begin() as connection:
-        for table_name in inspector.get_table_names():
-            connection.exec_driver_sql(f'DROP TABLE IF EXISTS "{table_name}"')
-    try:
-        Base.metadata.drop_all(bind=engine)
-    except OperationalError:
-        pass
-
-
-def _reset_metadata(engine) -> None:
-    """Reset database schema to match current models."""
-    _safe_drop_schema(engine)
-    Base.metadata.create_all(bind=engine)
-
-
-@pytest.fixture(autouse=True)
-def _reset_database(engine):
-    """Reset schema before each test for deterministic state."""
-
-    _reset_metadata(engine)
-    yield
 
 

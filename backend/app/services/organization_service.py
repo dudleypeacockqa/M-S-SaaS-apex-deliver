@@ -6,6 +6,7 @@ from typing import Any, Optional
 
 from sqlalchemy.orm import Session
 
+from app.core.subscription import SubscriptionTier
 from app.models.organization import Organization
 
 
@@ -36,13 +37,27 @@ def _ensure_unique_slug(db: Session, desired_slug: str, *, exclude_id: Optional[
     return desired_slug
 
 
+def _normalize_subscription_tier(value: Any) -> str:
+    """Normalize subscription tier values from Clerk metadata."""
+
+    if isinstance(value, SubscriptionTier):
+        return value.value
+
+    if isinstance(value, str):
+        candidate = value.strip().lower()
+        if candidate in {tier.value for tier in SubscriptionTier}:
+            return candidate
+
+    return SubscriptionTier.STARTER.value
+
+
 def _coerce_metadata(data: dict[str, Any]) -> tuple[str, str, str]:
     """Extract name, slug, subscription tier from Clerk payload with fallbacks."""
 
     name = data.get("name") or "Untitled Organization"
     slug = data.get("slug") or _slugify(name)
     public_metadata = data.get("public_metadata") or {}
-    tier = public_metadata.get("subscription_tier", "starter")
+    tier = _normalize_subscription_tier(public_metadata.get("subscription_tier"))
     return name, slug, tier
 
 
