@@ -349,10 +349,10 @@ class MockNetSuiteClient:
 # Initialize client based on environment configuration
 try:
     netsuite_client = RealNetSuiteClient()
-    print("[Phase 11] ✅ Using REAL NetSuite SuiteCloud REST API")
+    print("[Phase 11] Using REAL NetSuite SuiteCloud REST API")
 except ValueError:
     netsuite_client = MockNetSuiteClient()
-    print("[Phase 11] ⚠️  Using MOCK NetSuite client (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)")
+    print("[Phase 11] Using MOCK NetSuite client (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)")
 
 
 # =============================================================================
