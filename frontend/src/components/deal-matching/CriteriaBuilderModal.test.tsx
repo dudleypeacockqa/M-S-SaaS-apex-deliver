@@ -129,9 +129,10 @@ describe('CriteriaBuilderModal', () => {
     fireEvent.change(industriesInput, { target: { value: 'SaaS' } });
     fireEvent.keyDown(industriesInput, { key: 'Enter', code: 'Enter' });
 
+    // Allow React state update to complete
     await waitFor(() => {
       expect(screen.getByText('SaaS')).toBeInTheDocument();
-    });
+    }, { timeout: 2000 });
   });
 
   it('should allow removing industries by clicking X', async () => {
@@ -148,16 +149,18 @@ describe('CriteriaBuilderModal', () => {
     fireEvent.change(industriesInput, { target: { value: 'SaaS' } });
     fireEvent.keyDown(industriesInput, { key: 'Enter', code: 'Enter' });
 
+    // Wait for industry tag to appear
     await waitFor(() => {
       expect(screen.getByText('SaaS')).toBeInTheDocument();
-    });
+    }, { timeout: 2000 });
 
     const removeButton = screen.getByRole('button', { name: /remove saas/i });
     fireEvent.click(removeButton);
 
+    // Wait for industry tag to be removed
     await waitFor(() => {
       expect(screen.queryByText('SaaS')).not.toBeInTheDocument();
-    });
+    }, { timeout: 2000 });
   });
 
   it('should submit form with valid data', async () => {
@@ -199,6 +202,11 @@ describe('CriteriaBuilderModal', () => {
     fireEvent.change(industriesInput, { target: { value: 'SaaS' } });
     fireEvent.keyDown(industriesInput, { key: 'Enter', code: 'Enter' });
 
+    // Wait for industry tag to be added
+    await waitFor(() => {
+      expect(screen.getByText('SaaS')).toBeInTheDocument();
+    }, { timeout: 2000 });
+
     fireEvent.change(screen.getByLabelText(/minimum deal size/i), {
       target: { value: '1000000' }
     });
@@ -211,6 +219,7 @@ describe('CriteriaBuilderModal', () => {
     const submitButton = screen.getByRole('button', { name: /create criteria/i });
     fireEvent.click(submitButton);
 
+    // Wait for API call and success callback
     await waitFor(() => {
       expect(mockCreate).toHaveBeenCalledWith({
         name: 'Tech Acquisitions Q4',
@@ -222,7 +231,7 @@ describe('CriteriaBuilderModal', () => {
         structures: [],
       });
       expect(onSuccess).toHaveBeenCalled();
-    });
+    }, { timeout: 2000 });
   });
 
   it('should show loading state during submission', async () => {

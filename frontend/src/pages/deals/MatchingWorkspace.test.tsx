@@ -173,11 +173,11 @@ describe('MatchingWorkspace', () => {
 
       await waitFor(() => {
         expect(screen.getByText('SaaS Startup Acquisition')).toBeInTheDocument();
+        const scoreBadges = screen.getAllByTestId('score-badge');
+        expect(scoreBadges).toHaveLength(2);
+        expect(scoreBadges[0]).toHaveTextContent('86%');
+        expect(scoreBadges[1]).toHaveTextContent('72%');
       });
-
-      const scoreBadges = screen.getAllByTestId('score-badge');
-      expect(scoreBadges[0]).toHaveTextContent('86%');
-      expect(scoreBadges[1]).toHaveTextContent('72%');
     });
 
     it('should show confidence badges (high/medium/low)', async () => {
