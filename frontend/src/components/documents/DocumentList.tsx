@@ -20,8 +20,6 @@ interface DocumentListProps {
 
 type SortKey = 'name' | 'date'
 
-type DocumentRow = Document
-
 function formatDate(value: string): string {
   const date = new Date(value)
   return new Intl.DateTimeFormat(undefined, {

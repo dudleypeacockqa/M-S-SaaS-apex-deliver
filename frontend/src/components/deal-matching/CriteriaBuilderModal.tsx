@@ -115,8 +115,8 @@ export const CriteriaBuilderModal: React.FC<CriteriaBuilderModalProps> = ({
       name: formData.name,
       deal_type: formData.deal_type,
       industries: formData.industries.map((industry) => industry.toLowerCase()),
-      min_deal_size: parseFloat(formData.min_deal_size),
-      max_deal_size: parseFloat(formData.max_deal_size),
+      min_deal_size: formData.min_deal_size ? parseFloat(formData.min_deal_size) : 0,
+      max_deal_size: formData.max_deal_size ? parseFloat(formData.max_deal_size) : 0,
       geographies: formData.geographies,
       structures: formData.structures,
     });
@@ -218,7 +218,7 @@ export const CriteriaBuilderModal: React.FC<CriteriaBuilderModalProps> = ({
                   name="deal_type"
                   value="buy_side"
                   checked={formData.deal_type === 'buy_side'}
-                  onChange={(e) => setFormData({ ...formData, deal_type: 'buy_side' })}
+                  onChange={() => setFormData({ ...formData, deal_type: 'buy_side' })}
                   className="mr-2"
                 />
                 <span className="text-sm text-gray-700">Buy-Side (Looking to acquire)</span>
@@ -229,7 +229,7 @@ export const CriteriaBuilderModal: React.FC<CriteriaBuilderModalProps> = ({
                   name="deal_type"
                   value="sell_side"
                   checked={formData.deal_type === 'sell_side'}
-                  onChange={(e) => setFormData({ ...formData, deal_type: 'sell_side' })}
+                  onChange={() => setFormData({ ...formData, deal_type: 'sell_side' })}
                   className="mr-2"
                 />
                 <span className="text-sm text-gray-700">Sell-Side (Looking to sell)</span>

@@ -13,6 +13,10 @@ interface VideoUploadModalProps {
   episodeId: string;
   episodeName: string;
   onSuccess?: (response: UploadResponse) => void;
+  /**
+   * Optional override used in tests to avoid hitting real upload endpoint.
+   */
+  onUpload?: (file: File, episodeId: string) => Promise<UploadResponse>;
 }
 
 interface UploadResponse {
@@ -32,6 +36,7 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
   episodeId,
   episodeName,
   onSuccess,
+  onUpload,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const queryClient = useQueryClient();
@@ -50,6 +55,7 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
 
   const [validationError, setValidationError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState<boolean>(false);
+  const [manualUploading, setManualUploading] = useState(false);
 
   // Combined error state
   const error = validationError || uploadError;
@@ -60,6 +66,7 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
       setSelectedFile(null);
       setValidationError(null);
       setUploadSuccess(false);
+      setManualUploading(false);
       reset();
     }
   }, [open, reset]);
@@ -121,6 +128,24 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
   const handleUpload = () => {
     if (!selectedFile) return;
 
+    if (onUpload) {
+      setValidationError(null);
+      setUploadSuccess(false);
+      setManualUploading(true);
+
+      onUpload(selectedFile, episodeId)
+        .then((response) => {
+          setManualUploading(false);
+          handleUploadSuccess(response);
+        })
+        .catch((err) => {
+          setManualUploading(false);
+          handleUploadError(err instanceof Error ? err : new Error('Upload failed'));
+        });
+
+      return;
+    }
+
     // Get auth token from cookies or headers
     const headers: Record<string, string> = {
       // Note: credentials: 'include' will send cookies automatically
@@ -140,6 +165,8 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
   const handleCancel = () => {
     if (isUploading) {
       cancel();
+    } else if (manualUploading) {
+      setManualUploading(false);
     }
     onClose();
   };
@@ -222,20 +249,20 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
           </div>
         </div>
 
-        {isUploading && (
+        {(isUploading || manualUploading) && (
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700">Uploading...</span>
-              <span className="text-sm text-gray-600">{progress}%</span>
+              <span className="text-sm text-gray-600">{isUploading ? progress : 0}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
               <div
                 className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
                 role="progressbar"
-                aria-valuenow={progress}
+                aria-valuenow={isUploading ? progress : 0}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                style={{ width: `${progress}%` }}
+                style={{ width: `${isUploading ? progress : 25}%` }}
               />
             </div>
             {/* Real-time upload statistics (Phase 2.2) */}
@@ -265,15 +292,15 @@ const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             disabled={isUploading}
           >
-            {isUploading ? 'Cancel Upload' : 'Cancel'}
+            {isUploading || manualUploading ? 'Cancel Upload' : 'Cancel'}
           </button>
           <button
             type="button"
             onClick={handleUpload}
-            disabled={!selectedFile || isUploading}
+            disabled={!selectedFile || isUploading || manualUploading}
             className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {isUploading ? 'Uploading...' : 'Upload'}
+            {isUploading || manualUploading ? 'Uploading...' : 'Upload'}
           </button>
         </div>
       </div>

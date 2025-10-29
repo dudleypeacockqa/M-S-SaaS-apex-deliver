@@ -20,6 +20,7 @@ import {
   getQuotaSummary,
   listEpisodes,
   publishEpisodeToYouTube,
+  transcribeEpisode,
   createEpisode,
   updateEpisode,
   deleteEpisode,
@@ -256,6 +257,25 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
     critical: 'mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-900',
   };
 
+  // Format billing cycle dates (DEV-016 Phase 2.2 - Sprint 4A)
+  const formatBillingCycle = () => {
+    if (!quota.periodStart || !quota.periodEnd) return null;
+
+    const start = new Date(quota.periodStart);
+    const end = new Date(quota.periodEnd);
+
+    const formatDate = (date: Date) => {
+      const day = date.getDate();
+      const month = date.toLocaleDateString('en-US', { month: 'short' });
+      const year = date.getFullYear();
+      return `${day} ${month} ${year}`;
+    };
+
+    return `${formatDate(start)} – ${formatDate(end)} · Resets at 11:59 PM`;
+  };
+
+  const billingCycleDisplay = formatBillingCycle();
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
       <div className="flex items-center justify-between">
@@ -275,6 +295,16 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
               ? `Created ${quota.used} episodes this month`
               : `${quota.remaining} remaining this month`}
           </p>
+          {quota.periodLabel && (
+            <p className="mt-1 text-xs text-gray-500">
+              {quota.periodLabel} Cycle
+            </p>
+          )}
+          {billingCycleDisplay && (
+            <p className="mt-0.5 text-xs text-gray-500">
+              {billingCycleDisplay}
+            </p>
+          )}
           {warningLevel && (
             <div
               role={warningRole}
@@ -388,6 +418,10 @@ function EpisodeListItem({
 
   const [youtubeSuccessMessage, setYoutubeSuccessMessage] = React.useState<string | null>(null);
   const [youtubeErrorMessage, setYoutubeErrorMessage] = React.useState<string | null>(null);
+  const [transcriptionSuccessMessage, setTranscriptionSuccessMessage] = React.useState<string | null>(null);
+  const [transcriptionErrorMessage, setTranscriptionErrorMessage] = React.useState<string | null>(null);
+
+  const queryClient = useQueryClient();
 
   const youtubeMutation = useMutation({
     mutationFn: () => publishEpisodeToYouTube(episode.id),
@@ -401,10 +435,30 @@ function EpisodeListItem({
     },
   });
 
+  const transcriptionMutation = useMutation({
+    mutationFn: () => transcribeEpisode(episode.id),
+    onSuccess: () => {
+      setTranscriptionErrorMessage(null);
+      setTranscriptionSuccessMessage('Transcript generated successfully');
+      // Refresh episodes list to show updated transcript
+      queryClient.invalidateQueries({ queryKey: ['episodes'] });
+    },
+    onError: () => {
+      setTranscriptionSuccessMessage(null);
+      setTranscriptionErrorMessage('Failed to transcribe audio. Please try again.');
+    },
+  });
+
   const handlePublish = () => {
     setYoutubeSuccessMessage(null);
     setYoutubeErrorMessage(null);
     youtubeMutation.mutate();
+  };
+
+  const handleTranscribe = () => {
+    setTranscriptionSuccessMessage(null);
+    setTranscriptionErrorMessage(null);
+    transcriptionMutation.mutate();
   };
 
   return (
@@ -413,6 +467,33 @@ function EpisodeListItem({
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3">
+              {episode.thumbnail_url ? (
+                <img
+                  src={episode.thumbnail_url}
+                  alt={`Thumbnail for ${episode.title}`}
+                  className="h-16 w-16 rounded object-cover border border-gray-200"
+                  data-testid="episode-thumbnail"
+                />
+              ) : (
+                <div
+                  className="h-16 w-16 rounded bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center"
+                  data-testid="episode-thumbnail-placeholder"
+                >
+                  <svg
+                    className="h-6 w-6 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+              )}
               <p className="text-sm font-medium text-indigo-600 truncate">
                 {episode.title}
               </p>
@@ -459,6 +540,56 @@ function EpisodeListItem({
             >
               Delete
             </button>
+            {/* Transcription functionality (DEV-016 Phase 2.2 - Sprint 4A) */}
+            <div className="flex flex-col items-end gap-1">
+              {episode.transcript === null ? (
+                <button
+                  type="button"
+                  onClick={handleTranscribe}
+                  disabled={transcriptionMutation.isPending}
+                  className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {transcriptionMutation.isPending ? 'Transcribing…' : 'Transcribe Audio'}
+                </button>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">Transcript ready</span>
+                    {episode.transcript_language && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                        {episode.transcript_language.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <a
+                      href={`data:text/plain;charset=utf-8,${encodeURIComponent(episode.transcript)}`}
+                      download={`${episode.title.replace(/\s+/g, '_')}_transcript.txt`}
+                      className="text-xs text-indigo-600 hover:text-indigo-800 underline"
+                    >
+                      Download Transcript (TXT)
+                    </a>
+                    <a
+                      href={`data:text/plain;charset=utf-8,${encodeURIComponent(episode.transcript)}`}
+                      download={`${episode.title.replace(/\s+/g, '_')}_transcript.srt`}
+                      className="text-xs text-indigo-600 hover:text-indigo-800 underline"
+                    >
+                      Download Transcript (SRT)
+                    </a>
+                  </div>
+                </>
+              )}
+              {transcriptionSuccessMessage && (
+                <p className="text-xs text-emerald-600" role="status">
+                  {transcriptionSuccessMessage}
+                </p>
+              )}
+              {transcriptionErrorMessage && (
+                <p className="text-xs text-red-600" role="alert">
+                  {transcriptionErrorMessage}
+                </p>
+              )}
+            </div>
             {episode.video_file_url && (
               <div className="flex flex-col items-end gap-1">
                 {youtubeAccess.isLoading ? (

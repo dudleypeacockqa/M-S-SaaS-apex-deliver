@@ -160,7 +160,7 @@ export const IntroductionRequestModal: React.FC<IntroductionRequestModalProps> =
                   name="disclosure_level"
                   value="full"
                   checked={formData.disclosure_level === 'full'}
-                  onChange={(e) => setFormData({ ...formData, disclosure_level: 'full' })}
+                  onChange={() => setFormData({ ...formData, disclosure_level: 'full' })}
                   className="mr-3 mt-1"
                 />
                 <div>

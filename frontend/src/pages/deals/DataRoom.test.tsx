@@ -6,6 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DataRoom } from './DataRoom';
 import * as documentsAPI from '../../services/api/documents';
 
@@ -36,10 +37,19 @@ vi.mock('react-router-dom', async () => {
 });
 
 const renderDataRoom = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+
   return render(
-    <BrowserRouter>
-      <DataRoom />
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <DataRoom />
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 };
 
@@ -71,19 +81,23 @@ describe('DataRoom - Folder Management', () => {
         id: 'folder-1',
         name: 'Financial Statements',
         deal_id: 'test-deal-123',
-        parent_folder_id: null,
+        parent_id: null,
         organization_id: 'org-1',
+        created_by: 'user-1',
         created_at: new Date().toISOString(),
         updated_at: null,
+        document_count: 0,
       },
       {
         id: 'folder-2',
         name: 'Legal Documents',
         deal_id: 'test-deal-123',
-        parent_folder_id: null,
+        parent_id: null,
         organization_id: 'org-1',
+        created_by: 'user-1',
         created_at: new Date().toISOString(),
         updated_at: null,
+        document_count: 0,
       },
     ];
 
@@ -111,10 +125,12 @@ describe('DataRoom - Folder Management', () => {
       id: 'folder-new',
       name: 'Due Diligence',
       deal_id: 'test-deal-123',
-      parent_folder_id: null,
+      parent_id: null,
       organization_id: 'org-1',
+      created_by: 'user-1',
       created_at: new Date().toISOString(),
       updated_at: null,
+      document_count: 0,
     };
 
     (documentsAPI.createFolder as any).mockResolvedValue(mockNewFolder);
@@ -127,9 +143,15 @@ describe('DataRoom - Folder Management', () => {
       fireEvent.click(createButton);
     });
 
+    const input = await screen.findByPlaceholderText(/folder name/i)
+    fireEvent.change(input, { target: { value: 'Due Diligence' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+
     await waitFor(() => {
-      const input = screen.getByPlaceholderText(/folder name/i)
-      expect(input).toBeInTheDocument()
+      expect(documentsAPI.createFolder).toHaveBeenCalledWith('test-deal-123', {
+        name: 'Due Diligence',
+        parent_id: null,
+      })
     })
   });
 
@@ -139,10 +161,12 @@ describe('DataRoom - Folder Management', () => {
         id: 'folder-1',
         name: 'Financials',
         deal_id: 'test-deal-123',
-        parent_folder_id: null,
+        parent_id: null,
         organization_id: 'org-1',
+        created_by: 'user-1',
         created_at: new Date().toISOString(),
         updated_at: null,
+        document_count: 0,
       },
     ];
 
@@ -173,13 +197,11 @@ describe('DataRoom - Folder Management', () => {
 
     renderDataRoom();
 
-    await waitFor(() => {
-      const folder = screen.getByText('Financials');
-      fireEvent.click(folder);
-    });
+    const folderButton = await screen.findByRole('button', { name: /select financials/i })
+    fireEvent.click(folderButton)
 
     await waitFor(() => {
-      expect(documentsAPI.listDocuments).toHaveBeenCalledWith(
+      expect(documentsAPI.listDocuments).toHaveBeenLastCalledWith(
         'test-deal-123',
         expect.objectContaining({ folder_id: 'folder-1' })
       )
@@ -191,7 +213,7 @@ describe('DataRoom - Folder Management', () => {
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /all documents/i })).toBeInTheDocument()
-    });
+    })
   });
 });
 
@@ -362,4 +384,42 @@ describe('DataRoom - Document Operations', () => {
 
     expect(screen.queryByText(/documents selected/i)).not.toBeInTheDocument();
   });
+
+  it('opens permission modal for single selected document', async () => {
+    const mockDocuments = {
+      items: [
+        {
+          id: 'doc-1',
+          name: 'Confidential.pdf',
+          file_size: 1024,
+          file_type: 'application/pdf',
+          deal_id: 'test-deal-123',
+          folder_id: null,
+          organization_id: 'org-1',
+          uploaded_by: 'user-1',
+          version: 1,
+          created_at: new Date().toISOString(),
+          updated_at: null,
+        },
+      ],
+      total: 1,
+      page: 1,
+      per_page: 20,
+      pages: 1,
+    }
+
+    ;(documentsAPI.listDocuments as any).mockResolvedValue(mockDocuments)
+
+    renderDataRoom()
+
+    const checkbox = await screen.findByRole('checkbox', { name: /select confidential.pdf/i })
+    fireEvent.click(checkbox)
+
+    const manageButton = await screen.findByRole('button', { name: /manage access/i })
+    fireEvent.click(manageButton)
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+  })
 });

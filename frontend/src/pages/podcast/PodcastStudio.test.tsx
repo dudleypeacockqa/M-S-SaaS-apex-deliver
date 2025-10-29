@@ -471,6 +471,55 @@ describe('PodcastStudio', () => {
     });
   });
 
+  describe('Video thumbnails', () => {
+    beforeEach(() => {
+      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
+        feature: 'podcast_audio',
+        tier: 'professional',
+        tierLabel: 'Professional',
+        hasAccess: true,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
+      });
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue(defaultQuota);
+    });
+
+    it('shows thumbnail when thumbnail_url present', async () => {
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        buildEpisode({
+          id: 'ep-thumb',
+          title: 'Video Episode',
+          thumbnail_url: 'https://cdn.example.com/thumb.jpg',
+        }),
+      ]);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const thumbnail = await screen.findByTestId('episode-thumbnail');
+      expect(thumbnail).toHaveAttribute('src', 'https://cdn.example.com/thumb.jpg');
+      expect(thumbnail).toHaveAccessibleName(/thumbnail for video episode/i);
+      expect(screen.queryByTestId('episode-thumbnail-placeholder')).not.toBeInTheDocument();
+    });
+
+    it('renders placeholder when thumbnail missing', async () => {
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        buildEpisode({
+          id: 'ep-placeholder',
+          title: 'No Thumbnail Episode',
+          thumbnail_url: null,
+        }),
+      ]);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      expect(await screen.findByTestId('episode-thumbnail-placeholder')).toBeInTheDocument();
+      expect(screen.queryByTestId('episode-thumbnail')).not.toBeInTheDocument();
+    });
+  });
+
   describe('YouTube Integration', () => {
     const audioAccess = {
       feature: 'podcast_audio',

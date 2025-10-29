@@ -44,7 +44,7 @@ function buildTree(folders: Folder[]): FolderNode[] {
     }
   })
 
-  const sortNodes = (list: FolderNode[]) =>
+  const sortNodes = (list: FolderNode[]): FolderNode[] =>
     list
       .slice()
       .sort((a, b) => a.name.localeCompare(b.name))

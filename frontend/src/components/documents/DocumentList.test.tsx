@@ -319,6 +319,37 @@ describe('DocumentList', () => {
     });
   });
 
+  it('should render manage access button when provided', async () => {
+    const { listDocuments } = await import('../../services/api/documents');
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Secure.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 1,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
+
+    const onManagePermissions = vi.fn();
+
+    renderWithProviders(
+      <DocumentList
+        dealId="deal-1"
+        folderId={null}
+        onSelectionChange={vi.fn()}
+        onManagePermissions={onManagePermissions}
+      />
+    );
+
+    const manageButton = await screen.findByRole('button', { name: /manage permissions for secure.pdf/i });
+    fireEvent.click(manageButton);
+
+    expect(onManagePermissions).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'doc-1' })
+    );
+  });
+
   it('should confirm before deleting document', async () => {
     const { listDocuments, deleteDocument } = await import('../../services/api/documents');
     vi.mocked(listDocuments).mockResolvedValue({
