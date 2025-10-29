@@ -118,8 +118,6 @@ export interface DocumentPermission {
   created_at: string
 }
 
-type LegacyPermissionResponse = DocumentPermissionResponse
-
 const normalisePermission = (permission: DocumentPermissionResponse): DocumentPermission => ({
   id: permission.id,
   document_id: permission.document_id,
@@ -137,17 +135,6 @@ export interface DocumentPermissionResponse {
   user_email?: string
   permission_level: PermissionLevel
   created_at: string
-}
-
-function mapPermissionResponse(permission: DocumentPermissionResponse): DocumentPermission {
-  return {
-    id: permission.id,
-    document_id: permission.document_id,
-    user_id: permission.user_id,
-    user_email: permission.user_email ?? '',
-    role: permission.permission_level,
-    created_at: permission.created_at,
-  }
 }
 
 export async function createFolder(

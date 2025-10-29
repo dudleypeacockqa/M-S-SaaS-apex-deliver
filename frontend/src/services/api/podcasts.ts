@@ -47,7 +47,13 @@ export interface PodcastEpisode {
   created_by: string;
   organization_id: string;
   created_at: string;
+  updated_at: string | null;
+  published_at: string | null;
   show_notes: string | null;
+  transcript: string | null;
+  transcript_language: string | null;
+  duration_seconds: number | null;
+  youtube_video_id: string | null;
 }
 
 type ApiQuotaSummary = {
@@ -94,6 +100,20 @@ interface ApiYouTubeUploadResponse {
 
 export interface YouTubeUploadResponse {
   videoId: string;
+}
+
+interface ApiTranscriptionResponse {
+  episode_id: string;
+  transcript: string;
+  transcript_language?: string | null;
+  word_count?: number | null;
+}
+
+export interface TranscriptionResponse {
+  episodeId: string;
+  transcript: string;
+  transcriptLanguage: string;
+  wordCount: number;
 }
 
 /**
@@ -237,5 +257,23 @@ export async function publishEpisodeToYouTube(episodeId: string): Promise<YouTub
 
   return {
     videoId: response.data.video_id,
+  };
+}
+
+export async function transcribeEpisode(episodeId: string, language?: string): Promise<TranscriptionResponse> {
+  const body = language ? { language } : undefined;
+  const { data } = await axios.post<ApiTranscriptionResponse>(
+    `${API_BASE_URL}/api/podcasts/episodes/${episodeId}/transcribe`,
+    body,
+    {
+      withCredentials: true,
+    }
+  );
+
+  return {
+    episodeId: data.episode_id,
+    transcript: data.transcript,
+    transcriptLanguage: data.transcript_language ?? 'en',
+    wordCount: data.word_count ?? (data.transcript ? data.transcript.split(/\s+/).filter(Boolean).length : 0),
   };
 }

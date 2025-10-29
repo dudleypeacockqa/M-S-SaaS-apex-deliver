@@ -85,6 +85,7 @@ async def check_episode_quota(
 
     used = 0
     if db is not None:
+        await reset_monthly_usage(organization_id, db)
         used = await get_monthly_usage(organization_id, db)
 
     if used >= limit:
@@ -115,6 +116,7 @@ async def get_remaining_quota(
 
     used = 0
     if db is not None:
+        await reset_monthly_usage(organization_id, db)
         used = await get_monthly_usage(organization_id, db)
     return max(0, limit - used)
 
@@ -126,6 +128,8 @@ async def increment_episode_count(organization_id: str, db: SessionLikeWithMock)
         raise ValueError("Database session is required to increment usage")
 
     current_month = _current_month_start()
+    if current_month.tzinfo is not None:
+        current_month = current_month.replace(tzinfo=None)
     stmt = select(PodcastUsage).where(
         and_(
             PodcastUsage.organization_id == organization_id,
@@ -197,6 +201,53 @@ def _query_usage_sync(organization_id: str, db: Session) -> int:
     return count or 0
 
 
+async def reset_monthly_usage(
+    organization_id: str,
+    db: SessionLikeWithMock,
+) -> PodcastUsage:
+    """Ensure a usage record exists for the current month, resetting counts when a new cycle begins."""
+
+    if db is None:
+        raise ValueError("Database session is required to reset monthly usage")
+
+    current_month = _current_month_start()
+    stmt = select(PodcastUsage).where(
+        and_(
+            PodcastUsage.organization_id == organization_id,
+            PodcastUsage.month == current_month,
+        )
+    )
+
+    if _is_async_session(db):
+        result = await db.execute(stmt)
+    else:
+        result = db.execute(stmt)  # type: ignore[arg-type]
+
+    usage = result.scalar_one_or_none()
+    usage = await _maybe_await(usage)
+
+    if usage is not None:
+        return usage
+
+    usage = PodcastUsage(
+        organization_id=organization_id,
+        month=current_month,
+        episode_count=0,
+    )
+
+    await _maybe_await(db.add(usage))
+    await _maybe_await(db.commit())
+    await _maybe_await(db.refresh(usage))
+
+    logger.info(
+        "Initialized podcast quota record for %s/%s",
+        organization_id,
+        current_month.strftime("%Y-%m"),
+    )
+
+    return usage
+
+
 async def get_quota_summary(
     organization_id: str,
     tier: SubscriptionTier,
@@ -208,6 +259,7 @@ async def get_quota_summary(
         raise ValueError("Database session is required to compute quota summary")
 
     limit = TIER_QUOTAS.get(tier, 0)
+    await reset_monthly_usage(organization_id, db)
     used = await get_monthly_usage(organization_id, db)
     remaining = await get_remaining_quota(organization_id, db=db, tier=tier)
 
@@ -256,11 +308,9 @@ async def get_quota_summary(
 
     now = datetime.now(timezone.utc)
     period = now.strftime("%Y-%m")
-    current_year = now.year
-    current_month = now.month
-    period_start_dt = datetime(current_year, current_month, 1, tzinfo=timezone.utc)
-    last_day = calendar.monthrange(current_year, current_month)[1]
-    period_end_dt = datetime(current_year, current_month, last_day, 23, 59, 59, tzinfo=timezone.utc)
+    period_start_dt = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    last_day = calendar.monthrange(period_start_dt.year, period_start_dt.month)[1]
+    period_end_dt = period_start_dt.replace(day=last_day, hour=23, minute=59, second=59)
     period_label = period_start_dt.strftime("%B %Y")
 
     return PodcastQuotaSummary(
@@ -289,6 +339,7 @@ __all__ = [
     "get_remaining_quota",
     "increment_episode_count",
     "get_monthly_usage",
+    "reset_monthly_usage",
     "get_quota_summary",
     "TIER_QUOTAS",
 ]

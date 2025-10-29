@@ -16,11 +16,11 @@ import { FeatureGate } from '../../components/podcast/FeatureGate';
 import { CreateEpisodeModal } from '../../components/podcast/CreateEpisodeModal';
 import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
 import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal';
-import AudioUploadModal from '../../components/podcast/AudioUploadModal';
 import {
   getQuotaSummary,
   listEpisodes,
   publishEpisodeToYouTube,
+  transcribeEpisode,
   createEpisode,
   updateEpisode,
   deleteEpisode,
@@ -46,7 +46,6 @@ function PodcastStudioContent() {
   const [isCreateModalOpen, setCreateModalOpen] = React.useState(false);
   const [editingEpisode, setEditingEpisode] = React.useState<PodcastEpisode | null>(null);
   const [deleteTarget, setDeleteTarget] = React.useState<PodcastEpisode | null>(null);
-  const [uploadTarget, setUploadTarget] = React.useState<PodcastEpisode | null>(null);
 
   const {
     data: quota,
@@ -176,7 +175,6 @@ function PodcastStudioContent() {
         youtubeAccess={youtubeAccess}
         onEdit={(episode) => setEditingEpisode(episode)}
         onDelete={(episode) => setDeleteTarget(episode)}
-        onUploadAudio={(episode) => setUploadTarget(episode)}
       />
 
       <CreateEpisodeModal
@@ -193,6 +191,12 @@ function PodcastStudioContent() {
               video_file_url: values.videoFileUrl || null,
               show_notes: values.showNotes || null,
               status: 'draft',
+              updated_at: null,
+              published_at: null,
+              transcript: null,
+              transcript_language: null,
+              duration_seconds: null,
+              youtube_video_id: null,
             });
           } catch (error) {
             console.error('Failed to create podcast episode', error);
@@ -220,19 +224,6 @@ function PodcastStudioContent() {
         onConfirm={() => deleteTarget && deleteEpisodeMutation.mutate(deleteTarget.id)}
         isSubmitting={deleteEpisodeMutation.isPending}
       />
-
-      {uploadTarget && (
-        <AudioUploadModal
-          open={Boolean(uploadTarget)}
-          onClose={() => setUploadTarget(null)}
-          episodeId={uploadTarget.id}
-          episodeName={uploadTarget.title}
-          onSuccess={() => {
-            queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
-            setUploadTarget(null);
-          }}
-        />
-      )}
     </div>
   );
 }
@@ -272,36 +263,24 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
     critical: 'mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-900',
   };
 
-  const cycleLabel = quota.periodLabel ?? quota.period ?? 'Current cycle';
-  const periodDetails = React.useMemo(() => {
-    if (!quota.periodStart || !quota.periodEnd) {
-      return null;
-    }
+  // Format billing cycle dates (DEV-016 Phase 2.2 - Sprint 4A)
+  const formatBillingCycle = () => {
+    if (!quota.periodStart || !quota.periodEnd) return null;
 
-    const startDate = new Date(quota.periodStart);
-    const endDate = new Date(quota.periodEnd);
+    const start = new Date(quota.periodStart);
+    const end = new Date(quota.periodEnd);
 
-    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-      return null;
-    }
-
-    const dateFormatter = new Intl.DateTimeFormat(undefined, {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-
-    const timeFormatter = new Intl.DateTimeFormat(undefined, {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
-
-    return {
-      range: `${dateFormatter.format(startDate)} – ${dateFormatter.format(endDate)}`,
-      resetLabel: timeFormatter.format(endDate),
+    const formatDate = (date: Date) => {
+      const day = date.getDate();
+      const month = date.toLocaleDateString('en-US', { month: 'short' });
+      const year = date.getFullYear();
+      return `${day} ${month} ${year}`;
     };
-  }, [quota.periodStart, quota.periodEnd]);
+
+    return `${formatDate(start)} – ${formatDate(end)} · Resets at 11:59 PM`;
+  };
+
+  const billingCycleDisplay = formatBillingCycle();
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
@@ -322,12 +301,14 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
               ? `Created ${quota.used} episodes this month`
               : `${quota.remaining} remaining this month`}
           </p>
-          <p className="mt-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
-            {cycleLabel} cycle
-          </p>
-          {periodDetails && (
+          {quota.periodLabel && (
             <p className="mt-1 text-xs text-gray-500">
-              {periodDetails.range} · resets at {periodDetails.resetLabel.toLowerCase()}
+              {quota.periodLabel} Cycle
+            </p>
+          )}
+          {billingCycleDisplay && (
+            <p className="mt-0.5 text-xs text-gray-500">
+              {billingCycleDisplay}
             </p>
           )}
           {warningLevel && (
@@ -348,13 +329,7 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
             </div>
           )}
           {quota.upgradeRequired && quota.upgradeMessage && (
-            <div
-              role="alert"
-              aria-label="Upgrade required"
-              className="mt-2 rounded-md border border-indigo-200 bg-indigo-50 px-4 py-3 text-indigo-900"
-            >
-              <p className="text-sm font-medium">{quota.upgradeMessage}</p>
-            </div>
+            <p className="mt-2 text-sm text-indigo-700" role="alert">{quota.upgradeMessage}</p>
           )}
         </div>
         <div className="flex flex-col items-end">
@@ -383,13 +358,11 @@ function EpisodesList({
   youtubeAccess,
   onEdit,
   onDelete,
-  onUploadAudio,
 }: {
   episodes: PodcastEpisode[];
   youtubeAccess: FeatureAccessState;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
-  onUploadAudio: (episode: PodcastEpisode) => void;
 }) {
   if (episodes.length === 0) {
     return (
@@ -425,7 +398,6 @@ function EpisodesList({
             youtubeAccess={youtubeAccess}
             onEdit={onEdit}
             onDelete={onDelete}
-            onUploadAudio={onUploadAudio}
           />
         ))}
       </ul>
@@ -438,13 +410,11 @@ function EpisodeListItem({
   youtubeAccess,
   onEdit,
   onDelete,
-  onUploadAudio,
 }: {
   episode: PodcastEpisode;
   youtubeAccess: FeatureAccessState;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
-  onUploadAudio: (episode: PodcastEpisode) => void;
 }) {
   const statusColors = {
     draft: 'bg-yellow-100 text-yellow-800',
@@ -454,6 +424,10 @@ function EpisodeListItem({
 
   const [youtubeSuccessMessage, setYoutubeSuccessMessage] = React.useState<string | null>(null);
   const [youtubeErrorMessage, setYoutubeErrorMessage] = React.useState<string | null>(null);
+  const [transcribeSuccessMessage, setTranscribeSuccessMessage] = React.useState<string | null>(null);
+  const [transcribeErrorMessage, setTranscribeErrorMessage] = React.useState<string | null>(null);
+
+  const queryClient = useQueryClient();
 
   const youtubeMutation = useMutation({
     mutationFn: () => publishEpisodeToYouTube(episode.id),
@@ -467,10 +441,29 @@ function EpisodeListItem({
     },
   });
 
+  const transcribeMutation = useMutation({
+    mutationFn: () => transcribeEpisode(episode.id),
+    onSuccess: () => {
+      setTranscribeErrorMessage(null);
+      setTranscribeSuccessMessage('Transcript generated successfully..');
+      queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
+    },
+    onError: () => {
+      setTranscribeSuccessMessage(null);
+      setTranscribeErrorMessage('Failed to transcribe audio. Please try again.');
+    },
+  });
+
   const handlePublish = () => {
     setYoutubeSuccessMessage(null);
     setYoutubeErrorMessage(null);
     youtubeMutation.mutate();
+  };
+
+  const handleTranscribe = () => {
+    setTranscribeSuccessMessage(null);
+    setTranscribeErrorMessage(null);
+    transcribeMutation.mutate();
   };
 
   return (
@@ -479,6 +472,34 @@ function EpisodeListItem({
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3">
+              {/* Show thumbnail if available, otherwise show placeholder */}
+              {episode.thumbnail_url ? (
+                <img
+                  src={episode.thumbnail_url}
+                  alt={`Thumbnail for ${episode.title}`}
+                  className="h-16 w-16 rounded object-cover"
+                  data-testid="episode-thumbnail"
+                />
+              ) : (
+                <div
+                  className="h-16 w-16 rounded bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center"
+                  data-testid="episode-thumbnail-placeholder"
+                >
+                  <svg
+                    className="h-6 w-6 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+              )}
               <p className="text-sm font-medium text-indigo-600 truncate">
                 {episode.title}
               </p>
@@ -520,32 +541,76 @@ function EpisodeListItem({
             </button>
             <button
               type="button"
-              onClick={() => onUploadAudio(episode)}
-              className="inline-flex items-center px-3 py-2 border border-indigo-200 shadow-sm text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              title="Upload audio file for this episode"
-            >
-              <svg
-                className="mr-1.5 h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                />
-              </svg>
-              Upload Audio
-            </button>
-            <button
-              type="button"
               onClick={() => onDelete(episode)}
               className="inline-flex items-center px-3 py-2 border border-red-200 shadow-sm text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
               Delete
             </button>
+            {/* Transcription functionality (DEV-016 Phase 2.2 - Sprint 4A) */}
+            <div className="flex flex-col items-end gap-1">
+              {episode.transcript === null ? (
+                <button
+                  type="button"
+                  onClick={handleTranscribe}
+                  disabled={transcribeMutation.isPending}
+                  className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {transcribeMutation.isPending ? 'Transcribing…' : 'Transcribe audio'}
+                </button>
+              ) : (
+                <>
+                  <div className="flex flex-col gap-1 max-w-md">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">Transcript ready</span>
+                      {episode.transcript_language && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                          {episode.transcript_language.toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-700 line-clamp-2">
+                      {episode.transcript}
+                    </p>
+                    <div className="flex gap-2">
+                      <a
+                        href={`/api/podcasts/episodes/${episode.id}/transcript`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-indigo-600 hover:text-indigo-800 underline"
+                      >
+                        Download transcript (TXT)
+                      </a>
+                      <a
+                        href={`/api/podcasts/episodes/${episode.id}/transcript.srt`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-indigo-600 hover:text-indigo-800 underline"
+                      >
+                        Download transcript (SRT)
+                      </a>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleTranscribe}
+                      disabled={transcribeMutation.isPending}
+                      className="text-xs text-indigo-600 hover:text-indigo-800 underline text-left"
+                    >
+                      {transcribeMutation.isPending ? 'Regenerating…' : 'Regenerate Transcript'}
+                    </button>
+                  </div>
+                </>
+              )}
+              {transcribeSuccessMessage && (
+                <p className="text-xs text-emerald-600" role="status">
+                  {transcribeSuccessMessage}
+                </p>
+              )}
+              {transcribeErrorMessage && (
+                <p className="text-xs text-red-600" role="alert">
+                  {transcribeErrorMessage}
+                </p>
+              )}
+            </div>
             {episode.video_file_url && (
               <div className="flex flex-col items-end gap-1">
                 {youtubeAccess.isLoading ? (

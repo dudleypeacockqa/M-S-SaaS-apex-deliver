@@ -27,6 +27,7 @@ vi.mock('../../services/api/podcasts', () => ({
   updateEpisode: vi.fn(),
   deleteEpisode: vi.fn(),
   publishEpisodeToYouTube: vi.fn(),
+  transcribeEpisode: vi.fn(),
 }));
 
 const defaultQuota: podcastApi.QuotaSummary = {
@@ -48,6 +49,30 @@ const defaultQuota: podcastApi.QuotaSummary = {
   upgradeCtaUrl: null,
 };
 
+const buildEpisode = (
+  overrides: Partial<podcastApi.PodcastEpisode> = {}
+): podcastApi.PodcastEpisode => ({
+  id: 'ep-1',
+  title: 'Episode Title',
+  description: 'Episode description',
+  episode_number: 1,
+  season_number: 1,
+  audio_file_url: 'https://cdn.example.com/audio.mp3',
+  video_file_url: null,
+  status: 'draft',
+  created_by: 'user-1',
+  organization_id: 'org-1',
+  created_at: '2025-10-01T10:00:00Z',
+  updated_at: '2025-10-01T10:00:00Z',
+  published_at: null,
+  show_notes: null,
+  transcript: null,
+  transcript_language: null,
+  duration_seconds: null,
+  youtube_video_id: null,
+  ...overrides,
+});
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -67,6 +92,12 @@ const createWrapper = () => {
 describe('PodcastStudio', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(podcastApi.transcribeEpisode).mockResolvedValue({
+      episodeId: 'ep-1',
+      transcript: 'Generated transcript content.',
+      transcriptLanguage: 'en',
+      wordCount: 3,
+    });
   });
 
   describe('Feature Access Gating', () => {
@@ -273,6 +304,82 @@ describe('PodcastStudio', () => {
     });
   });
 
+  describe('Transcription', () => {
+    beforeEach(() => {
+      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
+        feature: 'podcast_audio',
+        tier: 'professional',
+        tierLabel: 'Professional',
+        hasAccess: true,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
+      });
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue(defaultQuota);
+    });
+
+    it('should show transcribe button when transcript missing', async () => {
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        buildEpisode({ transcript: null }),
+      ]);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const transcribeButton = await screen.findByRole('button', { name: /transcribe audio/i });
+      expect(transcribeButton).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: /download transcript/i })).not.toBeInTheDocument();
+      expect(podcastApi.transcribeEpisode).not.toHaveBeenCalled();
+    });
+
+    it('should call API and show success message when transcription completes', async () => {
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        buildEpisode({ transcript: null }),
+      ]);
+
+      const user = userEvent.setup();
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const transcribeButton = await screen.findByRole('button', { name: /transcribe audio/i });
+      await user.click(transcribeButton);
+
+      await waitFor(() => {
+        expect(podcastApi.transcribeEpisode).toHaveBeenCalledWith('ep-1');
+      });
+
+      expect(await screen.findByText(/transcript generated successfully/i)).toBeInTheDocument();
+    });
+
+    it('should indicate when transcript is ready', async () => {
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        buildEpisode({ transcript: 'Existing transcript content.' }),
+      ]);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      expect(await screen.findByText(/transcript ready/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /regenerate transcript/i })).toBeInTheDocument();
+      expect(screen.getByText(/existing transcript content/i)).toBeInTheDocument();
+    });
+
+    it('should provide transcript download links when transcript ready', async () => {
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        buildEpisode({ transcript: 'Existing transcript content.' }),
+      ]);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const txtLink = await screen.findByRole('link', { name: /download transcript \(txt\)/i });
+      const srtLink = screen.getByRole('link', { name: /download transcript \(srt\)/i });
+
+      expect(txtLink).toHaveAttribute('href', '/api/podcasts/episodes/ep-1/transcript');
+      expect(srtLink).toHaveAttribute('href', '/api/podcasts/episodes/ep-1/transcript.srt');
+      expect(txtLink).toHaveAttribute('target', '_blank');
+      expect(srtLink).toHaveAttribute('target', '_blank');
+    });
+  });
+
   describe('Episode List', () => {
     beforeEach(() => {
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
@@ -315,34 +422,20 @@ describe('PodcastStudio', () => {
 
     it('should display list of episodes with titles', async () => {
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
-        {
+        buildEpisode({
           id: 'ep-1',
           title: 'Episode 1: Introduction',
           description: 'First episode',
-          episode_number: 1,
-          season_number: 1,
-          audio_file_url: 'https://cdn.example.com/ep1.mp3',
-          video_file_url: null,
           status: 'published',
-          created_by: 'user-1',
-          organization_id: 'org-1',
-          created_at: '2025-10-01T10:00:00Z',
-          show_notes: null,
-        },
-        {
+          published_at: '2025-10-02T10:00:00Z',
+        }),
+        buildEpisode({
           id: 'ep-2',
           title: 'Episode 2: Deep Dive',
           description: 'Second episode',
           episode_number: 2,
-          season_number: 1,
-          audio_file_url: 'https://cdn.example.com/ep2.mp3',
-          video_file_url: null,
           status: 'draft',
-          created_by: 'user-1',
-          organization_id: 'org-1',
-          created_at: '2025-10-15T10:00:00Z',
-          show_notes: null,
-        },
+        }),
       ]);
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -355,20 +448,17 @@ describe('PodcastStudio', () => {
 
     it('should show episode status badges', async () => {
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
-        {
+        buildEpisode({
           id: 'ep-1',
           title: 'Published Episode',
-          description: null,
-          episode_number: 1,
-          season_number: 1,
-          audio_file_url: 'https://cdn.example.com/ep1.mp3',
-          video_file_url: null,
           status: 'published',
-          created_by: 'user-1',
-          organization_id: 'org-1',
-          created_at: '2025-10-01T10:00:00Z',
-          show_notes: null,
-        },
+          published_at: '2025-10-05T10:00:00Z',
+        }),
+        buildEpisode({
+          id: 'ep-2',
+          title: 'Draft Episode',
+          status: 'draft',
+        }),
       ]);
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -378,6 +468,55 @@ describe('PodcastStudio', () => {
         // Should have a status badge with "published" text
         expect(badges.length).toBeGreaterThan(0);
       });
+    });
+  });
+
+  describe('Video thumbnails', () => {
+    beforeEach(() => {
+      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
+        feature: 'podcast_audio',
+        tier: 'professional',
+        tierLabel: 'Professional',
+        hasAccess: true,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
+      });
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue(defaultQuota);
+    });
+
+    it('shows thumbnail when thumbnail_url present', async () => {
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        buildEpisode({
+          id: 'ep-thumb',
+          title: 'Video Episode',
+          thumbnail_url: 'https://cdn.example.com/thumb.jpg',
+        }),
+      ]);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const thumbnail = await screen.findByTestId('episode-thumbnail');
+      expect(thumbnail).toHaveAttribute('src', 'https://cdn.example.com/thumb.jpg');
+      expect(thumbnail).toHaveAccessibleName(/thumbnail for video episode/i);
+      expect(screen.queryByTestId('episode-thumbnail-placeholder')).not.toBeInTheDocument();
+    });
+
+    it('renders placeholder when thumbnail missing', async () => {
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        buildEpisode({
+          id: 'ep-placeholder',
+          title: 'No Thumbnail Episode',
+          thumbnail_url: null,
+        }),
+      ]);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      expect(await screen.findByTestId('episode-thumbnail-placeholder')).toBeInTheDocument();
+      expect(screen.queryByTestId('episode-thumbnail')).not.toBeInTheDocument();
     });
   });
 
@@ -440,20 +579,12 @@ describe('PodcastStudio', () => {
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(audioAccess);
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(youtubeAccessGranted);
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
-        {
+        buildEpisode({
           id: 'ep-youtube-1',
           title: 'Premium Video Episode',
           description: 'Video episode ready for YouTube',
-          episode_number: 1,
-          season_number: 1,
-          audio_file_url: 'https://cdn.example.com/audio.mp3',
           video_file_url: 'https://cdn.example.com/video.mp4',
-          status: 'draft',
-          created_by: 'user-1',
-          organization_id: 'org-1',
-          created_at: '2025-10-20T10:00:00Z',
-          show_notes: null,
-        },
+        }),
       ]);
       vi.mocked(podcastApi.publishEpisodeToYouTube).mockResolvedValue({ videoId: 'YT_12345' });
 
@@ -475,20 +606,11 @@ describe('PodcastStudio', () => {
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(audioAccess);
       vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(youtubeAccessDenied);
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
-        {
+        buildEpisode({
           id: 'ep-youtube-2',
           title: 'Video Episode',
-          description: null,
-          episode_number: 2,
-          season_number: 1,
-          audio_file_url: 'https://cdn.example.com/audio.mp3',
           video_file_url: 'https://cdn.example.com/video.mp4',
-          status: 'draft',
-          created_by: 'user-1',
-          organization_id: 'org-1',
-          created_at: '2025-10-21T10:00:00Z',
-          show_notes: null,
-        },
+        }),
       ]);
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -609,20 +731,13 @@ describe('PodcastStudio', () => {
 
     it('should create episode when form submitted with valid data', async () => {
       const user = userEvent.setup();
-      const newEpisode = {
+      const newEpisode = buildEpisode({
         id: 'ep-new',
         title: 'New Test Episode',
         description: 'Test description',
         episode_number: 3,
-        season_number: 1,
         audio_file_url: 'https://cdn.example.com/ep3.mp3',
-        video_file_url: null,
-        status: 'draft' as const,
-        created_by: 'user-1',
-        organization_id: 'org-1',
-        created_at: '2025-10-28T12:00:00Z',
-        show_notes: null,
-      };
+      });
       vi.mocked(podcastApi.createEpisode).mockResolvedValue(newEpisode);
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -642,35 +757,28 @@ describe('PodcastStudio', () => {
       }, { timeout: 10000 });
 
       // Verify it was called with correct values (null for empty optional fields)
-      expect(podcastApi.createEpisode).toHaveBeenCalledWith({
-        title: 'New Test Episode',
-        description: null,
-        episode_number: 3,
-        season_number: 1,
-        audio_file_url: 'https://cdn.example.com/ep3.mp3',
-        video_file_url: null,
-        show_notes: null,
-        status: 'draft',
-      });
+      expect(podcastApi.createEpisode).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'New Test Episode',
+          description: null,
+          episode_number: 3,
+          season_number: 1,
+          audio_file_url: 'https://cdn.example.com/ep3.mp3',
+          video_file_url: null,
+          show_notes: null,
+          status: 'draft',
+        })
+      );
     }, 15000);
 
     it('should open Edit modal when Edit button clicked on episode', async () => {
       const user = userEvent.setup();
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
-        {
+        buildEpisode({
           id: 'ep-1',
           title: 'Episode to Edit',
           description: 'Original description',
-          episode_number: 1,
-          season_number: 1,
-          audio_file_url: 'https://cdn.example.com/ep1.mp3',
-          video_file_url: null,
-          status: 'draft',
-          created_by: 'user-1',
-          organization_id: 'org-1',
-          created_at: '2025-10-28T10:00:00Z',
-          show_notes: null,
-        },
+        }),
       ]);
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -684,20 +792,11 @@ describe('PodcastStudio', () => {
 
     it('should update episode when edit form submitted', async () => {
       const user = userEvent.setup();
-      const existingEpisode = {
+      const existingEpisode = buildEpisode({
         id: 'ep-1',
         title: 'Original Title',
         description: 'Original description',
-        episode_number: 1,
-        season_number: 1,
-        audio_file_url: 'https://cdn.example.com/ep1.mp3',
-        video_file_url: null,
-        status: 'draft' as const,
-        created_by: 'user-1',
-        organization_id: 'org-1',
-        created_at: '2025-10-28T10:00:00Z',
-        show_notes: null,
-      };
+      });
 
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([existingEpisode]);
       vi.mocked(podcastApi.updateEpisode).mockResolvedValue({
@@ -726,20 +825,10 @@ describe('PodcastStudio', () => {
     it('should show delete confirmation when delete button clicked', async () => {
       const user = userEvent.setup();
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
-        {
+        buildEpisode({
           id: 'ep-del',
           title: 'Episode to Delete',
-          description: null,
-          episode_number: 1,
-          season_number: 1,
-          audio_file_url: 'https://cdn.example.com/ep-del.mp3',
-          video_file_url: null,
-          status: 'draft',
-          created_by: 'user-1',
-          organization_id: 'org-1',
-          created_at: '2025-10-28T10:00:00Z',
-          show_notes: null,
-        },
+        }),
       ]);
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
@@ -754,20 +843,10 @@ describe('PodcastStudio', () => {
     it('should delete episode when deletion confirmed', async () => {
       const user = userEvent.setup();
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
-        {
+        buildEpisode({
           id: 'ep-del',
           title: 'Episode to Delete',
-          description: null,
-          episode_number: 1,
-          season_number: 1,
-          audio_file_url: 'https://cdn.example.com/ep-del.mp3',
-          video_file_url: null,
-          status: 'draft',
-          created_by: 'user-1',
-          organization_id: 'org-1',
-          created_at: '2025-10-28T10:00:00Z',
-          show_notes: null,
-        },
+        }),
       ]);
       vi.mocked(podcastApi.deleteEpisode).mockResolvedValue(undefined);
 

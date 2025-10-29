@@ -5,8 +5,8 @@ Endpoints for financial analysis, ratio calculations, and AI narratives
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import Dict, Any, Optional
-from datetime import datetime, timezone
+from typing import Dict, Any
+from datetime import datetime
 
 from app.db.session import get_db
 from app.models.user import User
@@ -96,7 +96,6 @@ def calculate_financial_ratios(
 
     # Convert Pydantic model to dict for calculation service
     financial_dict = financial_data.model_dump(exclude_none=True)
-    period = financial_dict.pop('period', None)  # Extract period if provided
 
     # Calculate all ratios using the pure calculation service
     calculated_ratios = calculate_all_ratios(financial_dict)
@@ -110,47 +109,11 @@ def calculate_financial_ratios(
     else:
         data_quality = "minimal"
 
-    # Persist ratios to database (Task 1.1 - TDD GREEN)
-    from app.models.financial_ratio import FinancialRatio
-    from decimal import Decimal
-
-    db_ratio = FinancialRatio(
-        deal_id=deal_id,
-        organization_id=deal.organization_id,
-        period=period,
-        statement_id=None,  # No statement for standalone calculations
-        calculated_at=datetime.now(timezone.utc),
-        # Map all calculated ratios to database columns
-        current_ratio=Decimal(str(calculated_ratios['current_ratio'])) if calculated_ratios.get('current_ratio') is not None else None,
-        quick_ratio=Decimal(str(calculated_ratios['quick_ratio'])) if calculated_ratios.get('quick_ratio') is not None else None,
-        cash_ratio=Decimal(str(calculated_ratios['cash_ratio'])) if calculated_ratios.get('cash_ratio') is not None else None,
-        operating_cash_flow_ratio=Decimal(str(calculated_ratios['operating_cash_flow_ratio'])) if calculated_ratios.get('operating_cash_flow_ratio') is not None else None,
-        defensive_interval_ratio=Decimal(str(calculated_ratios['defensive_interval_ratio'])) if calculated_ratios.get('defensive_interval_ratio') is not None else None,
-        gross_profit_margin=Decimal(str(calculated_ratios['gross_profit_margin'])) if calculated_ratios.get('gross_profit_margin') is not None else None,
-        operating_profit_margin=Decimal(str(calculated_ratios['operating_profit_margin'])) if calculated_ratios.get('operating_profit_margin') is not None else None,
-        net_profit_margin=Decimal(str(calculated_ratios['net_profit_margin'])) if calculated_ratios.get('net_profit_margin') is not None else None,
-        return_on_assets=Decimal(str(calculated_ratios['return_on_assets'])) if calculated_ratios.get('return_on_assets') is not None else None,
-        return_on_equity=Decimal(str(calculated_ratios['return_on_equity'])) if calculated_ratios.get('return_on_equity') is not None else None,
-        return_on_invested_capital=Decimal(str(calculated_ratios['return_on_invested_capital'])) if calculated_ratios.get('return_on_invested_capital') is not None else None,
-        ebitda_margin=Decimal(str(calculated_ratios['ebitda_margin'])) if calculated_ratios.get('ebitda_margin') is not None else None,
-        ebit_margin=Decimal(str(calculated_ratios['ebit_margin'])) if calculated_ratios.get('ebit_margin') is not None else None,
-        debt_to_equity=Decimal(str(calculated_ratios['debt_to_equity'])) if calculated_ratios.get('debt_to_equity') is not None else None,
-        debt_to_assets=Decimal(str(calculated_ratios['debt_to_assets'])) if calculated_ratios.get('debt_to_assets') is not None else None,
-        equity_multiplier=Decimal(str(calculated_ratios['equity_multiplier'])) if calculated_ratios.get('equity_multiplier') is not None else None,
-        interest_coverage=Decimal(str(calculated_ratios['interest_coverage'])) if calculated_ratios.get('interest_coverage') is not None else None,
-        debt_service_coverage=Decimal(str(calculated_ratios['debt_service_coverage'])) if calculated_ratios.get('debt_service_coverage') is not None else None,
-        financial_leverage=Decimal(str(calculated_ratios['financial_leverage'])) if calculated_ratios.get('financial_leverage') is not None else None,
-    )
-
-    db.add(db_ratio)
-    db.commit()
-    db.refresh(db_ratio)
-
     # Build response
     response = FinancialRatiosResponse(
         deal_id=deal_id,
         organization_id=deal.organization_id,
-        calculated_at=datetime.now(timezone.utc),
+        calculated_at=datetime.utcnow(),
         data_quality=data_quality,
         **calculated_ratios  # Unpack all calculated ratios into response
     )
@@ -160,17 +123,12 @@ def calculate_financial_ratios(
 
 @router.get(
     "/deals/{deal_id}/financial/ratios",
-    response_model=list[FinancialRatiosResponse],
-    summary="Get calculated ratios for a deal",
+    response_model=FinancialRatiosResponse,
+    summary="Get latest calculated ratios for a deal",
     description="""
-    Retrieve financial ratios for a deal with optional filtering.
+    Retrieve the most recently calculated financial ratios for a deal.
 
-    Returns ratios from financial statement syncs or manual calculations.
-    Results are ordered by calculated_at (most recent first).
-
-    **Query Parameters**:
-    - period: Filter by specific period (e.g., "2024-Q4")
-    - limit: Limit number of results (default: 10)
+    Returns ratios from the latest financial statement sync or manual calculation.
 
     **Authentication**: Required
     **Authorization**: User must have access to the deal's organization
@@ -179,33 +137,29 @@ def calculate_financial_ratios(
 )
 def get_financial_ratios(
     deal_id: str,
-    period: Optional[str] = None,
-    limit: int = 10,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """
-    Get financial ratios for a deal (Task 1.1 - TDD GREEN).
+    Get latest financial ratios for a deal.
 
-    Queries the FinancialRatio model for persisted calculations.
-    Supports filtering by period and limiting results.
+    Currently returns a stub response. In future iterations, this will:
+    1. Query the FinancialRatio model for latest ratios
+    2. Return calculated values from the database
+    3. Include historical trend data
 
     Args:
         deal_id: ID of the deal
-        period: Optional period filter (e.g., "2024-Q4")
-        limit: Maximum number of results to return
         db: Database session
         current_user: Authenticated user
 
     Returns:
-        List of FinancialRatiosResponse with persisted ratios
+        FinancialRatiosResponse with latest ratios
 
     Raises:
-        HTTPException 404: Deal not found
+        HTTPException 404: Deal not found or no ratios calculated
         HTTPException 403: User doesn't have access to deal's organization
     """
-    from app.models.financial_ratio import FinancialRatio
-
     # Verify deal exists and user has access
     deal = db.query(Deal).filter(Deal.id == deal_id).first()
 
@@ -222,47 +176,12 @@ def get_financial_ratios(
             detail="You don't have access to this deal's organization"
         )
 
-    # Query FinancialRatio model with optional period filter
-    query = db.query(FinancialRatio).filter(FinancialRatio.deal_id == deal_id)
-
-    if period:
-        query = query.filter(FinancialRatio.period == period)
-
-    # Order by most recent first and apply limit
-    ratios = query.order_by(FinancialRatio.calculated_at.desc()).limit(limit).all()
-
-    # Convert database models to response schema
-    results = []
-    for ratio in ratios:
-        results.append(FinancialRatiosResponse(
-            deal_id=ratio.deal_id,
-            organization_id=ratio.organization_id,
-            calculated_at=ratio.calculated_at,
-            data_quality="complete",  # Simplified - could calculate based on non-null fields
-            period=ratio.period,
-            # Map all ratio fields
-            current_ratio=float(ratio.current_ratio) if ratio.current_ratio else None,
-            quick_ratio=float(ratio.quick_ratio) if ratio.quick_ratio else None,
-            cash_ratio=float(ratio.cash_ratio) if ratio.cash_ratio else None,
-            operating_cash_flow_ratio=float(ratio.operating_cash_flow_ratio) if ratio.operating_cash_flow_ratio else None,
-            defensive_interval_ratio=float(ratio.defensive_interval_ratio) if ratio.defensive_interval_ratio else None,
-            gross_profit_margin=float(ratio.gross_profit_margin) if ratio.gross_profit_margin else None,
-            operating_profit_margin=float(ratio.operating_profit_margin) if ratio.operating_profit_margin else None,
-            net_profit_margin=float(ratio.net_profit_margin) if ratio.net_profit_margin else None,
-            return_on_assets=float(ratio.return_on_assets) if ratio.return_on_assets else None,
-            return_on_equity=float(ratio.return_on_equity) if ratio.return_on_equity else None,
-            return_on_invested_capital=float(ratio.return_on_invested_capital) if ratio.return_on_invested_capital else None,
-            ebitda_margin=float(ratio.ebitda_margin) if ratio.ebitda_margin else None,
-            ebit_margin=float(ratio.ebit_margin) if ratio.ebit_margin else None,
-            debt_to_equity=float(ratio.debt_to_equity) if ratio.debt_to_equity else None,
-            debt_to_assets=float(ratio.debt_to_assets) if ratio.debt_to_assets else None,
-            equity_multiplier=float(ratio.equity_multiplier) if ratio.equity_multiplier else None,
-            interest_coverage=float(ratio.interest_coverage) if ratio.interest_coverage else None,
-            debt_service_coverage=float(ratio.debt_service_coverage) if ratio.debt_service_coverage else None,
-            financial_leverage=float(ratio.financial_leverage) if ratio.financial_leverage else None,
-        ))
-
-    return results
+    # TODO: Query FinancialRatio model for latest ratios
+    # For now, return stub indicating no ratios calculated yet
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No financial ratios have been calculated for this deal yet. Use POST /deals/{deal_id}/financial/calculate-ratios to calculate them."
+    )
 
 
 @router.get(
@@ -323,189 +242,6 @@ def get_financial_connections(
     return [FinancialConnectionResponse.model_validate(conn) for conn in connections]
 
 
-@router.post(
-    "/deals/{deal_id}/financial/narrative/generate",
-    response_model=FinancialNarrativeResponse,
-    summary="Generate AI-powered financial narrative",
-    description="""
-    Generate an AI-powered financial analysis narrative from calculated ratios.
-
-    This endpoint:
-    1. Fetches the latest financial ratios for the deal
-    2. Uses GPT-4 to generate comprehensive analysis
-    3. Calculates Deal Readiness Score breakdown
-    4. Persists the narrative to the database
-
-    **Requirements**: Financial ratios must be calculated first via POST /calculate-ratios
-
-    **Authentication**: Required
-    **Authorization**: User must have access to the deal's organization
-    """,
-    status_code=status.HTTP_201_CREATED,
-)
-async def generate_financial_narrative(
-    deal_id: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    """
-    Generate AI narrative from financial ratios (Task 1.2 - TDD GREEN).
-
-    Args:
-        deal_id: ID of the deal
-        db: Database session
-        current_user: Authenticated user
-
-    Returns:
-        FinancialNarrativeResponse with AI-generated analysis
-
-    Raises:
-        HTTPException 404: Deal not found
-        HTTPException 403: User doesn't have access
-        HTTPException 400: No financial ratios available
-    """
-    from app.models.financial_ratio import FinancialRatio
-    from app.services import financial_narrative_service
-    from decimal import Decimal
-
-    # Verify deal exists and user has access
-    deal = db.query(Deal).filter(Deal.id == deal_id).first()
-
-    if not deal:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Deal with ID {deal_id} not found"
-        )
-
-    if deal.organization_id != current_user.organization_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have access to this deal's organization"
-        )
-
-    # Fetch latest financial ratios
-    latest_ratio = db.query(FinancialRatio).filter(
-        FinancialRatio.deal_id == deal_id
-    ).order_by(FinancialRatio.calculated_at.desc()).first()
-
-    if not latest_ratio:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No financial ratios available. Please calculate ratios first using POST /deals/{id}/financial/calculate-ratios"
-        )
-
-    # Generate narrative using AI service
-    # Note: This will use OpenAI GPT-4 if API key is available, otherwise fallback
-    try:
-        narrative_result = await financial_narrative_service.generate_financial_narrative(
-            ratios=latest_ratio,
-            statement=None  # Optional for standalone ratio calculations
-        )
-    except Exception as e:
-        # Fallback if AI service fails
-        narrative_result = {
-            "summary": "Financial analysis generated from calculated ratios. Strong liquidity position with current ratio of {:.2f}. Profitability metrics show net margin of {:.2f}%.".format(
-                float(latest_ratio.current_ratio) if latest_ratio.current_ratio else 0,
-                float(latest_ratio.net_profit_margin) if latest_ratio.net_profit_margin else 0
-            ),
-            "strengths": ["Positive financial indicators across key metrics."],
-            "weaknesses": ["Limited data availability may affect analysis depth."],
-            "red_flags": ["None identified in current analysis."],
-            "growth_signals": ["Stable financial foundation established."]
-        }
-
-    # Calculate readiness score breakdown
-    # Simple algorithm based on available ratios
-    data_quality_score = Decimal("80.0")  # Based on ratio completeness
-
-    # Financial health: liquidity + profitability
-    financial_health = Decimal("0")
-    if latest_ratio.current_ratio:
-        financial_health += min(Decimal("25"), Decimal(str(float(latest_ratio.current_ratio))) * Decimal("12.5"))
-    if latest_ratio.net_profit_margin:
-        financial_health += min(Decimal("25"), Decimal(str(abs(float(latest_ratio.net_profit_margin)))))
-    if latest_ratio.return_on_equity:
-        financial_health += min(Decimal("25"), Decimal(str(abs(float(latest_ratio.return_on_equity)))) / Decimal("2"))
-    financial_health_score = min(Decimal("100"), financial_health * Decimal("1.5"))
-
-    # Growth trajectory (simplified - would use YoY metrics if available)
-    growth_trajectory_score = Decimal("65.0")
-
-    # Risk assessment (inverse of leverage)
-    risk_score = Decimal("85.0")
-    if latest_ratio.debt_to_equity:
-        risk_score = max(Decimal("50"), Decimal("100") - (Decimal(str(float(latest_ratio.debt_to_equity))) * Decimal("20")))
-    risk_assessment_score = risk_score
-
-    # Overall readiness score (weighted average)
-    readiness_score = (
-        data_quality_score * Decimal("0.20") +
-        financial_health_score * Decimal("0.40") +
-        growth_trajectory_score * Decimal("0.20") +
-        risk_assessment_score * Decimal("0.20")
-    )
-
-    # Create and persist narrative
-    # Ensure lists are used (convert strings to lists if needed)
-    strengths = narrative_result.get("strengths", [])
-    if isinstance(strengths, str):
-        strengths = [strengths] if strengths else []
-
-    weaknesses = narrative_result.get("weaknesses", [])
-    if isinstance(weaknesses, str):
-        weaknesses = [weaknesses] if weaknesses else []
-
-    red_flags = narrative_result.get("red_flags", [])
-    if isinstance(red_flags, str):
-        red_flags = [red_flags] if red_flags else []
-
-    growth_signals = narrative_result.get("growth_signals", [])
-    if isinstance(growth_signals, str):
-        growth_signals = [growth_signals] if growth_signals else []
-
-    narrative = FinancialNarrative(
-        deal_id=deal_id,
-        organization_id=deal.organization_id,
-        summary=narrative_result.get("summary", "Financial analysis completed."),
-        strengths=strengths,
-        weaknesses=weaknesses,
-        red_flags=red_flags,
-        growth_signals=growth_signals,
-        readiness_score=readiness_score,
-        data_quality_score=data_quality_score,
-        financial_health_score=financial_health_score,
-        growth_trajectory_score=growth_trajectory_score,
-        risk_assessment_score=risk_assessment_score,
-        ai_model="gpt-4",  # Default model
-        generated_at=datetime.now(timezone.utc),
-    )
-
-    db.add(narrative)
-    db.commit()
-    db.refresh(narrative)
-
-    # Return response
-    return FinancialNarrativeResponse(
-        id=narrative.id,
-        deal_id=narrative.deal_id,
-        organization_id=narrative.organization_id,
-        summary=narrative.summary,
-        strengths=narrative.strengths,
-        weaknesses=narrative.weaknesses,
-        red_flags=narrative.red_flags,
-        growth_signals=narrative.growth_signals,
-        readiness_score=float(narrative.readiness_score),
-        readiness_score_breakdown={
-            "data_quality": float(narrative.data_quality_score),
-            "financial_health": float(narrative.financial_health_score),
-            "growth_trajectory": float(narrative.growth_trajectory_score),
-            "risk_assessment": float(narrative.risk_assessment_score),
-        },
-        ai_model=narrative.ai_model,
-        generated_at=narrative.generated_at,
-    )
-
-
 @router.get(
     "/deals/{deal_id}/financial/narrative",
     response_model=FinancialNarrativeResponse,
@@ -560,36 +296,11 @@ def get_financial_narrative(
             detail="You don't have access to this deal's organization"
         )
 
-    # Query FinancialNarrative model for latest narrative
-    latest_narrative = db.query(FinancialNarrative).filter(
-        FinancialNarrative.deal_id == deal_id
-    ).order_by(FinancialNarrative.generated_at.desc()).first()
-
-    if not latest_narrative:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No financial narrative has been generated for this deal yet. Please generate ratios and narrative first."
-        )
-
-    # Return narrative response
-    return FinancialNarrativeResponse(
-        id=latest_narrative.id,
-        deal_id=latest_narrative.deal_id,
-        organization_id=latest_narrative.organization_id,
-        summary=latest_narrative.summary,
-        strengths=latest_narrative.strengths,
-        weaknesses=latest_narrative.weaknesses,
-        red_flags=latest_narrative.red_flags,
-        growth_signals=latest_narrative.growth_signals,
-        readiness_score=float(latest_narrative.readiness_score) if latest_narrative.readiness_score else None,
-        readiness_score_breakdown={
-            "data_quality": float(latest_narrative.data_quality_score) if latest_narrative.data_quality_score else 0,
-            "financial_health": float(latest_narrative.financial_health_score) if latest_narrative.financial_health_score else 0,
-            "growth_trajectory": float(latest_narrative.growth_trajectory_score) if latest_narrative.growth_trajectory_score else 0,
-            "risk_assessment": float(latest_narrative.risk_assessment_score) if latest_narrative.risk_assessment_score else 0,
-        } if latest_narrative.readiness_score else None,
-        ai_model=latest_narrative.ai_model,
-        generated_at=latest_narrative.generated_at,
+    # TODO: Query FinancialNarrative model for latest narrative
+    # For now, return 404
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No financial narrative has been generated for this deal yet"
     )
 
 

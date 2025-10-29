@@ -1,0 +1,1 @@
+- 2025-10-30 12:32 UTC: Smoke tests green (backend OK, frontend 403 due to Cloudflare; manual check next)

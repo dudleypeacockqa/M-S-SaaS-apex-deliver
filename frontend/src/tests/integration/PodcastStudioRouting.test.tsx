@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen, waitFor } from "@testing-library/react"
 
 import App from "../../App"
+import * as podcastApi from "../../services/api/podcasts"
 
 type MockClerkState = {
   isSignedIn: boolean
@@ -75,6 +76,12 @@ vi.mock('../../services/api/podcasts', () => ({
     upgradeCtaUrl: null,
   }),
   listEpisodes: vi.fn().mockResolvedValue([]),
+  transcribeEpisode: vi.fn().mockResolvedValue({
+    episodeId: 'ep-1',
+    transcript: '',
+    transcriptLanguage: 'en',
+    wordCount: 0,
+  }),
 }))
 
 describe("Integration: Podcast Studio routing", () => {
@@ -140,5 +147,48 @@ describe("Integration: Podcast Studio routing", () => {
 
     // Should also see the quota information
     expect(screen.getByText(/episode quota/i)).toBeInTheDocument()
+  })
+
+  it("displays transcript status and download links when transcript exists", async () => {
+    setMockClerkState({
+      isSignedIn: true,
+      user: { firstName: "Taylor" },
+    })
+    window.history.replaceState({}, "Test", "/podcast-studio")
+
+    vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+      {
+        id: 'ep-1',
+        title: 'Transcript Ready',
+        description: 'Episode with transcript',
+        episode_number: 1,
+        season_number: 1,
+        audio_file_url: 'https://cdn.example.com/audio.mp3',
+        video_file_url: null,
+        status: 'draft',
+        created_by: 'user-1',
+        organization_id: 'org-1',
+        created_at: '2025-10-20T10:00:00Z',
+        updated_at: '2025-10-20T10:00:00Z',
+        published_at: null,
+        show_notes: null,
+        transcript: 'Existing transcript content.',
+        transcript_language: 'en',
+        duration_seconds: null,
+        youtube_video_id: null,
+      },
+    ])
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/transcript ready/i).length).toBeGreaterThan(0)
+    })
+
+    const txtLink = screen.getByRole('link', { name: /download transcript \(txt\)/i })
+    const srtLink = screen.getByRole('link', { name: /download transcript \(srt\)/i })
+
+    expect(txtLink).toHaveAttribute('href', '/api/podcasts/episodes/ep-1/transcript')
+    expect(srtLink).toHaveAttribute('href', '/api/podcasts/episodes/ep-1/transcript.srt')
   })
 })

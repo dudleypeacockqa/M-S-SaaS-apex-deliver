@@ -227,6 +227,10 @@ class LocalStorageService:
         return file_path.stat().st_size
 
 
+# Backwards compatibility alias used across services/tests
+StorageService = LocalStorageService
+
+
 # Singleton instance
 _storage_service: Optional[StorageServiceProtocol] = None
 

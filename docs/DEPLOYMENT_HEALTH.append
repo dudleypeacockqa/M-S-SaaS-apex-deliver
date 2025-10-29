@@ -1,0 +1,6 @@
+### Smoke Test Run 2025-10-29 18:12 UTC (Production)
+- Backend health: https://ma-saas-backend.onrender.com/health ✅
+- Frontend head request: https://apexdeliver.com → HTTP 403 (Cloudflare bot protection) ⚠️
+- Backend smoke pytest: 2 passed / 0 failed ()
+
+Next manual step: browser check through Cloudflare, confirm transcript download links visible in production UI.

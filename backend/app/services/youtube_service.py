@@ -5,7 +5,7 @@ import asyncio
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 try:  # Optional dependency; patched in tests.
     from googleapiclient.discovery import build  # type: ignore
@@ -61,14 +61,18 @@ async def upload_video(
     client = await _youtube_client()
 
     videos_resource = await _ensure_coroutine(client.videos())
+    metadata = generate_video_metadata(
+        title=payload.title,
+        description=payload.description,
+        tags=data.get("tags"),
+        category_id=data.get("category_id"),
+    )
+
     insert_request = await _ensure_coroutine(
         videos_resource.insert(
             part="snippet,status",
             body={
-                "snippet": {
-                    "title": payload.title,
-                    "description": payload.description,
-                },
+                "snippet": metadata,
                 "status": {"privacyStatus": "private"},
             },
             media_body=_media_upload(payload.file_path),
@@ -128,3 +132,31 @@ def _media_upload(file_path: str) -> Any:
 
 
 __all__ = ["upload_video"]
+
+
+def generate_video_metadata(
+    *,
+    title: str,
+    description: str,
+    tags: Sequence[str] | None = None,
+    category_id: str | None = None,
+) -> dict[str, Any]:
+    """Generate YouTube snippet payload with sensible defaults."""
+
+    snippet: dict[str, Any] = {
+        "title": title.strip() or "Podcast Episode",
+        "description": description.strip(),
+    }
+
+    if tags:
+        snippet["tags"] = [tag.strip() for tag in tags if tag.strip()]
+
+    if category_id:
+        snippet["categoryId"] = category_id
+    else:
+        snippet["categoryId"] = "22"  # People & Blogs default
+
+    if not snippet.get("description"):
+        snippet["description"] = "Uploaded from ApexDeliver Podcast Studio"
+
+    return snippet
