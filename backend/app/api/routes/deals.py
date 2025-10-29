@@ -9,7 +9,8 @@ from sqlalchemy.orm import Session
 from app.api.dependencies.auth import get_current_user
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.deal import DealCreate, DealListResponse, DealResponse, DealUpdate
+from app.models.deal import Deal
+from app.schemas.deal import DealCreate, DealListResponse, DealResponse, DealUpdate, DealStageUpdate
 from app.services import deal_service
 
 router = APIRouter(prefix="/deals", tags=["deals"])
@@ -103,8 +104,6 @@ def update_deal(
     existing_deal = deal_service.get_deal_by_id(deal_id, current_user.organization_id, db)
     if not existing_deal:
         # Check if deal exists in another org
-        from app.models.deal import Deal
-
         other_org_deal = db.get(Deal, deal_id)
         if other_org_deal:
             raise HTTPException(
@@ -118,6 +117,32 @@ def update_deal(
     updated_deal = deal_service.update_deal(
         deal_id, deal_update, current_user.organization_id, db
     )
+    return updated_deal
+
+
+@router.put("/{deal_id}/stage", response_model=DealResponse)
+def update_deal_stage_endpoint(
+    deal_id: str,
+    stage_update: DealStageUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Update the stage of an existing deal within the user's organization."""
+    updated_deal = deal_service.update_deal_stage(
+        deal_id,
+        organization_id=current_user.organization_id,
+        stage=stage_update.stage,
+        db=db,
+    )
+    if not updated_deal:
+        other_org_deal = db.get(Deal, deal_id)
+        if other_org_deal:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You do not have permission to update this deal",
+            )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deal not found")
+
     return updated_deal
 
 
@@ -137,8 +162,6 @@ def archive_deal(
     existing_deal = deal_service.get_deal_by_id(deal_id, current_user.organization_id, db)
     if not existing_deal:
         # Check if deal exists in another org
-        from app.models.deal import Deal
-
         other_org_deal = db.get(Deal, deal_id)
         if other_org_deal:
             raise HTTPException(
@@ -165,8 +188,6 @@ def restore_deal(
     Users can only restore deals within their organization.
     """
     # First check if deal exists and belongs to user's org
-    from app.models.deal import Deal
-
     existing_deal = db.scalar(
         db.query(Deal)
         .filter(Deal.id == deal_id, Deal.organization_id == current_user.organization_id)

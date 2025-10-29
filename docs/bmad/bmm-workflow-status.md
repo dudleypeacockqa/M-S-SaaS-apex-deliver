@@ -12,7 +12,7 @@ WORKFLOW_PATH: bmad/bmm/workflows/workflow-status/paths/greenfield-level-4.yaml
 ## Current State
 
 CURRENT_PHASE: 4-Implementation
-CURRENT_WORKFLOW: workflow-status
+CURRENT_WORKFLOW: dev-story
 CURRENT_AGENT: dev
 PHASE_1_COMPLETE: true
 PHASE_2_COMPLETE: true
@@ -21,8 +21,8 @@ PHASE_4_COMPLETE: false
 
 ## Next Action
 
-NEXT_ACTION: Execute Phase 0 readiness plan (reconcile repo, rerun baseline pytest/Vitest, refresh deployment docs).
-NEXT_COMMAND: npx bmad-method run workflow-status
+NEXT_ACTION: Introduce RED pytest coverage for DEV-008 (versioning, permissions, audit logs) before implementation
+NEXT_COMMAND: pytest backend/tests/test_document_endpoints.py -k "version or permission" --maxfail=1 --disable-warnings
 NEXT_AGENT: dev
 
-LAST_UPDATED: 2025-10-29T11:45:00Z
+LAST_UPDATED: 2025-10-29T09:25:00Z

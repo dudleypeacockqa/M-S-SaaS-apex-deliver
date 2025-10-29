@@ -62,3 +62,9 @@ class DealListResponse(BaseModel):
     total: int
     page: int
     per_page: int
+
+
+class DealStageUpdate(BaseModel):
+    """Schema for updating only the deal stage."""
+
+    stage: DealStage

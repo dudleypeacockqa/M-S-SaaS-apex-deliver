@@ -508,7 +508,18 @@ def create_deal_for_org(db_session, create_user, create_organization, request):
         stage: DealStage | str = DealStage.sourcing,
         target_company: str = "Target Co",
         currency: str = "GBP",
+        **extra_deal_fields,
     ):
+        if organization_id is None:
+            organization_id = extra_deal_fields.pop("organization_id", None)
+        if org_id is None:
+            org_id = extra_deal_fields.pop("org_id", None)
+
+        if owner_id is None:
+            owner_id = extra_deal_fields.pop("owner_id", None)
+        if user_id is None:
+            user_id = extra_deal_fields.pop("user_id", None)
+
         org_identifier = organization_id or org_id
         owner_identifier = owner_id or user_id
 
@@ -540,15 +551,18 @@ def create_deal_for_org(db_session, create_user, create_organization, request):
 
         stage_value = stage if isinstance(stage, DealStage) else DealStage(stage)
 
-        deal = Deal(
-            id=f"deal-{uuid4()}",
-            organization_id=org.id,
-            name=name,
-            stage=stage_value,
-            owner_id=owner_user.id,
-            target_company=target_company,
-            currency=currency,
-        )
+        deal_kwargs = {
+            "id": f"deal-{uuid4()}",
+            "organization_id": org.id,
+            "name": name,
+            "stage": stage_value,
+            "owner_id": owner_user.id,
+            "target_company": target_company,
+            "currency": currency,
+        }
+        deal_kwargs.update(extra_deal_fields)
+
+        deal = Deal(**deal_kwargs)
         db_session.add(deal)
         db_session.commit()
         db_session.refresh(deal)

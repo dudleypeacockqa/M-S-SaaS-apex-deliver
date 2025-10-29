@@ -1,8 +1,37 @@
-### Session 2025-10-29 (Governance Reset & Completion Plan Alignment)\n- ✅ Reviewed repository state (git log, deployment docs, story files) and confirmed outstanding RED suites: 21 backend valuation/automation tests, 11 frontend ValuationSuite specs.\n- ✅ Authored updated roadmap in docs/100-PERCENT-COMPLETION-PLAN.md covering DEV-011, DEV-008, DEV-016, DEV-012, DEV-018, marketing, and deployment hardening under BMAD + TDD discipline.\n- ✅ Updated bmm-workflow-status to set CURRENT_WORKFLOW=workflow-status with NEXT_COMMAND 
-px bmad-method status.\n- 🔄 NEXT: Execute governance command and rerun DEV-011 pytest/Vitest suites before promoting fixes.\n\n### Session 2025-10-29 (Plan Refresh – 09:55 UTC)
+### Session 2025-10-29 (Stabilisation - 09:58 UTC)
+- PASS npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx -> 13 passed (ValuationSuite GREEN).
+- PASS ./backend/venv/Scripts/python.exe -m pytest backend/tests/test_deal_matching_models.py -q -> 8 passed (DEV-018 models GREEN).
+- NEXT Expand stabilisation to full suites (frontend all, targeted backend) before resuming feature delivery.
+
+### Session 2025-10-29 (Smoke Script Execution & Deployment Health Refresh – 08:48 UTC)
+- ✅ Ran `bash scripts/run_smoke_tests.sh production` using backend venv interpreter: backend `/health` 200 OK, frontend HEAD 403 (expected Cloudflare shield), backend smoke suite absent so script emitted warning.
+- ✅ Updated `scripts/run_smoke_tests.sh` to auto-detect repo venv, handle missing smoke suite gracefully, and normalise LF endings for cross-shell execution.
+- ✅ Refreshed `docs/DEPLOYMENT_HEALTH.md` with latest commit (`8f45f75`), new smoke script results, and updated service timestamps; recorded follow-up to restore `backend/tests/smoke_tests.py`.
+- ✅ Advanced `docs/bmad/bmm-workflow-status.md` NEXT_ACTION to DEV-016 quota completion loop (`npm --prefix frontend run test -- PodcastStudio.test.tsx`).
+- 🔄 NEXT: Complete DEV-016 quota gating TDD loop (Vitest + backend feature gate coverage) before re-running full regressions.
+
+### Session 2025-10-29 (Deal stage endpoint TDD – 09:15 UTC)
+- ✅ Patched `create_deal_for_org` fixture to accept `org_id`/`user_id` aliases and keep tuple unpack compatibility across suites.
+- ✅ Implemented `/api/deals/{deal_id}/stage` FastAPI endpoint + `DealStageUpdate` schema and service helper to satisfy DEV-007 drag-and-drop tests.
+- ✅ pytest backend/tests/test_deal_endpoints.py → 25 passed (new stage cases GREEN).
+- 🔄 NEXT: Move into DEV-008 RED phase – add failing pytest coverage for versioning/permissions/audit flows per roadmap.
+
+### Session 2025-10-29 (Governance Reset & Completion Plan Alignment)
+- ✅ Reviewed repository state (git log, deployment docs, story files) and confirmed outstanding RED suites: 21 backend valuation/automation tests, 11 frontend ValuationSuite specs.
+- ✅ Authored updated roadmap in docs/100-PERCENT-COMPLETION-PLAN.md covering DEV-011, DEV-008, DEV-016, DEV-012, DEV-018, marketing, and deployment hardening under BMAD + TDD discipline.
+- ✅ Updated bmm-workflow-status to set CURRENT_WORKFLOW=workflow-status and NEXT_COMMAND to npx bmad-method status.
+- 🔄 NEXT: Execute governance command and rerun DEV-011 pytest/Vitest suites before promoting fixes.
+### Session 2025-10-29 (Plan Refresh – 09:55 UTC)
 - ♻️ Reassessed repository state; confirmed ValuationSuite Vitest failure and DEV-018 pytest errors with UNIQUE constraints.
 - 📝 Created docs/bmad/SESSION-2025-10-29-PLAN-REFRESH.md and updated bmm-workflow-status NEXT_ACTION/NEXT_COMMAND for RED suite recovery.
 - 🔄 NEXT: Stabilise ValuationSuite Vitest and backend deal matching tests before resuming DEV-011/DEV-016 implementation.
+
+### Session 2025-10-29 (Phase 0 Reset – 09:25 UTC)
+- ✅ `npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx` → **13/13 GREEN** (Vitest 4.0.4).
+- ✅ `npm --prefix frontend run test -- src/App.test.tsx src/features/auth/Auth.test.tsx src/tests/integration/routing.test.tsx` → **10/10 GREEN**, Clerk init warnings only.
+- ✅ `pytest --maxfail=1 --disable-warnings` → **456 passed / 38 skipped / 0 failed** (25.52s) after updating fixtures; backend baseline restored.
+- ✅ Patched `backend/tests/conftest.py:create_deal_for_org` to gracefully accept `org_id`/`user_id` aliases and propagate extra deal fields.
+- 🔄 NEXT: Update `docs/DEPLOYMENT_HEALTH.md` with new baselines and audit Render env secrets per Phase 0 blueprint.
 
 ### Session 2025-10-29 (Alignment Audit – 09:00 UTC)
 - ✅ `git status` → `main` matches `origin/main`; working tree holds WIP across deal endpoint tests, BMAD docs, podcast story, valuation tests, and smoke scripts.
@@ -16,9 +45,9 @@ px bmad-method status.\n- 🔄 NEXT: Execute governance command and rerun DEV-01
 - 📦 Captured repo state: HEAD 31f9f25 (chore: phase 0 stabilization) on main, branch is 2 commits ahead of origin/main with a large dirty working tree.
 - 🧪 Confirmed outstanding RED tests persist (see frontend/test-output.txt) and backend suite needs rerun after new migration a0175dfc0ca0.
 - 🚀 Noted Render redeploy pending; docs/DEPLOYMENT_HEALTH.md still references commit 0f512b9 rather than latest work.
-- 🔄 NEXT: Execute Phase 0 readiness plan (docs/100-PERCENT-COMPLETION-PLAN.md:19) — reconcile change sets, rerun pytest/Vitest baselines, refresh deployment health doc.
+- 🔄 NEXT: Execute Phase 0 readiness plan (docs/100-PERCENT-COMPLETION-PLAN.md:19) — reconcile change sets, rerun pytest/Vitest baselines, refresh deployment health doc. ✅ (Completed via 09:25 UTC session; deployment doc refresh pending).
 
-- 🔄 NEXT: Patch `create_deal_for_org` fixture to accept both `organization_id` and `org_id`, rerun full pytest, update workflow status once GREEN.
+- ✅ Patched `create_deal_for_org` fixture to accept both `organization_id` and `org_id`, reran full pytest, updated workflow status once GREEN (see 09:25 UTC session).
 
 ### Session 2025-10-29 (Governance Reset – 08:38 UTC)
 - 🔍 Reviewed CODEX guides, BMAD playbooks, and current completion plans to align 100% delivery scope.
@@ -184,3 +213,25 @@ px bmad-method status.\n- 🔄 NEXT: Execute governance command and rerun DEV-01
 
 ### Session 2025-10-29 (100% Test Pass Rate + DEV-011 PRODUCTION READY - 07:35 UTC) - ✅ **100% PASS RATE ACHIEVED**: All tests GREEN   - Backend: 431 passed, 38 skipped (100.0%)   - Frontend: 533 passed, 3 skipped (100.0%)   - Total: 964/972 tests (99.2% pass rate) - ✅ **Error Resolution**:   - Fixed conftest.py duplicate @pytest.fixture decorator and duplicated functions   - Added missing _normalize_subscription_tier to organization_service.py   - All organization service tests GREEN (5/5) - ✅ **DEV-011 COMPLETE - PRODUCTION READY**:   - Backend: 22/22 valuation tests PASSED (12 API + 10 models)   - Frontend: 12/12 ValuationSuite tests PASSED   - All acceptance criteria met: DCF, Comparables, Precedents, Scenarios, Monte Carlo, Exports, RBAC   - Growth-tier gating with upgrade messaging implemented - 🎯 **NEXT**: Commit changes, assess next priority from finish.plan.md  ### Session 2025-10-29 (DEV-011 valuation regression sweep - PREVIOUS) - ✅ Reconfirmed podcast entitlement enforcement and quota guardrails (`pytest backend/tests/test_podcast_api.py -q` → 24 passed, 0 failed). - ✅ Verified valuation core calculations and sensitivity helpers (`pytest backend/tests/test_valuation_service.py -q` → 27 passed, 0 failed). - ✅ COMPLETED: DEV-011 now PRODUCTION READY (see above)  ### Session 2025-10-29 (DEV-016 backend quota hardening) - ✅ Added regression coverage for quota warnings and entitlement API outputs (pytest backend/tests/test_quota_service.py & backend/tests/test_podcast_api.py). - ✅ Hardened test fixtures to drop stray tables via SQLAlchemy inspector to prevent sqlite teardown regressions. - ✅ pytest backend/tests/test_quota_service.py backend/tests/test_podcast_api.py -vv → GREEN. - ✅ npm --prefix frontend run test -- PodcastStudio.test.tsx → GREEN. - 🔄 NEXT: Implement podcast frontend gating/quota banner components and add Vitest coverage before moving to Render validation. ### Session 2025-10-29 (Phase B2 Analytics Responsiveness) - ✅ Added responsive analytics layout + upgrade messaging tests (ValuationSuite now 13 specs passing). - ✅  px vitest run src/pages/deals/valuation/ValuationSuite.test.tsx --pool=threads → GREEN. - ⚠️ Render redeploy still pending environment updates; deployment health unchanged. - 🔄 NEXT: Implement mobile layout tweaks in component (already passing tests) and proceed to Podcast Studio gating (Phase C) while awaiting deployment step. - ✅ Backend podcast quota + entitlement suites green (`pytest backend/tests/test_quota_service.py backend/tests/test_podcast_api.py -vv`). - ✅ Frontend Vitest coverage for podcast studio gating/quota (`npm --prefix frontend run test -- PodcastStudio.test.tsx`). - 🔁 Continue with DEV-016 frontend gating implementation (quota banner & upgrade CTA) or proceed to valuation suite tasks per roadmap. SPOT CHECK: DEV-016 quota backend regressions resolved; proceed with frontend gating work, then return to DEV-011.  
 
+
+
+
+
+
+### Session 2025-10-29 (Baseline regression sweep - 08:34 UTC)
+- Ran ============================= test session starts =============================
+platform win32 -- Python 3.13.5, pytest-8.4.2, pluggy-1.6.0
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+testpaths: backend/tests
+plugins: anyio-4.11.0, asyncio-1.2.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 480 items
+
+backend	ests	est_additional_ratios.py ...............                  [  3
+
+### Session 2025-10-29 (Baseline regression sweep - 08:34 UTC)
+- Ran backend/venv/Scripts/pytest.exe --maxfail=1 --disable-warnings -> FAIL fast on backend/tests/test_deal_endpoints.py::test_update_deal_stage_success (fixture signature mismatch: create_deal_for_org lacks org_id).
+- Ran npm --prefix frontend run test -> 533 passed / 3 skipped; Vitest suite green with current code.
+- Logged backend failure for DEV-002/DEV-004 scope reconciliation; need to restore fixture API before advancing Phase 1.
+- NEXT: Fix deal test fixture, rerun pytest to confirm green baseline ahead of DEV-008/DEV-016 implementation work.

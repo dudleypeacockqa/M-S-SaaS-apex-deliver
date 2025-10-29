@@ -167,6 +167,25 @@ def update_deal(
     return deal
 
 
+def update_deal_stage(
+    deal_id: str,
+    *,
+    organization_id: str,
+    stage: DealStage,
+    db: Session,
+) -> Optional[Deal]:
+    """Update the stage of a deal within the caller's organization."""
+    deal = get_deal_by_id(deal_id, organization_id, db)
+    if not deal:
+        return None
+
+    deal.stage = stage
+    deal.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(deal)
+    return deal
+
+
 def archive_deal(deal_id: str, organization_id: str, db: Session) -> Optional[Deal]:
     """
     Archive a deal (soft delete).
