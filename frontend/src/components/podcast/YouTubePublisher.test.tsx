@@ -227,8 +227,9 @@ describe('YouTubePublisher', () => {
         lastCheckedAt: '2025-10-28T12:30:00Z',
       });
       renderPublisher({ status });
-      const badge = await screen.findByTestId('youtube-status-badge');
-      expect(badge).toHaveTextContent(new RegExp(status, 'i'));
+      await waitFor(() => {
+        expect(screen.getByTestId('youtube-status-badge')).toHaveTextContent(new RegExp(status, 'i'));
+      });
     }
   });
 
