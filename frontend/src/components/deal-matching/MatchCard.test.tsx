@@ -5,17 +5,17 @@ import { MatchCard } from './MatchCard';
 const mockMatch = {
   id: 'match-1',
   dealId: 'deal-1',
+  matchedDealId: 'matched-deal-1',
   dealName: 'Acme Corp Acquisition',
-  targetCompany: 'Acme SaaS Inc',
-  industry: 'SaaS',
   score: 85.5,
   confidence: 'high' as const,
   explanation: {
-    industry: { score: 0.9, reasoning: 'Perfect industry match - both in SaaS sector' },
-    size: { score: 0.8, reasoning: 'Deal size within optimal range' },
-    geography: { score: 0.85, reasoning: 'Both located in UK' },
+    industry_match: { score: 0.9, reason: 'Perfect industry match - both in SaaS sector' },
+    size_match: { score: 0.8, reason: 'Deal size within optimal range' },
+    geography_match: { score: 0.85, reason: 'Both located in UK' },
+    description_match: { score: 0.75, reason: 'Semantic similarity detected' },
   },
-  status: 'pending' as const,
+  status: 'pending',
 };
 
 describe('MatchCard', () => {
@@ -34,8 +34,7 @@ describe('MatchCard', () => {
     );
 
     expect(screen.getByText('Acme Corp Acquisition')).toBeInTheDocument();
-    expect(screen.getByText('Acme SaaS Inc')).toBeInTheDocument();
-    expect(screen.getByText('SaaS')).toBeInTheDocument();
+    expect(screen.getByText('Deal ID: matched-deal-1')).toBeInTheDocument();
   });
 
   it('displays score badge with correct confidence', () => {

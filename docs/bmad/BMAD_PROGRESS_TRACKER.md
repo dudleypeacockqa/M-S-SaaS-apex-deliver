@@ -1,3 +1,14 @@
+### Session 2025-10-29 (Phase 0 Baseline – 13:05 UTC)
+- ✅ ackend/venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings → **500 passed / 0 failed / 38 skipped** (document + deal-matching regressions resolved).
+- ✅ 
+pm --prefix frontend run test → **580 passed / 0 failed** (Vitest full sweep green after MatchingWorkspace/useDealMatches fix).
+- ✅ Document bulk download now honors permissions (403 when none available); tests updated accordingly.
+- 🔄 NEXT: Update CORS configuration to include production domains (e.g., https://100daysandbeyond.com) and verify Render front/back smoke.
+### Session 2025-10-29 (DEV-008 regression sweep - 09:38 UTC)
+- ✅ Command: backend/venv/Scripts/pytest.exe backend/tests/test_document_endpoints.py --maxfail=1 --disable-warnings → 37 passed.
+- ✅ Confirms document endpoints remain green after service-level coverage additions.
+- 🔄 NEXT: Pivot to frontend data-room RED specs (upload/version UI).
+
 ### Session 2025-10-29 (🎉 DEV-016 Audio Upload Complete - 10:22 UTC)
 
 **🎯 MAJOR MILESTONE: Audio Upload Feature Complete (TDD GREEN)**
@@ -422,6 +433,9 @@ umpy in backend requirements + venv, rerun pytest, refresh deployment health sna
 - ✅ Permission/audit sweep: `../backend/venv/Scripts/python.exe -m pytest tests/test_document_endpoints.py -k "permission or audit" --maxfail=1 --disable-warnings` → 8 passed.
 - ✅ Full suite: `../backend/venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings` → 500 passed / 38 skipped / 0 failed.
 - 🔄 NEXT: Draft RED coverage for DEV-008 audit log retrieval/rotation milestones before implementing remaining story items.
+
+
+
 
 
 
