@@ -427,7 +427,10 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
               <span>Fetching scenario analytics…</span>
             </div>
           ) : scenarioSummary ? (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
+            <div
+              className="grid grid-cols-1 gap-4 md:grid-cols-5"
+              data-testid="analytics-metrics-grid"
+            >
               <AnalyticsMetric label="Scenarios Analysed" value={scenarioSummary.count} />
               <RangeValue label="EV Median" value={scenarioSummary.enterprise_value_range.median} />
               <RangeValue label="Equity Median" value={scenarioSummary.equity_value_range.median} />

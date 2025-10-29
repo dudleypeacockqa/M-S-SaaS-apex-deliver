@@ -211,7 +211,7 @@ describe('ChangeTierModal', () => {
         trial_end: null,
         created_at: '2025-01-01T00:00:00Z',
         updated_at: '2025-01-01T00:00:00Z',
-      }), 100))
+      }), 500))
     );
 
     render(
@@ -230,12 +230,12 @@ describe('ChangeTierModal', () => {
     // Select tier and confirm
     const enterpriseCard = screen.getByText('Enterprise Plan').closest('div[role="button"]');
     await user.click(enterpriseCard!);
-    await user.click(screen.getByText('Confirm Change'));
+    await user.click(screen.getByRole('button', { name: /confirm change/i }));
 
-    // Should show loading state
-    expect(screen.getByText(/Changing tier/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Changing tier…')).toBeInTheDocument();
+    });
 
-    // Wait for completion
     await waitFor(() => {
       expect(mockOnSuccess).toHaveBeenCalled();
     });

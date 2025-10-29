@@ -13,6 +13,7 @@ Valuation Suite now supports full creation-to-analysis flow under Phase B of the
 - Run Monte Carlo simulations over existing valuations.
 - Add comparable companies and precedent transactions.
 - Display scenario analytics summary (count, medians, ranges).
+- Responsive analytics grid (single column on mobile, five columns on desktop).
 - Enforce subscription gating (403) for tiers below Growth.
 
 ## User Journey

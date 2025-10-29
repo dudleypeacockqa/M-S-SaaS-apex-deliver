@@ -38,6 +38,13 @@
 - Created comprehensive integration tests (9 tests in test_xero_integration.py)
 - All existing tests passing: 360/362 (99.4%), 83% coverage
 - Documentation: Created XERO_SETUP_GUIDE.md with sandbox setup instructions
+
+**Phase 4 QuickBooks Online Integration**: 🚧 In Progress (2025-10-29)
+- Introduced `quickbooks_oauth_service` mirroring the Xero integration with real python-quickbooks/intuit-oauth SDK support and secure mock fallback.
+- Added REST endpoints for QuickBooks OAuth initiate, callback, sync, status, and disconnect with multi-tenant guards.
+- Expanded financial API tests to cover QuickBooks flows (24 backend assertions now GREEN).
+- `GET /financial/connections` now returns both QuickBooks and Xero records from the database.
+- Next: complete P&L import + Sage/NetSuite adapters and refresh `FINANCIAL_INTEGRATIONS.md`.
 - **Status**: Production-ready (requires Xero app credentials)
 
 **Deferred to Future**:

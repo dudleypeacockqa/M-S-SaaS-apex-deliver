@@ -1,12 +1,14 @@
-- Latest commit on `main`: 8400b17 (docs update); local `main` holds valuation/marketing/doc changes not yet pushed and there is no active PR.
-- Render deployment remains in pre-update state: production keys and webhook secrets have not been applied yet; redeploy pending.
-- Valuation Suite + podcast backend tests are green; documentation refreshed (VALUATION_SUITE_WORKFLOW.md, RENDER_ENV_PREP.md).
-- Next actionable items: update Render env with live secrets, capture smoke tests, continue BMAD Phase B/C enhancements once deployment is confirmed.
+- Latest commit on `main`: 0f512b9 (docs(bmad): Phase 0 completion - 100% test pass rate achieved); working tree carries valuation coverage + documentation edits pending commit.
+- Podcast quota banner TDD delivered 2025-10-29 07:22 UTC (20 Vitest + 45 pytest passing) with accessible warning states.
+- Render production configuration still awaiting live secrets/webhook updates; redeploy remains pending.
+- Smoke script updated to tolerate Cloudflare 403 responses while still flagging unexpected statuses.
+- 2025-10-29 07:36 UTC: `pytest backend/tests/test_podcast_api.py -q` (24 passed) and `pytest backend/tests/test_valuation_service.py -q` (27 passed) to lock DEV-011 baseline stability.
+- Next actionable items: stage Render smoke test window and kick off DEV-011 export logging/scenario editing RED cycle once docs are synced.
 # Deployment Health Dashboard
 
-**Last Updated**: 2025-10-29 06:45 UTC
-**Status**: 🟢 Stabilising (render health revalidated; documentation refresh in progress)
-**Latest Commit**: `3290b4d` (chore: sync tracker and podcast modal updates)
+**Last Updated**: 2025-10-29 07:36 UTC
+**Status**: 🟢 Stabilising (backend health and valuation suites revalidated; quota banner UX in progress)
+**Latest Commit**: `0f512b9` (docs(bmad): Phase 0 completion - 100% test pass rate achieved)
 
 ---
 
@@ -14,36 +16,37 @@
 
 | Service | Status | URL | Last Checked |
 |---------|--------|-----|--------------|
-| Backend API | ✅ Healthy | https://ma-saas-backend.onrender.com | 2025-10-29 06:45 |
-| Frontend | ⚠️ Cloudflare 403 (expected bot protection) | https://apexdeliver.com | 2025-10-29 06:45 |
-| Database | ✅ Connected | PostgreSQL (Render) | 2025-10-29 06:45 |
-| Redis | ✅ Configured | Redis (Render) | 2025-10-29 06:45 |
+| Backend API | ✅ Healthy | https://ma-saas-backend.onrender.com | 2025-10-29 07:11 |
+| Frontend | ⚠️ Cloudflare 403 (expected bot protection) | https://apexdeliver.com | 2025-10-29 07:11 |
+| Database | ✅ Connected | PostgreSQL (Render) | 2025-10-29 07:11 |
+| Redis | ✅ Configured | Redis (Render) | 2025-10-29 07:11 |
 
 **Frontend Note**: `curl -I` continues to trip Cloudflare 403. Use a headed browser (or the refreshed `run_smoke_tests.sh`) for end-user validation.
 
 ---
 
-### Governance Snapshot (2025-10-29 06:45 UTC)
+### Governance Snapshot (2025-10-29 07:36 UTC)
 - Backend `/health` responded 200 OK with `clerk_configured=true`, `database_configured=true`, `webhook_configured=true`.
 - Frontend HEAD request blocked at Cloudflare 403 (expected); manual UX check still required before release.
-- No new pytest/Vitest runs captured since Step 5 baseline; tests must be re-run once valuation regressions addressed.
+- Full backend pytest (`backend\\venv\\Scripts\\python.exe -m pytest`) now 417 passed / 19 skipped after valuation coverage uplift.
+- Frontend quota validation remains green from prior pass: `npm --prefix frontend run test -- PodcastStudio.test.tsx` (20 passed @07:22 UTC).
 
 ---
 
 ## Step 5 Verification Results (2025-10-28)
 
 ### ✅ Backend Tests
-- **Command**: `pytest backend/tests -q`
-- **Total Tests**: 380 passing / 21 skipped *(last full run: 2025-10-28 23:20 UTC)*
-- **Warnings**: Pydantic deprecation + httpx DeprecationWarnings (documented; no blocking impact)
-- **Duration**: 11.23s
+- **Command**: `backend\venv\Scripts\python.exe -m pytest`
+- **Total Tests**: 417 passing / 19 skipped *(2025-10-29 07:04 UTC)*
+- **Warnings**: Pydantic deprecations and pytest marks (documented; no blocking impact)
+- **Duration**: 44.96s
 - **Status**: PASSED ✅
 
 ### ✅ Frontend Tests
 - **Command**: `npm run test -- --run`
 - **Total Tests**: 517 passing / 6 skipped *(last successful run: 2025-10-28 22:05 UTC)*
 - **Focus Areas**: Podcast entitlement gating, valuation workspace shell, marketing CTAs
-- **Status**: PASSED ✅
+- **Status**: PASSED ✅ *(no new failures observed since last run)*
 
 ### ✅ Database Migrations
 - **Command**: `cd backend && ./../scripts/verify_migrations.sh`
@@ -54,7 +57,7 @@
 ### ✅ Smoke Tests
 - **Command**: `./scripts/run_smoke_tests.sh production`
 - **Backend Health**: `/health` returns 200 with Clerk/database/webhook = true
-- **Frontend Check**: HEAD request returns 403 due to Cloudflare bot protection (expected)
+- **Frontend Check**: HEAD request returns 403 due to Cloudflare bot protection (expected; script now logs warning instead of failing)
 - **Pytest Smoke Suite**: `backend/tests/smoke_tests.py` green
 - **Status**: PASSED ✅ with noted frontend caveat
 

@@ -149,6 +149,56 @@ describe('PodcastStudio', () => {
       });
     });
 
+    it('should show approaching quota banner when usage reaches warning threshold', async () => {
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
+        tier: 'professional',
+        tierLabel: 'Professional',
+        limit: 10,
+        remaining: 2,
+        used: 8,
+        isUnlimited: false,
+        period: '2025-10',
+        quotaState: 'warning',
+        warningStatus: 'warning',
+        warningMessage: '80% of monthly quota used (8/10). 2 episodes remaining this month.',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
+      });
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const banner = await screen.findByRole('status', { name: /quota warning/i });
+      expect(banner).toHaveTextContent('80% of monthly quota used (8/10)');
+      expect(banner).toHaveTextContent('2 episodes remaining this month');
+      expect(screen.getByRole('button', { name: /new episode/i })).toBeEnabled();
+    });
+
+    it('should show critical quota banner when usage reaches critical threshold', async () => {
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
+        tier: 'professional',
+        tierLabel: 'Professional',
+        limit: 10,
+        remaining: 1,
+        used: 9,
+        isUnlimited: false,
+        period: '2025-10',
+        quotaState: 'warning',
+        warningStatus: 'critical',
+        warningMessage: '90% of monthly quota used (9/10). 1 episode remaining this month.',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
+      });
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const banner = await screen.findByRole('alert', { name: /quota critical warning/i });
+      expect(banner).toHaveTextContent('90% of monthly quota used (9/10)');
+      expect(banner).toHaveTextContent('1 episode remaining this month');
+      expect(screen.getByRole('button', { name: /new episode/i })).toBeEnabled();
+    });
+
     it('should display "Unlimited" for Premium tier', async () => {
       vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
         tier: 'premium',
@@ -184,7 +234,7 @@ describe('PodcastStudio', () => {
         period: '2025-10',
         quotaState: 'critical',
         warningStatus: 'critical',
-        warningMessage: 'Monthly quota exceeded.',
+        warningMessage: 'Monthly quota exceeded (10/10). 0 episodes remaining this month.',
         upgradeRequired: true,
         upgradeMessage: 'Upgrade to Premium tier for unlimited episodes.',
         upgradeCtaUrl: '/pricing',
@@ -536,7 +586,7 @@ describe('PodcastStudio', () => {
       expect(screen.getByLabelText(/episode number/i)).toBeInTheDocument();
     });
 
-    it.skip('should create episode when form submitted with valid data', async () => {
+    it('should create episode when form submitted with valid data', async () => {
       const user = userEvent.setup();
       const newEpisode = {
         id: 'ep-new',
@@ -565,18 +615,22 @@ describe('PodcastStudio', () => {
 
       await user.click(screen.getByRole('button', { name: /create episode/i }));
 
+      // Wait for the mutation to be called
       await waitFor(() => {
-        expect(podcastApi.createEpisode).toHaveBeenCalledWith({
-          title: 'New Test Episode',
-          description: '',
-          episode_number: 3,
-          season_number: 1,
-          audio_file_url: 'https://cdn.example.com/ep3.mp3',
-          video_file_url: '',
-          show_notes: '',
-          status: 'draft',
-        });
-      }, { timeout: 10000 });
+        expect(podcastApi.createEpisode).toHaveBeenCalled();
+      }, { timeout: 3000 });
+
+      // Verify it was called with correct values (null for empty optional fields)
+      expect(podcastApi.createEpisode).toHaveBeenCalledWith({
+        title: 'New Test Episode',
+        description: null,
+        episode_number: 3,
+        season_number: 1,
+        audio_file_url: 'https://cdn.example.com/ep3.mp3',
+        video_file_url: null,
+        show_notes: null,
+        status: 'draft',
+      });
     });
 
     it('should open Edit modal when Edit button clicked on episode', async () => {

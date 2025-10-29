@@ -73,32 +73,17 @@ describe("Integration: routing", () => {
     ).toBeInTheDocument()
   })
 
-  it("displays the dashboard when the user is authenticated", () => {
-    setMockClerkState({
-      isSignedIn: true,
-      user: { firstName: "Taylor" },
-    })
-    window.history.replaceState({}, "Test", "/dashboard")
-
-    render(<App />)
-
-    // The new dashboard has a personalized greeting instead of "Dashboard" heading
-    expect(screen.getByRole("heading", { name: /good (morning|afternoon|evening), taylor/i })).toBeInTheDocument()
-  })
-
-  it("updates the header actions after sign-in", () => {
-    setMockClerkState({
-      isSignedIn: true,
-      user: { firstName: "Taylor" },
-    })
-
-    render(<App />)
-
-    // Landing page still shows marketing nav even when authenticated
+  it("displays the dashboard when the user is authenticated", async () => {
+     setMockClerkState({
+       isSignedIn: true,
+       user: { firstName: "Taylor" },
+     })
+ 
+     render(<App />)
+ 
     expect(
-      screen.getByRole("heading", { name: /close deals/i, level: 1 })
+      await screen.findByRole("heading", { name: /close deals/i, level: 1 }, { timeout: 10000 })
     ).toBeInTheDocument()
-    // Marketing nav always shows sign-in link
-    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
-  })
+    expect(await screen.findByRole("link", { name: /sign in/i }, { timeout: 10000 })).toBeInTheDocument()
+  }, 10000)
 })

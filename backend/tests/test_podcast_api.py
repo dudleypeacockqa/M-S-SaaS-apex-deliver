@@ -466,7 +466,7 @@ class TestPodcastUsageEndpoint:
                     tier_label="Professional",
                     quota_state="warning",
                     warning_status="warning",
-                    warning_message="80% of monthly quota used.",
+                    warning_message="80% of monthly quota used (8/10). 2 episodes remaining this month.",
                     upgrade_required=False,
                     upgrade_message=None,
                     upgrade_cta_url=None,
@@ -476,7 +476,10 @@ class TestPodcastUsageEndpoint:
 
             assert response.status_code == status.HTTP_200_OK
             assert response.headers["X-Podcast-Quota-Warning"] == "warning"
-            assert response.headers["X-Podcast-Quota-Warning-Message"] == "80% of monthly quota used."
+            assert (
+                response.headers["X-Podcast-Quota-Warning-Message"]
+                == "80% of monthly quota used (8/10). 2 episodes remaining this month."
+            )
             assert "X-Podcast-Upgrade-Required" not in response.headers
         finally:
             _clear_override()
@@ -514,7 +517,7 @@ class TestPodcastUsageEndpoint:
                     tier_label="Professional",
                     quota_state="critical",
                     warning_status="critical",
-                    warning_message="Monthly quota exceeded.",
+                    warning_message="Monthly quota exceeded (10/10). 0 episodes remaining this month.",
                     upgrade_required=True,
                     upgrade_message="Upgrade to Premium tier for unlimited episodes.",
                     upgrade_cta_url="/pricing",
@@ -526,7 +529,7 @@ class TestPodcastUsageEndpoint:
             assert response.headers["X-Podcast-Quota-Warning"] == "critical"
             assert (
                 response.headers["X-Podcast-Quota-Warning-Message"]
-                == "Monthly quota exceeded."
+                == "Monthly quota exceeded (10/10). 0 episodes remaining this month."
             )
             assert response.headers["X-Podcast-Upgrade-Required"] == "true"
             assert (

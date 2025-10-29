@@ -230,6 +230,31 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
 
   const badgeClass = stateStyles[quota.quotaState] ?? 'bg-gray-100 text-gray-800';
   const showUpgradeCta = quota.upgradeRequired && quota.upgradeCtaUrl;
+  const warningLevel = quota.warningStatus ?? (quota.quotaState === 'critical' ? 'critical' : null);
+  const warningRole = warningLevel === 'critical' ? 'alert' : 'status';
+  const warningLabel = warningLevel === 'critical' ? 'Quota critical warning' : 'Quota warning';
+  const percentUsed = !quota.isUnlimited && typeof quota.limit === 'number' && quota.limit > 0
+    ? Math.round((quota.used / quota.limit) * 100)
+    : null;
+  const remainingCount = !quota.isUnlimited && typeof quota.remaining === 'number'
+    ? quota.remaining
+    : null;
+  const fallbackWarningMessage = (() => {
+    if (percentUsed === null) {
+      return 'Approaching your monthly quota limit.';
+    }
+
+    const remainingCopy = remainingCount !== null
+      ? `${remainingCount} ${remainingCount === 1 ? 'episode' : 'episodes'} remaining.`
+      : '';
+
+    return `${percentUsed}% of your monthly quota used.${remainingCopy ? ` ${remainingCopy}` : ''}`;
+  })();
+  const warningMessage = quota.warningMessage ?? fallbackWarningMessage;
+  const warningStyles: Record<string, string> = {
+    warning: 'mt-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900',
+    critical: 'mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-900',
+  };
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
@@ -250,8 +275,22 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
               ? `Created ${quota.used} episodes this month`
               : `${quota.remaining} remaining this month`}
           </p>
-          {quota.warningMessage && (
-            <p className="mt-2 text-sm text-amber-700">{quota.warningMessage}</p>
+          {warningLevel && (
+            <div
+              role={warningRole}
+              aria-label={warningLabel}
+              aria-live="polite"
+              className={warningStyles[warningLevel] ?? 'mt-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900'}
+            >
+              <p className="text-sm font-medium">{warningMessage}</p>
+              {remainingCount !== null && (
+                <p className="mt-1 text-sm">
+                  {remainingCount === 1
+                    ? '1 episode remaining this month.'
+                    : `${remainingCount} episodes remaining this month.`}
+                </p>
+              )}
+            </div>
           )}
           {quota.upgradeRequired && quota.upgradeMessage && (
             <p className="mt-2 text-sm text-indigo-700">{quota.upgradeMessage}</p>

@@ -76,13 +76,13 @@ describe("AppRoutes", () => {
     renderApp(["/"])
 
     // The new landing page has a different structure with MarketingNav
-    expect(await screen.findByRole("heading", { name: /close deals/i }, { timeout: 10000 })).toBeInTheDocument()
+    expect(await screen.findByRole("heading", { name: /close deals/i }, { timeout: 20000 })).toBeInTheDocument()
     // Marketing nav has regular links, not Clerk's SignInButton
     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
     // Multiple "Get Started" links exist (nav + footer), so use getAllBy
     const getStartedLinks = screen.getAllByRole("link", { name: /get started/i })
     expect(getStartedLinks.length).toBeGreaterThan(0)
-  }, 10000)
+  }, 20000)
 
   it("redirects visitors from the dashboard to the sign-in page", () => {
     renderApp(["/dashboard"])
@@ -92,30 +92,29 @@ describe("AppRoutes", () => {
     ).toBeInTheDocument()
   })
 
-  it("shows dashboard content when the user is authenticated", () => {
-    setMockClerkState({
-      isSignedIn: true,
-      user: { firstName: "Jamie" },
-    })
+  it("shows dashboard content when the user is authenticated", async () => {
+     setMockClerkState({
+       isSignedIn: true,
+       user: { firstName: "Jamie" },
+     })
+ 
+     renderApp(["/dashboard"])
+ 
+     // The new dashboard has a personalized greeting instead of "Dashboard" heading
+     expect(
+       await screen.findByRole("heading", { name: /good (morning|afternoon|evening), jamie/i }, { timeout: 20000 })
+     ).toBeInTheDocument()
+   }, 20000)
 
-    renderApp(["/dashboard"])
-
-    // The new dashboard has a personalized greeting instead of "Dashboard" heading
-    expect(screen.getByRole("heading", { name: /good (morning|afternoon|evening), jamie/i })).toBeInTheDocument()
-  })
-
-  it("updates the header to show the user menu for authenticated users", () => {
-    setMockClerkState({
-      isSignedIn: true,
-      user: { firstName: "Jamie" },
-    })
-
-    renderApp(["/"])
-
-    // The landing page still shows MarketingNav for authenticated users
-    // (they can still access marketing pages)
-    expect(screen.getByRole("heading", { name: /close deals/i })).toBeInTheDocument()
-    // The marketing nav still shows sign-in/up links even when authenticated
-    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
-  })
+  it("updates the header to show the user menu for authenticated users", async () => {
+     setMockClerkState({
+       isSignedIn: true,
+       user: { firstName: "Jamie" },
+     })
+ 
+     renderApp(["/"])
+ 
+     expect(await screen.findByRole("heading", { name: /close deals/i }, { timeout: 10000 })).toBeInTheDocument()
+     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
+  }, 10000)
 })

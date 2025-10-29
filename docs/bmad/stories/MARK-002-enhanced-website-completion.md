@@ -10,7 +10,12 @@
 
 ---
 
-**Latest Update (2025-10-28 22:00 UTC)**:
+**Latest Update (2025-10-29 07:09 UTC)**:
+- RED → GREEN: Marketing regression suite fully passing (`npm --prefix frontend test -- components/marketing`, `-- EnhancedLandingPage.test.tsx`).
+- Verified hero copy + SEO metadata align with tests (ensures "Close Deals 70% Faster" headline assertion).
+- Outstanding experiential work now limited to assets/perf/analytics phases per roadmap.
+
+**Update (2025-10-28 22:00 UTC)**:
 - Catalogued outstanding marketing assets/tests tied to this story before resuming RED→GREEN work:
   - Component/test sync: `frontend/src/components/marketing/ExitIntentPopup.tsx`, `StickyCTABar.tsx`, `ROICalculator.tsx`, `EnhancedTestimonials.test.tsx`, `TrustBadges.test.tsx`.
   - Page-level coverage: `frontend/src/pages/marketing/EnhancedLandingPage.test.tsx` (copy mismatches pending fix).

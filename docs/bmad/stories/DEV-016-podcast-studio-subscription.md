@@ -10,6 +10,12 @@
 
 ---
 
+**Latest Update (2025-10-29 07:22 UTC)**:
+- Added quota warning banner with BMAD TDD (RED → GREEN) covering 80%, 90%, and 100% threshold messaging plus upgrade CTA surfacing.
+- Tests executed: `npm --prefix frontend run test -- PodcastStudio.test.tsx` (20 passed) and `python -m pytest backend/tests/test_quota_service.py backend/tests/test_podcast_api.py` (45 passed).
+- Updated `scripts/run_smoke_tests.sh` to treat Render frontend 403 responses as expected Cloudflare bot protection while still flagging unexpected statuses.
+- Deployment tracker refreshed (`docs/DEPLOYMENT_HEALTH.md`) with latest health snapshot and quota UX focus.
+
 **Latest Update (2025-10-29 06:55 UTC)**:
 - RED → GREEN: `PodcastStudio.test.tsx` CRUD flow now 18/18 passing (`npm --prefix frontend test -- PodcastStudio.test.tsx`).
 - Integrated `CreateEpisodeModal`, `EditEpisodeModal`, and `DeleteEpisodeModal` with accessible dialogs + deterministic mutations; edit/delete tests now GREEN.

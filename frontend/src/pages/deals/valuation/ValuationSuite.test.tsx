@@ -56,9 +56,14 @@ describe('ValuationSuite RED tests', () => {
     })
   })
 
-  it('renders valuation layout shell', () => {
+  it('renders valuation layout shell', async () => {
+    vi.mocked(valuationApi.listValuations).mockResolvedValue([
+      { id: 'val-001', enterprise_value: 10000000, equity_value: 8000000, deal_id: 'deal-123', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
+    ])
     renderSuite()
-    expect(screen.getByText(/valuation suite/i)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText(/valuation suite/i)).toBeInTheDocument()
+    })
   })
 
   it('shows loading indicator while valuations fetch', async () => {
@@ -110,7 +115,7 @@ describe('ValuationSuite RED tests', () => {
   })
 
   it('allows adding precedent transaction to selected valuation', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: 0 })
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
       { id: 'val-002', enterprise_value: 12000000, equity_value: 9500000, deal_id: 'deal-precedent', organization_id: 'org-1', forecast_years: 5, discount_rate: 11, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 95.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
     ])
@@ -135,8 +140,8 @@ describe('ValuationSuite RED tests', () => {
 
     await waitFor(() => {
       expect(valuationApi.addPrecedentTransaction).toHaveBeenCalledWith('deal-precedent', 'val-002', expect.objectContaining({ target_company: 'Target Corp', acquirer_company: 'Acquirer Inc' }))
-    })
-  })
+    }, { timeout: 15000 })
+  }, 20000)
 
   // TODO: Test skipped - need to add analytics view or clarify what this test is checking
   it('displays scenario summary insights with analytics metrics', async () => {
@@ -165,6 +170,24 @@ describe('ValuationSuite RED tests', () => {
     expect(screen.getByText('£8,000,000 – £12,500,000')).toBeInTheDocument()
     expect(screen.getByText(/equity range/i)).toBeInTheDocument()
     expect(screen.getByText('£6,200,000 – £10,000,000')).toBeInTheDocument()
+  })
+
+  it('applies responsive layout classes to analytics metrics grid', async () => {
+    vi.mocked(valuationApi.listValuations).mockResolvedValue([
+      { id: 'val-responsive', enterprise_value: 12500000, equity_value: 9500000, deal_id: 'deal-responsive', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 3, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
+    ])
+    vi.mocked(valuationApi.getScenarioSummary).mockResolvedValue({
+      count: 3,
+      enterprise_value_range: { min: 9000000, max: 14000000, median: 11500000 },
+      equity_value_range: { min: 7000000, max: 10500000, median: 8800000 },
+    })
+
+    renderSuite('/deals/deal-responsive/valuations/val-responsive')
+
+    await screen.findByRole('heading', { name: /analytics summary/i })
+    const gridContainer = await screen.findByTestId('analytics-metrics-grid', {}, { timeout: 5000 })
+    expect(gridContainer.className).toContain('grid-cols-1')
+    expect(gridContainer.className).toContain('md:grid-cols-5')
   })
 
   it('allows creating a new scenario with JSON assumptions', async () => {

@@ -224,22 +224,34 @@ async def get_quota_summary(
 
     if not is_unlimited and limit_value:
         usage_ratio = used / limit_value
+        def _remaining_phrase(count: int) -> str:
+            episode_word = "episode" if count == 1 else "episodes"
+            return f"{count} {episode_word} remaining this month."
+
         if usage_ratio >= 1:
             quota_state = "exceeded"
             warning_status = "critical"
-            warning_message = "Monthly quota exceeded."
+            remaining_value = 0
+            warning_message = (
+                f"Monthly quota exceeded ({used}/{limit_value}). {_remaining_phrase(remaining_value)}"
+            )
             upgrade_required = True
             upgrade_message = "Upgrade to Premium tier for unlimited episodes."
             upgrade_cta_url = DEFAULT_UPGRADE_CTA
-            remaining_value = 0
         elif usage_ratio >= 0.9:
             quota_state = "critical"
             warning_status = "critical"
-            warning_message = "90% of monthly quota used."
+            remaining_count = max(remaining_value, 0)
+            warning_message = (
+                f"90% of monthly quota used ({used}/{limit_value}). {_remaining_phrase(remaining_count)}"
+            )
         elif usage_ratio >= 0.8:
             quota_state = "warning"
             warning_status = "warning"
-            warning_message = "80% of monthly quota used."
+            remaining_count = max(remaining_value, 0)
+            warning_message = (
+                f"80% of monthly quota used ({used}/{limit_value}). {_remaining_phrase(remaining_count)}"
+            )
 
     period = datetime.now(timezone.utc).strftime("%Y-%m")
 

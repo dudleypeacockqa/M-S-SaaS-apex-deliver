@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { listTasks, createTask, updateTask, type Task, type TaskCreate, type TaskUpdate } from '../../services/api/tasks'
 
+type TaskStatus = Task['status']
+type TaskPriority = Task['priority']
+
 interface TaskBoardProps {
   dealId: string
 }
@@ -10,7 +13,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ dealId }) => {
   const queryClient = useQueryClient()
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
-  const [priorityFilter, setPriorityFilter] = useState<string>('all')
+  const [priorityFilter, setPriorityFilter] = useState<TaskPriority | 'all'>('all')
 
   // Fetch tasks
   const { data, isLoading, error } = useQuery({
@@ -86,7 +89,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ dealId }) => {
             <select
               id="priority-filter"
               value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
+              onChange={(e) => setPriorityFilter(e.target.value as TaskPriority | 'all')}
               className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
             >
               <option value="all">All</option>
@@ -212,7 +215,7 @@ interface CreateTaskModalProps {
 const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ onClose, onCreate, isLoading }) => {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [priority, setPriority] = useState('normal')
+  const [priority, setPriority] = useState<TaskPriority>('normal')
   const [dueDate, setDueDate] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -264,7 +267,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ onClose, onCreate, is
             <select
               id="priority"
               value={priority}
-              onChange={(e) => setPriority(e.target.value)}
+              onChange={(e) => setPriority(e.target.value as TaskPriority)}
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
             >
               <option value="low">Low</option>
@@ -320,8 +323,8 @@ interface TaskDetailModalProps {
 const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose, onUpdate, isLoading }) => {
   const [title, setTitle] = useState(task.title)
   const [description, setDescription] = useState(task.description || '')
-  const [status, setStatus] = useState(task.status)
-  const [priority, setPriority] = useState(task.priority)
+  const [status, setStatus] = useState<TaskStatus>(task.status)
+  const [priority, setPriority] = useState<TaskPriority>(task.priority)
   const [dueDate, setDueDate] = useState(task.due_date ? task.due_date.split('T')[0] : '')
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -374,7 +377,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose, onUpda
             <select
               id="edit-status"
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => setStatus(e.target.value as TaskStatus)}
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
             >
               <option value="todo">To Do</option>
@@ -391,7 +394,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose, onUpda
             <select
               id="edit-priority"
               value={priority}
-              onChange={(e) => setPriority(e.target.value)}
+              onChange={(e) => setPriority(e.target.value as TaskPriority)}
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
             >
               <option value="low">Low</option>

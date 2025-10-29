@@ -367,7 +367,10 @@ class TestGetQuotaSummary:
             summary = await get_quota_summary(org_id, tier=SubscriptionTier.PROFESSIONAL, db=mock_db_session)
 
         assert summary.warning_status == "warning"
-        assert summary.warning_message == "80% of monthly quota used."
+        assert (
+            summary.warning_message
+            == "80% of monthly quota used (8/10). 2 episodes remaining this month."
+        )
         assert summary.quota_state == "warning"
         assert summary.upgrade_required is False
         assert summary.remaining == 2
@@ -388,7 +391,10 @@ class TestGetQuotaSummary:
             summary = await get_quota_summary(org_id, tier=SubscriptionTier.PROFESSIONAL, db=mock_db_session)
 
         assert summary.warning_status == "critical"
-        assert summary.warning_message == "90% of monthly quota used."
+        assert (
+            summary.warning_message
+            == "90% of monthly quota used (9/10). 1 episode remaining this month."
+        )
         assert summary.quota_state == "critical"
         assert summary.upgrade_required is False
         assert summary.remaining == 1
@@ -409,7 +415,10 @@ class TestGetQuotaSummary:
             summary = await get_quota_summary(org_id, tier=SubscriptionTier.PROFESSIONAL, db=mock_db_session)
 
         assert summary.warning_status == "critical"
-        assert summary.warning_message == "Monthly quota exceeded."
+        assert (
+            summary.warning_message
+            == "Monthly quota exceeded (10/10). 0 episodes remaining this month."
+        )
         assert summary.quota_state == "exceeded"
         assert summary.upgrade_required is True
         assert summary.upgrade_message == "Upgrade to Premium tier for unlimited episodes."

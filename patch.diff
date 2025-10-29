@@ -1,0 +1,91 @@
+diff --git a/backend/tests/conftest.py b/backend/tests/conftest.py
+index 0278773..d24ce25 100644
+--- a/backend/tests/conftest.py
++++ b/backend/tests/conftest.py
+@@
+-from sqlalchemy import create_engine, inspect
++from sqlalchemy import create_engine
+ from sqlalchemy.orm import sessionmaker
+ from sqlalchemy.pool import StaticPool
+-from sqlalchemy.exc import OperationalError
+ from _pytest.fixtures import FixtureLookupError
+@@
+-from app.core import database as core_database  # noqa: E402
+ from app.core.config import get_settings, settings  # noqa: E402
+ from app.db import session as session_module  # noqa: E402
+ from app.db.base 
+@@
+-def _safe_drop_schema(engine) -> None:
+-    """Drop known tables/views without failing if metadata is stale."""
+-
+-    inspector = inspect(engine)
+-    with engine.begin() as connection:
+-        for table_name in inspector.get_table_names():
+-            connection.exec_driver_sql(f'DROP TABLE IF EXISTS "{table_name}"')
+-
+-        get_view_names = getattr(inspector, "get_view_names", None)
+-        if callable(get_view_names):
+-            for view_name in get_view_names():  # pragma: no cover - sqlite usually has none
+-                connection.exec_driver_sql(f'DROP VIEW IF EXISTS "{view_name}"')
+-
+-    try:
+-        Base.metadata.drop_all(bind=engine)
+-    except OperationalError:
+-        # Drop any remaining tables that SQLAlchemy metadata did not track
+-        with engine.begin() as connection:
+-            for table_name in inspector.get_table_names():
+-                connection.exec_driver_sql(f'DROP TABLE IF EXISTS "{table_name}"')
+-
+-
+-def _reset_metadata(engine) -> None:
+-    """Ensure metadata matches the declared models for the provided engine."""
+-
+-    _safe_drop_schema(engine)
+-    Base.metadata.create_all(bind=engine)
+-
+-
+-__all__ = ["_safe_drop_schema", "_reset_metadata"]
+-
+-
+-@pytest.fixture()
++@pytest.fixture()
+ def engine():
+     """Create an in-memory SQLite engine per test."""
+@@
+-    session_module.engine = engine
+-    session_module.SessionLocal = session_factory
+-    core_database.engine = engine
+-    core_database.SessionLocal = session_factory
++    session_module.engine = engine
++    session_module.SessionLocal = session_factory
+@@
+-        Base.metadata.drop_all(engine)
+-        engine.dispose()
+-        core_database.engine = None
+-        core_database.SessionLocal = None
++        Base.metadata.drop_all(engine)
++        engine.dispose()
+@@
+-@pytest.fixture(autouse=True)
+-def _reset_database(engine):
+-    """Reset schema before each test for deterministic state."""
+-
+-    _reset_metadata(engine)
+-    yield
+-
+-
+ @pytest.fixture()
+ def client(engine) -> Iterator[TestClient]:
+     """Return a FastAPI TestClient with database dependency override."""
+@@
+ def db_session(engine):
+     """Provide a raw SQLAlchemy session for direct database inspection."""
+ 
+     SessionTesting = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+     session = SessionTesting()
+     try:
+         yield session
+     finally:
+-        session.close()
++        session.rollback()
++        session.close()

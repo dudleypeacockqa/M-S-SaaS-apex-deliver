@@ -109,7 +109,7 @@ describe('Clerk authentication routing', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders the appropriate header action depending on auth state', () => {
+  it('renders the appropriate header action depending on auth state', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
@@ -126,8 +126,7 @@ describe('Clerk authentication routing', () => {
       </QueryClientProvider>
     )
 
-    // Marketing nav uses regular link, not Clerk's SignInButton
-    expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: /sign in/i }, { timeout: 10000 })).toBeInTheDocument()
 
     setMockClerkState({
       isSignedIn: true,
@@ -142,8 +141,6 @@ describe('Clerk authentication routing', () => {
       </QueryClientProvider>
     )
 
-    // Landing page still shows marketing nav (not the user name in header)
-    // The user name would appear in the dashboard, not on the landing page
-    expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument()
-  })
+    expect(await screen.findByRole('link', { name: /sign in/i }, { timeout: 10000 })).toBeInTheDocument()
+  }, 10000)
 })

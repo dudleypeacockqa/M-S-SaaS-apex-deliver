@@ -21,8 +21,8 @@ PHASE_4_COMPLETE: false
 
 ## Next Action
 
-NEXT_ACTION: Implement podcast frontend gating (quota banner + upgrade CTA) with Vitest coverage before Render smoke tests
-NEXT_COMMAND: npm --prefix frontend run test -- PodcastQuotaBanner.test.tsx
-NEXT_AGENT: dev
+NEXT_ACTION: Run updated smoke suite to capture Render frontend/backend snapshot post-quota banner work
+NEXT_COMMAND: ./scripts/run_smoke_tests.sh production
+NEXT_AGENT: ops
 
-LAST_UPDATED: 2025-10-29T10:30:00Z
+LAST_UPDATED: 2025-10-29T07:24:00Z

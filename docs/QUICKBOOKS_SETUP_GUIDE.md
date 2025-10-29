@@ -1,6 +1,6 @@
 # QuickBooks Integration Setup Guide (Phase 4)
 
-**Last Updated**: 2025-10-28
+**Last Updated**: 2025-10-29
 **Feature**: DEV-010 Financial Intelligence Engine - QuickBooks SDK Integration
 **Status**: Production-Ready (requires QuickBooks app credentials)
 
@@ -108,16 +108,14 @@ pytest tests/test_quickbooks_integration.py -v -m integration
 
 2. Initiate OAuth flow:
    ```bash
-   curl -X POST http://localhost:8000/api/financial/connect/quickbooks/initiate \
-     -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"deal_id": "your_deal_id"}'
+   curl -X POST "http://localhost:8000/api/deals/DEAL_ID/financial/connect/quickbooks" \
+     -H "Authorization: Bearer YOUR_JWT_TOKEN"
    ```
 
 3. Visit the `authorization_url` returned
 4. Authorize the app in QuickBooks sandbox
-5. You'll be redirected with `code` and `realmId` parameters
-6. Connection will be stored in database
+5. You'll be redirected with `code` and `realmId` parameters (handled by backend callback)
+6. Connection will be stored in the `financial_connections` table
 
 ---
 
@@ -125,12 +123,7 @@ pytest tests/test_quickbooks_integration.py -v -m integration
 
 ### Connect QuickBooks Account to Deal
 
-**POST** `/api/financial/connect/quickbooks/initiate`
-```json
-{
-  "deal_id": "550e8400-e29b-41d4-a716-446655440000"
-}
-```
+**POST** `/api/deals/{deal_id}/financial/connect/quickbooks`
 
 **Response**:
 ```json
@@ -142,18 +135,34 @@ pytest tests/test_quickbooks_integration.py -v -m integration
 
 ### Handle OAuth Callback
 
-**GET** `/api/financial/connect/quickbooks/callback?code=AUTH_CODE&state=STATE_TOKEN&realmId=REALM_ID`
+**GET** `/api/deals/{deal_id}/financial/connect/quickbooks/callback?code=AUTH_CODE&state=STATE_TOKEN&realm_id=REALM_ID`
 
-Automatically handled by backend - creates `FinancialConnection` record.
+Automatically handled by backend - creates/updates a `FinancialConnection` record.
 
-### Import Financial Statements
+### Sync Financial Statements
 
-**POST** `/api/financial/connect/quickbooks/import`
+**POST** `/api/deals/{deal_id}/financial/sync/quickbooks`
+
 ```json
 {
-  "connection_id": "connection-uuid"
+  "success": true,
+  "statements_synced": 1,
+  "platform": "quickbooks",
+  "last_sync_at": "2025-10-29T07:20:00.000Z"
 }
 ```
+
+### Check Connection Status
+
+**GET** `/api/deals/{deal_id}/financial/connect/quickbooks/status`
+
+Returns connection status, organization name, and last sync timestamp.
+
+### Disconnect
+
+**DELETE** `/api/deals/{deal_id}/financial/connect/quickbooks`
+
+Removes stored tokens and marks the integration as disconnected.
 
 ---
 
@@ -267,5 +276,5 @@ All integrations follow the same pattern:
 ---
 
 **Status**: ✅ Phase 4 COMPLETE - Real QuickBooks SDK Integration
-**Test Coverage**: 360/362 tests passing (99.4%), 83% coverage maintained
+**Test Coverage**: Backend financial API + models sync suites green (24 new QuickBooks assertions)
 **Deployment**: Ready for production (requires QuickBooks app credentials)

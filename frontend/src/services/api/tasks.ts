@@ -3,7 +3,7 @@
  * Handles all task-related API calls for DEV-012 Task Management feature
  */
 
-import api from './client'
+import api from '../api'
 
 export interface Task {
   id: string
@@ -25,8 +25,8 @@ export interface Task {
 export interface TaskCreate {
   title: string
   description?: string | null
-  status?: string
-  priority?: string
+  status?: Task['status']
+  priority?: Task['priority']
   stage_gate?: string | null
   assignee_id?: string | null
   due_date?: string | null
@@ -35,8 +35,8 @@ export interface TaskCreate {
 export interface TaskUpdate {
   title?: string
   description?: string | null
-  status?: string
-  priority?: string
+  status?: Task['status']
+  priority?: Task['priority']
   stage_gate?: string | null
   assignee_id?: string | null
   due_date?: string | null
@@ -61,7 +61,7 @@ export interface TaskTemplate {
 export interface TaskTemplateTask {
   title: string
   description?: string | null
-  priority: string
+  priority: Task['priority']
   stage_gate?: string | null
 }
 
