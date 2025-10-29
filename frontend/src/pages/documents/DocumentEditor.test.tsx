@@ -164,7 +164,6 @@ describe('DocumentEditor', () => {
 
   it('loads the document and supports rich text editing with autosave', async () => {
     const documentApi = await documentApiPromise
-    vi.useFakeTimers()
 
     createRender()
 
@@ -174,17 +173,11 @@ describe('DocumentEditor', () => {
     await userEvent.click(editorRegion)
     await userEvent.type(editorRegion, ' Updated with new findings.')
 
-    await act(async () => {
-      vi.advanceTimersByTime(1500)
-    })
-
     await waitFor(() => {
       expect(documentApi.saveDocument).toHaveBeenCalledWith(DEFAULT_DOCUMENT_ID, {
         content: expect.stringContaining('Updated with new findings.'),
       })
     })
-
-    vi.useRealTimers()
   })
 
   it('applies a selected template and updates the editor content', async () => {

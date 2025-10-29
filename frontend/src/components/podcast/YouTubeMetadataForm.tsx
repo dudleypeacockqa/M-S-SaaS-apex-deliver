@@ -57,9 +57,9 @@ export function YouTubeMetadataForm({ values, errors, onFieldChange, onErrorChan
           value={values.title}
           onChange={handleTitleChange}
           onBlur={() => {
-            if (!values.title.trim()) {
-              onFieldChange('title', values.title.trim());
-            }
+            const trimmed = values.title.trim();
+            onFieldChange('title', trimmed);
+            onErrorChange && onErrorChange('title', trimmed ? null : 'Title is required');
           }}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           placeholder="Investor update episode"
