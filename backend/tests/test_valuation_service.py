@@ -13,6 +13,8 @@ from typing import List
 import pytest
 
 from app.services import valuation_service
+from app.models import Organization, User, ValuationModel
+from app.core.config import settings
 
 
 class TestDiscountedCashFlowCalculations:
@@ -417,4 +419,208 @@ class TestExportLogging:
         assert log_entry.export_type == "pdf"
         assert log_entry.export_format == "summary"
         assert log_entry.file_size_bytes == 204800
+
+
+class TestValuationServiceOperations:
+    def test_calculate_enterprise_value_exit_multiple_path(self):
+        ev = valuation_service._calculate_enterprise_value(
+            cash_flows=[350000, 420000, 500000],
+            terminal_cash_flow=575000,
+            discount_rate=0.1,
+            terminal_method="exit_multiple",
+            terminal_growth_rate=None,
+            terminal_ebitda_multiple=7.25,
+        )
+
+        assert ev > 0
+
+    def test_calculate_enterprise_value_exit_multiple_requires_multiple(self):
+        with pytest.raises(ValueError, match="terminal_ebitda_multiple required"):
+            valuation_service._calculate_enterprise_value(
+                cash_flows=[200000, 250000],
+                terminal_cash_flow=260000,
+                discount_rate=0.11,
+                terminal_method="exit_multiple",
+                terminal_growth_rate=None,
+                terminal_ebitda_multiple=None,
+            )
+
+    def test_update_valuation_recalculates_metrics(self, db_session, valuation_payload, test_deal, solo_user):
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            created_by=solo_user.id,
+            **valuation_payload,
+        )
+
+        original_ev = valuation.enterprise_value
+        original_price = valuation.implied_share_price
+
+        updated = valuation_service.update_valuation(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            updates={
+                "cash_flows": [600000, 750000, 925000, 1100000, 1250000],
+                "terminal_cash_flow": 1350000,
+                "terminal_method": "exit_multiple",
+                "terminal_ebitda_multiple": 8.0,
+                "net_debt": 250000,
+                "shares_outstanding": 150000,
+            },
+        )
+
+        assert updated.enterprise_value != pytest.approx(original_ev)
+        assert updated.implied_share_price != pytest.approx(original_price)
+
+    def test_delete_valuation_removes_related_records(self, db_session, valuation_payload, test_deal, solo_user):
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            created_by=solo_user.id,
+            **valuation_payload,
+        )
+
+        valuation_service.add_comparable(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            company_name="Delete Me",
+            ev_ebitda_multiple=9.0,
+        )
+        valuation_service.add_precedent_transaction(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            target_company="Target",
+            acquirer_company="Buyer",
+            ev_ebitda_multiple=7.0,
+        )
+
+        deleted = valuation_service.delete_valuation(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+        )
+
+        assert deleted is True
+        assert db_session.get(ValuationModel, valuation.id) is None
+        assert valuation_service.list_comparable_companies(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+        ) == []
+        assert valuation_service.list_precedent_transactions(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+        ) == []
+
+    def test_calculate_precedent_multiples_handles_no_records(self, db_session, valuation_payload, test_deal, solo_user):
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            created_by=solo_user.id,
+            **valuation_payload,
+        )
+
+        multiples = valuation_service.calculate_precedent_multiples(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            subject_ebitda=1_500_000,
+        )
+
+        assert multiples["ev_ebitda"]["count"] == 0
+        assert multiples["ev_ebitda"]["stale_count"] == 0
+
+    def test_list_helpers_return_entries(self, db_session, valuation_payload, test_deal, solo_user):
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=test_deal.id,
+            organization_id=test_deal.organization_id,
+            created_by=solo_user.id,
+            **valuation_payload,
+        )
+
+        scenario = valuation_service.add_scenario(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            name="Scenario A",
+            enterprise_value=9_500_000,
+        )
+        comparable = valuation_service.add_comparable(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            company_name="Comp A",
+            ev_ebitda_multiple=8.5,
+        )
+        precedent = valuation_service.add_precedent_transaction(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+            target_company="Target A",
+            acquirer_company="Buyer A",
+            ev_ebitda_multiple=7.2,
+        )
+
+        assert scenario in valuation_service.list_scenarios(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+        )
+        assert comparable in valuation_service.list_comparable_companies(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+        )
+        assert precedent in valuation_service.list_precedent_transactions(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=valuation.organization_id,
+        )
+
+    def test_trigger_export_task_returns_payload(self):
+        payload = valuation_service.trigger_export_task(
+            valuation_id="val-123",
+            organization_id="org-123",
+            export_type="pdf",
+            export_format="summary",
+        )
+
+        assert payload["status"] == "queued"
+        assert payload["export_type"] == "pdf"
+
+    def test_ensure_test_reference_entities_noop_when_not_test(self, db_session, monkeypatch):
+        org_id = str(uuid4())
+        user_id = str(uuid4())
+        monkeypatch.setattr(settings, "environment", "production")
+
+        valuation_service._ensure_test_reference_entities(
+            db_session,
+            organization_id=org_id,
+            user_id=user_id,
+        )
+
+        assert db_session.get(Organization, org_id) is None
+        assert db_session.get(User, user_id) is None
+
+    def test_ensure_test_reference_entities_creates_placeholders(self, db_session, monkeypatch):
+        org_id = str(uuid4())
+        user_id = str(uuid4())
+        monkeypatch.setattr(settings, "environment", "test")
+
+        valuation_service._ensure_test_reference_entities(
+            db_session,
+            organization_id=org_id,
+            user_id=user_id,
+        )
+
+        assert db_session.get(Organization, org_id) is not None
+        assert db_session.get(User, user_id) is not None
 

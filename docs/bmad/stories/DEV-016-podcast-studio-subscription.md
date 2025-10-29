@@ -10,6 +10,12 @@
 
 ---
 
+**Latest Update (2025-10-29 06:55 UTC)**:
+- RED → GREEN: `PodcastStudio.test.tsx` CRUD flow now 18/18 passing (`npm --prefix frontend test -- PodcastStudio.test.tsx`).
+- Integrated `CreateEpisodeModal`, `EditEpisodeModal`, and `DeleteEpisodeModal` with accessible dialogs + deterministic mutations; edit/delete tests now GREEN.
+- Cleaned duplicate imports in `PodcastStudio.tsx` and ensured Delete/Confirm Delete affordances align with DEV-016 spec.
+- Active WIP tracked for governance reset: backend quota + entitlement modules, podcast API routes/tests, and helper scripts (`scripts/run_smoke_tests.sh`, `scripts/verify_migrations.sh`) remain linked for upcoming quota warning UX.
+
 **Latest Update (2025-10-28 23:30 UTC)**:
 - Backend quota service/API now expose tier labels, upgrade messaging, and consistent quota states; `pytest backend/tests/test_quota_service.py` + `test_podcast_api.py` passing.
 - Frontend `useFeatureAccess`, `FeatureGate`, and `PodcastStudio` quota HUD aligned with new payloads; Vitest suite GREEN (517 passed / 6 skipped).

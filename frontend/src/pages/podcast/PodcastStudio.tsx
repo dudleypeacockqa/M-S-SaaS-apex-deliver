@@ -11,6 +11,7 @@
 
 import React from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 import { FeatureGate } from '../../components/podcast/FeatureGate';
 import { CreateEpisodeModal } from '../../components/podcast/CreateEpisodeModal';
 import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
@@ -26,9 +27,6 @@ import {
   type QuotaSummary,
 } from '../../services/api/podcasts';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
-import { CreateEpisodeModal } from '../../components/podcast/CreateEpisodeModal';
-import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
-import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal';
 
 type FeatureAccessState = ReturnType<typeof useFeatureAccess>;
 type CreateEpisodePayload = Parameters<typeof createEpisode>[0];
@@ -181,18 +179,22 @@ function PodcastStudioContent() {
       <CreateEpisodeModal
         open={isCreateModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        onSubmit={(values) =>
-          createEpisodeMutation.mutate({
-            title: values.title,
-            description: values.description || null,
-            episode_number: Number(values.episodeNumber),
-            season_number: Number(values.seasonNumber),
-            audio_file_url: values.audioFileUrl,
-            video_file_url: values.videoFileUrl || null,
-            show_notes: values.showNotes || null,
-            status: 'draft',
-          })
-        }
+        onSubmit={async (values) => {
+          try {
+            await createEpisodeMutation.mutateAsync({
+              title: values.title,
+              description: values.description || null,
+              episode_number: Number(values.episodeNumber),
+              season_number: Number(values.seasonNumber),
+              audio_file_url: values.audioFileUrl,
+              video_file_url: values.videoFileUrl || null,
+              show_notes: values.showNotes || null,
+              status: 'draft',
+            });
+          } catch (error) {
+            console.error('Failed to create podcast episode', error);
+          }
+        }}
         isSubmitting={createEpisodeMutation.isPending}
       />
 

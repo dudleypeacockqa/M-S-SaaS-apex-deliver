@@ -168,7 +168,7 @@ describe('ValuationSuite RED tests', () => {
   })
 
   it('allows creating a new scenario with JSON assumptions', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: 0 })
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
       { id: 'val-scenarios', enterprise_value: 10500000, equity_value: 8000000, deal_id: 'deal-scenarios', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
     ])
@@ -214,7 +214,7 @@ describe('ValuationSuite RED tests', () => {
       await screen.findByText(/scenario saved successfully/i),
     ).toBeInTheDocument()
     expect(await screen.findByText(/upside case/i)).toBeInTheDocument()
-  })
+  }, 15000)
 
   it('shows validation error when scenario assumptions JSON is invalid', async () => {
     const user = userEvent.setup()

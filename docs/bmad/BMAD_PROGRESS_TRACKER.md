@@ -1,3 +1,12 @@
+### Session 2025-10-29 (Phase 4 Stabilisation - 06:50 UTC)
+- RED Targeted pytest (backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_api.py backend/tests/test_podcast_api.py) failed: _reset_database fixture references missing _reset_metadata (NameError) blocking 36 valuation and podcast API cases.
+- GREEN npm --prefix frontend test -- ValuationSuite.test.tsx PodcastStudio.test.tsx -> 30 tests passing (ValuationSuite 12, PodcastStudio 18).
+- ACTION Restore _reset_metadata helper in backend/tests/conftest.py and rerun valuation and podcast API suites before next DEV-016 TDD loop.
+
+### Session 2025-10-28 (Phase D0 Podcast Quota Baseline)
+- ✅ Fixed podcast professional quota assertion (ackend/tests/test_podcast_api.py) after schema update (quota_state now "normal").
+- ✅ python -m pytest backend/tests/test_podcast_api.py::TestPodcastUsageEndpoint::test_usage_endpoint_returns_quota_summary_for_professional -q → GREEN.
+- 🔄 NEXT: rerun full podcast API suite post-Render config updates to validate live entitlements.
 ### Session 2025-10-29 (Session 10: Phase C Complete - Podcast Studio CRUD Implementation – 06:47 UTC)
 - ✅ **Phase C Complete**: Full CRUD implementation for Podcast Studio
 - ✅ **Backend Tests**: 378/378 passing (100%) ✅
@@ -33,6 +42,13 @@
 - ✅ Verified local branch main has no pending commits compared to origin; working tree dirty with ongoing BMAD docs/features (no new commits yet).
 - ⚠️ Render health based on docs/DEPLOYMENT_HEALTH.md remains last-checked 2025-10-28; network-restricted session cannot revalidate live endpoints.
 - 🔄 NEXT: Schedule approved smoke-test run + DEPLOYMENT_HEALTH.md refresh during Dev cycle once network access available.
+### Session 2025-10-29 (Phase B: Valuation Regression Triage)
+- ✅ Synced with origin/main (`3290b4d`) to confirm baseline commit and gathered latest dirty work inventory.
+- ✅ Revalidated Render backend health (`/health` → 200 OK @ 06:45Z); frontend HEAD still Cloudflare 403 (expected).
+- ⚠️ Vitest log (`frontend/test-output.txt`) shows 8/8 ValuationSuite specs failing—workspace regressions block DEV-011 completion.
+- ⚠️ Worktree remains heavily modified (500+ tracked deltas + new podcast modal); must avoid reverting user edits.
+- 🔄 NEXT: capture fresh RED run via `npm --prefix frontend run test -- ValuationSuite.test.tsx`, triage component regressions, restore GREEN under TDD, then rerun backend smoke (`pytest --maxfail=1`).
+
 ### Session 2025-10-28 (Phase D0 Render Prep)
 - ✅ Authored docs/RENDER_ENV_PREP.md summarising required production env vars/webhook actions for backend & frontend.
 - ✅ Cross-referenced Render checklist; identified outstanding secrets (live Clerk/Stripe keys, webhook signing secrets).
@@ -77,6 +93,12 @@ px vitest run ValuationSuite → 9 tests passing (creation/analytics/precedent f
 - Command: `npm --prefix frontend test -- ValuationSuite.test.tsx` → **12 passed / 0 failed**.
 - Implementation: Added `htmlFor`/`id` pairs, string-input state with clamping ≥50 iterations, and ensured payload determinism before calling `runMonteCarlo`.
 - Impact: Removes final RED scenario in valuation workspace; ready to proceed with scenario editing + export backlog.
+
+### Session 2025-10-29 (Phase 1: DEV-016 CRUD Dialogs – 06:55 UTC)
+- 🔴→🟢 Podcast Studio CRUD specs now 18/18 GREEN after wiring accessible create/edit/delete modals.
+- Command: `npm --prefix frontend test -- PodcastStudio.test.tsx` → **18 passed / 0 failed**.
+- Implementation: Integrated `CreateEpisodeModal`, `EditEpisodeModal`, `DeleteEpisodeModal`; cleaned duplicate imports and ensured Delete + Confirm Delete flows trigger React Query mutations.
+- Impact: DEV-016 frontend gating now stable; next focus on quota warning UX + backend usage endpoints.
 
 ### Session 2025-10-28 (Phase 0: Governance Reset & Baseline Complete)
 - ✅ **Phase 0 COMPLETE**: Clean git state & accurate test baseline established

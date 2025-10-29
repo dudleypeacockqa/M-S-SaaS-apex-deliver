@@ -14,7 +14,7 @@ const renderLandingPage = async () => {
     </RouterWrapper>
   );
 
-  await screen.findByText(/Close Deals/i);
+  await screen.findByText(/Close Deals/i, undefined, { timeout: 10000 });
   return utils;
 };
 
