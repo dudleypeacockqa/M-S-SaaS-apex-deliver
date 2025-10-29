@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -172,7 +172,9 @@ describe('YouTubePublisher', () => {
     await userEvent.type(titleInput, 'A'.repeat(120));
     await userEvent.tab();
 
-    expect(await screen.findByText(/title must be 100 characters or fewer/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/title must be 100 characters or fewer/i)).toBeInTheDocument();
+    });
     expect(titleInput).toHaveValue('A'.repeat(100));
 
     const descriptionInput = screen.getByLabelText(/description/i);
@@ -222,10 +224,7 @@ describe('YouTubePublisher', () => {
     const statuses: YouTubePublishStatus[] = ['uploading', 'processing', 'published', 'failed'];
 
     for (const status of statuses) {
-      podcastApi.getYouTubePublishStatus.mockResolvedValueOnce({
-        status,
-        lastCheckedAt: '2025-10-28T12:30:00Z',
-      });
+      cleanup();
       renderPublisher({ status });
       await waitFor(() => {
         expect(screen.getByTestId('youtube-status-badge')).toHaveTextContent(new RegExp(status, 'i'));
@@ -312,7 +311,7 @@ describe('YouTubePublisher', () => {
   it('shows processing indicator while publish mutation is in flight', async () => {
     podcastApi.publishEpisodeToYouTube.mockImplementation(() =>
       new Promise((resolve) => {
-        setTimeout(() => resolve({ videoId: 'YT_999' }), 50);
+        setTimeout(() => resolve({ videoId: 'YT_999' }), 200);
       })
     );
     renderPublisher();
@@ -320,7 +319,9 @@ describe('YouTubePublisher', () => {
     const publishButton = await screen.findByRole('button', { name: /publish episode/i });
     await userEvent.click(publishButton);
 
-    expect(await screen.findByText(/publishing to youtube…/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(publishButton).toHaveTextContent(/publishing to youtube…/i);
+    });
   });
 
   it('locks scheduling controls when privacy is set to private', async () => {

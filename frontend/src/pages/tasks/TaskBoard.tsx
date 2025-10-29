@@ -133,6 +133,7 @@ const TaskBoard: React.FC = () => {
     mountedRef.current = true;
     void loadBoardData(true);
     const intervalId = setInterval(() => {
+      console.log('interval fired');
       void loadBoardData();
     }, POLL_INTERVAL_MS);
 

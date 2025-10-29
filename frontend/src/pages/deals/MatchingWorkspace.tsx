@@ -74,6 +74,28 @@ const formatCurrencyRange = (min: string, max: string) => {
   return `${formatter.format(minNumber)} – ${formatter.format(maxNumber)}`;
 };
 
+const CriteriaSkeleton: React.FC = () => (
+  <div className="grid gap-4 md:grid-cols-2 animate-pulse">
+    {[...Array(4)].map((_, index) => (
+      <div
+        key={`criteria-skeleton-${index}`}
+        className="h-32 rounded-xl bg-gray-100"
+      />
+    ))}
+  </div>
+);
+
+const MatchesSkeleton: React.FC = () => (
+  <div className="space-y-3 animate-pulse">
+    {[...Array(3)].map((_, index) => (
+      <div
+        key={`match-skeleton-${index}`}
+        className="h-24 rounded-lg bg-gray-100"
+      />
+    ))}
+  </div>
+);
+
 const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
   dealId,
   activeTab: initialTab = 'criteria',
@@ -111,6 +133,7 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
     queryKey: ['matchCriteria'],
     queryFn: fetchMatchCriteria,
     enabled: hasAccess,
+    staleTime: 60_000,
   });
 
   useEffect(() => {
@@ -140,6 +163,8 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
     queryKey: ['dealMatches', dealId],
     queryFn: () => listDealMatches(dealId!),
     enabled: hasAccess && activeTab === 'matches' && !!dealId,
+    staleTime: 60_000,
+    keepPreviousData: true,
   });
 
   const findMatchesMutation = useMutation({
@@ -553,7 +578,9 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
               </button>
             </div>
 
-            {criteria.length === 0 ? (
+            {criteriaLoading ? (
+              <CriteriaSkeleton />
+            ) : criteria.length === 0 ? (
               <div className="text-center py-12 bg-gray-50 rounded-lg">
                 <p className="text-gray-600">No criteria saved yet. Create your first one!</p>
               </div>
@@ -566,76 +593,81 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
         )}
 
         {activeTab === 'matches' && dealId && (
-          <div>
-            <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">Matches</h2>
-                {activeCriteria ? (
-                  <p className="text-sm text-gray-500">Using preset: {activeCriteria.name}</p>
+          <ErrorBoundary fallback={<div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">Unable to load matches right now.</div>}>
+            <div>
+              <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">Matches</h2>
+                  {activeCriteria ? (
+                    <p className="text-sm text-gray-500">Using preset: {activeCriteria.name}</p>
+                  ) : (
+                    <p className="text-sm text-gray-500">Select a preset to enable matching</p>
+                  )}
+                </div>
+                {canFindMatches ? (
+                  <button
+                    onClick={() => {
+                      if (activeCriteria) {
+                        findMatchesMutation.mutate({
+                          criteria_id: activeCriteria.id,
+                          top_n: 10,
+                          min_score: 40,
+                        });
+                      }
+                    }}
+                    disabled={findMatchesMutation.isPending}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium disabled:bg-gray-400"
+                  >
+                    {findMatchesMutation.isPending ? 'Finding...' : 'Find Matches'}
+                  </button>
                 ) : (
-                  <p className="text-sm text-gray-500">Select a preset to enable matching</p>
+                  <div className="text-sm text-gray-500">Select or create a criteria preset to find matches.</div>
                 )}
               </div>
-              {canFindMatches ? (
-                <button
-                  onClick={() => {
-                    if (activeCriteria) {
-                      findMatchesMutation.mutate({
-                        criteria_id: activeCriteria.id,
-                        top_n: 10,
-                        min_score: 40,
-                      });
-                    }
-                  }}
-                  disabled={findMatchesMutation.isPending}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium disabled:bg-gray-400"
-                >
-                  {findMatchesMutation.isPending ? 'Finding...' : 'Find Matches'}
-                </button>
+
+              {matchAnalytics && !showMatchesLoader && (
+                <div className="mb-6 space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <MatchSuccessRate
+                      successRate={matchAnalytics.successRate}
+                      total={matchAnalytics.total}
+                      successCount={matchAnalytics.successCount}
+                    />
+                    <MatchScoreDistribution
+                      distribution={matchAnalytics.distribution}
+                      total={matchAnalytics.total}
+                    />
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <RecentMatches matches={matchAnalytics.recentMatches} />
+                    <MatchingActivity events={matchAnalytics.activityEvents} />
+                  </div>
+                </div>
+              )}
+
+              {showMatchesLoader ? (
+                <MatchesSkeleton />
+              ) : matches.length === 0 ? (
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                  <p className="text-gray-600">No matches found. Try finding matches for this deal.</p>
+                </div>
               ) : (
-                <div className="text-sm text-gray-500">
-                  Select or create a criteria preset to find matches.
+                <div className="space-y-4">
+                  {matches.map((match) => (
+                    <MatchCard
+                      key={`${match.dealId}-${match.matchedDealId ?? match.id ?? 'calculated'}`}
+                      match={match}
+                      onViewDetails={handleViewDetails}
+                      onSave={handleSaveMatch}
+                      onPass={handlePassMatch}
+                      loading={saveMatchMutation.isPending || passMatchMutation.isPending}
+                    />
+                  ))}
                 </div>
               )}
             </div>
-
-            {matchAnalytics && !showMatchesLoader && (
-              <div className="mb-6 space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <MatchSuccessRate
-                    successRate={matchAnalytics.successRate}
-                    total={matchAnalytics.total}
-                    successCount={matchAnalytics.successCount}
-                  />
-                  <MatchScoreDistribution
-                    distribution={matchAnalytics.distribution}
-                    total={matchAnalytics.total}
-                  />
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <RecentMatches matches={matchAnalytics.recentMatches} />
-                  <MatchingActivity events={matchAnalytics.activityEvents} />
-                </div>
-              </div>
-            )}
-            ) : (
-              <div className="space-y-4">
-                {matches.map((match) => (
-                  <MatchCard
-                    key={`${match.dealId}-${match.matchedDealId ?? match.id ?? 'calculated'}`}
-                    match={match}
-                    onViewDetails={handleViewDetails}
-                    onSave={handleSaveMatch}
-                    onPass={handlePassMatch}
-                    loading={saveMatchMutation.isPending || passMatchMutation.isPending}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          </ErrorBoundary>
         )}
-      </div>
-
       <MatchDetailModal
         match={selectedMatch}
         isOpen={isDetailModalOpen}

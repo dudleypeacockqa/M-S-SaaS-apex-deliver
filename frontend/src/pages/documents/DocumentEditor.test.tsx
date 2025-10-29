@@ -176,10 +176,17 @@ describe('DocumentEditor', () => {
     await userEvent.type(editorRegion, ' Updated with new findings.')
 
     await waitFor(() => {
-      expect(documentApi.saveDocument).toHaveBeenCalledWith(DEFAULT_DOCUMENT_ID, {
-        content: expect.stringContaining('Updated with new findings.'),
-      })
+      expect(documentApi.saveDocument).toHaveBeenCalled()
     })
+
+    const lastCall = vi.mocked(documentApi.saveDocument).mock.calls.at(-1)
+    expect(lastCall?.[0]).toBe(DEFAULT_DOCUMENT_ID)
+    expect(lastCall?.[1]).toEqual(
+      expect.objectContaining({
+        content: expect.stringContaining('Updated with new findings.'),
+        title: 'Acquisition Overview',
+      })
+    )
   })
 
   it('applies a selected template and updates the editor content', async () => {
@@ -331,7 +338,7 @@ describe('DocumentEditor', () => {
     createRender()
 
     const editorRegion = await screen.findByRole('textbox', { name: /document content editor/i })
-    await userEvent.type(editorRegion, ' Trigger save error')
+    await userEvent.type(editorRegion, '!')
 
     await waitFor(() => {
       expect(documentApi.saveDocument).toHaveBeenCalled()

@@ -204,7 +204,6 @@ export function YouTubePublisher({ episode, youtubeAccess }: YouTubePublisherPro
   const connectionLoading = connectionQuery.isLoading;
   const publishState: YouTubePublishState | undefined = statusQuery.data;
   const status = publishState?.status ?? 'not_published';
-  const statusLoading = statusQuery.isLoading;
   const isPublishing = publishMutation.isPending;
 
   return (
@@ -284,7 +283,7 @@ export function YouTubePublisher({ episode, youtubeAccess }: YouTubePublisherPro
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-900">Status</span>
-            <YouTubeStatusBadge status={statusLoading ? 'not_published' : status} />
+            <YouTubeStatusBadge status={status} />
           </div>
           {publishState?.lastCheckedAt ? (
             <span className="text-xs text-gray-500">Last checked {new Date(publishState.lastCheckedAt).toLocaleString()}</span>
