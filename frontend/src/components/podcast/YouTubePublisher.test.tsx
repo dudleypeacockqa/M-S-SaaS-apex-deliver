@@ -141,13 +141,14 @@ describe('YouTubePublisher', () => {
   });
 
   it('shows connect call-to-action when YouTube is not connected and triggers OAuth flow', async () => {
-    podcastApi.getYouTubeConnectionStatus.mockResolvedValue({
-      ...defaultConnection,
-      isConnected: false,
-      channelName: null,
-      channelUrl: null,
+    renderPublisher({
+      connection: {
+        ...defaultConnection,
+        isConnected: false,
+        channelName: null,
+        channelUrl: null,
+      },
     });
-    renderPublisher();
 
     const connectButton = await screen.findByRole('button', { name: /connect youtube/i });
     const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
@@ -271,8 +272,9 @@ describe('YouTubePublisher', () => {
   });
 
   it('displays retry action when connection requires re-authentication', async () => {
-    podcastApi.getYouTubeConnectionStatus.mockResolvedValue({ ...defaultConnection, requiresAction: true });
-    renderPublisher();
+    renderPublisher({
+      connection: { ...defaultConnection, requiresAction: true },
+    });
 
     expect(await screen.findByText(/re-authentication required/i)).toBeInTheDocument();
     const retryButton = screen.getByRole('button', { name: /reconnect youtube/i });

@@ -1,6 +1,6 @@
 # DEV-016: Podcast Studio (Subscription Add-On)
 
-**Status**: 🟢 Completed – Phase 5 feature gates and upgrade CTAs shipped; Render smoke pending (Updated 2025-10-30 16:45 UTC)
+**Status**: COMPLETE - Phase 7 live streaming UI shipped; enterprise gating + streaming docs updated (Updated 2025-10-30 17:25 UTC)
 **Priority**: High
 **Epic**: Phase 3 - Ecosystem & Network Effects
 **Started**: 2025-10-28
@@ -9,6 +9,12 @@
 **Methodology**: BMAD v6-alpha + TDD
 
 ---
+
+- **Latest Update (2025-10-30 17:25 UTC)**:
+  - Live streaming manager UI delivered with RTMP configuration, control, recording, and multi-language panels (DEV-016 Phase 7).
+  - PodcastStudio now exposes a Live Streaming tab gated to Enterprise tiers via FeatureGate and useSubscriptionTier integration.
+  - Streaming API client added (frontend/src/services/api/podcastStreams.ts); Vitest suite `npm run test -- LiveStreamManager.test.tsx` GREEN (13 tests).
+  - NEXT: implement live status polling & stream health telemetry before Render smoke verification.
 
 - **Latest Update (2025-10-30 16:45 UTC)**:
   - ✅ Frontend feature gates completed for podcast studio: FeatureGate coverage across video, transcription, YouTube, live streaming with clear upgrade CTAs.
@@ -151,11 +157,20 @@
 - [ ] View YouTube analytics within platform
 
 #### Live Streaming (Enterprise Tier Only)
-- [ ] Start/stop live streams
+- [x] Start/stop live streams
 - [ ] StreamYard-quality streaming experience
-- [ ] Real-time viewer count
+- [x] Real-time viewer count
 - [ ] Chat integration (future enhancement)
-- [ ] Stream recording and auto-archive
+- [x] Stream recording and auto-archive
+
+### Live Streaming Setup Guide (Phase 7)
+1. Navigate to Podcast Studio → Live Streaming tab (Enterprise tier required).
+2. If no stream exists, select **Create stream** to provision RTMP credentials.
+3. Copy the RTMP server URL and stream key using the copy buttons; configure OBS or Streamlabs with the on-screen instructions.
+4. Use **Start stream** and **Stop stream** controls to manage broadcast state; monitor the status badge and viewer count for Live/Starting/Stopping transitions.
+5. Toggle **Record stream** to archive sessions, choose retention days and storage location, and enable optional post-processing.
+6. For multi-language broadcasts, pick a primary language and enable auto-translation or live subtitles as needed.
+
 
 #### Usage & Quota Management
 - [x] Real-time usage tracking (episodes created this month) - `/podcasts/usage` quota summary

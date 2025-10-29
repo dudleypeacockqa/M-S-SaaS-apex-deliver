@@ -29,7 +29,11 @@ const DEFAULT_DEAL_ID = 'deal-789'
 
 const createRender = () =>
   renderWithQueryClient(
-    <DocumentEditor documentId={DEFAULT_DOCUMENT_ID} dealId={DEFAULT_DEAL_ID} />
+    <DocumentEditor
+      documentId={DEFAULT_DOCUMENT_ID}
+      dealId={DEFAULT_DEAL_ID}
+      autoSaveDelayMs={0}
+    />
   )
 
 describe('DocumentEditor', () => {
@@ -173,8 +177,6 @@ describe('DocumentEditor', () => {
     await act(async () => {
       vi.advanceTimersByTime(1500)
     })
-
-    expect(documentApi.saveDocument).toHaveBeenCalled()
 
     await waitFor(() => {
       expect(documentApi.saveDocument).toHaveBeenCalledWith(DEFAULT_DOCUMENT_ID, {
