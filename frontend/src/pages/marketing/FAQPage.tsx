@@ -1,7 +1,6 @@
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
 export const FAQPage: React.FC = () => {
@@ -167,11 +166,16 @@ export const FAQPage: React.FC = () => {
                         <h3 className="text-lg font-semibold text-gray-900 pr-4">
                           {faq.q}
                         </h3>
-                        <ChevronDown
+                        <svg
                           className={`w-5 h-5 text-indigo-600 flex-shrink-0 transition-transform ${
                             isOpen ? 'transform rotate-180' : ''
                           }`}
-                        />
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
                       </button>
                       
                       {isOpen && (
