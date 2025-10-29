@@ -4,7 +4,7 @@ type JsonHeaders = Record<string, string>
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE"
 
-type PermissionLevel = "viewer" | "editor" | "owner"
+export type PermissionLevel = "viewer" | "editor" | "owner"
 
 type FetchOptions = {
   method?: HttpMethod
@@ -76,13 +76,13 @@ export interface Folder {
   id: string
   name: string
   deal_id: string
-  parent_folder_id: string | null
+  parent_id: string | null
   organization_id: string
   created_by: string
   created_at: string
   updated_at: string | null
   document_count: number
-  children: Folder[]
+  children?: Folder[]
 }
 
 export interface DocumentListParams {
@@ -108,22 +108,23 @@ export interface CreateFolderPayload {
 }
 
 export interface PermissionPayload {
-  user_id: string
-  permission_level: PermissionLevel
-  folder_id?: string | null
+  user_email: string
+  role: PermissionLevel
 }
 
-export interface PermissionResponse {
+export interface DocumentPermission {
   id: string
-  document_id: string | null
-  folder_id: string | null
+  document_id: string
   user_id: string
-  permission_level: PermissionLevel
-  granted_by: string
+  user_email: string
+  role: PermissionLevel
   created_at: string
 }
 
-export async function createFolder(dealId: string, payload: CreateFolderPayload): Promise<Folder> {
+export async function createFolder(
+  dealId: string,
+  payload: { name: string; parent_id: string | null }
+): Promise<Folder> {
   const headers = await getAuthHeaders("json")
 
   return request<Folder>(buildDealUrl(dealId, "/folders"), {
@@ -131,7 +132,7 @@ export async function createFolder(dealId: string, payload: CreateFolderPayload)
     headers,
     body: JSON.stringify({
       name: payload.name,
-      parent_folder_id: payload.parent_folder_id ?? null,
+      parent_id: payload.parent_id,
     }),
   })
 }
@@ -141,6 +142,29 @@ export async function listFolders(dealId: string): Promise<Folder[]> {
 
   return request<Folder[]>(buildDealUrl(dealId, "/folders"), {
     method: "GET",
+    headers,
+  })
+}
+
+export async function updateFolder(
+  dealId: string,
+  folderId: string,
+  payload: Partial<{ name: string; parent_id: string | null }>
+): Promise<Folder> {
+  const headers = await getAuthHeaders("json")
+
+  return request<Folder>(buildDealUrl(dealId, `/folders/${folderId}`), {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function deleteFolder(dealId: string, folderId: string): Promise<void> {
+  const headers = await getAuthHeaders("json")
+
+  await request<void>(buildDealUrl(dealId, `/folders/${folderId}`), {
+    method: "DELETE",
     headers,
   })
 }
@@ -218,6 +242,15 @@ export async function downloadDocument(dealId: string, documentId: string): Prom
   return URL.createObjectURL(blob)
 }
 
+export async function deleteDocument(dealId: string, documentId: string): Promise<void> {
+  const headers = await getAuthHeaders("json")
+
+  await fetch(buildDealUrl(dealId, `/documents/${documentId}`), {
+    method: "DELETE",
+    headers,
+  })
+}
+
 export async function archiveDocument(dealId: string, documentId: string): Promise<Document> {
   const headers = await getAuthHeaders("json")
 
@@ -236,25 +269,53 @@ export async function restoreDocument(dealId: string, documentId: string): Promi
   })
 }
 
-export async function addDocumentPermission(
-  dealId: string,
-  documentId: string,
-  payload: PermissionPayload
-): Promise<PermissionResponse> {
+export async function listPermissions(documentId: string): Promise<DocumentPermission[]> {
   const headers = await getAuthHeaders("json")
 
-  return request<PermissionResponse>(
-    buildDealUrl(dealId, `/documents/${documentId}/permissions`),
+  const response = await request<DocumentPermission[]>(
+    `${API_BASE_URL}/api/documents/${documentId}/permissions`,
     {
-      method: "POST",
+      method: "GET",
       headers,
-      body: JSON.stringify({
-        user_id: payload.user_id,
-        permission_level: payload.permission_level,
-        folder_id: payload.folder_id ?? null,
-      }),
     }
   )
+
+  return response
+}
+
+export async function addPermission(
+  documentId: string,
+  payload: { user_email: string; role: PermissionLevel }
+): Promise<DocumentPermission> {
+  const headers = await getAuthHeaders("json")
+
+  return request<DocumentPermission>(`${API_BASE_URL}/api/documents/${documentId}/permissions`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updatePermission(
+  permissionId: string,
+  payload: { role: PermissionLevel }
+): Promise<DocumentPermission> {
+  const headers = await getAuthHeaders("json")
+
+  return request<DocumentPermission>(`${API_BASE_URL}/api/permissions/${permissionId}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function removePermission(permissionId: string): Promise<void> {
+  const headers = await getAuthHeaders("json")
+
+  await request<void>(`${API_BASE_URL}/api/permissions/${permissionId}`, {
+    method: "DELETE",
+    headers,
+  })
 }
 
 export const ALLOWED_FILE_TYPES = [

@@ -10,12 +10,16 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PermissionModal } from './PermissionModal';
 
 // Mock permissions API
-vi.mock('../../services/api/documents', () => ({
-  listPermissions: vi.fn(),
-  addPermission: vi.fn(),
-  updatePermission: vi.fn(),
-  removePermission: vi.fn(),
-}));
+vi.mock('../../services/api/documents', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../services/api/documents')>();
+  return {
+    ...actual,
+    listPermissions: vi.fn(),
+    addPermission: vi.fn(),
+    updatePermission: vi.fn(),
+    removePermission: vi.fn(),
+  };
+});
 
 const renderWithProviders = (ui: React.ReactElement) => {
   const queryClient = new QueryClient({
@@ -88,9 +92,9 @@ describe('PermissionModal', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/viewer/i)).toBeInTheDocument();
-      expect(screen.getByText(/editor/i)).toBeInTheDocument();
-      expect(screen.getByText(/owner/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/role for viewer@example.com/i)).toHaveValue('viewer');
+      expect(screen.getByLabelText(/role for editor@example.com/i)).toHaveValue('editor');
+      expect(screen.getByLabelText(/role for owner@example.com/i)).toHaveValue('owner');
     });
   });
 
@@ -138,8 +142,7 @@ describe('PermissionModal', () => {
     fireEvent.click(addButton);
 
     await waitFor(() => {
-      expect(addPermission).toHaveBeenCalledWith({
-        document_id: 'doc-1',
+      expect(addPermission).toHaveBeenCalledWith('doc-1', {
         user_email: 'newuser@example.com',
         role: 'viewer',
       });

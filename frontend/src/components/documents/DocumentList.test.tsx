@@ -10,11 +10,15 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DocumentList } from './DocumentList';
 
 // Mock document API
-vi.mock('../../services/api/documents', () => ({
-  listDocuments: vi.fn(),
-  downloadDocument: vi.fn(),
-  deleteDocument: vi.fn(),
-}));
+vi.mock('../../services/api/documents', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../services/api/documents')>();
+  return {
+    ...actual,
+    listDocuments: vi.fn(),
+    downloadDocument: vi.fn(),
+    deleteDocument: vi.fn(),
+  };
+});
 
 const renderWithProviders = (ui: React.ReactElement) => {
   const queryClient = new QueryClient({
@@ -372,9 +376,9 @@ describe('DocumentList', () => {
     confirmSpy.mockRestore();
   });
 
-  it('should show loading state while fetching documents', () => {
-    const { listDocuments } = vi.mocked(require('../../services/api/documents'));
-    listDocuments.mockImplementation(() => new Promise(() => {}));
+  it('should show loading state while fetching documents', async () => {
+    const { listDocuments } = await import('../../services/api/documents');
+    vi.mocked(listDocuments).mockImplementation(() => new Promise(() => {}));
 
     renderWithProviders(
       <DocumentList

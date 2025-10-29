@@ -10,12 +10,16 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FolderTree } from './FolderTree';
 
 // Mock folder API
-vi.mock('../../services/api/documents', () => ({
-  createFolder: vi.fn(),
-  listFolders: vi.fn(),
-  deleteFolder: vi.fn(),
-  updateFolder: vi.fn(),
-}));
+vi.mock('../../services/api/documents', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../services/api/documents')>();
+  return {
+    ...actual,
+    createFolder: vi.fn(),
+    listFolders: vi.fn(),
+    deleteFolder: vi.fn(),
+    updateFolder: vi.fn(),
+  };
+});
 
 const renderWithProviders = (ui: React.ReactElement) => {
   const queryClient = new QueryClient({
@@ -40,8 +44,8 @@ describe('FolderTree', () => {
   it('should render root folder structure', async () => {
     const { listFolders } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Contracts', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01' },
-      { id: 'folder-2', name: 'Financial Reports', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-02' },
+      { id: 'folder-1', name: 'Contracts', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0 },
+      { id: 'folder-2', name: 'Financial Reports', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-02', document_count: 2 },
     ]);
 
     renderWithProviders(
@@ -61,9 +65,9 @@ describe('FolderTree', () => {
   it('should render nested folder hierarchy', async () => {
     const { listFolders } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Legal', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01' },
-      { id: 'folder-2', name: 'NDAs', parent_id: 'folder-1', deal_id: 'deal-1', created_at: '2025-01-02' },
-      { id: 'folder-3', name: 'Signed', parent_id: 'folder-2', deal_id: 'deal-1', created_at: '2025-01-03' },
+      { id: 'folder-1', name: 'Legal', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 1 },
+      { id: 'folder-2', name: 'NDAs', parent_id: 'folder-1', deal_id: 'deal-1', created_at: '2025-01-02', document_count: 0 },
+      { id: 'folder-3', name: 'Signed', parent_id: 'folder-2', deal_id: 'deal-1', created_at: '2025-01-03', document_count: 0 },
     ]);
 
     renderWithProviders(
@@ -90,7 +94,7 @@ describe('FolderTree', () => {
   it('should highlight selected folder', async () => {
     const { listFolders } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Documents', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01' },
+      { id: 'folder-1', name: 'Documents', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 2 },
     ]);
 
     renderWithProviders(
@@ -102,15 +106,16 @@ describe('FolderTree', () => {
     );
 
     await waitFor(() => {
-      const folderElement = screen.getByText('Documents').closest('div');
-      expect(folderElement).toHaveClass('bg-indigo-50');
+      const folderButton = screen.getByRole('button', { name: /select documents/i });
+      const folderContainer = folderButton.closest('div.flex.items-center.justify-between');
+      expect(folderContainer).toHaveClass('bg-indigo-50');
     });
   });
 
   it('should call onFolderSelect when folder is clicked', async () => {
     const { listFolders } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Assets', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01' },
+      { id: 'folder-1', name: 'Assets', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0 },
     ]);
 
     const onFolderSelect = vi.fn();
@@ -178,8 +183,7 @@ describe('FolderTree', () => {
     fireEvent.keyDown(input, { key: 'Enter' });
 
     await waitFor(() => {
-      expect(createFolder).toHaveBeenCalledWith({
-        deal_id: 'deal-1',
+      expect(createFolder).toHaveBeenCalledWith('deal-1', {
         name: 'New Folder',
         parent_id: null,
       });
@@ -189,7 +193,7 @@ describe('FolderTree', () => {
   it('should show context menu on right-click', async () => {
     const { listFolders } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Reports', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01' },
+      { id: 'folder-1', name: 'Reports', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0 },
     ]);
 
     renderWithProviders(
@@ -216,7 +220,7 @@ describe('FolderTree', () => {
   it('should rename folder via context menu', async () => {
     const { listFolders, updateFolder } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Old Name', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01' },
+      { id: 'folder-1', name: 'Old Name', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0 },
     ]);
     vi.mocked(updateFolder).mockResolvedValue({
       id: 'folder-1',
@@ -252,14 +256,14 @@ describe('FolderTree', () => {
     fireEvent.keyDown(input, { key: 'Enter' });
 
     await waitFor(() => {
-      expect(updateFolder).toHaveBeenCalledWith('folder-1', { name: 'New Name' });
+      expect(updateFolder).toHaveBeenCalledWith('deal-1', 'folder-1', { name: 'New Name' });
     });
   });
 
   it('should delete folder with confirmation', async () => {
     const { listFolders, deleteFolder } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'To Delete', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01' },
+      { id: 'folder-1', name: 'To Delete', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0 },
     ]);
     vi.mocked(deleteFolder).mockResolvedValue(undefined);
 
@@ -282,21 +286,22 @@ describe('FolderTree', () => {
     const folderElement = screen.getByText('To Delete');
     fireEvent.contextMenu(folderElement);
 
-    // Click delete
-    const deleteButton = await screen.findByText(/delete/i);
-    fireEvent.click(deleteButton);
+    // Click delete button from context menu (not the folder name)
+    const deleteButtons = await screen.findAllByText(/delete/i);
+    const deleteButton = deleteButtons.find(btn => btn.tagName === 'BUTTON' && btn.textContent === 'Delete');
+    fireEvent.click(deleteButton!);
 
     await waitFor(() => {
       expect(confirmSpy).toHaveBeenCalled();
-      expect(deleteFolder).toHaveBeenCalledWith('folder-1');
+      expect(deleteFolder).toHaveBeenCalledWith('deal-1', 'folder-1');
     });
 
     confirmSpy.mockRestore();
   });
 
-  it('should show loading state while fetching folders', () => {
-    const { listFolders } = vi.mocked(require('../../services/api/documents'));
-    listFolders.mockImplementation(() => new Promise(() => {})); // Never resolves
+  it('should show loading state while fetching folders', async () => {
+    const { listFolders } = await import('../../services/api/documents');
+    vi.mocked(listFolders).mockImplementation(() => new Promise(() => {})); // Never resolves
 
     renderWithProviders(
       <FolderTree
