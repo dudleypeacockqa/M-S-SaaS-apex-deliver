@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, desc, like, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, blogPosts, InsertBlogPost, contactSubmissions, InsertContactSubmission } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,82 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// Blog post queries
+export async function getAllBlogPosts(filters?: { category?: string; search?: string }) {
+  const db = await getDb();
+  if (!db) return [];
+
+  let conditions = [eq(blogPosts.published, true)];
+
+  if (filters?.category) {
+    conditions.push(eq(blogPosts.category, filters.category as any));
+  }
+
+  if (filters?.search) {
+    conditions.push(
+      like(blogPosts.title, `%${filters.search}%`)
+    );
+  }
+
+  const result = await db
+    .select()
+    .from(blogPosts)
+    .where(and(...conditions))
+    .orderBy(desc(blogPosts.publishedAt));
+
+  return result;
+}
+
+export async function getBlogPostBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db
+    .select()
+    .from(blogPosts)
+    .where(eq(blogPosts.slug, slug))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createBlogPost(post: InsertBlogPost) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(blogPosts).values(post);
+  return result;
+}
+
+export async function updateBlogPost(id: number, post: Partial<InsertBlogPost>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db
+    .update(blogPosts)
+    .set(post)
+    .where(eq(blogPosts.id, id));
+
+  return result;
+}
+
+// Contact form submissions
+export async function createContactSubmission(submission: InsertContactSubmission) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(contactSubmissions).values(submission);
+  return result;
+}
+
+export async function getAllContactSubmissions() {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result = await db
+    .select()
+    .from(contactSubmissions)
+    .orderBy(desc(contactSubmissions.createdAt));
+
+  return result;
+}
