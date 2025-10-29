@@ -23,6 +23,13 @@ from app.services.xero_oauth_service import (
     handle_xero_callback,
     fetch_xero_statements,
 )
+from app.services.quickbooks_oauth_service import (
+    initiate_quickbooks_oauth,
+    handle_quickbooks_callback,
+    fetch_quickbooks_statements,
+    disconnect_quickbooks,
+    get_quickbooks_connection_status,
+)
 from app.api.dependencies.auth import get_current_user
 from app.models.financial_connection import FinancialConnection
 from app.models.financial_narrative import FinancialNarrative
@@ -225,9 +232,14 @@ def get_financial_connections(
             detail="You don't have access to this deal's organization"
         )
 
-    # TODO: Query FinancialConnection model
-    # For now, return empty list (no connections yet)
-    return []
+    connections = (
+        db.query(FinancialConnection)
+        .filter(FinancialConnection.deal_id == deal_id)
+        .order_by(FinancialConnection.created_at.desc())
+        .all()
+    )
+
+    return [FinancialConnectionResponse.model_validate(conn) for conn in connections]
 
 
 @router.get(
@@ -497,6 +509,220 @@ def sync_financial_data(
         "platform": connection.platform,
         "last_sync_at": connection.last_sync_at.isoformat() if connection.last_sync_at else None
     }
+
+
+@router.post(
+    "/deals/{deal_id}/financial/connect/quickbooks",
+    summary="Initiate QuickBooks OAuth 2.0 flow",
+    description="""
+    Start the OAuth 2.0 authorization flow to connect a QuickBooks Online account.
+
+    Returns an authorization URL that the frontend should redirect the user to.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def connect_quickbooks(
+    deal_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Initiate QuickBooks OAuth flow."""
+
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    return initiate_quickbooks_oauth(deal_id, db)
+
+
+@router.get(
+    "/deals/{deal_id}/financial/connect/quickbooks/callback",
+    response_model=FinancialConnectionResponse,
+    summary="Handle QuickBooks OAuth callback",
+    description="""
+    Handle the OAuth 2.0 callback from QuickBooks Online after user authorization.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def quickbooks_oauth_callback(
+    deal_id: str,
+    code: str,
+    state: str,
+    realm_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Handle QuickBooks OAuth callback."""
+
+    if not code or not state or not realm_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing required query parameters: code, state, realm_id",
+        )
+
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    connection = handle_quickbooks_callback(
+        deal_id,
+        code,
+        state,
+        realm_id,
+        db,
+    )
+
+    return FinancialConnectionResponse.model_validate(connection)
+
+
+@router.get(
+    "/deals/{deal_id}/financial/connect/quickbooks/status",
+    summary="Get QuickBooks connection status",
+    description="""
+    Retrieve QuickBooks connection status for a deal.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def quickbooks_connection_status(
+    deal_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Return QuickBooks connection status for the deal."""
+
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    return get_quickbooks_connection_status(deal_id, db)
+
+
+@router.post(
+    "/deals/{deal_id}/financial/sync/quickbooks",
+    summary="Sync financial data from QuickBooks",
+    description="""
+    Trigger a manual sync of financial data from QuickBooks Online.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def sync_quickbooks_financial_data(
+    deal_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Manually sync financial data from QuickBooks."""
+
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    connection = (
+        db.query(FinancialConnection)
+        .filter(
+            FinancialConnection.deal_id == deal_id,
+            FinancialConnection.platform == "quickbooks",
+        )
+        .first()
+    )
+
+    if not connection:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No QuickBooks connection found for this deal. Please connect QuickBooks first.",
+        )
+
+    statements = fetch_quickbooks_statements(connection.id, db)
+
+    return {
+        "success": True,
+        "statements_synced": len(statements),
+        "platform": connection.platform,
+        "last_sync_at": connection.last_sync_at.isoformat() if connection.last_sync_at else None,
+    }
+
+
+@router.delete(
+    "/deals/{deal_id}/financial/connect/quickbooks",
+    summary="Disconnect QuickBooks from a deal",
+    description="""
+    Disconnect the QuickBooks integration and remove stored tokens for this deal.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def disconnect_quickbooks_connection(
+    deal_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Remove QuickBooks connection for the specified deal."""
+
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    disconnect_quickbooks(deal_id, db)
+
+    return {"success": True}
 
 
 @router.get(

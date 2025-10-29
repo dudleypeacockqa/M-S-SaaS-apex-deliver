@@ -122,8 +122,8 @@ def test_calculate_ratios_with_partial_data(client, test_deal, solo_user):
         app.dependency_overrides.pop(get_current_user, None)
 
 
-def test_get_financial_connections_endpoint(client, test_deal, solo_user):
-    """Test GET /deals/{id}/financial/connections endpoint"""
+def test_get_financial_connections_endpoint_returns_empty_list_when_no_connections(client, test_deal, solo_user):
+    """Test GET /deals/{id}/financial/connections endpoint returns empty list when no connections exist."""
     app.dependency_overrides[get_current_user] = lambda: solo_user
 
     try:
@@ -134,9 +134,41 @@ def test_get_financial_connections_endpoint(client, test_deal, solo_user):
         assert response.status_code == 200
         data = response.json()
 
-        # Should return empty list (no connections yet)
         assert isinstance(data, list)
         assert len(data) == 0
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_get_financial_connections_endpoint_returns_connections(client, test_deal, db_session, solo_user):
+    """Test financial connections endpoint returns persisted connections."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    connection = FinancialConnection(
+        id="conn-qbo-1",
+        deal_id=test_deal.id,
+        organization_id=test_deal.organization_id,
+        platform="quickbooks",
+        access_token="token",
+        refresh_token="refresh",
+        token_expires_at=datetime.utcnow() + timedelta(hours=1),
+        platform_organization_name="QuickBooks Demo Co",
+        connection_status="active",
+    )
+    db_session.add(connection)
+    db_session.commit()
+
+    try:
+        response = client.get(
+            f"/api/deals/{test_deal.id}/financial/connections",
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert len(data) == 1
+        assert data[0]["platform"] == "quickbooks"
+        assert data[0]["platform_organization_name"] == "QuickBooks Demo Co"
     finally:
         app.dependency_overrides.pop(get_current_user, None)
 
@@ -309,6 +341,208 @@ def test_sync_financial_data_no_connection(client, test_deal, solo_user):
 
         assert response.status_code == 404
         assert "connection" in response.json()["detail"].lower()
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_connect_quickbooks_initiates_oauth_flow(client, test_deal, solo_user):
+    """QuickBooks connection initiates OAuth flow."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        with patch('app.api.routes.financial.initiate_quickbooks_oauth') as mock_initiate:
+            mock_initiate.return_value = {
+                "authorization_url": "https://appcenter.intuit.com/connect/oauth2?client_id=real",
+                "state": "state-token",
+            }
+
+            response = client.post(
+                f"/api/deals/{test_deal.id}/financial/connect/quickbooks",
+            )
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["authorization_url"].startswith("https://appcenter.intuit.com")
+            assert data["state"] == "state-token"
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_connect_quickbooks_with_invalid_deal(client, solo_user):
+    """Connecting QuickBooks with invalid deal returns 404."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.post(
+            "/api/deals/invalid-id/financial/connect/quickbooks",
+        )
+
+        assert response.status_code == 404
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_quickbooks_oauth_callback_success(client, test_deal, solo_user):
+    """QuickBooks callback returns FinancialConnection response."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    mock_connection = Mock()
+    mock_connection.id = "conn-qbo-2"
+    mock_connection.deal_id = test_deal.id
+    mock_connection.organization_id = test_deal.organization_id
+    mock_connection.platform = "quickbooks"
+    mock_connection.connection_status = "active"
+    mock_connection.platform_organization_name = "QuickBooks Demo Co"
+    mock_connection.last_sync_at = None
+    mock_connection.last_sync_status = None
+    mock_connection.created_at = datetime.utcnow()
+
+    try:
+        with patch('app.api.routes.financial.handle_quickbooks_callback') as mock_callback:
+            mock_callback.return_value = mock_connection
+
+            response = client.get(
+                f"/api/deals/{test_deal.id}/financial/connect/quickbooks/callback",
+                params={
+                    "code": "auth-code",
+                    "state": "state-token",
+                    "realm_id": "realm-123",
+                },
+            )
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["platform"] == "quickbooks"
+            assert data["connection_status"] == "active"
+            assert data["platform_organization_name"] == "QuickBooks Demo Co"
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_quickbooks_oauth_callback_missing_params(client, test_deal, solo_user):
+    """QuickBooks callback requires code/state/realm_id."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.get(
+            f"/api/deals/{test_deal.id}/financial/connect/quickbooks/callback",
+        )
+
+        assert response.status_code == 422
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_sync_quickbooks_financial_data_success(client, test_deal, db_session, solo_user):
+    """Synchronise QuickBooks statements successfully."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    connection = FinancialConnection(
+        id="conn-qbo-sync",
+        deal_id=test_deal.id,
+        organization_id=test_deal.organization_id,
+        platform="quickbooks",
+        access_token="token",
+        refresh_token="refresh",
+        token_expires_at=datetime.utcnow() + timedelta(hours=1),
+        connection_status="active",
+    )
+    db_session.add(connection)
+    db_session.commit()
+
+    try:
+        with patch('app.api.routes.financial.fetch_quickbooks_statements') as mock_fetch:
+            mock_statement = Mock()
+            mock_statement.id = "stmt-qbo-1"
+            mock_fetch.return_value = [mock_statement]
+
+            response = client.post(
+                f"/api/deals/{test_deal.id}/financial/sync/quickbooks",
+            )
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["success"] is True
+            assert data["statements_synced"] == 1
+            assert data["platform"] == "quickbooks"
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_sync_quickbooks_financial_data_no_connection(client, test_deal, solo_user):
+    """Attempting QuickBooks sync without connection returns 404."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.post(
+            f"/api/deals/{test_deal.id}/financial/sync/quickbooks",
+        )
+
+        assert response.status_code == 404
+        assert "quickbooks" in response.json()["detail"].lower()
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_quickbooks_connection_status(client, test_deal, db_session, solo_user):
+    """QuickBooks status endpoint returns connection information."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    connection = FinancialConnection(
+        id="conn-qbo-status",
+        deal_id=test_deal.id,
+        organization_id=test_deal.organization_id,
+        platform="quickbooks",
+        access_token="token",
+        refresh_token="refresh",
+        token_expires_at=datetime.utcnow() + timedelta(hours=1),
+        connection_status="active",
+        platform_organization_name="QuickBooks Demo Co",
+    )
+    db_session.add(connection)
+    db_session.commit()
+
+    try:
+        response = client.get(
+            f"/api/deals/{test_deal.id}/financial/connect/quickbooks/status",
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["connected"] is True
+        assert data["platform"] == "quickbooks"
+        assert data["platform_organization_name"] == "QuickBooks Demo Co"
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_disconnect_quickbooks_connection(client, test_deal, db_session, solo_user):
+    """Disconnect QuickBooks removes connection."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    connection = FinancialConnection(
+        id="conn-qbo-delete",
+        deal_id=test_deal.id,
+        organization_id=test_deal.organization_id,
+        platform="quickbooks",
+        access_token="token",
+        refresh_token="refresh",
+        token_expires_at=datetime.utcnow() + timedelta(hours=1),
+        connection_status="active",
+    )
+    db_session.add(connection)
+    db_session.commit()
+
+    try:
+        response = client.delete(
+            f"/api/deals/{test_deal.id}/financial/connect/quickbooks",
+        )
+
+        assert response.status_code == 200
+        assert response.json()["success"] is True
+
+        remaining = db_session.query(FinancialConnection).filter_by(id="conn-qbo-delete").first()
+        assert remaining is None
     finally:
         app.dependency_overrides.pop(get_current_user, None)
 
