@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
+import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom"
 import { SignedIn, SignedOut } from "@clerk/clerk-react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
@@ -47,6 +47,12 @@ const DashboardRoute = () => {
   )
 }
 
+const FinancialDashboardRoute = () => {
+  const { dealId } = useParams<{ dealId: string }>();
+  if (!dealId) return <Navigate to="/deals" replace />;
+  return <FinancialDashboard dealId={dealId} />;
+}
+
 export const AppRoutes = () => {
   return (
     <Routes>
@@ -78,7 +84,7 @@ export const AppRoutes = () => {
         <Route path="deals/:dealId" element={<SignedIn><DealDetails /></SignedIn>} />
         <Route path="deals/:dealId/data-room" element={<SignedIn><DataRoom /></SignedIn>} />
         <Route path="deals/:dealId/valuation" element={<SignedIn><ValuationSuite /></SignedIn>} />
-        <Route path="deals/:dealId/financial" element={<SignedIn><FinancialDashboard /></SignedIn>} />
+        <Route path="deals/:dealId/financial" element={<SignedIn><FinancialDashboardRoute /></SignedIn>} />
 
         {/* Podcast Routes */}
         <Route path="podcast-studio" element={<SignedIn><PodcastStudio /></SignedIn>} />

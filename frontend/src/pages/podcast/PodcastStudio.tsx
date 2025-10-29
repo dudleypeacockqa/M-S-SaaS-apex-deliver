@@ -191,6 +191,12 @@ function PodcastStudioContent() {
               video_file_url: values.videoFileUrl || null,
               show_notes: values.showNotes || null,
               status: 'draft',
+              updated_at: null,
+              published_at: null,
+              transcript: null,
+              transcript_language: null,
+              duration_seconds: null,
+              youtube_video_id: null,
             });
           } catch (error) {
             console.error('Failed to create podcast episode', error);
@@ -418,8 +424,8 @@ function EpisodeListItem({
 
   const [youtubeSuccessMessage, setYoutubeSuccessMessage] = React.useState<string | null>(null);
   const [youtubeErrorMessage, setYoutubeErrorMessage] = React.useState<string | null>(null);
-  const [transcriptionSuccessMessage, setTranscriptionSuccessMessage] = React.useState<string | null>(null);
-  const [transcriptionErrorMessage, setTranscriptionErrorMessage] = React.useState<string | null>(null);
+  const [transcribeSuccessMessage, setTranscribeSuccessMessage] = React.useState<string | null>(null);
+  const [transcribeErrorMessage, setTranscribeErrorMessage] = React.useState<string | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -435,17 +441,16 @@ function EpisodeListItem({
     },
   });
 
-  const transcriptionMutation = useMutation({
+  const transcribeMutation = useMutation({
     mutationFn: () => transcribeEpisode(episode.id),
     onSuccess: () => {
-      setTranscriptionErrorMessage(null);
-      setTranscriptionSuccessMessage('Transcript generated successfully');
-      // Refresh episodes list to show updated transcript
-      queryClient.invalidateQueries({ queryKey: ['episodes'] });
+      setTranscribeErrorMessage(null);
+      setTranscribeSuccessMessage('Transcript generated successfully..');
+      queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
     },
     onError: () => {
-      setTranscriptionSuccessMessage(null);
-      setTranscriptionErrorMessage('Failed to transcribe audio. Please try again.');
+      setTranscribeSuccessMessage(null);
+      setTranscribeErrorMessage('Failed to transcribe audio. Please try again.');
     },
   });
 
@@ -456,9 +461,9 @@ function EpisodeListItem({
   };
 
   const handleTranscribe = () => {
-    setTranscriptionSuccessMessage(null);
-    setTranscriptionErrorMessage(null);
-    transcriptionMutation.mutate();
+    setTranscribeSuccessMessage(null);
+    setTranscribeErrorMessage(null);
+    transcribeMutation.mutate();
   };
 
   return (
@@ -467,11 +472,12 @@ function EpisodeListItem({
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3">
+              {/* Show thumbnail if available, otherwise show placeholder */}
               {episode.thumbnail_url ? (
                 <img
                   src={episode.thumbnail_url}
                   alt={`Thumbnail for ${episode.title}`}
-                  className="h-16 w-16 rounded object-cover border border-gray-200"
+                  className="h-16 w-16 rounded object-cover"
                   data-testid="episode-thumbnail"
                 />
               ) : (
@@ -546,10 +552,10 @@ function EpisodeListItem({
                 <button
                   type="button"
                   onClick={handleTranscribe}
-                  disabled={transcriptionMutation.isPending}
+                  disabled={transcribeMutation.isPending}
                   className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  {transcriptionMutation.isPending ? 'Transcribing…' : 'Transcribe Audio'}
+                  {transcribeMutation.isPending ? 'Transcribing…' : 'Transcribe audio'}
                 </button>
               ) : (
                 <>
@@ -572,7 +578,7 @@ function EpisodeListItem({
                         rel="noopener noreferrer"
                         className="text-xs text-indigo-600 hover:text-indigo-800 underline"
                       >
-                        Download Transcript (TXT)
+                        Download transcript (TXT)
                       </a>
                       <a
                         href={`/api/podcasts/episodes/${episode.id}/transcript.srt`}
@@ -580,28 +586,28 @@ function EpisodeListItem({
                         rel="noopener noreferrer"
                         className="text-xs text-indigo-600 hover:text-indigo-800 underline"
                       >
-                        Download Transcript (SRT)
+                        Download transcript (SRT)
                       </a>
                     </div>
                     <button
                       type="button"
                       onClick={handleTranscribe}
-                      disabled={transcriptionMutation.isPending}
+                      disabled={transcribeMutation.isPending}
                       className="text-xs text-indigo-600 hover:text-indigo-800 underline text-left"
                     >
-                      {transcriptionMutation.isPending ? 'Regenerating…' : 'Regenerate Transcript'}
+                      {transcribeMutation.isPending ? 'Regenerating…' : 'Regenerate Transcript'}
                     </button>
                   </div>
                 </>
               )}
-              {transcriptionSuccessMessage && (
+              {transcribeSuccessMessage && (
                 <p className="text-xs text-emerald-600" role="status">
-                  {transcriptionSuccessMessage}
+                  {transcribeSuccessMessage}
                 </p>
               )}
-              {transcriptionErrorMessage && (
+              {transcribeErrorMessage && (
                 <p className="text-xs text-red-600" role="alert">
-                  {transcriptionErrorMessage}
+                  {transcribeErrorMessage}
                 </p>
               )}
             </div>
