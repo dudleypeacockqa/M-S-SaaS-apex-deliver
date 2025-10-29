@@ -16,6 +16,7 @@ import { NewDealPage } from "./pages/deals/NewDealPage"
 import { DealDetails } from "./pages/deals/DealDetails"
 import { DataRoom } from "./pages/deals/DataRoom"
 import { ValuationSuite } from "./pages/deals/valuation/ValuationSuite"
+import FinancialDashboard from "./pages/deals/FinancialDashboard"
 import { PodcastStudio } from "./pages/podcast/PodcastStudio"
 
 // Billing & Checkout Pages
@@ -77,6 +78,7 @@ export const AppRoutes = () => {
         <Route path="deals/:dealId" element={<SignedIn><DealDetails /></SignedIn>} />
         <Route path="deals/:dealId/data-room" element={<SignedIn><DataRoom /></SignedIn>} />
         <Route path="deals/:dealId/valuation" element={<SignedIn><ValuationSuite /></SignedIn>} />
+        <Route path="deals/:dealId/financial" element={<SignedIn><FinancialDashboard /></SignedIn>} />
 
         {/* Podcast Routes */}
         <Route path="podcast-studio" element={<SignedIn><PodcastStudio /></SignedIn>} />

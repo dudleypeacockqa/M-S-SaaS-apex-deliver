@@ -244,6 +244,21 @@ export const DealDetails: React.FC = () => {
                 📂 Data Room
               </button>
               <button
+                onClick={() => navigate(`/deals/${deal.id}/financial`)}
+                style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  border: '1px solid #10b981',
+                  background: 'white',
+                  color: '#10b981',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                💰 Financial Intelligence
+              </button>
+              <button
                 onClick={handleEditClick}
                 style={{
                   padding: '0.5rem 1rem',

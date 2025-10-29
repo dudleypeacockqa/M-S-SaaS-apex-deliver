@@ -111,10 +111,26 @@ describe("AppRoutes", () => {
        isSignedIn: true,
        user: { firstName: "Jamie" },
      })
- 
+
      renderApp(["/"])
- 
+
      expect(await screen.findByRole("heading", { name: /close deals/i }, { timeout: 10000 })).toBeInTheDocument()
      expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
+  }, 10000)
+
+  it("routes to financial dashboard for authenticated users", async () => {
+    setMockClerkState({
+      isSignedIn: true,
+      user: { firstName: "Jamie" },
+    })
+
+    renderApp(["/deals/test-deal-123/financial"])
+
+    // Financial dashboard should render for authenticated users
+    // The component will hit auth errors in test environment, but that proves routing works
+    // Check for Retry button (multiple error messages may exist, but button is unique action)
+    expect(
+      await screen.findByRole("button", { name: /retry/i }, { timeout: 5000 })
+    ).toBeInTheDocument()
   }, 10000)
 })
