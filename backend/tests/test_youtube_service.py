@@ -88,3 +88,34 @@ async def test_upload_video_rejected_for_professional():
     mock_required.assert_called_once_with("youtube_integration")
     mock_client.assert_not_called()
     assert "Premium" in str(exc.value)
+
+
+@pytest.mark.asyncio
+async def test_upload_video_requires_file_path():
+    """Missing video asset should raise ValueError before YouTube API is invoked."""
+
+    from app.services import youtube_service  # noqa: WPS433
+
+    payload = {"title": "Episode Without Asset"}
+
+    with patch(
+        "app.services.youtube_service.check_feature_access",
+        new_callable=AsyncMock,
+        create=True,
+    ) as mock_access, patch(
+        "app.services.youtube_service._youtube_client",
+        new_callable=AsyncMock,
+        create=True,
+    ) as mock_client:
+        mock_access.return_value = True
+
+        with pytest.raises(ValueError) as exc:
+            await youtube_service.upload_video(
+                data=payload,
+                organization_id="org_premium",
+                user_tier=SubscriptionTier.PREMIUM,
+            )
+
+    mock_access.assert_awaited_once_with("org_premium", "youtube_integration")
+    mock_client.assert_not_called()
+    assert "Missing required video upload fields" in str(exc.value)

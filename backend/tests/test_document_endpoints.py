@@ -29,7 +29,7 @@ def auth_context(create_user, create_organization):
     """Provision a user + org, returning auth headers, cleanup callback, and org id."""
     org = create_organization(name="Doc Org")
     user = create_user(
-        email="docs@example.com",
+        email="docs@example.com", first_name="Doc", last_name="Owner",
         role=UserRole.enterprise,
         organization_id=str(org.id),
     )
@@ -1033,6 +1033,41 @@ def test_delete_document_records_audit_log(client, auth_context, seeded_deal):
         assert logs_resp.status_code == 200
         actions = [entry["action"] for entry in logs_resp.json()]
         assert "delete" in actions
+    finally:
+        cleanup()
+
+
+def test_access_logs_include_user_name(client, auth_context, seeded_deal):
+    """Ensure audit log endpoint returns user-friendly actor details."""
+    headers, cleanup, user, _ = auth_context
+    try:
+        upload_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/documents",
+            headers=headers,
+            files={"file": ("audit.pdf", io.BytesIO(b"audit"), "application/pdf")},
+        )
+        doc_id = upload_resp.json()["id"]
+
+        # Trigger an additional access event so we exercise ordering and data population
+        download_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/documents/{doc_id}/download",
+            headers=headers,
+        )
+        assert download_resp.status_code == 200
+
+        logs_resp = client.get(
+            f"/api/deals/{seeded_deal.id}/documents/{doc_id}/access-logs",
+            headers=headers,
+        )
+
+        assert logs_resp.status_code == 200
+        entries = logs_resp.json()
+        assert entries, "Expected at least one access log entry"
+
+        latest = entries[0]
+        assert latest["action"] == "download"
+        assert latest["user_id"] == str(user.id)
+        assert latest.get("user_name") == "Doc Owner"
     finally:
         cleanup()
 

@@ -28,6 +28,7 @@ from app.schemas.document import (
     FolderResponse,
     FolderUpdate,
     PaginatedDocuments,
+    PermissionLevel,
     PermissionCreate,
     PermissionResponse,
     DocumentAccessLogEntry,
@@ -139,7 +140,8 @@ def update_folder(
     updated_folder = document_service.update_folder(
         folder=folder,
         folder_data=folder_data,
-        db=db
+        db=db,
+        current_user=current_user,
     )
     return updated_folder
 
@@ -168,9 +170,50 @@ def delete_folder(
         )
 
     try:
-        document_service.delete_folder(folder=folder, db=db)
+        document_service.delete_folder(
+            folder=folder,
+            db=db,
+            current_user=current_user,
+        )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.post(
+    "/folders/{folder_id}/permissions",
+    response_model=PermissionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def grant_folder_permission(
+    deal_id: str,
+    folder_id: str,
+    permission_data: PermissionCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    permission = document_service.grant_folder_permission(
+        db=db,
+        deal_id=deal_id,
+        folder_id=folder_id,
+        permission_data=permission_data,
+        current_user=current_user,
+    )
+    return permission
+
+
+@router.get("/folders/{folder_id}/permissions", response_model=List[PermissionResponse])
+def list_folder_permissions(
+    deal_id: str,
+    folder_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return document_service.list_folder_permissions(
+        db=db,
+        deal_id=deal_id,
+        folder_id=folder_id,
+        current_user=current_user,
+    )
 
 
 # ============================================================================
@@ -272,6 +315,13 @@ def get_document(
             detail="Document not found"
         )
 
+    document_service.ensure_document_permission(
+        db=db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.VIEWER,
+    )
+
     # Log access
     document_service.log_document_access(
         db=db,
@@ -309,9 +359,18 @@ def update_document(
             detail="Document not found"
         )
 
+    document_service.ensure_document_permission(
+        db=db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.EDITOR,
+        allow_editor_for_own=True,
+    )
+
     updated_document = document_service.update_document_metadata(
         db=db,
         document=document,
+        current_user=current_user,
         folder_id=folder_id,
     )
     return updated_document
@@ -340,7 +399,18 @@ def delete_document(
             detail="Document not found"
         )
 
-    document_service.archive_document(db=db, document=document)
+    document_service.ensure_document_permission(
+        db=db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.OWNER,
+        allow_editor_for_own=True,
+    )
+
+    document_service.archive_document(
+        db=db,
+        document=document,
+    )
 
 
 @router.post("/documents/{document_id}/download")
@@ -366,6 +436,13 @@ async def download_document(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Document not found"
         )
+
+    document_service.ensure_document_permission(
+        db=db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.VIEWER,
+    )
 
     # Get file path from storage
     storage = get_storage_service()
@@ -416,7 +493,18 @@ def archive_document_endpoint(
             detail="Document not found"
         )
 
-    document_service.archive_document(db=db, document=document)
+    document_service.ensure_document_permission(
+        db=db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.OWNER,
+        allow_editor_for_own=True,
+    )
+
+    document_service.archive_document(
+        db=db,
+        document=document,
+    )
 
 
 @router.post("/documents/{document_id}/restore", status_code=status.HTTP_204_NO_CONTENT)
@@ -437,6 +525,13 @@ def restore_document_endpoint(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Document not found"
         )
+
+    document_service.ensure_document_permission(
+        db=db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.OWNER,
+    )
 
     document_service.restore_document(db=db, document=document)
 
@@ -471,6 +566,13 @@ def grant_permission(
             detail="Document not found"
         )
 
+    document_service.ensure_document_permission(
+        db=db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.OWNER,
+    )
+
     permission = document_service.grant_document_permission(
         db=db,
         document=document,
@@ -492,6 +594,21 @@ def list_permissions(
 
     Shows who has access and their permission level.
     """
+    document = document_service.get_document_by_id(
+        db=db,
+        document_id=document_id,
+        organization_id=current_user.organization_id,
+    )
+    if not document:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    document_service.ensure_document_permission(
+        db=db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.OWNER,
+    )
+
     permissions = document_service.list_document_permissions(
         db=db,
         document_id=document_id,
@@ -518,11 +635,26 @@ def get_access_logs(
 
     Returns recent access history including views, downloads, and modifications.
     """
+    document = document_service.get_document_by_id(
+        db=db,
+        document_id=document_id,
+        organization_id=current_user.organization_id,
+    )
+    if not document:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    document_service.ensure_document_permission(
+        db=db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.OWNER,
+    )
+
     logs = document_service.get_document_access_logs(
         db=db,
         document_id=document_id,
         organization_id=current_user.organization_id,
-        limit=limit
+        limit=limit,
     )
     return logs
 

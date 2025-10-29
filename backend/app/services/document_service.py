@@ -725,6 +725,7 @@ def archive_document(
     db: Session,
     *,
     document: Document,
+    performed_by: Optional[User] = None,
 ) -> None:
     """
     Archive a document and all its versions.
@@ -750,6 +751,14 @@ def archive_document(
 
     db.commit()
 
+    if performed_by:
+        _log_access(
+            db,
+            document=document,
+            user=performed_by,
+            action="delete",
+        )
+
 
 def restore_document(
     db: Session,
@@ -766,12 +775,36 @@ def update_document_metadata(
     db: Session,
     *,
     document: Document,
+    current_user: User,
     folder_id: Optional[str],
 ) -> Document:
+    ensure_document_permission(
+        db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.EDITOR,
+        allow_editor_for_own=True,
+    )
+
+    deal = db.get(Deal, document.deal_id)
+    if deal is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deal not found")
+
     if folder_id:
         folder = db.get(Folder, folder_id)
         if folder is None or folder.deal_id != document.deal_id:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Folder not found")
+        folder_permission = _resolve_folder_permission(
+            db,
+            folder=folder,
+            user=current_user,
+            deal=deal,
+        )
+        if _PERMISSION_RANK[_normalize_level(folder_permission)] < _PERMISSION_RANK[PermissionLevel.EDITOR]:
+            raise HTTPException(
+                status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions to move document to this folder",
+            )
         document.folder_id = folder_id
     else:
         document.folder_id = None

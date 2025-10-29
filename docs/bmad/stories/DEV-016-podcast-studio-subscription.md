@@ -1,6 +1,6 @@
 # DEV-016: Podcast Studio (Subscription Add-On)
 
-**Status**: 🟡 In Progress – quota UX, uploads, and coverage outstanding (Updated 2025-10-29 08:45 UTC)
+**Status**: 🟡 In Progress – quota UX largely implemented; uploads & coverage polish outstanding (Updated 2025-10-29 10:28 UTC)
 **Priority**: High
 **Epic**: Phase 3 - Ecosystem & Network Effects
 **Started**: 2025-10-28
@@ -9,6 +9,12 @@
 **Methodology**: BMAD v6-alpha + TDD
 
 ---
+
+**Latest Update (2025-10-29 10:28 UTC)**:
+- ✅ Added upgrade-required quota banner with accessible alert state and disabled creation button when Starter users hit limits.
+- ✅ Vitest now covers upgrade CTA, 80/90% warnings, and unlimited tiers (`npm --prefix frontend run test -- src/pages/podcast/PodcastStudio.test.tsx`).
+- ✅ Backend quota + entitlement smoke rerun remains green; next capture UI evidence and sync deployment docs before Render rehearsal.
+- 🔄 NEXT: Capture screenshots of quota warning + upgrade CTA, update deployment health narrative, then progress to upload/transcription workflows.
 
 **Latest Update (2025-10-29 08:45 UTC)**:
 - 🧾 Governance pass highlighted remaining must-haves: quota warning API responses need tier labels/CTAs, Clerk tier fetch still stubbed, and upload/transcription flows remain unimplemented.
@@ -131,8 +137,8 @@
 #### Usage & Quota Management
 - [x] Real-time usage tracking (episodes created this month) - `/podcasts/usage` quota summary
 - [x] Quota display showing limit and remaining (API response delivers tier, limit, remaining, used, unlimited flag)
-- [ ] Quota warning when approaching limit (80%, 90%, 100%)
-- [ ] Quota exceeded error with upgrade CTA
+- [x] Quota warning when approaching limit (80%, 90%, 100%)
+- [x] Quota exceeded error with upgrade CTA
 - [ ] Usage reset on monthly billing cycle
 
 #### Testing Requirements
@@ -1113,5 +1119,3 @@ REDIS_URL=redis://localhost:6379/0
 4. **Validation & Deployment Readiness**
    - Run pytest, npm test/lint/build; regenerate BMAD manifests (installer.compileAgents + ManifestGenerator).
    - Verify Render backend/marketing health, update story checklist and PR description.
-
-

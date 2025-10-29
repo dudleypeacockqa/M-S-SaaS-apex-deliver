@@ -73,6 +73,34 @@ describe('ValuationSuite RED tests', () => {
     expect(screen.getByRole('status', { name: /loading/i })).toBeInTheDocument()
   })
 
+  it('shows upgrade messaging when valuations endpoint rejects with entitlement error', async () => {
+    vi.mocked(valuationApi.listValuations).mockRejectedValueOnce({
+      response: {
+        status: 403,
+        data: {
+          detail: {
+            message: 'Upgrade to the Growth tier to unlock full valuation analytics.',
+            required_tier_label: 'Growth',
+            upgrade_cta_url: '/billing/upgrade',
+          },
+        },
+      },
+    })
+
+    renderSuite('/deals/deal-upgrade/valuations/val-entitlement')
+
+    const upgradeHeading = await screen.findByRole('heading', { name: /upgrade required/i })
+    expect(upgradeHeading).toBeInTheDocument()
+    expect(
+      screen.getByText('The valuation workspace is available to Growth tier and above.'),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Upgrade to the Growth tier to unlock full valuation analytics.'),
+    ).toBeInTheDocument()
+    const upgradeLink = screen.getByRole('link', { name: /view pricing plans/i })
+    expect(upgradeLink).toHaveAttribute('href', '/billing/upgrade')
+  })
+
   it('submits new valuation when form completed', async () => {
     const user = userEvent.setup()
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([])

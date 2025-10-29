@@ -199,6 +199,37 @@ describe('PodcastStudio', () => {
       expect(screen.getByRole('button', { name: /new episode/i })).toBeEnabled();
     });
 
+    it('should disable new episode creation and show upgrade CTA when quota requires upgrade', async () => {
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
+        tier: 'starter',
+        tierLabel: 'Starter',
+        limit: 3,
+        remaining: 0,
+        used: 3,
+        isUnlimited: false,
+        period: '2025-10',
+        quotaState: 'warning',
+        warningStatus: 'critical',
+        warningMessage: 'Monthly limit reached. Upgrade required to continue publishing.',
+        upgradeRequired: true,
+        upgradeMessage: 'Upgrade to Professional for additional podcast slots.',
+        upgradeCtaUrl: '/pricing',
+      });
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const upgradeMessage = await screen.findByText(/upgrade to professional for additional podcast slots/i);
+      const upgradeAlert = upgradeMessage.closest('[role="alert"]');
+      expect(upgradeAlert).not.toBeNull();
+
+      const upgradeButton = screen.getByRole('button', { name: /view upgrade options/i });
+      expect(upgradeButton).toBeInTheDocument();
+
+      const newEpisodeButton = screen.getByRole('button', { name: /new episode/i });
+      expect(newEpisodeButton).toBeDisabled();
+      expect(newEpisodeButton).toHaveAttribute('title', 'Upgrade to Professional for additional podcast slots.');
+    });
+
     it('should display "Unlimited" for Premium tier', async () => {
       vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue({
         tier: 'premium',

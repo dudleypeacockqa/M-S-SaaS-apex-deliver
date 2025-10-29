@@ -21,6 +21,8 @@ PHASE_4_COMPLETE: false
 
 ## Next Action
 
-NEXT_ACTION: Implement DEV-008 document versioning, permission, and audit logging to satisfy new RED tests
-NEXT_COMMAND: pytest backend/tests/test_document_endpoints.py -k "version or permission" --maxfail=1 --disable-warnings
-LAST_UPDATED: 2025-10-29T10:14:00Z
+NEXT_ACTION: Phase 4 – Continue DEV-016 backend completion (YouTube/Clerk sync hardening)
+NEXT_COMMAND: pytest backend/tests/test_podcast_api.py backend/tests/test_clerk_auth_complete.py --maxfail=1
+NEXT_AGENT: dev
+
+LAST_UPDATED: 2025-10-29T13:45:00Z

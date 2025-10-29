@@ -293,7 +293,13 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
             </div>
           )}
           {quota.upgradeRequired && quota.upgradeMessage && (
-            <p className="mt-2 text-sm text-indigo-700">{quota.upgradeMessage}</p>
+            <div
+              role="alert"
+              aria-label="Upgrade required"
+              className="mt-2 rounded-md border border-indigo-200 bg-indigo-50 px-4 py-3 text-indigo-900"
+            >
+              <p className="text-sm font-medium">{quota.upgradeMessage}</p>
+            </div>
           )}
         </div>
         <div className="flex flex-col items-end">

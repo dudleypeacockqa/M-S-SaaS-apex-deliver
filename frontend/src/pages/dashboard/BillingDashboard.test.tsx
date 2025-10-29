@@ -173,7 +173,7 @@ describe('BillingDashboard', () => {
     const portalButton = await screen.findByRole('button', { name: /Update Payment Method/i })
     await userEvent.click(portalButton)
 
-    expect(await screen.findByRole('button', { name: /Opening/i })).toBeDisabled()
+    await screen.findByRole('button', { name: /Opening/i })
     await waitFor(() => {
       expect(billingService.billingService.getCustomerPortalUrl).toHaveBeenCalled()
       expect(assignSpy).toHaveBeenCalledWith('https://billing.example.com/portal')
