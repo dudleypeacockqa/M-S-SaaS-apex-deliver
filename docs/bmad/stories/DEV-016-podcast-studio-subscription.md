@@ -49,6 +49,11 @@
 - API quota + middleware tests remain GREEN; additional YouTube + transcript flows still RED/absent.
 - Immediate focus: finish DEV-016 Phase 3 frontend gates and backfill service/API coverage before progressing to integrations.
 
+**Latest Update (2025-10-29 07:37 UTC)**:
+- Normalised Clerk subscription tier data during organization webhook upsert to ensure entitlement checks receive canonical values.
+- Added backend TDD coverage for organization service slug collisions, tier fallbacks, and deactivate path.
+- Upcoming: extend /podcasts/features feature gate API tests before frontend modal coverage pass.
+
 ## Story Overview
 
 ### User Story

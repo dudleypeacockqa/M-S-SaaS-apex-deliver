@@ -21,8 +21,8 @@ PHASE_4_COMPLETE: false
 
 ## Next Action
 
-NEXT_ACTION: Start DEV-011 export logging & scenario editing RED tests (add failing coverage before implementation)
-NEXT_COMMAND: pytest backend/tests/test_valuation_api.py -k export --maxfail=1
+NEXT_ACTION: Phase 0.2 – rerun ValuationSuite Vitest in focused mode to capture current RED state before implementing fixes
+NEXT_COMMAND: npm --prefix frontend run test -- src/pages/deals/valuation/ValuationSuite.test.tsx
 NEXT_AGENT: dev
 
-LAST_UPDATED: 2025-10-29T07:36:00Z
+LAST_UPDATED: 2025-10-29T08:28:54Z

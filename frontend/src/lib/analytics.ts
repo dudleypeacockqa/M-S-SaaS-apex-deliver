@@ -40,3 +40,4 @@ export const trackFormSubmission = (formName: string, location: string) => {
     timestamp: Date.now()
   })
 }
+

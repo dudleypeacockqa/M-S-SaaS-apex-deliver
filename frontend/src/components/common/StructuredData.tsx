@@ -37,3 +37,4 @@ export const StructuredData: React.FC<StructuredDataProps> = ({ json, id = 'stru
 
   return null
 }
+

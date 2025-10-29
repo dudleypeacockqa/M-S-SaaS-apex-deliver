@@ -1046,3 +1046,114 @@ class TestPodcastYouTubeUpload:
 
 
 
+
+
+class TestFeatureAccessEndpoint:
+    """Validate /podcasts/features/{feature} contract responses."""
+
+    def test_feature_access_includes_labels_when_access_granted(
+        self,
+        client,
+    ) -> None:
+        user = SimpleNamespace(
+            id="user_pro",
+            organization_id="org_pro",
+            role=UserRole.growth,
+            subscription_tier=SubscriptionTier.PROFESSIONAL.value,
+        )
+
+        _override_user(user)
+        try:
+            with patch(
+                "app.api.routes.podcasts.subscription.get_organization_tier",
+                new_callable=AsyncMock,
+            ) as mock_get_tier, patch(
+                "app.services.entitlement_service.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_check_access:
+                mock_get_tier.return_value = SubscriptionTier.PROFESSIONAL
+                mock_check_access.return_value = True
+
+                response = client.get("/api/podcasts/features/podcast_audio")
+
+            assert response.status_code == status.HTTP_200_OK
+            data = response.json()
+            assert data["feature"] == "podcast_audio"
+            assert data["tier"] == "professional"
+            assert data["tier_label"] == "Professional"
+            assert data["required_tier"] == "professional"
+            assert data["required_tier_label"] == "Professional"
+            assert data["upgrade_required"] is False
+            assert data["upgrade_message"] is None
+            assert data["upgrade_cta_url"] is None
+        finally:
+            _clear_override()
+
+    def test_feature_access_includes_upgrade_message_when_denied(
+        self,
+        client,
+    ) -> None:
+        user = SimpleNamespace(
+            id="user_pro",
+            organization_id="org_pro",
+            role=UserRole.growth,
+            subscription_tier=SubscriptionTier.PROFESSIONAL.value,
+        )
+
+        _override_user(user)
+        try:
+            with patch(
+                "app.api.routes.podcasts.subscription.get_organization_tier",
+                new_callable=AsyncMock,
+            ) as mock_get_tier, patch(
+                "app.services.entitlement_service.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_check_access:
+                mock_get_tier.return_value = SubscriptionTier.PROFESSIONAL
+                mock_check_access.return_value = False
+
+                response = client.get("/api/podcasts/features/podcast_video")
+
+            assert response.status_code == status.HTTP_200_OK
+            data = response.json()
+            assert data["feature"] == "podcast_video"
+            assert data["tier"] == "professional"
+            assert data["required_tier"] == "premium"
+            assert data["required_tier_label"] == "Premium"
+            assert data["upgrade_required"] is True
+            assert data["upgrade_cta_url"] == "/pricing"
+            assert data["upgrade_message"] == "Upgrade to Premium tier to unlock video podcasting."
+        finally:
+            _clear_override()
+
+    def test_feature_access_returns_404_for_unknown_feature(
+        self,
+        client,
+    ) -> None:
+        user = SimpleNamespace(
+            id="user_pro",
+            organization_id="org_pro",
+            role=UserRole.growth,
+            subscription_tier=SubscriptionTier.PROFESSIONAL.value,
+        )
+
+        _override_user(user)
+        try:
+            with patch(
+                "app.api.routes.podcasts.subscription.get_organization_tier",
+                new_callable=AsyncMock,
+            ) as mock_get_tier, patch(
+                "app.services.entitlement_service.check_feature_access",
+                new_callable=AsyncMock,
+            ) as mock_check_access:
+                mock_get_tier.return_value = SubscriptionTier.PROFESSIONAL
+                mock_check_access.side_effect = FeatureNotFoundError(
+                    "Feature 'podcast_hologram' not found"
+                )
+
+                response = client.get("/api/podcasts/features/podcast_hologram")
+
+            assert response.status_code == status.HTTP_404_NOT_FOUND
+        finally:
+            _clear_override()
+
