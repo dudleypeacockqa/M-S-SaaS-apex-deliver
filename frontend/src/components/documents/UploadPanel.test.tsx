@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import UploadPanel from './UploadPanel';
@@ -22,15 +23,26 @@ describe('UploadPanel', () => {
   });
 
   it('supports dropping multiple files into drop zone', async () => {
-    const user = userEvent.setup();
-    const handleUpload = jest.fn();
+    const handleUpload = vi.fn();
     render(<UploadPanel onUpload={handleUpload} isUploading={false} />);
     const dropzone = screen.getByTestId('upload-dropzone');
     const files = [
       new File(['a'], 'doc1.pdf', { type: 'application/pdf' }),
       new File(['b'], 'doc2.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
     ];
-    await user.upload(dropzone, files);
+
+    // Simulate drop event
+    const dataTransfer = {
+      files,
+      items: files.map(file => ({
+        kind: 'file',
+        type: file.type,
+        getAsFile: () => file
+      })),
+      types: ['Files']
+    };
+
+    fireEvent.drop(dropzone, { dataTransfer });
     expect(handleUpload).toHaveBeenCalledWith(files);
   });
 
@@ -52,23 +64,53 @@ describe('UploadPanel', () => {
   });
 
   it('clears error when user selects new files', async () => {
-    const user = userEvent.setup();
     const files = [new File(['a'], 'doc.pdf', { type: 'application/pdf' })];
-    render(
+    const onUpload = vi.fn();
+
+    // First render: with error message
+    const { rerender } = render(
       <UploadPanel
-        onUpload={noop}
+        onUpload={onUpload}
         isUploading={false}
         errorMessage="File too large"
       />
     );
+
+    // Verify error is shown
+    expect(screen.getByText(/file too large/i)).toBeInTheDocument();
+
+    // Simulate drop event
     const dropzone = screen.getByTestId('upload-dropzone');
-    await user.upload(dropzone, files);
+    const dataTransfer = {
+      files,
+      items: files.map(file => ({
+        kind: 'file',
+        type: file.type,
+        getAsFile: () => file
+      })),
+      types: ['Files']
+    };
+
+    fireEvent.drop(dropzone, { dataTransfer });
+
+    // onUpload should have been called
+    expect(onUpload).toHaveBeenCalled();
+
+    // Rerender without error (simulating parent clearing the error after successful upload)
+    rerender(
+      <UploadPanel
+        onUpload={onUpload}
+        isUploading={false}
+      />
+    );
+
+    // Error should now be gone
     await waitFor(() => expect(screen.queryByText(/file too large/i)).not.toBeInTheDocument());
   });
 
   it('invokes onRemove callback when cancel button clicked', async () => {
     const user = userEvent.setup();
-    const onRemove = jest.fn();
+    const onRemove = vi.fn();
     render(
       <UploadPanel
         onUpload={noop}

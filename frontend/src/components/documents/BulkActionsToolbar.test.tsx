@@ -1,114 +1,70 @@
-/**
- * BulkActionsToolbar Component Tests
- * TDD RED phase - Write failing tests first
- * Sprint 1.1 - DEV-008 Secure Document & Data Room
- */
-
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BulkActionsToolbar } from './BulkActionsToolbar';
-
-// Mock bulk actions API
-vi.mock('../../services/api/documents', () => ({
-  bulkDownloadDocuments: vi.fn(),
-  bulkDeleteDocuments: vi.fn(),
-}));
-
-const renderWithProviders = (ui: React.ReactElement) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  });
-
-  return render(
-    <QueryClientProvider client={queryClient}>
-      {ui}
-    </QueryClientProvider>
-  );
-};
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import BulkActionsToolbar from './BulkActionsToolbar';
 
 describe('BulkActionsToolbar', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+  const baseProps = {
+    selectedCount: 0,
+    disableDownload: false,
+    disableDelete: false,
+    onDownload: vi.fn(),
+    onDelete: vi.fn(),
+    onClearSelection: vi.fn(),
+  };
+
+  it('renders selection summary when items selected', () => {
+    render(<BulkActionsToolbar {...baseProps} selectedCount={3} />);
+    expect(screen.getByText(/3 selected/i)).toBeInTheDocument();
   });
 
-  it('should not render when no documents selected', () => {
-    renderWithProviders(<BulkActionsToolbar selectedIds={[]} onClear={vi.fn()} />);
-    expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
+  it('hides toolbar when no items selected', () => {
+    render(<BulkActionsToolbar {...baseProps} selectedCount={0} />);
+    expect(screen.queryByText(/selected/i)).not.toBeInTheDocument();
   });
 
-  it('should render when documents are selected', () => {
-    renderWithProviders(<BulkActionsToolbar selectedIds={['doc-1', 'doc-2']} onClear={vi.fn()} />);
-    expect(screen.getByRole('toolbar')).toBeInTheDocument();
-    expect(screen.getByText(/2 selected/i)).toBeInTheDocument();
+  it('disables download button when disableDownload true', () => {
+    render(<BulkActionsToolbar {...baseProps} selectedCount={2} disableDownload />);
+    expect(screen.getByRole('button', { name: /download/i })).toBeDisabled();
   });
 
-  it('should show download button', () => {
-    renderWithProviders(<BulkActionsToolbar selectedIds={['doc-1']} onClear={vi.fn()} />);
-    expect(screen.getByRole('button', { name: /download/i })).toBeInTheDocument();
+  it('disables delete button when disableDelete true', () => {
+    render(<BulkActionsToolbar {...baseProps} selectedCount={2} disableDelete />);
+    expect(screen.getByRole('button', { name: /delete/i })).toBeDisabled();
   });
 
-  it('should show delete button', () => {
-    renderWithProviders(<BulkActionsToolbar selectedIds={['doc-1']} onClear={vi.fn()} />);
-    expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
+  it('invokes onDownload when download clicked', async () => {
+    const user = userEvent.setup();
+    const onDownload = vi.fn();
+    render(<BulkActionsToolbar {...baseProps} selectedCount={2} onDownload={onDownload} />);
+    await user.click(screen.getByRole('button', { name: /download/i }));
+    expect(onDownload).toHaveBeenCalled();
   });
 
-  it('should show clear selection button', () => {
-    renderWithProviders(<BulkActionsToolbar selectedIds={['doc-1']} onClear={vi.fn()} />);
-    expect(screen.getByRole('button', { name: /clear/i })).toBeInTheDocument();
+  it('invokes onDelete when delete clicked', async () => {
+    const user = userEvent.setup();
+    const onDelete = vi.fn();
+    render(<BulkActionsToolbar {...baseProps} selectedCount={2} onDelete={onDelete} />);
+    await user.click(screen.getByRole('button', { name: /delete/i }));
+    expect(onDelete).toHaveBeenCalled();
   });
 
-  it('should call bulk download API', async () => {
-    const { bulkDownloadDocuments } = await import('../../services/api/documents');
-    vi.mocked(bulkDownloadDocuments).mockResolvedValue('https://example.com/download-zip');
-
-    // Mock window.open
-    const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-
-    renderWithProviders(<BulkActionsToolbar selectedIds={['doc-1', 'doc-2']} onClear={vi.fn()} />);
-
-    const downloadButton = screen.getByRole('button', { name: /download/i });
-    fireEvent.click(downloadButton);
-
-    await waitFor(() => {
-      expect(bulkDownloadDocuments).toHaveBeenCalledWith(['doc-1', 'doc-2']);
-      expect(windowOpenSpy).toHaveBeenCalledWith('https://example.com/download-zip', '_blank');
-    });
-
-    windowOpenSpy.mockRestore();
+  it('invokes onClearSelection when clear button clicked', async () => {
+    const user = userEvent.setup();
+    const onClearSelection = vi.fn();
+    render(<BulkActionsToolbar {...baseProps} selectedCount={2} onClearSelection={onClearSelection} />);
+    await user.click(screen.getByRole('button', { name: /clear/i }));
+    expect(onClearSelection).toHaveBeenCalled();
   });
 
-  it('should confirm before bulk delete', async () => {
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
-
-    renderWithProviders(<BulkActionsToolbar selectedIds={['doc-1', 'doc-2']} onClear={vi.fn()} />);
-
-    const deleteButton = screen.getByRole('button', { name: /delete/i });
-    fireEvent.click(deleteButton);
-
-    expect(confirmSpy).toHaveBeenCalledWith('Delete 2 documents?');
-    confirmSpy.mockRestore();
-  });
-
-  it('should call bulk delete API when confirmed', async () => {
-    const { bulkDeleteDocuments } = await import('../../services/api/documents');
-    vi.mocked(bulkDeleteDocuments).mockResolvedValue(undefined);
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-
-    const onClear = vi.fn();
-    renderWithProviders(<BulkActionsToolbar selectedIds={['doc-1', 'doc-2']} onClear={onClear} />);
-
-    const deleteButton = screen.getByRole('button', { name: /delete/i });
-    fireEvent.click(deleteButton);
-
-    await waitFor(() => {
-      expect(bulkDeleteDocuments).toHaveBeenCalledWith(['doc-1', 'doc-2']);
-      expect(onClear).toHaveBeenCalled();
-    });
-
-    confirmSpy.mockRestore();
+  it('shows warning message when selection exceeds limit', () => {
+    render(
+      <BulkActionsToolbar
+        {...baseProps}
+        selectedCount={200}
+        warningMessage="Too many files"
+      />
+    );
+    expect(screen.getByText(/too many files/i)).toBeInTheDocument();
   });
 });
