@@ -1,56 +1,31 @@
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createEpisode } from '../../services/api/podcasts';
 
 interface CreateEpisodeModalProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
+  onSubmit: (values: {
+    title: string;
+    description: string;
+    episodeNumber: string;
+    seasonNumber: string;
+    audioFileUrl: string;
+    videoFileUrl: string;
+    showNotes: string;
+  }) => void;
+  isSubmitting: boolean;
 }
 
-export function CreateEpisodeModal({ isOpen, onClose }: CreateEpisodeModalProps) {
-  const queryClient = useQueryClient();
+export function CreateEpisodeModal({ open, onClose, onSubmit, isSubmitting }: CreateEpisodeModalProps) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    episode_number: '',
-    season_number: '',
-    audio_file_url: '',
-    video_file_url: '',
-    show_notes: '',
+    episodeNumber: '',
+    seasonNumber: '',
+    audioFileUrl: '',
+    videoFileUrl: '',
+    showNotes: '',
   });
   const [error, setError] = useState<string | null>(null);
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: () =>
-      createEpisode({
-        title: formData.title,
-        description: formData.description || null,
-        episode_number: parseInt(formData.episode_number),
-        season_number: parseInt(formData.season_number),
-        audio_file_url: formData.audio_file_url,
-        video_file_url: formData.video_file_url || null,
-        show_notes: formData.show_notes || null,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
-      queryClient.invalidateQueries({ queryKey: ['podcastQuota'] });
-      onClose();
-      // Reset form
-      setFormData({
-        title: '',
-        description: '',
-        episode_number: '',
-        season_number: '',
-        audio_file_url: '',
-        video_file_url: '',
-        show_notes: '',
-      });
-      setError(null);
-    },
-    onError: (err: any) => {
-      setError(err.response?.data?.detail || 'Failed to create episode. Please try again.');
-    },
-  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
