@@ -65,21 +65,14 @@ class PodcastQuotaSummary(BaseModel):
 
 
 class PodcastTranscriptionRequest(BaseModel):
-    """Request payload for initiating a podcast transcription."""
-
-    language: Optional[str] = None
-
-
-class PodcastYouTubeUploadResponse(BaseModel):
-    """Response model for YouTube publish endpoint."""
-
-    video_id: str
-
-
-class PodcastTranscriptionRequest(BaseModel):
     """Request payload for initiating podcast transcription."""
 
     language: Optional[constr(strip_whitespace=True, min_length=2, max_length=10)] = Field(
         default=None,
         description="ISO language code for transcript (defaults to 'en').",
     )
+
+class PodcastYouTubeUploadResponse(BaseModel):
+    """Response model for YouTube publish endpoint."""
+
+    video_id: str

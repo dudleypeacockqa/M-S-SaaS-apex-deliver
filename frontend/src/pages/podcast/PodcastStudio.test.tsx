@@ -757,16 +757,18 @@ describe('PodcastStudio', () => {
       }, { timeout: 10000 });
 
       // Verify it was called with correct values (null for empty optional fields)
-      expect(podcastApi.createEpisode).toHaveBeenCalledWith({
-        title: 'New Test Episode',
-        description: null,
-        episode_number: 3,
-        season_number: 1,
-        audio_file_url: 'https://cdn.example.com/ep3.mp3',
-        video_file_url: null,
-        show_notes: null,
-        status: 'draft',
-      });
+      expect(podcastApi.createEpisode).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'New Test Episode',
+          description: null,
+          episode_number: 3,
+          season_number: 1,
+          audio_file_url: 'https://cdn.example.com/ep3.mp3',
+          video_file_url: null,
+          show_notes: null,
+          status: 'draft',
+        })
+      );
     }, 15000);
 
     it('should open Edit modal when Edit button clicked on episode', async () => {

@@ -10,6 +10,12 @@
 
 ---
 
+- **Latest Update (2025-10-30 12:25 UTC)**:
+  - Backend quota reset helper (`reset_monthly_usage`) implemented and wired into quota checks; new pytest coverage ensures fresh month records are created.
+  - `/podcasts/episodes/{id}/transcribe` now validates requested language, enforces enterprise-only multi-language access, and returns `transcript_language` + `word_count` metadata while persisting transcript fields.
+  - Audio chunking service + Whisper helpers accept language inputs; podcast service tests updated with deterministic mocks.
+  - Thumbnail generation route adjusted to lean on `ThumbnailService` (`Path.exists`) so integration tests run without filesystem flakiness.
+
 **Latest Update (2025-10-30 12:10 UTC)**:
 - ✅ Added `reset_monthly_usage` helper (pytest `backend/tests/test_quota_service.py` → 29 passed) and wired into quota summary so new cycles auto initialise usage at zero.
 - ✅ Transcription endpoint now returns `transcript_language` + `word_count`, persisted via `podcast_service.update_episode`; `backend/tests/test_podcast_api.py -k transcribe` → 8 passed.
@@ -1115,7 +1121,7 @@ REDIS_URL=redis://localhost:6379/0
 **Story Owner**: AI Development Team
 **Product Owner**: User (M&A Platform Founder)
 **Story Created**: 2025-10-28
-**Last Updated**: 2025-10-28 16:30 UTC
+**Last Updated**: 2025-10-30 12:25 UTC
 ## Implementation Plan (BMAD v6-alpha Session – 2025-10-28)
 
 1. **Baseline Reset & Context**
@@ -1130,4 +1136,3 @@ REDIS_URL=redis://localhost:6379/0
 4. **Validation & Deployment Readiness**
    - Run pytest, npm test/lint/build; regenerate BMAD manifests (installer.compileAgents + ManifestGenerator).
    - Verify Render backend/marketing health, update story checklist and PR description.
-

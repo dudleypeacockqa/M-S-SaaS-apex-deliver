@@ -36,14 +36,14 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-const renderDataRoom = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  });
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+});
 
+const renderDataRoom = () => {
   return render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
@@ -52,6 +52,10 @@ const renderDataRoom = () => {
     </QueryClientProvider>
   );
 };
+
+afterEach(() => {
+  queryClient.clear();
+});
 
 describe('DataRoom - Folder Management', () => {
   beforeEach(() => {

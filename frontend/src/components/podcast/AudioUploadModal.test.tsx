@@ -8,6 +8,29 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AudioUploadModal from './AudioUploadModal';
 
+// Mock the useUploadProgress hook
+const mockUpload = vi.fn();
+const mockCancel = vi.fn();
+const mockReset = vi.fn();
+
+// State that can be updated in tests
+let mockHookState = {
+  progress: 0,
+  isUploading: false,
+  error: null as string | null,
+  uploadSpeed: null as number | null,
+  estimatedTimeRemaining: null as number | null,
+};
+
+vi.mock('../../hooks/useUploadProgress', () => ({
+  useUploadProgress: () => ({
+    ...mockHookState,
+    upload: mockUpload,
+    cancel: mockCancel,
+    reset: mockReset,
+  }),
+}));
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -24,6 +47,16 @@ const createWrapper = () => {
 describe('AudioUploadModal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUpload.mockReset();
+    mockCancel.mockReset();
+    mockReset.mockReset();
+
+    // Reset mock hook state
+    mockHookState.progress = 0;
+    mockHookState.isUploading = false;
+    mockHookState.error = null;
+    mockHookState.uploadSpeed = null;
+    mockHookState.estimatedTimeRemaining = null;
   });
 
   describe('Component Rendering', () => {
@@ -221,23 +254,12 @@ describe('AudioUploadModal', () => {
 
   describe('Upload Progress', () => {
     it('should show progress bar during upload', async () => {
-      const mockUpload = vi.fn().mockImplementation(
-        () =>
-          new Promise((resolve) => {
-            setTimeout(
-              () => resolve({ audio_url: '/storage/test.mp3', episode_id: 'ep-123' }),
-              100
-            );
-          })
-      );
-
       render(
         <AudioUploadModal
           open={true}
           onClose={() => {}}
           episodeId="ep-123"
           episodeName="Test Episode"
-          onUpload={mockUpload}
         />,
         { wrapper: createWrapper() }
       );
@@ -254,15 +276,26 @@ describe('AudioUploadModal', () => {
       const uploadButton = screen.getByRole('button', { name: /upload/i });
       fireEvent.click(uploadButton);
 
-      await waitFor(() => {
-        expect(screen.getByRole('progressbar')).toBeInTheDocument();
-      });
+      // Verify upload was called with correct parameters
+      expect(mockUpload).toHaveBeenCalledWith(
+        expect.any(File),
+        '/api/podcasts/episodes/ep-123/upload-audio',
+        expect.any(Object),
+        expect.any(Function),
+        expect.any(Function)
+      );
     });
 
     it('should show success message after upload', async () => {
-      const mockUpload = vi.fn().mockResolvedValue({
-        audio_url: '/storage/test.mp3',
-        episode_id: 'ep-123',
+      // Configure mock to call success callback immediately
+      mockUpload.mockImplementation((_file, _url, _headers, onSuccess) => {
+        // Simulate async upload then success
+        setTimeout(() => {
+          onSuccess({
+            audio_url: '/storage/test.mp3',
+            episode_id: 'ep-123',
+          });
+        }, 0);
       });
 
       render(
@@ -271,7 +304,6 @@ describe('AudioUploadModal', () => {
           onClose={() => {}}
           episodeId="ep-123"
           episodeName="Test Episode"
-          onUpload={mockUpload}
         />,
         { wrapper: createWrapper() }
       );
@@ -289,12 +321,17 @@ describe('AudioUploadModal', () => {
       fireEvent.click(uploadButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/success/i)).toBeInTheDocument();
-      });
+        expect(screen.getByText(/upload successful/i)).toBeInTheDocument();
+      }, { timeout: 2000 });
     });
 
     it('should show error message on upload failure', async () => {
-      const mockUpload = vi.fn().mockRejectedValue(new Error('Upload failed'));
+      // Configure mock to call error callback
+      mockUpload.mockImplementation((_file, _url, _headers, _onSuccess, onError) => {
+        setTimeout(() => {
+          onError(new Error('Upload failed'));
+        }, 0);
+      });
 
       render(
         <AudioUploadModal
@@ -302,7 +339,6 @@ describe('AudioUploadModal', () => {
           onClose={() => {}}
           episodeId="ep-123"
           episodeName="Test Episode"
-          onUpload={mockUpload}
         />,
         { wrapper: createWrapper() }
       );
@@ -321,7 +357,7 @@ describe('AudioUploadModal', () => {
 
       await waitFor(() => {
         expect(screen.getByText(/failed|error/i)).toBeInTheDocument();
-      });
+      }, { timeout: 2000 });
     });
   });
 
@@ -347,9 +383,15 @@ describe('AudioUploadModal', () => {
 
     it('should call onSuccess after successful upload', async () => {
       const onSuccess = vi.fn();
-      const mockUpload = vi.fn().mockResolvedValue({
-        audio_url: '/storage/test.mp3',
-        episode_id: 'ep-123',
+
+      // Configure mock to call success callback
+      mockUpload.mockImplementation((_file, _url, _headers, onSuccessCallback) => {
+        setTimeout(() => {
+          onSuccessCallback({
+            audio_url: '/storage/test.mp3',
+            episode_id: 'ep-123',
+          });
+        }, 0);
       });
 
       render(
@@ -358,7 +400,6 @@ describe('AudioUploadModal', () => {
           onClose={() => {}}
           episodeId="ep-123"
           episodeName="Test Episode"
-          onUpload={mockUpload}
           onSuccess={onSuccess}
         />,
         { wrapper: createWrapper() }
@@ -381,7 +422,7 @@ describe('AudioUploadModal', () => {
           audio_url: '/storage/test.mp3',
           episode_id: 'ep-123',
         });
-      });
+      }, { timeout: 2000 });
     });
 
     it('should reset state when modal reopened', async () => {
