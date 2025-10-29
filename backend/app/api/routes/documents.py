@@ -21,6 +21,9 @@ from app.api.dependencies.auth import get_current_user
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.document import (
+    BulkDeleteRequest,
+    BulkDeleteResponse,
+    BulkDownloadRequest,
     DocumentListParams,
     DocumentMetadata,
     DocumentUploadResponse,
@@ -280,6 +283,7 @@ def list_documents(
         deal_id=deal_id,
         organization_id=current_user.organization_id,
         params=params,
+        current_user=current_user,
     )
 
     return {
@@ -702,3 +706,83 @@ async def restore_document_version(
         current_user=current_user,
     )
     return restored_doc
+
+
+# ============================================================================
+# BULK OPERATIONS (DEV-008 Phase 2)
+# ============================================================================
+
+
+@router.post("/documents/bulk-download")
+async def bulk_download_documents(
+    deal_id: str,
+    request: BulkDownloadRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Bulk download multiple documents as a ZIP file.
+
+    Returns a ZIP archive containing all requested documents that the user has permission to view.
+    Documents without permission are silently skipped.
+    Returns 403 if no documents are accessible.
+    """
+    from fastapi.responses import Response
+
+    document_ids = [str(doc_id) for doc_id in request.document_ids]
+
+    zip_content, filename = await document_service.bulk_download_documents(
+        db=db,
+        document_ids=document_ids,
+        organization_id=current_user.organization_id,
+        current_user=current_user,
+    )
+
+    return Response(
+        content=zip_content,
+        media_type="application/zip",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"'
+        }
+    )
+
+
+@router.post("/documents/bulk-delete", response_model=BulkDeleteResponse)
+def bulk_delete_documents(
+    deal_id: str,
+    request: BulkDeleteRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Bulk delete (archive) multiple documents.
+
+    Requires owner permission (deal owner or document uploader).
+    Returns details about successful and failed deletions.
+    Returns 403 if all documents fail due to insufficient permissions.
+    """
+    document_ids = [str(doc_id) for doc_id in request.document_ids]
+
+    deleted_ids, failed_ids, failed_reasons = document_service.bulk_delete_documents(
+        db=db,
+        document_ids=document_ids,
+        organization_id=current_user.organization_id,
+        current_user=current_user,
+    )
+
+    # Check if ALL documents failed due to permission
+    if len(failed_ids) == len(document_ids) and len(deleted_ids) == 0:
+        # If all failed due to permission, return 403
+        if all("permission" in str(reason).lower() or "forbidden" in str(reason).lower()
+               for reason in failed_reasons.values()):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions to delete any of the requested documents",
+            )
+
+    return BulkDeleteResponse(
+        deleted_count=len(deleted_ids),
+        deleted_ids=deleted_ids,
+        failed_ids=failed_ids,
+        failed_reasons=failed_reasons,
+    )

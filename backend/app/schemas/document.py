@@ -132,10 +132,8 @@ class DocumentVersionInfo(BaseModel):
 
 
 class PermissionLevel(str):
-    NONE = "none"
     """Document permission levels."""
 
-    NONE = "none"
     VIEWER = "viewer"
     EDITOR = "editor"
     OWNER = "owner"
@@ -220,3 +218,12 @@ MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB in bytes
 
 # Maximum versions per document
 MAX_VERSIONS_PER_DOCUMENT = 20
+
+
+class BulkDeleteResponse(BaseModel):
+    """Schema for bulk delete response."""
+
+    deleted_count: int
+    deleted_ids: List[str]
+    failed_ids: List[str] = []
+    failed_reasons: dict[str, str] = {}
