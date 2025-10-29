@@ -102,6 +102,7 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
         content,
         title: nextTitle,
       }),
+    retry: false,
     onSuccess: (payload) => {
       lastSavedContentRef.current = latestContentRef.current
       setLastSavedAt(new Date().toISOString())

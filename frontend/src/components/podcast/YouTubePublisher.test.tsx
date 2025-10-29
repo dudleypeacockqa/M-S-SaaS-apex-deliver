@@ -262,7 +262,13 @@ describe('YouTubePublisher', () => {
     renderPublisher();
 
     const disconnectButton = await screen.findByRole('button', { name: /disconnect channel/i });
-    podcastApi.disconnectYouTubeChannel.mockResolvedValue({ success: true });
+    podcastApi.disconnectYouTubeChannel.mockResolvedValue(undefined);
+    podcastApi.getYouTubeConnectionStatus.mockResolvedValueOnce({
+      ...defaultConnection,
+      isConnected: false,
+      channelName: null,
+      channelUrl: null,
+    });
 
     await userEvent.click(disconnectButton);
 
@@ -273,6 +279,8 @@ describe('YouTubePublisher', () => {
   });
 
   it('displays retry action when connection requires re-authentication', async () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+
     renderPublisher({
       connection: { ...defaultConnection, requiresAction: true },
     });
@@ -284,6 +292,8 @@ describe('YouTubePublisher', () => {
     await waitFor(() => {
       expect(podcastApi.initiateYouTubeOAuth).toHaveBeenCalledWith('ep-1', expect.any(String));
     });
+
+    openSpy.mockRestore();
   });
 
   it('provides live validation feedback for mandatory metadata fields', async () => {
@@ -300,11 +310,10 @@ describe('YouTubePublisher', () => {
   });
 
   it('shows processing indicator while publish mutation is in flight', async () => {
-    podcastApi.publishEpisodeToYouTube.mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          setTimeout(() => resolve({ videoId: 'YT_999' }), 50);
-        }) as unknown as ReturnType<typeof podcastApi.publishEpisodeToYouTube>
+    podcastApi.publishEpisodeToYouTube.mockImplementation(() =>
+      new Promise((resolve) => {
+        setTimeout(() => resolve({ videoId: 'YT_999' }), 50);
+      })
     );
     renderPublisher();
 

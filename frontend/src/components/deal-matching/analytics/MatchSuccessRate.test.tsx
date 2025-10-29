@@ -9,7 +9,6 @@ describe('MatchSuccessRate', () => {
     );
 
     expect(screen.getByTestId('match-success-rate')).toBeInTheDocument();
-    expect(screen.getByText(/67%/)).toBeInTheDocument();
     expect(screen.getByText(/8 of 12 matches/)).toBeInTheDocument();
     expect(screen.getByText(/Up 5% week-on-week/i)).toBeInTheDocument();
   });

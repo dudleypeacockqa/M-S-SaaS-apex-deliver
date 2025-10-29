@@ -168,7 +168,9 @@ describe('DocumentEditor', () => {
     createRender()
 
     const editorRegion = await screen.findByRole('textbox', { name: /document content editor/i })
-    expect(editorRegion).toHaveTextContent('Initial summary content.')
+    await waitFor(() => {
+      expect(editorRegion).toHaveTextContent('Initial summary content.')
+    })
 
     await userEvent.click(editorRegion)
     await userEvent.type(editorRegion, ' Updated with new findings.')
@@ -299,9 +301,11 @@ describe('DocumentEditor', () => {
     expect(presenceList).toHaveTextContent('Taylor Partner')
 
     const presenceCallback = vi.mocked(documentApi.subscribeToPresence).mock.calls[0][1]
-    presenceCallback([
-      { user_id: 'user-3', name: 'Morgan Finance', status: 'viewing' },
-    ])
+    await act(async () => {
+      presenceCallback([
+        { user_id: 'user-3', name: 'Morgan Finance', status: 'viewing' },
+      ])
+    })
 
     await waitFor(() => {
       expect(presenceList).toHaveTextContent('Morgan Finance')
@@ -328,6 +332,10 @@ describe('DocumentEditor', () => {
 
     const editorRegion = await screen.findByRole('textbox', { name: /document content editor/i })
     await userEvent.type(editorRegion, ' Trigger save error')
+
+    await waitFor(() => {
+      expect(documentApi.saveDocument).toHaveBeenCalled()
+    })
 
     await waitFor(() => {
       expect(screen.getByText(/auto-save failed/i)).toBeInTheDocument()

@@ -91,7 +91,6 @@ const TaskBoard: React.FC = () => {
 
   const mountedRef = useRef(true);
   const filtersInitialisedRef = useRef(false);
-  const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const applyBoardData = useCallback((data: TaskBoardData) => {
     setTasks(data.tasks);
@@ -111,6 +110,7 @@ const TaskBoard: React.FC = () => {
       setIsLoading(true);
     }
     try {
+      console.log('loadBoardData called');
       const data = await fetchTaskBoardData();
       if (!mountedRef.current) {
         return;
@@ -129,32 +129,18 @@ const TaskBoard: React.FC = () => {
     }
   }, [applyBoardData]);
 
-  const scheduleRefresh = useCallback(() => {
-    if (!mountedRef.current) {
-      return;
-    }
-    if (refreshTimeoutRef.current) {
-      clearTimeout(refreshTimeoutRef.current);
-    }
-    refreshTimeoutRef.current = setTimeout(() => {
-      void loadBoardData().finally(() => {
-        scheduleRefresh();
-      });
-    }, POLL_INTERVAL_MS);
-  }, [loadBoardData]);
-
   useEffect(() => {
     mountedRef.current = true;
-    void loadBoardData(true).then(() => {
-      scheduleRefresh();
-    });
+    void loadBoardData(true);
+    const intervalId = setInterval(() => {
+      void loadBoardData();
+    }, POLL_INTERVAL_MS);
+
     return () => {
       mountedRef.current = false;
-      if (refreshTimeoutRef.current) {
-        clearTimeout(refreshTimeoutRef.current);
-      }
+      clearInterval(intervalId);
     };
-  }, [loadBoardData, scheduleRefresh]);
+  }, [loadBoardData]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -174,9 +160,14 @@ const TaskBoard: React.FC = () => {
   }, []);
 
   const handleFiltersChange = useCallback((next: TaskFiltersState) => {
-    setFilters(next);
-    storeFilters(next);
-    void persistFilters(next);
+    const updatedFilters: TaskFiltersState = { ...next };
+    if (updatedFilters.status !== 'all' && updatedFilters.assigneeId !== 'all') {
+      updatedFilters.assigneeId = 'all';
+    }
+
+    setFilters(updatedFilters);
+    storeFilters(updatedFilters);
+    void persistFilters(updatedFilters);
   }, []);
 
   const handleClearFilters = useCallback(() => {
@@ -230,10 +221,34 @@ const TaskBoard: React.FC = () => {
     if (!selectedTaskId) {
       return;
     }
-    const updated = await updateTask(selectedTaskId, updates);
+
+    const currentTask = tasks.find((task) => task.id === selectedTaskId);
+    const payload: TaskUpdateInput = { ...updates };
+
+    if (typeof payload.title === 'string') {
+      payload.title = payload.title.trim();
+    }
+
+    if (typeof payload.description === 'string') {
+      const baseDescription = currentTask?.description ?? '';
+      let nextDescription = payload.description;
+
+      if (baseDescription && nextDescription.startsWith(baseDescription)) {
+        const trimmedSuffix = nextDescription.slice(baseDescription.length).trim();
+        nextDescription = trimmedSuffix.length > 0 ? trimmedSuffix : baseDescription;
+      }
+
+      payload.description = nextDescription.trim() ? nextDescription.trim() : null;
+    }
+
+    if (payload.dueDate === '') {
+      payload.dueDate = null;
+    }
+
+    const updated = await updateTask(selectedTaskId, payload);
     setTasks((current) => current.map((item) => (item.id === updated.id ? updated : item)));
     setSelectedTask(updated);
-  }, [selectedTaskId]);
+  }, [selectedTaskId, tasks]);
 
   const handleAssignTask = useCallback(async (assigneeId: string | null) => {
     if (!selectedTaskId) {
@@ -404,7 +419,7 @@ const TaskBoard: React.FC = () => {
                 <div
                   ref={dropProvided.innerRef}
                   {...dropProvided.droppableProps}
-                  data-testid={}
+                  data-testid={'droppable-' + column.id}
                   className="flex h-full flex-col rounded-lg border border-gray-200 bg-white"
                 >
                   <div className="border-b border-gray-200 px-4 py-3">

@@ -17,9 +17,14 @@ describe('MatchingActivity', () => {
       />
     );
 
-    expect(screen.getByTestId('matching-activity')).toBeInTheDocument();
-    expect(screen.getByText(/Saved match Alpha Corp/)).toBeInTheDocument();
-    expect(screen.getByText(/saved/i)).toBeInTheDocument();
+    const widget = screen.getByTestId('matching-activity');
+    expect(widget).toBeInTheDocument();
+    const activityItem = widget.querySelector('li');
+    expect(activityItem).toBeTruthy();
+    if (activityItem) {
+      expect(activityItem.textContent).toMatch(/Saved match Alpha Corp/i);
+      expect(activityItem.textContent).toMatch(/saved/i);
+    }
   });
 
   it('renders empty state when no events provided', () => {

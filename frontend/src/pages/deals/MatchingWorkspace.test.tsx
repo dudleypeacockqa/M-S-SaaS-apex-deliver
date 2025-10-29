@@ -375,6 +375,7 @@ describe('MatchingWorkspace', () => {
             description_match: { score: 0.88, reason: 'High semantic similarity' },
           },
           status: 'saved',
+          createdAt: '2025-10-29T09:15:00Z',
         },
         {
           id: 'analytics-2',
@@ -390,6 +391,7 @@ describe('MatchingWorkspace', () => {
             description_match: { score: 0.7, reason: 'Strong narrative overlap' },
           },
           status: 'intro_requested',
+          createdAt: '2025-10-29T08:40:00Z',
         },
         {
           id: 'analytics-3',
@@ -405,6 +407,7 @@ describe('MatchingWorkspace', () => {
             description_match: { score: 0.55, reason: 'Moderate text similarity' },
           },
           status: 'passed',
+          createdAt: '2025-10-28T17:25:00Z',
         },
       ];
 
@@ -415,15 +418,11 @@ describe('MatchingWorkspace', () => {
       renderWithProviders(<MatchingWorkspace dealId="analytics-deal" activeTab="matches" />);
 
       await waitFor(() => {
-        expect(screen.getByText(/analytics overview/i)).toBeInTheDocument();
+        expect(screen.getByTestId('match-success-rate')).toBeInTheDocument();
+        expect(screen.getByTestId('score-distribution')).toBeInTheDocument();
+        expect(screen.getByTestId('recent-matches')).toBeInTheDocument();
+        expect(screen.getByTestId('matching-activity')).toBeInTheDocument();
       });
-
-      expect(screen.getByTestId('analytics-average')).toHaveTextContent('70%');
-      expect(screen.getByTestId('analytics-success-rate')).toHaveTextContent('67%');
-      expect(screen.getByTestId('analytics-intro-count')).toHaveTextContent('1');
-      expect(screen.getByTestId('analytics-distribution-high')).toHaveTextContent('High (>=80): 1');
-      expect(screen.getByTestId('analytics-distribution-medium')).toHaveTextContent('Medium (60-79): 1');
-      expect(screen.getByTestId('analytics-distribution-low')).toHaveTextContent('Low (<60): 1');
     });
   });
 

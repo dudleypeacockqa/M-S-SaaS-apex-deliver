@@ -349,12 +349,48 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
 
     const successRate = total ? Math.round((successCount / total) * 100) : 0;
 
+    const recentMatches = matches
+      .slice()
+      .sort((a, b) => {
+        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        if (aTime === bTime) {
+          return (b.score ?? 0) - (a.score ?? 0);
+        }
+        return bTime - aTime;
+      })
+      .slice(0, 5)
+      .map((match) => ({
+        id: match.id ?? `${match.dealId}-${match.matchedDealId ?? 'recent'}`,
+        name: match.dealName,
+        score: match.score,
+        status: match.status,
+      }));
+
+    const activityEvents = matches
+      .filter((match) => match.status || match.createdAt)
+      .sort((a, b) => {
+        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return bTime - aTime;
+      })
+      .slice(0, 6)
+      .map((match) => ({
+        id: match.id ?? `${match.dealId}-${match.matchedDealId ?? 'activity'}`,
+        timestamp: match.createdAt ?? new Date().toISOString(),
+        label: `${match.status ? match.status.toUpperCase() : 'MATCHED'}: ${match.dealName}`,
+        status: match.status ? match.status.toLowerCase() : 'matched',
+      }));
+
     return {
       total,
       averageScore: Number.isFinite(averageScore) ? averageScore : 0,
       distribution,
       successRate,
       introCount,
+      successCount,
+      recentMatches,
+      activityEvents,
     };
   }, [matches]);
 
@@ -564,94 +600,24 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
             </div>
 
             {matchAnalytics && !showMatchesLoader && (
-              <section
-                aria-label="Match analytics"
-                className="mb-6 rounded-lg border border-gray-200 bg-white/60 p-4 shadow-sm"
-              >
-                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                  Analytics Overview
-                </h3>
-                <div className="mt-3 grid gap-4 md:grid-cols-3">
-                  <div
-                    className="rounded-lg border border-indigo-200 bg-indigo-50 p-4"
-                    data-testid="analytics-average"
-                  >
-                    <p className="text-xs font-medium text-indigo-700 uppercase tracking-wide">
-                      Average Match Score
-                    </p>
-                    <p className="mt-1 text-2xl font-semibold text-indigo-900">
-                      {matchAnalytics.averageScore}%
-                    </p>
-                    <p className="mt-1 text-xs text-indigo-600">
-                      Across {matchAnalytics.total} matches
-                    </p>
-                  </div>
-                  <div
-                    className="rounded-lg border border-emerald-200 bg-emerald-50 p-4"
-                    data-testid="analytics-success-rate"
-                  >
-                    <p className="text-xs font-medium text-emerald-700 uppercase tracking-wide">
-                      Success Rate
-                    </p>
-                    <p className="mt-1 text-2xl font-semibold text-emerald-900">
-                      {matchAnalytics.successRate}%
-                    </p>
-                    <p className="mt-1 text-xs text-emerald-600">
-                      Saved or intro requested
-                    </p>
-                  </div>
-                  <div
-                    className="rounded-lg border border-blue-200 bg-blue-50 p-4"
-                    data-testid="analytics-intro-count"
-                  >
-                    <p className="text-xs font-medium text-blue-700 uppercase tracking-wide">
-                      Intro Requests
-                    </p>
-                    <p className="mt-1 text-2xl font-semibold text-blue-900">
-                      {matchAnalytics.introCount}
-                    </p>
-                    <p className="mt-1 text-xs text-blue-600">
-                      Awaiting responses
-                    </p>
-                  </div>
+              <div className="mb-6 space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <MatchSuccessRate
+                    successRate={matchAnalytics.successRate}
+                    total={matchAnalytics.total}
+                    successCount={matchAnalytics.successCount}
+                  />
+                  <MatchScoreDistribution
+                    distribution={matchAnalytics.distribution}
+                    total={matchAnalytics.total}
+                  />
                 </div>
-                <div className="mt-4 grid gap-3 md:grid-cols-3">
-                  <div
-                    className="rounded-md border border-gray-200 p-3"
-                    data-testid="analytics-distribution-high"
-                  >
-                    <p className="text-sm font-medium text-gray-700">
-                      {`High (>=80): ${matchAnalytics.distribution.high}`}
-                    </p>
-                  </div>
-                  <div
-                    className="rounded-md border border-gray-200 p-3"
-                    data-testid="analytics-distribution-medium"
-                  >
-                    <p className="text-sm font-medium text-gray-700">
-                      {`Medium (60-79): ${matchAnalytics.distribution.medium}`}
-                    </p>
-                  </div>
-                  <div
-                    className="rounded-md border border-gray-200 p-3"
-                    data-testid="analytics-distribution-low"
-                  >
-                    <p className="text-sm font-medium text-gray-700">
-                      {`Low (<60): ${matchAnalytics.distribution.low}`}
-                    </p>
-                  </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <RecentMatches matches={matchAnalytics.recentMatches} />
+                  <MatchingActivity events={matchAnalytics.activityEvents} />
                 </div>
-              </section>
+              </div>
             )}
-
-            {showMatchesLoader ? (
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <p className="text-gray-600">Loading matches...</p>
-              </div>
-            ) : matches.length === 0 ? (
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <p className="text-gray-600">No matches found. Try finding matches for this deal.</p>
-              </div>
             ) : (
               <div className="space-y-4">
                 {matches.map((match) => (
