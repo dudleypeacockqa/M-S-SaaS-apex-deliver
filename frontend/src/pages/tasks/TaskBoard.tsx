@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import TaskCard from '../../components/tasks/TaskCard';
+import TaskFilters from '../../components/tasks/TaskFilters';
 import TaskFormModal from '../../components/tasks/TaskFormModal';
 import TaskDetailModal from '../../components/tasks/TaskDetailModal';
-import TaskFilters from '../../components/tasks/TaskFilters';
 import {
   assignTask,
   createTask,
@@ -17,6 +17,7 @@ import {
   updateTaskStatus,
   type Task,
   type TaskAssignee,
+  type TaskBoardData,
   type TaskCreateInput,
   type TaskFiltersState,
   type TaskPriority,
@@ -24,201 +25,306 @@ import {
   type TaskUpdateInput,
 } from '../../services/tasksService';
 
-const statusOrder: TaskStatus[] = ['todo', 'in_progress', 'done'];
-const statusLabels: Record<TaskStatus, string> = {
-  todo: 'To Do',
-  in_progress: 'In Progress',
-  done: 'Done',
-};
+const columns: Array<{ id: TaskStatus; title: string }> = [
+  { id: 'todo', title: 'To Do' },
+  { id: 'in_progress', title: 'In Progress' },
+  { id: 'done', title: 'Done' },
+];
 
-const priorityOrder: Record<TaskPriority, number> = {
+const priorityWeights: Record<TaskPriority, number> = {
   low: 1,
   medium: 2,
   high: 3,
   urgent: 4,
 };
 
-const FALLBACK_FILTERS: TaskFiltersState = {
-  assigneeId: 'all',
-  status: 'all',
-  priority: 'all',
-  sortBy: 'priority',
-  sortDirection: 'desc',
-  dueDateBefore: null,
-  dueDateAfter: null,
-};
-
-const resolveDefaultFilters = (): TaskFiltersState => {
-  if (typeof getDefaultFilters === 'function') {
-    const value = getDefaultFilters();
-    if (value) return value;
+const isEditableElement = (target: EventTarget | null): boolean => {
+  if (!(target instanceof HTMLElement)) {
+    return false;
   }
-  return { ...FALLBACK_FILTERS };
+  const tagName = target.tagName;
+  return tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT' || target.isContentEditable;
 };
 
 const TaskBoard: React.FC = () => {
   const queryClient = useQueryClient();
+  const [filters, setFilters] = useState<TaskFiltersState>(() => getDefaultFilters());
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [filters, setFilters] = useState<TaskFiltersState>(resolveDefaultFilters());
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [filtersReady, setFiltersReady] = useState(false);
+  const [assignees, setAssignees] = useState<TaskAssignee[]>([]);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
+  const filtersInitialisedRef = useRef(false);
 
-  const filtersSyncedRef = useRef(false);
-  const filtersPersistInitialisedRef = useRef(false);
-  const boardTasksRef = useRef<Task[]>([]);
-
-  const boardQuery = useQuery({
-    queryKey: ['task-board'],
+  const { data, isLoading, isError, error } = useQuery<TaskBoardData>({
+    queryKey: ['taskBoard'],
     queryFn: fetchTaskBoardData,
     refetchInterval: 45000,
+    refetchIntervalInBackground: true,
   });
 
   useEffect(() => {
-    if (boardQuery.data) {
-      setTasks(boardQuery.data.tasks);
-      boardTasksRef.current = boardQuery.data.tasks;
-      if (!filtersSyncedRef.current) {
-        setFilters(boardQuery.data.filters);
-        filtersSyncedRef.current = true;
-      }
-      setFiltersReady(true);
-    }
-  }, [boardQuery.data]);
-
-  useEffect(() => {
-    boardTasksRef.current = tasks;
-  }, [tasks]);
-
-  useEffect(() => {
-    if (!filtersReady) return;
-    if (!filtersPersistInitialisedRef.current) {
-      filtersPersistInitialisedRef.current = true;
+    if (!data) {
       return;
     }
-    persistFilters(filters).catch((error) => {
-      console.warn('Failed to persist task filters', error);
-    });
-  }, [filters, filtersReady]);
+    setAssignees(data.assignees);
+    setTasks(data.tasks);
+    if (!filtersInitialisedRef.current) {
+      setFilters(data.filters);
+      filtersInitialisedRef.current = true;
+    }
+  }, [data]);
 
   useEffect(() => {
-    const handleShortcut = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() !== 'n') return;
-      if (event.metaKey || event.ctrlKey || event.altKey) return;
-      const target = event.target as HTMLElement | null;
-      if (target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return;
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() !== 'n' || event.ctrlKey || event.metaKey || event.altKey) {
+        return;
+      }
+      if (isEditableElement(event.target)) {
+        return;
+      }
       event.preventDefault();
-      setShowCreateModal(true);
+      setIsCreateModalOpen(true);
     };
 
-    window.addEventListener('keydown', handleShortcut);
-    return () => window.removeEventListener('keydown', handleShortcut);
+    window.addEventListener('keydown', handleKeydown);
+    return () => window.removeEventListener('keydown', handleKeydown);
   }, []);
+
+  const applyTasksUpdate = useCallback(
+    (updater: (current: Task[]) => Task[]),
+  ) => {
+    let computed: Task[] | undefined;
+    setTasks((current) => {
+      computed = updater(current);
+      return computed;
+    });
+    queryClient.setQueryData<TaskBoardData | undefined>(['taskBoard'], (current) => {
+      if (!current) {
+        return current;
+      }
+      const nextTasks = computed ?? updater(current.tasks);
+      return {
+        ...current,
+        tasks: nextTasks,
+      };
+    });
+  }, [queryClient]);
 
   const createTaskMutation = useMutation({
     mutationFn: (payload: TaskCreateInput) => createTask(payload),
-    onSuccess: (newTask) => {
-      setTasks((previous) => [...previous, newTask]);
-      queryClient.invalidateQueries({ queryKey: ['task-board'] });
+    onSuccess: (createdTask) => {
+      applyTasksUpdate((current) => [...current, createdTask]);
     },
   });
 
   const updateTaskMutation = useMutation({
     mutationFn: ({ taskId, updates }: { taskId: string; updates: TaskUpdateInput }) => updateTask(taskId, updates),
     onSuccess: (updatedTask) => {
-      setTasks((previous) => previous.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
-      queryClient.setQueryData(['task-detail', updatedTask.id], updatedTask);
-      queryClient.invalidateQueries({ queryKey: ['task-board'] });
+      applyTasksUpdate((current) => current.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
+      setActiveTask((existing) => (existing?.id === updatedTask.id ? updatedTask : existing));
+    },
+  });
+
+  const updateTaskStatusMutation = useMutation({
+    mutationFn: ({ taskId, status, position }: { taskId: string; status: TaskStatus; position: number }) =>
+      updateTaskStatus(taskId, status, position),
+    onSuccess: (updatedTask) => {
+      applyTasksUpdate((current) => current.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
+      setActiveTask((existing) => (existing?.id === updatedTask.id ? updatedTask : existing));
     },
   });
 
   const assignTaskMutation = useMutation({
-    mutationFn: ({ taskId, assigneeId }: { taskId: string; assigneeId: string | null }) => assignTask(taskId, assigneeId),
+    mutationFn: ({ taskId, assigneeId }: { taskId: string; assigneeId: string | null }) =>
+      assignTask(taskId, assigneeId),
     onSuccess: (updatedTask) => {
-      setTasks((previous) => previous.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
-      queryClient.setQueryData(['task-detail', updatedTask.id], updatedTask);
-      queryClient.invalidateQueries({ queryKey: ['task-board'] });
+      applyTasksUpdate((current) => current.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
+      setActiveTask((existing) => (existing?.id === updatedTask.id ? updatedTask : existing));
     },
   });
 
   const deleteTaskMutation = useMutation({
     mutationFn: (taskId: string) => deleteTask(taskId),
-    onSuccess: (_result, taskId) => {
-      setTasks((previous) => previous.filter((task) => task.id !== taskId));
-      queryClient.removeQueries({ queryKey: ['task-detail', taskId] });
-      queryClient.invalidateQueries({ queryKey: ['task-board'] });
-      setSelectedTaskId(null);
+    onSuccess: (_, taskId) => {
+      applyTasksUpdate((current) => current.filter((task) => task.id !== taskId));
+      setIsDetailOpen(false);
+      setActiveTaskId(null);
+      setActiveTask(null);
+      setIsDetailLoading(false);
     },
   });
 
-  const updateStatusMutation = useMutation({
-    mutationFn: ({ taskId, status, position }: { taskId: string; status: TaskStatus; position: number }) => updateTaskStatus(taskId, status, position),
-    onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey: ['task-board'] });
-      const previousTasks = boardTasksRef.current.map((task) => ({ ...task }));
-      setTasks((current) => current.map((task) => (task.id === variables.taskId ? { ...task, status: variables.status } : task)));
-      return { previousTasks };
-    },
-    onError: (_error, _variables, context) => {
-      if (context?.previousTasks) {
-        setTasks(context.previousTasks);
-      }
-    },
-    onSuccess: (updatedTask) => {
-      setTasks((previous) => previous.map((task) => (task.id === updatedTask.id ? updatedTask : task)));
-      queryClient.setQueryData(['task-detail', updatedTask.id], updatedTask);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['task-board'] });
-    },
-  });
+  const handleCreateTask = useCallback(async (payload: TaskCreateInput) => {
+    await createTaskMutation.mutateAsync(payload);
+  }, [createTaskMutation]);
+
+  const handleTaskCardClick = useCallback(async (task: Task) => {
+    setActiveTaskId(task.id);
+    setActiveTask(task);
+    setIsDetailOpen(true);
+    setIsDetailLoading(true);
+    try {
+      const detailedTask = await getTask(task.id);
+      setActiveTask(detailedTask);
+      applyTasksUpdate((current) =>
+        current.map((currentTask) => (currentTask.id === detailedTask.id ? detailedTask : currentTask)),
+      );
+    } catch (detailError) {
+      console.error('Failed to load task details', detailError);
+    } finally {
+      setIsDetailLoading(false);
+    }
+  }, [applyTasksUpdate]);
+
+  const handleCloseDetail = useCallback(() => {
+    setIsDetailOpen(false);
+    setActiveTaskId(null);
+    setActiveTask(null);
+    setIsDetailLoading(false);
+  }, []);
+
+  const handleSaveTask = useCallback(async (updates: TaskUpdateInput) => {
+    if (!activeTaskId) {
+      return;
+    }
+    await updateTaskMutation.mutateAsync({ taskId: activeTaskId, updates });
+  }, [activeTaskId, updateTaskMutation]);
+
+  const handleAssignTask = useCallback(async (assigneeId: string | null) => {
+    if (!activeTaskId) {
+      return;
+    }
+    await assignTaskMutation.mutateAsync({ taskId: activeTaskId, assigneeId });
+  }, [activeTaskId, assignTaskMutation]);
+
+  const handleDeleteTask = useCallback(async () => {
+    if (!activeTaskId) {
+      return;
+    }
+    await deleteTaskMutation.mutateAsync(activeTaskId);
+  }, [activeTaskId, deleteTaskMutation]);
 
   const handleDragEnd = useCallback((result: DropResult) => {
-    const destination = result.destination;
-    if (!destination) return;
-    if (destination.droppableId === result.source.droppableId && destination.index === result.source.index) return;
+    const { destination, source, draggableId } = result;
+    if (!destination) {
+      return;
+    }
 
-    const newStatus = destination.droppableId as TaskStatus;
-    updateStatusMutation.mutate({
-      taskId: result.draggableId,
-      status: newStatus,
-      position: destination.index,
-    });
-  }, [updateStatusMutation]);
+    const sourceStatus = source.droppableId as TaskStatus;
+    const destinationStatus = destination.droppableId as TaskStatus;
 
-  const handleFiltersChange = (nextFilters: TaskFiltersState) => {
+    if (destinationStatus === sourceStatus && destination.index === source.index) {
+      return;
+    }
+
+    const movedTask = tasks.find((task) => task.id === draggableId);
+    if (!movedTask) {
+      return;
+    }
+
+    applyTasksUpdate((current) =>
+      current.map((task) => (task.id === draggableId ? { ...task, status: destinationStatus } : task)),
+    );
+
+    updateTaskStatusMutation.mutate(
+      { taskId: draggableId, status: destinationStatus, position: destination.index },
+      {
+        onError: () => {
+          applyTasksUpdate((current) =>
+            current.map((task) => (task.id === draggableId ? { ...task, status: sourceStatus } : task)),
+          );
+        },
+      },
+    );
+  }, [tasks, applyTasksUpdate, updateTaskStatusMutation]);
+
+  const handleFiltersChange = useCallback((nextFilters: TaskFiltersState) => {
     setFilters(nextFilters);
-  };
+    persistFilters(nextFilters).catch((persistError) => {
+      console.error('Failed to persist task filters', persistError);
+    });
+  }, []);
 
-  const handleClearFilters = () => {
-    setFilters(resolveDefaultFilters());
-  };
+  const handleClearFilters = useCallback(() => {
+    const defaults = getDefaultFilters();
+    setFilters(defaults);
+    persistFilters(defaults).catch((persistError) => {
+      console.error('Failed to persist task filters', persistError);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isDetailOpen || !activeTaskId) {
+      return;
+    }
+    const latest = tasks.find((task) => task.id === activeTaskId);
+    if (!latest) {
+      return;
+    }
+    setActiveTask((current) => {
+      if (!current) {
+        return latest;
+      }
+      return {
+        ...current,
+        ...latest,
+      };
+    });
+  }, [tasks, isDetailOpen, activeTaskId]);
 
   const filteredTasks = useMemo(() => {
-    return tasks.filter((task) => {
-      if (filters.assigneeId !== 'all') {
-        if (task.assignee) {
-          if (task.assignee.id !== filters.assigneeId) return false;
+    const dueBefore = filters.dueDateBefore ? new Date(filters.dueDateBefore) : null;
+    if (dueBefore) {
+      dueBefore.setHours(23, 59, 59, 999);
+    }
+    const dueAfter = filters.dueDateAfter ? new Date(filters.dueDateAfter) : null;
+    if (dueAfter) {
+      dueAfter.setHours(0, 0, 0, 0);
+    }
+
+    const filtered = tasks.filter((task) => {
+      if (filters.assigneeId !== 'all' && (task.assignee?.id ?? 'all') !== filters.assigneeId) {
+        return false;
+      }
+      if (filters.status !== 'all' && task.status !== filters.status) {
+        return false;
+      }
+      if (filters.priority !== 'all' && task.priority !== filters.priority) {
+        return false;
+      }
+
+      const taskDueDate = task.dueDate ? new Date(task.dueDate) : null;
+      if (dueBefore) {
+        if (!taskDueDate || Number.isNaN(taskDueDate.getTime()) || taskDueDate > dueBefore) {
+          return false;
         }
       }
-      if (filters.status !== 'all' && task.status !== filters.status) return false;
-      if (filters.priority !== 'all' && task.priority !== filters.priority) return false;
-
-      if (filters.dueDateBefore) {
-        if (!task.dueDate) return false;
-        const taskDate = new Date(task.dueDate).setHours(0, 0, 0, 0);
-        const filterDate = new Date(filters.dueDateBefore).setHours(0, 0, 0, 0);
-        if (taskDate > filterDate) return false;
+      if (dueAfter) {
+        if (!taskDueDate || Number.isNaN(taskDueDate.getTime()) || taskDueDate < dueAfter) {
+          return false;
+        }
       }
-
-      if (filters.dueDateAfter) {
-        if (!task.dueDate) return false;
-        const taskDate = new Date(task.dueDate).setHours(0, 0, 0, 0);
-        const filterDate = new Date(filters.dueDateAfter).setHours(0, 0, 0, 0);
-        if (taskDate < filterDate) return false;
-      }
-
       return true;
+    });
+
+    const factor = filters.sortDirection === 'asc' ? 1 : -1;
+
+    return [...filtered].sort((a, b) => {
+      if (filters.sortBy === 'dueDate') {
+        const aTime = a.dueDate ? new Date(a.dueDate).getTime() : Number.POSITIVE_INFINITY;
+        const bTime = b.dueDate ? new Date(b.dueDate).getTime() : Number.POSITIVE_INFINITY;
+        return (aTime - bTime) * factor;
+      }
+      if (filters.sortBy === 'priority') {
+        const diff = priorityWeights[a.priority] - priorityWeights[b.priority];
+        return diff * factor;
+      }
+      const aCreatedAt = new Date(a.createdAt).getTime();
+      const bCreatedAt = new Date(b.createdAt).getTime();
+      return (aCreatedAt - bCreatedAt) * factor;
     });
   }, [tasks, filters]);
 
@@ -228,157 +334,126 @@ const TaskBoard: React.FC = () => {
       in_progress: [],
       done: [],
     };
-
-    const comparator = (a: Task, b: Task) => {
-      if (filters.sortBy === 'priority') {
-        const difference = priorityOrder[a.priority] - priorityOrder[b.priority];
-        if (difference !== 0) return difference;
-      } else if (filters.sortBy === 'dueDate') {
-        const aTime = a.dueDate ? new Date(a.dueDate).getTime() : Number.POSITIVE_INFINITY;
-        const bTime = b.dueDate ? new Date(b.dueDate).getTime() : Number.POSITIVE_INFINITY;
-        if (aTime !== bTime) return aTime - bTime;
-      } else {
-        const aTime = new Date(a.createdAt).getTime();
-        const bTime = new Date(b.createdAt).getTime();
-        if (aTime !== bTime) return aTime - bTime;
-      }
-
-      return a.title.localeCompare(b.title);
-    };
-
     filteredTasks.forEach((task) => {
-      grouped[task.status].push(task);
+      grouped[task.status]?.push(task);
     });
-
-    statusOrder.forEach((status) => {
-      grouped[status].sort((a, b) => {
-        const outcome = comparator(a, b);
-        return filters.sortDirection === 'asc' ? outcome : outcome * -1;
-      });
-    });
-
     return grouped;
-  }, [filteredTasks, filters]);
+  }, [filteredTasks]);
 
-  const handleTaskClick = useCallback((task: Task) => {
-    setSelectedTaskId(task.id);
-  }, []);
-
-  const selectedTaskQuery = useQuery({
-    queryKey: ['task-detail', selectedTaskId],
-    queryFn: () => getTask(selectedTaskId as string),
-    enabled: Boolean(selectedTaskId),
-    initialData: () => {
-      if (!selectedTaskId) return undefined;
-      return tasks.find((task) => task.id === selectedTaskId);
-    },
-  });
-
-  const assignees: TaskAssignee[] = boardQuery.data?.assignees ?? [];
-
-  if (boardQuery.isLoading && !boardQuery.data) {
-    return <div className="p-6 text-sm text-gray-600">Loading tasks...</div>;
-  }
-
-  if (boardQuery.isError) {
-    return (
-      <div className="p-6">
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          Failed to load tasks. Please try again.
-        </div>
-      </div>
-    );
-  }
+  const totalVisibleTasks = filteredTasks.length;
+  const lastUpdated = data?.metadata?.lastUpdated ? new Date(data.metadata.lastUpdated).toLocaleString() : null;
 
   return (
-    <div className="space-y-5 p-6">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div className="space-y-6 p-6">
+      <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Task automation board</h1>
-          <p className="text-sm text-gray-500">Organise and prioritise tasks across your deals.</p>
+          <h1 className="text-2xl font-semibold text-gray-900">Task Board</h1>
+          <p className="text-sm text-gray-500">Coordinate diligence workflows across the deal team.</p>
+          {lastUpdated && (
+            <p className="text-xs text-gray-400">Last updated {lastUpdated}</p>
+          )}
         </div>
         <button
           type="button"
-          onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+          onClick={() => setIsCreateModalOpen(true)}
+          className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-60"
+          disabled={isLoading || createTaskMutation.isPending}
         >
-          New Task
+          New task
         </button>
+      </header>
+
+      <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
+        <span>
+          Showing {totalVisibleTasks} task{totalVisibleTasks === 1 ? '' : 's'}
+        </span>
+        {typeof data?.metadata?.total === 'number' && (
+          <span className="text-gray-400">{data.metadata.total} total in workspace</span>
+        )}
       </div>
 
-      <TaskFilters filters={filters} assignees={assignees} onChange={handleFiltersChange} onClear={handleClearFilters} />
+      <TaskFilters
+        filters={filters}
+        assignees={assignees}
+        onChange={handleFiltersChange}
+        onClear={handleClearFilters}
+      />
+
+      {isLoading && (
+        <div className="rounded-md border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600">
+          Loading tasks...
+        </div>
+      )}
+
+      {isError && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          Failed to load tasks. {error instanceof Error ? error.message : 'Please try again.'}
+        </div>
+      )}
 
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="grid gap-4 md:grid-cols-3">
-          {statusOrder.map((status) => (
-            <Droppable droppableId={status} key={status}>
-              {(provided) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  data-testid={'droppable-' + status}
-                  className="flex min-h-[280px] flex-col rounded-lg border border-gray-200 bg-gray-50 p-4"
-                >
-                  <div className="mb-3 flex items-center justify-between">
-                    <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-600">{statusLabels[status]}</h2>
-                    <span className="text-xs text-gray-500">{tasksByStatus[status].length}</span>
-                  </div>
-
-                  <div className="flex-1 space-y-3">
-                    {tasksByStatus[status].map((task, index) => (
+          {columns.map((column) => (
+            <div key={column.id} className="flex h-full flex-col rounded-lg border border-gray-200 bg-white">
+              <div className="border-b border-gray-200 px-4 py-3">
+                <h2 className="text-sm font-semibold text-gray-700">{column.title}</h2>
+                <p className="text-xs text-gray-400">
+                  {tasksByStatus[column.id].length} task{tasksByStatus[column.id].length === 1 ? '' : 's'}
+                </p>
+              </div>
+              <Droppable droppableId={column.id}>
+                {(dropProvided) => (
+                  <div
+                    ref={dropProvided.innerRef}
+                    {...dropProvided.droppableProps}
+                    data-testid={'droppable-' + column.id}
+                    className="flex flex-1 flex-col gap-3 p-4"
+                  >
+                    {tasksByStatus[column.id].map((task, index) => (
                       <Draggable key={task.id} draggableId={task.id} index={index}>
-                        {(draggableProvided) => (
+                        {(dragProvided) => (
                           <div
-                            ref={draggableProvided.innerRef}
-                            {...draggableProvided.draggableProps}
-                            {...draggableProvided.dragHandleProps}
+                            ref={dragProvided.innerRef}
+                            {...dragProvided.draggableProps}
+                            {...dragProvided.dragHandleProps}
                           >
-                            <TaskCard task={task} onClick={handleTaskClick} />
+                            <TaskCard task={task} onClick={() => handleTaskCardClick(task)} />
                           </div>
                         )}
                       </Draggable>
                     ))}
-
-                    {tasksByStatus[status].length === 0 && (
-                      <p className="rounded-md border border-dashed border-gray-200 bg-white py-6 text-center text-xs text-gray-400">
-                        No tasks in this column
-                      </p>
+                    {tasksByStatus[column.id].length === 0 && !isLoading && (
+                      <p className="text-sm text-gray-400">No tasks in this stage.</p>
                     )}
+                    {dropProvided.placeholder}
                   </div>
-
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
+                )}
+              </Droppable>
+            </div>
           ))}
         </div>
       </DragDropContext>
 
-      {showCreateModal && (
-        <TaskFormModal
-          isOpen={showCreateModal}
-          onClose={() => setShowCreateModal(false)}
-          onSubmit={(payload) => createTaskMutation.mutateAsync(payload)}
-          assignees={assignees}
-          deals={[]}
-          isSubmitting={createTaskMutation.isPending}
-        />
-      )}
+      <TaskFormModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateTask}
+        assignees={assignees}
+        isSubmitting={createTaskMutation.isPending}
+      />
 
-      {selectedTaskId && (
-        <TaskDetailModal
-          isOpen={Boolean(selectedTaskId)}
-          onClose={() => setSelectedTaskId(null)}
-          task={selectedTaskQuery.data ?? null}
-          loading={selectedTaskQuery.isFetching && !selectedTaskQuery.isFetched}
-          assignees={assignees}
-          onSave={(updates) => updateTaskMutation.mutateAsync({ taskId: selectedTaskId, updates })}
-          onAssign={(assignee) => assignTaskMutation.mutateAsync({ taskId: selectedTaskId, assigneeId: assignee })}
-          onDelete={() => deleteTaskMutation.mutateAsync(selectedTaskId)}
-          isSaving={updateTaskMutation.isPending}
-          isDeleting={deleteTaskMutation.isPending}
-        />
-      )}
+      <TaskDetailModal
+        isOpen={isDetailOpen}
+        onClose={handleCloseDetail}
+        task={activeTask}
+        loading={isDetailLoading}
+        assignees={assignees}
+        onSave={handleSaveTask}
+        onAssign={handleAssignTask}
+        onDelete={handleDeleteTask}
+        isSaving={updateTaskMutation.isPending}
+        isDeleting={deleteTaskMutation.isPending}
+      />
     </div>
   );
 };
