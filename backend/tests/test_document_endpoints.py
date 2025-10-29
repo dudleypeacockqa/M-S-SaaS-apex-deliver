@@ -673,10 +673,7 @@ def test_max_versions_enforced(client, auth_context, seeded_deal, db_session):
                 headers=headers,
                 files={"file": ("policy.pdf", io.BytesIO(content), "application/pdf")},
             )
-            # Keep updating to get the latest document ID
-            if response.status_code != 201:
-                print(f"Upload {i} failed: {response.status_code}, {response.json()}")
-            assert response.status_code == 201, f"Upload {i} failed: {response.json()}"
+            assert response.status_code == 201
             latest_doc_id = response.json()["id"]
 
         # List versions using the latest document ID

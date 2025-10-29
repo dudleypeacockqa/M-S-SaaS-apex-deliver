@@ -398,6 +398,7 @@ async def upload_document(
         version=version_number,
         parent_document_id=parent_doc_id,
     )
+    document.created_at = datetime.now(timezone.utc)
     db.add(document)
     db.flush()
     document_id = document.id
@@ -486,6 +487,8 @@ async def _trim_document_versions(
     for version in keep:
         version.parent_document_id = None if version.id == root.id else root.id
         db.add(version)
+
+    db.flush()
 
     for old_version in purge:
         try:
@@ -1269,6 +1272,8 @@ async def restore_document_version(
         updated_at=persisted_document.updated_at,
         uploader_name=_user_display_name(current_user),
     )
+
+
 
 
 
