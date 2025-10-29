@@ -12,10 +12,12 @@
 import React from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { FeatureGate } from '../../components/podcast/FeatureGate';
+import { FeatureGate } from '../../components/subscription/FeatureGate';
+import QuotaWarning from '../../components/podcast/QuotaWarning';
 import { CreateEpisodeModal } from '../../components/podcast/CreateEpisodeModal';
 import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
 import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal';
+import VideoUploadModal from '../../components/podcast/VideoUploadModal';
 import {
   getQuotaSummary,
   listEpisodes,
@@ -33,6 +35,49 @@ type FeatureAccessState = ReturnType<typeof useFeatureAccess>;
 type CreateEpisodePayload = Parameters<typeof createEpisode>[0];
 type UpdateEpisodePayload = Parameters<typeof updateEpisode>[1];
 
+type NotificationState = {
+  type: 'success' | 'error' | 'info';
+  message: string;
+};
+
+type ErrorBoundaryProps = {
+  fallback: React.ReactNode;
+  children: React.ReactNode;
+};
+
+type ErrorBoundaryState = {
+  hasError: boolean;
+};
+
+const UPGRADE_MESSAGES = {
+  video: 'Premium unlocks video uploads and YouTube publishing.',
+  transcription: 'Professional tier unlocks automated podcast transcripts.',
+  youtube: 'Upgrade to Premium to publish directly to YouTube.',
+  liveStreaming: 'Enterprise unlocks live streaming to investor audiences.',
+};
+
+const QUOTA_WARNING_THRESHOLD = 0.8;
+
+class SectionErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  state: ErrorBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown, info: unknown) {
+    // eslint-disable-next-line no-console
+    console.error('PodcastStudio section failed to render', error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
 export function PodcastStudio() {
   return (
     <FeatureGate feature="podcast_audio">
@@ -46,6 +91,28 @@ function PodcastStudioContent() {
   const [isCreateModalOpen, setCreateModalOpen] = React.useState(false);
   const [editingEpisode, setEditingEpisode] = React.useState<PodcastEpisode | null>(null);
   const [deleteTarget, setDeleteTarget] = React.useState<PodcastEpisode | null>(null);
+  const [videoUploadEpisode, setVideoUploadEpisode] = React.useState<PodcastEpisode | null>(null);
+  const [notification, setNotification] = React.useState<NotificationState | null>(null);
+  const notificationTimeoutRef = React.useRef<number | null>(null);
+
+  const pushNotification = React.useCallback((type: NotificationState['type'], message: string) => {
+    setNotification({ type, message });
+    if (notificationTimeoutRef.current) {
+      window.clearTimeout(notificationTimeoutRef.current);
+    }
+    notificationTimeoutRef.current = window.setTimeout(() => {
+      setNotification(null);
+      notificationTimeoutRef.current = null;
+    }, 5000);
+  }, []);
+
+  React.useEffect(() => () => {
+    if (notificationTimeoutRef.current) {
+      window.clearTimeout(notificationTimeoutRef.current);
+    }
+  }, []);
+
+  const closeVideoUploadModal = React.useCallback(() => setVideoUploadEpisode(null), []);
 
   const {
     data: quota,
@@ -54,6 +121,9 @@ function PodcastStudioContent() {
   } = useQuery({
     queryKey: ['podcastQuota'],
     queryFn: getQuotaSummary,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
   });
 
   const {
@@ -63,6 +133,9 @@ function PodcastStudioContent() {
   } = useQuery({
     queryKey: ['podcastEpisodes'],
     queryFn: () => listEpisodes(),
+    staleTime: 60 * 1000,
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
   });
 
   const youtubeAccess = useFeatureAccess({ feature: 'youtube_integration' });
@@ -72,6 +145,10 @@ function PodcastStudioContent() {
     onSuccess: () => {
       setCreateModalOpen(false);
       queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
+      pushNotification('success', 'Episode created successfully');
+    },
+    onError: () => {
+      pushNotification('error', 'Failed to create episode');
     },
   });
 
@@ -81,6 +158,10 @@ function PodcastStudioContent() {
     onSuccess: () => {
       setEditingEpisode(null);
       queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
+      pushNotification('success', 'Episode updated successfully');
+    },
+    onError: () => {
+      pushNotification('error', 'Failed to update episode');
     },
   });
 
@@ -89,6 +170,10 @@ function PodcastStudioContent() {
     onSuccess: () => {
       setDeleteTarget(null);
       queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
+      pushNotification('info', 'Episode deleted');
+    },
+    onError: () => {
+      pushNotification('error', 'Failed to delete episode');
     },
   });
 
@@ -123,6 +208,39 @@ function PodcastStudioContent() {
         <p className="mt-2 text-gray-600">
           Create and manage your podcast episodes
         </p>
+      </div>
+
+      {notification && (
+        <NotificationBanner
+          notification={notification}
+          onDismiss={() => setNotification(null)}
+        />
+      )}
+
+      {quota && (
+        <>
+          <QuotaHud quota={quota} />
+          <QuotaWarning quota={quota} threshold={QUOTA_WARNING_THRESHOLD} />
+        </>
+      )}
+
+      {/* Video feature gate */}
+      <div className="mb-6">
+        <FeatureGate
+          feature="podcast_video"
+          requiredTier="premium"
+          upgradeMessage={UPGRADE_MESSAGES.video}
+          lockedTitle="Video features locked"
+          lockedDescription="Video production is locked on your current plan."
+          ctaLabel="Explore Premium video options"
+        >
+          <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
+            <h3 className="text-sm font-semibold text-purple-800">Video uploads enabled</h3>
+            <p className="mt-1 text-sm text-purple-700">
+              Upload ready-to-share video episodes and syndicate directly to YouTube.
+            </p>
+          </div>
+        </FeatureGate>
       </div>
 
       {/* Quota Card */}
@@ -170,12 +288,47 @@ function PodcastStudioContent() {
       </div>
 
       {/* Episodes List */}
-      <EpisodesList
-        episodes={episodes}
-        youtubeAccess={youtubeAccess}
-        onEdit={(episode) => setEditingEpisode(episode)}
-        onDelete={(episode) => setDeleteTarget(episode)}
-      />
+      <SectionErrorBoundary
+        fallback={
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            We couldn't load your episodes just now. Please refresh the page or try again later.
+          </div>
+        }
+      >
+        <EpisodesList
+          episodes={episodes}
+          youtubeAccess={youtubeAccess}
+          onEdit={(episode) => setEditingEpisode(episode)}
+          onDelete={(episode) => setDeleteTarget(episode)}
+          onNotify={pushNotification}
+          onVideoUpload={(episode) => setVideoUploadEpisode(episode)}
+        />
+      </SectionErrorBoundary>
+
+      <FeatureGate
+        feature="live_streaming"
+        requiredTier="enterprise"
+        upgradeMessage={UPGRADE_MESSAGES.liveStreaming}
+        lockedTitle="Live streaming locked"
+        lockedDescription="Host real-time investor broadcasts with an Enterprise plan."
+        ctaLabel="Explore Enterprise streaming"
+      >
+        <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4 sm:flex sm:items-center sm:justify-between">
+          <div>
+            <h3 className="text-base font-semibold text-slate-900">Live stream studio</h3>
+            <p className="mt-1 text-sm text-slate-600">
+              Broadcast your next investor roadshow directly from the podcast studio with real-time analytics and backstage chat for presenters.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="mt-4 inline-flex items-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 sm:mt-0"
+            onClick={() => pushNotification('info', 'Live streaming session scheduler coming soon')}
+          >
+            Go live (beta)
+          </button>
+        </div>
+      </FeatureGate>
 
       <CreateEpisodeModal
         open={isCreateModalOpen}
@@ -224,7 +377,103 @@ function PodcastStudioContent() {
         onConfirm={() => deleteTarget && deleteEpisodeMutation.mutate(deleteTarget.id)}
         isSubmitting={deleteEpisodeMutation.isPending}
       />
+
+      <FeatureGate
+        feature="podcast_video"
+        requiredTier="premium"
+        upgradeMessage={UPGRADE_MESSAGES.video}
+        lockedTitle="Video uploads locked"
+        lockedDescription="Upgrade to access the video upload pipeline."
+        ctaLabel="Upgrade for video uploads"
+      >
+        {videoUploadEpisode && (
+          <VideoUploadModal
+            open={Boolean(videoUploadEpisode)}
+            onClose={closeVideoUploadModal}
+            episodeId={videoUploadEpisode.id}
+            episodeName={videoUploadEpisode.title}
+            onSuccess={(response) => {
+              pushNotification('success', `Video uploaded for "${videoUploadEpisode.title}"`);
+              closeVideoUploadModal();
+              return response;
+            }}
+          />
+        )}
+      </FeatureGate>
     </div>
+  );
+}
+
+function NotificationBanner({
+  notification,
+  onDismiss,
+}: {
+  notification: NotificationState;
+  onDismiss: () => void;
+}) {
+  const palette: Record<NotificationState['type'], string> = {
+    success: 'bg-emerald-50 border-emerald-300 text-emerald-700',
+    error: 'bg-red-50 border-red-300 text-red-700',
+    info: 'bg-indigo-50 border-indigo-300 text-indigo-700',
+  };
+
+  return (
+    <div
+      className={`mb-4 flex items-start justify-between rounded-md border px-4 py-3 text-sm shadow ${palette[notification.type]}`}
+      role="status"
+    >
+      <span>{notification.message}</span>
+      <button
+        type="button"
+        className="ml-4 text-xs font-semibold uppercase tracking-wide"
+        onClick={onDismiss}
+        aria-label="Dismiss notification"
+      >
+        Close
+      </button>
+    </div>
+  );
+}
+
+function QuotaHud({ quota }: { quota: QuotaSummary }) {
+  const isUnlimited = quota.isUnlimited || quota.limit === null || quota.limit <= 0;
+  const limit = quota.limit ?? 0;
+  const used = quota.used;
+  const percent = isUnlimited ? 0 : Math.min(Math.round((used / limit) * 100), 100);
+
+  return (
+    <section className="mb-4 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Plan usage
+          </p>
+          <p className="mt-1 text-lg font-semibold text-gray-900">
+            {isUnlimited ? `${used} episodes · no limit` : `${used} / ${limit} episodes`}
+          </p>
+          {!isUnlimited && (
+            <p className="text-xs text-gray-500">{quota.remaining} remaining this cycle</p>
+          )}
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+            {quota.tierLabel ?? quota.tier}
+          </span>
+          {!isUnlimited && (
+            <div className="flex w-52 items-center gap-2">
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
+                <div
+                  className="h-full rounded-full bg-indigo-500 transition-all"
+                  style={{ width: `${percent}%` }}
+                  aria-hidden
+                />
+              </div>
+              <span className="text-xs font-semibold text-gray-600">{percent}%</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -328,8 +577,8 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
               )}
             </div>
           )}
-          {quota.upgradeRequired && quota.upgradeMessage && (
-            <p className="mt-2 text-sm text-indigo-700" role="alert">{quota.upgradeMessage}</p>
+          {quota.upgradeMessage && !quota.upgradeRequired && (
+            <p className="mt-2 text-sm text-indigo-700" role="status">{quota.upgradeMessage}</p>
           )}
         </div>
         <div className="flex flex-col items-end">
@@ -358,11 +607,15 @@ function EpisodesList({
   youtubeAccess,
   onEdit,
   onDelete,
+  onNotify,
+  onVideoUpload,
 }: {
   episodes: PodcastEpisode[];
   youtubeAccess: FeatureAccessState;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
+  onNotify: (type: NotificationState['type'], message: string) => void;
+  onVideoUpload: (episode: PodcastEpisode) => void;
 }) {
   if (episodes.length === 0) {
     return (
@@ -398,6 +651,8 @@ function EpisodesList({
             youtubeAccess={youtubeAccess}
             onEdit={onEdit}
             onDelete={onDelete}
+            onNotify={onNotify}
+            onVideoUpload={onVideoUpload}
           />
         ))}
       </ul>
@@ -410,11 +665,15 @@ function EpisodeListItem({
   youtubeAccess,
   onEdit,
   onDelete,
+  onNotify,
+  onVideoUpload,
 }: {
   episode: PodcastEpisode;
   youtubeAccess: FeatureAccessState;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
+  onNotify: (type: NotificationState['type'], message: string) => void;
+  onVideoUpload: (episode: PodcastEpisode) => void;
 }) {
   const statusColors = {
     draft: 'bg-yellow-100 text-yellow-800',
@@ -434,10 +693,12 @@ function EpisodeListItem({
     onSuccess: () => {
       setYoutubeErrorMessage(null);
       setYoutubeSuccessMessage('Published to YouTube');
+      onNotify('success', `Episode "${episode.title}" is live on YouTube`);
     },
     onError: () => {
       setYoutubeSuccessMessage(null);
       setYoutubeErrorMessage('Failed to publish to YouTube. Please try again.');
+      onNotify('error', 'Failed to publish episode to YouTube');
     },
   });
 
@@ -447,10 +708,12 @@ function EpisodeListItem({
       setTranscribeErrorMessage(null);
       setTranscribeSuccessMessage('Transcript generated successfully..');
       queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
+      onNotify('success', `Transcript generated for "${episode.title}"`);
     },
     onError: () => {
       setTranscribeSuccessMessage(null);
       setTranscribeErrorMessage('Failed to transcribe audio. Please try again.');
+      onNotify('error', 'Failed to transcribe episode audio');
     },
   });
 
@@ -547,109 +810,154 @@ function EpisodeListItem({
               Delete
             </button>
             {/* Transcription functionality (DEV-016 Phase 2.2 - Sprint 4A) */}
-            <div className="flex flex-col items-end gap-1">
-              {episode.transcript === null ? (
+            <FeatureGate
+              feature="podcast_video"
+              requiredTier="premium"
+              upgradeMessage={UPGRADE_MESSAGES.video}
+              lockedTitle="Video uploads locked"
+              lockedDescription="Upload studio-quality video episodes with a Premium plan."
+              ctaLabel="Upgrade for video uploads"
+            >
+              <div className="flex flex-col items-end gap-1">
                 <button
                   type="button"
-                  onClick={handleTranscribe}
-                  disabled={transcribeMutation.isPending}
-                  className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-70"
+                  onClick={() => onVideoUpload(episode)}
+                  className="inline-flex items-center px-3 py-2 border border-purple-300 shadow-sm text-sm leading-4 font-medium rounded-md text-purple-700 bg-white hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                 >
-                  {transcribeMutation.isPending ? 'Transcribing…' : 'Transcribe audio'}
+                  Upload video
                 </button>
-              ) : (
-                <>
-                  <div className="flex flex-col gap-1 max-w-md">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">Transcript ready</span>
-                      {episode.transcript_language && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                          {episode.transcript_language.toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-700 line-clamp-2">
-                      {episode.transcript}
-                    </p>
-                    <div className="flex gap-2">
-                      <a
-                        href={`/api/podcasts/episodes/${episode.id}/transcript`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-indigo-600 hover:text-indigo-800 underline"
-                      >
-                        Download transcript (TXT)
-                      </a>
-                      <a
-                        href={`/api/podcasts/episodes/${episode.id}/transcript.srt`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-indigo-600 hover:text-indigo-800 underline"
-                      >
-                        Download transcript (SRT)
-                      </a>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleTranscribe}
-                      disabled={transcribeMutation.isPending}
-                      className="text-xs text-indigo-600 hover:text-indigo-800 underline text-left"
-                    >
-                      {transcribeMutation.isPending ? 'Regenerating…' : 'Regenerate Transcript'}
-                    </button>
-                  </div>
-                </>
-              )}
-              {transcribeSuccessMessage && (
-                <p className="text-xs text-emerald-600" role="status">
-                  {transcribeSuccessMessage}
-                </p>
-              )}
-              {transcribeErrorMessage && (
-                <p className="text-xs text-red-600" role="alert">
-                  {transcribeErrorMessage}
-                </p>
-              )}
-            </div>
-            {episode.video_file_url && (
-              <div className="flex flex-col items-end gap-1">
-                {youtubeAccess.isLoading ? (
-                  <span className="text-xs text-gray-500" role="status">
-                    Checking YouTube access…
-                  </span>
-                ) : youtubeAccess.hasAccess ? (
+                {episode.video_file_url ? (
+                  <a
+                    href={episode.video_file_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-purple-600 hover:text-purple-800 underline"
+                  >
+                    View current video
+                  </a>
+                ) : (
+                  <span className="text-xs text-gray-500">No video uploaded yet</span>
+                )}
+              </div>
+            </FeatureGate>
+
+            <FeatureGate
+              feature="transcription_basic"
+              requiredTier="professional"
+              upgradeMessage={UPGRADE_MESSAGES.transcription}
+              lockedTitle="Transcription locked"
+              lockedDescription="Generate AI-powered transcripts when you upgrade."
+              ctaLabel="Upgrade for transcripts"
+            >
+              <div className="flex flex-col items-start gap-1">
+                {episode.transcript === null ? (
                   <button
                     type="button"
-                    onClick={handlePublish}
-                    disabled={youtubeMutation.isPending}
-                    className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:opacity-70"
+                    onClick={handleTranscribe}
+                    disabled={transcribeMutation.isPending}
+                    className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-70"
                   >
-                    {youtubeMutation.isPending ? 'Publishing…' : 'Publish to YouTube'}
+                    {transcribeMutation.isPending ? 'Transcribing…' : 'Transcribe audio'}
                   </button>
                 ) : (
-                  <button
-                    type="button"
-                    disabled
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-500 bg-white cursor-not-allowed"
-                    title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
-                  >
-                    Upgrade for YouTube
-                  </button>
+                  <>
+                    <div className="flex flex-col gap-1 max-w-md">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">Transcript ready</span>
+                        {episode.transcript_language && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                            {episode.transcript_language.toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-700 line-clamp-2">
+                        {episode.transcript}
+                      </p>
+                      <div className="flex gap-2">
+                        <a
+                          href={`/api/podcasts/episodes/${episode.id}/transcript`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-indigo-600 hover:text-indigo-800 underline"
+                        >
+                          Download transcript (TXT)
+                        </a>
+                        <a
+                          href={`/api/podcasts/episodes/${episode.id}/transcript.srt`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-indigo-600 hover:text-indigo-800 underline"
+                        >
+                          Download transcript (SRT)
+                        </a>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleTranscribe}
+                        disabled={transcribeMutation.isPending}
+                        className="text-xs text-indigo-600 hover:text-indigo-800 underline text-left"
+                      >
+                        {transcribeMutation.isPending ? 'Regenerating…' : 'Regenerate Transcript'}
+                      </button>
+                    </div>
+                  </>
                 )}
-                {youtubeAccess.upgradeRequired && !youtubeAccess.hasAccess && youtubeAccess.upgradeMessage && (
-                  <p className="text-xs text-indigo-700 text-right">{youtubeAccess.upgradeMessage}</p>
-                )}
-                {youtubeSuccessMessage && (
+                {transcribeSuccessMessage && (
                   <p className="text-xs text-emerald-600" role="status">
-                    {youtubeSuccessMessage}
+                    {transcribeSuccessMessage}
                   </p>
                 )}
-                {youtubeErrorMessage && (
+                {transcribeErrorMessage && (
                   <p className="text-xs text-red-600" role="alert">
-                    {youtubeErrorMessage}
+                    {transcribeErrorMessage}
                   </p>
                 )}
               </div>
+            </FeatureGate>
+            {episode.video_file_url && (
+              <FeatureGate
+                feature="youtube_integration"
+                requiredTier="premium"
+                lockedTitle="YouTube publishing locked"
+                lockedDescription="Publish video episodes to YouTube with a Premium plan."
+                ctaLabel="Upgrade for YouTube"
+              >
+                <div className="flex flex-col items-end gap-1">
+                  {youtubeAccess.isLoading ? (
+                    <span className="text-xs text-gray-500" role="status">
+                      Checking YouTube access…
+                    </span>
+                  ) : youtubeAccess.hasAccess ? (
+                    <button
+                      type="button"
+                      onClick={handlePublish}
+                      disabled={youtubeMutation.isPending}
+                      className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      {youtubeMutation.isPending ? 'Publishing…' : 'Publish to YouTube'}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled
+                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-500 bg-white cursor-not-allowed"
+                      title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
+                    >
+                      Upgrade for YouTube
+                    </button>
+                  )}
+                  {youtubeSuccessMessage && (
+                    <p className="text-xs text-emerald-600" role="status">
+                      {youtubeSuccessMessage}
+                    </p>
+                  )}
+                  {youtubeErrorMessage && (
+                    <p className="text-xs text-red-600" role="alert">
+                      {youtubeErrorMessage}
+                    </p>
+                  )}
+                </div>
+              </FeatureGate>
             )}
           </div>
         </div>

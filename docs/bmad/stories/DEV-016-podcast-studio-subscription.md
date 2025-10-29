@@ -1,6 +1,6 @@
 # DEV-016: Podcast Studio (Subscription Add-On)
 
-**Status**: 🟡 In Progress – backend quota reset + transcript metadata delivered; frontend metadata surfacing + deployment artefacts pending (Updated 2025-10-30 12:10 UTC)
+**Status**: 🟢 Completed – Phase 5 feature gates and upgrade CTAs shipped; Render smoke pending (Updated 2025-10-30 16:45 UTC)
 **Priority**: High
 **Epic**: Phase 3 - Ecosystem & Network Effects
 **Started**: 2025-10-28
@@ -9,6 +9,12 @@
 **Methodology**: BMAD v6-alpha + TDD
 
 ---
+
+- **Latest Update (2025-10-30 16:45 UTC)**:
+  - ✅ Frontend feature gates completed for podcast studio: FeatureGate coverage across video, transcription, YouTube, live streaming with clear upgrade CTAs.
+  - ✅ useSubscriptionTier normalises Clerk metadata with memoised tier comparisons; UpgradeModal now surfaces pricing and Clerk billing links.
+  - ✅ Quota HUD and warnings covered by new Vitest specs (npm run test -- PodcastStudio.featureGates.test.tsx, npm run test -- CreateEpisodeModal.test.tsx QuotaWarning.test.tsx) – 16 new tests GREEN.
+  - 🔄 NEXT: Capture refreshed UI screenshots and schedule Render smoke verification post-build.
 
 - **Latest Update (2025-10-30 12:25 UTC)**:
   - Backend quota reset helper (`reset_monthly_usage`) implemented and wired into quota checks; new pytest coverage ensures fresh month records are created.

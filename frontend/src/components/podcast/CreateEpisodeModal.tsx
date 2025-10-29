@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { FeatureGate } from '../subscription/FeatureGate';
+
 interface CreateEpisodeModalProps {
   open: boolean;
   onClose: () => void;
@@ -151,19 +153,28 @@ export function CreateEpisodeModal({ open, onClose, onSubmit, isSubmitting }: Cr
           </div>
 
           {/* Video File URL */}
-          <div>
-            <label htmlFor="video-file-url" className="block text-sm font-medium text-gray-700">
-              Video File URL (optional)
-            </label>
-            <input
-              id="video-file-url"
-              type="url"
-              value={formData.videoFileUrl}
-              onChange={(e) => setFormData({ ...formData, videoFileUrl: e.target.value })}
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-              placeholder="https://cdn.example.com/episode.mp4"
-            />
-          </div>
+          <FeatureGate
+            feature="podcast_video"
+            requiredTier="premium"
+            upgradeMessage="Premium unlocks video uploads and YouTube publishing."
+            lockedTitle="Video uploads locked"
+            lockedDescription="Add high-quality video episodes by upgrading to the Premium tier."
+            ctaLabel="Upgrade for video uploads"
+          >
+            <div>
+              <label htmlFor="video-file-url" className="block text-sm font-medium text-gray-700">
+                Video File URL (optional)
+              </label>
+              <input
+                id="video-file-url"
+                type="url"
+                value={formData.videoFileUrl}
+                onChange={(e) => setFormData({ ...formData, videoFileUrl: e.target.value })}
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                placeholder="https://cdn.example.com/episode.mp4"
+              />
+            </div>
+          </FeatureGate>
 
           {/* Show Notes */}
           <div>
