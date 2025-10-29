@@ -91,7 +91,6 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_deal_match_actions_match_id'), table_name='deal_match_actions')
     op.drop_table('deal_match_actions')
     op.drop_index(op.f('ix_deal_matches_organization_id'), table_name='deal_matches')
-    op.drop_index(op.f('ix_deal_matches_organization_id'), table_name='deal_matches')
     op.drop_index(op.f('ix_deal_matches_matched_deal_id'), table_name='deal_matches')
     op.drop_index(op.f('ix_deal_matches_deal_id'), table_name='deal_matches')
     op.drop_table('deal_matches')

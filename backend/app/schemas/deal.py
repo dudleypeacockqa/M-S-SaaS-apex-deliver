@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from app.models.deal import DealStage
 
@@ -51,8 +51,7 @@ class DealResponse(DealBase):
     archived_at: Optional[datetime] = None
     is_archived: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DealListResponse(BaseModel):

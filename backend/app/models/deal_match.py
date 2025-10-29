@@ -47,6 +47,11 @@ class DealMatchCriteria(Base):
     # Relationships
     organization = relationship("Organization", back_populates="deal_match_criteria")
 
+    def __init__(self, **kwargs):
+        if kwargs.get('organization_id') is None:
+            raise ValueError('organization_id is required for DealMatchCriteria')
+        super().__init__(**kwargs)
+
     def __repr__(self):
         return f"<DealMatchCriteria(id={self.id}, name={self.name}, deal_type={self.deal_type})>"
 

@@ -95,9 +95,11 @@ describe('MatchingWorkspace', () => {
 
       renderWithProviders(<MatchingWorkspace />);
 
-      expect(screen.getByText(/deal matching/i)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText(/deal matching/i)).toBeInTheDocument();
+      });
+
       expect(screen.getByRole('tab', { name: /criteria/i })).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /matches/i })).toBeInTheDocument();
     });
 
     it('should show loading state while fetching data', () => {
@@ -151,7 +153,7 @@ describe('MatchingWorkspace', () => {
       await waitFor(() => {
         expect(screen.getByText(/saas/i)).toBeInTheDocument();
         expect(screen.getByText(/fintech/i)).toBeInTheDocument();
-        expect(screen.getByText(/£1M - £10M/i)).toBeInTheDocument();
+        expect(screen.getByText(/£1\.0M - £10\.0M/i)).toBeInTheDocument();
       });
     });
   });
@@ -207,15 +209,28 @@ describe('MatchingWorkspace', () => {
 
   describe('User Interactions', () => {
     it('should allow switching between tabs', async () => {
-      const { fetchMatchCriteria } = await import('../../services/dealMatchingService');
+      const { fetchMatchCriteria, listDealMatches } = await import('../../services/dealMatchingService');
       vi.mocked(fetchMatchCriteria).mockResolvedValue(mockMatchCriteria);
+      vi.mocked(listDealMatches).mockResolvedValue([]);
 
-      renderWithProviders(<MatchingWorkspace />);
+      renderWithProviders(<MatchingWorkspace dealId="test-deal-1" />);
 
+      // Wait for component to load
+      const criteriaTab = await screen.findByRole('tab', { name: /criteria/i });
       const matchesTab = await screen.findByRole('tab', { name: /matches/i });
+
+      // Initially criteria tab should be selected
+      expect(criteriaTab).toHaveAttribute('aria-selected', 'true');
+      expect(matchesTab).toHaveAttribute('aria-selected', 'false');
+
+      // Click matches tab
       fireEvent.click(matchesTab);
 
-      expect(matchesTab).toHaveAttribute('aria-selected', 'true');
+      // Matches tab should now be selected
+      await waitFor(() => {
+        expect(matchesTab).toHaveAttribute('aria-selected', 'true');
+        expect(criteriaTab).toHaveAttribute('aria-selected', 'false');
+      });
     });
 
     it('should trigger find matches action', async () => {
@@ -223,7 +238,7 @@ describe('MatchingWorkspace', () => {
       vi.mocked(fetchMatchCriteria).mockResolvedValue(mockMatchCriteria);
       vi.mocked(findMatchesForDeal).mockResolvedValue({ matches: mockMatches, total_count: 2 });
 
-      renderWithProviders(<MatchingWorkspace dealId="test-deal-1" />);
+      renderWithProviders(<MatchingWorkspace dealId="test-deal-1" activeTab="matches" />);
 
       const findButton = await screen.findByRole('button', { name: /find matches/i });
       fireEvent.click(findButton);

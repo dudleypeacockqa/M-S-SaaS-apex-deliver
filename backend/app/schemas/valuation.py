@@ -6,7 +6,7 @@ This module defines request/response schemas for valuation endpoints.
 from datetime import datetime
 from typing import List, Optional, Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 
 # Valuation Schemas
@@ -76,8 +76,7 @@ class ValuationResponse(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ValuationExportCreate(BaseModel):
@@ -141,8 +140,7 @@ class ScenarioResponse(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Comparable Company Schemas
@@ -224,8 +222,7 @@ class ComparableCompanyResponse(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Precedent Transaction Schemas
@@ -300,8 +297,7 @@ class PrecedentTransactionResponse(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Multiples Analysis Schemas

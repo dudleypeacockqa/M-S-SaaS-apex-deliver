@@ -4,7 +4,7 @@ Pydantic schemas for financial data requests and responses
 """
 
 from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
 
@@ -42,8 +42,8 @@ class FinancialRatiosResponse(BaseModel):
     calculated_at: datetime = Field(..., description="When ratios were calculated")
     data_quality: str = Field(default="partial", description="Data completeness: complete, partial, minimal")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "deal_id": "deal-123",
                 "organization_id": "org-456",
@@ -57,6 +57,7 @@ class FinancialRatiosResponse(BaseModel):
                 "data_quality": "complete"
             }
         }
+    )
 
 
 class FinancialDataInput(BaseModel):
@@ -92,8 +93,8 @@ class FinancialDataInput(BaseModel):
     nopat: Optional[float] = Field(None, description="Net Operating Profit After Tax")
     invested_capital: Optional[float] = Field(None, ge=0)
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "current_assets": 100000,
                 "current_liabilities": 50000,
@@ -112,6 +113,7 @@ class FinancialDataInput(BaseModel):
                 "operating_cash_flow": 60000
             }
         }
+    )
 
 
 class FinancialConnectionResponse(BaseModel):
@@ -127,8 +129,7 @@ class FinancialConnectionResponse(BaseModel):
     last_sync_status: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FinancialNarrativeResponse(BaseModel):
@@ -147,9 +148,9 @@ class FinancialNarrativeResponse(BaseModel):
     ai_model: str = Field(..., description="AI model used (e.g., gpt-4)")
     generated_at: datetime
 
-    class Config:
-        from_attributes = True
-        json_schema_extra = {
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
             "example": {
                 "id": "narrative-789",
                 "deal_id": "deal-123",
@@ -177,3 +178,4 @@ class FinancialNarrativeResponse(BaseModel):
                 "generated_at": "2025-10-26T12:30:00Z"
             }
         }
+    )

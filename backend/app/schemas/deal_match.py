@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 from datetime import datetime
 from decimal import Decimal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class MatchCriteriaCreate(BaseModel):
@@ -39,8 +39,7 @@ class MatchCriteriaResponse(BaseModel):
     weights: Optional[Dict]
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FindMatchesRequest(BaseModel):
@@ -84,5 +83,4 @@ class DealMatchResponse(BaseModel):
     status: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

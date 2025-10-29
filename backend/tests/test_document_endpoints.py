@@ -6,6 +6,7 @@ import os
 from uuid import uuid4
 
 import pytest
+from fastapi import status
 
 from app.models.deal import Deal, DealStage
 from app.models.document import Document, DocumentAccessLog
@@ -854,6 +855,92 @@ def test_editor_can_upload_with_folder_permission(client, auth_context, seeded_d
         cleanup()
 
 
+def test_document_listing_requires_permission(client, auth_context, seeded_deal, create_user):
+    """Users without document or folder permission must not list deal documents."""
+    from app.api.dependencies.auth import get_current_user
+    from app.main import app
+
+    headers, cleanup, owner_user, org_id = auth_context
+    try:
+        upload_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/documents",
+            headers=headers,
+            files={"file": ("restricted.pdf", io.BytesIO(b"secret"), "application/pdf")},
+        )
+        assert upload_resp.status_code == status.HTTP_201_CREATED
+
+        viewer = create_user(
+            email="viewer-no-access@example.com",
+            organization_id=org_id,
+            role=UserRole.professional,
+        )
+
+        viewer_headers = {"Authorization": f"Bearer mock_token_{viewer.id}"}
+        app.dependency_overrides[get_current_user] = lambda: viewer
+
+        list_resp = client.get(
+            f"/api/deals/{seeded_deal.id}/documents",
+            headers=viewer_headers,
+        )
+
+        assert list_resp.status_code == status.HTTP_403_FORBIDDEN
+    finally:
+        app.dependency_overrides[get_current_user] = lambda: owner_user
+        cleanup()
+
+
+def test_granting_folder_permission_creates_audit_log(
+    client,
+    auth_context,
+    seeded_deal,
+    create_user,
+):
+    """Granting folder access should append an audit entry for contained documents."""
+    headers, cleanup, owner_user, org_id = auth_context
+    from app.api.dependencies.auth import get_current_user
+    from app.main import app
+
+    try:
+        folder_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/folders",
+            headers=headers,
+            json={"name": "Audit Room"},
+        )
+        assert folder_resp.status_code == status.HTTP_201_CREATED
+        folder_id = folder_resp.json()["id"]
+
+        doc_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/documents?folder_id={folder_id}",
+            headers=headers,
+            files={"file": ("folder-doc.pdf", io.BytesIO(b"audit"), "application/pdf")},
+        )
+        assert doc_resp.status_code == status.HTTP_201_CREATED
+        document_id = doc_resp.json()["id"]
+
+        viewer = create_user(
+            email="audit-inherit@example.com",
+            organization_id=org_id,
+            role=UserRole.professional,
+        )
+
+        perm_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/folders/{folder_id}/permissions",
+            headers=headers,
+            json={"user_id": str(viewer.id), "permission_level": "viewer"},
+        )
+        assert perm_resp.status_code == status.HTTP_201_CREATED
+
+        logs_resp = client.get(
+            f"/api/deals/{seeded_deal.id}/documents/{document_id}/access-logs",
+            headers=headers,
+        )
+        assert logs_resp.status_code == status.HTTP_200_OK
+        actions = {entry["action"] for entry in logs_resp.json()}
+        assert "permission_granted" in actions
+    finally:
+        cleanup()
+
+
 def test_editor_cannot_delete_others_document(client, auth_context, seeded_deal, create_user):
     """Editors should not delete documents they did not upload."""
     headers, cleanup, owner_user, org_id = auth_context
@@ -1025,7 +1112,6 @@ def test_delete_document_records_audit_log(client, auth_context, seeded_deal):
             headers=headers,
         )
         assert delete_resp.status_code == 204
-
         logs_resp = client.get(
             f"/api/deals/{seeded_deal.id}/documents/{document_id}/access-logs",
             headers=headers,
@@ -1053,7 +1139,6 @@ def test_access_logs_include_user_name(client, auth_context, seeded_deal):
             headers=headers,
         )
         assert download_resp.status_code == 200
-
         logs_resp = client.get(
             f"/api/deals/{seeded_deal.id}/documents/{doc_id}/access-logs",
             headers=headers,
@@ -1069,6 +1154,9 @@ def test_access_logs_include_user_name(client, auth_context, seeded_deal):
         assert latest.get("user_name") == "Doc Owner"
     finally:
         cleanup()
+
+
+
 
 
 

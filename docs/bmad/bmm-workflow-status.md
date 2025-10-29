@@ -12,7 +12,7 @@ WORKFLOW_PATH: bmad/bmm/workflows/workflow-status/paths/greenfield-level-4.yaml
 ## Current State
 
 CURRENT_PHASE: 4-Implementation
-CURRENT_WORKFLOW: dev-story
+CURRENT_WORKFLOW: workflow-status
 CURRENT_AGENT: dev
 PHASE_1_COMPLETE: true
 PHASE_2_COMPLETE: true
@@ -21,8 +21,9 @@ PHASE_4_COMPLETE: false
 
 ## Next Action
 
-NEXT_ACTION: Author failing tests for folder permission inheritance & access audit logging (DEV-008 RED)
-NEXT_COMMAND: backend/venv/Scripts/python.exe -m pytest backend/tests/test_document_endpoints.py -k "inherit or audit" --maxfail=1
+NEXT_ACTION: Execute full Vitest sweep to capture remaining RED states before resuming DEV-008 document room work.
+NEXT_COMMAND: npm --prefix frontend run test -- --run
 NEXT_AGENT: dev
 
-LAST_UPDATED: 2025-10-29T09:18:40Z
+LAST_UPDATED: 2025-10-29T12:45:00Z
+

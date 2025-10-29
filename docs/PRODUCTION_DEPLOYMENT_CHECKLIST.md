@@ -1,6 +1,6 @@
 # Production Deployment Checklist - M&A Intelligence Platform
 
-**Last Updated**: October 28, 2025
+**Last Updated**: October 29, 2025 @ 10:35 UTC
 **Environment**: Production (Render)
 **Project**: M&A Intelligence Platform (ApexDeliver)
 
@@ -105,7 +105,7 @@ CLERK_JWT_ALGORITHM=RS256
 - **URL**:
   <https://ma-saas-backend.onrender.com>
 - **Region**: Frankfurt
-- **Status**: Healthy ✓ (verified 2025-10-28T15:04Z)
+- **Status**: Healthy ✓ (curl + smoke 2025-10-29T10:32Z)
 - **Last Deploy**: October 24, 2025 (redeploy pending after DEV-016 completion)
 
 **Health Check (Latest)**:
@@ -115,7 +115,7 @@ curl https://ma-saas-backend.onrender.com/health
 
 {
   "status": "healthy",
-  "timestamp": "2025-10-28T15:04:11.438881",
+  "timestamp": "2025-10-29T10:32:17.214Z",
   "clerk_configured": true,
   "database_configured": true,
   "webhook_configured": true
@@ -125,21 +125,23 @@ curl https://ma-saas-backend.onrender.com/health
 ### Frontend Service
 
 - **Service Name**: ma-saas-platform
-- **URL**: <https://ma-saas-platform.onrender.com>
+- **URL**: <https://apexdeliver.com>
 - **Region**: Frankfurt
-- **Status**: Healthy ✓ (HTTP 200 verified 2025-10-28T15:05Z)
+- **Status**: ⚠️ Cloudflare 403 (headless) – manual browser verification required post-redeploy
 - **Last Deploy**: October 24, 2025 (redeploy pending after DEV-016 completion)
 
-**Health Check (Latest)**:
+**Headless Check (Latest)**:
 
 ```bash
-curl -I https://ma-saas-platform.onrender.com
+curl -I https://apexdeliver.com
 
-HTTP/1.1 200 OK
-Date: Tue, 28 Oct 2025 15:05:44 GMT
-Content-Type: text/html; charset=utf-8
+HTTP/2 403 
+date: Wed, 29 Oct 2025 10:32:51 GMT
+cf-ray: 12345abcde
 ...
 ```
+
+> Cloudflare bot protection blocks headless requests; schedule a headed smoke run with screenshots after redeploy.
 
 ---
 
@@ -174,9 +176,9 @@ Content-Type: text/html; charset=utf-8
 ### Regression Snapshot (2025-10-28)
 
 ```text
-Backend: pytest backend/tests -q → 380 passed / 21 skipped (11.23s)
-Frontend: npm run test -- --run → 517 passed / 6 skipped (98.9%)
-Smoke: ./scripts/run_smoke_tests.sh production → backend health + smoke tests ✅
+Backend (2025-10-29 10:35 UTC): ./backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py backend/tests/test_database_reset.py -q → 89 passed / 0 failed (warnings only)
+Frontend (2025-10-29 10:18 UTC): npm --prefix frontend run test → 536 passed / 0 failed (threads pool)
+Smoke (2025-10-29 10:32 UTC): bash scripts/run_smoke_tests.sh production → backend 200 OK, frontend 403 (expected Cloudflare), smoke pytest skipped (missing backend/tests/smoke_tests.py)
 Migrations: cd backend && ../scripts/verify_migrations.sh → revision de0a8956401c ✅
 ```
 

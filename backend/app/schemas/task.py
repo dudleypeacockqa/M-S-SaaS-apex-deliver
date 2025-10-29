@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class TaskCreate(BaseModel):
@@ -45,8 +45,7 @@ class TaskResponse(BaseModel):
     updated_at: Optional[datetime]
     completed_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TaskListResponse(BaseModel):
@@ -76,8 +75,7 @@ class TaskTemplateResponse(BaseModel):
     created_by: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TaskAutomationRuleCreate(BaseModel):
@@ -100,8 +98,7 @@ class TaskAutomationRuleResponse(BaseModel):
     created_by: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TaskAutomationLogResponse(BaseModel):
@@ -114,8 +111,7 @@ class TaskAutomationLogResponse(BaseModel):
     triggered_by: str
     triggered_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TaskAutomationLogList(BaseModel):

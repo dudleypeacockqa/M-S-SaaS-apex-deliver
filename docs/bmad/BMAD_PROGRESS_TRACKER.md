@@ -1,3 +1,38 @@
+### Session 2025-10-29 (DEV-008 Audit Log Enrichment – 10:45 UTC)
+- ❌ Added 	est_access_logs_include_user_name in ackend/tests/test_document_endpoints.py and confirmed RED (ackend/venv/Scripts/python -m pytest backend/tests/test_document_endpoints.py -k access_logs_include_user_name) because access logs returned only ['upload'].
+- ✅ Updated document_service to stamp upload timestamps (document.created_at) and to sort/log with (created_at DESC, id DESC); reran targeted suite → GREEN.
+- ✅ Regression: ackend/venv/Scripts/python -m pytest backend/tests/test_document_endpoints.py → 31 passed / 0 failed.
+- 🔄 NEXT: Extend DEV-008 coverage to folder permissions/search filters and mirror results into frontend data room UI tests.
+### Session 2025-10-29 (Phase 0 Frontend Sweep – 12:55 UTC)
+- ✅ `npm --prefix frontend run test --run` executed; overall 572 specs hit in ~22s.
+- ❌ `src/pages/deals/MatchingWorkspace.test.tsx` fails "should allow switching between tabs" (aria-selected stays false after click) — new DEV-018 UI regression.
+- 🛈 Clerk auth suites still emit "Clerk not loaded yet" warning (existing issue) but remain GREEN.
+- 🔄 NEXT: Debug MatchingWorkspace tab behaviour (check tab state toggling, focus management, `setActiveTab` logic) before re-running Vitest for full green baseline.
+### Session 2025-10-29 (Pydantic Cleanup - 10:40 UTC)
+- PASS ./backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py backend/tests/test_valuation_api.py backend/tests/test_quota_service.py backend/tests/test_podcast_api.py backend/tests/test_database_reset.py backend/tests/test_deal_matching_models.py -q -> 98 passed (Config warnings cleared).
+- UPDATED backend/app/schemas/{valuation,deal,deal_match,financial,task}.py to use ConfigDict instead of deprecated Config classes.
+- NOTE Remaining warnings: json_encoders deprecation + datetime.utcnow usage (tracked for follow-up).
+
+### Session 2025-10-29 (Phase 0 Baseline – 12:45 UTC)
+- ✅ Restored full `DealMatchingService` implementation (industry/size/geography helpers, OpenAI fallback, score weighting).
+- ✅ Updated deal matching models/migration to track `organization_id` and guard missing org assignments.
+- ✅ Backend regression: `backend/venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings` → **485 passed / 0 failed / 38 skipped**.
+- ❌ Frontend global Vitest sweep still pending (fork runner issue outstanding); only valuation/podcast suites rerun locally.
+- 🔄 NEXT: Drive Vitest full run & document room RED cycle per 100% plan once frontend baseline is verified.
+### Session 2025-10-29 (DEV-008 regression confirmation - 09:27 UTC)
+- ✅ Command: backend/venv/Scripts/pytest.exe backend/tests/test_document_endpoints.py --maxfail=1 --disable-warnings -> 31 passed.
+- ✅ DEV-008 document endpoints now stable (version retention, permissions, audit flows).
+- 🔄 NEXT: Expand DEV-008 coverage to backend service unit tests or proceed to quota/audit specs per roadmap.
+
+### Session 2025-10-29 (DEV-008 RED->GREEN loop - 09:24 UTC)
+- ✅ Command: backend/venv/Scripts/pytest.exe backend/tests/test_document_endpoints.py -k 'permission or version' --maxfail=1 --disable-warnings -> 9 passed.
+- ✅ Fix: Document upload now retains the newest version by flushing parent updates before purging old rows and reloading the committed record.
+- ✅ Result: 20-version cap holds without 500 errors; continuing DEV-008 coverage.
+
+### Session 2025-10-29 (DEV-008 Permission Coverage Check – 09:19 UTC)
+- ✅ backend/venv/Scripts/python.exe -m pytest backend/tests/test_document_endpoints.py -k "inherit or audit" --maxfail=1 → inheritance/audit tests already GREEN.
+- ⚠️ No failing specs present; need to craft new RED tests (folder inheritance, access audit log persistence) before implementation.
+
 ### Session 2025-10-29 (DEV-008 Permissions Baseline – 09:18 UTC)
 - ✅ backend/venv/Scripts/python.exe -m pytest backend/tests/test_document_endpoints.py -k permission --maxfail=1 → all current permission tests GREEN.
 - 🔄 NEXT: Draft new failing tests covering folder inheritance + audit log creation before implementing DEV-008 backlog items.
@@ -280,5 +315,20 @@ umpy in backend requirements + venv, rerun pytest, refresh deployment health sna
 - ✅ `../backend/venv/Scripts/python.exe -m pytest tests/test_deal_endpoints.py -q` → 25 passed (deal stage regression resolved).
 - ❌ Full sweep `../backend/venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings` now stops at `tests/test_deal_matching_service.py::TestDealMatchingService::test_calculate_industry_match_exact` because `_calculate_industry_match` is not implemented.
 - 🔄 NEXT: Implement DealMatchingService scoring helpers (industry/size/geography) to unblock DEV-018 tests before rerunning full backend suite.
+
+### Session 2025-10-29 (DEV-018 Scoring Helpers & Baseline Sweep – 09:20 UTC)
+- ✅ Confirmed DealMatchingService scoring helpers satisfy unit coverage (`../backend/venv/Scripts/python.exe -m pytest tests/test_deal_matching_service.py -q`).
+- ✅ Added validation guards on `DealMatchCriteria` / `DealMatch` to enforce `organization_id` non-null.
+- ✅ Full backend run progressed through DEV-018 suites.
+- ❌ `../backend/venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings` now fails at `tests/test_document_endpoints.py::test_max_versions_enforced` (document version cap not implemented; upload 21 returns 500).
+- 🔄 NEXT: Implement DEV-008 document version retention logic (max 20 versions, graceful pruning) and rerun document endpoint tests.
+
+### Session 2025-10-29 (DEV-008 Version Retention GREEN – 09:32 UTC)
+- ✅ Implemented document version pruning (preserve latest 20, reparent surviving versions) and added org validation on match models.
+- ✅ Test focus: `../backend/venv/Scripts/python.exe -m pytest tests/test_document_endpoints.py::test_max_versions_enforced -q` → passed.
+- ✅ Full suite: `../backend/venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings` → 485 passed / 38 skipped / 0 failed.
+- 🔄 NEXT: Draft RED tests for DEV-008 folder permissions & audit logging (`pytest tests/test_document_endpoints.py -k "permission or audit"`).
+
+
 
 
