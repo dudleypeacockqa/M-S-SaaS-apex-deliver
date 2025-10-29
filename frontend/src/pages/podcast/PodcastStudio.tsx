@@ -19,21 +19,16 @@ import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
 import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal';
 import VideoUploadModal from '../../components/podcast/VideoUploadModal';
 import LiveStreamManager, { type LiveStreamManagerTier } from '../../components/podcast/LiveStreamManager';
-import { YouTubePublishModal } from '../../components/podcast/YouTubePublishModal';
+import { YouTubePublisher } from '../../components/podcast/YouTubePublisher';
 import {
   getQuotaSummary,
   listEpisodes,
-  publishEpisodeToYouTube,
   transcribeEpisode,
   createEpisode,
   updateEpisode,
   deleteEpisode,
-  getYouTubeConnectionStatus,
-  initiateYouTubeOAuth,
   type PodcastEpisode,
   type QuotaSummary,
-  type YouTubeConnectionStatus,
-  type YouTubePublishPayload,
 } from '../../services/api/podcasts';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 import { useSubscriptionTier } from '../../hooks/useSubscriptionTier';
@@ -172,18 +167,6 @@ function PodcastStudioContent() {
 
   const youtubeAccess = useFeatureAccess({ feature: 'youtube_integration' });
 
-  const {
-    data: youtubeConnection,
-    isLoading: youtubeConnectionLoading,
-    isError: youtubeConnectionError,
-    refetch: refetchYouTubeConnection,
-  } = useQuery({
-    queryKey: ['youtubeConnection'],
-    queryFn: getYouTubeConnectionStatus,
-    enabled: youtubeAccess.hasAccess,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
 
   const createEpisodeMutation = useMutation({
     mutationFn: (payload: CreateEpisodePayload) => createEpisode(payload),
@@ -225,62 +208,8 @@ function PodcastStudioContent() {
     },
   });
 
-  const initiateYouTubeOAuthMutation = useMutation({
-    mutationFn: ({ episodeId, redirectUri }: { episodeId: string; redirectUri: string }) =>
-      initiateYouTubeOAuth(episodeId, redirectUri),
-    onSuccess: (data, variables) => {
-      window.open(data.authorizationUrl, '_blank', 'noopener');
-      setInfoEpisodeId(variables.episodeId);
-      setYoutubeInfoMessage('Complete the YouTube connection in the popup to finish publishing.');
-      pushNotification('info', 'YouTube connection popup opened — follow the steps to link your channel.');
-    },
-    onError: () => {
-      setYoutubeInfoMessage(null);
-      pushNotification('error', 'Failed to initiate YouTube connection');
-    },
-  });
 
-  const publishToYouTubeMutation = useMutation({
-    mutationFn: ({
-      episodeId,
-      payload,
-      episodeTitle,
-    }: {
-      episodeId: string;
-      payload: YouTubePublishPayload;
-      episodeTitle: string;
-    }) => publishEpisodeToYouTube(episodeId, payload),
-    onSuccess: (_, variables) => {
-      setPublishError(null);
-      setEpisodeToPublish(null);
-      setLastPublishedEpisodeId(variables.episodeId);
-      setInfoEpisodeId(null);
-      setYoutubeInfoMessage(null);
-      pushNotification('success', `Episode "${variables.episodeTitle}" is live on YouTube`);
-      queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
-      loadEpisodes();
-      queryClient.invalidateQueries({ queryKey: ['youtubeConnection'] });
-    },
-    onError: () => {
-      setPublishError('Failed to publish to YouTube. Please try again.');
-      pushNotification('error', 'Failed to publish episode to YouTube');
-    },
-  });
 
-  const handleRequestPublish = React.useCallback(
-    (episode: PodcastEpisode) => {
-      setPublishError(null);
-      publishToYouTubeMutation.reset();
-      setEpisodeToPublish(episode);
-    },
-    [publishToYouTubeMutation],
-  );
-
-  const handleClosePublishModal = React.useCallback(() => {
-    setEpisodeToPublish(null);
-    setPublishError(null);
-    publishToYouTubeMutation.reset();
-  }, [publishToYouTubeMutation]);
 
   const handleSubmitPublish = React.useCallback(
     (payload: YouTubePublishPayload) => {
@@ -865,16 +794,6 @@ function EpisodesList({
             key={episode.id}
             episode={episode}
             youtubeAccess={youtubeAccess}
-            youtubeConnection={youtubeConnection}
-            youtubeConnectionLoading={youtubeConnectionLoading}
-            youtubeConnectionError={youtubeConnectionError}
-            onRefreshYoutubeConnection={onRefreshYoutubeConnection}
-            onRequestPublish={onRequestPublish}
-            onRequestYouTubeConnect={onRequestYouTubeConnect}
-            youtubeInfoMessage={youtubeInfoMessage}
-            infoEpisodeId={infoEpisodeId}
-            lastPublishedEpisodeId={lastPublishedEpisodeId}
-            isConnecting={isConnecting}
             onEdit={onEdit}
             onDelete={onDelete}
             onNotify={onNotify}
