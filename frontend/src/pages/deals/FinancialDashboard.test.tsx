@@ -143,7 +143,7 @@ describe('FinancialDashboard', () => {
     });
   });
 
-  it.skip('should display green color for high readiness score (76-100)', async () => {
+  it('should display green color for high readiness score (76-100)', async () => {
     vi.mocked(financialApi.getFinancialRatios).mockResolvedValue(mockRatiosResponse);
     vi.mocked(financialApi.getFinancialNarrative).mockResolvedValue({
       ...mockNarrativeResponse,
@@ -155,10 +155,12 @@ describe('FinancialDashboard', () => {
     await waitFor(() => {
       const scoreElement = screen.getByText('85.0');
       expect(scoreElement).toBeInTheDocument();
+      expect(scoreElement.className).toContain('bg-green-500');
+      expect(scoreElement.className).toContain('text-white');
     });
   });
 
-  it.skip('should display yellow color for moderate readiness score (51-75)', async () => {
+  it('should display yellow color for moderate readiness score (51-75)', async () => {
     vi.mocked(financialApi.getFinancialRatios).mockResolvedValue(mockRatiosResponse);
     vi.mocked(financialApi.getFinancialNarrative).mockResolvedValue({
       ...mockNarrativeResponse,
@@ -170,10 +172,12 @@ describe('FinancialDashboard', () => {
     await waitFor(() => {
       const scoreElement = screen.getByText('65.0');
       expect(scoreElement).toBeInTheDocument();
+      expect(scoreElement.className).toContain('bg-yellow-500');
+      expect(scoreElement.className).toContain('text-white');
     });
   });
 
-  it.skip('should display red color for low readiness score (0-50)', async () => {
+  it('should display red color for low readiness score (0-50)', async () => {
     vi.mocked(financialApi.getFinancialRatios).mockResolvedValue(mockRatiosResponse);
     vi.mocked(financialApi.getFinancialNarrative).mockResolvedValue({
       ...mockNarrativeResponse,
@@ -185,6 +189,8 @@ describe('FinancialDashboard', () => {
     await waitFor(() => {
       const scoreElement = screen.getByText('45.0');
       expect(scoreElement).toBeInTheDocument();
+      expect(scoreElement.className).toContain('bg-red-500');
+      expect(scoreElement.className).toContain('text-white');
     });
   });
 

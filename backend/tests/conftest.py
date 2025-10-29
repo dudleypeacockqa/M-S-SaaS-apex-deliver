@@ -499,30 +499,43 @@ def create_deal_for_org(db_session, create_user, create_organization, request):
     def _create(
         *,
         organization: Organization | None = None,
+        organization_id: str | None = None,
+        org_id: str | None = None,
         owner: User | None = None,
+        owner_id: str | None = None,
+        user_id: str | None = None,
         name: str = "Test Deal",
         stage: DealStage | str = DealStage.sourcing,
         target_company: str = "Target Co",
         currency: str = "GBP",
     ):
+        org_identifier = organization_id or org_id
+        owner_identifier = owner_id or user_id
+
         owner_user = owner
+        if owner_user is None and owner_identifier:
+            owner_user = db_session.get(User, owner_identifier)
+
         if owner_user is None:
             try:
                 owner_user = request.getfixturevalue("growth_user")
             except FixtureLookupError:
                 owner_user = None
 
+        org = organization
+        if org is None and org_identifier:
+            org = db_session.get(Organization, org_identifier)
+
         if owner_user is not None:
-            org = organization
-            if org is None:
-                org = db_session.query(Organization).filter(Organization.id == owner_user.organization_id).first()
+            if org is None and owner_user.organization_id:
+                org = db_session.get(Organization, owner_user.organization_id)
             if org is None:
                 org = create_organization(subscription_tier="growth")
                 owner_user.organization_id = org.id
                 db_session.add(owner_user)
                 db_session.commit()
         else:
-            org = organization or create_organization()
+            org = org or create_organization()
             owner_user = create_user(role=UserRole.growth, organization_id=org.id)
 
         stage_value = stage if isinstance(stage, DealStage) else DealStage(stage)

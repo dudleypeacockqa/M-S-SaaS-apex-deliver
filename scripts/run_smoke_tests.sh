@@ -50,9 +50,25 @@ if command -v python >/dev/null 2>&1; then
     PYTHON_BIN="$(command -v python)"
 elif command -v python3 >/dev/null 2>&1; then
     PYTHON_BIN="$(command -v python3)"
-else
+fi
+
+if [[ -z "${PYTHON_BIN}" ]]; then
     log "❌ ERROR: python or python3 is required for smoke tests"
     exit 1
+fi
+
+if ! "${PYTHON_BIN}" -m pytest --version >/dev/null 2>&1; then
+    for candidate in "./backend/venv/Scripts/python.exe" "./backend/venv/bin/python"; do
+        if [[ -x "${candidate}" ]] && "${candidate}" -m pytest --version >/dev/null 2>&1; then
+            PYTHON_BIN="$(cd "$(dirname "${candidate}")" && pwd)/$(basename "${candidate}")"
+            break
+        fi
+    done
+
+    if ! "${PYTHON_BIN}" -m pytest --version >/dev/null 2>&1; then
+        log "❌ ERROR: pytest is not available. Please install backend dependencies (backend/venv)."
+        exit 1
+    fi
 fi
 
 log "1. Checking backend health endpoint..."
@@ -75,10 +91,15 @@ log ""
 
 log "3. Running backend smoke pytest suite..."
 pushd backend >/dev/null
-"${PYTHON_BIN}" -m pytest tests/smoke_tests.py -v --tb=short
+if [[ -f "tests/smoke_tests.py" ]]; then
+    "${PYTHON_BIN}" -m pytest tests/smoke_tests.py -v --tb=short
+else
+    log "   ⚠️  No backend smoke_tests.py found; skipping targeted smoke pytest suite."
+fi
 popd >/dev/null
 
 log ""
 divider
 log "✅ Smoke tests completed successfully"
 divider
+

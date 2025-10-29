@@ -1,3 +1,10 @@
+**Latest Update (2025-10-29 08:45 UTC)**:
+- 🔍 Governance audit confirms marketing assets (SVG logos, service worker, analytics wiring) still uncommitted to origin; Vitest full run blocked by fork timeout and needs stabilization.
+- ⚠️ Outstanding work: Structured data/analytics provider lacks GA4 + LinkedIn tracking, asset optimization pending, and EnhancedLandingPage regression must be rerun post-asset import.
+- 🔄 NEXT: Stabilise Vitest global run, finalise asset imports (SVG, service worker), and extend MARK-002 story tests before prepping Render deployment.
+
+---
+
 # MARK-002: Enhanced Sales & Marketing Website - Complete Implementation
 
 **Story ID**: MARK-002  
