@@ -331,16 +331,10 @@ describe('DocumentEditor', () => {
     const documentApi = await documentApiPromise
     vi.mocked(documentApi.saveDocument).mockRejectedValueOnce(new Error('Network failure'))
 
-    vi.useFakeTimers()
-
     createRender()
 
     const editorRegion = await screen.findByRole('textbox', { name: /document content editor/i })
     await userEvent.type(editorRegion, ' Trigger save error')
-
-    await act(async () => {
-      vi.advanceTimersByTime(1500)
-    })
 
     await waitFor(() => {
       expect(screen.getByText(/auto-save failed/i)).toBeInTheDocument()
@@ -353,8 +347,6 @@ describe('DocumentEditor', () => {
     await waitFor(() => {
       expect(documentApi.saveDocument).toHaveBeenCalledTimes(2)
     })
-
-    vi.useRealTimers()
   })
 
   it('updates context for AI suggestions when the user provides additional details', async () => {
