@@ -21,24 +21,30 @@ export const OptInPopup: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // TODO: Send email to backend API
+
     try {
-      await fetch('/api/marketing/subscribe', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://ma-saas-backend.onrender.com';
+      const response = await fetch(`${apiUrl}/api/marketing/subscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, source: 'popup' }),
       });
-      
+
+      if (!response.ok) {
+        throw new Error('Failed to subscribe');
+      }
+
       trackCtaClick('email-optin', 'popup');
       setSubmitted(true);
-      
+
       // Hide popup after 3 seconds
       setTimeout(() => {
         handleClose();
       }, 3000);
     } catch (error) {
       console.error('Failed to subscribe:', error);
+      // Show error to user (optional - for now just log)
+      alert('Failed to subscribe. Please try again later.');
     }
   };
 

@@ -11,6 +11,8 @@ export const ContactPage: React.FC = () => {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
@@ -19,11 +21,39 @@ export const ContactPage: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual form submission (backend integration)
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://ma-saas-backend.onrender.com';
+      const response = await fetch(`${apiUrl}/api/marketing/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          company: formData.subject, // Use subject as company field
+          message: formData.message,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit contact form');
+      }
+
+      const data = await response.json();
+      console.log('Contact form submitted successfully:', data);
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Error submitting contact form:', err);
+      setError('Failed to send message. Please try again or email us directly at support@100daysandbeyond.com');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -135,12 +165,20 @@ export const ContactPage: React.FC = () => {
                     />
                   </div>
 
+                  {/* Error Message */}
+                  {error && (
+                    <div className="bg-red-50 border-2 border-red-500 p-4 rounded-lg text-center">
+                      <p className="text-red-700">{error}</p>
+                    </div>
+                  )}
+
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full bg-indigo-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-800 transition-colors"
+                    disabled={loading}
+                    className="w-full bg-indigo-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Send Message
+                    {loading ? 'Sending...' : 'Send Message'}
                   </button>
                 </form>
               ) : (

@@ -14,7 +14,7 @@ type BlogPost = {
   excerpt: string;
   category: string;
   slug: string;
-  featured_image: string | null;
+  featured_image_url: string | null;
   read_time_minutes: number;
   published_at: string;
 };
@@ -44,10 +44,10 @@ const BlogPostCard: React.FC<{ post: BlogPost }> = ({ post }) => {
   return (
     <a href={`/blog/${post.slug}`} className="block h-full">
       <Card className={`overflow-hidden transition-shadow duration-300 hover:shadow-xl h-full flex flex-col border-t-4 ${borderClass}`}>
-        {post.featured_image ? (
+        {post.featured_image_url ? (
           <div className="h-48 overflow-hidden bg-gray-100">
             <img
-              src={post.featured_image}
+              src={post.featured_image_url}
               alt={post.title}
               className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
             />
