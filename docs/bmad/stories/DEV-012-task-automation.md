@@ -6,12 +6,35 @@
 **Estimated Effort**: 18–22 hours (full-stack, TDD)
 **Actual Effort**: ~2 days
 **Methodology**: BMAD v6-alpha + Strict TDD (RED → GREEN → REFACTOR)
-**Status**: ✅ PRODUCTION READY (Completed 2025-10-29 09:05 UTC)
+**Status**: 🔄 REOPENED (2025-10-30 12:45 UTC) – Frontend TaskBoard and automation UI pending; Vitest TaskBoard suite RED
 
 ---
 
-**Completion Summary (2025-10-29 09:05 UTC)**:
-- ✅ **All Features Verified Complete**
+**Reopen Summary (2025-10-30 12:45 UTC)**:
+- ❌ **Frontend TaskBoard implementation missing** – existing `TaskBoard.tsx` placeholder does not satisfy story acceptance criteria.
+- ❌ **Vitest suite RED** (`frontend/src/pages/tasks/TaskBoard.test.tsx`) – 13 failing tests covering board rendering, filters, modals, drag & drop, and polling.
+- ❌ **BMAD artefacts out of sync** – Progress tracker and story doc still marked COMPLETE; Render deployment not re-validated for DEV-012 scope.
+- ✅ Backend API endpoints and services remain available (needs regression verification once frontend complete).
+
+> **Action**: Resume BMAD v6-alpha + strict TDD cycle for DEV-012 frontend. Restore RED → GREEN → REFACTOR workflow, update artefacts at each phase, and re-run deployment validation before re-certifying completion.
+
+## Next Implementation Plan (2025-10-30)
+1. **RED – TaskBoard Vitest Suite Alignment**
+   - Capture baseline failure logs for `frontend/src/pages/tasks/TaskBoard.test.tsx`.
+   - Update BMAD artefacts (progress tracker, story doc) – ✅ completed.
+   - Review component/service contracts to confirm required API interactions.
+2. **GREEN – Implement TaskBoard UI**
+   - Build React Query-powered data layer with polling (`refetchInterval` 45s) and optimistic updates.
+   - Wire filters, modals (create/detail), drag-and-drop, and keyboard shortcuts per tests.
+   - Ensure service calls (`createTask`, `updateTask`, `assignTask`, `deleteTask`, `persistFilters`, `logTaskActivity`) are invoked with expected payloads.
+3. **REFACTOR – Polish & Deployment**
+   - Remove debug logging, ensure accessibility, type safety, and memoisation.
+   - Run `npm run test -- TaskBoard.test.tsx` + targeted backend regressions; capture results.
+   - Update BMAD tracker, story doc, 100% completion plan, and Render deployment checklist; execute Render smoke once suites GREEN.
+
+
+**Completion Summary (2025-10-29 09:05 UTC)** _(archived for traceability)_:
+- ✅ **All Features Verified Complete** (superseded by reopen)
 - Backend: 8/8 tests PASSED (test_task_crud.py + test_task_automation.py)
   - Task CRUD operations with deal/org scoping
   - Template application and automation rules

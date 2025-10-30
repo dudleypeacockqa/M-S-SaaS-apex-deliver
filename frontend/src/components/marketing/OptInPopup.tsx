@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { trackCtaClick } from '../../lib/analytics';
 import { subscribeToNewsletter } from '../../services/newsletterService';
 
-export const OptInPopup: React.FC = () => {
+interface OptInPopupProps {
+  delayMs?: number;
+}
+
+export const OptInPopup: React.FC<OptInPopupProps> = ({ delayMs = 90_000 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -14,13 +18,17 @@ export const OptInPopup: React.FC = () => {
     const hasSeenPopup = localStorage.getItem('100days_optin_seen');
     if (hasSeenPopup) return;
 
-    // Show popup after 90 seconds (less aggressive)
+    if (delayMs <= 0) {
+      setIsVisible(true);
+      return;
+    }
+
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 90000);
+    }, delayMs);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [delayMs]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -13,9 +13,10 @@ describe('RecentMatches', () => {
       />
     );
 
-    expect(screen.getByTestId('recent-matches')).toBeInTheDocument();
-    expect(screen.getByText('Alpha Corp Acquisition')).toBeInTheDocument();
-    expect(screen.getByText(/Status: saved/i)).toBeInTheDocument();
+    const widget = screen.getByTestId('recent-matches');
+    expect(widget).toBeInTheDocument();
+    expect(widget.textContent).toMatch(/Alpha Corp Acquisition/);
+    expect(widget.textContent).toMatch(/Status: saved/i);
   });
 
   it('renders empty state when no matches provided', () => {

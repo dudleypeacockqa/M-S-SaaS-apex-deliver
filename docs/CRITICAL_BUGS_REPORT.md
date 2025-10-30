@@ -11,14 +11,14 @@
 - **Symptom:** `/blog` renders the empty state and `https://100daysandbeyond.com/api/blog/posts` returns the SPA shell; direct call to `https://ma-saas-backend.onrender.com/api/blog/posts` replies with `500 Internal Server Error`.
 - **Impact:** Zero organic content exposure; SEO plan blocked.
 - **Evidence:** Cypress/Playwright smoke + manual curl during 2025-10-30 audit.
-- **TDD Gate:** Add Vitest contract test for the fetch hook and a Playwright regression against seeded posts before shipping fix.
+- **TDD Gate:** **NEW** Vitest RED spec `frontend/src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx` expects a friendly outage message; Playwright regression pending.
 - **Action:** Re-open ticket DEV-010; rebuild API + seeds, wire frontend to `VITE_API_URL`, add monitor.
 
 ### R2. Contact form submissions dropped *(frontend wired May 2026 — notifications pending)*
-- **Symptom:** `/contact` now posts to `/api/marketing/contact` via the shared API client; backend persists messages. Email/CRM notifications still stubbed.
-- **Impact:** Leads flow into `contact_messages` table; ops still needs notification channel.
-- **TDD Gate:** Vitest form test mocking the contact service + backend pytest for `/api/marketing/contact`.
-- **Action:** Implement SendGrid/CRM background task before removing this from Critical list.
+- **Symptom:** `/contact` now posts to `/api/marketing/contact` via the shared API client; backend persists messages. Email/CRM notifications still stubbed. JSON-LD schema still advertises the old `apexdeliver.com` domain.
+- **Impact:** Leads flow into `contact_messages` table; ops still needs notification channel. SEO schema remains inconsistent.
+- **TDD Gate:** **NEW** Vitest RED spec `frontend/src/pages/marketing/__tests__/ContactPage.form.test.tsx` asserts schema `url` points to `https://100daysandbeyond.com/contact`; backend pytest for `/api/marketing/contact` remains required.
+- **Action:** Implement SendGrid/CRM background task before removing this from Critical list and update schema to the correct domain.
 
 ### R3. Newsletter opt-in fails silently *(storage live, ESP integration pending)
 - **Symptom:** Exit intent + sticky CTA now hits `/api/marketing/subscribe`, storing the email + source. ESP hand-off still to be implemented.

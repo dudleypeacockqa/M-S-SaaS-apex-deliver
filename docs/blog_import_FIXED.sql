@@ -8,7 +8,7 @@
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'The Complete Guide to M&A Deal Flow Management in 2025',
@@ -181,7 +181,7 @@ Ready to transform your **M&A deal flow management**? I''d love to show you how 
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'AI-Powered Due Diligence: How Machine Learning is Revolutionizing M&A',
@@ -344,7 +344,7 @@ Book a 60-minute strategy session with me at **https://book.vimcal.com/p/dudleyp
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'DCF Valuation Explained: A Step-by-Step Guide for Dealmakers',
@@ -549,7 +549,7 @@ Ready to transform your **M&A valuation and deal structuring**? I''d love to sho
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Comparable Company Analysis: The Dealmaker''s Guide to Market-Based Valuation',
@@ -745,7 +745,7 @@ Ready to transform your **M&A valuation and deal execution process**? I''d love 
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'The Ultimate M&A Checklist: From LOI to Closing',
@@ -893,7 +893,7 @@ Ready to transform your **M&A execution and value realization**? I''d love to sh
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Red Flags in M&A Due Diligence: What Every Dealmaker Must Know',
@@ -1054,7 +1054,7 @@ Book a 60-minute strategy session with me at `https://book.vimcal.com/p/dudleype
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'The Art of Deal Sourcing: How to Build a Proprietary M&A Pipeline',
@@ -1208,7 +1208,7 @@ Ready to transform your **deal sourcing strategy**? I''d love to show you how Ap
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Negotiating M&A Terms: Strategies from 100+ Successful Deals',
@@ -1354,7 +1354,7 @@ Book a 60-minute strategy session with me at [https://book.vimcal.com/p/dudleype
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Post-Deal Earnouts: Structuring Win-Win Agreements',
@@ -1527,7 +1527,7 @@ Ready to transform your **M&A deal structure**? I''d love to show you how ApexDe
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'The Role of Quality of Earnings (QoE) in M&A Valuation',
@@ -1716,7 +1716,7 @@ Ready to transform your **M&A exit strategy**? I''d love to show you how ApexDel
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     '13-Week Cash Flow Forecasting: The CFO''s Secret Weapon',
@@ -1903,7 +1903,7 @@ Ready to transform your **liquidity management and strategic financial planning*
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'FP&A Best Practices: Building a World-Class Financial Planning Function',
@@ -2064,7 +2064,7 @@ Ready to transform your **FP&A function**? I''d love to show you how ApexDeliver
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Rolling Forecasts vs. Annual Budgets: Which is Right for Your Business?',
@@ -2236,7 +2236,7 @@ Ready to transform your **financial planning and capital deployment**? I''d love
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Scenario Planning for Uncertain Times: A Practical Guide',
@@ -2412,7 +2412,7 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'KPIs That Matter: The 15 Metrics Every CFO Should Track',
@@ -2626,7 +2626,7 @@ Ready to transform your **financial strategy and maximize your company''s enterp
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Driver-Based Planning: How to Build Agile Financial Models',
@@ -2809,7 +2809,7 @@ Ready to transform your **financial planning and forecasting**? I''d love to sho
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Variance Analysis: Turning Budget vs. Actual into Actionable Insights',
@@ -3016,7 +3016,7 @@ Ready to transform your **financial strategy and operational efficiency**? I''d 
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'The Power of Integrated Financial Planning: Connecting Strategy to Execution',
@@ -3180,7 +3180,7 @@ Ready to transform your **financial planning and M&A readiness**? I''d love to s
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Cash Flow Modeling for High-Growth Companies: The Strategic Survival Tool',
@@ -3347,7 +3347,7 @@ Ready to transform your **cash flow modeling and capital strategy**? I''d love t
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'FP&A Technology Stack: Tools Every Modern Finance Team Needs',
@@ -3491,7 +3491,7 @@ Ready to transform your **financial planning and analysis (FP&A) process**? I''d
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'The First 100 Days: A Post-Merger Integration Playbook',
@@ -3687,7 +3687,7 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Cultural Integration: The Make-or-Break Factor in M&A Success',
@@ -3870,7 +3870,7 @@ I’d love to show you how ApexDeliver + CapLiquify can help you move from cultu
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Synergy Realization: From Projections to Reality',
@@ -4088,7 +4088,7 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'IT Systems Integration: Avoiding the Post-Merger Tech Nightmare',
@@ -4259,7 +4259,7 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Talent Retention After an Acquisition: Keeping Your Best People',
@@ -4437,7 +4437,7 @@ Ready to transform your **M&A integration and talent retention strategy**? I''d 
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Customer Communication During M&A: Maintaining Trust and Revenue',
@@ -4602,7 +4602,7 @@ Ready to transform your **M&A customer retention strategy**? I''d love to show y
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Day 1 Readiness: Planning for a Seamless Transition',
@@ -4750,7 +4750,7 @@ Ready to transform your **M&A integration and Day 1 readiness planning**? I''d l
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Post-Merger Performance Tracking: Metrics That Matter',
@@ -4921,7 +4921,7 @@ Book a **60-minute strategy session** with me at **https://book.vimcal.com/p/dud
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Integrating Sales Teams: Aligning Go-to-Market Strategies Post-Acquisition',
@@ -5088,7 +5088,7 @@ Ready to transform your **post-acquisition commercial integration**? I''d love t
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Legal and Regulatory Compliance in Post-Merger Integration',
@@ -5240,7 +5240,7 @@ Book a 60-minute strategy session with me at [https://book.vimcal.com/p/dudleype
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Working Capital Optimization: Unlocking Hidden Cash',
@@ -5416,7 +5416,7 @@ I''d love to show you how ApexDeliver + CapLiquify can help you identify and unl
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Cash Conversion Cycle: The Ultimate Guide to Faster Cash Flow',
@@ -5612,7 +5612,7 @@ Book a 60-minute strategy session with me at **https://book.vimcal.com/p/dudleyp
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Inventory Management: Balancing Stock Levels and Cash Flow',
@@ -5804,7 +5804,7 @@ Ready to transform your **working capital and liquidity**? I''d love to show you
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Accounts Receivable Best Practices: Getting Paid Faster',
@@ -5971,7 +5971,7 @@ Ready to transform your **Accounts Receivable process**? I''d love to show you h
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Accounts Payable Optimization: Strategic Payment Timing',
@@ -6174,7 +6174,7 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Supply Chain Finance: Leveraging Trade Credit for Growth',
@@ -6315,7 +6315,7 @@ Ready to transform your **supply chain finance strategy**? I''d love to show you
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Working Capital Metrics: What to Track and Why',
@@ -6500,7 +6500,7 @@ Ready to transform your **liquidity and operational efficiency**? I''d love to s
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Seasonal Business Cash Flow Management',
@@ -6660,7 +6660,7 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Working Capital in M&A: Due Diligence and Post-Close Adjustments',
@@ -6827,7 +6827,7 @@ Ready to transform your **working capital due diligence and post-close adjustmen
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Cash Flow Forecasting for Working Capital Planning: The Difference Between Thriving and Just Surviving',
@@ -7048,7 +7048,7 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Value-Based Pricing: Capturing What Your Product is Really Worth',
@@ -7252,7 +7252,7 @@ Ready to transform your **pricing strategy and capture the full economic value o
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Dynamic Pricing Strategies for B2B Companies: The M&A Professional''s Playbook',
@@ -7418,7 +7418,7 @@ Ready to transform your **pricing strategy and unlock hidden EBITDA**? I''d love
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Promotional Pricing: Maximizing Revenue Without Eroding Margins',
@@ -7600,7 +7600,7 @@ Ready to transform your **promotional pricing strategy**? I''d love to show you 
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Price Elasticity: Understanding Customer Sensitivity to Price Changes',
@@ -7829,7 +7829,7 @@ Ready to transform your **pricing strategy and valuation**? I''d love to show yo
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Competitive Pricing Analysis: Positioning Your Product in the Market',
@@ -8017,7 +8017,7 @@ Ready to transform your **pricing strategy and unlock hidden enterprise value**?
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'SaaS Pricing Models: Finding the Right Strategy for Your Business',
@@ -8198,7 +8198,7 @@ Ready to transform your **SaaS pricing strategy**? I''d love to show you how Ape
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Discount Management: When to Say Yes (and When to Say No)',
@@ -8386,7 +8386,7 @@ Ready to transform your **discount management strategy and unit economics**? I''
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Pricing Psychology: The Science Behind Willingness to Pay',
@@ -8571,7 +8571,7 @@ Ready to transform your **pricing strategy and exit valuation**? I''d love to sh
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Revenue Optimization: Balancing Price, Volume, and Mix',
@@ -8745,7 +8745,7 @@ Ready to transform your **Revenue Optimization Strategy**? I''d love to show you
 INSERT INTO blog_posts (
     title, slug, excerpt, content, category, 
     featured_image_url, meta_description, 
-    published, published_at, author, read_time_minutes,
+    published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,
     created_at, updated_at
 ) VALUES (
     'Pricing Strategy for New Product Launches: Why 95% Get It Wrong and How to Be the 5%',

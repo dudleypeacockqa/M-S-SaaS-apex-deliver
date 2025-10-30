@@ -251,6 +251,63 @@ describe('LiveStreamManager - status handling', () => {
   });
 });
 
+describe('LiveStreamManager - status polling', () => {
+  it('should poll stream status at intervals when stream is active', async () => {
+    vi.useFakeTimers();
+
+    const stream = createTestStream({ status: 'live' });
+    vi.mocked(fetchLiveStream).mockResolvedValueOnce(stream);
+
+    const firstSnapshot = {
+      status: 'live',
+      updatedAt: '2025-10-29T12:10:00Z',
+      viewerCount: 12,
+      averageBitrateKbps: 2800,
+    };
+    const secondSnapshot = {
+      status: 'live',
+      updatedAt: '2025-10-29T12:10:05Z',
+      viewerCount: 24,
+      averageBitrateKbps: 3200,
+    };
+
+    vi.mocked(getLiveStreamStatus).mockResolvedValueOnce(firstSnapshot);
+
+    renderManager();
+
+    const summary = await screen.findByText(/stream summary/i);
+
+    await vi.advanceTimersByTimeAsync(5000);
+
+    expect(getLiveStreamStatus).toHaveBeenCalledWith(stream.id);
+
+    await waitFor(() => {
+      expect(within(summary.parentElement!).getByText('12')).toBeInTheDocument();
+    });
+
+    vi.mocked(getLiveStreamStatus).mockResolvedValueOnce(secondSnapshot);
+    await vi.advanceTimersByTimeAsync(5000);
+
+    await waitFor(() => {
+      expect(within(summary.parentElement!).getByText('24')).toBeInTheDocument();
+    });
+  });
+
+  it('should stop polling when stream is offline', async () => {
+    vi.useFakeTimers();
+
+    const stream = createTestStream({ status: 'offline' });
+    vi.mocked(fetchLiveStream).mockResolvedValueOnce(stream);
+
+    renderManager();
+
+    await screen.findByTestId('stream-status');
+    await vi.advanceTimersByTimeAsync(15000);
+
+    expect(getLiveStreamStatus).not.toHaveBeenCalled();
+  });
+});
+
 describe('LiveStreamManager - recording controls', () => {
   it('should render recording toggle and retention selector', async () => {
     const stream = createTestStream({
@@ -303,6 +360,7 @@ describe('LiveStreamManager - recording controls', () => {
           enabled: true,
           retentionDays: 30,
           storageLocation: 'cloud',
+          postProcessing: [],
         },
       });
     });

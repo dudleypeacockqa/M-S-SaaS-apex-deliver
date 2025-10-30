@@ -1086,45 +1086,28 @@ def test_list_categories():
 
 ## BMAD + TDD Remediation Plan
 
-The marketing site is aligned to BMAD (Build → Measure → Analyze → Decide). Each remediation demand starts with a RED test, ships the fix, and captures telemetry before the Decide checkpoint.
+The marketing site follows BMAD (Build → Measure → Analyze → Decide). Each workstream must start with RED tests, ship a GREEN implementation, capture telemetry, and then record a Decide checkpoint.
 
-### 1. Blog Delivery Path
-- **Build:** Restore FastAPI `GET /api/blog/posts` and expose it via `VITE_API_URL`. Update the React fetch hook to consume the configured base URL.
-- **Measure:** Add synthetic monitor (Vitest mock + Playwright smoke) that asserts the response body includes seeded post titles.
-- **Analyze:** Track error rates from the API and client fetch; compare response SLAs against 95th percentile benchmarks.
-- **Decide:** Promote build when both the automated tests and Render health checks stay green for 24 hours.
+### Workstreams & Required Tests
 
-### 2. Contact Pipeline
-- **Build:** Implement `/api/marketing/contact` with validation + email/CRM notification. Wire the form to call the endpoint with optimistic UI feedback.
-- **Measure:** Record submission counts vs. network failures using logging middleware. Add Playwright coverage that verifies success + error states.
-- **Analyze:** Review error logs daily; ensure conversion funnels in analytics reflect successful submissions.
-- **Decide:** Keep feature behind temporary flag until QA verifies RED → GREEN cycles locally and in staging.
+1. WS-01 Blog API & Feed – create Vitest contract tests for the blog listing, a backend pytest for the blog endpoints, and a Playwright smoke. Decide only when Render health checks stay green for 24 hours.
+2. WS-02 Contact Pipeline – add Vitest form tests, backend pytest for the marketing contact endpoint, and a Playwright happy/error flow. Decide after 24 hours of successful submissions with zero 5xx.
+3. WS-03 Newsletter Opt-In – produce popup unit tests, backend subscription pytest, and Playwright opt-in coverage. Decide when the opt-in success rate is at least 98 percent with visible confirmation.
+4. WS-04 Canonical and OG Metadata – snapshot SEO metadata for every marketing page and run a Playwright SEO spec. Decide once Lighthouse and Screaming Frog show 100daysandbeyond.com on every page.
+5. WS-05 Media & Integrations – cover team portrait fallbacks and the integrations CTA with Vitest and Playwright. Decide after seven consecutive days with zero asset 404s.
+6. WS-06 Type Safety and CI Gates – re-enable strict TypeScript checking and enforce npm test, pytest, and Playwright in CI. Decide after three consecutive green pipelines.
 
-### 3. Newsletter Opt-In
-- **Build:** FastAPI `/api/marketing/subscribe` now persists subscribers; frontend hook still needs to consume the service and trigger ESP sync.
-- **Measure:** Add Vitest coverage for the opt-in hook and track subscription counts via analytics.
-- **Analyze:** Compare opt-in rate vs. baseline once ESP integration ships.
-- **Decide:** Remove fallback popup once ESP hand-off succeeds end-to-end.
+### Execution Rhythm
 
-### 4. Canonical & OG Metadata *(COMPLETED – May 2026)*
-- **Build:** Domain constants centralized (`100daysandbeyond.com`) with updated SEO helpers + HTML shell.
-- **Measure:** Snapshot tests (Vitest + testing-library) now assert canonical/OG URLs; Lighthouse/Screaming Frog sweeps queued in deployment pipeline.
-- **Analyze:** Monitor Search Console for residual duplicate URL warnings.
-- **Decide:** Keep nightly crawl until four consecutive reports stay clean.
+- Build: RED → GREEN → REFACTOR, updating documentation alongside code.
+- Measure: run Vitest, pytest, and Playwright locally and in CI; collect coverage, Render, and Sentry metrics.
+- Analyze: review dashboards and analytics to verify acceptance thresholds.
+- Decide: update documentation (spec, bug report, BMAD tracker) only when evidence is captured.
 
-### 5. Media Assets
-- **Build:** Host team portraits and hero assets on the deployed CDN or bundle them locally.
-- **Measure:** Add CI checks that `HEAD` requests to critical assets return 200; extend `TeamPage` tests with mocked `Image` errors.
-- **Analyze:** Monitor 404 logs and Core Web Vitals for image payload impact.
-- **Decide:** Mark complete when a 7-day log window has zero asset 404s.
-
-### 6. Integrations CTA
-- **Build:** Create `/integrations` marketing page or redirect to the Features integrations section.
-- **Measure:** Router test ensures navigation renders content; Playwright journey validates CTA → destination.
-- **Analyze:** Track click-through and bounce on the integrations content.
-- **Decide:** Ship globally when analytics show <5% immediate bounce post-click.
+Daily stand-up tracks RED tests in flight, twice-weekly QA sync reviews telemetry, and the end-of-week Decide review reruns the full marketing verification checklist.
 
 ---
+
 
 ## Test Coverage & Automation
 

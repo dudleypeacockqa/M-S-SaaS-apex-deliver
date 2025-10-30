@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { render, screen, waitFor, act } from '@testing-library/react'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 vi.mock('../../services/newsletterService', () => ({
@@ -17,18 +17,14 @@ import { OptInPopup } from './OptInPopup'
 const mockedSubscribe = subscribeToNewsletter as unknown as vi.Mock
 const mockedTrackCtaClick = trackCtaClick as unknown as vi.Mock
 
-const renderPopup = () => render(<OptInPopup />)
+const renderPopup = (props: Partial<React.ComponentProps<typeof OptInPopup>> = {}) =>
+  render(<OptInPopup delayMs={0} {...props} />)
 
 describe('OptInPopup', () => {
   beforeEach(() => {
-    vi.useFakeTimers()
     mockedSubscribe.mockReset()
     mockedTrackCtaClick.mockReset()
     localStorage.clear()
-  })
-
-  afterEach(() => {
-    vi.useRealTimers()
   })
 
   it('becomes visible after the delay and submits successfully', async () => {
@@ -36,11 +32,7 @@ describe('OptInPopup', () => {
 
     renderPopup()
 
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(90000)
-    })
-
-    expect(await screen.findByPlaceholderText(/enter your email/i)).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/enter your email/i)).toBeInTheDocument()
 
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     await user.type(screen.getByPlaceholderText(/enter your email/i), 'deal@example.com')
@@ -58,11 +50,7 @@ describe('OptInPopup', () => {
 
     renderPopup()
 
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(90000)
-    })
-
-    expect(await screen.findByPlaceholderText(/enter your email/i)).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/enter your email/i)).toBeInTheDocument()
 
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     await user.type(screen.getByPlaceholderText(/enter your email/i), 'deal@example.com')

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import TaskCard from '../../components/tasks/TaskCard';
 import TaskFilters from '../../components/tasks/TaskFilters';
 import TaskFormModal from '../../components/tasks/TaskFormModal';
@@ -16,7 +17,6 @@ import {
   type Task,
   type TaskAssignee,
   type TaskBoardData,
-  type TaskCreateInput,
   type TaskFiltersState,
   type TaskPriority,
   type TaskStatus,
@@ -54,14 +54,14 @@ const readStoredFilters = (): TaskFiltersState => {
     return { ...DEFAULT_FILTERS };
   }
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
+    const rawValue = window.localStorage.getItem(STORAGE_KEY);
+    if (!rawValue) {
       return { ...DEFAULT_FILTERS };
     }
-    const parsed = JSON.parse(raw) as Partial<TaskFiltersState> | null;
+    const parsed = JSON.parse(rawValue) as Partial<TaskFiltersState> | null;
     return { ...DEFAULT_FILTERS, ...(parsed ?? {}) };
-  } catch (error) {
-    console.warn('Failed to read stored task filters', error);
+  } catch (storageError) {
+    console.warn('Failed to read stored task filters', storageError);
     return { ...DEFAULT_FILTERS };
   }
 };
@@ -72,84 +72,70 @@ const storeFilters = (filters: TaskFiltersState) => {
   }
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
-  } catch (error) {
-    console.warn('Failed to store task filters', error);
+  } catch (storageError) {
+    console.warn('Failed to store task filters', storageError);
   }
 };
 
+const isEditableElement = (target: EventTarget | null): boolean => {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+  return target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable;
+};
+
 const TaskBoard: React.FC = () => {
+  const queryClient = useQueryClient();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [assignees, setAssignees] = useState<TaskAssignee[]>([]);
   const [metadata, setMetadata] = useState<TaskBoardData['metadata'] | null>(null);
   const [filters, setFilters] = useState<TaskFiltersState>(() => readStoredFilters());
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
 
-  const mountedRef = useRef(true);
   const filtersInitialisedRef = useRef(false);
 
-  const applyBoardData = useCallback((data: TaskBoardData) => {
+  const { data, isLoading, isError, error, isFetching, refetch } = useQuery<TaskBoardData>({
+    queryKey: ['taskBoard'],
+    queryFn: fetchTaskBoardData,
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
     setTasks(data.tasks);
     setAssignees(data.assignees);
     setMetadata(data.metadata);
-    if (!filtersInitialisedRef.current) {
+    if (!filtersInitialisedRef.current && data.filters) {
       setFilters((current) => ({ ...current, ...data.filters }));
       filtersInitialisedRef.current = true;
     }
-  }, []);
-
-  const loadBoardData = useCallback(async (showSpinner: boolean = false) => {
-    if (!mountedRef.current) {
-      return;
-    }
-    if (showSpinner) {
-      setIsLoading(true);
-    }
-    try {
-      console.log('loadBoardData called');
-      const data = await fetchTaskBoardData();
-      if (!mountedRef.current) {
-        return;
-      }
-      applyBoardData(data);
-      setLoadError(null);
-    } catch (error) {
-      if (!mountedRef.current) {
-        return;
-      }
-      setLoadError(error instanceof Error ? error.message : 'Please try again.');
-    } finally {
-      if (mountedRef.current) {
-        setIsLoading(false);
-      }
-    }
-  }, [applyBoardData]);
+  }, [data]);
 
   useEffect(() => {
-    mountedRef.current = true;
-    void loadBoardData(true);
-    const intervalId = setInterval(() => {
-      console.log('interval fired');
-      void loadBoardData();
+    if (typeof window === 'undefined') {
+      return () => {};
+    }
+
+    const intervalId = window.setInterval(() => {
+      void refetch();
     }, POLL_INTERVAL_MS);
 
-    return () => {
-      mountedRef.current = false;
-      clearInterval(intervalId);
-    };
-  }, [loadBoardData]);
+    return () => window.clearInterval(intervalId);
+  }, [refetch]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
       if (event.key.toLowerCase() !== 'n' || event.metaKey || event.ctrlKey || event.altKey) {
         return;
       }
-      const target = event.target as HTMLElement | null;
-      if (target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) {
+      if (isEditableElement(event.target)) {
         return;
       }
       event.preventDefault();
@@ -160,28 +146,68 @@ const TaskBoard: React.FC = () => {
     return () => window.removeEventListener('keydown', handleShortcut);
   }, []);
 
-  const handleFiltersChange = useCallback((next: TaskFiltersState) => {
-    const updatedFilters: TaskFiltersState = { ...next };
-    if (updatedFilters.status !== 'all' && updatedFilters.assigneeId !== 'all') {
-      updatedFilters.assigneeId = 'all';
+  useEffect(() => {
+    if (!isDetailOpen || !selectedTaskId) {
+      return;
     }
+    const latest = tasks.find((task) => task.id === selectedTaskId);
+    if (!latest) {
+      return;
+    }
+    setSelectedTask((current) => (current ? { ...current, ...latest } : latest));
+  }, [isDetailOpen, selectedTaskId, tasks]);
 
-    setFilters(updatedFilters);
-    storeFilters(updatedFilters);
-    void persistFilters(updatedFilters);
+  const updateQueryData = useCallback(
+    (updater: (current: TaskBoardData) => TaskBoardData) => {
+      queryClient.setQueryData<TaskBoardData | undefined>(['taskBoard'], (existing) => {
+        if (!existing) {
+          return existing;
+        }
+        return updater(existing);
+      });
+    },
+    [queryClient],
+  );
+
+  const handleFiltersChange = useCallback((nextFilters: TaskFiltersState) => {
+    const normalised: TaskFiltersState = { ...nextFilters };
+    if (normalised.status !== 'all' && normalised.assigneeId !== 'all') {
+      normalised.assigneeId = 'all';
+    }
+    setFilters(normalised);
+    storeFilters(normalised);
+    persistFilters(normalised).catch((persistError) => {
+      console.error('Failed to persist task filters', persistError);
+    });
   }, []);
 
   const handleClearFilters = useCallback(() => {
-    setFilters({ ...DEFAULT_FILTERS });
-    storeFilters(DEFAULT_FILTERS);
-    void persistFilters(DEFAULT_FILTERS);
+    const defaults = { ...DEFAULT_FILTERS };
+    setFilters(defaults);
+    storeFilters(defaults);
+    persistFilters(defaults).catch((persistError) => {
+      console.error('Failed to persist task filters', persistError);
+    });
   }, []);
 
-  const handleCreateTask = useCallback(async (input: TaskCreateInput) => {
-    setIsLoading(true);
-    try {
-      const created = await createTask(input);
-      setTasks((current) => [...current, created]);
+  const createTaskMutation = useMutation({
+    mutationFn: (payload: TaskCreateInput) => createTask(payload),
+    onSuccess: (createdTask) => {
+      setTasks((current) => {
+        const next = [...current, createdTask];
+        updateQueryData((existing) => ({
+          ...existing,
+          tasks: next,
+          metadata: existing.metadata
+            ? {
+                ...existing.metadata,
+                total: existing.metadata.total + 1,
+                lastUpdated: new Date().toISOString(),
+              }
+            : existing.metadata,
+        }));
+        return next;
+      });
       setMetadata((current) =>
         current
           ? {
@@ -192,126 +218,206 @@ const TaskBoard: React.FC = () => {
           : current,
       );
       setIsCreateModalOpen(false);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+  });
 
-  const openTaskDetail = useCallback(async (task: Task) => {
-    setSelectedTaskId(task.id);
-    setSelectedTask(task);
-    setIsDetailLoading(true);
-    try {
-      const detailed = await getTask(task.id);
-      setSelectedTask(detailed);
-      setTasks((current) => current.map((item) => (item.id === detailed.id ? detailed : item)));
-    } catch (error) {
-      console.error('Failed to load task details', error);
-    } finally {
-      setIsDetailLoading(false);
-    }
-  }, []);
+  const updateTaskMutation = useMutation({
+    mutationFn: ({ taskId, updates }: { taskId: string; updates: TaskUpdateInput }) => updateTask(taskId, updates),
+    onSuccess: (updatedTask) => {
+      setTasks((current) => {
+        const next = current.map((task) => (task.id === updatedTask.id ? updatedTask : task));
+        updateQueryData((existing) => ({ ...existing, tasks: next }));
+        return next;
+      });
+      setSelectedTask((current) => (current && current.id === updatedTask.id ? { ...current, ...updatedTask } : current));
+    },
+  });
 
-  const closeTaskDetail = useCallback(() => {
+  const assignTaskMutation = useMutation({
+    mutationFn: ({ taskId, assigneeId }: { taskId: string; assigneeId: string | null }) => assignTask(taskId, assigneeId),
+    onSuccess: (updatedTask) => {
+      setTasks((current) => {
+        const next = current.map((task) => (task.id === updatedTask.id ? updatedTask : task));
+        updateQueryData((existing) => ({ ...existing, tasks: next }));
+        return next;
+      });
+      setSelectedTask((current) => (current && current.id === updatedTask.id ? { ...current, ...updatedTask } : current));
+    },
+  });
+
+  const deleteTaskMutation = useMutation({
+    mutationFn: (taskId: string) => deleteTask(taskId),
+    onSuccess: (_, taskId) => {
+      setTasks((current) => {
+        const next = current.filter((task) => task.id !== taskId);
+        updateQueryData((existing) => ({
+          ...existing,
+          tasks: next,
+          metadata: existing.metadata
+            ? {
+                ...existing.metadata,
+                total: Math.max(0, existing.metadata.total - 1),
+                lastUpdated: new Date().toISOString(),
+              }
+            : existing.metadata,
+        }));
+        return next;
+      });
+      setMetadata((current) =>
+        current
+          ? {
+              ...current,
+              total: Math.max(0, current.total - 1),
+              lastUpdated: new Date().toISOString(),
+            }
+          : current,
+      );
+      setIsDetailOpen(false);
+      setSelectedTaskId(null);
+      setSelectedTask(null);
+    },
+  });
+
+  const updateTaskStatusMutation = useMutation({
+    mutationFn: ({ taskId, status, position }: { taskId: string; status: TaskStatus; position: number }) =>
+      updateTaskStatus(taskId, status, position),
+    onSuccess: (updatedTask) => {
+      setTasks((current) => {
+        const next = current.map((task) => (task.id === updatedTask.id ? updatedTask : task));
+        updateQueryData((existing) => ({ ...existing, tasks: next }));
+        return next;
+      });
+      setSelectedTask((current) => (current && current.id === updatedTask.id ? { ...current, ...updatedTask } : current));
+    },
+  });
+
+  const handleCreateTask = useCallback(
+    async (payload: TaskCreateInput) => {
+      await createTaskMutation.mutateAsync(payload);
+    },
+    [createTaskMutation],
+  );
+
+  const handleOpenTaskDetail = useCallback(
+    async (task: Task) => {
+      setSelectedTaskId(task.id);
+      setSelectedTask(task);
+      setIsDetailOpen(true);
+      setIsDetailLoading(true);
+      try {
+        const detailedTask = await getTask(task.id);
+        setSelectedTask(detailedTask);
+        setTasks((current) => {
+          const next = current.map((item) => (item.id === detailedTask.id ? detailedTask : item));
+          updateQueryData((existing) => ({ ...existing, tasks: next }));
+          return next;
+        });
+      } catch (detailError) {
+        console.error('Failed to load task details', detailError);
+      } finally {
+        setIsDetailLoading(false);
+      }
+    },
+    [updateQueryData],
+  );
+
+  const handleCloseTaskDetail = useCallback(() => {
+    setIsDetailOpen(false);
     setSelectedTaskId(null);
     setSelectedTask(null);
     setIsDetailLoading(false);
   }, []);
 
-  const handleSaveTask = useCallback(async (updates: TaskUpdateInput) => {
-    if (!selectedTaskId) {
-      return;
-    }
-
-    const currentTask = tasks.find((task) => task.id === selectedTaskId);
-    const payload: TaskUpdateInput = { ...updates };
-
-    if (typeof payload.title === 'string') {
-      payload.title = payload.title.trim();
-    }
-
-    if (typeof payload.description === 'string') {
-      const baseDescription = currentTask?.description ?? '';
-      let nextDescription = payload.description;
-
-      if (baseDescription && nextDescription.startsWith(baseDescription)) {
-        const trimmedSuffix = nextDescription.slice(baseDescription.length).trim();
-        nextDescription = trimmedSuffix.length > 0 ? trimmedSuffix : baseDescription;
+  const handleSaveTask = useCallback(
+    async (updates: TaskUpdateInput) => {
+      if (!selectedTaskId) {
+        return;
       }
 
-      payload.description = nextDescription.trim() ? nextDescription.trim() : null;
-    }
+      const currentTask = tasks.find((task) => task.id === selectedTaskId);
+      const payload: TaskUpdateInput = { ...updates };
 
-    if (payload.dueDate === '') {
-      payload.dueDate = null;
-    }
+      if (typeof payload.title === 'string') {
+        payload.title = payload.title.trim();
+      }
 
-    const updated = await updateTask(selectedTaskId, payload);
-    setTasks((current) => current.map((item) => (item.id === updated.id ? updated : item)));
-    setSelectedTask(updated);
-  }, [selectedTaskId, tasks]);
+      if (typeof payload.description === 'string') {
+        const baseDescription = currentTask?.description ?? '';
+        let nextDescription = payload.description;
+        if (baseDescription && nextDescription.startsWith(baseDescription)) {
+          const suffix = nextDescription.slice(baseDescription.length).trim();
+          nextDescription = suffix.length > 0 ? suffix : baseDescription;
+        }
+        payload.description = nextDescription.trim() ? nextDescription.trim() : null;
+      }
 
-  const handleAssignTask = useCallback(async (assigneeId: string | null) => {
-    if (!selectedTaskId) {
-      return;
-    }
-    const updated = await assignTask(selectedTaskId, assigneeId);
-    setTasks((current) => current.map((item) => (item.id === updated.id ? updated : item)));
-    setSelectedTask(updated);
-  }, [selectedTaskId]);
+      if (payload.dueDate === '') {
+        payload.dueDate = null;
+      }
+
+      await updateTaskMutation.mutateAsync({ taskId: selectedTaskId, updates: payload });
+    },
+    [selectedTaskId, tasks, updateTaskMutation],
+  );
+
+  const handleAssignTask = useCallback(
+    async (assigneeId: string | null) => {
+      if (!selectedTaskId) {
+        return;
+      }
+      await assignTaskMutation.mutateAsync({ taskId: selectedTaskId, assigneeId });
+    },
+    [assignTaskMutation, selectedTaskId],
+  );
 
   const handleDeleteTask = useCallback(async () => {
     if (!selectedTaskId) {
       return;
     }
-    await deleteTask(selectedTaskId);
-    setTasks((current) => current.filter((item) => item.id !== selectedTaskId));
-    setMetadata((current) =>
-      current
-        ? {
-            ...current,
-            total: Math.max(0, current.total - 1),
-            lastUpdated: new Date().toISOString(),
-          }
-        : current,
-    );
-    closeTaskDetail();
-  }, [selectedTaskId, closeTaskDetail]);
+    await deleteTaskMutation.mutateAsync(selectedTaskId);
+  }, [deleteTaskMutation, selectedTaskId]);
 
-  const handleStatusChange = useCallback(async (result: DropResult) => {
-    const { destination, source, draggableId } = result;
-    if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) {
-      return;
-    }
-    const newStatus = destination.droppableId as TaskStatus;
-    const originalTasks = [...tasks];
+  const handleDragEnd = useCallback(
+    (result: DropResult) => {
+      const { destination, source, draggableId } = result;
+      if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) {
+        return;
+      }
 
-    setTasks((current) =>
-      current.map((item) => (item.id === draggableId ? { ...item, status: newStatus } : item)),
-    );
+      const destinationStatus = destination.droppableId as TaskStatus;
+      const previousTasks = tasks;
+      const optimisticTasks = previousTasks.map((task) =>
+        task.id === draggableId ? { ...task, status: destinationStatus } : task,
+      );
 
-    try {
-      const updated = await updateTaskStatus(draggableId, newStatus, destination.index);
-      setTasks((current) => current.map((item) => (item.id === updated.id ? updated : item)));
-    } catch (error) {
-      console.error('Failed to update task status', error);
-      setTasks(originalTasks);
-    }
-  }, [tasks]);
+      setTasks(optimisticTasks);
+      updateQueryData((existing) => ({ ...existing, tasks: optimisticTasks }));
+
+      updateTaskStatusMutation.mutate(
+        { taskId: draggableId, status: destinationStatus, position: destination.index },
+        {
+          onError: () => {
+            setTasks(previousTasks);
+            updateQueryData((existing) => ({ ...existing, tasks: previousTasks }));
+          },
+        },
+      );
+    },
+    [tasks, updateQueryData, updateTaskStatusMutation],
+  );
 
   const filteredTasks = useMemo(() => {
-    const before = filters.dueDateBefore ? new Date(filters.dueDateBefore) : null;
-    const after = filters.dueDateAfter ? new Date(filters.dueDateAfter) : null;
-
-    if (before) {
-      before.setHours(23, 59, 59, 999);
+    const dueBefore = filters.dueDateBefore ? new Date(filters.dueDateBefore) : null;
+    if (dueBefore) {
+      dueBefore.setHours(23, 59, 59, 999);
     }
-    if (after) {
-      after.setHours(0, 0, 0, 0);
+    const dueAfter = filters.dueDateAfter ? new Date(filters.dueDateAfter) : null;
+    if (dueAfter) {
+      dueAfter.setHours(0, 0, 0, 0);
     }
 
-    const matches = tasks.filter((task) => {
-      if (filters.assigneeId !== 'all' && task.assignee?.id !== filters.assigneeId) {
+    const filtered = tasks.filter((task) => {
+      if (filters.assigneeId !== 'all' && (task.assignee?.id ?? 'all') !== filters.assigneeId) {
         return false;
       }
       if (filters.status !== 'all' && task.status !== filters.status) {
@@ -320,42 +426,36 @@ const TaskBoard: React.FC = () => {
       if (filters.priority !== 'all' && task.priority !== filters.priority) {
         return false;
       }
-      if (before) {
-        if (!task.dueDate) {
-          return false;
-        }
-        const due = new Date(task.dueDate);
-        if (Number.isNaN(due.getTime()) || due > before) {
+      if (dueBefore) {
+        const taskDueDate = task.dueDate ? new Date(task.dueDate) : null;
+        if (!taskDueDate || Number.isNaN(taskDueDate.getTime()) || taskDueDate > dueBefore) {
           return false;
         }
       }
-      if (after) {
-        if (!task.dueDate) {
-          return false;
-        }
-        const due = new Date(task.dueDate);
-        if (Number.isNaN(due.getTime()) || due < after) {
+      if (dueAfter) {
+        const taskDueDate = task.dueDate ? new Date(task.dueDate) : null;
+        if (!taskDueDate || Number.isNaN(taskDueDate.getTime()) || taskDueDate < dueAfter) {
           return false;
         }
       }
       return true;
     });
 
-    const factor = filters.sortDirection === 'asc' ? 1 : -1;
+    const direction = filters.sortDirection === 'asc' ? 1 : -1;
 
-    return [...matches].sort((a, b) => {
+    return [...filtered].sort((a, b) => {
       if (filters.sortBy === 'dueDate') {
         const aTime = a.dueDate ? new Date(a.dueDate).getTime() : Number.POSITIVE_INFINITY;
         const bTime = b.dueDate ? new Date(b.dueDate).getTime() : Number.POSITIVE_INFINITY;
-        return (aTime - bTime) * factor;
+        return (aTime - bTime) * direction;
       }
       if (filters.sortBy === 'priority') {
         const diff = priorityWeight[a.priority] - priorityWeight[b.priority];
-        return diff * factor;
+        return diff * direction;
       }
       const aCreated = new Date(a.createdAt).getTime();
       const bCreated = new Date(b.createdAt).getTime();
-      return (aCreated - bCreated) * factor;
+      return (aCreated - bCreated) * direction;
     });
   }, [filters, tasks]);
 
@@ -365,14 +465,16 @@ const TaskBoard: React.FC = () => {
       in_progress: [],
       done: [],
     };
+
     filteredTasks.forEach((task) => {
       grouped[task.status].push(task);
     });
+
     return grouped;
   }, [filteredTasks]);
 
-  const totalVisible = filteredTasks.length;
-  const lastUpdated = metadata?.lastUpdated ? new Date(metadata.lastUpdated).toLocaleString() : null;
+  const lastUpdatedLabel = metadata?.lastUpdated ? new Date(metadata.lastUpdated).toLocaleString() : null;
+  const errorMessage = isError && error instanceof Error ? error.message : null;
 
   return (
     <div className="space-y-6 p-6">
@@ -380,12 +482,13 @@ const TaskBoard: React.FC = () => {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Task Board</h1>
           <p className="text-sm text-gray-500">Coordinate diligence workflows across the deal team.</p>
-          {lastUpdated && <p className="text-xs text-gray-400">Last updated {lastUpdated}</p>}
+          {lastUpdatedLabel && <p className="text-xs text-gray-400">Last updated {lastUpdatedLabel}</p>}
         </div>
         <button
           type="button"
           onClick={() => setIsCreateModalOpen(true)}
-          className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+          className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-60"
+          disabled={createTaskMutation.isPending}
         >
           New task
         </button>
@@ -393,7 +496,7 @@ const TaskBoard: React.FC = () => {
 
       <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
         <span>
-          Showing {totalVisible} task{totalVisible === 1 ? '' : 's'}
+          Showing {filteredTasks.length} task{filteredTasks.length === 1 ? '' : 's'}
         </span>
         {typeof metadata?.total === 'number' && (
           <span className="text-gray-400">{metadata.total} total in workspace</span>
@@ -402,34 +505,34 @@ const TaskBoard: React.FC = () => {
 
       <TaskFilters filters={filters} assignees={assignees} onChange={handleFiltersChange} onClear={handleClearFilters} />
 
-      {isLoading && (
+      {(isLoading || isFetching) && (
         <div className="rounded-md border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600">Loading tasks...</div>
       )}
 
-      {loadError && (
+      {errorMessage && (
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          Failed to load tasks. {loadError}
+          Failed to load tasks. {errorMessage}
         </div>
       )}
 
-      <DragDropContext onDragEnd={handleStatusChange}>
+      <DragDropContext onDragEnd={handleDragEnd}>
         <div className="grid gap-4 md:grid-cols-3">
           {statusColumns.map((column) => (
-            <Droppable key={column.id} droppableId={column.id}>
-              {(dropProvided) => (
-                <div
-                  ref={dropProvided.innerRef}
-                  {...dropProvided.droppableProps}
-                  data-testid={'droppable-' + column.id}
-                  className="flex h-full flex-col rounded-lg border border-gray-200 bg-white"
-                >
-                  <div className="border-b border-gray-200 px-4 py-3">
-                    <h2 className="text-sm font-semibold text-gray-700">{column.title}</h2>
-                    <p className="text-xs text-gray-400">
-                      {tasksByStatus[column.id].length} task{tasksByStatus[column.id].length === 1 ? '' : 's'}
-                    </p>
-                  </div>
-                  <div className="flex flex-1 flex-col gap-3 p-4">
+            <div key={column.id} className="flex h-full flex-col rounded-lg border border-gray-200 bg-white">
+              <div className="border-b border-gray-200 px-4 py-3">
+                <h2 className="text-sm font-semibold text-gray-700">{column.title}</h2>
+                <p className="text-xs text-gray-400">
+                  {tasksByStatus[column.id].length} task{tasksByStatus[column.id].length === 1 ? '' : 's'}
+                </p>
+              </div>
+              <Droppable droppableId={column.id}>
+                {(dropProvided) => (
+                  <div
+                    ref={dropProvided.innerRef}
+                    {...dropProvided.droppableProps}
+                    data-testid={'droppable-' + column.id}
+                    className="flex flex-1 flex-col gap-3 p-4"
+                  >
                     {tasksByStatus[column.id].map((task, index) => (
                       <Draggable key={task.id} draggableId={task.id} index={index}>
                         {(dragProvided) => (
@@ -438,48 +541,43 @@ const TaskBoard: React.FC = () => {
                             {...dragProvided.draggableProps}
                             {...dragProvided.dragHandleProps}
                           >
-                            <TaskCard task={task} onClick={openTaskDetail} />
+                            <TaskCard task={task} onClick={() => handleOpenTaskDetail(task)} />
                           </div>
                         )}
                       </Draggable>
                     ))}
-                    {tasksByStatus[column.id].length === 0 && (
+                    {tasksByStatus[column.id].length === 0 && !(isLoading || isFetching) && (
                       <p className="text-sm text-gray-400">No tasks in this stage.</p>
                     )}
+                    {dropProvided.placeholder}
                   </div>
-                  {dropProvided.placeholder}
-                </div>
-              )}
-            </Droppable>
+                )}
+              </Droppable>
+            </div>
           ))}
         </div>
       </DragDropContext>
 
-      {isCreateModalOpen && (
-        <TaskFormModal
-          isOpen={isCreateModalOpen}
-          onClose={() => setIsCreateModalOpen(false)}
-          onSubmit={handleCreateTask}
-          assignees={assignees}
-          deals={[]}
-          isSubmitting={false}
-        />
-      )}
+      <TaskFormModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateTask}
+        assignees={assignees}
+        isSubmitting={createTaskMutation.isPending}
+      />
 
-      {selectedTaskId && (
-        <TaskDetailModal
-          isOpen={Boolean(selectedTaskId)}
-          onClose={closeTaskDetail}
-          task={selectedTask}
-          loading={isDetailLoading}
-          assignees={assignees}
-          onSave={handleSaveTask}
-          onAssign={handleAssignTask}
-          onDelete={handleDeleteTask}
-          isSaving={false}
-          isDeleting={false}
-        />
-      )}
+      <TaskDetailModal
+        isOpen={isDetailOpen}
+        onClose={handleCloseTaskDetail}
+        task={selectedTask}
+        loading={isDetailLoading}
+        assignees={assignees}
+        onSave={handleSaveTask}
+        onAssign={handleAssignTask}
+        onDelete={handleDeleteTask}
+        isSaving={updateTaskMutation.isPending || assignTaskMutation.isPending}
+        isDeleting={deleteTaskMutation.isPending}
+      />
     </div>
   );
 };

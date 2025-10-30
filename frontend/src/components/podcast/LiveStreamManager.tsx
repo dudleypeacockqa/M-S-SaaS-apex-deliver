@@ -8,6 +8,7 @@ import {
   startLiveStream,
   stopLiveStream,
   updateLiveStreamPreferences,
+  type LiveStream,
   type RecordingSettings,
   type StreamQuality,
   type StreamStatusSnapshot,
@@ -19,6 +20,7 @@ import { StreamRecordingOptions } from './StreamRecordingOptions';
 import { MultiLanguageStreamSettings } from './MultiLanguageStreamSettings';
 
 const queryKey = (podcastId: string) => ['podcast', podcastId, 'liveStream'] as const;
+const POLL_INTERVAL_MS = 5000;
 
 export type LiveStreamManagerTier = 'starter' | 'professional' | 'premium' | 'enterprise';
 
@@ -61,6 +63,9 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
   });
 
   const stream = streamQuery.data;
+  const shouldPollStatus = Boolean(
+    stream && ['starting', 'live', 'stopping'].includes(stream.status)
+  );
 
   React.useEffect(() => {
     if (!stream) {
@@ -118,6 +123,56 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
     },
   });
 
+
+  React.useEffect(() => {
+    if (!shouldPollStatus || !stream) {
+      if (!shouldPollStatus) {
+        setStatusSnapshot(null);
+      }
+      return;
+    }
+
+    if (startMutation.isPending || stopMutation.isPending) {
+      setStatusSnapshot(null);
+      return;
+    }
+
+    let isCancelled = false;
+
+    const pollStatus = async () => {
+      try {
+        const snapshot = await getLiveStreamStatus(stream.id);
+        if (isCancelled) {
+          return;
+        }
+        setStatusSnapshot(snapshot);
+        queryClient.setQueryData(queryKey(podcastId), (previous: LiveStream | null | undefined) => {
+          if (!previous) {
+            return previous ?? null;
+          }
+          return {
+            ...previous,
+            status: snapshot.status,
+            latestViewerCount: snapshot.viewerCount ?? previous.latestViewerCount ?? null,
+          };
+        });
+      } catch (error) {
+        // Swallow polling errors; UI already shows last known status
+      }
+    };
+
+    void pollStatus();
+
+    const intervalId = window.setInterval(() => {
+      void pollStatus();
+    }, POLL_INTERVAL_MS);
+
+    return () => {
+      isCancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, [shouldPollStatus, stream?.id, stream?.status, podcastId, queryClient, startMutation.isPending, stopMutation.isPending]);
+
   const handleCreateStream = () => createMutation.mutate();
 
   const handleCopyServer = async () => {
@@ -156,10 +211,8 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
       enabled: normalized.enabled,
       retentionDays: normalized.retentionDays,
       storageLocation: normalized.storageLocation,
+      postProcessing: normalized.postProcessing,
     };
-    if (normalized.postProcessing.length > 0) {
-      recordingPayload.postProcessing = normalized.postProcessing;
-    }
 
     updatePreferences({ recording: recordingPayload });
   };
