@@ -21,10 +21,10 @@ export const StickyCTABar: React.FC = () => {
     }
 
     const handleScroll = () => {
-      // Show bar after scrolling down 50% of the page
+      // Show bar after scrolling down 80% of the page (less aggressive)
       const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
 
-      if (scrollPercentage > 50) {
+      if (scrollPercentage > 80) {
         setIsVisible(true)
       } else {
         setIsVisible(false)
