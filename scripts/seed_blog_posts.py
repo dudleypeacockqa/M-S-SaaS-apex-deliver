@@ -37,26 +37,57 @@ def seed_blog_posts():
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    # Load blog posts - try multiple possible paths
+    # DEBUG: Show current environment
+    print(f"DEBUG: Current working directory: {Path.cwd()}")
+    print(f"DEBUG: Script location: {Path(__file__).resolve()}")
+    print(f"DEBUG: Script parent: {Path(__file__).parent.resolve()}")
+
+    # List files in current directory
+    print(f"DEBUG: Files in current directory:")
+    try:
+        for item in sorted(Path.cwd().iterdir())[:20]:  # Show first 20 items
+            print(f"  - {item.name} {'(dir)' if item.is_dir() else f'({item.stat().st_size} bytes)'}")
+    except Exception as e:
+        print(f"  Could not list directory: {e}")
+
+    # Load blog posts - try multiple possible paths with explicit priority
     possible_paths = [
+        Path('/app/blog_posts_for_database.json'),  # Render deployment - FIRST PRIORITY
         Path(__file__).parent.parent / 'blog_posts_for_database.json',  # Local development
-        Path('/app/blog_posts_for_database.json'),  # Render deployment
         Path.cwd() / 'blog_posts_for_database.json',  # Current directory
+        Path('/app') / 'blog_posts_for_database.json',  # Alternative Render path
     ]
 
     blog_posts_file = None
-    for path in possible_paths:
-        if path.exists():
-            blog_posts_file = path
-            print(f"Found blog posts file at: {blog_posts_file}")
-            break
+    print(f"\nDEBUG: Searching for blog_posts_for_database.json...")
+    for i, path in enumerate(possible_paths, 1):
+        resolved = path.resolve()
+        exists = path.exists()
+        print(f"  {i}. {path}")
+        print(f"     Resolved: {resolved}")
+        print(f"     Exists: {exists}")
+        if exists:
+            try:
+                size = path.stat().st_size
+                print(f"     Size: {size} bytes")
+                blog_posts_file = path
+                print(f"     ✓ USING THIS FILE")
+                break
+            except Exception as e:
+                print(f"     Error reading: {e}")
 
     if not blog_posts_file:
-        print(f"ERROR: Could not find blog_posts_for_database.json")
-        print(f"Tried paths:")
-        for path in possible_paths:
-            print(f"  - {path}")
-        print(f"Current directory: {Path.cwd()}")
+        print(f"\nERROR: Could not find blog_posts_for_database.json")
+        print(f"All paths failed. Listing /app directory:")
+        try:
+            app_dir = Path('/app')
+            if app_dir.exists():
+                for item in sorted(app_dir.iterdir())[:30]:
+                    print(f"  - {item.name}")
+            else:
+                print("  /app directory does not exist")
+        except Exception as e:
+            print(f"  Could not list /app: {e}")
         return
 
     with open(blog_posts_file, 'r') as f:
