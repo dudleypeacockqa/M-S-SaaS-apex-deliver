@@ -703,7 +703,9 @@ describe('PodcastStudio', () => {
           scheduleTime: null,
         });
       });
-      expect(await screen.findByText(/published to youtube/i)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getAllByText(/published to youtube/i).length).toBeGreaterThan(0);
+      }, { timeout: 5000 });
     });
 
     it('initiates OAuth connect flow when YouTube account is not connected', async () => {

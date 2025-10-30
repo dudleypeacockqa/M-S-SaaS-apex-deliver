@@ -596,28 +596,19 @@ function PodcastStudioContent() {
         isSubmitting={deleteEpisodeMutation.isPending}
       />
 
-      <FeatureGate
-        feature="podcast_video"
-        requiredTier="premium"
-        upgradeMessage={UPGRADE_MESSAGES.video}
-        lockedTitle="Video uploads locked"
-        lockedDescription="Upgrade to access the video upload pipeline."
-        ctaLabel="Upgrade for video uploads"
-      >
-        {videoUploadEpisode && (
-          <VideoUploadModal
-            open={Boolean(videoUploadEpisode)}
-            onClose={closeVideoUploadModal}
-            episodeId={videoUploadEpisode.id}
-            episodeName={videoUploadEpisode.title}
-            onSuccess={(response) => {
-              pushNotification('success', `Video uploaded for "${videoUploadEpisode.title}"`);
-              closeVideoUploadModal();
-              return response;
-            }}
-          />
-        )}
-      </FeatureGate>
+      {canUploadVideo && videoUploadEpisode && (
+        <VideoUploadModal
+          open
+          onClose={closeVideoUploadModal}
+          episodeId={videoUploadEpisode.id}
+          episodeName={videoUploadEpisode.title}
+          onSuccess={(response) => {
+            pushNotification('success', `Video uploaded for "${videoUploadEpisode.title}"`);
+            closeVideoUploadModal();
+            return response;
+          }}
+        />
+      )}
 
       <YouTubePublishModal
         open={Boolean(episodeToPublish)}
@@ -976,8 +967,7 @@ function EpisodeListItem({
   const queryClient = useQueryClient();
   const isVideoEpisode = Boolean(episode.video_file_url);
   const isConnected = Boolean(youtubeConnection?.isConnected);
-  const canUseYoutubeFeatures =
-    youtubeAccess.hasAccess || (!youtubeConnectionLoading && youtubeConnection && !youtubeConnection.isConnected);
+  const canUseYoutubeFeatures = youtubeAccess.hasAccess;
   const infoMessage = infoEpisodeId === episode.id ? youtubeInfoMessage : null;
   const publishErrorMessage = infoEpisodeId === episode.id ? publishError : null;
   const showPublishSuccess = lastPublishedEpisodeId === episode.id;
@@ -1204,7 +1194,7 @@ function EpisodeListItem({
                 <span className="text-xs text-gray-500" role="status">
                   Checking YouTube access…
                 </span>
-              ) : !canUseYoutubeFeatures ? (
+              ) : !youtubeAccess.hasAccess ? (
                 <div className="flex flex-col items-end gap-1 text-right">
                   {(() => {
                     const upgradeMessageText =
@@ -1226,6 +1216,15 @@ function EpisodeListItem({
                     );
                   })()}
                 </div>
+              ) : !isConnected ? (
+                <button
+                  type="button"
+                  onClick={() => onRequestYouTubeConnect(episode)}
+                  disabled={isConnecting}
+                  className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isConnecting && infoEpisodeId === episode.id ? 'Connecting…' : 'Connect YouTube'}
+                </button>
               ) : youtubeConnectionError ? (
                 <div className="flex flex-col items-end gap-1">
                   <span className="text-xs text-red-600" role="alert">
@@ -1239,15 +1238,6 @@ function EpisodeListItem({
                     Retry connection
                   </button>
                 </div>
-              ) : !isConnected ? (
-                <button
-                  type="button"
-                  onClick={() => onRequestYouTubeConnect(episode)}
-                  disabled={isConnecting}
-                  className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {isConnecting && infoEpisodeId === episode.id ? 'Connecting…' : 'Connect YouTube'}
-                </button>
               ) : (
                 <button
                   type="button"

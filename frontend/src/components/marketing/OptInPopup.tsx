@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { trackCtaClick } from '../../lib/analytics';
+import { subscribeToNewsletter } from '../../services/newsletterService';
 
 export const OptInPopup: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user has already seen/dismissed the popup
-    const hasSeenPopup = localStorage.getItem('apexdeliver_optin_seen');
+    const hasSeenPopup = localStorage.getItem('100days_optin_seen');
     if (hasSeenPopup) return;
 
     // Show popup after 90 seconds (less aggressive)
@@ -23,16 +26,10 @@ export const OptInPopup: React.FC = () => {
     e.preventDefault();
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://ma-saas-backend.onrender.com';
-      const response = await fetch(`${apiUrl}/api/marketing/subscribe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'popup' }),
-      });
+      setLoading(true);
+      setError(null);
 
-      if (!response.ok) {
-        throw new Error('Failed to subscribe');
-      }
+      await subscribeToNewsletter({ email, source: 'popup' });
 
       trackCtaClick('email-optin', 'popup');
       setSubmitted(true);
@@ -41,16 +38,17 @@ export const OptInPopup: React.FC = () => {
       setTimeout(() => {
         handleClose();
       }, 3000);
-    } catch (error) {
-      console.error('Failed to subscribe:', error);
-      // Show error to user (optional - for now just log)
-      alert('Failed to subscribe. Please try again later.');
+    } catch (err) {
+      console.error('Failed to subscribe:', err);
+      setError('Failed to subscribe. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleClose = () => {
     setIsVisible(false);
-    localStorage.setItem('apexdeliver_optin_seen', 'true');
+    localStorage.setItem('100days_optin_seen', 'true');
   };
 
   if (!isVisible) return null;
@@ -100,11 +98,17 @@ export const OptInPopup: React.FC = () => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-900 focus:border-transparent"
                 />
               </div>
+              {error && (
+                <p className="text-sm text-red-600" role="alert">
+                  {error}
+                </p>
+              )}
               <button
                 type="submit"
-                className="w-full bg-indigo-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-800 transition-colors"
+                disabled={loading}
+                className="w-full bg-indigo-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Get Free Insights
+                {loading ? 'Subscribing…' : 'Get Free Insights'}
               </button>
               <p className="text-xs text-gray-500 text-center">
                 We respect your privacy. Unsubscribe anytime.
