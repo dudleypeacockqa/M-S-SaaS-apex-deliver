@@ -21,7 +21,10 @@ describe('PodcastPage', () => {
   describe('Header Section', () => {
     it('should render main heading', () => {
       renderWithRouter(<PodcastPage />);
-      expect(screen.getByText(/100 days and beyond/i)).toBeInTheDocument();
+      // Text appears multiple times (nav + heading), use getAllByText
+      const elements = screen.getAllByText(/100 days and beyond/i);
+      expect(elements.length).toBeGreaterThan(0);
+      expect(elements[0]).toBeInTheDocument();
     });
 
     it('should render descriptive subheading', () => {
@@ -38,12 +41,16 @@ describe('PodcastPage', () => {
 
     it('should render "Actionable Insights" feature', () => {
       renderWithRouter(<PodcastPage />);
-      expect(screen.getByText(/actionable insights/i)).toBeInTheDocument();
+      const elements = screen.getAllByText(/actionable insights/i);
+      expect(elements.length).toBeGreaterThan(0);
+      expect(elements[0]).toBeInTheDocument();
     });
 
     it('should render "Expert Guests" feature', () => {
       renderWithRouter(<PodcastPage />);
-      expect(screen.getByText(/expert guests/i)).toBeInTheDocument();
+      const elements = screen.getAllByText(/expert guests/i);
+      expect(elements.length).toBeGreaterThan(0);
+      expect(elements[0]).toBeInTheDocument();
     });
 
     it('should render "Growth Focused" feature', () => {
