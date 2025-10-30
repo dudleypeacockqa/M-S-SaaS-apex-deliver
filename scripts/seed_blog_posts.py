@@ -4,9 +4,17 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
-# Add backend directory to path
-backend_dir = Path(__file__).parent.parent / 'backend'
-sys.path.insert(0, str(backend_dir))
+# Add backend directory to path - try multiple locations
+possible_backend_dirs = [
+    Path(__file__).parent.parent / 'backend',  # Local development
+    Path('/app/backend'),  # Render deployment
+    Path.cwd() / 'backend',  # Current directory
+]
+
+for backend_dir in possible_backend_dirs:
+    if backend_dir.exists():
+        sys.path.insert(0, str(backend_dir))
+        break
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -16,21 +24,41 @@ import os
 
 def seed_blog_posts():
     """Seed blog posts from JSON file into database."""
-    
+
     # Get database URL from environment
     database_url = os.getenv('DATABASE_URL')
     if not database_url:
         print("ERROR: DATABASE_URL environment variable not set")
         return
-    
+
     # Create engine and session
     engine = create_engine(database_url)
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
-    
-    # Load blog posts
-    blog_posts_file = Path(__file__).parent.parent / 'blog_posts_for_database.json'
+
+    # Load blog posts - try multiple possible paths
+    possible_paths = [
+        Path(__file__).parent.parent / 'blog_posts_for_database.json',  # Local development
+        Path('/app/blog_posts_for_database.json'),  # Render deployment
+        Path.cwd() / 'blog_posts_for_database.json',  # Current directory
+    ]
+
+    blog_posts_file = None
+    for path in possible_paths:
+        if path.exists():
+            blog_posts_file = path
+            print(f"Found blog posts file at: {blog_posts_file}")
+            break
+
+    if not blog_posts_file:
+        print(f"ERROR: Could not find blog_posts_for_database.json")
+        print(f"Tried paths:")
+        for path in possible_paths:
+            print(f"  - {path}")
+        print(f"Current directory: {Path.cwd()}")
+        return
+
     with open(blog_posts_file, 'r') as f:
         blog_posts_data = json.load(f)
     
