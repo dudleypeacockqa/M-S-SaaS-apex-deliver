@@ -1,5 +1,5 @@
 import React from 'react';
-import { MarketingLayout } from '../../components/layouts/MarketingLayout';
+import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { useAuth } from '@clerk/clerk-react';
 import { Navigate } from 'react-router-dom';

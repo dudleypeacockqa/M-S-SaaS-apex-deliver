@@ -670,6 +670,7 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
         onSuccess={handleIntroSuccess}
       />
     </div>
+    </div>
   );
 };
 
