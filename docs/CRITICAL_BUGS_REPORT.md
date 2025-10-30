@@ -5,6 +5,41 @@
 
 ---
 
+## 🔴 Critical Regressions (2025-10-30 QA Retest)
+
+### R1. Blog content still inaccessible
+- **Symptom:** `/blog` renders the empty state and `https://100daysandbeyond.com/api/blog/posts` returns the SPA shell; direct call to `https://ma-saas-backend.onrender.com/api/blog/posts` replies with `500 Internal Server Error`.
+- **Impact:** Zero organic content exposure; SEO plan blocked.
+- **Evidence:** Cypress/Playwright smoke + manual curl during 2025-10-30 audit.
+- **TDD Gate:** Add Vitest contract test for the fetch hook and a Playwright regression against seeded posts before shipping fix.
+- **Action:** Re-open ticket DEV-010; rebuild API + seeds, wire frontend to `VITE_API_URL`, add monitor.
+
+### R2. Contact form submissions dropped
+- **Symptom:** `/contact` form only `console.log`s payload; no network request or persistence.
+- **Impact:** High-intent leads lost; sales unable to respond.
+- **TDD Gate:** Vitest form test mocking `fetch` + backend pytest for `/api/marketing/contact`.
+- **Action:** Implement marketing contact endpoint, connect form, add notifications.
+
+### R3. Newsletter opt-in fails silently
+- **Symptom:** Exit intent + sticky CTA posts to `/api/marketing/subscribe`; Render responds with SPA HTML and `catch` logs error. UI shows success even on failure.
+- **Impact:** Email list growth halted.
+- **TDD Gate:** Hook unit test asserting error UI + backend pytest mocking ESP provider.
+- **Action:** Deploy real subscription endpoint and surface error message.
+
+### R4. Team imagery 404s
+- **Symptom:** `/assets/team/*.jpg` resolves to SPA index, leaving blank portraits.
+- **Impact:** Trust erosion on About/Team pages.
+- **TDD Gate:** Vitest fallback avatar test + CI HEAD request check.
+- **Action:** Publish assets to CDN or bundle locally.
+
+### R5. Canonical/OG metadata still references legacy domains *(resolved May 2026)*
+- **Symptom:** SEO helpers previously hardcoded `apexdeliver.com` / `ma-saas-platform.onrender.com`; canonical + OG tags now point to `https://100daysandbeyond.com`.
+- **Impact:** Duplicate indexing eliminated; social previews now correct.
+- **TDD Gate:** Metadata snapshot tests assert host = `100daysandbeyond.com` (landing, pricing, features, about, contact, legal).
+- **Action:** Domain constant centralized; HTML shell + SEO helpers refreshed; keep Lighthouse crawl in release checklist.
+
+
+
 ## 🟢 FIXED & DEPLOYED
 
 ### 1. ✅ Blog Page "No posts yet"
@@ -105,63 +140,55 @@
 ## ✅ POST-DEPLOYMENT VERIFICATION CHECKLIST
 
 ### Critical Functionality
-- [ ] Blog page displays all 50 posts (not "No posts yet")
-- [ ] Blog posts load from API (check Network tab)
-- [ ] Navigation dropdowns stay open when moving mouse to items
-- [ ] Dropdowns close when clicking outside
-- [ ] Dropdowns close when pressing Escape key
+- [ ] Blog page displays seeded posts (no "No posts yet" message)
+- [ ] Blog API responds with 200 + JSON payload (network tab + curl)
+- [ ] Contact form posts to marketing endpoint and surfaces success + error states
+- [ ] Newsletter opt-in returns 200 and shows confirmation to user
 
 ### Pricing Page
-- [ ] Feature comparison table shows 14 rows (not 9)
-- [ ] New features visible:
-  - [ ] 13-Week Cash Forecasting
-  - [ ] Working Capital Management
-  - [ ] Due Diligence Data Room
-  - [ ] Post-Merger Integration Tools
-  - [ ] Portfolio Management Dashboard
-- [ ] Bolt-On Modules section appears below comparison table
-- [ ] Customer Portal Module card shows £499/month
-- [ ] Sales & Promotion Pricing Module card shows £399/month
+- [ ] Feature comparison table shows 14 rows with new capabilities
+- [ ] Bolt-On Modules section displays with correct pricing (£499 / £399)
 
 ### MVP Trial Workflow
-- [ ] "Start Free Trial" buttons link to /sign-up
-- [ ] Sign-up page loads Clerk authentication
-- [ ] After sign-up, redirects to /book-trial
-- [ ] /book-trial page loads successfully
-- [ ] Vimcal calendar embed displays
-- [ ] Calendar is interactive and bookable
+- [ ] "Start Free Trial" buttons route to Clerk sign-up
+- [ ] Post-auth redirect hits /book-trial with Vimcal embed
+- [ ] Booking can be completed and confirmation email delivered
 
-### UX Improvements
-- [ ] Sticky CTA bar appears at 80% scroll (not 50%)
-- [ ] Email popup appears after 90 seconds (not 30)
+### UX + Engagement
+- [ ] Sticky CTA bar appears at 80% scroll and hides correctly
+- [ ] Exit-intent/email popup triggers after 90s and respects dismissal
+
+### Brand & Assets
+- [ ] Team portraits and hero assets load without 404s
+- [ ] Integrations CTA resolves to live content (no SPA 404)
+- [ ] Canonical + OG metadata host is 100daysandbeyond.com on every page
 
 ### General
-- [ ] All navigation links work
-- [ ] Mobile hamburger menu works
-- [ ] Footer links functional
-- [ ] No console errors
+- [ ] Navigation (desktop/mobile) and footer links functional
+- [ ] No console errors across key journeys
+- [ ] Render logs clean (no 5xx) during verification window
 
 ---
 
+
 ## 📊 SUMMARY
 
-**Total Issues Identified:** 8  
-**Fixed:** 6 (75%)  
-**Remaining:** 2 (25% - non-critical)  
-**Critical Blockers:** 0  
-**Site Readiness:** ✅ 95% - Ready for production use
+**Total Issues Identified:** 13  
+**Fixed:** 6 (46%)  
+**Remaining:** 7 (54% - 5 critical, 2 high)  
+**Critical Blockers:** 5  
+**Site Readiness:** 🚫 Blocked – marketing funnel broken
 
 ---
 
 ## 🎯 NEXT ACTIONS
 
-1. **Wait 3-5 minutes** for Render deployment
-2. **Run verification checklist** on live site
-3. **Test complete user journey:**
-   - Homepage → Start Free Trial → Sign Up → Book Trial → Calendar
-4. **Address any issues** found during verification
-5. **Optional:** Improve feature page images
-6. **Final sign-off** when all critical items verified
+1. Patch blog API routing + seed data, then rerun RED → GREEN Vitest/Playwright suite.
+2. Implement marketing contact + newsletter subscription endpoints and wire the frontend forms.
+3. Publish team assets + integrations page, updating navigation to avoid 404s.
+4. Normalize canonical/OG metadata for every marketing page and re-run Lighthouse/Search Console scans.
+5. Update CI (npm test, lint, pytest, Playwright) and add Render health checks for marketing endpoints.
+6. Re-run the full verification checklist (below) and capture evidence before sign-off.
 
 ---
 

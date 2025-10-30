@@ -3,7 +3,7 @@
 **Live URL:** https://100daysandbeyond.com  
 **Repository:** https://github.com/dudleypeacockqa/M-S-SaaS-apex-deliver  
 **Project Path:** `/home/ubuntu/apex-deliver-main`  
-**Last Updated:** October 29, 2025
+**Last Updated:** October 30, 2025 *(domain + integrations refreshed Spring 2026)*
 
 ---
 
@@ -129,7 +129,7 @@ backend/
 - **Working Capital Management** - Optimize cash conversion cycle
 - **Financial Intelligence Engine** - 47+ financial ratios with AI insights
 - **Scenario Modeling** - Stress test financial assumptions
-- **Integration:** Xero, QuickBooks, Sage, NetSuite
+- **Integration:** Sage Intacct (native), Odoo (native), CSV imports (rapid onboarding)
 
 **Pricing:** £598/month + £2,500 setup
 
@@ -151,7 +151,7 @@ backend/
 
 **Customer Portal Module (B2B2C)**
 - Self-service portals for end customers
-- ERP integration for real-time data
+- ERP integration for real-time data (Sage Intacct & Odoo)
 - Branded white-label interface
 - Reduce administrative overhead
 
@@ -179,9 +179,9 @@ backend/
 
 #### Homepage (`/`)
 - Hero section with dual CTAs (Start Free Trial, Schedule Demo)
-- Feature highlights (3 product cards)
+- Feature highlights (CapLiquify FP&A, ApexDeliver M&A Suite, Customer Portals)
 - Social proof (testimonials)
-- Integration logos (Xero, QuickBooks, Sage, NetSuite, Stripe, Slack)
+- Integration logos (Sage Intacct, Odoo, CSV imports)
 - CTA sections throughout
 
 #### Features Page (`/features`)
@@ -363,11 +363,11 @@ backend/
 ### 🟡 HIGH PRIORITY (SEO & Brand Risk)
 
 #### 4. Canonical/OG Metadata Points to Legacy Domains
-**Status:** NOT FIXED  
-**Description:** Multiple SEO helpers still reference `apexdeliver.com` or `ma-saas-platform.onrender.com` (Pricing, Features, About, Contact, legal pages).  
-**Impact:** Duplicate indexing, diluted link equity, wrong social-sharing previews.  
-**TDD Coverage:** Add metadata snapshot tests asserting canonical URLs equal `https://100daysandbeyond.com`.  
-**Next Steps:** Normalize domain constants, update the HTML shell, and add deployment smoke tests that grep for the correct host.
+**Status:** ✅ FIXED (May 2026)  
+**Description:** Canonical + OG tags now resolve to `100daysandbeyond.com` across Pricing, Features, About, Contact, landing, and legal pages.  
+**Impact:** Single-source indexing with correct social previews.  
+**TDD Coverage:** Vitest suites (`domainConfig`, `MarketingLayout.domain`, page meta tests) assert the host is `https://100daysandbeyond.com`.  
+**Next Steps:** Keep smoke test in deploy pipeline to grep rendered HTML for the correct domain.
 
 #### 5. Team Portraits & Media Assets Return 404s
 **Status:** NOT FIXED  
@@ -393,7 +393,7 @@ backend/
 **Next Steps:** Address errors module-by-module, pairing each fix with tests and compiler checks.
 ## Recent Fixes
 
-### ✅ Completed Fixes (October 29, 2025)
+### ✅ Completed Fixes (October 30, 2025)
 
 #### 1. Navigation Dropdown Behavior
 **Issue:** Dropdowns stayed open when clicking elsewhere or moving mouse away  
@@ -750,5 +750,5 @@ pytest  # (if tests exist)
 ---
 
 **Document Version:** 1.0  
-**Last Updated:** October 29, 2025  
+**Last Updated:** October 30, 2025  
 **Status:** Ready for handover to Codex CLI

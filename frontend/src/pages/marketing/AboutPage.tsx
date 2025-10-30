@@ -6,17 +6,17 @@ export const AboutPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="About | ApexDeliver + CapLiquify"
-        description="Our mission: To empower ambitious businesses with financial intelligence. Learn about our journey from ERP specialists to building the end-to-end M&A intelligence platform."
-        keywords="about ApexDeliver, M&A platform mission, dealmaker tools, M&A software company"
-        ogTitle="About ApexDeliver"
+        title="About | 100 Days & Beyond"
+        description="Our mission: empower ambitious businesses with financial intelligence. Learn about our journey from ERP specialists to building the end-to-end M&A intelligence platform."
+        keywords="about 100 Days & Beyond, M&A platform mission, dealmaker tools, M&A software company"
+        ogTitle="About 100 Days & Beyond"
         ogDescription="Meet the team transforming the M&A lifecycle with accessible, AI-first tooling."
-        ogUrl="https://ma-saas-platform.onrender.com/about"
-        ogImage="https://apexdeliver.com/assets/brand/apexdeliver-wordmark.svg"
-        twitterTitle="About ApexDeliver"
-        twitterDescription="Discover why ApexDeliver exists and how we help modern dealmakers win."
-        twitterImage="https://apexdeliver.com/assets/brand/apexdeliver-wordmark.svg"
-        canonical="https://ma-saas-platform.onrender.com/about"
+        ogUrl="https://100daysandbeyond.com/about"
+        ogImage="https://100daysandbeyond.com/assets/brand/apexdeliver-wordmark.svg"
+        twitterTitle="About 100 Days & Beyond"
+        twitterDescription="Discover why 100 Days & Beyond exists and how we help modern dealmakers win."
+        twitterImage="https://100daysandbeyond.com/assets/brand/apexdeliver-wordmark.svg"
+        canonical="https://100daysandbeyond.com/about"
       />
       {/* Header */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">

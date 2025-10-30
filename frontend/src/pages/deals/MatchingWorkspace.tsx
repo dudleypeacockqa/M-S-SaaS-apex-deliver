@@ -21,6 +21,7 @@ import { MatchSuccessRate } from '../../components/deal-matching/analytics/Match
 import { MatchScoreDistribution } from '../../components/deal-matching/analytics/MatchScoreDistribution';
 import { RecentMatches } from '../../components/deal-matching/analytics/RecentMatches';
 import { MatchingActivity } from '../../components/deal-matching/analytics/MatchingActivity';
+import { ErrorBoundary } from '../../components/common';
 
 interface MatchingWorkspaceProps {
   dealId?: string;
@@ -62,17 +63,19 @@ const formatCurrencyRange = (min: string, max: string) => {
     maximumFractionDigits: 0,
   });
 
-  const parse = (value: string) => {
+  const parseValue = (value: string) => {
     const numeric = Number(value);
     return Number.isFinite(numeric) ? numeric : 0;
   };
 
-  const minNumber = parse(min);
-  const maxNumber = parse(max);
+  const minNumber = parseValue(min);
+  const maxNumber = parseValue(max);
 
   const million = 1_000_000;
+  const formatMillions = (value: number) => `£${(value / million).toFixed(1)}M`;
+
   if (minNumber >= million && maxNumber >= million) {
-    return `${(minNumber / million).toFixed(1)}M – ${(maxNumber / million).toFixed(1)}M`;
+    return `${formatMillions(minNumber)} – ${formatMillions(maxNumber)}`;
   }
 
   return `${formatter.format(minNumber)} – ${formatter.format(maxNumber)}`;
@@ -437,14 +440,14 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
               className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
             />
             <div>
-              <div className="flex items-center gap-2">
+              <header className="flex items-center gap-2">
                 <h3 className="text-lg font-semibold text-gray-900">{criterion.name}</h3>
                 {isSelected && (
                   <span className="text-xs font-medium text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">
                     Active
                   </span>
                 )}
-              </div>
+              </header>
               <p className="mt-1 text-sm text-gray-600">
                 <span className="font-medium">Type:</span> {criterion.deal_type === 'buy_side' ? 'Buy Side' : 'Sell Side'}
               </p>
@@ -452,7 +455,10 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
                 <span className="font-medium">Industries:</span> {criterion.industries.join(', ')}
               </p>
               <p className="text-sm text-gray-600">
-                <span className="font-medium">Size:</span> £{formatCurrencyRange(criterion.min_deal_size, criterion.max_deal_size)}
+                <span className="font-medium">Size:</span> {formatCurrencyRange(
+                  criterion.min_deal_size,
+                  criterion.max_deal_size,
+                )}
               </p>
               {criterion.geographies && criterion.geographies.length > 0 && (
                 <p className="text-sm text-gray-600">
@@ -602,6 +608,42 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
                 )}
               </div>
 
+              {criteria.length > 0 && (
+                <fieldset className="mb-4 rounded-lg border border-gray-200 p-4">
+                  <legend className="text-sm font-medium text-gray-700">Select a preset</legend>
+                  <div className="mt-2 grid gap-3 md:grid-cols-2">
+                    {criteria.map((criterionOption) => (
+                      <label
+                        key={`matches-preset-${criterionOption.id}`}
+                        className={`flex items-center justify-between rounded-md border px-3 py-2 text-sm ${
+                          selectedCriteriaId === criterionOption.id
+                            ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                            : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                        }`}
+                      >
+                        <span className="mr-3 flex-1">
+                          <span className="block font-semibold text-gray-900">
+                            {criterionOption.name}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            Industries: {criterionOption.industries.slice(0, 2).join(', ')}
+                          </span>
+                        </span>
+                        <input
+                          type="radio"
+                          name="match-preset"
+                          value={criterionOption.id}
+                          checked={selectedCriteriaId === criterionOption.id}
+                          onChange={() => setSelectedCriteriaId(criterionOption.id)}
+                          aria-label={`Select ${criterionOption.name} preset`}
+                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                        />
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              )}
+
               {matchAnalytics && !showMatchesLoader && (
                 <div className="mb-6 space-y-4">
                   <div className="grid gap-4 md:grid-cols-2">
@@ -673,5 +715,24 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
     </div>
   );
 };
+
+const MatchesSkeleton: React.FC = () => (
+  <div className="space-y-4">
+    {Array.from({ length: 3 }).map((_, index) => (
+      <div
+        // eslint-disable-next-line react/no-array-index-key
+        key={`match-skeleton-${index}`}
+        className="animate-pulse rounded-lg border border-gray-200 p-4 shadow-sm"
+      >
+        <div className="h-4 w-1/3 rounded bg-gray-200" />
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <div className="h-3 rounded bg-gray-100" />
+          <div className="h-3 rounded bg-gray-100" />
+        </div>
+        <div className="mt-4 h-3 w-2/3 rounded bg-gray-100" />
+      </div>
+    ))}
+  </div>
+);
 
 export default MatchingWorkspace;

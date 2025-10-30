@@ -14,7 +14,7 @@ export const LandingPage: React.FC = () => {
     {
       icon: '🧠',
       title: 'Financial Intelligence Engine',
-      description: 'Connect to major accounting platforms (Xero, QuickBooks, Sage, NetSuite) and get instant analysis with 47+ financial ratios, AI-generated narratives, and Deal Readiness Scores.',
+      description: 'Connect to Sage Intacct, Odoo, or import CSVs to get instant analysis with 47+ financial ratios, AI-generated narratives, and Deal Readiness Scores.',
     },
     {
       icon: '💰',
@@ -51,13 +51,17 @@ export const LandingPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="ApexDeliver - M&A Intelligence Platform for Every Dealmaker"
-        description="Professional M&A tools starting at £279/month. AI-powered financial intelligence, deal flow management, and valuation suite. 70% less than enterprise platforms."
+        title="100 Days & Beyond - M&A Intelligence Platform for Every Dealmaker"
+        description="Professional M&A tools starting at £598/month. AI-powered financial intelligence, deal flow management, and valuation suite. 70% less than enterprise platforms."
         keywords="M&A platform, deal flow management, financial intelligence, valuation software, M&A software, private equity tools, dealmaker platform"
-        ogTitle="ApexDeliver - M&A Intelligence Platform"
+        ogTitle="100 Days & Beyond - M&A Intelligence Platform"
         ogDescription="Professional-grade M&A tools at accessible pricing. AI-powered intelligence, deal flow management, and financial analysis in one integrated ecosystem."
-        ogUrl="https://ma-saas-platform.onrender.com"
-        canonical="https://ma-saas-platform.onrender.com"
+        ogUrl="https://100daysandbeyond.com/"
+        ogImage="https://100daysandbeyond.com/assets/dashboard-preview.png"
+        twitterTitle="100 Days & Beyond - M&A Intelligence Platform"
+        twitterDescription="Professional-grade M&A and FP&A tooling delivered in one unified platform."
+        twitterImage="https://100daysandbeyond.com/assets/dashboard-preview.png"
+        canonical="https://100daysandbeyond.com/"
       />
       {/* Hero Section */}
       <HeroSection />

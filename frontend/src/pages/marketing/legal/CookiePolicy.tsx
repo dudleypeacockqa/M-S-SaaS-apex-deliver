@@ -7,17 +7,17 @@ export const CookiePolicy: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="Cookie Policy | ApexDeliver M&A Platform"
-        description="Understand how ApexDeliver uses cookies and similar technologies to deliver secure, high-performance M&A workflows."
-        keywords="ApexDeliver cookie policy, M&A platform cookies, tracking preferences"
-        ogTitle="ApexDeliver Cookie Policy"
-        ogDescription="Details on cookie usage for personalization, analytics, and security across the ApexDeliver platform."
-        ogUrl="https://apexdeliver.com/legal/cookies"
-        ogImage="https://apexdeliver.com/assets/security-trust-visual.webp"
-        twitterTitle="ApexDeliver Cookie Policy"
-        twitterDescription="Manage cookie preferences for ApexDeliver's AI-enabled M&A platform."
-        twitterImage="https://apexdeliver.com/assets/security-trust-visual.webp"
-        canonical="https://apexdeliver.com/legal/cookies"
+        title="Cookie Policy | 100 Days & Beyond"
+        description="Understand how 100 Days & Beyond uses cookies and similar technologies to deliver secure, high-performance M&A workflows."
+        keywords="100 Days & Beyond cookie policy, M&A platform cookies, tracking preferences"
+        ogTitle="100 Days & Beyond Cookie Policy"
+        ogDescription="Details on cookie usage for personalization, analytics, and security across the 100 Days & Beyond platform."
+        ogUrl="https://100daysandbeyond.com/legal/cookies"
+        ogImage="https://100daysandbeyond.com/assets/security-trust-visual.webp"
+        twitterTitle="100 Days & Beyond Cookie Policy"
+        twitterDescription="Manage cookie preferences for the 100 Days & Beyond AI-enabled M&A platform."
+        twitterImage="https://100daysandbeyond.com/assets/security-trust-visual.webp"
+        canonical="https://100daysandbeyond.com/legal/cookies"
       />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Cookie Policy</h1>

@@ -36,7 +36,7 @@ export const RecentMatches: React.FC<RecentMatchesProps> = ({ matches }) => (
         {matches.map((match) => (
           <li key={match.id} className="flex items-center justify-between text-sm">
             <div>
-              <p className="font-medium text-gray-900">{match.name}</p>
+              <p className="font-medium text-gray-900">Recent match: {match.name}</p>
               <p className="text-xs text-gray-500">Status: {statusLabel(match.status)}</p>
             </div>
             <span className="inline-flex items-center justify-center rounded-full bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-700">

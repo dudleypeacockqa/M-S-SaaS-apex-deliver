@@ -19,7 +19,6 @@ import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
 import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal';
 import VideoUploadModal from '../../components/podcast/VideoUploadModal';
 import LiveStreamManager, { type LiveStreamManagerTier } from '../../components/podcast/LiveStreamManager';
-import { YouTubePublisher } from '../../components/podcast/YouTubePublisher';
 import {
   getQuotaSummary,
   listEpisodes,
@@ -27,8 +26,13 @@ import {
   createEpisode,
   updateEpisode,
   deleteEpisode,
+  getYouTubeConnectionStatus,
+  initiateYouTubeOAuth,
+  publishEpisodeToYouTube,
   type PodcastEpisode,
   type QuotaSummary,
+  type YouTubeConnectionStatus,
+  type YouTubePublishPayload,
 } from '../../services/api/podcasts';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 import { useSubscriptionTier } from '../../hooks/useSubscriptionTier';
@@ -166,7 +170,20 @@ function PodcastStudioContent() {
   );
 
   const youtubeAccess = useFeatureAccess({ feature: 'youtube_integration' });
-
+  const canCheckYouTubeConnection = youtubeAccess.isFetched && youtubeAccess.hasAccess;
+  const {
+    data: youtubeConnection,
+    isLoading: youtubeConnectionLoading,
+    isError: youtubeConnectionErrorFlag,
+    refetch: refetchYouTubeConnection,
+  } = useQuery<YouTubeConnectionStatus>({
+    queryKey: ['youtubeConnection'],
+    queryFn: getYouTubeConnectionStatus,
+    enabled: canCheckYouTubeConnection,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+  const youtubeConnectionError = canCheckYouTubeConnection && youtubeConnectionErrorFlag;
 
   const createEpisodeMutation = useMutation({
     mutationFn: (payload: CreateEpisodePayload) => createEpisode(payload),
@@ -208,8 +225,61 @@ function PodcastStudioContent() {
     },
   });
 
+  const initiateYouTubeOAuthMutation = useMutation({
+    mutationFn: ({
+      episodeId,
+      redirectUri,
+    }: {
+      episodeId: string;
+      redirectUri: string;
+    }) => initiateYouTubeOAuth(episodeId, redirectUri),
+    onMutate: ({ episodeId }) => {
+      setInfoEpisodeId(episodeId);
+      setYoutubeInfoMessage('Opening YouTube connection…');
+      setPublishError(null);
+    },
+    onSuccess: (response, { episodeId }) => {
+      window.open(response.authorizationUrl, '_blank', 'noopener');
+      setInfoEpisodeId(episodeId);
+      setYoutubeInfoMessage('Complete the YouTube connection in the popup to finish setup.');
+      pushNotification('info', 'YouTube connect window opened');
+      refetchYouTubeConnection();
+    },
+    onError: (_error, { episodeId }) => {
+      setInfoEpisodeId(episodeId);
+      setYoutubeInfoMessage('Unable to start YouTube connection. Please try again.');
+      pushNotification('error', 'Failed to open YouTube connect');
+    },
+  });
 
-
+  const publishToYouTubeMutation = useMutation({
+    mutationFn: ({
+      episodeId,
+      payload,
+    }: {
+      episodeId: string;
+      payload: YouTubePublishPayload;
+    }) => publishEpisodeToYouTube(episodeId, payload),
+    onMutate: ({ episodeId }) => {
+      setInfoEpisodeId(episodeId);
+      setYoutubeInfoMessage('Publishing to YouTube…');
+      setPublishError(null);
+    },
+    onSuccess: (_response, { episodeId }) => {
+      setYoutubeInfoMessage('Published to YouTube');
+      setLastPublishedEpisodeId(episodeId);
+      setEpisodeToPublish(null);
+      pushNotification('success', 'Published to YouTube');
+      loadEpisodes();
+      refetchYouTubeConnection();
+    },
+    onError: (_error, { episodeId }) => {
+      setPublishError('Failed to publish to YouTube. Please try again.');
+      setInfoEpisodeId(episodeId);
+      setYoutubeInfoMessage(null);
+      pushNotification('error', 'Failed to publish to YouTube');
+    },
+  });
 
   const handleSubmitPublish = React.useCallback(
     (payload: YouTubePublishPayload) => {
@@ -219,7 +289,6 @@ function PodcastStudioContent() {
 
       publishToYouTubeMutation.mutate({
         episodeId: episodeToPublish.id,
-        episodeTitle: episodeToPublish.title,
         payload,
       });
     },
@@ -236,6 +305,21 @@ function PodcastStudioContent() {
     },
     [initiateYouTubeOAuthMutation],
   );
+
+  const handleRequestPublish = React.useCallback(
+    (episode: PodcastEpisode) => {
+      setEpisodeToPublish(episode);
+      setPublishError(null);
+      setInfoEpisodeId(episode.id);
+      setYoutubeInfoMessage(null);
+    },
+    [],
+  );
+
+  const handleClosePublishModal = React.useCallback(() => {
+    setEpisodeToPublish(null);
+    setPublishError(null);
+  }, []);
 
   const isQuotaExceeded = Boolean(
     quota && !quota.isUnlimited && (quota.remaining ?? 0) <= 0,
@@ -416,6 +500,7 @@ function PodcastStudioContent() {
               youtubeInfoMessage={youtubeInfoMessage}
               infoEpisodeId={infoEpisodeId}
               lastPublishedEpisodeId={lastPublishedEpisodeId}
+              publishError={publishError}
               isConnecting={initiateYouTubeOAuthMutation.isPending}
               onEdit={(episode) => setEditingEpisode(episode)}
               onDelete={(episode) => setDeleteTarget(episode)}
@@ -523,6 +608,15 @@ function PodcastStudioContent() {
           />
         )}
       </FeatureGate>
+
+      <YouTubePublishModal
+        open={Boolean(episodeToPublish)}
+        episode={episodeToPublish}
+        onClose={handleClosePublishModal}
+        onSubmit={handleSubmitPublish}
+        isSubmitting={publishToYouTubeMutation.isPending}
+        error={publishError}
+      />
 
       
     </div>
@@ -739,6 +833,7 @@ function EpisodesList({
   youtubeInfoMessage,
   infoEpisodeId,
   lastPublishedEpisodeId,
+  publishError,
   isConnecting,
   onEdit,
   onDelete,
@@ -756,6 +851,7 @@ function EpisodesList({
   youtubeInfoMessage: string | null;
   infoEpisodeId: string | null;
   lastPublishedEpisodeId: string | null;
+  publishError: string | null;
   isConnecting: boolean;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
@@ -794,6 +890,17 @@ function EpisodesList({
             key={episode.id}
             episode={episode}
             youtubeAccess={youtubeAccess}
+            youtubeConnection={youtubeConnection}
+            youtubeConnectionLoading={youtubeConnectionLoading}
+            youtubeConnectionError={youtubeConnectionError}
+            onRefreshYoutubeConnection={onRefreshYoutubeConnection}
+            onRequestPublish={onRequestPublish}
+            onRequestYouTubeConnect={onRequestYouTubeConnect}
+            youtubeInfoMessage={youtubeInfoMessage}
+            infoEpisodeId={infoEpisodeId}
+            lastPublishedEpisodeId={lastPublishedEpisodeId}
+            publishError={publishError}
+            isConnecting={isConnecting}
             onEdit={onEdit}
             onDelete={onDelete}
             onNotify={onNotify}
@@ -808,6 +915,17 @@ function EpisodesList({
 function EpisodeListItem({
   episode,
   youtubeAccess,
+  youtubeConnection,
+  youtubeConnectionLoading,
+  youtubeConnectionError,
+  onRefreshYoutubeConnection,
+  onRequestPublish,
+  onRequestYouTubeConnect,
+  youtubeInfoMessage,
+  infoEpisodeId,
+  lastPublishedEpisodeId,
+  publishError,
+  isConnecting,
   onEdit,
   onDelete,
   onNotify,
@@ -815,6 +933,17 @@ function EpisodeListItem({
 }: {
   episode: PodcastEpisode;
   youtubeAccess: FeatureAccessState;
+  youtubeConnection: YouTubeConnectionStatus | undefined;
+  youtubeConnectionLoading: boolean;
+  youtubeConnectionError: boolean;
+  onRefreshYoutubeConnection: () => Promise<unknown>;
+  onRequestPublish: (episode: PodcastEpisode) => void;
+  onRequestYouTubeConnect: (episode: PodcastEpisode) => void;
+  youtubeInfoMessage: string | null;
+  infoEpisodeId: string | null;
+  lastPublishedEpisodeId: string | null;
+  publishError: string | null;
+  isConnecting: boolean;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
   onNotify: (type: NotificationState['type'], message: string) => void;
@@ -830,6 +959,16 @@ function EpisodeListItem({
   const [transcribeErrorMessage, setTranscribeErrorMessage] = React.useState<string | null>(null);
 
   const queryClient = useQueryClient();
+  const isVideoEpisode = Boolean(episode.video_file_url);
+  const isConnected = Boolean(youtubeConnection?.isConnected);
+  const infoMessage = infoEpisodeId === episode.id ? youtubeInfoMessage : null;
+  const publishErrorMessage = infoEpisodeId === episode.id ? publishError : null;
+  const showPublishSuccess = lastPublishedEpisodeId === episode.id;
+  const handleRetryConnection = React.useCallback(() => {
+    void onRefreshYoutubeConnection()
+      .then(() => onNotify('info', 'Refreshing YouTube connection status'))
+      .catch(() => onNotify('error', 'Unable to refresh YouTube connection'));
+  }, [onRefreshYoutubeConnection, onNotify]);
 
   const transcribeMutation = useMutation({
     mutationFn: () => transcribeEpisode(episode.id),
@@ -1045,6 +1184,8 @@ function EpisodeListItem({
                 </span>
               ) : !youtubeAccess.hasAccess ? (
                 <div className="flex flex-col items-end gap-1 text-right">
+                  {process.env.NODE_ENV === 'test' &&
+                    console.log('upgrade message', youtubeAccess.upgradeMessage, youtubeAccess.isLoading)}
                   <p className="text-xs text-indigo-600">
                     {youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
                   </p>
@@ -1098,6 +1239,11 @@ function EpisodeListItem({
                   {infoMessage}
                 </p>
               ) : null}
+              {publishErrorMessage ? (
+                <p className="text-xs text-red-600 text-right" role="alert">
+                  {publishErrorMessage}
+                </p>
+              ) : null}
               {showPublishSuccess ? (
                 <p className="text-xs text-emerald-600" role="status">
                   Published to YouTube
@@ -1109,5 +1255,223 @@ function EpisodeListItem({
         </div>
       </div>
     </li>
+  );
+}
+
+interface YouTubePublishModalProps {
+  open: boolean;
+  episode: PodcastEpisode | null;
+  onClose: () => void;
+  onSubmit: (payload: YouTubePublishPayload) => void;
+  isSubmitting: boolean;
+  error: string | null;
+}
+
+type PublishFormState = {
+  title: string;
+  description: string;
+  tags: string;
+  privacy: 'private' | 'unlisted' | 'public';
+  scheduleTime: string;
+};
+
+const DEFAULT_PUBLISH_FORM_STATE: PublishFormState = {
+  title: '',
+  description: '',
+  tags: '',
+  privacy: 'unlisted',
+  scheduleTime: '',
+};
+
+function YouTubePublishModal({
+  open,
+  episode,
+  onClose,
+  onSubmit,
+  isSubmitting,
+  error,
+}: YouTubePublishModalProps) {
+  const [formState, setFormState] = React.useState<PublishFormState>(DEFAULT_PUBLISH_FORM_STATE);
+  const [validationError, setValidationError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (open && episode) {
+      setFormState({
+        title: episode.title ?? '',
+        description: episode.description ?? '',
+        tags: '',
+        privacy: 'unlisted',
+        scheduleTime: '',
+      });
+      setValidationError(null);
+      return;
+    }
+
+    if (!open) {
+      setFormState(DEFAULT_PUBLISH_FORM_STATE);
+      setValidationError(null);
+    }
+  }, [open, episode]);
+
+  if (!open || !episode) {
+    return null;
+  }
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const trimmedTitle = formState.title.trim();
+    if (!trimmedTitle) {
+      setValidationError('Video title is required');
+      return;
+    }
+
+    const payload: YouTubePublishPayload = {
+      title: trimmedTitle,
+      description: formState.description.trim(),
+      tags: formState.tags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean),
+      privacy: formState.privacy,
+      scheduleTime: formState.scheduleTime
+        ? new Date(`${formState.scheduleTime}:00Z`).toISOString()
+        : null,
+    };
+
+    setValidationError(null);
+    onSubmit(payload);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl">
+        <div className="mb-4 flex items-start justify-between">
+          <h2 className="text-2xl font-bold text-gray-900">Publish to YouTube</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md p-1 text-gray-500 hover:text-gray-700"
+            aria-label="Close publish modal"
+          >
+            x
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="youtube-title" className="block text-sm font-medium text-gray-700">
+              Video title
+            </label>
+            <input
+              id="youtube-title"
+              type="text"
+              value={formState.title}
+              onChange={(event) => setFormState((prev) => ({ ...prev, title: event.target.value }))}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              placeholder="Investor update episode"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="youtube-description" className="block text-sm font-medium text-gray-700">
+              Description
+            </label>
+            <textarea
+              id="youtube-description"
+              value={formState.description}
+              onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))}
+              rows={4}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              placeholder="Add show notes and key talking points for viewers"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="youtube-tags" className="block text-sm font-medium text-gray-700">
+              Tags (comma separated)
+            </label>
+            <input
+              id="youtube-tags"
+              type="text"
+              value={formState.tags}
+              onChange={(event) => setFormState((prev) => ({ ...prev, tags: event.target.value }))}
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              placeholder="investor relations, earnings"
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="youtube-privacy" className="block text-sm font-medium text-gray-700">
+                Privacy
+              </label>
+              <select
+                id="youtube-privacy"
+                value={formState.privacy}
+                onChange={(event) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    privacy: event.target.value as PublishFormState['privacy'],
+                  }))
+                }
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+              >
+                <option value="private">Private</option>
+                <option value="unlisted">Unlisted</option>
+                <option value="public">Public</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="youtube-schedule" className="block text-sm font-medium text-gray-700">
+                Schedule (optional)
+              </label>
+              <input
+                id="youtube-schedule"
+                type="datetime-local"
+                value={formState.scheduleTime}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, scheduleTime: event.target.value }))
+                }
+                disabled={formState.privacy === 'private'}
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 disabled:cursor-not-allowed disabled:bg-gray-100"
+              />
+            </div>
+          </div>
+
+          {validationError ? (
+            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {validationError}
+            </div>
+          ) : null}
+          {error ? (
+            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {error}
+            </div>
+          ) : null}
+
+          <div className="flex items-center justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-indigo-300"
+            >
+              {isSubmitting ? 'Publishing…' : 'Publish episode'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

@@ -94,12 +94,12 @@ export const FeaturesPage: React.FC = () => {
               <div className="text-4xl mb-4">🧠</div>
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Financial Intelligence Engine</h2>
               <p className="text-lg text-gray-600 mb-6">
-                Connect directly to major accounting platforms and get instant, AI-powered financial analysis with over 47 key ratios calculated automatically.
+                Connect directly to Sage Intacct or Odoo—or import CSVs—and get instant, AI-powered financial analysis with over 47 key ratios calculated automatically.
               </p>
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-start">
                   <span className="text-green-600 mr-3">✓</span>
-                  <span>Direct integration with Xero, QuickBooks, Sage, and NetSuite</span>
+                  <span>Native ERP integration for Sage Intacct and Odoo plus fast CSV uploads</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-600 mr-3">✓</span>

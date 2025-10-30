@@ -17,7 +17,9 @@
 8. [Common Tasks](#common-tasks)
 9. [Troubleshooting](#troubleshooting)
 10. [Code Examples](#code-examples)
-
+11. [BMAD + TDD Remediation Plan](#bmad--tdd-remediation-plan)
+12. [Test Coverage & Automation](#test-coverage--automation)
+13. [Deployment Checklist](#deployment-checklist)
 ---
 
 ## Development Environment Setup
@@ -1082,6 +1084,74 @@ def test_list_categories():
 
 ---
 
+## BMAD + TDD Remediation Plan
+
+The marketing site is aligned to BMAD (Build → Measure → Analyze → Decide). Each remediation demand starts with a RED test, ships the fix, and captures telemetry before the Decide checkpoint.
+
+### 1. Blog Delivery Path
+- **Build:** Restore FastAPI `GET /api/blog/posts` and expose it via `VITE_API_URL`. Update the React fetch hook to consume the configured base URL.
+- **Measure:** Add synthetic monitor (Vitest mock + Playwright smoke) that asserts the response body includes seeded post titles.
+- **Analyze:** Track error rates from the API and client fetch; compare response SLAs against 95th percentile benchmarks.
+- **Decide:** Promote build when both the automated tests and Render health checks stay green for 24 hours.
+
+### 2. Contact Pipeline
+- **Build:** Implement `/api/marketing/contact` with validation + email/CRM notification. Wire the form to call the endpoint with optimistic UI feedback.
+- **Measure:** Record submission counts vs. network failures using logging middleware. Add Playwright coverage that verifies success + error states.
+- **Analyze:** Review error logs daily; ensure conversion funnels in analytics reflect successful submissions.
+- **Decide:** Keep feature behind temporary flag until QA verifies RED → GREEN cycles locally and in staging.
+
+### 3. Newsletter Opt-In
+- **Build:** Provide a working subscription endpoint (FastAPI or ESP webhook) and update the opt-in popup/sticky CTA to use it.
+- **Measure:** Unit-test the opt-in hook (Vitest) and add a pytest to mock ESP integration; track conversion metrics via server logs.
+- **Analyze:** Compare opt-in rate vs. baseline; monitor ESP bounce/errors.
+- **Decide:** Remove fallback popup once success rate > 98% with no unhandled rejections.
+
+### 4. Canonical & OG Metadata *(COMPLETED – May 2026)*
+- **Build:** Domain constants centralized (`100daysandbeyond.com`) with updated SEO helpers + HTML shell.
+- **Measure:** Snapshot tests (Vitest + testing-library) now assert canonical/OG URLs; Lighthouse/Screaming Frog sweeps queued in deployment pipeline.
+- **Analyze:** Monitor Search Console for residual duplicate URL warnings.
+- **Decide:** Keep nightly crawl until four consecutive reports stay clean.
+
+### 5. Media Assets
+- **Build:** Host team portraits and hero assets on the deployed CDN or bundle them locally.
+- **Measure:** Add CI checks that `HEAD` requests to critical assets return 200; extend `TeamPage` tests with mocked `Image` errors.
+- **Analyze:** Monitor 404 logs and Core Web Vitals for image payload impact.
+- **Decide:** Mark complete when a 7-day log window has zero asset 404s.
+
+### 6. Integrations CTA
+- **Build:** Create `/integrations` marketing page or redirect to the Features integrations section.
+- **Measure:** Router test ensures navigation renders content; Playwright journey validates CTA → destination.
+- **Analyze:** Track click-through and bounce on the integrations content.
+- **Decide:** Ship globally when analytics show <5% immediate bounce post-click.
+
+---
+
+## Test Coverage & Automation
+
+### Frontend (Vitest + React Testing Library)
+- Write RED tests before code changes (`npm run test -- --runInBand`).
+- Add contract tests for `/blog`, `/contact`, `/book-trial`, `/team`, and `/integrations` routes.
+- Snapshot SEO metadata for all marketing pages (canonical, OG, Twitter cards).
+- Mock `fetch` for contact + subscribe flows to assert success/error handling.
+
+### Frontend E2E (Playwright)
+- Smoke critical journeys: Home → Pricing checkout redirect, Home → Contact submit, Exit-intent opt-in.
+- Validate sticky CTA / popup timing and ensure overlays dismiss correctly.
+- Run in CI against staging (`CI_URL` env) with screenshots for failures.
+
+### Backend (pytest)
+- Add tests for `/api/blog/posts`, `/api/marketing/contact`, `/api/marketing/subscribe`.
+- Use dependency overrides to mock ESP/CRM integrations.
+- Include schema validation and negative cases (400 on invalid payloads).
+
+### Tooling & Gates
+- Re-enable `tsc --noEmit` once type errors resolved; block merges on failures.
+- Update GitHub Actions to run `npm run test`, `npm run lint`, `pytest`, and Playwright smoke suites.
+- Publish coverage reports (Vitest + pytest) with thresholds: marketing UI ≥85%, marketing APIs ≥90%.
+- Add Render health check monitors for blog API + marketing endpoints.
+
+---
+
 ## Deployment Checklist
 
 ### Pre-Deployment
@@ -1106,5 +1176,5 @@ def test_list_categories():
 ---
 
 **Document Version:** 1.0  
-**Last Updated:** October 29, 2025  
+**Last Updated:** October 30, 2025  
 **For:** Codex CLI and development team
