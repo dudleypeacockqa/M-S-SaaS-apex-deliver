@@ -1,8 +1,21 @@
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { CTASection } from '../../components/marketing/CTASection';
 import { SEO } from '../../components/common/SEO';
+import { createPersonSchema } from '../../utils/schemas/personSchema';
+import { createOrganizationSchema } from '../../utils/schemas/organizationSchema';
 
 export const AboutPage: React.FC = () => {
+  // Generate Person schema for founder
+  const founderSchema = createPersonSchema({
+    name: 'Dudley Peacock',
+    role: 'Founder & CEO',
+    company: 'ApexDeliver Ltd',
+    email: 'dudley@apexdeliver.com',
+  });
+
+  // Generate Organization schema
+  const organizationSchema = createOrganizationSchema();
+
   return (
     <MarketingLayout>
       <SEO
@@ -17,6 +30,16 @@ export const AboutPage: React.FC = () => {
         twitterDescription="Discover why 100 Days & Beyond exists and how we help modern dealmakers win."
         twitterImage="https://100daysandbeyond.com/assets/brand/apexdeliver-wordmark.svg"
         canonical="https://100daysandbeyond.com/about"
+      />
+      {/* Person Schema for Founder */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(founderSchema) }}
+      />
+      {/* Organization Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
       {/* Header */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">

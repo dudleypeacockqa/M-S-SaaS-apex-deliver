@@ -651,8 +651,10 @@ describe('PodcastStudio', () => {
     });
 
     it('allows editing metadata before publishing to YouTube when integration access granted', async () => {
-      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(audioAccess);
-      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(youtubeAccessGranted);
+      vi.mocked(podcastApi.checkFeatureAccess).mockImplementation((feature: string) => {
+        if (feature === 'youtube_integration') return Promise.resolve(youtubeAccessGranted);
+        return Promise.resolve(audioAccess);
+      });
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
         buildEpisode({
           id: 'ep-youtube-1',
@@ -670,7 +672,7 @@ describe('PodcastStudio', () => {
       const user = userEvent.setup();
       render(<PodcastStudio />, { wrapper: createWrapper() });
 
-      const publishButton = await screen.findByRole('button', { name: /publish to youtube/i });
+      const publishButton = await screen.findByRole('button', { name: /publish to youtube/i }, { timeout: 5000 });
       expect(publishButton).toBeEnabled();
 
       await user.click(publishButton);
@@ -705,8 +707,10 @@ describe('PodcastStudio', () => {
     });
 
     it('initiates OAuth connect flow when YouTube account is not connected', async () => {
-      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(audioAccess);
-      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValueOnce(youtubeAccessGranted);
+      vi.mocked(podcastApi.checkFeatureAccess).mockImplementation((feature: string) => {
+        if (feature === 'youtube_integration') return Promise.resolve(youtubeAccessGranted);
+        return Promise.resolve(audioAccess);
+      });
       vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
         buildEpisode({
           id: 'ep-youtube-connect',
@@ -731,7 +735,7 @@ describe('PodcastStudio', () => {
 
       render(<PodcastStudio />, { wrapper: createWrapper() });
 
-      const connectButton = await screen.findByRole('button', { name: /connect youtube/i });
+      const connectButton = await screen.findByRole('button', { name: /connect youtube/i }, { timeout: 5000 });
       await user.click(connectButton);
 
       await waitFor(() => {

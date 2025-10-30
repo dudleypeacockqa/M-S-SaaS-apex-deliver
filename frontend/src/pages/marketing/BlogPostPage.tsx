@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { CTASection } from '../../components/marketing/CTASection';
+import { createBlogPostSchema } from '../../utils/schemas/blogPostSchema';
 
 interface BlogPost {
   id: number;
@@ -17,6 +18,8 @@ interface BlogPost {
   meta_description: string;
   read_time_minutes: number;
   featured_image_url?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export const BlogPostPage: React.FC = () => {
@@ -84,12 +87,30 @@ export const BlogPostPage: React.FC = () => {
     );
   }
 
+  // Generate Article schema for SEO
+  const articleSchema = createBlogPostSchema({
+    title: post.title,
+    author: post.author,
+    publishedAt: post.created_at || new Date().toISOString(),
+    updatedAt: post.updated_at,
+    excerpt: post.excerpt,
+    featuredImage: post.featured_image_url,
+    url: `https://apexdeliver.com/blog/${post.slug}`,
+    tags: [post.category],
+    wordCount: Math.ceil(post.content.split(/\s+/).length),
+  });
+
   return (
     <MarketingLayout>
       <SEO
         title={`${post.title} | ApexDeliver + CapLiquify Blog`}
         description={post.meta_description}
         keywords={post.primary_keyword}
+      />
+      {/* Article Schema for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
 
       {/* Article Header */}

@@ -53,17 +53,19 @@ vi.mock("@clerk/clerk-react", () => ({
 
 // Mock podcast API calls
 vi.mock('../../services/api/podcasts', () => ({
-  checkFeatureAccess: vi.fn().mockResolvedValue({
-    feature: 'podcast_audio',
-    tier: 'professional',
-    tierLabel: 'Professional',
-    hasAccess: true,
-    requiredTier: 'professional',
-    requiredTierLabel: 'Professional',
-    upgradeRequired: false,
-    upgradeMessage: null,
-    upgradeCtaUrl: null,
-  }),
+  checkFeatureAccess: vi.fn().mockImplementation((feature: string) =>
+    Promise.resolve({
+      feature: feature,
+      tier: 'professional',
+      tierLabel: 'Professional',
+      hasAccess: true,
+      requiredTier: 'professional',
+      requiredTierLabel: 'Professional',
+      upgradeRequired: false,
+      upgradeMessage: null,
+      upgradeCtaUrl: null,
+    })
+  ),
   getQuotaSummary: vi.fn().mockResolvedValue({
     tier: 'professional',
     tierLabel: 'Professional',
@@ -89,6 +91,24 @@ vi.mock('../../services/api/podcasts', () => ({
     transcriptLanguage: 'en',
     wordCount: 0,
   }),
+  getYouTubeConnectionStatus: vi.fn().mockResolvedValue({
+    isConnected: false,
+    channelName: null,
+    channelUrl: null,
+    requiresAction: false,
+    connectedAt: null,
+    lastPublishedAt: null,
+  }),
+  initiateYouTubeOAuth: vi.fn().mockResolvedValue({
+    authorizationUrl: 'https://youtube.com/oauth',
+    state: 'test-state',
+    expiresAt: null,
+  }),
+  publishToYouTube: vi.fn().mockResolvedValue({
+    status: 'uploading',
+    lastCheckedAt: new Date().toISOString(),
+    videoId: null,
+  }),
 }))
 
 describe("Integration: Podcast Studio routing", () => {
@@ -113,8 +133,10 @@ describe("Integration: Podcast Studio routing", () => {
       expect(screen.queryByRole("heading", { name: /podcast studio/i })).not.toBeInTheDocument()
     })
 
-    // Should see the basic app layout with sign-in option
-    expect(screen.getByRole("link", { name: /apexdeliver/i })).toBeInTheDocument()
+    // Should see the basic app layout with sign-in option after lazy routes load
+    await waitFor(() => {
+      expect(screen.getByRole("link", { name: /apexdeliver/i })).toBeInTheDocument()
+    }, { timeout: 3000 })
   })
 
   it("renders Podcast Studio for authenticated users with access", async () => {
@@ -192,7 +214,7 @@ describe("Integration: Podcast Studio routing", () => {
       expect(screen.getAllByText(/transcript ready/i).length).toBeGreaterThan(0)
     })
 
-    const txtLink = screen.getByRole('link', { name: /download transcript \(txt\)/i })
+    const txtLink = await screen.findByRole('link', { name: /download transcript \(txt\)/i }, { timeout: 3000 })
     const srtLink = screen.getByRole('link', { name: /download transcript \(srt\)/i })
 
     expect(txtLink).toHaveAttribute('href', '/api/podcasts/episodes/ep-1/transcript')

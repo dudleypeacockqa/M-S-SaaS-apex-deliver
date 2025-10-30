@@ -5,6 +5,7 @@ import { SEO } from '../../components/common/SEO';
 import { useAuth } from '@clerk/clerk-react';
 import { useState } from 'react';
 import { billingService, type SubscriptionTier } from '../../services/billingService';
+import { createProductWithOffersSchema } from '../../utils/schemas/offerSchema';
 
 export const PricingPage: React.FC = () => {
   const { isSignedIn } = useAuth();
@@ -134,6 +135,26 @@ export const PricingPage: React.FC = () => {
     },
   ];
 
+  // Generate Product + Offer structured data for SEO
+  const pricingSchema = createProductWithOffersSchema(
+    {
+      name: 'ApexDeliver + CapLiquify',
+      description: 'End-to-end M&A intelligence platform for deal flow management, financial analysis, and secure collaboration',
+      brand: 'ApexDeliver',
+      url: 'https://apexdeliver.com/pricing',
+    },
+    pricingTiers
+      .filter((tier) => typeof tier.price === 'number')
+      .map((tier) => ({
+        name: tier.name,
+        price: tier.price as number,
+        currency: 'GBP',
+        billingPeriod: 'MONTH' as const,
+        description: tier.description,
+        url: 'https://apexdeliver.com/pricing',
+      }))
+  );
+
   return (
     <MarketingLayout>
       <SEO
@@ -148,6 +169,11 @@ export const PricingPage: React.FC = () => {
         twitterDescription="Flexible plans covering deal pipeline management, valuations, data rooms, and AI-powered matching."
         twitterImage="https://100daysandbeyond.com/assets/financial-analysis-visual.png"
         canonical="https://100daysandbeyond.com/pricing"
+      />
+      {/* Product + Offer Schema for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingSchema) }}
       />
       {/* Header Section */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">

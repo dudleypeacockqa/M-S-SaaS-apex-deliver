@@ -20,11 +20,11 @@
 - **TDD Gate:** Vitest form test mocking the contact service + backend pytest for `/api/marketing/contact`.
 - **Action:** Implement SendGrid/CRM background task before removing this from Critical list.
 
-### R3. Newsletter opt-in fails silently
-- **Symptom:** Exit intent + sticky CTA posts to `/api/marketing/subscribe`; Render responds with SPA HTML and `catch` logs error. UI shows success even on failure.
-- **Impact:** Email list growth halted.
-- **TDD Gate:** Hook unit test asserting error UI + backend pytest mocking ESP provider.
-- **Action:** Deploy real subscription endpoint and surface error message.
+### R3. Newsletter opt-in fails silently *(storage live, ESP integration pending)
+- **Symptom:** Exit intent + sticky CTA now hits `/api/marketing/subscribe`, storing the email + source. ESP hand-off still to be implemented.
+- **Impact:** Opt-ins preserved in `newsletter_subscriptions`, but marketing automation remains manual.
+- **TDD Gate:** Vitest coverage pending for the opt-in hook; backend pytest verifies persistence and idempotency.
+- **Action:** Wire ESP (SendGrid/Mailchimp) webhook and surface UI confirmations.
 
 ### R4. Team imagery 404s
 - **Symptom:** `/assets/team/*.jpg` resolves to SPA index, leaving blank portraits.

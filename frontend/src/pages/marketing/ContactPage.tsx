@@ -2,8 +2,18 @@ import { useState } from 'react';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { submitContactForm } from '../../services/contactService';
+import { createOrganizationSchema } from '../../utils/schemas/organizationSchema';
 
 export const ContactPage: React.FC = () => {
+  // Generate ContactPage schema for SEO
+  const contactPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: 'Contact 100 Days & Beyond',
+    description: 'Get in touch with our team for demos, sales inquiries, or support',
+    url: 'https://apexdeliver.com/contact',
+    mainEntity: createOrganizationSchema(),
+  };
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -62,6 +72,11 @@ export const ContactPage: React.FC = () => {
         twitterDescription="Reach the 100 Days & Beyond team for demos, sales questions, and platform support."
         twitterImage="https://100daysandbeyond.com/assets/security-trust-visual.png"
         canonical="https://100daysandbeyond.com/contact"
+      />
+      {/* ContactPage Schema for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageSchema) }}
       />
       {/* Header */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">

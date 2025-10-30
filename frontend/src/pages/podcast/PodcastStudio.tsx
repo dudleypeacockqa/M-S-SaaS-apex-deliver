@@ -421,21 +421,28 @@ function PodcastStudioContent() {
 
           {/* Video feature gate */}
           <div className="mb-6">
-            <FeatureGate
-              feature="podcast_video"
-              requiredTier="premium"
-              upgradeMessage={UPGRADE_MESSAGES.video}
-              lockedTitle="Video features locked"
-              lockedDescription="Video production is locked on your current plan."
-              ctaLabel="Explore Premium video options"
-            >
+            {subscription.isAtLeast('premium') ? (
               <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
                 <h3 className="text-sm font-semibold text-purple-800">Video uploads enabled</h3>
                 <p className="mt-1 text-sm text-purple-700">
                   Upload ready-to-share video episodes and syndicate directly to YouTube.
                 </p>
               </div>
-            </FeatureGate>
+            ) : (
+              <div className="rounded-lg border border-purple-200 bg-purple-50 p-4 text-purple-700">
+                <h3 className="text-sm font-semibold">Video features locked</h3>
+                <p className="mt-1 text-sm text-purple-700">
+                  Video production is locked on your current plan. Upgrade to unlock uploads and streaming.
+                </p>
+                <button
+                  type="button"
+                  className="mt-3 inline-flex items-center rounded-md border border-purple-300 px-3 py-2 text-sm font-medium text-purple-700 bg-white hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                  onClick={() => pushNotification('info', UPGRADE_MESSAGES.video)}
+                >
+                  Explore Premium video options
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Quota Card */}

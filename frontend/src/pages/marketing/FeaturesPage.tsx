@@ -2,8 +2,38 @@ import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { CTASection } from '../../components/marketing/CTASection';
 import { SEO } from '../../components/common/SEO';
 import { marketingIllustrations } from '../../assets/marketing';
+import { createOrganizationSchema } from '../../utils/schemas/organizationSchema';
 
 export const FeaturesPage: React.FC = () => {
+  // Generate SoftwareApplication schema for SEO
+  const softwareSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'ApexDeliver + CapLiquify',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: '598.00',
+      priceCurrency: 'GBP',
+      availability: 'https://schema.org/InStock',
+    },
+    description: 'End-to-end M&A intelligence platform with deal pipeline management, financial analysis, valuation tools, and secure data rooms',
+    url: 'https://apexdeliver.com/features',
+    provider: createOrganizationSchema(),
+    featureList: [
+      'Deal Pipeline & Flow Management',
+      'Financial Intelligence Engine (47+ ratios)',
+      'Multi-Method Valuation Suite',
+      'Secure Data Room',
+      'AI-Powered Deal Matching',
+      'Task & Workflow Automation',
+      'Document Generation',
+      '13-Week Cash Forecasting',
+      'Working Capital Management',
+    ],
+  };
+
   return (
     <MarketingLayout>
       <SEO
@@ -18,6 +48,11 @@ export const FeaturesPage: React.FC = () => {
         twitterDescription="From AI-assisted valuations to secure data rooms, see everything the 100 Days & Beyond platform covers."
         twitterImage="https://100daysandbeyond.com/assets/pmi-integration-graphic.png"
         canonical="https://100daysandbeyond.com/features"
+      />
+      {/* SoftwareApplication Schema for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
       />
       {/* Header */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">

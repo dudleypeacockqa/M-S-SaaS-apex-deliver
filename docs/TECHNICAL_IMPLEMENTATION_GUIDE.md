@@ -1101,10 +1101,10 @@ The marketing site is aligned to BMAD (Build → Measure → Analyze → Decide)
 - **Decide:** Keep feature behind temporary flag until QA verifies RED → GREEN cycles locally and in staging.
 
 ### 3. Newsletter Opt-In
-- **Build:** Provide a working subscription endpoint (FastAPI or ESP webhook) and update the opt-in popup/sticky CTA to use it.
-- **Measure:** Unit-test the opt-in hook (Vitest) and add a pytest to mock ESP integration; track conversion metrics via server logs.
-- **Analyze:** Compare opt-in rate vs. baseline; monitor ESP bounce/errors.
-- **Decide:** Remove fallback popup once success rate > 98% with no unhandled rejections.
+- **Build:** FastAPI `/api/marketing/subscribe` now persists subscribers; frontend hook still needs to consume the service and trigger ESP sync.
+- **Measure:** Add Vitest coverage for the opt-in hook and track subscription counts via analytics.
+- **Analyze:** Compare opt-in rate vs. baseline once ESP integration ships.
+- **Decide:** Remove fallback popup once ESP hand-off succeeds end-to-end.
 
 ### 4. Canonical & OG Metadata *(COMPLETED – May 2026)*
 - **Build:** Domain constants centralized (`100daysandbeyond.com`) with updated SEO helpers + HTML shell.
