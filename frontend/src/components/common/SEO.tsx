@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { convertToWebP, supportsWebP } from '../../utils/imageUtils';
 
 export interface SEOProps {
   title: string;
@@ -47,6 +48,14 @@ export const SEO: React.FC<SEOProps> = ({
       element.setAttribute('content', content);
     };
 
+    // Helper to optimize image URLs (auto-convert to WebP)
+    const optimizeImageUrl = (url: string | undefined): string | undefined => {
+      if (!url) return undefined;
+      // Convert PNG/JPG to WebP for better performance
+      // Social media platforms (Twitter, Facebook, LinkedIn) support WebP
+      return convertToWebP(url);
+    };
+
     // Set basic meta tags
     setMetaTag('description', description);
     if (keywords) {
@@ -59,7 +68,9 @@ export const SEO: React.FC<SEOProps> = ({
     setMetaTag('og:type', 'website', true);
 
     if (ogImage) {
-      setMetaTag('og:image', ogImage, true);
+      // Use WebP for OG images (Facebook, LinkedIn support it)
+      const optimizedOgImage = optimizeImageUrl(ogImage);
+      setMetaTag('og:image', optimizedOgImage || ogImage, true);
     }
 
     if (ogUrl) {
@@ -72,7 +83,10 @@ export const SEO: React.FC<SEOProps> = ({
     setMetaTag('twitter:description', twitterDescription || ogDescription || description);
 
     if (twitterImage || ogImage) {
-      setMetaTag('twitter:image', twitterImage || ogImage || '');
+      // Use WebP for Twitter images (Twitter supports WebP since 2019)
+      const imageUrl = twitterImage || ogImage || '';
+      const optimizedTwitterImage = optimizeImageUrl(imageUrl);
+      setMetaTag('twitter:image', optimizedTwitterImage || imageUrl);
     }
 
     // Set canonical URL

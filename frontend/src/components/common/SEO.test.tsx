@@ -45,8 +45,9 @@ describe('SEO', () => {
     expect(
       document.querySelector('meta[property="og:description"]')?.getAttribute('content')
     ).toBe('OG Description');
+    // SEO component auto-converts JPG to WebP for better performance
     expect(document.querySelector('meta[property="og:image"]')?.getAttribute('content')).toBe(
-      'https://example.com/image.jpg'
+      'https://example.com/image.webp'
     );
     expect(document.querySelector('meta[property="og:url"]')?.getAttribute('content')).toBe(
       'https://example.com'
@@ -74,8 +75,9 @@ describe('SEO', () => {
     expect(
       document.querySelector('meta[name="twitter:description"]')?.getAttribute('content')
     ).toBe('Twitter Description');
+    // SEO component auto-converts JPG to WebP for better performance
     expect(document.querySelector('meta[name="twitter:image"]')?.getAttribute('content')).toBe(
-      'https://example.com/twitter.jpg'
+      'https://example.com/twitter.webp'
     );
   });
 
