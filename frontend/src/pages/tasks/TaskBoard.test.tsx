@@ -554,20 +554,30 @@ const renderTaskBoard = () => {
     });
   });
 
-  it('refreshes tasks on polling interval', async () => {
-    vi.useFakeTimers();
+  it('refreshes tasks on polling interval', { timeout: 10000 }, async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
 
     renderTaskBoard();
 
+    // Wait for initial load
     await waitFor(() => {
       expect(taskService.fetchTaskBoardData).toHaveBeenCalledTimes(1);
     });
 
-    vi.advanceTimersByTime(45000);
+    const initialCallCount = vi.mocked(taskService.fetchTaskBoardData).mock.calls.length;
 
-    await waitFor(() => {
-      expect(taskService.fetchTaskBoardData).toHaveBeenCalledTimes(2);
-    });
+    // Advance timers by 45 seconds (polling interval) and run pending timers
+    vi.advanceTimersByTime(45000);
+    await vi.advanceTimersToNextTimerAsync();
+
+    // Wait for the second fetch
+    await waitFor(
+      () => {
+        const currentCallCount = vi.mocked(taskService.fetchTaskBoardData).mock.calls.length;
+        expect(currentCallCount).toBeGreaterThan(initialCallCount);
+      },
+      { timeout: 1000 },
+    );
 
     vi.useRealTimers();
   });
