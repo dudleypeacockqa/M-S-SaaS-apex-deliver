@@ -32,8 +32,9 @@ def seed_blog_posts():
         return
 
     # Create engine and session
+    # Note: Not calling Base.metadata.create_all(engine) to avoid foreign key errors
+    # Tables already exist from Alembic migrations
     engine = create_engine(database_url)
-    Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
 
