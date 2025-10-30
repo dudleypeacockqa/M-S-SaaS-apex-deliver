@@ -1,4 +1,4 @@
-# robots.txt for M&A Intelligence Platform (ApexDeliver/100daysandbeyond.com)
+# robots.txt for 100daysandbeyond.com
 # Allow crawling of marketing and public pages
 # Block authenticated/private areas
 
@@ -10,4 +10,4 @@ Disallow: /deals/
 Disallow: /podcast-studio
 Disallow: /checkout/
 
-Sitemap: https://apexdeliver.com/sitemap.xml
+Sitemap: https://100daysandbeyond.com/sitemap.xml

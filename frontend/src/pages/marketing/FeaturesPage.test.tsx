@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { FeaturesPage } from './FeaturesPage';
@@ -8,6 +8,11 @@ const renderWithRouter = (component: React.ReactElement) => {
 };
 
 describe('FeaturesPage', () => {
+  beforeEach(() => {
+    document.head.innerHTML = '';
+    document.body.innerHTML = '';
+  });
+
   it('renders main heading', () => {
     renderWithRouter(<FeaturesPage />);
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
@@ -37,5 +42,17 @@ describe('FeaturesPage', () => {
     const { container } = renderWithRouter(<FeaturesPage />);
     const sections = container.querySelectorAll('section');
     expect(sections.length).toBeGreaterThan(2);
+  });
+
+  it('defines canonical and og:url metadata for 100daysandbeyond.com', () => {
+    renderWithRouter(<FeaturesPage />);
+
+    const canonical = document.querySelector('link[rel="canonical"]');
+    expect(canonical).not.toBeNull();
+    expect(canonical?.getAttribute('href')).toBe('https://100daysandbeyond.com/features');
+
+    const ogUrlMeta = document.querySelector('meta[property="og:url"]');
+    expect(ogUrlMeta).not.toBeNull();
+    expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/features');
   });
 });

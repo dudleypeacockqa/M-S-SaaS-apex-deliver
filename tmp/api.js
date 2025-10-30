@@ -1,0 +1,1 @@
+import{a as s}from"./index-ngrFHoWO.js";const t="https://ma-saas-backend.onrender.com",r=s.create({baseURL:`${t}/api`,headers:{"Content-Type":"application/json"}});r.interceptors.request.use(e=>e,e=>Promise.reject(e));r.interceptors.response.use(e=>e,e=>{throw e.response?.data?.error?new Error(e.response.data.error.message||"API request failed"):e});export{r as a};

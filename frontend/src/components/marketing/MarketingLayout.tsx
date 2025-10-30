@@ -13,11 +13,11 @@ export const MarketingLayout: React.FC<MarketingLayoutProps> = ({ children }) =>
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'ApexDeliver',
-    alternateName: 'M&A Intelligence Platform',
-    url: 'https://apexdeliver.com',
-    logo: 'https://apexdeliver.com/assets/brand/apexdeliver-wordmark.svg',
-    description: 'ApexDeliver is the only end-to-end M&A intelligence platform combining deal flow management, AI-powered financial analysis, intelligent deal matching, and post-merger integration tools—all in one affordable subscription.',
+    name: '100 Days & Beyond',
+    alternateName: 'ApexDeliver',
+    url: 'https://100daysandbeyond.com',
+    logo: 'https://100daysandbeyond.com/assets/brand/apexdeliver-wordmark.svg',
+    description: '100 Days & Beyond is the only end-to-end M&A intelligence platform combining deal flow management, AI-powered financial analysis, intelligent deal matching, and post-merger integration tools—all in one affordable subscription.',
     foundingDate: '2025',
     contactPoint: {
       '@type': 'ContactPoint',

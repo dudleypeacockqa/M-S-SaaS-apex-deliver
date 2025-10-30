@@ -10,6 +10,8 @@ const renderContact = () => render(<BrowserRouter><ContactPage /></BrowserRouter
 describe('ContactPage', () => {
   beforeEach(() => {
     document.title = ''
+    document.head.innerHTML = ''
+    document.body.innerHTML = ''
   })
 
   it('renders header, contact form, and information sections', () => {
@@ -47,5 +49,17 @@ describe('ContactPage', () => {
     expect(screen.getByText(/message sent/i)).toBeInTheDocument()
     expect(container.querySelector('form')).not.toBeInTheDocument()
   }, 15000)
+
+  it('defines canonical and og:url metadata for the contact domain path', () => {
+    renderContact()
+
+    const canonical = document.querySelector('link[rel="canonical"]')
+    expect(canonical).not.toBeNull()
+    expect(canonical?.getAttribute('href')).toBe('https://100daysandbeyond.com/contact')
+
+    const ogUrlMeta = document.querySelector('meta[property="og:url"]')
+    expect(ogUrlMeta).not.toBeNull()
+    expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/contact')
+  })
 })
 

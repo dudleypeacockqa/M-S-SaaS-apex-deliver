@@ -34,6 +34,8 @@ describe('PricingPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     setAuthState(false);
+    document.head.innerHTML = '';
+    document.body.innerHTML = '';
   });
 
   it('renders all 4 pricing tiers with correct headings and prices', () => {
@@ -115,5 +117,17 @@ describe('PricingPage', () => {
       expect(screen.getByRole('alert')).toHaveTextContent(/failed to create checkout session/i);
     });
     expect(screen.getByTestId('pricing-cta-starter')).toBeEnabled();
+  });
+
+  it('publishes canonical and og:url metadata for the 100daysandbeyond.com domain', () => {
+    renderPricing();
+
+    const canonical = document.querySelector('link[rel="canonical"]');
+    expect(canonical).not.toBeNull();
+    expect(canonical?.getAttribute('href')).toBe('https://100daysandbeyond.com/pricing');
+
+    const ogUrlMeta = document.querySelector('meta[property="og:url"]');
+    expect(ogUrlMeta).not.toBeNull();
+    expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/pricing');
   });
 });

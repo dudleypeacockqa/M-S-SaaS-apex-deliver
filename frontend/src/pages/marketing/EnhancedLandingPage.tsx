@@ -46,14 +46,14 @@ export const EnhancedLandingPage: React.FC = () => {
         'The end-to-end M&A intelligence platform. From deal flow to cash flow, we unify your entire M&A lifecycle into a single, intelligent, and automated platform.',
       brand: {
         '@type': 'Organization',
-        name: 'ApexDeliver',
-        url: 'https://apexdeliver.com',
+        name: '100 Days & Beyond',
+        url: 'https://100daysandbeyond.com',
       },
       offers: {
         '@type': 'Offer',
         priceCurrency: 'GBP',
         price: '598.00',
-        url: 'https://apexdeliver.com/pricing',
+        url: 'https://100daysandbeyond.com/pricing',
         availability: 'https://schema.org/InStock',
       },
       aggregateRating: {
@@ -71,6 +71,14 @@ export const EnhancedLandingPage: React.FC = () => {
         title="ApexDeliver + CapLiquify | End-to-End M&A Intelligence Platform"
         description="Stop juggling spreadsheets and disconnected tools. ApexDeliver integrates every stage of your M&A lifecycle—from valuation to post-merger integration—into a single platform."
         keywords="M&A platform, deal flow management, financial planning, FP&A, valuation software, due diligence, post-merger integration"
+        ogTitle="100 Days & Beyond | End-to-End M&A Intelligence Platform"
+        ogDescription="Stop juggling spreadsheets and disconnected tools. 100 Days & Beyond integrates every stage of your M&A lifecycle—powered by CapLiquify and ApexDeliver."
+        ogImage="https://100daysandbeyond.com/assets/dashboard-preview.png"
+        ogUrl="https://100daysandbeyond.com/"
+        twitterTitle="100 Days & Beyond | End-to-End M&A Intelligence Platform"
+        twitterDescription="AI-powered M&A operations with CapLiquify FP&A and ApexDeliver. Manage deals, valuations, and post-merger execution from a single platform."
+        twitterImage="https://100daysandbeyond.com/assets/dashboard-preview.png"
+        canonical="https://100daysandbeyond.com/"
       />
       <StructuredData json={structuredData} id="product-schema" />
       <ExitIntentPopup />
