@@ -14,8 +14,8 @@ WORKFLOW_PATH: bmad/bmm/workflows/workflow-status/paths/greenfield-level-4.yaml
 CURRENT_PHASE: 4-Implementation
 CURRENT_WORKFLOW: dev-story
 CURRENT_AGENT: dev
-CURRENT_STORY: Sprint-2-Podcast-Advanced-Features
-CURRENT_SPRINT: DEV-016 Phase 3-4 Completion - 98% Platform Complete
+CURRENT_STORY: MARK-003-legacy-cleanup-bmad-alignment
+CURRENT_SPRINT: Marketing Website 100% Completion - BMAD Stories Created
 PHASE_1_COMPLETE: true
 PHASE_2_COMPLETE: true
 PHASE_3_COMPLETE: true
@@ -24,10 +24,10 @@ PHASE_5_READY: true
 
 ## Next Action
 
-NEXT_ACTION: Continue DEV-016 implementation with Manus backend + CODEX frontend collaboration
-NEXT_COMMAND: git add . && git commit -m "fix(tests): achieve backend 100% pass rate - Manus Phase 1 complete"
+NEXT_ACTION: Execute MARK-003 legacy cleanup tasks and begin MARK-004 test coverage
+NEXT_COMMAND: /bmad:bmm:workflows:dev-story
 NEXT_AGENT: dev
-TARGET: DEV-016 Phase 3 - Podcast Service Layer Implementation (Manus) + Frontend fixes (CODEX)
-STATUS: ✅ Backend 565/565 passing (100%); TypeScript build passing; Phase 1 test fixes complete. Ready for DEV-016 implementation.
+TARGET: MARK-003: Legacy Cleanup & BMAD Alignment (Phase 2 complete - stories created)
+STATUS: ✅ 6 BMAD stories created (MARK-003 through MARK-008); Legacy files already deleted; Ready to execute test coverage phase.
 
-LAST_UPDATED: 2025-10-29T12:55:00Z
+LAST_UPDATED: 2025-10-30T14:30:00Z

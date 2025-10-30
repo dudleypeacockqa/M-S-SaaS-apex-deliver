@@ -280,73 +280,117 @@ backend/
 ---
 
 ## Current Issues
-## Current Issues
+
+### 📊 MARKETING WEBSITE COMPLETION STATUS
+
+**Current Completion**: **70%** (35/50 pages complete, 107 marketing tests passing)
+**Health Score**: **8.4/10**
+**Target**: **100%** completion via BMAD stories MARK-003 through MARK-008
+**Timeline**: 4 weeks (62 hours total effort)
+
+**Completed Work** (70%):
+- ✅ 35/50 marketing pages implemented (Landing, Features, Pricing, Contact, About, etc.)
+- ✅ 107 marketing tests passing (90% coverage of existing pages)
+- ✅ Core navigation, SEO, and analytics infrastructure
+- ✅ Clerk authentication integration
+- ✅ Responsive layouts and mobile optimization (partial)
+- ✅ StickyCTABar and OptInPopup components
+
+**Outstanding Work** (30%):
+- ❌ 26 pages without tests (BlogListingPage, BlogPostPage, Security, Team, FAQ, promotional pages)
+- ❌ 5 components without tests (CTASection, Footer, MarketingLayout, DashboardMockup, OptInPopup)
+- ❌ Blog system backend API and CMS (MARK-006)
+- ❌ Case studies and social proof components (MARK-007)
+- ❌ Promotional page interactive elements (MARK-008)
+- ❌ Performance optimization (Lighthouse >90) (MARK-005 Phase 4)
+- ❌ SEO enhancement (structured data, sitemap) (MARK-005 Phase 5)
+- ❌ Real assets replacing placeholders (MARK-005 Phase 3)
+
+**BMAD Stories Created** (2025-10-30):
+1. **MARK-003**: Legacy Cleanup & BMAD Alignment (4h) - ✅ Stories created, legacy files deleted
+2. **MARK-004**: Test Coverage Critical Path (12h) - ⏳ Pending (146 new tests for 26 pages)
+3. **MARK-005**: Enhanced Website Phases 3-10 (30h) - ⏳ Pending (assets, performance, SEO, analytics)
+4. **MARK-006**: Blog System Complete (6h) - ⏳ Pending (backend API, database, CMS)
+5. **MARK-007**: Case Studies & Social Proof (4h) - ⏳ Pending (5 B2B case studies)
+6. **MARK-008**: Promotional Pages Polish (6h) - ⏳ Pending (interactive calculators, timelines)
+
+**Next Actions**:
+1. Execute MARK-004: Write 146 tests (TDD RED → GREEN → REFACTOR)
+2. Execute MARK-005 through MARK-008 sequentially
+3. Update BMAD progress tracker after each phase completion
+4. Deploy to production after each story completion
+
+**Related Files**:
+- Story definitions: `docs/bmad/stories/MARK-003` through `MARK-008`
+- Progress tracker: `docs/bmad/BMAD_PROGRESS_TRACKER.md`
+- Workflow status: `docs/bmad/bmm-workflow-status.md`
+
+---
 
 ### 🔴 CRITICAL (Site Broken)
 
 #### 1. Blog Page Does Not Load Content
 **Status:** BROKEN  
-**Description:**  immediately renders the "No posts yet" empty state. Fetching  from the production domain returns the SPA HTML shell instead of JSON; hitting the FastAPI service directly () responds with .  
-**Root Cause:** The marketing bundle calls a relative path, so requests never leave . Even when routed to the backend, the API is crashing (likely missing tables or seed data).  
-**Impact:** Blog pillar content is unavailable, gutting organic SEO plans and breaking internal links.  
-**TDD Coverage:** Add Vitest contract tests that stub the fetch and assert fallback messaging; add an integration test (Playwright/pytest) that hits the deployed endpoint once routing is fixed.  
+**Description:** `/blog` renders the "No posts yet" empty state. Fetching `/api/blog/posts` from the production domain returns the SPA HTML shell, while the FastAPI service (`https://ma-saas-backend.onrender.com/api/blog/posts`) responds with `500 Internal Server Error`.  
+**Root Cause:** The marketing bundle calls a relative path, so requests never leave `100daysandbeyond.com`. Once routed correctly, the backend still crashes (missing tables or seed data).  
+**Impact:** Blog pillar content is unavailable, destroying SEO plans and breaking internal links.  
+**TDD Coverage:** Add Vitest contract tests stubbing the fetch and asserting the fallback message; add integration tests (Playwright + pytest) hitting the live endpoint once routing is fixed.  
 **Next Steps:**
-1. Update the frontend to use  (already documented) and add production env on Render.  
-2. Restore the FastAPI  endpoint (ensure migrations + seed complete).  
-3. Add monitoring + integration test to CI to catch regressions.
+1. Use `VITE_API_URL` in the frontend and configure it on Render.  
+2. Restore the FastAPI `/api/blog/posts` endpoint (ensure migrations + seed).  
+3. Add monitoring and CI integration tests for regression detection.
 
 #### 2. Contact Form Submissions Are Dropped
 **Status:** BROKEN  
-**Description:** Submitting  only logs to the console and toggles a success message; no network request is made, so leads are discarded.  
-**Impact:** High-intent visitors cannot reach the team, creating an immediate revenue leak.  
-**TDD Coverage:** Write a failing Vitest test that asserts  is called with the payload → implement POST to backend (or email service). Pair with backend pytest to validate request handling.  
+**Description:** Submitting `/contact` only logs to the console and toggles a success state; no network request is made.  
+**Impact:** High-intent visitors cannot reach the team → direct revenue leak.  
+**TDD Coverage:** Write a failing Vitest test asserting `fetch` is called with the payload; pair with backend pytest covering request validation and notification handling.  
 **Next Steps:**
-1. Design  endpoint (FastAPI) with validation + notification.  
-2. Update the React form to call the endpoint and surface error states.  
-3. Add end-to-end coverage (Playwright) to ensure form > success toast works.
+1. Implement `/api/marketing/contact` (FastAPI) with validation + notification.  
+2. Update the React form to post to the endpoint and surface error states.  
+3. Add Playwright coverage ensuring the success toast appears after mock submission.
 
 #### 3. Newsletter Opt-In Popup Fails Silently
 **Status:** BROKEN  
-**Description:** The exit-intent/sticky CTA posts to ; Render returns the SPA HTML, so the  logs "Failed to subscribe" and users never see confirmation.  
-**Impact:** Marketing opt-ins are lost; customer journey cannot be nurtured.  
-**TDD Coverage:** Add a unit test for the opt-in hook that mocks a rejected promise; ensure UI surfaces failure. Add backend pytest covering subscription storage/integration.  
+**Description:** Exit-intent/sticky CTA posts to `/api/marketing/subscribe`; the static host returns HTML, so the `catch` block logs "Failed to subscribe" and users never receive confirmation.  
+**Impact:** Marketing opt-ins are lost; nurture campaigns stall.  
+**TDD Coverage:** Unit-test the opt-in hook to ensure failures show error UI; add backend pytest for subscription persistence/ESP forwarding.  
 **Next Steps:**
-1. Expose a working subscription endpoint (FastAPI or external ESP).  
-2. Wire the frontend to use the configured .  
-3. Track conversions via telemetry.
+1. Expose a working subscription endpoint (FastAPI or ESP webhook).  
+2. Consume it via `VITE_API_URL`.  
+3. Track conversions via analytics/observability.
 
 ### 🟡 HIGH PRIORITY (SEO & Brand Risk)
 
 #### 4. Canonical/OG Metadata Points to Legacy Domains
 **Status:** NOT FIXED  
-**Description:** Many SEO helpers still reference  or  (see Pricing, Features, About, Contact, legal pages).  
-**Impact:** Duplicate indexing, diluted link equity, incorrect social-sharing previews.  
-**TDD Coverage:** Introduce metadata snapshot tests (Vitest + react-testing-library) that assert canonical URLs match .  
+**Description:** Multiple SEO helpers still reference `apexdeliver.com` or `ma-saas-platform.onrender.com` (Pricing, Features, About, Contact, legal pages).  
+**Impact:** Duplicate indexing, diluted link equity, wrong social-sharing previews.  
+**TDD Coverage:** Add metadata snapshot tests asserting canonical URLs equal `https://100daysandbeyond.com`.  
 **Next Steps:** Normalize domain constants, update the HTML shell, and add deployment smoke tests that grep for the correct host.
 
 #### 5. Team Portraits & Media Assets Return 404s
 **Status:** NOT FIXED  
-**Description:** Requests like  resolve to the SPA HTML, leaving broken avatars on .  
-**Impact:** Erodes credibility on a key trust-building page.  
-**TDD Coverage:** Add a Vitest test for  that asserts fallback avatar is rendered when image fails; add a CI check that HEAD requests for key assets return .  
-**Next Steps:** Upload assets to the deployed CDN (or bundle locally) and update import paths.
+**Description:** Requests like `/assets/team/dudley-peacock.jpg` resolve to the SPA HTML, leaving broken avatars on `/team`.  
+**Impact:** Damages credibility on a trust-building page.  
+**TDD Coverage:** Add a Vitest test ensuring `TeamPage` falls back gracefully; add CI HEAD checks verifying key assets return `200`.  
+**Next Steps:** Upload assets to the CDN (or bundle locally) and update import paths.
 
 #### 6. "View All Integrations" CTA Hits Missing Route
 **Status:** NOT FIXED  
-**Description:** Landing-page CTA links to , but the router lacks a matching element so the SPA displays the 404.  
-**Impact:** Frustrates users exploring ecosystem capabilities.  
-**TDD Coverage:** Add a router test that navigates to  and expects a valid component; implement the page or redirect to an existing section.  
-**Next Steps:** Ship either a dedicated integrations page or deep-link to Features → Integrations section.
+**Description:** Landing-page CTA links to `/integrations`, but no route exists so the SPA returns 404.  
+**Impact:** Frustrates users exploring integrations.  
+**TDD Coverage:** Add a router test that navigates to `/integrations` and expects a rendered component (or redirect).  
+**Next Steps:** Ship a dedicated integrations page or deep-link to the Features → Integrations section.
 
 ### 🟢 MEDIUM PRIORITY (Technical Debt)
 
 #### 7. TypeScript Errors (184 errors)
 **Status:** TEMPORARILY BYPASSED  
-**Description:** Project still skips type-checking via . Errors cluster in Podcast Studio, Matching Workspace, etc.  
-**Impact:** Type safety compromised; potential runtime issues.  
-**TDD Coverage:** Enforce  in CI once errors are resolved and maintain RED → GREEN cycles for type fixes.  
-**Next Steps:** Tackle errors per module while maintaining strict TDD (write failing test demonstrating the type issue, fix code, re-enable compiler checks).
-
+**Description:** Project still skips type-checking via `vite build`. Errors cluster in Podcast Studio, Matching Workspace, etc.  
+**Impact:** Type safety compromised; runtime regressions possible.  
+**TDD Coverage:** Re-enable `tsc --noEmit` after resolving errors; maintain strict RED → GREEN cycles for fixes.  
+**Next Steps:** Address errors module-by-module, pairing each fix with tests and compiler checks.
 ## Recent Fixes
 
 ### ✅ Completed Fixes (October 29, 2025)
