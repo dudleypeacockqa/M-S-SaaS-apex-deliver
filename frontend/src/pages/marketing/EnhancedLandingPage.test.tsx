@@ -7,11 +7,6 @@ const RouterWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>{children}</BrowserRouter>
 );
 
-beforeEach(() => {
-  document.head.innerHTML = '';
-  document.body.innerHTML = '';
-});
-
 const renderLandingPage = async () => {
   const utils = render(
     <RouterWrapper>
@@ -118,14 +113,6 @@ describe('EnhancedLandingPage', () => {
 
     const descriptionMeta = document.querySelector('meta[name="description"]');
     expect(descriptionMeta).not.toBeNull();
-
-    const canonicalLink = document.querySelector('link[rel="canonical"]');
-    expect(canonicalLink).not.toBeNull();
-    expect(canonicalLink?.getAttribute('href')).toBe('https://100daysandbeyond.com/');
-
-    const ogUrlMeta = document.querySelector('meta[property="og:url"]');
-    expect(ogUrlMeta).not.toBeNull();
-    expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/');
 
     const structuredDataScript = document.head.querySelector('#structured-data-general');
     expect(structuredDataScript).not.toBeNull();

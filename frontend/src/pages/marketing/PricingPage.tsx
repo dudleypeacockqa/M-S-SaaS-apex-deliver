@@ -40,6 +40,7 @@ export const PricingPage: React.FC = () => {
   };
   const pricingTiers = [
     {
+      testId: 'starter',
       name: 'CapLiquify FP&A',
       price: 598,
       currency: '£',
@@ -60,6 +61,7 @@ export const PricingPage: React.FC = () => {
       highlighted: false,
     },
     {
+      testId: 'professional',
       name: 'ApexDeliver Professional',
       price: 1598,
       currency: '£',
@@ -82,6 +84,7 @@ export const PricingPage: React.FC = () => {
       highlighted: true,
     },
     {
+      testId: 'enterprise',
       name: 'ApexDeliver Enterprise',
       price: 2997,
       currency: '£',
@@ -106,6 +109,7 @@ export const PricingPage: React.FC = () => {
       highlighted: false,
     },
     {
+      testId: 'community',
       name: 'Portfolio / Community Leader',
       price: 'Contact',
       currency: '',
@@ -133,17 +137,17 @@ export const PricingPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="Pricing | ApexDeliver + CapLiquify"
+        title="Pricing | 100 Days & Beyond"
         description="Find the perfect plan to fuel your growth. Start with what you need today and scale as your ambitions grow. All plans backed by a 14-day money-back guarantee."
         keywords="M&A software pricing, deal management pricing, M&A platform cost, professional M&A tools pricing"
-        ogTitle="ApexDeliver Pricing - Professional M&A Tools from £279/month"
+        ogTitle="100 Days & Beyond Pricing - Professional M&A Tools from £598/month"
         ogDescription="Choose from 4 pricing tiers designed for solo dealmakers to large organizations. All plans include AI-powered intelligence and deal flow management."
-        ogUrl="https://ma-saas-platform.onrender.com/pricing"
-        ogImage="https://apexdeliver.com/assets/financial-analysis-visual.png"
-        twitterTitle="ApexDeliver Pricing"
+        ogUrl="https://100daysandbeyond.com/pricing"
+        ogImage="https://100daysandbeyond.com/assets/financial-analysis-visual.png"
+        twitterTitle="100 Days & Beyond Pricing"
         twitterDescription="Flexible plans covering deal pipeline management, valuations, data rooms, and AI-powered matching."
-        twitterImage="https://apexdeliver.com/assets/financial-analysis-visual.png"
-        canonical="https://ma-saas-platform.onrender.com/pricing"
+        twitterImage="https://100daysandbeyond.com/assets/financial-analysis-visual.png"
+        canonical="https://100daysandbeyond.com/pricing"
       />
       {/* Header Section */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
@@ -161,16 +165,20 @@ export const PricingPage: React.FC = () => {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {pricingTiers.map((tier, index) => (
-              <PricingCard
-                key={index}
-                {...tier}
-                onGetStarted={tier.cta === 'Get Started' ? () => handleGetStarted(tier.name) : undefined}
-                loading={loadingTier === tier.name}
-                disabled={loadingTier !== null && loadingTier !== tier.name}
-                ctaTestId={`pricing-cta-${tier.name.toLowerCase().replace(/\s+/g, '-')}`}
-              />
-            ))}
+            {pricingTiers.map((tier, index) => {
+              const { testId, ...tierProps } = tier;
+
+              return (
+                <PricingCard
+                  key={index}
+                  {...tierProps}
+                  onGetStarted={tier.cta === 'Get Started' ? () => handleGetStarted(tier.name) : undefined}
+                  loading={loadingTier === tier.name}
+                  disabled={loadingTier !== null && loadingTier !== tier.name}
+                  ctaTestId={`pricing-cta-${testId ?? tier.name.toLowerCase().replace(/\s+/g, '-')}`}
+                />
+              );
+            })}
           </div>
 
           {errorTier && (

@@ -280,76 +280,72 @@ backend/
 ---
 
 ## Current Issues
+## Current Issues
 
 ### 🔴 CRITICAL (Site Broken)
 
-#### 1. Blog Page Showing "No Posts Yet"
+#### 1. Blog Page Does Not Load Content
 **Status:** BROKEN  
-**Description:** Blog page displays "No posts yet" message despite:
-- Backend API endpoint `/api/blog` exists
-- 50 blog posts defined in `blog_posts_for_database.json`
-- Category badges showing correct counts (10, 11, 12, 13, 14, 15)
-
-**Root Cause:** Backend API returns "Internal Server Error" when called
-- Likely cause: `blog_posts` table doesn't exist in production database
-- Or: Blog posts from JSON file were never imported into database
-
-**Impact:** Users cannot read blog content, hurting SEO and content marketing
-
-**Files Involved:**
-- `/backend/app/api/routes/blog.py` - API endpoint (code is correct)
-- `/backend/app/models/blog_post.py` - BlogPost model
-- `/frontend/src/pages/marketing/Blog.tsx` - Frontend component
-- `/home/ubuntu/blog_posts_for_database.json` - Blog post data
-
+**Description:**  immediately renders the "No posts yet" empty state. Fetching  from the production domain returns the SPA HTML shell instead of JSON; hitting the FastAPI service directly () responds with .  
+**Root Cause:** The marketing bundle calls a relative path, so requests never leave . Even when routed to the backend, the API is crashing (likely missing tables or seed data).  
+**Impact:** Blog pillar content is unavailable, gutting organic SEO plans and breaking internal links.  
+**TDD Coverage:** Add Vitest contract tests that stub the fetch and assert fallback messaging; add an integration test (Playwright/pytest) that hits the deployed endpoint once routing is fixed.  
 **Next Steps:**
-1. Check if `blog_posts` table exists in production database
-2. Run database migrations if needed
-3. Import blog posts from JSON file into database
-4. Verify API returns data correctly
+1. Update the frontend to use  (already documented) and add production env on Render.  
+2. Restore the FastAPI  endpoint (ensure migrations + seed complete).  
+3. Add monitoring + integration test to CI to catch regressions.
 
----
+#### 2. Contact Form Submissions Are Dropped
+**Status:** BROKEN  
+**Description:** Submitting  only logs to the console and toggles a success message; no network request is made, so leads are discarded.  
+**Impact:** High-intent visitors cannot reach the team, creating an immediate revenue leak.  
+**TDD Coverage:** Write a failing Vitest test that asserts  is called with the payload → implement POST to backend (or email service). Pair with backend pytest to validate request handling.  
+**Next Steps:**
+1. Design  endpoint (FastAPI) with validation + notification.  
+2. Update the React form to call the endpoint and surface error states.  
+3. Add end-to-end coverage (Playwright) to ensure form > success toast works.
 
-### 🟡 HIGH PRIORITY (UX Issues)
+#### 3. Newsletter Opt-In Popup Fails Silently
+**Status:** BROKEN  
+**Description:** The exit-intent/sticky CTA posts to ; Render returns the SPA HTML, so the  logs "Failed to subscribe" and users never see confirmation.  
+**Impact:** Marketing opt-ins are lost; customer journey cannot be nurtured.  
+**TDD Coverage:** Add a unit test for the opt-in hook that mocks a rejected promise; ensure UI surfaces failure. Add backend pytest covering subscription storage/integration.  
+**Next Steps:**
+1. Expose a working subscription endpoint (FastAPI or external ESP).  
+2. Wire the frontend to use the configured .  
+3. Track conversions via telemetry.
 
-#### 2. Poor Quality Images
+### 🟡 HIGH PRIORITY (SEO & Brand Risk)
+
+#### 4. Canonical/OG Metadata Points to Legacy Domains
 **Status:** NOT FIXED  
-**Description:** Feature page images are low quality, generic placeholders
-- Deal Flow diagram looks amateurish
-- Financial dashboard screenshots are blurry
-- Inconsistent illustration style
+**Description:** Many SEO helpers still reference  or  (see Pricing, Features, About, Contact, legal pages).  
+**Impact:** Duplicate indexing, diluted link equity, incorrect social-sharing previews.  
+**TDD Coverage:** Introduce metadata snapshot tests (Vitest + react-testing-library) that assert canonical URLs match .  
+**Next Steps:** Normalize domain constants, update the HTML shell, and add deployment smoke tests that grep for the correct host.
 
-**Impact:** Unprofessional appearance, reduces trust
+#### 5. Team Portraits & Media Assets Return 404s
+**Status:** NOT FIXED  
+**Description:** Requests like  resolve to the SPA HTML, leaving broken avatars on .  
+**Impact:** Erodes credibility on a key trust-building page.  
+**TDD Coverage:** Add a Vitest test for  that asserts fallback avatar is rendered when image fails; add a CI check that HEAD requests for key assets return .  
+**Next Steps:** Upload assets to the deployed CDN (or bundle locally) and update import paths.
 
-**Files Involved:**
-- `/frontend/src/pages/marketing/FeaturesPage.tsx`
-- `/frontend/src/assets/marketing/` - Image assets
+#### 6. "View All Integrations" CTA Hits Missing Route
+**Status:** NOT FIXED  
+**Description:** Landing-page CTA links to , but the router lacks a matching element so the SPA displays the 404.  
+**Impact:** Frustrates users exploring ecosystem capabilities.  
+**TDD Coverage:** Add a router test that navigates to  and expects a valid component; implement the page or redirect to an existing section.  
+**Next Steps:** Ship either a dedicated integrations page or deep-link to Features → Integrations section.
 
-**Recommendation:** Replace with high-quality custom illustrations or professional stock images
+### 🟢 MEDIUM PRIORITY (Technical Debt)
 
----
-
-### 🟢 MEDIUM PRIORITY
-
-#### 3. TypeScript Errors (184 errors)
+#### 7. TypeScript Errors (184 errors)
 **Status:** TEMPORARILY BYPASSED  
-**Description:** Project has 184 TypeScript compilation errors
-- Errors in PodcastStudio.tsx, MatchingWorkspace.tsx, and other files
-- Build script modified to skip TypeScript checking (`vite build` instead of `tsc -b && vite build`)
-
-**Impact:** 
-- Type safety compromised
-- Potential runtime errors
-- Technical debt
-
-**Files Involved:**
-- `/frontend/package.json` - Build script modified
-- `/frontend/src/pages/podcast/PodcastStudio.tsx` - 20+ errors
-- `/frontend/src/pages/deals/MatchingWorkspace.tsx` - Fixed syntax error
-
-**Recommendation:** Gradually fix TypeScript errors and re-enable strict type checking
-
----
+**Description:** Project still skips type-checking via . Errors cluster in Podcast Studio, Matching Workspace, etc.  
+**Impact:** Type safety compromised; potential runtime issues.  
+**TDD Coverage:** Enforce  in CI once errors are resolved and maintain RED → GREEN cycles for type fixes.  
+**Next Steps:** Tackle errors per module while maintaining strict TDD (write failing test demonstrating the type issue, fix code, re-enable compiler checks).
 
 ## Recent Fixes
 

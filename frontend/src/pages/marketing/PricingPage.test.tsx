@@ -40,12 +40,22 @@ describe('PricingPage', () => {
 
   it('renders all 4 pricing tiers with correct headings and prices', () => {
     renderPricing();
-    ['Starter', 'Professional', 'Enterprise', 'Community Leader'].forEach((tier) => {
-      expect(screen.getAllByText(tier).length).toBeGreaterThan(0);
+    const expectedTierNames = [
+      'CapLiquify FP&A',
+      'ApexDeliver Professional',
+      'ApexDeliver Enterprise',
+      'Portfolio / Community Leader',
+    ];
+
+    expectedTierNames.forEach((tier) => {
+      expect(screen.getByText(tier)).toBeInTheDocument();
     });
-    ['£279', '£598', '£1,598', '£2,997'].forEach((price) => {
-      expect(screen.getByText(price)).toBeInTheDocument();
+
+    ['£598', '£1,598', '£2,997'].forEach((price) => {
+      expect(screen.getAllByText(price)[0]).toBeInTheDocument();
     });
+
+    expect(screen.getAllByText(/Contact/i)[0]).toBeInTheDocument();
   });
 
   it('redirects unauthenticated users to sign-in when clicking Get Started', async () => {

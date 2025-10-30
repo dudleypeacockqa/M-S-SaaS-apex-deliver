@@ -10,14 +10,14 @@ export const FeaturesPage: React.FC = () => {
         title="Features | ApexDeliver + CapLiquify"
         description="From CapLiquify FP&A to full M&A lifecycle management. Explore deal pipeline automation, financial intelligence, valuation tools, secure data rooms, and more."
         keywords="M&A features, deal pipeline, financial intelligence, valuation tools, data room, deal matching, M&A automation"
-        ogUrl="https://ma-saas-platform.onrender.com/features"
-        ogTitle="ApexDeliver Feature Tour"
+        ogUrl="https://100daysandbeyond.com/features"
+        ogTitle="100 Days & Beyond Feature Tour"
         ogDescription="Explore deal pipeline automation, AI analytics, valuation workflows, secure data rooms, and professional community features."
-        ogImage="https://apexdeliver.com/assets/pmi-integration-graphic.png"
-        twitterTitle="ApexDeliver Feature Tour"
-        twitterDescription="From AI-assisted valuations to secure data rooms, see everything the ApexDeliver platform covers."
-        twitterImage="https://apexdeliver.com/assets/pmi-integration-graphic.png"
-        canonical="https://ma-saas-platform.onrender.com/features"
+        ogImage="https://100daysandbeyond.com/assets/pmi-integration-graphic.png"
+        twitterTitle="100 Days & Beyond Feature Tour"
+        twitterDescription="From AI-assisted valuations to secure data rooms, see everything the 100 Days & Beyond platform covers."
+        twitterImage="https://100daysandbeyond.com/assets/pmi-integration-graphic.png"
+        canonical="https://100daysandbeyond.com/features"
       />
       {/* Header */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">

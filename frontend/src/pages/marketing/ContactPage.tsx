@@ -29,17 +29,17 @@ export const ContactPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="Contact | ApexDeliver + CapLiquify"
+        title="Contact | 100 Days & Beyond"
         description="Get in touch with our team for demos, sales inquiries, or support. We respond within 24 hours and are here to help you transform your M&A and finance operations."
-        keywords="contact ApexDeliver, M&A platform support, demo request, sales inquiry"
-        ogTitle="Contact ApexDeliver"
-        ogDescription="Speak with the ApexDeliver team about demos, onboarding, or partnership opportunities."
-        ogUrl="https://ma-saas-platform.onrender.com/contact"
-        ogImage="https://apexdeliver.com/assets/security-trust-visual.png"
-        twitterTitle="Contact ApexDeliver"
-        twitterDescription="Reach the ApexDeliver team for demos, sales questions, and platform support."
-        twitterImage="https://apexdeliver.com/assets/security-trust-visual.png"
-        canonical="https://ma-saas-platform.onrender.com/contact"
+        keywords="contact 100 Days & Beyond, M&A platform support, demo request, sales inquiry"
+        ogTitle="Contact 100 Days & Beyond"
+        ogDescription="Speak with the 100 Days & Beyond team about demos, onboarding, or partnership opportunities."
+        ogUrl="https://100daysandbeyond.com/contact"
+        ogImage="https://100daysandbeyond.com/assets/security-trust-visual.png"
+        twitterTitle="Contact 100 Days & Beyond"
+        twitterDescription="Reach the 100 Days & Beyond team for demos, sales questions, and platform support."
+        twitterImage="https://100daysandbeyond.com/assets/security-trust-visual.png"
+        canonical="https://100daysandbeyond.com/contact"
       />
       {/* Header */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">

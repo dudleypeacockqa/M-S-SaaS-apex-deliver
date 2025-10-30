@@ -17,8 +17,8 @@ describe('ContactPage', () => {
   it('renders header, contact form, and information sections', () => {
     renderContact()
 
-    expect(document.title).toContain('Contact Us')
-    expect(screen.getByRole('heading', { level: 1, name: /get in touch/i })).toBeInTheDocument()
+    expect(document.title).toContain('Contact | 100 Days & Beyond')
+    expect(screen.getByRole('heading', { level: 1, name: /growth journey/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
     expect(screen.getByText(/support@apexdeliver.com/i)).toBeInTheDocument()
     expect(screen.getByText(/data protection officer/i)).toBeInTheDocument()

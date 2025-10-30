@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 
 import { MarketingLayout } from './MarketingLayout';
 
@@ -15,9 +16,11 @@ describe('MarketingLayout domain configuration', () => {
 
   it('exposes organization structured data for 100daysandbeyond.com', () => {
     render(
-      <MarketingLayout>
-        <div>Test content</div>
-      </MarketingLayout>
+      <BrowserRouter>
+        <MarketingLayout>
+          <div>Test content</div>
+        </MarketingLayout>
+      </BrowserRouter>
     );
 
     const schemaScript = document.getElementById('organization-schema');
