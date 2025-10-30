@@ -1,5 +1,48 @@
 # BMAD Progress Tracker
 
+## Session 2025-10-30 (DEV-016 Phase 2.2 Sprint 4A Complete - 19:56 UTC)
+
+**Status**: Sprint 4A COMPLETE - Transcription UI + Billing Cycle Display delivered
+
+**Test Results**:
+- Frontend PodcastStudio: **28/28 passing (100%)** ✅
+  - Fixed 6 previously failing tests
+  - All transcription UI tests GREEN
+  - All billing cycle display tests GREEN
+
+**Sprint 4A Deliverables** (Phase 1 - 4h estimated, 2h actual):
+
+1. ✅ **Transcription UI Implementation**
+   - "Transcribe Audio" button when transcript is null
+   - Transcript content preview with language badge
+   - Download links for TXT and SRT formats (via API endpoints `/api/podcasts/episodes/{id}/transcript`)
+   - "Regenerate Transcript" button for existing transcripts
+   - Success/error messaging with role attributes
+   - React Query integration with cache invalidation
+
+2. ✅ **Billing Cycle Display**
+   - formatBillingCycle() helper function
+   - Period label display (e.g., "October 2025 Cycle")
+   - Formatted date range: "1 Oct 2025 – 31 Oct 2025 · Resets at 11:59 PM"
+
+3. ✅ **Accessibility Improvements**
+   - Added `role="alert"` to upgrade message for screen readers
+
+**Files Modified**:
+- [frontend/src/pages/podcast/PodcastStudio.tsx](frontend/src/pages/podcast/PodcastStudio.tsx#L259-L607) (billing cycle + transcription UI)
+- [frontend/src/hooks/useUploadProgress.ts](frontend/src/hooks/useUploadProgress.ts) (linter refactoring)
+
+**Commits Pushed**:
+- 38143dd: feat(podcast): add transcription UI and billing cycle display (DEV-016 Phase 2.2 Sprint 4A)
+
+**Platform Completion**: **~76%** (Phase 1 Sprint 4A: 4/34 hours complete)
+
+**100% Completion Plan Progress**: 4/190 hours (2%)
+
+**Next**: Sprint 4B - Document Room Frontend UI (10h)
+
+---
+
 ## Session 2025-10-30 (DEV-016 Phase 7 Live Streaming UI - 17:25 UTC)
 
 **Status**: Phase 7 COMPLETE – Live streaming UI, enterprise gating, and streaming docs delivered
