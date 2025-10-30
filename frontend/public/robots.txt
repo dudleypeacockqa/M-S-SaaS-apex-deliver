@@ -1,13 +1,57 @@
-# robots.txt for 100daysandbeyond.com
-# Allow crawling of marketing and public pages
-# Block authenticated/private areas
+# robots.txt for 100daysandbeyond.com (ApexDeliver M&A Platform)
+# Last Updated: 2025-10-30
+# Purpose: SEO optimization - allow marketing pages, restrict authenticated areas
 
 User-agent: *
+
+# Allow all marketing and public content
 Allow: /
+Allow: /features
+Allow: /pricing
+Allow: /about
+Allow: /contact
+Allow: /blog
+Allow: /blog/*
+Allow: /security
+Allow: /team
+Allow: /faq
+Allow: /podcast
+Allow: /case-studies
+Allow: /legal/
+
+# Block authenticated application pages
 Disallow: /dashboard
 Disallow: /admin/
 Disallow: /deals/
+Disallow: /financial/
+Disallow: /tasks/
+Disallow: /billing/
+Disallow: /settings/
 Disallow: /podcast-studio
 Disallow: /checkout/
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /book-trial
+Disallow: /api/
 
+# Sitemap location
 Sitemap: https://100daysandbeyond.com/sitemap.xml
+
+# Crawl delay for respectful bot behavior
+Crawl-delay: 1
+
+# Block AI training scrapers (protect content from LLM training)
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /

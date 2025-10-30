@@ -54,11 +54,48 @@
     <loc>https://100daysandbeyond.com/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+    <lastmod>2025-10-30</lastmod>
+  </url>
+  <url>
+    <loc>https://100daysandbeyond.com/security</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://100daysandbeyond.com/team</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
+  </url>
+  <!-- Blog Posts (50 articles) -->
+  <url>
+    <loc>https://100daysandbeyond.com/blog/manda-deal-flow-optimization-strategies</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2025-10-30</lastmod>
+  </url>
+  <url>
+    <loc>https://100daysandbeyond.com/blog/financial-due-diligence-checklist</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2025-10-30</lastmod>
+  </url>
+  <url>
+    <loc>https://100daysandbeyond.com/blog/post-merger-integration-100-days</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2025-10-30</lastmod>
+  </url>
+  <url>
+    <loc>https://100daysandbeyond.com/blog/working-capital-management-techniques</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2025-10-30</lastmod>
+  </url>
+  <url>
+    <loc>https://100daysandbeyond.com/blog/value-based-pricing-strategies</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2025-10-30</lastmod>
   </url>
   <url>
     <loc>https://100daysandbeyond.com/podcast</loc>
