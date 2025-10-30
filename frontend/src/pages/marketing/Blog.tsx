@@ -111,7 +111,8 @@ const BlogListingPage: React.FC = () => {
           params.append('search', searchTerm);
         }
         
-        const url = `/api/blog?${params.toString()}`;
+        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const url = `${API_BASE_URL}/api/blog?${params.toString()}`;
         const response = await fetch(url);
         
         if (!response.ok) {
