@@ -23,7 +23,7 @@ class BlogPostResponse(BaseModel):
     primary_keyword: str
     secondary_keywords: List[str]
     meta_description: str
-    featured_image: Optional[str]
+    featured_image_url: Optional[str]
     author: str
     read_time_minutes: int
     published: bool
@@ -94,7 +94,7 @@ def list_blog_posts(
             primary_keyword=post.primary_keyword,
             secondary_keywords=post.secondary_keywords.split(',') if post.secondary_keywords else [],
             meta_description=post.meta_description,
-            featured_image=post.featured_image_url,
+            featured_image_url=post.featured_image_url,
             author=post.author,
             read_time_minutes=post.read_time_minutes,
             published=post.published,
