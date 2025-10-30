@@ -567,7 +567,7 @@ const renderTaskBoard = () => {
     const initialCallCount = vi.mocked(taskService.fetchTaskBoardData).mock.calls.length;
 
     // Advance timers by 45 seconds (polling interval) and run pending timers
-    vi.advanceTimersByTime(45000);
+    await vi.advanceTimersByTimeAsync(45000);
     await vi.advanceTimersToNextTimerAsync();
 
     // Wait for the second fetch
