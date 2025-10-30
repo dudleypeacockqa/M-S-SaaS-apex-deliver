@@ -42,6 +42,10 @@ class Settings(BaseSettings):
     # API Keys
     openai_api_key: str = ""
     anthropic_api_key: str = ""
+    sendgrid_api_key: str = ""
+    sendgrid_from_email: str = "noreply@100daysandbeyond.com"
+    sendgrid_from_name: str = "100 Days & Beyond"
+    contact_notification_email: str = "contact@100daysandbeyond.com"
 
     # Storage Configuration
     storage_path: str = "./storage"

@@ -363,11 +363,11 @@ backend/
 ### 🟡 HIGH PRIORITY (SEO & Brand Risk)
 
 #### 4. Canonical/OG Metadata Points to Legacy Domains
-**Status:** ✅ FIXED (May 2026)  
-**Description:** Canonical + OG tags now resolve to `100daysandbeyond.com` across Pricing, Features, About, Contact, landing, and legal pages.  
-**Impact:** Single-source indexing with correct social previews.  
-**TDD Coverage:** Vitest suites (`domainConfig`, `MarketingLayout.domain`, page meta tests) assert the host is `https://100daysandbeyond.com`.  
-**Next Steps:** Keep smoke test in deploy pipeline to grep rendered HTML for the correct domain.
+**Status:** NOT FIXED  
+**Description:** Multiple SEO helpers still reference `apexdeliver.com` or `ma-saas-platform.onrender.com` (Pricing, Features, About, Contact, legal pages).  
+**Impact:** Duplicate indexing, diluted link equity, wrong social-sharing previews.  
+**TDD Coverage:** Add metadata snapshot tests asserting canonical URLs equal `https://100daysandbeyond.com`.  
+**Next Steps:** Normalize domain constants, update the HTML shell, and add deployment smoke tests that grep for the correct host.
 
 #### 5. Team Portraits & Media Assets Return 404s
 **Status:** NOT FIXED  

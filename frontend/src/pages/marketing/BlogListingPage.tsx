@@ -2,23 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
-
-interface BlogPost {
-  id: number;
-  title: string;
-  slug: string;
-  excerpt: string;
-  author: string;
-  category: string;
-  published_at: string;
-  read_time_minutes: number;
-  featured_image_url?: string;
-}
+import { fetchBlogPosts, type BlogPostSummary } from '../../services/blogService';
 
 export const BlogListingPage: React.FC = () => {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [posts, setPosts] = useState<BlogPostSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [error, setError] = useState<string | null>(null);
 
   const categories = [
     'All Posts',
@@ -30,18 +20,32 @@ export const BlogListingPage: React.FC = () => {
   ];
 
   useEffect(() => {
-    // TODO: Fetch blog posts from API
-    // For now, using empty array until API is ready
-    fetch('/api/blog/posts')
-      .then(res => res.json())
-      .then(data => {
+    let isActive = true;
+
+    const loadPosts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchBlogPosts();
+        if (!isActive) return;
         setPosts(data);
-        setLoading(false);
-      })
-      .catch(() => {
+      } catch (err) {
+        if (!isActive) return;
+        console.error('Failed to load blog posts', err);
         setPosts([]);
-        setLoading(false);
-      });
+        setError('Unable to load blog posts. Please try again later.');
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadPosts();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   const filteredPosts = selectedCategory === 'all' 
@@ -51,9 +55,17 @@ export const BlogListingPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="Blog | ApexDeliver + CapLiquify"
+        title="Blog | 100 Days & Beyond"
         description="Expert insights on M&A strategy, financial planning, post-merger integration, working capital management, and pricing optimization. Learn from industry leaders."
         keywords="M&A blog, financial planning, merger integration, working capital, pricing strategy"
+        ogTitle="100 Days & Beyond Blog"
+        ogDescription="Explore strategies, frameworks, and playbooks for every stage of the M&A lifecycle."
+        ogUrl="https://100daysandbeyond.com/blog"
+        ogImage="https://100daysandbeyond.com/assets/financial-analysis-visual.png"
+        twitterTitle="100 Days & Beyond Blog"
+        twitterDescription="Stay ahead with insights on M&A, FP&A, and portfolio value creation."
+        twitterImage="https://100daysandbeyond.com/assets/financial-analysis-visual.png"
+        canonical="https://100daysandbeyond.com/blog"
       />
 
       {/* Header */}
@@ -96,6 +108,12 @@ export const BlogListingPage: React.FC = () => {
           {loading ? (
             <div className="text-center py-12">
               <div className="text-gray-600">Loading posts...</div>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <div className="text-red-600 font-semibold" role="alert">
+                {error}
+              </div>
             </div>
           ) : filteredPosts.length === 0 ? (
             <div className="text-center py-12">

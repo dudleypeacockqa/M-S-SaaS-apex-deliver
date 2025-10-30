@@ -2,14 +2,16 @@
 import json
 import sys
 from pathlib import Path
+from datetime import datetime
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Add backend directory to path
+backend_dir = Path(__file__).parent.parent / 'backend'
+sys.path.insert(0, str(backend_dir))
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.models import BlogPost
-from app.database import Base
+from app.models.blog_post import BlogPost
+from app.db.base import Base
 import os
 
 def seed_blog_posts():
@@ -28,7 +30,7 @@ def seed_blog_posts():
     session = Session()
     
     # Load blog posts
-    blog_posts_file = Path(__file__).parent.parent.parent / 'blog_posts_for_database.json'
+    blog_posts_file = Path(__file__).parent.parent / 'blog_posts_for_database.json'
     with open(blog_posts_file, 'r') as f:
         blog_posts_data = json.load(f)
     
@@ -38,10 +40,18 @@ def seed_blog_posts():
         # Check if post already exists
         existing_post = session.query(BlogPost).filter_by(slug=post_data['slug']).first()
         if existing_post:
-            print(f"  ⏭️  Skipping '{post_data['title']}' (already exists)")
+            print(f"  [SKIP] '{post_data['title']}' (already exists)")
             continue
         
         # Create new blog post
+        # Parse published_at datetime if present
+        published_at = None
+        if post_data.get('published_at'):
+            try:
+                published_at = datetime.fromisoformat(post_data['published_at'].replace('Z', '+00:00'))
+            except (ValueError, AttributeError):
+                published_at = None
+
         blog_post = BlogPost(
             title=post_data['title'],
             slug=post_data['slug'],
@@ -53,16 +63,16 @@ def seed_blog_posts():
             secondary_keywords=post_data['secondary_keywords'],
             meta_description=post_data['meta_description'],
             published=post_data['published'],
-            published_at=post_data.get('published_at'),
+            published_at=published_at,
             read_time_minutes=post_data['read_time_minutes']
         )
         
         session.add(blog_post)
-        print(f"  ✅ Added '{post_data['title']}'")
+        print(f"  [OK] Added '{post_data['title']}'")
     
     # Commit all changes
     session.commit()
-    print(f"\n✅ Successfully seeded {len(blog_posts_data)} blog posts!")
+    print(f"\n[SUCCESS] Successfully seeded {len(blog_posts_data)} blog posts!")
     session.close()
 
 if __name__ == '__main__':

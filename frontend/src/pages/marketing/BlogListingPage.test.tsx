@@ -2,15 +2,14 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 
-import { BlogListingPage } from './BlogListingPage'
-
 vi.mock('../../services/blogService', () => ({
   fetchBlogPosts: vi.fn(),
 }))
 
-const { fetchBlogPosts } = require('../../services/blogService') as {
-  fetchBlogPosts: ReturnType<typeof vi.fn>
-}
+import { fetchBlogPosts } from '../../services/blogService'
+import { BlogListingPage } from './BlogListingPage'
+
+const mockedFetchBlogPosts = fetchBlogPosts as unknown as vi.Mock
 
 const renderWithRouter = () =>
   render(
@@ -25,7 +24,7 @@ describe('BlogListingPage', () => {
   })
 
   it('fetches and renders blog posts from the API', async () => {
-    fetchBlogPosts.mockResolvedValueOnce([
+    mockedFetchBlogPosts.mockResolvedValueOnce([
       {
         id: 1,
         title: 'How to Close Deals Faster',
@@ -44,7 +43,7 @@ describe('BlogListingPage', () => {
     expect(screen.getByText(/loading posts/i)).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(fetchBlogPosts).toHaveBeenCalledTimes(1)
+      expect(mockedFetchBlogPosts).toHaveBeenCalledTimes(1)
       expect(screen.getByText(/How to Close Deals Faster/i)).toBeInTheDocument()
     })
 
@@ -52,12 +51,12 @@ describe('BlogListingPage', () => {
   })
 
   it('shows a friendly error message when the API call fails', async () => {
-    fetchBlogPosts.mockRejectedValueOnce(new Error('Network error'))
+    mockedFetchBlogPosts.mockRejectedValueOnce(new Error('Network error'))
 
     renderWithRouter()
 
     await waitFor(() => {
-      expect(fetchBlogPosts).toHaveBeenCalledTimes(1)
+      expect(mockedFetchBlogPosts).toHaveBeenCalledTimes(1)
       expect(screen.getByText(/Unable to load blog posts/i)).toBeInTheDocument()
     })
   })

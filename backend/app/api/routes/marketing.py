@@ -5,9 +5,12 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr, Field
 import logging
+import httpx
 
+from app.core.config import settings
 from app.db.session import get_db
 from app.models.contact_message import ContactMessage
+from app.models.newsletter_subscription import NewsletterSubscription
 
 logger = logging.getLogger(__name__)
 
@@ -43,23 +46,59 @@ class SubscribeResponse(BaseModel):
 
 
 def send_contact_notification(contact_id: int, name: str, email: str, message: str):
-    """Send notification email to team about new contact form submission.
+    """Send notification email to team about new contact form submission."""
 
-    This is a placeholder for email notification logic.
-    In production, integrate with SendGrid, AWS SES, or similar.
-    """
-    logger.info(f"New contact form submission #{contact_id} from {name} ({email})")
-    logger.info(f"Message preview: {message[:100]}...")
-    # TODO: Implement actual email sending logic
-    # Example with SendGrid:
-    # sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
-    # message = Mail(
-    #     from_email='noreply@100daysandbeyond.com',
-    #     to_emails='contact@100daysandbeyond.com',
-    #     subject=f'New Contact Form: {name}',
-    #     html_content=f'<p><strong>Name:</strong> {name}</p>...'
-    # )
-    # sg.send(message)
+    if not settings.sendgrid_api_key or not settings.contact_notification_email:
+        logger.warning(
+            "Skipping contact notification for #%s; SendGrid not configured",
+            contact_id,
+        )
+        return
+
+    payload = {
+        "personalizations": [
+            {
+                "to": [
+                    {
+                        "email": settings.contact_notification_email,
+                        "name": settings.sendgrid_from_name,
+                    }
+                ],
+                "subject": f"New contact form submission from {name}",
+            }
+        ],
+        "from": {
+            "email": settings.sendgrid_from_email,
+            "name": settings.sendgrid_from_name,
+        },
+        "reply_to": {"email": email, "name": name},
+        "content": [
+            {
+                "type": "text/plain",
+                "value": (
+                    f"Contact ID: {contact_id}\n"
+                    f"Name: {name}\n"
+                    f"Email: {email}\n\n"
+                    f"Message:\n{message}"
+                ),
+            }
+        ],
+    }
+
+    try:
+        response = httpx.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            headers={
+                "Authorization": f"Bearer {settings.sendgrid_api_key}",
+                "Content-Type": "application/json",
+            },
+            json=payload,
+            timeout=10,
+        )
+        response.raise_for_status()
+        logger.info("SendGrid notification sent for contact #%s", contact_id)
+    except httpx.HTTPError as exc:
+        logger.error("Failed to send SendGrid notification: %s", exc)
 
 
 @router.post("/contact", response_model=ContactResponse)
@@ -121,43 +160,45 @@ def subscribe_newsletter(
     subscription: SubscribeRequest,
     db: Session = Depends(get_db),
 ) -> SubscribeResponse:
-    """
-    Subscribe to the marketing newsletter.
+    """Subscribe to the marketing newsletter and persist the record."""
 
-    - **email**: Email address to subscribe
-    - **source**: Source of subscription (website, popup, etc.)
-    """
     try:
-        # TODO: Integrate with email service provider (Mailchimp, SendGrid, etc.)
-        # For now, just log the subscription
-        logger.info(f"New newsletter subscription: {subscription.email} from {subscription.source}")
+        existing = (
+            db.query(NewsletterSubscription)
+            .filter(NewsletterSubscription.email == subscription.email)
+            .one_or_none()
+        )
 
-        # Example Mailchimp integration:
-        # from mailchimp_marketing import Client
-        # mailchimp = Client()
-        # mailchimp.set_config({
-        #     "api_key": settings.MAILCHIMP_API_KEY,
-        #     "server": settings.MAILCHIMP_SERVER_PREFIX
-        # })
-        #
-        # member_info = {
-        #     "email_address": subscription.email,
-        #     "status": "subscribed",
-        #     "merge_fields": {
-        #         "SOURCE": subscription.source
-        #     }
-        # }
-        #
-        # mailchimp.lists.add_list_member(settings.MAILCHIMP_LIST_ID, member_info)
+        if existing:
+            existing.source = subscription.source or existing.source
+            db.commit()
+            logger.info(
+                "Newsletter subscription already exists for %s; source updated to %s",
+                subscription.email,
+                existing.source,
+            )
+        else:
+            db_sub = NewsletterSubscription(
+                email=subscription.email,
+                source=subscription.source or "website",
+            )
+            db.add(db_sub)
+            db.commit()
+            logger.info(
+                "New newsletter subscription stored for %s (%s)",
+                subscription.email,
+                subscription.source,
+            )
 
         return SubscribeResponse(
             success=True,
-            message="Thank you for subscribing! Check your inbox for a confirmation email."
+            message="Thank you for subscribing! Check your inbox for a confirmation email.",
         )
 
     except Exception as e:
         logger.error(f"Error subscribing to newsletter: {e}")
+        db.rollback()
         raise HTTPException(
             status_code=500,
-            detail="Failed to subscribe. Please try again later."
+            detail="Failed to subscribe. Please try again later.",
         )

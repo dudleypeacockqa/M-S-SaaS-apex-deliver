@@ -26,6 +26,7 @@ from .podcast_usage import PodcastUsage
 
 from .deal_match import DealMatchCriteria, DealMatch, DealMatchAction
 from .blog_post import BlogPost
+from .newsletter_subscription import NewsletterSubscription
 
 __all__ = [
     "User",
@@ -63,4 +64,5 @@ __all__ = [
     "DealMatch",
     "DealMatchAction",
     "BlogPost",
+    "NewsletterSubscription",
 ]

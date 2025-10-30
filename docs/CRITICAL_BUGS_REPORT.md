@@ -14,11 +14,11 @@
 - **TDD Gate:** Add Vitest contract test for the fetch hook and a Playwright regression against seeded posts before shipping fix.
 - **Action:** Re-open ticket DEV-010; rebuild API + seeds, wire frontend to `VITE_API_URL`, add monitor.
 
-### R2. Contact form submissions dropped
-- **Symptom:** `/contact` form only `console.log`s payload; no network request or persistence.
-- **Impact:** High-intent leads lost; sales unable to respond.
-- **TDD Gate:** Vitest form test mocking `fetch` + backend pytest for `/api/marketing/contact`.
-- **Action:** Implement marketing contact endpoint, connect form, add notifications.
+### R2. Contact form submissions dropped *(frontend wired May 2026 — notifications pending)*
+- **Symptom:** `/contact` now posts to `/api/marketing/contact` via the shared API client; backend persists messages. Email/CRM notifications still stubbed.
+- **Impact:** Leads flow into `contact_messages` table; ops still needs notification channel.
+- **TDD Gate:** Vitest form test mocking the contact service + backend pytest for `/api/marketing/contact`.
+- **Action:** Implement SendGrid/CRM background task before removing this from Critical list.
 
 ### R3. Newsletter opt-in fails silently
 - **Symptom:** Exit intent + sticky CTA posts to `/api/marketing/subscribe`; Render responds with SPA HTML and `catch` logs error. UI shows success even on failure.
@@ -32,11 +32,11 @@
 - **TDD Gate:** Vitest fallback avatar test + CI HEAD request check.
 - **Action:** Publish assets to CDN or bundle locally.
 
-### R5. Canonical/OG metadata still references legacy domains *(resolved May 2026)*
-- **Symptom:** SEO helpers previously hardcoded `apexdeliver.com` / `ma-saas-platform.onrender.com`; canonical + OG tags now point to `https://100daysandbeyond.com`.
-- **Impact:** Duplicate indexing eliminated; social previews now correct.
-- **TDD Gate:** Metadata snapshot tests assert host = `100daysandbeyond.com` (landing, pricing, features, about, contact, legal).
-- **Action:** Domain constant centralized; HTML shell + SEO helpers refreshed; keep Lighthouse crawl in release checklist.
+### R5. Canonical/OG metadata still references legacy domains
+- **Symptom:** SEO helpers still hardcode `apexdeliver.com` / `ma-saas-platform.onrender.com`; canonical + OG tags continue to point to legacy hosts.
+- **Impact:** Duplicate indexing persists; social previews remain incorrect.
+- **TDD Gate:** Metadata snapshot tests must assert host = `100daysandbeyond.com` (landing, pricing, features, about, contact, legal).
+- **Action:** Centralize domain constant, refresh HTML shell + SEO helpers, rerun Lighthouse/Search Console crawl.
 
 
 
@@ -142,7 +142,7 @@
 ### Critical Functionality
 - [ ] Blog page displays seeded posts (no "No posts yet" message)
 - [ ] Blog API responds with 200 + JSON payload (network tab + curl)
-- [ ] Contact form posts to marketing endpoint and surfaces success + error states
+- [x] Contact form posts to marketing endpoint and surfaces success + error states
 - [ ] Newsletter opt-in returns 200 and shows confirmation to user
 
 ### Pricing Page

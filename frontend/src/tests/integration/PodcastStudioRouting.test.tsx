@@ -42,6 +42,13 @@ vi.mock("@clerk/clerk-react", () => ({
     isLoaded: mockClerkState.isLoaded,
     user: mockClerkState.user,
   }),
+  useOrganization: () => ({
+    organization: {
+      publicMetadata: { subscription_tier: 'professional' },
+      id: 'org_test456',
+    },
+    isLoaded: true,
+  }),
 }))
 
 // Mock podcast API calls

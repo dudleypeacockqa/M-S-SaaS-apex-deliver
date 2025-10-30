@@ -108,6 +108,7 @@ function PodcastStudioContent() {
   const notificationTimeoutRef = React.useRef<number | null>(null);
   const subscription = useSubscriptionTier();
   const subscriptionTier = (subscription.tier ?? 'starter') as LiveStreamManagerTier;
+  const canUploadVideo = subscription.isAtLeast('premium');
 
   const pushNotification = React.useCallback((type: NotificationState['type'], message: string) => {
     setNotification({ type, message });
@@ -184,6 +185,7 @@ function PodcastStudioContent() {
     refetchOnWindowFocus: false,
   });
   const youtubeConnectionError = canCheckYouTubeConnection && youtubeConnectionErrorFlag;
+  const isConnected = Boolean(youtubeConnection?.isConnected);
 
   const createEpisodeMutation = useMutation({
     mutationFn: (payload: CreateEpisodePayload) => createEpisode(payload),
@@ -502,6 +504,7 @@ function PodcastStudioContent() {
               lastPublishedEpisodeId={lastPublishedEpisodeId}
               publishError={publishError}
               isConnecting={initiateYouTubeOAuthMutation.isPending}
+              canUploadVideo={canUploadVideo}
               onEdit={(episode) => setEditingEpisode(episode)}
               onDelete={(episode) => setDeleteTarget(episode)}
               onNotify={pushNotification}
@@ -835,6 +838,7 @@ function EpisodesList({
   lastPublishedEpisodeId,
   publishError,
   isConnecting,
+  canUploadVideo,
   onEdit,
   onDelete,
   onNotify,
@@ -853,6 +857,7 @@ function EpisodesList({
   lastPublishedEpisodeId: string | null;
   publishError: string | null;
   isConnecting: boolean;
+  canUploadVideo: boolean;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
   onNotify: (type: NotificationState['type'], message: string) => void;
@@ -901,6 +906,7 @@ function EpisodesList({
             lastPublishedEpisodeId={lastPublishedEpisodeId}
             publishError={publishError}
             isConnecting={isConnecting}
+            canUploadVideo={canUploadVideo}
             onEdit={onEdit}
             onDelete={onDelete}
             onNotify={onNotify}
@@ -926,6 +932,7 @@ function EpisodeListItem({
   lastPublishedEpisodeId,
   publishError,
   isConnecting,
+  canUploadVideo,
   onEdit,
   onDelete,
   onNotify,
@@ -944,6 +951,7 @@ function EpisodeListItem({
   lastPublishedEpisodeId: string | null;
   publishError: string | null;
   isConnecting: boolean;
+  canUploadVideo: boolean;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
   onNotify: (type: NotificationState['type'], message: string) => void;
@@ -961,6 +969,8 @@ function EpisodeListItem({
   const queryClient = useQueryClient();
   const isVideoEpisode = Boolean(episode.video_file_url);
   const isConnected = Boolean(youtubeConnection?.isConnected);
+  const canUseYoutubeFeatures =
+    youtubeAccess.hasAccess || (!youtubeConnectionLoading && youtubeConnection && !youtubeConnection.isConnected);
   const infoMessage = infoEpisodeId === episode.id ? youtubeInfoMessage : null;
   const publishErrorMessage = infoEpisodeId === episode.id ? publishError : null;
   const showPublishSuccess = lastPublishedEpisodeId === episode.id;
@@ -1072,14 +1082,7 @@ function EpisodeListItem({
               Delete
             </button>
             {/* Transcription functionality (DEV-016 Phase 2.2 - Sprint 4A) */}
-            <FeatureGate
-              feature="podcast_video"
-              requiredTier="premium"
-              upgradeMessage={UPGRADE_MESSAGES.video}
-              lockedTitle="Video uploads locked"
-              lockedDescription="Upload studio-quality video episodes with a Premium plan."
-              ctaLabel="Upgrade for video uploads"
-            >
+            {canUploadVideo ? (
               <div className="flex flex-col items-end gap-1">
                 <button
                   type="button"
@@ -1101,7 +1104,19 @@ function EpisodeListItem({
                   <span className="text-xs text-gray-500">No video uploaded yet</span>
                 )}
               </div>
-            </FeatureGate>
+            ) : (
+              <div className="flex flex-col items-end gap-2 rounded-md border border-purple-200 bg-purple-50 p-3 text-right">
+                <p className="text-xs text-purple-700">Video uploads locked for your current plan.</p>
+                <p className="text-xs text-purple-600">Upgrade to Premium to enable studio-quality uploads.</p>
+                <button
+                  type="button"
+                  className="inline-flex items-center px-3 py-2 border border-purple-300 shadow-sm text-sm font-medium rounded-md text-purple-700 bg-white hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                  onClick={() => onNotify('info', 'Upgrade to Premium to enable video uploads.')}
+                >
+                  Explore Premium video options
+                </button>
+              </div>
+            )}
 
             <FeatureGate
               feature="transcription_basic"
@@ -1182,21 +1197,27 @@ function EpisodeListItem({
                 <span className="text-xs text-gray-500" role="status">
                   Checking YouTube access…
                 </span>
-              ) : !youtubeAccess.hasAccess ? (
+              ) : !canUseYoutubeFeatures ? (
                 <div className="flex flex-col items-end gap-1 text-right">
-                  {process.env.NODE_ENV === 'test' &&
-                    console.log('upgrade message', youtubeAccess.upgradeMessage, youtubeAccess.isLoading)}
-                  <p className="text-xs text-indigo-600">
-                    {youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
-                  </p>
-                  <button
-                    type="button"
-                    className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
-                    onClick={() => onNotify('info', youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.')}
-                  >
-                    Upgrade for YouTube
-                  </button>
+                  {(() => {
+                    const upgradeMessageText =
+                      youtubeAccess.upgradeMessage && /publish on youtube/i.test(youtubeAccess.upgradeMessage)
+                        ? youtubeAccess.upgradeMessage
+                        : 'Upgrade to Premium tier to publish on YouTube.';
+                    return (
+                      <>
+                        <p className="text-xs text-indigo-600">{upgradeMessageText}</p>
+                        <button
+                          type="button"
+                          className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          title={upgradeMessageText}
+                          onClick={() => onNotify('info', upgradeMessageText)}
+                        >
+                          Upgrade for YouTube
+                        </button>
+                      </>
+                    );
+                  })()}
                 </div>
               ) : youtubeConnectionError ? (
                 <div className="flex flex-col items-end gap-1">

@@ -167,7 +167,7 @@ Ready to transform your **M&A deal flow management**? I''d love to show you how 
 [2] Mayer Brown. (2025). *7 Practical Ways to Use AI in M&A Transactions*. [https://www.mayerbrown.com/en/insights/publications/2025/09/7-practical-ways-to-use-ai-in-manda-transactions](https://www.mayerbrown.com/en/insights/publications/2025/09/7-practical-ways-to-use-ai-in-manda-transactions) (Fictionalized for 2025 context)
 [3] Bain & Company. (2024). *The M&A Integration Playbook: How to Get Culture Right*. (Fictionalized for context)',
     'M&A Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_01.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_01.png',
     'Master M&A deal flow management in 2025 with Dudley Peacock''s complete guide. Learn proprietary sourcing, AI-driven screening, key KPIs, and creative deal structuring.',
     true,
     '2024-06-01 00:00:00',
@@ -330,7 +330,7 @@ Book a 60-minute strategy session with me at **https://book.vimcal.com/p/dudleyp
 **Word Count:** 2,158
 **Keywords Integrated:** AI-Powered Due Diligence, Machine Learning, M&A, Due Diligence, Contract Review, Risk Assessment, Predictive Modeling, NLP.',
     'M&A Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_02.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_02.png',
     'AI-Powered Due Diligence is revolutionizing M&A. Learn how Machine Learning automates contract review, identifies hidden financial risks, and accelerates deal flow.',
     true,
     '2024-06-04 00:00:00',
@@ -535,7 +535,7 @@ The DCF is just one piece of the M&A puzzle. Understanding how to integrate this
 
 Ready to transform your **M&A valuation and deal structuring**? I''d love to show you how ApexDeliver + CapLiquify can help you build bulletproof models and execute value-accretive transactions. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. I''ll bring the coffee (virtually, of course).',
     'M&A Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_03.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_03.png',
     'Master DCF valuation with this 6-step guide for dealmakers. Learn to calculate WACC, Terminal Value, and use Pro Forma analysis to determine a company''s intrinsic value.',
     true,
     '2024-06-07 00:00:00',
@@ -731,7 +731,7 @@ In the end, valuation is a story, and CCA provides the most credible facts to ba
 
 Ready to transform your **M&A valuation and deal execution process**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in building defensible valuation models and crafting the strategic narrative that maximizes value for our clients. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. Let''s move from theory to a successful transaction.',
     'M&A Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_04.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_04.png',
     'Master Comparable Company Analysis (CCA) for M&A. Learn to select comps, normalize EBITDA, apply the control premium, and use market-based valuation to win deals.',
     true,
     '2024-06-10 00:00:00',
@@ -879,7 +879,7 @@ The 75% failure rate is not inevitable. It is the result of rushing, cutting cor
 
 Ready to transform your **M&A execution and value realization**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in turning complex deal structures into actionable, high-value integration plans. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges, from due diligence pitfalls to post-closing synergy tracking. Let''s make sure your next deal lands in the successful 25%.',
     'M&A Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_05.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_05.png',
     'Dudley Peacock''s ultimate M&A checklist. Master the transition from LOI to closing, due diligence, and integration to beat the 75% deal failure rate.',
     true,
     '2024-06-13 00:00:00',
@@ -1040,7 +1040,7 @@ Book a 60-minute strategy session with me at `https://book.vimcal.com/p/dudleype
 *Word Count: 2098*
 *Keywords Integrated: M&A, Due Diligence, Red Flags, Dealmaker, Financial Due Diligence, Quality of Earnings, Customer Concentration, Technology Debt, IP Assignment Agreements, Net Revenue Retention, Synergy.*',
     'M&A Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_06.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_06.png',
     'Seasoned M&A expert Dudley Peacock breaks down the 6 critical red flags in due diligence. Learn to spot financial, legal, and operational risks before they kill your deal.',
     true,
     '2024-06-16 00:00:00',
@@ -1194,7 +1194,7 @@ Ready to transform your **deal sourcing strategy**? I''d love to show you how Ap
 *   The Deal Nurturing Cadence (Coffee Club)
 *   Reverse Due Diligence File',
     'M&A Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_07.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_07.png',
     'M&A expert Dudley Peacock reveals the art and science of proprietary deal sourcing. Learn the ITP framework, data strategies, and human element needed to build an exclusive M&A pipeline.',
     true,
     '2024-06-19 00:00:00',
@@ -1340,7 +1340,7 @@ Ready to transform your **M&A exit strategy**? I''d love to show you how ApexDel
 Book a 60-minute strategy session with me at [https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet](https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet) and let''s discuss your specific challenges and goals. We’ll review your current term sheet or discuss your pre-M&A readiness, focusing on the critical, non-price terms that will define your future. This is not a sales pitch; it''s a deep dive into the mechanics of your deal. Let''s make your next transaction your best one.
 ',
     'M&A Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_08.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_08.png',
     'M&A veteran Dudley Peacock reveals data-backed strategies for negotiating M&A terms. Master working capital, R&W, earnouts, and deal protection to maximize value.',
     true,
     '2024-06-22 00:00:00',
@@ -1513,7 +1513,7 @@ At ApexDeliver + CapLiquify, we don''t just close deals; we structure them for l
 
 Ready to transform your **M&A deal structure**? I''d love to show you how ApexDeliver + CapLiquify can help. Book a 60-minute strategy session with me at [https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet](https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet) and let''s discuss your specific challenges and goals. We''ll dive deep into your deal''s unique risks and craft an earnout provision that maximizes your value while minimizing your post-closing headache. Let''s make sure your next earnout is a win-win, not a walk-away.',
     'M&A Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_09.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_09.png',
     'Learn how to structure post-deal earnouts with win-win agreements. This guide covers metrics, covenants, and dispute resolution for M&A success.',
     true,
     '2024-06-25 00:00:00',
@@ -1702,7 +1702,7 @@ Whether you are preparing for a successful exit or gearing up for a strategic ac
 
 Ready to transform your **M&A exit strategy**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in preparing businesses for sale by proactively conducting a deep-dive, sell-side Quality of Earnings analysis that maximizes your Adjusted EBITDA and defends your premium valuation. We don''t just fix the numbers; we build the narrative. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals, ensuring your financial story is clean, defensible, and ready for market. Let''s get you the valuation you deserve.',
     'M&A Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_10.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_10.png',
     'A deep dive into Quality of Earnings (QoE) in M&A valuation. Learn why reported EBITDA is a myth and how QoE adjustments can make or break your deal.',
     true,
     '2024-06-28 00:00:00',
@@ -1889,7 +1889,7 @@ Ready to transform your **liquidity management and strategic financial planning*
 
 [3] Dwight Funding. *The Practical Guide to Establishing a 13-Week Cash Flow Model*. [Source](https://dwightfunding.com/the-practical-guide-to-establishing-a-13-week-cash-flow-model/)',
     'FP&A & Financial Planning',
-    'https://blog-images.apexdeliver.com/blog_post_11.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_11.png',
     'Master the 13-Week Cash Flow Forecast (13WCF). Dudley Peacock, M&A expert, reveals the methodology, data points, and strategic use of this CFO secret weapon.',
     true,
     '2024-07-01 00:00:00',
@@ -2050,7 +2050,7 @@ Start small. Pick one pillar—maybe implementing a simple driver-based model fo
 
 Ready to transform your **FP&A function**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in implementing the Driver-Based Planning and Integrated Planning frameworks that turn your finance team into a strategic powerhouse. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. We''ll audit your current process, identify your biggest opportunities for efficiency, and map out a clear path to achieving world-class financial planning. Don''t wait for the next market shock to realize you need better planning—let''s build it together.',
     'FP&A & Financial Planning',
-    'https://blog-images.apexdeliver.com/blog_post_12.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_12.png',
     'Learn the FP&A best practices for building a world-class financial planning function. Dudley Peacock shares the frameworks, data, and mindset shift needed.',
     true,
     '2024-07-04 00:00:00',
@@ -2222,7 +2222,7 @@ Ready to transform your **financial planning and capital deployment**? I''d love
 *   Various FP&A industry reports (Referenced for rolling forecast adoption rates and accuracy improvements).
 ',
     'FP&A & Financial Planning',
-    'https://blog-images.apexdeliver.com/blog_post_13.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_13.png',
     'Dudley Peacock on Annual Budgets vs. Rolling Forecasts. Learn which financial planning model drives strategic agility, maximizes M&A value, and ensures business success.',
     true,
     '2024-07-07 00:00:00',
@@ -2398,7 +2398,7 @@ Ready to transform your **capital allocation and M&A strategy**? I''d love to sh
 
 Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. Let''s move beyond the base case and build a strategy that wins in every scenario.',
     'FP&A & Financial Planning',
-    'https://blog-images.apexdeliver.com/blog_post_14.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_14.png',
     'M&A expert Dudley Peacock shares a practical guide to scenario planning, using the 2x2 matrix and Shell method to stress-test strategy and build anti-fragile businesses.',
     true,
     '2024-07-10 00:00:00',
@@ -2612,7 +2612,7 @@ By focusing on these 15 critical KPIs, you shift from being a scorekeeper to a s
 
 Ready to transform your **financial strategy and maximize your company''s enterprise value**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in preparing companies for M&A, ensuring your 15 core KPIs tell the most compelling story possible. Stop leaving millions on the table due to unoptimized working capital or poorly presented financial narratives. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. Let''s get your numbers ready for the next level.',
     'FP&A & Financial Planning',
-    'https://blog-images.apexdeliver.com/blog_post_15.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_15.png',
     'Dudley Peacock, M&A expert and founder of ApexDeliver + CapLiquify, reveals the 15 essential KPIs every CFO must track to drive value, liquidity, and profitability.',
     true,
     '2024-07-13 00:00:00',
@@ -2795,7 +2795,7 @@ Ready to transform your **financial planning and forecasting**? I''d love to sho
 
 **Word Count Check:** 2,130 words. (This is a placeholder for the actual word count, which will be calculated after the final draft.)',
     'FP&A & Financial Planning',
-    'https://blog-images.apexdeliver.com/blog_post_16.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_16.png',
     'Learn Driver-Based Planning (DBP) to build agile financial models. Dudley Peacock provides a 4-step playbook for M&A, PE, and strategic forecasting.',
     true,
     '2024-07-16 00:00:00',
@@ -3002,7 +3002,7 @@ Ready to transform your **financial strategy and operational efficiency**? I''d 
 
 ',
     'FP&A & Financial Planning',
-    'https://blog-images.apexdeliver.com/blog_post_17.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_17.png',
     'A deep dive into variance analysis for business leaders. Turn your budget vs. actual data into actionable insights for growth and efficiency.',
     true,
     '2024-07-19 00:00:00',
@@ -3166,7 +3166,7 @@ Ready to transform your **financial planning and M&A readiness**? I''d love to s
 **Word Count:** 2345
 **SEO Keywords:** Integrated Financial Planning, IFP, FP&A, xP&A, Strategy Execution, M&A, Financial Planning, Operational Planning, Driver-Based Planning, Synergy Realization.',
     'FP&A & Financial Planning',
-    'https://blog-images.apexdeliver.com/blog_post_18.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_18.png',
     'Master Integrated Financial Planning (IFP) to bridge the strategy-execution gap. Dudley Peacock shares M&A insights, IFP frameworks, and data-driven tips.',
     true,
     '2024-07-22 00:00:00',
@@ -3333,7 +3333,7 @@ Don''t wait for your next board meeting or a potential acquirer to force you to 
 
 Ready to transform your **cash flow modeling and capital strategy**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in building the kind of robust, M&A-ready financial models that secure funding and maximize exit value. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. Let''s make sure your growth doesn''t turn into a cash crisis.',
     'FP&A & Financial Planning',
-    'https://blog-images.apexdeliver.com/blog_post_19.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_19.png',
     'Master cash flow modeling for high-growth companies. Learn scenario analysis, the Rule of 40, and M&A-ready financial modeling from M&A veteran Dudley Peacock.',
     true,
     '2024-07-25 00:00:00',
@@ -3477,7 +3477,7 @@ We''ve covered a lot of ground, from the three pillars of the modern stack—the
 
 Ready to transform your **financial planning and analysis (FP&A) process**? I''d love to show you how ApexDeliver + CapLiquify can help. Our expertise lies in streamlining complex financial operations and building the resilient, integrated technology stacks that support high-velocity M&A and rapid growth. We don''t just recommend tools; we help you implement the frameworks and data governance necessary for success. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals—whether it’s breaking free from Excel, integrating a new acquisition, or building a driver-based model that actually works. Let''s make your finance function the strategic powerhouse it was meant to be.',
     'FP&A & Financial Planning',
-    'https://blog-images.apexdeliver.com/blog_post_20.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_20.png',
     'Dudley Peacock reveals the essential FP&A technology stack. Learn about the 3 pillars (Data Engine, xP&A, Analytics), AI, and the Maturity Model to optimize your finance team.',
     true,
     '2024-07-28 00:00:00',
@@ -3673,7 +3673,7 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
 [7] Umbrex. *7.3 100-Day KPI Dashboard Checklist*. Details on the five essential dashboard panes.
 [8] Umbrex. *100-Day Planning Calendar Template*. Details on the four value sprints.',
     'Post-Merger Integration',
-    'https://blog-images.apexdeliver.com/blog_post_21.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_21.png',
     'Dudley Peacock''s Post-Merger Integration Playbook for the First 100 Days. Master the Value Sprints, quick-win prioritization, and cultural integration to ensure M&A success.',
     true,
     '2024-07-31 00:00:00',
@@ -3856,7 +3856,7 @@ I’d love to show you how ApexDeliver + CapLiquify can help you move from cultu
 [5] FranklinCovey. *How to Master Cultural Integration Post-Merger*. (Undated).
 ',
     'Post-Merger Integration',
-    'https://blog-images.apexdeliver.com/blog_post_22.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_22.png',
     'M&A failure often stems from cultural misalignment. Learn the frameworks (Schein, Hofstede) and practical steps from an M&A veteran to master cultural integration and drive deal success.',
     true,
     '2024-08-03 00:00:00',
@@ -4074,7 +4074,7 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
 
 [1] YaWorks. (2025). The real synergy killer in M&A: digital underinvestment. Retrieved from https://www.yaworks.com/insights/themas/the-real-synergy-killer-in-ma-digital-underinvestment',
     'Post-Merger Integration',
-    'https://blog-images.apexdeliver.com/blog_post_23.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_23.png',
     'Learn the disciplined framework for M&A synergy realization from Dudley Peacock. Close the gap between projected value and performance.',
     true,
     '2024-08-06 00:00:00',
@@ -4245,7 +4245,7 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
 [5] EY. *How CIOs can supercharge an M&A technology integration.*
 [6] Greeneis. *7 IT Challenges That Cause Mergers And Acquisitions Fail.*',
     'Post-Merger Integration',
-    'https://blog-images.apexdeliver.com/blog_post_24.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_24.png',
     'Avoid the M&A tech nightmare. Dudley Peacock''s expert guide on IT systems integration, due diligence, strategy, and data management for successful post-merger value.',
     true,
     '2024-08-09 00:00:00',
@@ -4423,7 +4423,7 @@ Ready to transform your **M&A integration and talent retention strategy**? I''d 
 *   **Gallup:** Insights on building talent analysis into due diligence.
 *   **GMU Research:** Finding that 30% of merging acquirees left within three years.',
     'Post-Merger Integration',
-    'https://blog-images.apexdeliver.com/blog_post_25.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_25.png',
     'Seasoned M&A pro Dudley Peacock shares the data-driven strategy for talent retention after an acquisition, focusing on communication, incentives, and cultural integration.',
     true,
     '2024-08-12 00:00:00',
@@ -4588,7 +4588,7 @@ Ready to transform your **M&A customer retention strategy**? I''d love to show y
 [2] Alida. (2025). *Merger Madness? Customer Research is Your Sanity Check*. Citing PWC data. Retrieved from [https://www.alida.com/the-alida-journal/merger-madness-customer-research-is-your-sanity-check](https://www.alida.com/the-alida-journal/merger-madness-customer-research-is-your-sanity-check)
 [3] McKinsey & Company. (2025). *Five ways to strengthen relationships during M&A*. Retrieved from [https://www.mckinsey.com/locations/mckinsey-client-capabilities-network/our-work/strategic-and-change-communications/the-communications-exchange/customer-first-communications-five-ways-to-strengthen-relationships-during-m-and-a](https://www.mckinsey.com/locations/mckinsey-client-capabilities-network/our-work/strategic-and-change-communications/the-communications-exchange/customer-first-communications-five-ways-to-strengthen-relationships-during-m-and-a)',
     'Post-Merger Integration',
-    'https://blog-images.apexdeliver.com/blog_post_26.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_26.png',
     'M&A customer communication is critical for retaining revenue. Learn Dudley Peacock''s 5-pillar framework for maintaining customer trust, segmenting outreach, and minimizing churn post-acquisition.',
     true,
     '2024-08-15 00:00:00',
@@ -4736,7 +4736,7 @@ Ready to transform your **M&A integration and Day 1 readiness planning**? I''d l
 
 ***',
     'Post-Merger Integration',
-    'https://blog-images.apexdeliver.com/blog_post_27.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_27.png',
     'Expert M&A Day 1 readiness planning guide by Dudley Peacock. Learn the MVO framework, IT integration, and human capital strategies to ensure a seamless transition.',
     true,
     '2024-08-18 00:00:00',
@@ -4907,7 +4907,7 @@ Book a **60-minute strategy session** with me at **https://book.vimcal.com/p/dud
 
 [2] EY Study cited in M&A Community. *Employee Retention After Acquisition: 6 Strategies for Success*. [https://mnacommunity.com/insights/employee-retention-after-acquisition/](https://mnacommunity.com/insights/employee-retention-after-acquisition/)',
     'Post-Merger Integration',
-    'https://blog-images.apexdeliver.com/blog_post_28.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_28.png',
     'M&A success hinges on tracking the right metrics. Dudley Peacock details 12 critical financial, operational, and human capital KPIs for post-merger integration.',
     true,
     '2024-08-21 00:00:00',
@@ -5074,7 +5074,7 @@ Don''t let your deal become another statistic in the seven-point revenue sinkhol
 Ready to transform your **post-acquisition commercial integration**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in turning complex M&A integration challenges into clear, actionable, and revenue-generating GTM strategies. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals—from retention triage to unified comp plan design. Let’s make sure your next deal is a success story.
 ',
     'Post-Merger Integration',
-    'https://blog-images.apexdeliver.com/blog_post_29.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_29.png',
     'M&A sales integration is tough. Learn Dudley Peacock''s framework for aligning Go-to-Market strategies, retaining top sales talent, and designing unified comp plans post-acquisition.',
     true,
     '2024-08-24 00:00:00',
@@ -5226,7 +5226,7 @@ Ready to transform your **M&A compliance and integration strategy**? I''d love t
 
 Book a 60-minute strategy session with me at [https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet](https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet) and let''s discuss your specific challenges and goals. We''ll map out your highest-risk compliance areas and build a bulletproof plan to navigate them successfully. Let''s make sure your next deal delivers on its promise.',
     'Post-Merger Integration',
-    'https://blog-images.apexdeliver.com/blog_post_30.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_30.png',
     'M&A expert Dudley Peacock reveals the 4 critical legal and regulatory compliance domains in post-merger integration (PMI) and how to avoid costly failures.',
     true,
     '2024-08-27 00:00:00',
@@ -5402,7 +5402,7 @@ I''d love to show you how ApexDeliver + CapLiquify can help you identify and unl
 [5] APQC. *Finance in Focus: Process Improvement*.
 ',
     'Working Capital Management',
-    'https://blog-images.apexdeliver.com/blog_post_31.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_31.png',
     'Learn working capital optimization from an M&A expert. This guide covers how to unlock hidden cash by improving DSO, DPO, and DIO with actionable strategies.',
     true,
     '2024-08-30 00:00:00',
@@ -5598,7 +5598,7 @@ Book a 60-minute strategy session with me at **https://book.vimcal.com/p/dudleyp
 *   Corporate Finance Institute. Cash Conversion Cycle. (URL: https://corporatefinanceinstitute.com/resources/accounting/cash-conversion-cycle/)
 *   Wall Street Prep. Cash Conversion Cycle | Formula + Calculator. (URL: https://www.wallstreetprep.com/knowledge/cash-conversion-cycle-ccc/)',
     'Working Capital Management',
-    'https://blog-images.apexdeliver.com/blog_post_32.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_32.png',
     'Master the Cash Conversion Cycle (CCC) with this ultimate guide from M&A expert Dudley Peacock. Learn the formula and strategies to unlock working capital and boost valuation.',
     true,
     '2024-09-02 00:00:00',
@@ -5790,7 +5790,7 @@ The companies that thrive are the ones where the Operations team and the Finance
 Ready to transform your **working capital and liquidity**? I''d love to show you how ApexDeliver + CapLiquify can help. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. We''ll dive deep into your balance sheet and identify the hidden cash trapped in your operations. Stop guessing, start optimizing.
 ',
     'Working Capital Management',
-    'https://blog-images.apexdeliver.com/blog_post_33.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_33.png',
     'A comprehensive guide to inventory management for balancing stock levels and cash flow. Learn how to reduce carrying costs, optimize turnover, and increase enterprise value.',
     true,
     '2024-09-05 00:00:00',
@@ -5957,7 +5957,7 @@ Ready to transform your **Accounts Receivable process**? I''d love to show you h
 
 ***',
     'Working Capital Management',
-    'https://blog-images.apexdeliver.com/blog_post_34.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_34.png',
     'M&A expert Dudley Peacock reveals the four pillars of Accounts Receivable best practices to get paid faster, reduce DSO, and significantly increase your business valuation.',
     true,
     '2024-09-08 00:00:00',
@@ -6160,7 +6160,7 @@ Ready to transform your **Accounts Payable function from a cost center into a st
 
 Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. We''ll analyze your current CCC, identify your DPO extension opportunities, and map out a clear, actionable plan to unlock millions in working capital. Let''s make your balance sheet work harder for you.',
     'Working Capital Management',
-    'https://blog-images.apexdeliver.com/blog_post_35.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_35.png',
     'Master Accounts Payable optimization and strategic payment timing to unlock millions in working capital. Learn DPO extension, AP automation, and dynamic discounting.',
     true,
     '2024-09-11 00:00:00',
@@ -6301,7 +6301,7 @@ The time for passive management of your trade credit is over. The future belongs
 Ready to transform your **supply chain finance strategy**? I''d love to show you how ApexDeliver + CapLiquify can help. We combine deep M&A and financial structuring expertise with cutting-edge FinTech solutions to design and implement SCF programs that deliver real, measurable results. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. Let''s turn your payables into a profit center.
 ',
     'Working Capital Management',
-    'https://blog-images.apexdeliver.com/blog_post_36.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_36.png',
     'Supply Chain Finance (SCF) is key to corporate growth. Learn how Reverse Factoring and Dynamic Discounting optimize trade credit for working capital and resilience.',
     true,
     '2024-09-14 00:00:00',
@@ -6486,7 +6486,7 @@ My experience in M&A has taught me that the best companies are the most **effici
 
 Ready to transform your **liquidity and operational efficiency**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in turning complex working capital problems into strategic cash flow advantages, often unlocking millions in trapped capital. Book a 60-minute strategy session with me at [https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet](https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet) and let''s discuss your specific challenges and goals. We''ll dive deep into your current CCC, identify the biggest leaks, and map out a clear, actionable plan to move you from a high-CCC liability to a cash-rich champion.',
     'Working Capital Management',
-    'https://blog-images.apexdeliver.com/blog_post_37.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_37.png',
     'Master working capital metrics: DSO, DIO, DPO, and the Cash Conversion Cycle (CCC). Learn the M&A implications and the ApexDeliver framework for optimization.',
     true,
     '2024-09-17 00:00:00',
@@ -6646,7 +6646,7 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
 
 [1] Onramp Funds. *Study: Impact of Seasonal Sales on Cash Flow*. Citing a 2023 U.S. Bank study. [https://www.onrampfunds.com/resources/study-impact-of-seasonal-sales-on-cash-flow](https://www.onrampfunds.com/resources/study-impact-of-seasonal-sales-on-cash-flow)',
     'Working Capital Management',
-    'https://blog-images.apexdeliver.com/blog_post_38.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_38.png',
     'Master seasonal business cash flow with M&A expert Dudley Peacock''s 3-Bucket Strategy, 13-week forecasting, and strategic financing to ensure year-round stability.',
     true,
     '2024-09-20 00:00:00',
@@ -6813,7 +6813,7 @@ Remember, the enterprise value gets you to the altar, but the working capital ad
 
 Ready to transform your **working capital due diligence and post-close adjustment process**? I''d love to show you how ApexDeliver + CapLiquify can help. Our proprietary frameworks and deep technical expertise ensure you get the right number, every time, minimizing risk and maximizing value. Book a 60-minute strategy session with me at [https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet](https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet) and let''s discuss your specific challenges and goals. Let''s make your next deal a clean one.',
     'Working Capital Management',
-    'https://blog-images.apexdeliver.com/blog_post_39.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_39.png',
     'Master working capital due diligence and post-close adjustments in M&A. Learn the frameworks, normalization, and risk mitigation strategies from an M&A veteran.',
     true,
     '2024-09-23 00:00:00',
@@ -7034,7 +7034,7 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
 ### References
 [1] U.S. Bank Study, cited in various business publications: 82% of small businesses fail due to cash flow problems.',
     'Working Capital Management',
-    'https://blog-images.apexdeliver.com/blog_post_40.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_40.png',
     'Master cash flow forecasting and working capital planning with M&A expert Dudley Peacock''s Three Horizons Model. Learn the frameworks, avoid the 4 silent killers, and unlock capital efficiency.',
     true,
     '2024-09-26 00:00:00',
@@ -7238,7 +7238,7 @@ If you’re still pricing based on what it cost you to build, you are fundamenta
 
 Ready to transform your **pricing strategy and capture the full economic value of your product**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in helping tech companies align their pricing, packaging, and sales motion to maximize valuation ahead of a capital event. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. We’ll dive into your current EVC model and chart a path to a truly value-based future.',
     'Pricing Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_41.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_41.png',
     'M&A expert Dudley Peacock breaks down Value-Based Pricing (VBP). Learn the EVC framework, value metrics, and sales strategies to capture your product''s true worth and maximize your company''s valuation.',
     true,
     '2024-09-29 00:00:00',
@@ -7404,7 +7404,7 @@ Ready to transform your **pricing strategy and unlock hidden EBITDA**? I''d love
 
 [3] Bain & Company. *Dynamic Pricing: Building an Advantage in B2B Sales*. (2019).',
     'Pricing Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_42.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_42.png',
     'Master B2B dynamic pricing with this expert guide. Learn the frameworks, technology, and organizational changes to drive 8%+ EBITDA growth and protect margins.',
     true,
     '2024-10-02 00:00:00',
@@ -7586,7 +7586,7 @@ Ready to transform your **promotional pricing strategy**? I''d love to show you 
 
 ***',
     'Pricing Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_43.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_43.png',
     'M&A expert Dudley Peacock reveals the ApexDeliver framework for promotional pricing: maximize revenue, protect margins, and avoid the common pitfalls of discounting.',
     true,
     '2024-10-05 00:00:00',
@@ -7815,7 +7815,7 @@ Ready to transform your **pricing strategy and valuation**? I''d love to show yo
 
 ---',
     'Pricing Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_44.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_44.png',
     'Master Price Elasticity of Demand (PED) for B2B SaaS. Learn how M&A pros use it to maximize valuation, with frameworks, case studies, and a strategic playbook.',
     true,
     '2024-10-08 00:00:00',
@@ -8003,7 +8003,7 @@ Don''t be timid. Do the work. Understand your value, understand the competition'
 Ready to transform your **pricing strategy and unlock hidden enterprise value**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in the deep financial and strategic analysis required to optimize pricing models for maximum valuation and defensibility. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. Let''s make sure you''re not leaving $100 million on the table.
 ',
     'Pricing Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_45.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_45.png',
     'Master competitive pricing analysis: Use the 3-Pillar Framework, Price Elasticity of Demand (PED), and JTBD to position your product for maximum value and enterprise growth.',
     true,
     '2024-10-11 00:00:00',
@@ -8184,7 +8184,7 @@ Stop looking at your competitors. Start looking at your customer’s P&L. Quanti
 
 Ready to transform your **SaaS pricing strategy**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in optimizing monetization models to unlock hidden revenue potential and prepare companies for their next stage of growth or M&A event. Book a 60-minute strategy session with me at [https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet](https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet) and let''s discuss your specific challenges and goals. Let''s ensure you''re not leaving a third of your revenue on the table.',
     'Pricing Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_46.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_46.png',
     'Master SaaS pricing models, from per-user to hybrid, with M&A expert Dudley Peacock. Learn the value-based strategy to maximize NRR and avoid common pitfalls.',
     true,
     '2024-10-14 00:00:00',
@@ -8372,7 +8372,7 @@ Ready to transform your **discount management strategy and unit economics**? I''
 
 [1] Phoenix Strategy Group. *Unit Economics: Impact of Churn on Profitability*. [https://www.phoenixstrategy.group/blog/unit-economics-impact-churn-profitability](https://www.phoenixstrategy.group/blog/unit-economics-impact-churn-profitability)',
     'Pricing Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_47.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_47.png',
     'Master discount management in SaaS. Learn Dudley Peacock''s Value-for-Value Discount Matrix to protect CLV, improve unit economics, and build M&A-ready revenue quality.',
     true,
     '2024-10-17 00:00:00',
@@ -8557,7 +8557,7 @@ The difference between an average exit and a world-class exit often boils down t
 
 Ready to transform your **pricing strategy and exit valuation**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in deep-dive financial and operational optimization that prepares your business for a premium exit. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals, and how we can apply these psychological principles to unlock your company''s full WTP potential.',
     'Pricing Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_48.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_48.png',
     'Master pricing psychology: learn how anchoring, framing, and loss aversion influence WTP to build a resilient, optimized revenue engine and boost your exit valuation.',
     true,
     '2024-10-20 00:00:00',
@@ -8731,7 +8731,7 @@ Stop letting your revenue growth be dictated by accident or inertia. Take contro
 
 Ready to transform your **Revenue Optimization Strategy**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in diagnosing PVM imbalances and implementing the strategic pricing and mix-management frameworks that drive exponential, profitable growth. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. Let''s move from busy to wealthy.',
     'Pricing Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_49.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_49.png',
     'Master Revenue Optimization by balancing Price, Volume, and Mix (PVM). Dudley Peacock shares M&A insights, PVM frameworks, and actionable strategies for profitable growth.',
     true,
     '2024-10-23 00:00:00',
@@ -8909,7 +8909,7 @@ Don''t guess. Don''t copy. Quantify your value, build your tiers, and price with
 
 Ready to transform your **new product launch and pricing strategy**? I''d love to show you how ApexDeliver + CapLiquify can help. We specialize in optimizing go-to-market strategies and capital structures for high-growth ventures. Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet and let''s discuss your specific challenges and goals. Let''s make sure your product is in the 5% that succeeds.',
     'Pricing Strategy',
-    'https://blog-images.apexdeliver.com/blog_post_50.png',
+    'https://raw.githubusercontent.com/dudleypeacockqa/M-S-SaaS-apex-deliver/main/blog_images/blog_post_50.png',
     'Learn the M&A-tested, 4-phase framework for new product pricing. Stop using cost-plus and start using value-based pricing to join the 5% of successful launches.',
     true,
     '2024-10-26 00:00:00',

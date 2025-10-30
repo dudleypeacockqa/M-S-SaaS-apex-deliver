@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
+import { submitContactForm } from '../../services/contactService';
 
 export const ContactPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -27,26 +28,17 @@ export const ContactPage: React.FC = () => {
     setError(null);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://ma-saas-backend.onrender.com';
-      const response = await fetch(`${apiUrl}/api/marketing/contact`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          company: formData.subject, // Use subject as company field
-          message: formData.message,
-        }),
+      const response = await submitContactForm({
+        name: formData.name,
+        email: formData.email,
+        company: formData.subject === 'general' ? undefined : formData.subject,
+        message: formData.message,
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to submit contact form');
+      if (!response.success) {
+        throw new Error('Contact submission failed');
       }
 
-      const data = await response.json();
-      console.log('Contact form submitted successfully:', data);
       setSubmitted(true);
     } catch (err) {
       console.error('Error submitting contact form:', err);

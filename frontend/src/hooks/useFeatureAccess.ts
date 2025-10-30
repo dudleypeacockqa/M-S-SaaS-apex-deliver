@@ -37,6 +37,10 @@ export const useFeatureAccess = ({ feature, enabled = true }: FeatureAccessOptio
     queryFn: () => checkFeatureAccess(feature),
   });
 
+  if (process.env.NODE_ENV === 'test') {
+    console.log('useFeatureAccess result', feature, query.data);
+  }
+
   return useMemo<FeatureAccessState>(
     () => ({
       feature,

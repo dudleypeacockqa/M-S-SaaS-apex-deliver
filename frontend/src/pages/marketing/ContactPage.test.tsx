@@ -1,9 +1,16 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BrowserRouter } from 'react-router-dom'
 
+vi.mock('../../services/contactService', () => ({
+  submitContactForm: vi.fn(),
+}))
+
+import { submitContactForm } from '../../services/contactService'
 import { ContactPage } from './ContactPage'
+
+const mockedSubmitContactForm = submitContactForm as unknown as vi.Mock
 
 const renderContact = () => render(<BrowserRouter><ContactPage /></BrowserRouter>)
 
@@ -12,6 +19,8 @@ describe('ContactPage', () => {
     document.title = ''
     document.head.innerHTML = ''
     document.body.innerHTML = ''
+    mockedSubmitContactForm.mockReset()
+    mockedSubmitContactForm.mockResolvedValue({ success: true, message: 'ok', id: 1 })
   })
 
   it('renders header, contact form, and information sections', () => {
@@ -46,9 +55,25 @@ describe('ContactPage', () => {
 
     await user.click(screen.getByRole('button', { name: /send message/i }))
 
+    expect(mockedSubmitContactForm).toHaveBeenCalledTimes(1)
     expect(screen.getByText(/message sent/i)).toBeInTheDocument()
     expect(container.querySelector('form')).not.toBeInTheDocument()
   }, 15000)
+
+  it('shows error state when submission fails', async () => {
+    mockedSubmitContactForm.mockRejectedValueOnce(new Error('Network error'))
+
+    renderContact()
+    const user = userEvent.setup()
+
+    await user.type(screen.getByLabelText(/name/i), 'Jane Doe')
+    await user.type(screen.getByLabelText(/email/i), 'jane@example.com')
+    await user.type(screen.getByLabelText(/message/i), 'This message should fail.')
+
+    await user.click(screen.getByRole('button', { name: /send message/i }))
+
+    expect(await screen.findByText(/Failed to send message/i)).toBeInTheDocument()
+  })
 
   it('defines canonical and og:url metadata for the contact domain path', () => {
     renderContact()
