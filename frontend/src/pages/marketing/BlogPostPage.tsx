@@ -5,6 +5,7 @@ import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { CTASection } from '../../components/marketing/CTASection';
 import { createBlogPostSchema } from '../../utils/schemas/blogPostSchema';
+import { OptimizedImage } from '../../components/common/OptimizedImage';
 
 interface BlogPost {
   id: number;
@@ -141,10 +142,14 @@ export const BlogPostPage: React.FC = () => {
         {/* Featured Image */}
         {post.featured_image_url && (
           <div className="mb-12 rounded-xl overflow-hidden">
-            <img
+            <OptimizedImage
               src={post.featured_image_url}
               alt={post.title}
               className="w-full h-auto"
+              sizes="(max-width: 768px) 100vw, 896px"
+              width={896}
+              height={504}
+              priority={true}
             />
           </div>
         )}
@@ -184,10 +189,14 @@ export const BlogPostPage: React.FC = () => {
                 >
                   {relatedPost.featured_image_url ? (
                     <div className="aspect-video bg-gray-200 overflow-hidden">
-                      <img
+                      <OptimizedImage
                         src={relatedPost.featured_image_url}
                         alt={relatedPost.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        width={384}
+                        height={216}
+                        loading="lazy"
                       />
                     </div>
                   ) : (
