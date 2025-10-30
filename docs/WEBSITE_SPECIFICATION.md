@@ -330,25 +330,18 @@ backend/
 ### 🔴 CRITICAL (Site Broken)
 
 #### 1. Blog Page Does Not Load Content
-**Status:** BROKEN  
-**Description:** `/blog` renders the "No posts yet" empty state. Fetching `/api/blog/posts` from the production domain returns the SPA HTML shell, while the FastAPI service (`https://ma-saas-backend.onrender.com/api/blog/posts`) responds with `500 Internal Server Error`.  
-**Root Cause:** The marketing bundle calls a relative path, so requests never leave `100daysandbeyond.com`. Once routed correctly, the backend still crashes (missing tables or seed data).  
-**Impact:** Blog pillar content is unavailable, destroying SEO plans and breaking internal links.  
-**TDD Coverage:** Add Vitest contract tests stubbing the fetch and asserting the fallback message; add integration tests (Playwright + pytest) hitting the live endpoint once routing is fixed.  
-**Next Steps:**
-1. Use `VITE_API_URL` in the frontend and configure it on Render.  
-2. Restore the FastAPI `/api/blog/posts` endpoint (ensure migrations + seed).  
-3. Add monitoring and CI integration tests for regression detection.
+**Status:** ✅ RESOLVED (May 2026)
+**Description:** `/blog` now pulls posts from `https://ma-saas-backend.onrender.com/api/blog` via the shared Axios client; errors surface a friendly alert.  
+**Impact:** Blog pillar content is visible again, restoring SEO funnels.  
+**TDD Coverage:** Vitest contract tests (`BlogListingPage.test.tsx`) enforce API usage and error handling.
+**Next Steps:** Enable Playwright production smoke and keep seeds in sync with content plan.
 
 #### 2. Contact Form Submissions Are Dropped
-**Status:** BROKEN  
-**Description:** Submitting `/contact` only logs to the console and toggles a success state; no network request is made.  
-**Impact:** High-intent visitors cannot reach the team → direct revenue leak.  
-**TDD Coverage:** Write a failing Vitest test asserting `fetch` is called with the payload; pair with backend pytest covering request validation and notification handling.  
-**Next Steps:**
-1. Implement `/api/marketing/contact` (FastAPI) with validation + notification.  
-2. Update the React form to post to the endpoint and surface error states.  
-3. Add Playwright coverage ensuring the success toast appears after mock submission.
+**Status:** 🟡 IN PROGRESS  
+**Description:** Frontend submits via the marketing API and persists to `contact_messages`; SendGrid notifications remain stubbed.  
+**Impact:** Leads reach the datastore but support still needs email alerts.  
+**TDD Coverage:** Vitest mocks the contact service; backend pytest verifies `/api/marketing/contact` validation + persistence.  
+**Next Steps:** Wire SendGrid (or CRM) notifications and add Playwright regression coverage.
 
 #### 3. Newsletter Opt-In Popup Fails Silently
 **Status:** BROKEN  
