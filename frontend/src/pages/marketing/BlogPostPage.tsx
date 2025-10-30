@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { CTASection } from '../../components/marketing/CTASection';
@@ -27,18 +28,36 @@ export const BlogPostPage: React.FC = () => {
   useEffect(() => {
     if (!slug) return;
 
-    // TODO: Fetch blog post from API
-    fetch(`/api/blog/posts/${slug}`)
-      .then(res => res.json())
-      .then(data => {
-        setPost(data.post);
-        setRelatedPosts(data.related || []);
+    const fetchPost = async () => {
+      try {
+        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+        // Fetch the main post
+        const postResponse = await fetch(`${API_BASE_URL}/api/blog/${slug}`);
+        if (!postResponse.ok) {
+          throw new Error('Post not found');
+        }
+        const postData = await postResponse.json();
+        setPost(postData);
+
+        // Fetch related posts from same category
+        const relatedResponse = await fetch(`${API_BASE_URL}/api/blog?category=${encodeURIComponent(postData.category)}&limit=4`);
+        if (relatedResponse.ok) {
+          const relatedData = await relatedResponse.json();
+          // Filter out current post and limit to 3
+          const filtered = relatedData.filter((p: BlogPost) => p.slug !== slug).slice(0, 3);
+          setRelatedPosts(filtered);
+        }
+
         setLoading(false);
-      })
-      .catch(() => {
+      } catch (error) {
+        console.error('Error fetching blog post:', error);
         setPost(null);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchPost();
   }, [slug]);
 
   if (loading) {
@@ -110,10 +129,9 @@ export const BlogPostPage: React.FC = () => {
         )}
 
         {/* Article Content */}
-        <div 
-          className="prose prose-lg prose-indigo max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        <div className="prose prose-lg prose-indigo max-w-none">
+          <ReactMarkdown>{post.content}</ReactMarkdown>
+        </div>
 
         {/* Author Bio */}
         <div className="mt-12 pt-8 border-t border-gray-200">
