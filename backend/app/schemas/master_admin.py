@@ -1,7 +1,7 @@
 """Pydantic schemas for Master Admin Portal CRUD operations."""
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date as date_type, datetime
 from decimal import Decimal
 from typing import Optional
 
@@ -28,7 +28,7 @@ from app.models.master_admin import (
 
 class AdminGoalBase(BaseModel):
     """Base schema for admin goals."""
-    week_start: date = Field(..., description="Start date of the week (Monday)")
+    week_start: date_type = Field(..., description="Start date of the week (Monday)")
     target_discoveries: int = Field(0, ge=0, description="Target number of discoveries")
     target_emails: int = Field(0, ge=0, description="Target number of emails")
     target_videos: int = Field(0, ge=0, description="Target number of videos")
@@ -62,7 +62,7 @@ class AdminActivityBase(BaseModel):
     """Base schema for admin activities."""
     type: ActivityType = Field(..., description="Activity type")
     status: ActivityStatus = Field(..., description="Activity status")
-    date: date = Field(..., description="Activity date")
+    date: date_type = Field(..., description="Activity date")
     amount: int = Field(1, ge=1, description="Number of activities")
     notes: Optional[str] = Field(None, description="Activity notes")
     prospect_id: Optional[int] = Field(None, description="Related prospect ID")
@@ -77,7 +77,7 @@ class AdminActivityUpdate(BaseModel):
     """Schema for updating an admin activity (all fields optional)."""
     type: Optional[ActivityType] = None
     status: Optional[ActivityStatus] = None
-    date: Optional[date] = None
+    date: Optional[date_type] = None
     amount: Optional[int] = Field(None, ge=1)
     notes: Optional[str] = None
     prospect_id: Optional[int] = None
@@ -95,7 +95,7 @@ class AdminActivityResponse(AdminActivityBase):
 
 class AdminScoreBase(BaseModel):
     """Base schema for admin scores."""
-    date: date = Field(..., description="Score date")
+    date: date_type = Field(..., description="Score date")
     score: int = Field(..., ge=0, le=100, description="Daily score (0-100)")
     streak_days: int = Field(0, ge=0, description="Current streak in days")
     activities_count: int = Field(0, ge=0, description="Number of activities")
@@ -121,6 +121,12 @@ class AdminScoreResponse(AdminScoreBase):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class AdminScoreListResponse(BaseModel):
+    """Schema for list of admin scores."""
+    scores: list[AdminScoreResponse]
+    total: int
 
 
 class AdminFocusSessionBase(BaseModel):
@@ -283,8 +289,8 @@ class AdminDealBase(BaseModel):
     stage: AdminDealStage = Field(AdminDealStage.DISCOVERY, description="Deal stage")
     value: Optional[Decimal] = Field(None, ge=0, description="Deal value")
     probability: int = Field(0, ge=0, le=100, description="Win probability (0-100%)")
-    expected_close_date: Optional[date] = Field(None, description="Expected close date")
-    actual_close_date: Optional[date] = Field(None, description="Actual close date")
+    expected_close_date: Optional[date_type] = Field(None, description="Expected close date")
+    actual_close_date: Optional[date_type] = Field(None, description="Actual close date")
     notes: Optional[str] = Field(None, description="Deal notes")
 
 
@@ -299,8 +305,8 @@ class AdminDealUpdate(BaseModel):
     stage: Optional[AdminDealStage] = None
     value: Optional[Decimal] = Field(None, ge=0)
     probability: Optional[int] = Field(None, ge=0, le=100)
-    expected_close_date: Optional[date] = None
-    actual_close_date: Optional[date] = None
+    expected_close_date: Optional[date_type] = None
+    actual_close_date: Optional[date_type] = None
     notes: Optional[str] = None
 
 
@@ -479,7 +485,7 @@ class AdminLeadCaptureBase(BaseModel):
     phone: Optional[str] = Field(None, max_length=50, description="Lead phone")
     company: Optional[str] = Field(None, max_length=255, description="Company name")
     event_name: Optional[str] = Field(None, max_length=255, description="Event name")
-    event_date: Optional[date] = Field(None, description="Event date")
+    event_date: Optional[date_type] = Field(None, description="Event date")
     interest_level: Optional[str] = Field(None, max_length=50, description="Interest level (hot/warm/cold)")
     follow_up_type: Optional[str] = Field(None, max_length=100, description="Follow-up type")
     notes: Optional[str] = Field(None, description="Lead notes")
@@ -498,7 +504,7 @@ class AdminLeadCaptureUpdate(BaseModel):
     phone: Optional[str] = Field(None, max_length=50)
     company: Optional[str] = Field(None, max_length=255)
     event_name: Optional[str] = Field(None, max_length=255)
-    event_date: Optional[date] = None
+    event_date: Optional[date_type] = None
     interest_level: Optional[str] = Field(None, max_length=50)
     follow_up_type: Optional[str] = Field(None, max_length=100)
     notes: Optional[str] = None

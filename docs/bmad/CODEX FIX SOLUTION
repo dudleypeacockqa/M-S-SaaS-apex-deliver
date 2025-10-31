@@ -1,252 +1,426 @@
-# Codex CLI Fix Solution - RESOLVED
+Got it. I can’t directly touch your GitHub or Render from here, so I’m giving you drop‑in files and an execution plan you (or your developer) can paste straight into the repo and run. I’ll also give you the exact commands to verify latest commit/PR status and Render health.
 
-**Issue Date**: 2025-10-31
-**Resolution Date**: 2025-10-31
-**Status**:  **FIXED**
-**Severity**: P0 - Blocking (Codex CLI completely non-functional)
+Below you’ll find:
 
----
+STATUS.md (pinned) — copy/paste into repo root.
 
-## Problem Summary
+BMAD + TDD delivery plan (7‑day hardening → 21‑day pilot‑ready), with owners, DoR/DoD, tests first.
 
-Codex CLI was opening but not accepting any commands (text input or BMAD instructions). When user pressed Enter after typing commands, nothing happened - no response, no error messages, complete silence.
+Verification commands for latest commit / PR status and Render health.
 
----
+PR package (file tree + contents) you can commit as a single “repo‑hardening” PR.
 
-## Root Cause Analysis
+I’ve aligned the sales/meeting artefacts to your C‑suite selling notes (ROI first, tight agenda, give time back) and the security/governance posture you defined in the CosPharm docs (7‑year audit, TLS 1.3, daily backups, RTO 4h / RPO 1h).
+The cadence leverages your top CliftonStrengths (Strategic, Learner, Achiever, Activator) and guards against ENFP drift by locking the “boring middle” into checklists/tests.
 
-### Primary Issue: Invalid Model Configuration
-**File**: `~/.codex/config.toml`
-**Problem**: Model set to `"gpt-5-codex"` which does not exist
+1) Pinned STATUS.md — paste this at repo root
+# APEXDELIVER / CAPLIQUIFY — PROJECT STATUS (PINNED)
 
-```toml
-# BEFORE (BROKEN)
-model = "gpt-5-codex"  # L This model doesn't exist in OpenAI's API
-model_reasoning_effort = "high"
-```
-
-**Impact**: Codex CLI failed silently when attempting to make API calls to OpenAI because the model name was invalid.
-
-### Secondary Issue: Context Window Overflow
-**File**: `~/.codex/history.jsonl`
-**Problem**: 5.3 MB of conversation history combined with large project context (BMAD docs, 700+ modified files) exceeded model's context window
-
-**Error Log Evidence**:
-```
-[2025-10-31T14:16:23.967221Z] Turn error: stream disconnected before completion:
-Your input exceeds the context window of this model. Please adjust your input and try again.
-```
-
-**Impact**: Even if model were valid, requests would fail due to context overflow.
+**Last updated:** <SET ON COMMIT>  
+**Owner:** Dudley (CEO) • Focus: PMI Finance Ops Stabilisation (Option B)  
+**Primary product to SELL:** CapLiquify FP&A/WC for Intacct/Odoo/CSV  
+**ApexDeliver:** positioned as PMI/M&A operator kit (module inside the same platform)
 
 ---
 
-## Solution Implemented
-
-### Fix 1: Correct Model Configuration 
-
-**File Modified**: `C:\Users\User\.codex\config.toml`
-
-**Change Applied**:
-```toml
-# AFTER (WORKING)
-model = "gpt-4o"  #  Valid model with 128K context window
-```
-
-**Removed**: `model_reasoning_effort = "high"` (not applicable to gpt-4o)
-
-**Alternative Models** (for future reference):
-- `gpt-4o` - Recommended (large context, fast, balanced cost)
-- `gpt-4o-mini` - Faster, cheaper for simple tasks
-- `o1` - Good reasoning, larger context than o3
-- `o3` - Smaller context (128K), good for simple projects
-
-### Fix 2: Clear Conversation History 
-
-**Backup Created**:
-```
-~/.codex/history.jsonl � ~/.codex/history.jsonl.backup-2025-10-31
-(5.3 MB preserved)
-```
-
-**History Cleared**:
-```
-~/.codex/history.jsonl � 0 bytes (fresh start)
-```
-
-**Rationale**: Massive history combined with large project files exceeded context limits.
+## Traffic lights
+- **Story unity (ApexDeliver ⇢ CapLiquify):** 🟧 needs copy merge on marketing site
+- **Demo path (CSV → 13‑week → WC moves → PDF lender pack):** 🟨 stubs exist, needs seed data + scripts
+- **Tenancy & security doc (schema‑per‑tenant, Frankfurt primary):** 🟧 decision logged but not codified
+- **Observability (health endpoints, alerts, backups):** 🟧 minimal, add checklist + scripts
+- **Sales kit in repo (ROI XLSX, lender‑pack shell, meeting agenda):** 🟩 added under `/docs/sales-kit/`
+- **Seed datasets (Intacct‑like, Odoo‑like):** 🟧 scrubbed samples required
+- **CI/CD + smoke tests:** 🟧 add GitHub Actions + smoke job
+- **Render health:** 🟨 manual checks only; wire automated health in CI
 
 ---
 
-## Verification Steps
-
-### 1. Configuration Verification
-```bash
-cat ~/.codex/config.toml | head -5
-# Output: model = "gpt-4o"
-```
-
-### 2. History Verification
-```bash
-ls -lh ~/.codex/history.jsonl
-# Output: 0 bytes (fresh)
-
-ls -lh ~/.codex/history.jsonl.backup-2025-10-31
-# Output: 5.3 MB (backup preserved)
-```
-
-### 3. Authentication Verification
-```bash
-codex --version
-# Output: codex-cli 0.53.0
-```
-
-**Auth Status**:  Valid
-- Email: dudley@financeflo.ai
-- Plan: ChatGPT Pro
-- Token Expires: 2025-11-24
-- Organization: FinanceFlo AI
-
-### 4. BMAD Prompts Verification
-```bash
-ls ~/.codex/prompts/ | grep bmad | wc -l
-# Output: 42 prompts installed
-```
-
-**BMAD Modules Active**: `bmb`, `bmm`, `cis`
+## North‑star outcomes
+- **Demo‑credible in 7 days** (live walkthrough from CSV → lender pack)  
+- **Pilot‑ready in 21 days** (2 paying tenants, per‑tenant backup/restore verified, daily jobs green)
 
 ---
 
-## Testing Instructions
-
-### Test 1: Basic Command
-```bash
-codex "What is the current directory?"
-```
-
-**Expected**: Immediate response from GPT-4o model
-
-### Test 2: Interactive Mode
-```bash
-codex
-```
-Then type: `List all TypeScript files in the frontend directory`
-
-**Expected**: Response within 5-10 seconds
-
-### Test 3: BMAD Workflow
-```bash
-codex
-```
-Then type: `/bmad-bmm-workflows-workflow-status`
-
-**Expected**: BMAD workflow executes and returns status
+## Environments
+- **Primary region:** EU (Frankfurt) • **DR:** USA (data may cross border during DR)  
+- **Bank ingest rule:** *No third‑party aggregator at MVP* — ERP‑synced bank + CSV fallback
 
 ---
 
-## Files Modified
+## Hardening sprint (7 days)
+**D1–2** Freeze demo scripts + seed datasets  
+**D2** Tenancy decision doc (schema‑per‑tenant) + backup/restore runbook  
+**D3** Ops checklist uplift (health endpoints, alerts, backup IDs)  
+**D4** Marketing site hero: sell CapLiquify; ApexDeliver as PMI module  
+**D5** One‑click demo (`scripts/dev-up.sh`)  
+**D6–7** Sales kit into repo; run live smoke
 
-| File | Change | Status |
-|------|--------|--------|
-| `~/.codex/config.toml` | Changed model from `gpt-5-codex` to `gpt-4o` |  Applied |
-| `~/.codex/history.jsonl` | Cleared to 0 bytes |  Applied |
-| `~/.codex/history.jsonl.backup-2025-10-31` | Created backup (5.3 MB) |  Created |
-
----
-
-## Future Prevention
-
-### Recommended Maintenance
-
-1. **Monitor History Size**:
-   ```bash
-   ls -lh ~/.codex/history.jsonl
-   # If > 2 MB, consider clearing or archiving
-   ```
-
-2. **Periodic History Cleanup** (every 2-4 weeks):
-   ```bash
-   cp ~/.codex/history.jsonl ~/.codex/history-backup-$(date +%Y%m%d).jsonl
-   echo "" > ~/.codex/history.jsonl
-   ```
-
-3. **Model Selection Guidelines**:
-   - **Large projects** (like this one): Use `gpt-4o` or `gpt-4o-mini`
-   - **Simple projects**: Can use `o1` or `o3`
-   - **Avoid**: Non-existent models like `gpt-5-codex`
-
-4. **Check Codex Logs for Errors**:
-   ```bash
-   tail -50 ~/.codex/log/codex-tui.log | grep -i error
-   ```
-
-### Configuration Template
-
-```toml
-# ~/.codex/config.toml - Recommended Configuration
-
-model = "gpt-4o"
-
-# Trust levels for projects
-[projects.'\\?\C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver']
-trust_level = "trusted"
-
-# Optional: Project-specific model overrides
-# [projects.'\\?\C:\Projects\simple-project']
-# trust_level = "trusted"
-# model = "gpt-4o-mini"  # Use faster model for simpler projects
-```
+See `/docs/runbooks/HARDENING_7D.md`.
 
 ---
 
-## Related Issues
-
-- **Context Overflow**: If still experiencing context issues, reduce project complexity or use more focused prompts
-- **Slow Responses**: Consider switching to `gpt-4o-mini` for faster responses
-- **Cost Concerns**: Use `gpt-4o-mini` to reduce API costs
+## Feature matrix (demo path)
+- CSV/ERP ingest → **13‑week direct cash** → **WC drivers (DSO/DPO/DIO)** → **Weekly moves list** → **PDF lender pack** (covenants + lineage) → **Alerts**  
+Status per step: 🟨 🟨 🟨 🟨 🟨 🟧
 
 ---
 
-## Resolution Timeline
-
-| Time | Action | Result |
-|------|--------|--------|
-| 19:00 UTC | User reports Codex not accepting input | Issue confirmed |
-| 19:01 UTC | Checked Codex installation |  Installed (v0.53.0) |
-| 19:02 UTC | Verified authentication |  Valid (ChatGPT Pro) |
-| 19:03 UTC | Read config.toml | L Found invalid model `gpt-5-codex` |
-| 19:04 UTC | Checked error logs | L Found context overflow errors |
-| 19:05 UTC | Changed model to `gpt-4o` |  Applied |
-| 19:08 UTC | Backed up history (5.3 MB) |  Completed |
-| 19:09 UTC | Cleared history to 0 bytes |  Completed |
-| 19:09 UTC | Solution verified |  **RESOLVED** |
-
-**Total Resolution Time**: 9 minutes
+## Security & compliance (mid‑market buyer expectations)
+- TLS 1.3 in transit • DB + field‑level encryption (PII/financials) • Clerk MFA/SSO  
+- Schema‑per‑tenant • **Daily backups (30‑day)** • **7‑year audit logs** • **RTO 4h / RPO 1h**  
+Refs: `/docs/procurement/SECURITY_ONE_PAGER.md`, `/docs/tenancy/DECISION.md`
 
 ---
 
-## Success Criteria
-
--  Codex CLI opens successfully
--  Codex accepts text commands and responds
--  BMAD workflows (`/bmad-*`) execute correctly
--  No context overflow errors in logs
--  Response time < 10 seconds for typical queries
+## Observability SLAs (min)
+- `/healthz` 200 OK in <150ms (p95) • error rate <1% • backups pass daily • smoke green post‑deploy
 
 ---
 
-## Contact & Support
-
-**Issue Resolution By**: Claude Code (AI Assistant)
-**Methodology**: BMAD v6-alpha + systematic debugging
-**Documentation Updated**: 2025-10-31 19:09 UTC
-
-**For Future Issues**:
-1. Check this document first
-2. Review `~/.codex/log/codex-tui.log` for errors
-3. Verify model configuration in `~/.codex/config.toml`
-4. Consider history cleanup if size > 2 MB
+## Open risks
+1) Brand sprawl (ApexDeliver vs CapLiquify) hurts conversion – **fix D4**  
+2) Seed data gaps slow demos – **fix D1–2**  
+3) Tenancy not codified – **fix D2**
 
 ---
 
-**Status**: =� **OPERATIONAL** - Codex CLI fully functional
+## Decision log (last 7 days)
+- Bank ingest: ERP bank + CSV only at MVP ✅
+- Region: EU‑Frankfurt primary, USA DR ✅
+- PMI wedge: Option **B** (Finance Ops Stabilisation) ✅
+
+---
+
+## Definition of Ready (DoR)
+- User story has acceptance tests (TDD), demo path note, success metric, and rollback noted.
+
+## Definition of Done (DoD)
+- Tests pass (unit/integration/E2E) • Docs updated • Healthcheck OK • Demo script reproducible • Linked issue closed
+
+
+2) Plan to 100% complete (BMAD + TDD)
+
+Below is the Breakdown → Measure → Automate → Document loop applied to your 7‑day hardening and 21‑day pilot‑ready tracks, with tests‑first on each work item.
+
+2.1 7‑Day Hardening Sprint (goal: demo‑credible)
+
+D1–2 — Demo path freeze + seed data (Owner: Eng Lead)
+
+Deliverables:
+
+/docs/demo-scripts/capliquify-intacct.md, /docs/demo-scripts/capliquify-odoo.md (CSV mapping → screens → expected numbers).
+
+/scripts/seed/intacct/*.csv, /scripts/seed/odoo/*.csv (AR/AP ageing, inventory, GL, bank).
+
+scripts/seed/seed.sh (idempotent).
+
+Tests (TDD):
+
+tests/e2e/test_demo_path.py — “Given seed data, when I import CSV then dashboard shows 13‑week cash and WC deltas within ±0.5% of fixture.”
+
+tests/unit/test_13week_engine.py — math parity with fixture.
+
+BMAD: Break CSVs, Measure import timing & parity, Automate seed script, Document demo guides.
+
+D2 — Tenancy decision codified (Owner: Platform)
+
+Deliverables:
+
+/docs/tenancy/DECISION.md (schema‑per‑tenant; per‑tenant backup/restore; Frankfurt→USA DR note; DPA links).
+
+/docs/runbooks/BACKUP_RESTORE.md (daily backup job IDs; restore rehearsal steps).
+
+Tests:
+
+tests/integration/test_tenant_isolation.py — ensure cross‑tenant queries forbidden.
+
+Backup restore dry‑run script returns 0 exit code and checksum matches.
+
+D3 — Ops checklist uplift (Owner: DevOps)
+
+Deliverables:
+
+Health endpoints: GET /healthz, GET /readyz (FastAPI).
+
+Alerts thresholds: error>5%, p95>2s, backup fail, DB pool >90%.
+
+/docs/runbooks/OPS_CHECKLIST.md.
+
+Tests:
+
+CI job smoke.yml hits /healthz post‑deploy; fails build on non‑200 or latency>150ms (p95).
+
+BMAD: Measure baseline latency, Automate smoke, Document runbooks.
+
+D4 — Single‑offer story on site (Owner: Marketing/PM)
+
+Deliverables:
+
+Update marketing hero: sell CapLiquify FP&A/WC; position ApexDeliver as PMI module.
+
+CTA: “14‑day guided trial” + lender pack preview.
+
+Tests:
+
+Link checker; lighthouse score ≥85; no dead links to ApexDeliver legacy pages.
+
+D5 — One‑click demo (Owner: Eng)
+
+Deliverables:
+
+scripts/dev-up.sh → start DB, migrate, seed, boot API+FE, open demo URL.
+
+Makefile target make demo.
+
+Tests:
+
+CI: spin ephemeral env, run smoke on demo URL.
+
+D6–7 — Sales kit into repo (Owner: PM/RevOps)
+
+Deliverables:
+
+/docs/sales-kit/ROI.xlsx (done) • /docs/sales-kit/LENDER_PACK_SHELL.docx (done) • /docs/sales-kit/MEETING_AGENDA.md.
+
+Tests:
+
+Check files exist, not empty; agenda includes ROI first, timed sections, time‑back. (Matches your C‑suite best practices.)
+
+Security/governance clauses (TLS 1.3, 7‑year logs, daily backups, RTO/RPO) mirror your CosPharm spec.
+
+2.2 21‑Day Pilot‑Ready (goal: 2 paying tenants)
+
+Track A — Data & Engines (Owner: Eng)
+
+Stories:
+
+13‑week direct: parity with fixture set; p95 calc <100ms line‑item.
+
+WC drivers: DSO/DPO/DIO calc + cash‑unlock math ties to ROI sheet.
+
+Consolidation (basic): multi‑entity cash rollup; variance notes.
+
+Tests (TDD):
+
+Unit: test_cash_math.py, test_wcd_levers.py.
+
+Integration: test_csv_ingest_paths.py (Intacct, Odoo flavours).
+
+E2E: demo path green with both seed packs.
+
+Track B — Governance & Ops (Owner: DevOps)
+
+Stories:
+
+Per‑tenant backup/restore job; daily pass, 30‑day retention.
+
+Audit log immutability; 7‑year retention.
+
+DR note: Frankfurt⇢USA tested.
+
+Tests:
+
+Restore rehearsal CI job monthly; verify checksum; alert on fail.
+
+Track C — Sales Motion (Owner: CEO)
+
+Stories:
+
+Meeting kit: agenda, ROI first, lender pack preview, calendar templates.
+
+YouTube: 2 topics recorded and published; links embedded in outbound.
+
+Tests:
+
+Discovery→Demo≥40%, Demo→Sale≥20% by week 9 (conservative funnel you chose).
+
+Track D — Procurement Pack (Owner: PM/Legal)
+
+Stories:
+
+SECURITY_ONE_PAGER.md • BUYER_FAQ.md (bank feeds, residency/DR, RBAC).
+
+Tests:
+
+Red‑team read: answers are crisp, no waffle; links to privacy/terms/cookies.
+
+Definition of Done (for Pilot‑ready)
+
+2 tenants live; per‑tenant restore rehearsed; alerts quiet; weekly lender pack cadence running.
+
+3) How to check latest commit / PR / Render health now
+
+(Run these on your machine/CI. Replace placeholders with your repo/app names.)
+
+Git (local & remote)
+
+# Show last two commits (graph, one‑line)
+git log --decorate --graph --oneline -n 2
+
+# Verify your branch is pushed
+git status
+git remote -v
+git rev-parse --abbrev-ref HEAD
+git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)
+
+# List open PRs (GitHub CLI)
+gh pr list --state open --limit 10
+gh pr view <PR_NUMBER> --web
+
+
+Render deploy status
+
+In app dashboard: Events should show last deploy Succeeded; Health should be Healthy.
+
+Add a healthcheck URL (see code stub below). Then run:
+
+# Replace with your Render public URL
+APP=https://<your-app-domain>
+time curl -s -o /dev/null -w "%{http_code} %{time_total}\n" $APP/healthz
+time curl -s -o /dev/null -w "%{http_code} %{time_total}\n" $APP/readyz
+
+
+Expect 200 and <0.15s p95. Wire these curls into CI post‑deploy smoke.
+
+4) PR package — create one PR with these files
+
+Branch name: chore/hardening-7d-demo-credible
+Commit style: Conventional commits (feat:, chore:, docs:)
+
+Files to add/update (copy the blocks below into your repo):
+
+A) /STATUS.md
+
+(Use the block at the top of this message.)
+
+B) /docs/tenancy/DECISION.md
+# Tenancy Decision — Schema per tenant
+
+**Decision:** Use *schema‑per‑tenant* Postgres isolation.
+**Why:** Clean isolation, per‑tenant backups/restores, simpler GDPR erasure.
+
+## Guarantees
+- Strict org‑scoped auth; cross‑tenant queries prohibited.
+- **Backups:** Daily per tenant, 30‑day retention. Restore rehearsal monthly.
+- **Residency:** Primary EU (Frankfurt). **DR:** USA. During DR tests/activation, data may cross borders.
+- **Encryption:** TLS 1.3 in transit; DB‑level + field‑level encryption for PII/financials (AES‑256).
+- **Audit:** 7‑year immutable logs.
+
+## Links
+- Privacy: https://financeflo.ai/privacy
+- Terms: https://financeflo.ai/terms
+- Cookies: https://financeflo.ai/cookies
+
+C) /docs/runbooks/OPS_CHECKLIST.md
+# Ops Checklist (minimum viable SRE)
+
+Health: `/healthz` (liveness), `/readyz` (deps, DB, queue). p95 < 150ms.
+Alerts: error>5% (5m), p95>2s (10m), DB pool>90%, backup fail, 3x integration failures.
+
+Backups: daily; 30‑day retention; restore rehearsal monthly (checksums match).
+DR: Frankfurt primary, USA DR. Quarterly DR test (switch, validate, switch back).
+
+Logs: request/response codes; audit (7‑year); integration logs (Sage/Odoo).
+
+D) Health endpoints (FastAPI) /backend/app/health.py
+from fastapi import APIRouter
+import asyncpg, os, time
+
+router = APIRouter()
+
+@router.get("/healthz")
+async def healthz():
+    return {"ok": True, "ts": time.time()}
+
+@router.get("/readyz")
+async def readyz():
+    # shallow DB ping
+    dsn = os.getenv("DATABASE_URL")
+    if not dsn:
+        return {"ok": False, "error": "DB_URL missing"}
+    conn = await asyncpg.connect(dsn)
+    await conn.execute("SELECT 1;")
+    await conn.close()
+    return {"ok": True}
+
+
+(Mount in your FastAPI app and ensure these are public.)
+
+E) Smoke test GitHub Action .github/workflows/smoke.yml
+name: Post-deploy smoke
+on:
+  workflow_dispatch:
+  deployment_status:
+
+jobs:
+  smoke:
+    if: github.event.deployment_status.state == 'success' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Curl health
+        run: |
+          APP="${{ secrets.APP_URL }}"
+          for path in healthz readyz; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$APP/$path")
+            time=$(curl -s -o /dev/null -w "%{time_total}" "$APP/$path")
+            echo "$path -> $code in ${time}s"
+            test "$code" = "200"
+          done
+
+F) /scripts/dev-up.sh
+#!/usr/bin/env bash
+set -euo pipefail
+echo "→ Starting local demo..."
+# 1) DB up + migrate
+# 2) Seed
+bash scripts/seed/seed.sh
+# 3) Boot API + FE (adjust to your repo)
+# e.g., concurrently "cd backend && uvicorn app.main:app --reload" "cd frontend && npm run dev"
+
+G) /scripts/seed/seed.sh (skeleton)
+#!/usr/bin/env bash
+set -euo pipefail
+echo "→ Seeding Intacct-like + Odoo-like demo data"
+# Load CSVs from scripts/seed/intacct and scripts/seed/odoo
+# Use your app's CLI or a seeding endpoint
+
+H) /docs/demo-scripts/capliquify-intacct.md (outline)
+# Demo — Intacct lane
+1) Import CSVs (AR/AP ageing, inventory, bank)
+2) Show 13‑week direct cash (Week 3 cash-out alert example)
+3) Show WC drivers (DSO/DPO/DIO baseline→target)
+4) Open ROI workbook (pre‑wired) and state cash unlock
+5) Generate PDF lender pack (covenants page visible)
+6) Agree next step (pilot scope + dates)
+
+I) /docs/procurement/SECURITY_ONE_PAGER.md and /docs/procurement/BUYER_FAQ.md
+
+(use the one‑pager + FAQ we built earlier; paste into repo so procurement can self‑serve.)
+
+5) Why this plan fits you
+
+Strategic + Activator: gives you the high‑level win conditions and the exact first moves.
+
+Achiever: visible checklists & streaks; daily green bars to chase.
+
+Learner: TDD forces constant feedback loops; small wins compound.
+
+The meeting kit keeps you in your proven lane with execs: ROI on slide 1, tight agenda, and time‑back. The compliance/security posture mirrors your CosPharm documents (7‑year audit, TLS 1.3, backups, RTO/RPO) so enterprise buyers won’t stall on procurement.
+
+6) What I still cannot do from here (and how you do it in minutes)
+
+I can’t check your latest commit/PR or click Render. Use the git/GitHub CLI commands above and the /healthz//readyz curls to verify in under 60 seconds.
+
+I can’t push this PR. Create the branch, drop in the files, and run:
+
+git checkout -b chore/hardening-7d-demo-credible
+git add STATUS.md docs/tenancy/DECISION.md docs/runbooks/OPS_CHECKLIST.md \
+        backend/app/health.py .github/workflows/smoke.yml scripts/dev-up.sh \
+        scripts/seed/seed.sh docs/demo-scripts/capliquify-intacct.md \
+        docs/procurement/SECURITY_ONE_PAGER.md docs/procurement/BUYER_FAQ.md
+git commit -m "chore: 7‑day hardening (demo‑credible) — health, tenancy, ops, demo scripts"
+git push -u origin chore/hardening-7d-demo-credible
+gh pr create --title "Hardening Week: demo‑credible" --fill
+
+
+Approve/merge, then confirm Render auto‑deploys and the smoke job passes.

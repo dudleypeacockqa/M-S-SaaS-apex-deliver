@@ -6,3 +6,21 @@
   Plugin: [35mvite:resolve[39m
 [2m19:50:53[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [33mwarning: Module "node:path" has been externalized for browser compatibility, imported by "C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/tests/domainConfig.test.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
   Plugin: [35mvite:resolve[39m
+
+<--- Last few GCs --->
+
+[29672:0000024F7EE03000]  5553649 ms: Scavenge (during sweeping) 4017.3 (4062.2) -> 3985.7 (4062.2) MB, pooled: 0.0 MB, 6.84 / 0.00 ms (average mu = 0.877, current mu = 0.875) allocation failure; 
+[29672:0000024F7EE03000]  5558250 ms: Mark-Compact 4591.3 (4636.0) -> 4152.3 (4252.7) MB, pooled: 0.8 MB, 4138.02 / 0.00 ms (average mu = 0.791, current mu = 0.693) allocation failure; scavenge might not succeed
+
+FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FF7CC438B26 void __cdecl node::OnFatalError(char const * __ptr64,char const * __ptr64)+1318
+ 2: 00007FF7CCFD53D7 public: class v8::MaybeLocal<class v8::Object> __cdecl v8::Function::NewInstance(class v8::Local<class v8::Context>,int,class v8::Local<class v8::Value> * __ptr64 const)const __ptr64+423
+ 3: 00007FF7CCDE3837 EVP_PKEY_asn1_set_get_priv_key+463031
+ 4: 00007FF7CCDE139F EVP_PKEY_asn1_set_get_priv_key+453663
+ 5: 00007FF7CCDFED60 X509_STORE_set_cleanup+5616
+ 6: 00007FF7CCDFDA5E X509_STORE_set_cleanup+750
+ 7: 00007FF7CCE0B6DB SSL_CTX_set_cookie_generate_cb+21131
+ 8: 00007FF7CCA0B47E public: __cdecl v8::String::Utf8Value::~Utf8Value(void) __ptr64+152750
+ 9: 000002554703B4FA 

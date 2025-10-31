@@ -96,7 +96,9 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
       queryClient.setQueryData(queryKey(podcastId), updatedStream);
       try {
         const snapshot = await getLiveStreamStatus(updatedStream.id);
-        setStatusSnapshot(snapshot);
+        React.startTransition(() => {
+          setStatusSnapshot(snapshot);
+        });
       } finally {
         queryClient.invalidateQueries({ queryKey: queryKey(podcastId) });
       }
@@ -109,7 +111,9 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
       queryClient.setQueryData(queryKey(podcastId), updatedStream);
       try {
         const snapshot = await getLiveStreamStatus(updatedStream.id);
-        setStatusSnapshot(snapshot);
+        React.startTransition(() => {
+          setStatusSnapshot(snapshot);
+        });
       } finally {
         queryClient.invalidateQueries({ queryKey: queryKey(podcastId) });
       }
@@ -143,7 +147,9 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
         if (isCancelled) {
           return;
         }
-        setStatusSnapshot(snapshot);
+        React.startTransition(() => {
+          setStatusSnapshot(snapshot);
+        });
       } catch (error) {
         // Ignore polling errors to keep last known state
       } finally {
