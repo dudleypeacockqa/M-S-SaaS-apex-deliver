@@ -1,0 +1,8 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest --run --reporter=json
+
+[2m19:50:53[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [33mwarning: Module "node:fs" has been externalized for browser compatibility, imported by "C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/tests/domainConfig.test.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+  Plugin: [35mvite:resolve[39m
+[2m19:50:53[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [33mwarning: Module "node:path" has been externalized for browser compatibility, imported by "C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/tests/domainConfig.test.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+  Plugin: [35mvite:resolve[39m
