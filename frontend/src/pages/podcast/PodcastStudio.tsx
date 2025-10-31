@@ -18,6 +18,7 @@ import { CreateEpisodeModal } from '../../components/podcast/CreateEpisodeModal'
 import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
 import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal';
 import VideoUploadModal from '../../components/podcast/VideoUploadModal';
+import { YouTubePublishModal } from '../../components/podcast/YouTubePublishModal';
 import {
   getQuotaSummary,
   listEpisodes,
@@ -26,8 +27,12 @@ import {
   createEpisode,
   updateEpisode,
   deleteEpisode,
+  getYouTubeConnectionStatus,
+  initiateYouTubeOAuth,
   type PodcastEpisode,
   type QuotaSummary,
+  type YouTubeConnectionStatus,
+  type YouTubePublishPayload,
 } from '../../services/api/podcasts';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 
@@ -93,6 +98,11 @@ function PodcastStudioContent() {
   const [deleteTarget, setDeleteTarget] = React.useState<PodcastEpisode | null>(null);
   const [videoUploadEpisode, setVideoUploadEpisode] = React.useState<PodcastEpisode | null>(null);
   const [notification, setNotification] = React.useState<NotificationState | null>(null);
+  const [episodeToPublish, setEpisodeToPublish] = React.useState<PodcastEpisode | null>(null);
+  const [publishError, setPublishError] = React.useState<string | null>(null);
+  const [infoEpisodeId, setInfoEpisodeId] = React.useState<string | null>(null);
+  const [youtubeInfoMessage, setYoutubeInfoMessage] = React.useState<string | null>(null);
+  const [lastPublishedEpisodeId, setLastPublishedEpisodeId] = React.useState<string | null>(null);
   const notificationTimeoutRef = React.useRef<number | null>(null);
 
   const pushNotification = React.useCallback((type: NotificationState['type'], message: string) => {
@@ -118,27 +128,38 @@ function PodcastStudioContent() {
     data: quota,
     isLoading: quotaLoading,
     isError: quotaError,
-  } = useQuery({
+  } = useQuery<QuotaSummary, Error>({
     queryKey: ['podcastQuota'],
     queryFn: getQuotaSummary,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    keepPreviousData: true,
   });
 
   const {
     data: episodes = [],
     isLoading: episodesLoading,
     isError: episodesError,
-  } = useQuery({
+  } = useQuery<PodcastEpisode[], Error>({
     queryKey: ['podcastEpisodes'],
-    queryFn: () => listEpisodes(),
+    queryFn: listEpisodes,
     staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
-    keepPreviousData: true,
   });
 
   const youtubeAccess = useFeatureAccess({ feature: 'youtube_integration' });
+
+  const {
+    data: youtubeConnection,
+    isLoading: youtubeConnectionLoading,
+    isError: youtubeConnectionError,
+    refetch: refetchYouTubeConnection,
+  } = useQuery({
+    queryKey: ['youtubeConnection'],
+    queryFn: getYouTubeConnectionStatus,
+    enabled: youtubeAccess.hasAccess,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
   const createEpisodeMutation = useMutation({
     mutationFn: (payload: CreateEpisodePayload) => createEpisode(payload),
@@ -177,6 +198,88 @@ function PodcastStudioContent() {
     },
   });
 
+  const initiateYouTubeOAuthMutation = useMutation({
+    mutationFn: ({ episodeId, redirectUri }: { episodeId: string; redirectUri: string }) =>
+      initiateYouTubeOAuth(episodeId, redirectUri),
+    onSuccess: (data, variables) => {
+      window.open(data.authorizationUrl, '_blank', 'noopener');
+      setInfoEpisodeId(variables.episodeId);
+      setYoutubeInfoMessage('Complete the YouTube connection in the popup to finish publishing.');
+      pushNotification('info', 'YouTube connection popup opened — follow the steps to link your channel.');
+    },
+    onError: () => {
+      setYoutubeInfoMessage(null);
+      pushNotification('error', 'Failed to initiate YouTube connection');
+    },
+  });
+
+  const publishToYouTubeMutation = useMutation({
+    mutationFn: ({
+      episodeId,
+      payload,
+      episodeTitle,
+    }: {
+      episodeId: string;
+      payload: YouTubePublishPayload;
+      episodeTitle: string;
+    }) => publishEpisodeToYouTube(episodeId, payload),
+    onSuccess: (_, variables) => {
+      setPublishError(null);
+      setEpisodeToPublish(null);
+      setLastPublishedEpisodeId(variables.episodeId);
+      setInfoEpisodeId(null);
+      setYoutubeInfoMessage(null);
+      pushNotification('success', `Episode "${variables.episodeTitle}" is live on YouTube`);
+      queryClient.invalidateQueries({ queryKey: ['podcastEpisodes'] });
+      queryClient.invalidateQueries({ queryKey: ['youtubeConnection'] });
+    },
+    onError: () => {
+      setPublishError('Failed to publish to YouTube. Please try again.');
+      pushNotification('error', 'Failed to publish episode to YouTube');
+    },
+  });
+
+  const handleRequestPublish = React.useCallback(
+    (episode: PodcastEpisode) => {
+      setPublishError(null);
+      publishToYouTubeMutation.reset();
+      setEpisodeToPublish(episode);
+    },
+    [publishToYouTubeMutation],
+  );
+
+  const handleClosePublishModal = React.useCallback(() => {
+    setEpisodeToPublish(null);
+    setPublishError(null);
+    publishToYouTubeMutation.reset();
+  }, [publishToYouTubeMutation]);
+
+  const handleSubmitPublish = React.useCallback(
+    (payload: YouTubePublishPayload) => {
+      if (!episodeToPublish) {
+        return;
+      }
+
+      publishToYouTubeMutation.mutate({
+        episodeId: episodeToPublish.id,
+        episodeTitle: episodeToPublish.title,
+        payload,
+      });
+    },
+    [episodeToPublish, publishToYouTubeMutation],
+  );
+
+  const handleRequestYouTubeConnect = React.useCallback(
+    (episode: PodcastEpisode) => {
+      if (initiateYouTubeOAuthMutation.isPending) {
+        return;
+      }
+      const redirectUri = window.location.href;
+      initiateYouTubeOAuthMutation.mutate({ episodeId: episode.id, redirectUri });
+    },
+    [initiateYouTubeOAuthMutation],
+  );
+
   const isQuotaExceeded = Boolean(
     quota && !quota.isUnlimited && (quota.remaining ?? 0) <= 0,
   );
@@ -210,125 +313,159 @@ function PodcastStudioContent() {
         </p>
       </div>
 
-      {notification && (
+      <div
+        role="tablist"
+        aria-label="Podcast studio sections"
+        className="mb-6 flex flex-wrap items-center gap-3 border-b border-gray-200 pb-2"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeSection === 'episodes'}
+          className={`rounded-md px-4 py-2 text-sm font-medium transition ${activeSection === 'episodes' ? 'bg-indigo-600 text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+          onClick={() => setActiveSection('episodes')}
+        >
+          Episodes
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeSection === 'liveStreaming'}
+          className={`rounded-md px-4 py-2 text-sm font-medium transition ${activeSection === 'liveStreaming' ? 'bg-indigo-600 text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+          onClick={() => setActiveSection('liveStreaming')}
+        >
+          Live streaming
+        </button>
+      </div>
+
+      {notification ? (
         <NotificationBanner
           notification={notification}
           onDismiss={() => setNotification(null)}
         />
-      )}
+      ) : null}
 
-      {quota && (
+      {activeSection === 'episodes' ? (
         <>
-          <QuotaHud quota={quota} />
-          <QuotaWarning quota={quota} threshold={QUOTA_WARNING_THRESHOLD} />
+          {quota ? (
+            <>
+              <QuotaHud quota={quota} />
+              <QuotaWarning quota={quota} threshold={QUOTA_WARNING_THRESHOLD} />
+            </>
+          ) : null}
+          
+          {/* Video feature gate */}
+          <div className="mb-6">
+            <FeatureGate
+              feature="podcast_video"
+              requiredTier="premium"
+              upgradeMessage={UPGRADE_MESSAGES.video}
+              lockedTitle="Video features locked"
+              lockedDescription="Video production is locked on your current plan."
+              ctaLabel="Explore Premium video options"
+            >
+              <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
+                <h3 className="text-sm font-semibold text-purple-800">Video uploads enabled</h3>
+                <p className="mt-1 text-sm text-purple-700">
+                  Upload ready-to-share video episodes and syndicate directly to YouTube.
+                </p>
+              </div>
+            </FeatureGate>
+          </div>
+          
+          {/* Quota Card */}
+          {quota ? <QuotaCard quota={quota} /> : null}
+          
+          {/* Actions Bar */}
+          <div className="mb-6 flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-gray-900">Episodes</h2>
+            <button
+              type="button"
+              disabled={isQuotaExceeded || isUpgradeRequired}
+              onClick={() => {
+                if (!isQuotaExceeded && !isUpgradeRequired) {
+                  setCreateModalOpen(true);
+                }
+              }}
+              className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
+                isQuotaExceeded || isUpgradeRequired
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+              }`}
+              title={
+                isUpgradeRequired
+                  ? quota?.upgradeMessage ?? 'Upgrade required to create new episodes.'
+                  : isQuotaExceeded
+                    ? 'Quota exceeded. Upgrade to Premium for unlimited episodes.'
+                    : ''
+              }
+            >
+              <svg
+                className="mr-2 -ml-1 h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              New Episode
+            </button>
+          </div>
+          
+          {/* Episodes List */}
+          <SectionErrorBoundary
+            fallback={
+              <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                We couldn't load your episodes just now. Please refresh the page or try again later.
+              </div>
+            }
+          >
+            <EpisodesList
+              episodes={episodes}
+              youtubeAccess={youtubeAccess}
+              youtubeConnection={youtubeConnection}
+              youtubeConnectionLoading={youtubeConnectionLoading}
+              youtubeConnectionError={youtubeConnectionError}
+              onRefreshYoutubeConnection={refetchYouTubeConnection}
+              onRequestPublish={handleRequestPublish}
+              onRequestYouTubeConnect={handleRequestYouTubeConnect}
+              youtubeInfoMessage={youtubeInfoMessage}
+              infoEpisodeId={infoEpisodeId}
+              lastPublishedEpisodeId={lastPublishedEpisodeId}
+              isConnecting={initiateYouTubeOAuthMutation.isPending}
+              onEdit={(episode) => setEditingEpisode(episode)}
+              onDelete={(episode) => setDeleteTarget(episode)}
+              onNotify={pushNotification}
+              onVideoUpload={(episode) => setVideoUploadEpisode(episode)}
+            />
+          </SectionErrorBoundary>
         </>
+      ) : (
+        <FeatureGate
+          feature="live_streaming"
+          requiredTier="enterprise"
+          upgradeMessage={UPGRADE_MESSAGES.liveStreaming}
+          lockedTitle="Live streaming locked"
+          lockedDescription="Host real-time investor broadcasts with an Enterprise plan."
+          ctaLabel="Explore Enterprise streaming"
+        >
+          <SectionErrorBoundary
+            fallback={
+              <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                Live streaming controls failed to load. Please refresh and try again.
+              </div>
+            }
+          >
+            <LiveStreamManager podcastId={liveStreamPodcastId} tier={subscription.tier} />
+          </SectionErrorBoundary>
+        </FeatureGate>
       )}
 
-      {/* Video feature gate */}
-      <div className="mb-6">
-        <FeatureGate
-          feature="podcast_video"
-          requiredTier="premium"
-          upgradeMessage={UPGRADE_MESSAGES.video}
-          lockedTitle="Video features locked"
-          lockedDescription="Video production is locked on your current plan."
-          ctaLabel="Explore Premium video options"
-        >
-          <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
-            <h3 className="text-sm font-semibold text-purple-800">Video uploads enabled</h3>
-            <p className="mt-1 text-sm text-purple-700">
-              Upload ready-to-share video episodes and syndicate directly to YouTube.
-            </p>
-          </div>
-        </FeatureGate>
-      </div>
-
-      {/* Quota Card */}
-      {quota && <QuotaCard quota={quota} />}
-
-      {/* Actions Bar */}
-      <div className="mb-6 flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-gray-900">Episodes</h2>
-        <button
-          type="button"
-          disabled={isQuotaExceeded || isUpgradeRequired}
-          onClick={() => {
-            if (!isQuotaExceeded && !isUpgradeRequired) {
-              setCreateModalOpen(true);
-            }
-          }}
-          className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-            isQuotaExceeded || isUpgradeRequired
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-          }`}
-          title={
-            isUpgradeRequired
-              ? quota?.upgradeMessage ?? 'Upgrade required to create new episodes.'
-              : isQuotaExceeded
-                ? 'Quota exceeded. Upgrade to Premium for unlimited episodes.'
-                : ''
-          }
-        >
-          <svg
-            className="mr-2 -ml-1 h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          New Episode
-        </button>
-      </div>
-
-      {/* Episodes List */}
-      <SectionErrorBoundary
-        fallback={
-          <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-            We couldn't load your episodes just now. Please refresh the page or try again later.
-          </div>
-        }
-      >
-        <EpisodesList
-          episodes={episodes}
-          youtubeAccess={youtubeAccess}
-          onEdit={(episode) => setEditingEpisode(episode)}
-          onDelete={(episode) => setDeleteTarget(episode)}
-          onNotify={pushNotification}
-          onVideoUpload={(episode) => setVideoUploadEpisode(episode)}
-        />
-      </SectionErrorBoundary>
-
-      <FeatureGate
-        feature="live_streaming"
-        requiredTier="enterprise"
-        upgradeMessage={UPGRADE_MESSAGES.liveStreaming}
-        lockedTitle="Live streaming locked"
-        lockedDescription="Host real-time investor broadcasts with an Enterprise plan."
-        ctaLabel="Explore Enterprise streaming"
-      >
-        <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4 sm:flex sm:items-center sm:justify-between">
-          <div>
-            <h3 className="text-base font-semibold text-slate-900">Live stream studio</h3>
-            <p className="mt-1 text-sm text-slate-600">
-              Broadcast your next investor roadshow directly from the podcast studio with real-time analytics and backstage chat for presenters.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="mt-4 inline-flex items-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 sm:mt-0"
-            onClick={() => pushNotification('info', 'Live streaming session scheduler coming soon')}
-          >
-            Go live (beta)
-          </button>
-        </div>
-      </FeatureGate>
 
       <CreateEpisodeModal
         open={isCreateModalOpen}
@@ -400,6 +537,16 @@ function PodcastStudioContent() {
           />
         )}
       </FeatureGate>
+
+      <YouTubePublishModal
+        open={Boolean(episodeToPublish)}
+        episode={episodeToPublish}
+        connection={youtubeConnection}
+        isSubmitting={publishToYouTubeMutation.isPending}
+        errorMessage={publishError}
+        onClose={handleClosePublishModal}
+        onSubmit={handleSubmitPublish}
+      />
     </div>
   );
 }
@@ -605,6 +752,16 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
 function EpisodesList({
   episodes,
   youtubeAccess,
+  youtubeConnection,
+  youtubeConnectionLoading,
+  youtubeConnectionError,
+  onRefreshYoutubeConnection,
+  onRequestPublish,
+  onRequestYouTubeConnect,
+  youtubeInfoMessage,
+  infoEpisodeId,
+  lastPublishedEpisodeId,
+  isConnecting,
   onEdit,
   onDelete,
   onNotify,
@@ -612,6 +769,16 @@ function EpisodesList({
 }: {
   episodes: PodcastEpisode[];
   youtubeAccess: FeatureAccessState;
+  youtubeConnection: YouTubeConnectionStatus | undefined;
+  youtubeConnectionLoading: boolean;
+  youtubeConnectionError: boolean;
+  onRefreshYoutubeConnection: () => Promise<unknown>;
+  onRequestPublish: (episode: PodcastEpisode) => void;
+  onRequestYouTubeConnect: (episode: PodcastEpisode) => void;
+  youtubeInfoMessage: string | null;
+  infoEpisodeId: string | null;
+  lastPublishedEpisodeId: string | null;
+  isConnecting: boolean;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
   onNotify: (type: NotificationState['type'], message: string) => void;
@@ -649,6 +816,16 @@ function EpisodesList({
             key={episode.id}
             episode={episode}
             youtubeAccess={youtubeAccess}
+            youtubeConnection={youtubeConnection}
+            youtubeConnectionLoading={youtubeConnectionLoading}
+            youtubeConnectionError={youtubeConnectionError}
+            onRefreshYoutubeConnection={onRefreshYoutubeConnection}
+            onRequestPublish={onRequestPublish}
+            onRequestYouTubeConnect={onRequestYouTubeConnect}
+            youtubeInfoMessage={youtubeInfoMessage}
+            infoEpisodeId={infoEpisodeId}
+            lastPublishedEpisodeId={lastPublishedEpisodeId}
+            isConnecting={isConnecting}
             onEdit={onEdit}
             onDelete={onDelete}
             onNotify={onNotify}
@@ -663,6 +840,16 @@ function EpisodesList({
 function EpisodeListItem({
   episode,
   youtubeAccess,
+  youtubeConnection,
+  youtubeConnectionLoading,
+  youtubeConnectionError,
+  onRefreshYoutubeConnection,
+  onRequestPublish,
+  onRequestYouTubeConnect,
+  youtubeInfoMessage,
+  infoEpisodeId,
+  lastPublishedEpisodeId,
+  isConnecting,
   onEdit,
   onDelete,
   onNotify,
@@ -670,6 +857,16 @@ function EpisodeListItem({
 }: {
   episode: PodcastEpisode;
   youtubeAccess: FeatureAccessState;
+  youtubeConnection: YouTubeConnectionStatus | undefined;
+  youtubeConnectionLoading: boolean;
+  youtubeConnectionError: boolean;
+  onRefreshYoutubeConnection: () => Promise<unknown>;
+  onRequestPublish: (episode: PodcastEpisode) => void;
+  onRequestYouTubeConnect: (episode: PodcastEpisode) => void;
+  youtubeInfoMessage: string | null;
+  infoEpisodeId: string | null;
+  lastPublishedEpisodeId: string | null;
+  isConnecting: boolean;
   onEdit: (episode: PodcastEpisode) => void;
   onDelete: (episode: PodcastEpisode) => void;
   onNotify: (type: NotificationState['type'], message: string) => void;
@@ -681,26 +878,10 @@ function EpisodeListItem({
     archived: 'bg-gray-100 text-gray-800',
   };
 
-  const [youtubeSuccessMessage, setYoutubeSuccessMessage] = React.useState<string | null>(null);
-  const [youtubeErrorMessage, setYoutubeErrorMessage] = React.useState<string | null>(null);
   const [transcribeSuccessMessage, setTranscribeSuccessMessage] = React.useState<string | null>(null);
   const [transcribeErrorMessage, setTranscribeErrorMessage] = React.useState<string | null>(null);
 
   const queryClient = useQueryClient();
-
-  const youtubeMutation = useMutation({
-    mutationFn: () => publishEpisodeToYouTube(episode.id),
-    onSuccess: () => {
-      setYoutubeErrorMessage(null);
-      setYoutubeSuccessMessage('Published to YouTube');
-      onNotify('success', `Episode "${episode.title}" is live on YouTube`);
-    },
-    onError: () => {
-      setYoutubeSuccessMessage(null);
-      setYoutubeErrorMessage('Failed to publish to YouTube. Please try again.');
-      onNotify('error', 'Failed to publish episode to YouTube');
-    },
-  });
 
   const transcribeMutation = useMutation({
     mutationFn: () => transcribeEpisode(episode.id),
@@ -717,11 +898,18 @@ function EpisodeListItem({
     },
   });
 
-  const handlePublish = () => {
-    setYoutubeSuccessMessage(null);
-    setYoutubeErrorMessage(null);
-    youtubeMutation.mutate();
-  };
+  const handleRetryConnection = React.useCallback(async () => {
+    try {
+      await onRefreshYoutubeConnection();
+    } catch (error) {
+      onNotify('error', 'Failed to refresh YouTube connection');
+    }
+  }, [onRefreshYoutubeConnection, onNotify]);
+
+  const isVideoEpisode = Boolean(episode.video_file_url);
+  const showPublishSuccess = lastPublishedEpisodeId === episode.id;
+  const infoMessage = infoEpisodeId === episode.id ? youtubeInfoMessage : null;
+  const isConnected = youtubeConnection?.isConnected ?? false;
 
   const handleTranscribe = () => {
     setTranscribeSuccessMessage(null);
@@ -914,58 +1102,69 @@ function EpisodeListItem({
                 )}
               </div>
             </FeatureGate>
-            {episode.video_file_url && (
-              <FeatureGate
-                feature="youtube_integration"
-                requiredTier="premium"
-                lockedTitle="YouTube publishing locked"
-                lockedDescription="Publish video episodes to YouTube with a Premium plan."
-                ctaLabel="Upgrade for YouTube"
-              >
+          {isVideoEpisode ? (
+            <div className="flex flex-col items-end gap-2">
+              {youtubeAccess.isLoading || youtubeConnectionLoading ? (
+                <span className="text-xs text-gray-500" role="status">
+                  Checking YouTube access…
+                </span>
+              ) : !youtubeAccess.hasAccess ? (
+                <button
+                  type="button"
+                  className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
+                  onClick={() => onNotify('info', youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.')}
+                >
+                  Upgrade for YouTube
+                </button>
+              ) : youtubeConnectionError ? (
                 <div className="flex flex-col items-end gap-1">
-                  {youtubeAccess.isLoading ? (
-                    <span className="text-xs text-gray-500" role="status">
-                      Checking YouTube access…
-                    </span>
-                  ) : youtubeAccess.hasAccess ? (
-                    <button
-                      type="button"
-                      onClick={handlePublish}
-                      disabled={youtubeMutation.isPending}
-                      className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:opacity-70"
-                    >
-                      {youtubeMutation.isPending ? 'Publishing…' : 'Publish to YouTube'}
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => window.location.href = youtubeAccess.upgradeCtaUrl ?? '/pricing'}
-                        className="inline-flex items-center px-3 py-2 border border-indigo-200 shadow-sm text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
-                      >
-                        Upgrade for YouTube
-                      </button>
-                      {youtubeAccess.upgradeMessage && (
-                        <p className="text-xs text-indigo-600" role="status">
-                          {youtubeAccess.upgradeMessage}
-                        </p>
-                      )}
-                    </>
-                  )}
-                  {youtubeSuccessMessage && (
-                    <p className="text-xs text-emerald-600" role="status">
-                      {youtubeSuccessMessage}
-                    </p>
-                  )}
-                  {youtubeErrorMessage && (
-                    <p className="text-xs text-red-600" role="alert">
-                      {youtubeErrorMessage}
-                    </p>
-                  )}
+                  <span className="text-xs text-red-600" role="alert">
+                    We couldn't verify your YouTube connection.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRetryConnection}
+                    className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-600 bg-white hover:bg-gray-50"
+                  >
+                    Retry connection
+                  </button>
                 </div>
-              </FeatureGate>
-            )}
+              ) : !isConnected ? (
+                <button
+                  type="button"
+                  onClick={() => onRequestYouTubeConnect(episode)}
+                  disabled={isConnecting}
+                  className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isConnecting && infoEpisodeId === episode.id ? 'Connecting…' : 'Connect YouTube'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onRequestPublish(episode)}
+                  className="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  Publish to YouTube
+                </button>
+              )}
+              {isConnected && youtubeConnection?.channelName ? (
+                <span className="text-xs text-gray-500">
+                  Connected as {youtubeConnection.channelName}
+                </span>
+              ) : null}
+              {infoMessage ? (
+                <p className="text-xs text-indigo-600 text-right" role="status">
+                  {infoMessage}
+                </p>
+              ) : null}
+              {showPublishSuccess ? (
+                <p className="text-xs text-emerald-600" role="status">
+                  Published to YouTube
+                </p>
+              ) : null}
+            </div>
+          ) : null}
           </div>
         </div>
       </div>
