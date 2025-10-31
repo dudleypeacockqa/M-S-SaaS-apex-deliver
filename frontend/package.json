@@ -19,11 +19,13 @@
     "@hello-pangea/dnd": "^18.0.1",
     "@tanstack/react-query": "^5.90.5",
     "axios": "^1.12.2",
+    "lucide-react": "^0.552.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.9.4",
     "serve": "^14.2.5",
+    "wouter": "^3.7.1",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
