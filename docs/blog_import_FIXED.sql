@@ -173,6 +173,8 @@ Ready to transform your **M&A deal flow management**? I''d love to show you how 
     '2024-06-01 00:00:00',
     'Dudley Peacock',
     12,
+    'PMI',
+    'complete guide, guide to, flow management, complete guide to, deal flow management',
     NOW(),
     NOW()
 );
@@ -336,6 +338,8 @@ Book a 60-minute strategy session with me at **https://book.vimcal.com/p/dudleyp
     '2024-06-04 00:00:00',
     'Dudley Peacock',
     11,
+    'due diligence',
+    'a process, process that, due diligence checklist, financial analysis',
     NOW(),
     NOW()
 );
@@ -541,6 +545,8 @@ Ready to transform your **M&A valuation and deal structuring**? I''d love to sho
     '2024-06-07 00:00:00',
     'Dudley Peacock',
     12,
+    'valuation',
+    'DCF valuation, step-by-step guide, valuation methods, DCF valuation',
     NOW(),
     NOW()
 );
@@ -737,6 +743,8 @@ Ready to transform your **M&A valuation and deal execution process**? I''d love 
     '2024-06-10 00:00:00',
     'Dudley Peacock',
     13,
+    'valuation',
+    'company analysis, comparable company analysis, analysis cca, s guide, company analysis cca',
     NOW(),
     NOW()
 );
@@ -885,6 +893,8 @@ Ready to transform your **M&A execution and value realization**? I''d love to sh
     '2024-06-13 00:00:00',
     'Dudley Peacock',
     10,
+    'PMI',
+    'PMI best practices, merger integration, acquisition integration, synergy realization',
     NOW(),
     NOW()
 );
@@ -1046,6 +1056,8 @@ Book a 60-minute strategy session with me at `https://book.vimcal.com/p/dudleype
     '2024-06-16 00:00:00',
     'Dudley Peacock',
     10,
+    'due diligence',
+    'due diligence checklist, financial analysis, deal evaluation, DD process',
     NOW(),
     NOW()
 );
@@ -1200,6 +1212,8 @@ Ready to transform your **deal sourcing strategy**? I''d love to show you how Ap
     '2024-06-19 00:00:00',
     'Dudley Peacock',
     12,
+    'M&A',
+    'deal pipeline, M&A strategy, deal pipeline, M&A process',
     NOW(),
     NOW()
 );
@@ -1346,6 +1360,8 @@ Book a 60-minute strategy session with me at [https://book.vimcal.com/p/dudleype
     '2024-06-22 00:00:00',
     'Dudley Peacock',
     11,
+    'valuation',
+    'valuation methods, DCF valuation, comp analysis, precedent transactions',
     NOW(),
     NOW()
 );
@@ -1519,6 +1535,8 @@ Ready to transform your **M&A deal structure**? I''d love to show you how ApexDe
     '2024-06-25 00:00:00',
     'Dudley Peacock',
     12,
+    'valuation',
+    'valuation methods, DCF valuation, comp analysis, precedent transactions',
     NOW(),
     NOW()
 );
@@ -1708,6 +1726,8 @@ Ready to transform your **M&A exit strategy**? I''d love to show you how ApexDel
     '2024-06-28 00:00:00',
     'Dudley Peacock',
     12,
+    'valuation',
+    'M&A valuation, qoe analysis, valuation methods, DCF valuation',
     NOW(),
     NOW()
 );
@@ -1895,6 +1915,8 @@ Ready to transform your **liquidity management and strategic financial planning*
     '2024-07-01 00:00:00',
     'Dudley Peacock',
     12,
+    'M&A',
+    'M&A strategy, deal pipeline, M&A process, acquisition strategy',
     NOW(),
     NOW()
 );
@@ -2056,6 +2078,8 @@ Ready to transform your **FP&A function**? I''d love to show you how ApexDeliver
     '2024-07-04 00:00:00',
     'Dudley Peacock',
     10,
+    'M&A',
+    'best practices, financial planning, M&A strategy, deal pipeline',
     NOW(),
     NOW()
 );
@@ -2228,6 +2252,8 @@ Ready to transform your **financial planning and capital deployment**? I''d love
     '2024-07-07 00:00:00',
     'Dudley Peacock',
     10,
+    'M&A',
+    'M&A strategy, deal pipeline, M&A process, acquisition strategy',
     NOW(),
     NOW()
 );
@@ -2404,6 +2430,8 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
     '2024-07-10 00:00:00',
     'Dudley Peacock',
     6,
+    'M&A',
+    'scenario planning, planning is, M&A strategy, deal pipeline',
     NOW(),
     NOW()
 );
@@ -2618,6 +2646,8 @@ Ready to transform your **financial strategy and maximize your company''s enterp
     '2024-07-13 00:00:00',
     'Dudley Peacock',
     13,
+    'M&A',
+    'M&A strategy, deal pipeline, M&A process, acquisition strategy',
     NOW(),
     NOW()
 );
@@ -2801,6 +2831,8 @@ Ready to transform your **financial planning and forecasting**? I''d love to sho
     '2024-07-16 00:00:00',
     'Dudley Peacock',
     12,
+    'due diligence',
+    'driver-based planning, planning dbp, due diligence checklist, financial analysis',
     NOW(),
     NOW()
 );
@@ -3008,6 +3040,8 @@ Ready to transform your **financial strategy and operational efficiency**? I''d 
     '2024-07-19 00:00:00',
     'Dudley Peacock',
     12,
+    'M&A',
+    'variance analysis, M&A strategy, deal pipeline, M&A process',
     NOW(),
     NOW()
 );
@@ -3172,6 +3206,8 @@ Ready to transform your **financial planning and M&A readiness**? I''d love to s
     '2024-07-22 00:00:00',
     'Dudley Peacock',
     12,
+    'due diligence',
+    'financial planning, the strategy-execution, strategy-execution gap, the strategy-execution gap, integrated financial planning',
     NOW(),
     NOW()
 );
@@ -3339,6 +3375,8 @@ Ready to transform your **cash flow modeling and capital strategy**? I''d love t
     '2024-07-25 00:00:00',
     'Dudley Peacock',
     12,
+    'valuation',
+    'valuation methods, DCF valuation, comp analysis, precedent transactions',
     NOW(),
     NOW()
 );
@@ -3483,6 +3521,8 @@ Ready to transform your **financial planning and analysis (FP&A) process**? I''d
     '2024-07-28 00:00:00',
     'Dudley Peacock',
     12,
+    'M&A',
+    'M&A strategy, deal pipeline, M&A process, acquisition strategy',
     NOW(),
     NOW()
 );
@@ -3679,6 +3719,8 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
     '2024-07-31 00:00:00',
     'Dudley Peacock',
     11,
+    'post-merger integration',
+    'PMI best practices, merger integration, acquisition integration, synergy realization',
     NOW(),
     NOW()
 );
@@ -3862,6 +3904,8 @@ I’d love to show you how ApexDeliver + CapLiquify can help you move from cultu
     '2024-08-03 00:00:00',
     'Dudley Peacock',
     12,
+    'integration',
+    'PMI best practices, merger integration, acquisition integration, synergy realization',
     NOW(),
     NOW()
 );
@@ -4080,6 +4124,8 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
     '2024-08-06 00:00:00',
     'Dudley Peacock',
     11,
+    'M&A',
+    'M&A strategy, deal pipeline, M&A process, acquisition strategy',
     NOW(),
     NOW()
 );
@@ -4251,6 +4297,8 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
     '2024-08-09 00:00:00',
     'Dudley Peacock',
     13,
+    'integration',
+    'PMI best practices, merger integration, acquisition integration, synergy realization',
     NOW(),
     NOW()
 );
@@ -4429,6 +4477,8 @@ Ready to transform your **M&A integration and talent retention strategy**? I''d 
     '2024-08-12 00:00:00',
     'Dudley Peacock',
     13,
+    'acquisition',
+    'M&A strategy, deal pipeline, M&A process, acquisition strategy',
     NOW(),
     NOW()
 );
@@ -4594,6 +4644,8 @@ Ready to transform your **M&A customer retention strategy**? I''d love to show y
     '2024-08-15 00:00:00',
     'Dudley Peacock',
     13,
+    'PMI',
+    'PMI best practices, merger integration, acquisition integration, synergy realization',
     NOW(),
     NOW()
 );
@@ -4742,6 +4794,8 @@ Ready to transform your **M&A integration and Day 1 readiness planning**? I''d l
     '2024-08-18 00:00:00',
     'Dudley Peacock',
     13,
+    'PMI',
+    'PMI best practices, merger integration, acquisition integration, synergy realization',
     NOW(),
     NOW()
 );
@@ -4913,6 +4967,8 @@ Book a **60-minute strategy session** with me at **https://book.vimcal.com/p/dud
     '2024-08-21 00:00:00',
     'Dudley Peacock',
     12,
+    'PMI',
+    'PMI best practices, merger integration, acquisition integration, synergy realization',
     NOW(),
     NOW()
 );
@@ -5080,6 +5136,8 @@ Ready to transform your **post-acquisition commercial integration**? I''d love t
     '2024-08-24 00:00:00',
     'Dudley Peacock',
     11,
+    'PMI',
+    'PMI best practices, merger integration, acquisition integration, synergy realization',
     NOW(),
     NOW()
 );
@@ -5232,6 +5290,8 @@ Book a 60-minute strategy session with me at [https://book.vimcal.com/p/dudleype
     '2024-08-27 00:00:00',
     'Dudley Peacock',
     11,
+    'post-merger integration',
+    'merger integration, PMI best practices, merger integration, acquisition integration',
     NOW(),
     NOW()
 );
@@ -5408,6 +5468,8 @@ I''d love to show you how ApexDeliver + CapLiquify can help you identify and unl
     '2024-08-30 00:00:00',
     'Dudley Peacock',
     12,
+    'M&A',
+    'M&A strategy, deal pipeline, M&A process, acquisition strategy',
     NOW(),
     NOW()
 );
@@ -5604,6 +5666,8 @@ Book a 60-minute strategy session with me at **https://book.vimcal.com/p/dudleyp
     '2024-09-02 00:00:00',
     'Dudley Peacock',
     12,
+    'valuation',
+    'valuation methods, DCF valuation, comp analysis, precedent transactions',
     NOW(),
     NOW()
 );
@@ -5796,6 +5860,8 @@ Ready to transform your **working capital and liquidity**? I''d love to show you
     '2024-09-05 00:00:00',
     'Dudley Peacock',
     12,
+    'due diligence',
+    'inventory management, due diligence checklist, financial analysis, deal evaluation',
     NOW(),
     NOW()
 );
@@ -5963,6 +6029,8 @@ Ready to transform your **Accounts Receivable process**? I''d love to show you h
     '2024-09-08 00:00:00',
     'Dudley Peacock',
     12,
+    'valuation',
+    'best practices, valuation methods, DCF valuation, comp analysis',
     NOW(),
     NOW()
 );
@@ -6166,6 +6234,8 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
     '2024-09-11 00:00:00',
     'Dudley Peacock',
     12,
+    'M&A',
+    'M&A strategy, deal pipeline, M&A process, acquisition strategy',
     NOW(),
     NOW()
 );
@@ -6307,6 +6377,8 @@ Ready to transform your **supply chain finance strategy**? I''d love to show you
     '2024-09-14 00:00:00',
     'Dudley Peacock',
     11,
+    'valuation',
+    'valuation methods, DCF valuation, comp analysis, precedent transactions',
     NOW(),
     NOW()
 );
@@ -6492,6 +6564,8 @@ Ready to transform your **liquidity and operational efficiency**? I''d love to s
     '2024-09-17 00:00:00',
     'Dudley Peacock',
     12,
+    'M&A',
+    'M&A strategy, deal pipeline, M&A process, acquisition strategy',
     NOW(),
     NOW()
 );
@@ -6652,6 +6726,8 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
     '2024-09-20 00:00:00',
     'Dudley Peacock',
     11,
+    'M&A',
+    '3-bucket strategy, M&A strategy, deal pipeline, M&A process',
     NOW(),
     NOW()
 );
@@ -6819,6 +6895,8 @@ Ready to transform your **working capital due diligence and post-close adjustmen
     '2024-09-23 00:00:00',
     'Dudley Peacock',
     12,
+    'due diligence',
+    'due diligence checklist, financial analysis, deal evaluation, DD process',
     NOW(),
     NOW()
 );
@@ -7040,6 +7118,8 @@ Book a 60-minute strategy session with me at https://book.vimcal.com/p/dudleypea
     '2024-09-26 00:00:00',
     'Dudley Peacock',
     12,
+    'M&A',
+    'capital planning, working capital planning, M&A strategy, deal pipeline',
     NOW(),
     NOW()
 );
@@ -7244,6 +7324,8 @@ Ready to transform your **pricing strategy and capture the full economic value o
     '2024-09-29 00:00:00',
     'Dudley Peacock',
     11,
+    'M&A',
+    'M&A strategy, deal pipeline, M&A process, acquisition strategy',
     NOW(),
     NOW()
 );
@@ -7410,6 +7492,8 @@ Ready to transform your **pricing strategy and unlock hidden EBITDA**? I''d love
     '2024-10-02 00:00:00',
     'Dudley Peacock',
     12,
+    'M&A',
+    'M&A strategy, deal pipeline, M&A process, acquisition strategy',
     NOW(),
     NOW()
 );
@@ -7592,6 +7676,8 @@ Ready to transform your **promotional pricing strategy**? I''d love to show you 
     '2024-10-05 00:00:00',
     'Dudley Peacock',
     13,
+    'M&A',
+    'M&A strategy, deal pipeline, M&A process, acquisition strategy',
     NOW(),
     NOW()
 );
@@ -7821,6 +7907,8 @@ Ready to transform your **pricing strategy and valuation**? I''d love to show yo
     '2024-10-08 00:00:00',
     'Dudley Peacock',
     11,
+    'valuation',
+    'pricing strategy, valuation methods, DCF valuation, comp analysis',
     NOW(),
     NOW()
 );
@@ -8009,6 +8097,8 @@ Ready to transform your **pricing strategy and unlock hidden enterprise value**?
     '2024-10-11 00:00:00',
     'Dudley Peacock',
     12,
+    'due diligence',
+    'pricing analysis, competitive pricing analysis, due diligence checklist, financial analysis',
     NOW(),
     NOW()
 );
@@ -8190,6 +8280,8 @@ Ready to transform your **SaaS pricing strategy**? I''d love to show you how Ape
     '2024-10-14 00:00:00',
     'Dudley Peacock',
     13,
+    'M&A',
+    'strategy that, M&A strategy, deal pipeline, M&A process',
     NOW(),
     NOW()
 );
@@ -8378,6 +8470,8 @@ Ready to transform your **discount management strategy and unit economics**? I''
     '2024-10-17 00:00:00',
     'Dudley Peacock',
     10,
+    'due diligence',
+    'discount management, due diligence checklist, financial analysis, deal evaluation',
     NOW(),
     NOW()
 );
@@ -8563,6 +8657,8 @@ Ready to transform your **pricing strategy and exit valuation**? I''d love to sh
     '2024-10-20 00:00:00',
     'Dudley Peacock',
     13,
+    'valuation',
+    'valuation methods, DCF valuation, comp analysis, precedent transactions',
     NOW(),
     NOW()
 );
@@ -8737,6 +8833,8 @@ Ready to transform your **Revenue Optimization Strategy**? I''d love to show you
     '2024-10-23 00:00:00',
     'Dudley Peacock',
     11,
+    'PMI',
+    'PMI best practices, merger integration, acquisition integration, synergy realization',
     NOW(),
     NOW()
 );
@@ -8915,6 +9013,8 @@ Ready to transform your **new product launch and pricing strategy**? I''d love t
     '2024-10-26 00:00:00',
     'Dudley Peacock',
     12,
+    'M&A',
+    'pricing strategy, strategy that, M&A strategy, deal pipeline',
     NOW(),
     NOW()
 );

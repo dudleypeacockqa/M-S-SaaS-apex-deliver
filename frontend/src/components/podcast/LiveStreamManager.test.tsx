@@ -253,14 +253,7 @@ describe('LiveStreamManager - status handling', () => {
 
 describe('LiveStreamManager - status polling', () => {
   it('should poll stream status at intervals when stream is active', async () => {
-    const timers: Array<() => void> = [];
-    const setTimeoutSpy = vi.spyOn(window, 'setTimeout').mockImplementation((cb, ms) => {
-      if (typeof cb === 'function') {
-        timers.push(cb as () => void);
-      }
-      return 0 as unknown as number;
-    });
-
+    vi.useFakeTimers();
     try {
       const stream = createTestStream({ status: 'live' });
       vi.mocked(fetchLiveStream).mockResolvedValueOnce(stream);
@@ -292,31 +285,19 @@ describe('LiveStreamManager - status polling', () => {
         expect(within(summary.parentElement!).getByText('12')).toBeInTheDocument();
       });
 
-      expect(timers.length).toBeGreaterThan(0);
-
       vi.mocked(getLiveStreamStatus).mockResolvedValueOnce(secondSnapshot);
-      act(() => {
-        const nextTick = timers.shift();
-        nextTick?.();
-      });
+      await vi.advanceTimersByTimeAsync(5000);
 
       await waitFor(() => {
         expect(within(summary.parentElement!).getByText('24')).toBeInTheDocument();
       });
     } finally {
-      setTimeoutSpy.mockRestore();
+      vi.useRealTimers();
     }
   });
 
   it('should stop polling when stream is offline', async () => {
-    const timers: Array<() => void> = [];
-    const setTimeoutSpy = vi.spyOn(window, 'setTimeout').mockImplementation((cb, ms) => {
-      if (typeof cb === 'function') {
-        timers.push(cb as () => void);
-      }
-      return 0 as unknown as number;
-    });
-
+    vi.useFakeTimers();
     try {
       const stream = createTestStream({ status: 'offline' });
       vi.mocked(fetchLiveStream).mockResolvedValueOnce(stream);
@@ -326,9 +307,9 @@ describe('LiveStreamManager - status polling', () => {
       await screen.findByTestId('stream-status');
 
       expect(getLiveStreamStatus).not.toHaveBeenCalled();
-      expect(timers.length).toBe(0);
+      expect(vi.getTimerCount()).toBe(0);
     } finally {
-      setTimeoutSpy.mockRestore();
+      vi.useRealTimers();
     }
   });
 });

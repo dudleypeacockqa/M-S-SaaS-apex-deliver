@@ -126,14 +126,11 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
 
   React.useEffect(() => {
     if (!shouldPollStatus || !stream) {
-      if (!shouldPollStatus) {
-        setStatusSnapshot(null);
-      }
+      setStatusSnapshot(null);
       return;
     }
 
     if (startMutation.isPending || stopMutation.isPending) {
-      setStatusSnapshot(null);
       return;
     }
 
@@ -146,30 +143,28 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
           return;
         }
         setStatusSnapshot(snapshot);
-        queryClient.setQueryData(queryKey(podcastId), (previous: LiveStream | null | undefined) => {
-          if (!previous) {
-            return previous ?? null;
-          }
-          return {
-            ...previous,
-            status: snapshot.status,
-            latestViewerCount: snapshot.viewerCount ?? previous.latestViewerCount ?? null,
-          };
-        });
       } catch (error) {
-        // Swallow polling errors; UI already shows last known status
+        // Ignore polling errors to keep last known state
+      } finally {
+        if (!isCancelled) {
+          if (pollTimeoutRef.current !== null) {
+            window.clearTimeout(pollTimeoutRef.current);
+          }
+          pollTimeoutRef.current = window.setTimeout(() => {
+            void pollStatus();
+          }, POLL_INTERVAL_MS);
+        }
       }
     };
 
     void pollStatus();
 
-    const intervalId = window.setInterval(() => {
-      void pollStatus();
-    }, POLL_INTERVAL_MS);
-
     return () => {
       isCancelled = true;
-      window.clearInterval(intervalId);
+      if (pollTimeoutRef.current !== null) {
+        window.clearTimeout(pollTimeoutRef.current);
+        pollTimeoutRef.current = null;
+      }
     };
   }, [shouldPollStatus, stream?.id, stream?.status, podcastId, queryClient, startMutation.isPending, stopMutation.isPending]);
 

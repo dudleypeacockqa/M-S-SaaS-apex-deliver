@@ -7,9 +7,15 @@ The current SQL file is missing these required columns, causing import failures.
 import json
 import re
 
-# Load the JSON data with blog posts
-with open('blog_posts_for_database.json', 'r', encoding='utf-8') as f:
-    blog_posts = json.load(f)
+# Load the JSON data with blog posts (complete version with all keywords)
+keywords_file = 'blog_posts_for_database_COMPLETE.json'
+try:
+    with open(keywords_file, 'r', encoding='utf-8') as f:
+        blog_posts = json.load(f)
+except FileNotFoundError:
+    print(f"WARNING: {keywords_file} not found, falling back to blog_posts_for_database.json")
+    with open('blog_posts_for_database.json', 'r', encoding='utf-8') as f:
+        blog_posts = json.load(f)
 
 # Create a mapping of slug -> keywords
 keywords_map = {}
@@ -77,5 +83,6 @@ for i in range(1, len(inserts), 2):
 with open('docs/blog_import_FIXED.sql', 'w', encoding='utf-8') as f:
     f.write(fixed_sql)
 
-print("✅ Fixed SQL written to docs/blog_import_FIXED.sql")
+print("[OK] Fixed SQL written to docs/blog_import_FIXED.sql")
+print(f"[OK] Processed {len(keywords_map)} posts with keywords")
 print("Please review the file and then rename it to blog_import.sql")
