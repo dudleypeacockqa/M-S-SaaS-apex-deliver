@@ -55,7 +55,7 @@ describe('Clerk authentication routing', () => {
     })
   })
 
-  it('redirects unauthenticated users from /dashboard to /sign-in', () => {
+  it('redirects unauthenticated users from /dashboard to /sign-in', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
@@ -72,14 +72,15 @@ describe('Clerk authentication routing', () => {
       </QueryClientProvider>
     )
 
+    // Wait for lazy-loaded SignInPage to render
     expect(
-      screen.getByRole('heading', {
+      await screen.findByRole('heading', {
         name: /sign in to apexdeliver/i,
-      })
+      }, { timeout: 3000 })
     ).toBeInTheDocument()
   })
 
-  it('shows dashboard content when the user is authenticated', () => {
+  it('shows dashboard content when the user is authenticated', async () => {
     setMockClerkState({
       isSignedIn: true,
       user: { firstName: 'Ada', emailAddress: 'ada@example.com' },
@@ -101,11 +102,11 @@ describe('Clerk authentication routing', () => {
       </QueryClientProvider>
     )
 
-    // The new dashboard has a personalized greeting instead of "Dashboard" heading
+    // The new dashboard has a personalized greeting instead of "Dashboard" heading - wait for lazy load
     expect(
-      screen.getByRole('heading', {
+      await screen.findByRole('heading', {
         name: /good (morning|afternoon|evening), ada/i,
-      })
+      }, { timeout: 3000 })
     ).toBeInTheDocument()
   })
 
