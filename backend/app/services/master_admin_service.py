@@ -861,3 +861,713 @@ def get_dashboard_stats(user_id: str, db: Session) -> dict:
         "open_deals": open_deals,
         "unread_nudges": unread_nudges_count,
     }
+
+
+# ============================================================================
+# Campaign Management Services
+# ============================================================================
+
+def create_admin_campaign(campaign_data: AdminCampaignCreate, user: User, db: Session) -> AdminCampaign:
+    """
+    Create a new campaign.
+
+    Args:
+        campaign_data: Campaign creation data
+        user: User creating the campaign
+        db: Database session
+
+    Returns:
+        Created campaign instance
+    """
+    campaign = AdminCampaign(
+        user_id=str(user.id),
+        name=campaign_data.name,
+        type=campaign_data.type,
+        status=campaign_data.status,
+        subject=campaign_data.subject,
+        content=campaign_data.content,
+        scheduled_at=campaign_data.scheduled_at,
+        segment_filter=campaign_data.segment_filter,
+    )
+    db.add(campaign)
+    db.commit()
+    db.refresh(campaign)
+    return campaign
+
+
+def get_admin_campaign_by_id(campaign_id: int, user_id: str, db: Session) -> Optional[AdminCampaign]:
+    """
+    Get campaign by ID (user-scoped).
+
+    Args:
+        campaign_id: Campaign ID
+        user_id: User ID for isolation
+        db: Database session
+
+    Returns:
+        Campaign instance or None if not found
+    """
+    return db.scalar(
+        select(AdminCampaign).where(
+            AdminCampaign.id == campaign_id,
+            AdminCampaign.user_id == user_id
+        )
+    )
+
+
+def list_admin_campaigns(
+    user_id: str,
+    db: Session,
+    page: int = 1,
+    per_page: int = 50,
+    status: Optional[str] = None,
+    campaign_type: Optional[str] = None,
+) -> tuple[list[AdminCampaign], int]:
+    """
+    List campaigns with pagination and filtering.
+
+    Args:
+        user_id: User ID
+        db: Database session
+        page: Page number (1-indexed)
+        per_page: Items per page
+        status: Filter by campaign status
+        campaign_type: Filter by campaign type
+
+    Returns:
+        Tuple of (campaigns list, total count)
+    """
+    query = select(AdminCampaign).where(AdminCampaign.user_id == user_id)
+    
+    if status:
+        query = query.where(AdminCampaign.status == status)
+    if campaign_type:
+        query = query.where(AdminCampaign.type == campaign_type)
+    
+    # Get total count
+    total = db.scalar(select(func.count()).select_from(query.subquery()))
+    
+    # Apply pagination and sorting
+    query = query.order_by(desc(AdminCampaign.created_at))
+    query = query.offset((page - 1) * per_page).limit(per_page)
+    
+    campaigns = list(db.scalars(query))
+    return campaigns, total or 0
+
+
+def update_admin_campaign(campaign: AdminCampaign, campaign_data: AdminCampaignUpdate, db: Session) -> AdminCampaign:
+    """
+    Update an existing campaign.
+
+    Args:
+        campaign: Campaign instance to update
+        campaign_data: Update data
+        db: Database session
+
+    Returns:
+        Updated campaign instance
+    """
+    update_fields = campaign_data.model_dump(exclude_unset=True)
+    for field, value in update_fields.items():
+        setattr(campaign, field, value)
+    
+    campaign.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(campaign)
+    return campaign
+
+
+def delete_admin_campaign(campaign: AdminCampaign, db: Session) -> None:
+    """
+    Delete a campaign.
+
+    Args:
+        campaign: Campaign instance to delete
+        db: Database session
+    """
+    db.delete(campaign)
+    db.commit()
+
+
+def send_admin_campaign(campaign: AdminCampaign, db: Session) -> AdminCampaign:
+    """
+    Send a campaign (update status to sent).
+
+    Args:
+        campaign: Campaign instance to send
+        db: Database session
+
+    Returns:
+        Updated campaign instance
+    """
+    campaign.status = "sent"
+    campaign.sent_at = datetime.now(timezone.utc)
+    campaign.updated_at = datetime.now(timezone.utc)
+    
+    db.commit()
+    db.refresh(campaign)
+    return campaign
+
+
+# ============================================================================
+# Content Studio Services
+# ============================================================================
+
+def create_admin_content_script(script_data: AdminContentScriptCreate, user: User, db: Session) -> AdminContentScript:
+    """
+    Create a new content script.
+
+    Args:
+        script_data: Script creation data
+        user: User creating the script
+        db: Database session
+
+    Returns:
+        Created script instance
+    """
+    script = AdminContentScript(
+        user_id=str(user.id),
+        title=script_data.title,
+        type=script_data.type,
+        topic=script_data.topic,
+        target_duration=script_data.target_duration,
+        script_text=script_data.script_text,
+        notes=script_data.notes,
+    )
+    db.add(script)
+    db.commit()
+    db.refresh(script)
+    return script
+
+
+def get_admin_content_script_by_id(script_id: int, user_id: str, db: Session) -> Optional[AdminContentScript]:
+    """
+    Get content script by ID (user-scoped).
+
+    Args:
+        script_id: Script ID
+        user_id: User ID for isolation
+        db: Database session
+
+    Returns:
+        Script instance or None if not found
+    """
+    return db.scalar(
+        select(AdminContentScript).where(
+            AdminContentScript.id == script_id,
+            AdminContentScript.user_id == user_id
+        )
+    )
+
+
+def list_admin_content_scripts(
+    user_id: str,
+    db: Session,
+    page: int = 1,
+    per_page: int = 50,
+    script_type: Optional[str] = None,
+) -> tuple[list[AdminContentScript], int]:
+    """
+    List content scripts with pagination and filtering.
+
+    Args:
+        user_id: User ID
+        db: Database session
+        page: Page number (1-indexed)
+        per_page: Items per page
+        script_type: Filter by script type
+
+    Returns:
+        Tuple of (scripts list, total count)
+    """
+    query = select(AdminContentScript).where(AdminContentScript.user_id == user_id)
+    
+    if script_type:
+        query = query.where(AdminContentScript.type == script_type)
+    
+    # Get total count
+    total = db.scalar(select(func.count()).select_from(query.subquery()))
+    
+    # Apply pagination and sorting
+    query = query.order_by(desc(AdminContentScript.created_at))
+    query = query.offset((page - 1) * per_page).limit(per_page)
+    
+    scripts = list(db.scalars(query))
+    return scripts, total or 0
+
+
+def update_admin_content_script(script: AdminContentScript, script_data: AdminContentScriptUpdate, db: Session) -> AdminContentScript:
+    """
+    Update an existing content script.
+
+    Args:
+        script: Script instance to update
+        script_data: Update data
+        db: Database session
+
+    Returns:
+        Updated script instance
+    """
+    update_fields = script_data.model_dump(exclude_unset=True)
+    for field, value in update_fields.items():
+        setattr(script, field, value)
+    
+    script.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(script)
+    return script
+
+
+def delete_admin_content_script(script: AdminContentScript, db: Session) -> None:
+    """
+    Delete a content script.
+
+    Args:
+        script: Script instance to delete
+        db: Database session
+    """
+    db.delete(script)
+    db.commit()
+
+
+def create_admin_content_piece(content_data: AdminContentPieceCreate, user: User, db: Session) -> AdminContentPiece:
+    """
+    Create a new content piece.
+
+    Args:
+        content_data: Content creation data
+        user: User creating the content
+        db: Database session
+
+    Returns:
+        Created content instance
+    """
+    content = AdminContentPiece(
+        user_id=str(user.id),
+        script_id=content_data.script_id,
+        title=content_data.title,
+        type=content_data.type,
+        status=content_data.status,
+        video_url=content_data.video_url,
+        audio_url=content_data.audio_url,
+        thumbnail_url=content_data.thumbnail_url,
+        description=content_data.description,
+        tags=content_data.tags,
+        published_at=content_data.published_at,
+        youtube_id=content_data.youtube_id,
+        spotify_id=content_data.spotify_id,
+        views_count=content_data.views_count,
+        engagement_score=content_data.engagement_score,
+    )
+    db.add(content)
+    db.commit()
+    db.refresh(content)
+    return content
+
+
+def get_admin_content_piece_by_id(content_id: int, user_id: str, db: Session) -> Optional[AdminContentPiece]:
+    """
+    Get content piece by ID (user-scoped).
+
+    Args:
+        content_id: Content ID
+        user_id: User ID for isolation
+        db: Database session
+
+    Returns:
+        Content instance or None if not found
+    """
+    return db.scalar(
+        select(AdminContentPiece).where(
+            AdminContentPiece.id == content_id,
+            AdminContentPiece.user_id == user_id
+        )
+    )
+
+
+def list_admin_content_pieces(
+    user_id: str,
+    db: Session,
+    page: int = 1,
+    per_page: int = 50,
+    content_type: Optional[str] = None,
+    status: Optional[str] = None,
+) -> tuple[list[AdminContentPiece], int]:
+    """
+    List content pieces with pagination and filtering.
+
+    Args:
+        user_id: User ID
+        db: Database session
+        page: Page number (1-indexed)
+        per_page: Items per page
+        content_type: Filter by content type
+        status: Filter by status
+
+    Returns:
+        Tuple of (content list, total count)
+    """
+    query = select(AdminContentPiece).where(AdminContentPiece.user_id == user_id)
+    
+    if content_type:
+        query = query.where(AdminContentPiece.type == content_type)
+    if status:
+        query = query.where(AdminContentPiece.status == status)
+    
+    # Get total count
+    total = db.scalar(select(func.count()).select_from(query.subquery()))
+    
+    # Apply pagination and sorting
+    query = query.order_by(desc(AdminContentPiece.created_at))
+    query = query.offset((page - 1) * per_page).limit(per_page)
+    
+    content_pieces = list(db.scalars(query))
+    return content_pieces, total or 0
+
+
+def update_admin_content_piece(content: AdminContentPiece, content_data: AdminContentPieceUpdate, db: Session) -> AdminContentPiece:
+    """
+    Update an existing content piece.
+
+    Args:
+        content: Content instance to update
+        content_data: Update data
+        db: Database session
+
+    Returns:
+        Updated content instance
+    """
+    update_fields = content_data.model_dump(exclude_unset=True)
+    for field, value in update_fields.items():
+        setattr(content, field, value)
+    
+    content.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(content)
+    return content
+
+
+def delete_admin_content_piece(content: AdminContentPiece, db: Session) -> None:
+    """
+    Delete a content piece.
+
+    Args:
+        content: Content instance to delete
+        db: Database session
+    """
+    db.delete(content)
+    db.commit()
+
+
+# ============================================================================
+# Lead Capture Services
+# ============================================================================
+
+def create_admin_lead_capture(lead_data: AdminLeadCaptureCreate, user: User, db: Session) -> AdminLeadCapture:
+    """
+    Create a new lead capture.
+
+    Args:
+        lead_data: Lead capture data
+        user: User creating the lead
+        db: Database session
+
+    Returns:
+        Created lead capture instance
+    """
+    lead = AdminLeadCapture(
+        user_id=str(user.id),
+        name=lead_data.name,
+        email=lead_data.email,
+        phone=lead_data.phone,
+        company=lead_data.company,
+        title=lead_data.title,
+        event_name=lead_data.event_name,
+        event_date=lead_data.event_date,
+        interest_level=lead_data.interest_level,
+        notes=lead_data.notes,
+        voice_notes_url=lead_data.voice_notes_url,
+        follow_up_sent=lead_data.follow_up_sent,
+        ghl_synced=lead_data.ghl_synced,
+        ghl_contact_id=lead_data.ghl_contact_id,
+    )
+    db.add(lead)
+    db.commit()
+    db.refresh(lead)
+    return lead
+
+
+def get_admin_lead_capture_by_id(lead_id: int, user_id: str, db: Session) -> Optional[AdminLeadCapture]:
+    """
+    Get lead capture by ID (user-scoped).
+
+    Args:
+        lead_id: Lead ID
+        user_id: User ID for isolation
+        db: Database session
+
+    Returns:
+        Lead capture instance or None if not found
+    """
+    return db.scalar(
+        select(AdminLeadCapture).where(
+            AdminLeadCapture.id == lead_id,
+            AdminLeadCapture.user_id == user_id
+        )
+    )
+
+
+def list_admin_lead_captures(
+    user_id: str,
+    db: Session,
+    page: int = 1,
+    per_page: int = 50,
+    event_name: Optional[str] = None,
+    interest_level: Optional[str] = None,
+    follow_up_sent: Optional[bool] = None,
+) -> tuple[list[AdminLeadCapture], int]:
+    """
+    List lead captures with pagination and filtering.
+
+    Args:
+        user_id: User ID
+        db: Database session
+        page: Page number (1-indexed)
+        per_page: Items per page
+        event_name: Filter by event name
+        interest_level: Filter by interest level
+        follow_up_sent: Filter by follow-up status
+
+    Returns:
+        Tuple of (leads list, total count)
+    """
+    query = select(AdminLeadCapture).where(AdminLeadCapture.user_id == user_id)
+    
+    if event_name:
+        query = query.where(AdminLeadCapture.event_name.ilike(f"%{event_name}%"))
+    if interest_level:
+        query = query.where(AdminLeadCapture.interest_level == interest_level)
+    if follow_up_sent is not None:
+        query = query.where(AdminLeadCapture.follow_up_sent == follow_up_sent)
+    
+    # Get total count
+    total = db.scalar(select(func.count()).select_from(query.subquery()))
+    
+    # Apply pagination and sorting
+    query = query.order_by(desc(AdminLeadCapture.created_at))
+    query = query.offset((page - 1) * per_page).limit(per_page)
+    
+    leads = list(db.scalars(query))
+    return leads, total or 0
+
+
+def update_admin_lead_capture(lead: AdminLeadCapture, lead_data: AdminLeadCaptureUpdate, db: Session) -> AdminLeadCapture:
+    """
+    Update an existing lead capture.
+
+    Args:
+        lead: Lead capture instance to update
+        lead_data: Update data
+        db: Database session
+
+    Returns:
+        Updated lead capture instance
+    """
+    update_fields = lead_data.model_dump(exclude_unset=True)
+    for field, value in update_fields.items():
+        setattr(lead, field, value)
+    
+    lead.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(lead)
+    return lead
+
+
+def delete_admin_lead_capture(lead: AdminLeadCapture, db: Session) -> None:
+    """
+    Delete a lead capture.
+
+    Args:
+        lead: Lead capture instance to delete
+        db: Database session
+    """
+    db.delete(lead)
+    db.commit()
+
+
+def sync_lead_to_ghl(lead: AdminLeadCapture, db: Session) -> AdminLeadCapture:
+    """
+    Sync lead capture to GoHighLevel.
+
+    Args:
+        lead: Lead capture instance to sync
+        db: Database session
+
+    Returns:
+        Updated lead capture instance with GHL contact ID
+    """
+    # TODO: Implement actual GoHighLevel API integration
+    # For now, just mark as synced
+    lead.ghl_synced = True
+    lead.updated_at = datetime.now(timezone.utc)
+    
+    db.commit()
+    db.refresh(lead)
+    return lead
+
+
+# ============================================================================
+# Collateral Services
+# ============================================================================
+
+def create_admin_collateral(collateral_data: AdminCollateralCreate, user: User, db: Session) -> AdminCollateral:
+    """
+    Create a new collateral item.
+
+    Args:
+        collateral_data: Collateral creation data
+        user: User creating the collateral
+        db: Database session
+
+    Returns:
+        Created collateral instance
+    """
+    collateral = AdminCollateral(
+        user_id=str(user.id),
+        name=collateral_data.name,
+        type=collateral_data.type,
+        description=collateral_data.description,
+        file_url=collateral_data.file_url,
+        thumbnail_url=collateral_data.thumbnail_url,
+        tags=collateral_data.tags,
+        version=collateral_data.version,
+    )
+    db.add(collateral)
+    db.commit()
+    db.refresh(collateral)
+    return collateral
+
+
+def get_admin_collateral_by_id(collateral_id: int, user_id: str, db: Session) -> Optional[AdminCollateral]:
+    """
+    Get collateral by ID (user-scoped).
+
+    Args:
+        collateral_id: Collateral ID
+        user_id: User ID for isolation
+        db: Database session
+
+    Returns:
+        Collateral instance or None if not found
+    """
+    return db.scalar(
+        select(AdminCollateral).where(
+            AdminCollateral.id == collateral_id,
+            AdminCollateral.user_id == user_id
+        )
+    )
+
+
+def list_admin_collateral(
+    user_id: str,
+    db: Session,
+    page: int = 1,
+    per_page: int = 50,
+    collateral_type: Optional[str] = None,
+    search: Optional[str] = None,
+) -> tuple[list[AdminCollateral], int]:
+    """
+    List collateral with pagination and filtering.
+
+    Args:
+        user_id: User ID
+        db: Database session
+        page: Page number (1-indexed)
+        per_page: Items per page
+        collateral_type: Filter by collateral type
+        search: Search by name or description
+
+    Returns:
+        Tuple of (collateral list, total count)
+    """
+    query = select(AdminCollateral).where(AdminCollateral.user_id == user_id)
+    
+    if collateral_type:
+        query = query.where(AdminCollateral.type == collateral_type)
+    if search:
+        search_term = f"%{search}%"
+        query = query.where(
+            or_(
+                AdminCollateral.name.ilike(search_term),
+                AdminCollateral.description.ilike(search_term)
+            )
+        )
+    
+    # Get total count
+    total = db.scalar(select(func.count()).select_from(query.subquery()))
+    
+    # Apply pagination and sorting
+    query = query.order_by(desc(AdminCollateral.created_at))
+    query = query.offset((page - 1) * per_page).limit(per_page)
+    
+    collateral_items = list(db.scalars(query))
+    return collateral_items, total or 0
+
+
+def update_admin_collateral(collateral: AdminCollateral, collateral_data: AdminCollateralUpdate, db: Session) -> AdminCollateral:
+    """
+    Update an existing collateral item.
+
+    Args:
+        collateral: Collateral instance to update
+        collateral_data: Update data
+        db: Database session
+
+    Returns:
+        Updated collateral instance
+    """
+    update_fields = collateral_data.model_dump(exclude_unset=True)
+    for field, value in update_fields.items():
+        setattr(collateral, field, value)
+    
+    collateral.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(collateral)
+    return collateral
+
+
+def delete_admin_collateral(collateral: AdminCollateral, db: Session) -> None:
+    """
+    Delete a collateral item.
+
+    Args:
+        collateral: Collateral instance to delete
+        db: Database session
+    """
+    db.delete(collateral)
+    db.commit()
+
+
+def track_collateral_usage(collateral_id: int, user_id: str, prospect_id: Optional[int], db: Session) -> AdminCollateralUsage:
+    """
+    Track collateral usage.
+
+    Args:
+        collateral_id: Collateral ID
+        user_id: User ID
+        prospect_id: Optional prospect ID
+        db: Database session
+
+    Returns:
+        Created usage tracking instance
+    """
+    usage = AdminCollateralUsage(
+        collateral_id=collateral_id,
+        user_id=user_id,
+        prospect_id=prospect_id,
+        used_at=datetime.now(timezone.utc),
+    )
+    db.add(usage)
+    db.commit()
+    db.refresh(usage)
+    return usage
