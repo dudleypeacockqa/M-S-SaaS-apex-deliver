@@ -36,11 +36,16 @@ with open('docs/blog_import.sql', 'r', encoding='utf-8') as f:
 # 1. Add columns to the column list
 # 2. Add values to the VALUES list
 
-# First, fix the column list in all INSERT statements
-sql_content = sql_content.replace(
-    "published, published_at, author, read_time_minutes,",
-    "published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,"
-)
+# First, check if column list already has primary_keyword and secondary_keywords
+# If not, add them
+if "primary_keyword, secondary_keywords," not in sql_content:
+    sql_content = sql_content.replace(
+        "published, published_at, author, read_time_minutes,",
+        "published, published_at, author, read_time_minutes, primary_keyword, secondary_keywords,"
+    )
+    print("Added primary_keyword and secondary_keywords to column list")
+else:
+    print("Column list already contains primary_keyword and secondary_keywords")
 
 # Now we need to add the actual values
 # This is trickier - we need to find each slug and add the corresponding keywords
