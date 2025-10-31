@@ -28,8 +28,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD python -c "import requests; requests.get('http://localhost:8000/health')" || exit 1
 
 # Run the application
-# First run migrations via prestart script, then start uvicorn
-# Note: prestart.sh will be copied to /app by Docker build context
+# First run migrations, then start uvicorn
 # Use $PORT environment variable from Render
-CMD bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+CMD sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
 
