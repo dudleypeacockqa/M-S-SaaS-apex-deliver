@@ -93,6 +93,7 @@ export function PodcastStudio() {
 
 function PodcastStudioContent() {
   const queryClient = useQueryClient();
+  const [activeSection, setActiveSection] = React.useState<'episodes' | 'liveStreaming'>('episodes');
   const [isCreateModalOpen, setCreateModalOpen] = React.useState(false);
   const [editingEpisode, setEditingEpisode] = React.useState<PodcastEpisode | null>(null);
   const [deleteTarget, setDeleteTarget] = React.useState<PodcastEpisode | null>(null);
@@ -1109,14 +1110,19 @@ function EpisodeListItem({
                   Checking YouTube access…
                 </span>
               ) : !youtubeAccess.hasAccess ? (
-                <button
-                  type="button"
-                  className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
-                  onClick={() => onNotify('info', youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.')}
-                >
-                  Upgrade for YouTube
-                </button>
+                <div className="flex flex-col items-end gap-1">
+                  <button
+                    type="button"
+                    className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
+                    onClick={() => onNotify('info', youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.')}
+                  >
+                    Upgrade for YouTube
+                  </button>
+                  <span className="text-xs text-gray-500">
+                    {youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
+                  </span>
+                </div>
               ) : youtubeConnectionError ? (
                 <div className="flex flex-col items-end gap-1">
                   <span className="text-xs text-red-600" role="alert">
