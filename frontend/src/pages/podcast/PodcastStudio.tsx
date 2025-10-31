@@ -937,14 +937,21 @@ function EpisodeListItem({
                       {youtubeMutation.isPending ? 'Publishing…' : 'Publish to YouTube'}
                     </button>
                   ) : (
-                    <button
-                      type="button"
-                      disabled
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-500 bg-white cursor-not-allowed"
-                      title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
-                    >
-                      Upgrade for YouTube
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => window.location.href = youtubeAccess.upgradeCtaUrl ?? '/pricing'}
+                        className="inline-flex items-center px-3 py-2 border border-indigo-200 shadow-sm text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        title={youtubeAccess.upgradeMessage ?? 'Upgrade to Premium tier to publish on YouTube.'}
+                      >
+                        Upgrade for YouTube
+                      </button>
+                      {youtubeAccess.upgradeMessage && (
+                        <p className="text-xs text-indigo-600" role="status">
+                          {youtubeAccess.upgradeMessage}
+                        </p>
+                      )}
+                    </>
                   )}
                   {youtubeSuccessMessage && (
                     <p className="text-xs text-emerald-600" role="status">

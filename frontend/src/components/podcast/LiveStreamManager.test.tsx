@@ -253,58 +253,83 @@ describe('LiveStreamManager - status handling', () => {
 
 describe('LiveStreamManager - status polling', () => {
   it('should poll stream status at intervals when stream is active', async () => {
-    vi.useFakeTimers();
-
-    const stream = createTestStream({ status: 'live' });
-    vi.mocked(fetchLiveStream).mockResolvedValueOnce(stream);
-
-    const firstSnapshot = {
-      status: 'live',
-      updatedAt: '2025-10-29T12:10:00Z',
-      viewerCount: 12,
-      averageBitrateKbps: 2800,
-    };
-    const secondSnapshot = {
-      status: 'live',
-      updatedAt: '2025-10-29T12:10:05Z',
-      viewerCount: 24,
-      averageBitrateKbps: 3200,
-    };
-
-    vi.mocked(getLiveStreamStatus).mockResolvedValueOnce(firstSnapshot);
-
-    renderManager();
-
-    const summary = await screen.findByText(/stream summary/i);
-
-    await vi.advanceTimersByTimeAsync(5000);
-
-    expect(getLiveStreamStatus).toHaveBeenCalledWith(stream.id);
-
-    await waitFor(() => {
-      expect(within(summary.parentElement!).getByText('12')).toBeInTheDocument();
+    const timers: Array<() => void> = [];
+    const setTimeoutSpy = vi.spyOn(window, 'setTimeout').mockImplementation((cb, ms) => {
+      if (typeof cb === 'function') {
+        timers.push(cb as () => void);
+      }
+      return 0 as unknown as number;
     });
 
-    vi.mocked(getLiveStreamStatus).mockResolvedValueOnce(secondSnapshot);
-    await vi.advanceTimersByTimeAsync(5000);
+    try {
+      const stream = createTestStream({ status: 'live' });
+      vi.mocked(fetchLiveStream).mockResolvedValueOnce(stream);
 
-    await waitFor(() => {
-      expect(within(summary.parentElement!).getByText('24')).toBeInTheDocument();
-    });
+      const firstSnapshot = {
+        status: 'live',
+        updatedAt: '2025-10-29T12:10:00Z',
+        viewerCount: 12,
+        averageBitrateKbps: 2800,
+      };
+      const secondSnapshot = {
+        status: 'live',
+        updatedAt: '2025-10-29T12:10:05Z',
+        viewerCount: 24,
+        averageBitrateKbps: 3200,
+      };
+
+      vi.mocked(getLiveStreamStatus).mockResolvedValueOnce(firstSnapshot);
+
+      renderManager();
+
+      const summary = await screen.findByText(/stream summary/i);
+
+      await waitFor(() => {
+        expect(getLiveStreamStatus).toHaveBeenCalledWith(stream.id);
+      });
+
+      await waitFor(() => {
+        expect(within(summary.parentElement!).getByText('12')).toBeInTheDocument();
+      });
+
+      expect(timers.length).toBeGreaterThan(0);
+
+      vi.mocked(getLiveStreamStatus).mockResolvedValueOnce(secondSnapshot);
+      act(() => {
+        const nextTick = timers.shift();
+        nextTick?.();
+      });
+
+      await waitFor(() => {
+        expect(within(summary.parentElement!).getByText('24')).toBeInTheDocument();
+      });
+    } finally {
+      setTimeoutSpy.mockRestore();
+    }
   });
 
   it('should stop polling when stream is offline', async () => {
-    vi.useFakeTimers();
+    const timers: Array<() => void> = [];
+    const setTimeoutSpy = vi.spyOn(window, 'setTimeout').mockImplementation((cb, ms) => {
+      if (typeof cb === 'function') {
+        timers.push(cb as () => void);
+      }
+      return 0 as unknown as number;
+    });
 
-    const stream = createTestStream({ status: 'offline' });
-    vi.mocked(fetchLiveStream).mockResolvedValueOnce(stream);
+    try {
+      const stream = createTestStream({ status: 'offline' });
+      vi.mocked(fetchLiveStream).mockResolvedValueOnce(stream);
 
-    renderManager();
+      renderManager();
 
-    await screen.findByTestId('stream-status');
-    await vi.advanceTimersByTimeAsync(15000);
+      await screen.findByTestId('stream-status');
 
-    expect(getLiveStreamStatus).not.toHaveBeenCalled();
+      expect(getLiveStreamStatus).not.toHaveBeenCalled();
+      expect(timers.length).toBe(0);
+    } finally {
+      setTimeoutSpy.mockRestore();
+    }
   });
 });
 

@@ -11,9 +11,19 @@ from unittest.mock import MagicMock, Mock, patch
 from uuid import uuid4
 
 import pytest
-from botocore.exceptions import ClientError
 
-from app.services.s3_storage_service import S3StorageService
+# Check for boto3 availability - skip all tests if not installed
+try:
+    from botocore.exceptions import ClientError
+    from app.services.s3_storage_service import S3StorageService
+    HAS_BOTO3 = True
+except ImportError:
+    HAS_BOTO3 = False
+    ClientError = Exception  # Fallback
+    S3StorageService = None  # Fallback
+
+# Skip entire module if boto3 not installed (optional dependency)
+pytestmark = pytest.mark.skipif(not HAS_BOTO3, reason="boto3 not installed (optional S3/R2 storage dependency)")
 
 
 class TestS3StorageServiceInitialization:

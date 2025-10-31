@@ -1,24 +1,23 @@
 """
-Comprehensive tests for blog API endpoints using synchronous test client.
+Tests for blog API endpoints.
 
-Covers:
-- GET /api/blog with filtering, search, pagination, and validation paths
-- GET /api/blog/{slug}
-- GET /api/blog/categories/list
+Tests cover:
+- GET /api/blog (list with filters)
+- GET /api/blog/{slug} (single post)
+- GET /api/blog/categories/list (categories)
 """
 
-from datetime import datetime, timezone
-
 import pytest
-from sqlalchemy.orm import Session
 from starlette.testclient import TestClient
+from sqlalchemy.orm import Session
+from datetime import datetime, timezone
 
 from app.models.blog_post import BlogPost
 
 
 @pytest.fixture
 def sample_blog_posts(db_session: Session):
-    """Create a set of blog posts covering published/unpublished scenarios."""
+    """Create sample blog posts for testing."""
     posts = [
         BlogPost(
             title="Test M&A Strategy Post",
@@ -60,7 +59,7 @@ def sample_blog_posts(db_session: Session):
             primary_keyword="post-merger integration",
             secondary_keywords="PMI, integration, M&A",
             meta_description="PMI best practices for successful post-merger integration",
-            featured_image_url=None,
+            featured_image_url=None,  # Test null image
             published=True,
             published_at=datetime.now(timezone.utc),
             read_time_minutes=12,
@@ -76,24 +75,27 @@ def sample_blog_posts(db_session: Session):
             secondary_keywords="test",
             meta_description="Draft post for testing",
             featured_image_url=None,
-            published=False,
+            published=False,  # Unpublished
             published_at=None,
             read_time_minutes=5,
         ),
     ]
 
     for post in posts:
-        db_session.add(post)
-    db_session.commit()
+        db.add(post)
+    await db.commit()
 
+    # Refresh to get IDs
     for post in posts:
-        db_session.refresh(post)
+        await db.refresh(post)
 
     return posts
 
 
-def test_list_blog_posts_default(client: TestClient, sample_blog_posts):
-    response = client.get("/api/blog")
+@pytest.mark.asyncio
+async def test_list_blog_posts_default(client: AsyncClient, sample_blog_posts):
+    """Test listing blog posts with default parameters (published only)."""
+    response = await client.get("/api/blog")
 
     assert response.status_code == 200
     data = response.json()
@@ -102,26 +104,26 @@ def test_list_blog_posts_default(client: TestClient, sample_blog_posts):
     assert len(data) == 3  # Only published posts
     assert all(post["published"] is True for post in data)
 
+    # Verify response structure
     first_post = data[0]
-    for field in [
-        "id",
-        "title",
-        "slug",
-        "excerpt",
-        "content",
-        "category",
-        "author",
-        "read_time_minutes",
-        "published",
-        "published_at",
-        "created_at",
-        "updated_at",
-    ]:
-        assert field in first_post
+    assert "id" in first_post
+    assert "title" in first_post
+    assert "slug" in first_post
+    assert "excerpt" in first_post
+    assert "content" in first_post
+    assert "category" in first_post
+    assert "author" in first_post
+    assert "read_time_minutes" in first_post
+    assert "published" in first_post
+    assert "published_at" in first_post
+    assert "created_at" in first_post
+    assert "updated_at" in first_post
 
 
-def test_list_blog_posts_with_category_filter(client: TestClient, sample_blog_posts):
-    response = client.get("/api/blog?category=FP%26A")
+@pytest.mark.asyncio
+async def test_list_blog_posts_with_category_filter(client: AsyncClient, sample_blog_posts):
+    """Test filtering blog posts by category."""
+    response = await client.get("/api/blog?category=FP%26A")
 
     assert response.status_code == 200
     data = response.json()
@@ -131,8 +133,10 @@ def test_list_blog_posts_with_category_filter(client: TestClient, sample_blog_po
     assert data[0]["title"] == "Advanced FP&A Techniques"
 
 
-def test_list_blog_posts_with_search(client: TestClient, sample_blog_posts):
-    response = client.get("/api/blog?search=integration")
+@pytest.mark.asyncio
+async def test_list_blog_posts_with_search(client: AsyncClient, sample_blog_posts):
+    """Test searching blog posts in title, excerpt, or content."""
+    response = await client.get("/api/blog?search=integration")
 
     assert response.status_code == 200
     data = response.json()
@@ -141,56 +145,80 @@ def test_list_blog_posts_with_search(client: TestClient, sample_blog_posts):
     assert "PMI" in data[0]["title"]
 
 
-def test_list_blog_posts_include_unpublished(client: TestClient, sample_blog_posts):
-    response = client.get("/api/blog?published_only=false")
+@pytest.mark.asyncio
+async def test_list_blog_posts_include_unpublished(client: AsyncClient, sample_blog_posts):
+    """Test listing all blog posts including unpublished."""
+    response = await client.get("/api/blog?published_only=false")
 
     assert response.status_code == 200
     data = response.json()
 
-    assert len(data) == 4  # Includes unpublished post
+    assert len(data) == 4  # All 4 posts including unpublished
     unpublished = [p for p in data if not p["published"]]
     assert len(unpublished) == 1
     assert unpublished[0]["slug"] == "unpublished-draft-post"
 
 
-def test_list_blog_posts_with_pagination(client: TestClient, sample_blog_posts):
-    response_page_1 = client.get("/api/blog?limit=2")
-    assert response_page_1.status_code == 200
-    data_page_1 = response_page_1.json()
-    assert len(data_page_1) == 2
+@pytest.mark.asyncio
+async def test_list_blog_posts_with_pagination(client: AsyncClient, sample_blog_posts):
+    """Test pagination with limit and offset."""
+    # Get first 2 posts
+    response1 = await client.get("/api/blog?limit=2")
+    assert response1.status_code == 200
+    data1 = response1.json()
+    assert len(data1) == 2
 
-    response_page_2 = client.get("/api/blog?limit=2&offset=2")
-    assert response_page_2.status_code == 200
-    data_page_2 = response_page_2.json()
-    assert len(data_page_2) == 1
-    assert data_page_1[0]["id"] != data_page_2[0]["id"]
+    # Get next post with offset
+    response2 = await client.get("/api/blog?limit=2&offset=2")
+    assert response2.status_code == 200
+    data2 = response2.json()
+    assert len(data2) == 1  # Only 3 published total, offset 2 means 1 remaining
+
+    # Ensure different posts
+    assert data1[0]["id"] != data2[0]["id"]
 
 
-def test_list_blog_posts_empty_result(client: TestClient, sample_blog_posts):
-    response = client.get("/api/blog?category=Nonexistent+Category")
+@pytest.mark.asyncio
+async def test_list_blog_posts_empty_result(client: AsyncClient, sample_blog_posts):
+    """Test filtering that returns no results."""
+    response = await client.get("/api/blog?category=Nonexistent+Category")
 
     assert response.status_code == 200
     data = response.json()
-    assert data == []
+    assert len(data) == 0
+    assert isinstance(data, list)
 
 
-def test_get_blog_post_by_slug_success(client: TestClient, sample_blog_posts):
-    response = client.get("/api/blog/test-ma-strategy-post")
+@pytest.mark.asyncio
+async def test_get_blog_post_by_slug_success(client: AsyncClient, sample_blog_posts):
+    """Test retrieving a single blog post by slug."""
+    response = await client.get("/api/blog/test-ma-strategy-post")
 
     assert response.status_code == 200
     data = response.json()
+
     assert data["slug"] == "test-ma-strategy-post"
+    assert data["title"] == "Test M&A Strategy Post"
+    assert data["category"] == "M&A Strategy"
+    assert data["author"] == "Dudley Peacock"
+    assert data["read_time_minutes"] == 8
+    assert data["published"] is True
+    assert data["primary_keyword"] == "M&A strategy"
+    assert "deal flow" in data["secondary_keywords"]
 
 
 def test_get_blog_post_by_slug_not_found(client: TestClient, sample_blog_posts):
+    """Test retrieving a blog post with invalid slug."""
     response = client.get("/api/blog/nonexistent-slug-12345")
 
     assert response.status_code == 404
     data = response.json()
-    assert "detail" in data and "not found" in data["detail"].lower()
+    assert "detail" in data
+    assert "not found" in data["detail"].lower()
 
 
 def test_get_unpublished_post_by_slug(client: TestClient, sample_blog_posts):
+    """Test that unpublished posts can still be retrieved by slug (for preview)."""
     response = client.get("/api/blog/unpublished-draft-post")
 
     assert response.status_code == 200
@@ -200,70 +228,76 @@ def test_get_unpublished_post_by_slug(client: TestClient, sample_blog_posts):
 
 
 def test_list_blog_categories(client: TestClient, sample_blog_posts):
+    """Test listing all unique blog categories."""
     response = client.get("/api/blog/categories/list")
 
     assert response.status_code == 200
     data = response.json()
 
     assert isinstance(data, list)
-    assert len(data) == 3
-    assert {"M&A Strategy", "FP&A", "PMI"}.issubset(set(data))
+    assert len(data) == 3  # M&A Strategy, FP&A, PMI
+    assert "M&A Strategy" in data
+    assert "FP&A" in data
+    assert "PMI" in data
 
 
 def test_list_blog_categories_empty_database(client: TestClient, db_session: Session):
+    """Test listing categories when database is empty."""
     response = client.get("/api/blog/categories/list")
 
     assert response.status_code == 200
     data = response.json()
-    assert data == []
+    assert isinstance(data, list)
+    assert len(data) == 0
 
 
 def test_list_blog_posts_with_invalid_limit(client: TestClient, sample_blog_posts):
-    response_high = client.get("/api/blog?limit=200")
-    assert response_high.status_code == 422
+    """Test that limit parameter is validated."""
+    # Limit too high
+    response = client.get("/api/blog?limit=200")
+    assert response.status_code == 422  # Validation error
 
-    response_low = client.get("/api/blog?limit=0")
-    assert response_low.status_code == 422
+    # Limit too low
+    response = client.get("/api/blog?limit=0")
+    assert response.status_code == 422  # Validation error
 
 
 def test_list_blog_posts_with_invalid_offset(client: TestClient, sample_blog_posts):
+    """Test that offset parameter is validated."""
     response = client.get("/api/blog?offset=-1")
-    assert response.status_code == 422
+    assert response.status_code == 422  # Validation error
 
 
 def test_blog_post_response_schema(client: TestClient, sample_blog_posts):
+    """Test that blog post response matches expected schema."""
     response = client.get("/api/blog/test-ma-strategy-post")
 
     assert response.status_code == 200
     data = response.json()
 
+    # Required fields
     required_fields = [
-        "id",
-        "title",
-        "slug",
-        "excerpt",
-        "content",
-        "category",
-        "primary_keyword",
-        "secondary_keywords",
-        "meta_description",
-        "author",
-        "read_time_minutes",
-        "published",
-        "created_at",
-        "updated_at",
+        "id", "title", "slug", "excerpt", "content", "category",
+        "primary_keyword", "secondary_keywords", "meta_description",
+        "author", "read_time_minutes", "published", "created_at", "updated_at"
     ]
+
     for field in required_fields:
         assert field in data, f"Missing required field: {field}"
 
-    assert "featured_image_url" in data
-    assert "published_at" in data
+    # Optional fields
+    assert "featured_image_url" in data  # Can be null
+    assert "published_at" in data  # Can be null for unpublished
+
+    # Type checks
     assert isinstance(data["id"], int)
+    assert isinstance(data["title"], str)
     assert isinstance(data["read_time_minutes"], int)
     assert isinstance(data["published"], bool)
 
 
 def test_blog_search_case_insensitive(client: TestClient, sample_blog_posts):
+    """Test that search is case-insensitive."""
     response_upper = client.get("/api/blog?search=STRATEGY")
     response_lower = client.get("/api/blog?search=strategy")
 
@@ -274,17 +308,22 @@ def test_blog_search_case_insensitive(client: TestClient, sample_blog_posts):
     data_lower = response_lower.json()
 
     assert len(data_upper) == len(data_lower)
-    assert len(data_upper) >= 1
+    assert len(data_upper) >= 1  # Should find at least the M&A Strategy post
 
 
 def test_blog_list_ordering(client: TestClient, sample_blog_posts):
+    """Test that blog posts are ordered by published_at desc (newest first)."""
     response = client.get("/api/blog")
 
     assert response.status_code == 200
     data = response.json()
 
+    # With our sample data, verify order
     assert len(data) >= 2
-    for idx in range(len(data) - 1):
-        current = data[idx]["published_at"]
-        next_item = data[idx + 1]["published_at"]
-        assert current >= next_item
+
+    # Verify timestamps are in descending order
+    for i in range(len(data) - 1):
+        current_time = data[i]["published_at"]
+        next_time = data[i + 1]["published_at"]
+        # Most recent should be first (or equal if same second)
+        assert current_time >= next_time
