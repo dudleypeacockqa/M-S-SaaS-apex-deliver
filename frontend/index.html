@@ -36,6 +36,52 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="canonical" href="https://100daysandbeyond.com/" />
     <title>100 Days & Beyond | M&A Intelligence Platform</title>
+
+    <!-- Google Analytics 4 (GA4) -->
+    <!-- Replace G-XXXXXXXXXX with actual GA4 Measurement ID -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PLACEHOLDER"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-PLACEHOLDER', {
+        'send_page_view': true,
+        'anonymize_ip': true, // GDPR compliance
+        'cookie_flags': 'SameSite=None;Secure'
+      });
+    </script>
+
+    <!-- Microsoft Clarity (Alternative to Hotjar for heatmaps) -->
+    <!-- Replace with actual Clarity project ID -->
+    <script type="text/javascript">
+      (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "CLARITY_PLACEHOLDER");
+    </script>
+
+    <!-- LinkedIn Insight Tag -->
+    <!-- Replace with actual LinkedIn Partner ID -->
+    <script type="text/javascript">
+      _linkedin_partner_id = "LINKEDIN_PLACEHOLDER";
+      window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+      window._linkedin_data_partner_ids.push(_linkedin_partner_id);
+    </script>
+    <script type="text/javascript">
+      (function(l) {
+        if (!l){window.lintrk = function(a,b){window.lintrk.q.push([a,b])};
+        window.lintrk.q=[]}
+        var s = document.getElementsByTagName("script")[0];
+        var b = document.createElement("script");
+        b.type = "text/javascript";b.async = true;
+        b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
+        s.parentNode.insertBefore(b, s);
+      })(window.lintrk);
+    </script>
+    <noscript>
+      <img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid=LINKEDIN_PLACEHOLDER&fmt=gif" />
+    </noscript>
   </head>
   <body>
     <div id="root"></div>
