@@ -13,222 +13,189 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FeatureGate } from './FeatureGate';
 
-// Mock API client
-vi.mock('../../services/api/podcasts', () => ({
-  checkFeatureAccess: vi.fn(),
+// Mock hooks used by FeatureGate
+const mockFeatureAccess = {
+  hasAccess: true,
+  isLoading: false,
+  error: null,
+  requiredTier: 'professional',
+  requiredTierLabel: 'Professional',
+  upgradeMessage: null,
+  upgradeCtaUrl: null,
+};
+
+const mockSubscriptionTier = {
+  tier: 'professional' as const,
+  label: 'Professional',
+  isLoading: false,
+  isAtLeast: vi.fn((tier: string) => tier === 'starter' || tier === 'professional'),
+};
+
+vi.mock('../../hooks/useFeatureAccess', () => ({
+  useFeatureAccess: vi.fn(() => mockFeatureAccess),
 }));
 
-import { checkFeatureAccess } from '../../services/api/podcasts';
+vi.mock('../../hooks/useSubscriptionTier', () => ({
+  useSubscriptionTier: vi.fn(() => mockSubscriptionTier),
+}));
 
-const createTestQueryClient = () =>
-  new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
-  });
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
+import { useSubscriptionTier } from '../../hooks/useSubscriptionTier';
 
 describe('FeatureGate', () => {
-  let queryClient: QueryClient;
-
   beforeEach(() => {
-    queryClient = createTestQueryClient();
     vi.clearAllMocks();
+    // Reset mocks to default state
+    mockFeatureAccess.hasAccess = true;
+    mockFeatureAccess.isLoading = false;
+    mockFeatureAccess.error = null;
+    mockFeatureAccess.requiredTier = 'professional';
+    mockFeatureAccess.requiredTierLabel = 'Professional';
+    mockFeatureAccess.upgradeMessage = null;
+    mockFeatureAccess.upgradeCtaUrl = null;
+
+    mockSubscriptionTier.tier = 'professional';
+    mockSubscriptionTier.label = 'Professional';
+    mockSubscriptionTier.isLoading = false;
+    mockSubscriptionTier.isAtLeast = vi.fn((tier: string) => tier === 'starter' || tier === 'professional');
   });
 
-  const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-
   describe('Access Granted', () => {
-    it('should render children when user has access', async () => {
-      vi.mocked(checkFeatureAccess).mockResolvedValue({
-        feature: 'podcast_audio',
-        tier: 'professional',
-        tierLabel: 'Professional',
-        hasAccess: true,
-        requiredTier: 'professional',
-        requiredTierLabel: 'Professional',
-        upgradeRequired: false,
-        upgradeMessage: null,
-        upgradeCtaUrl: null,
-      });
+    it('should render children when user has access', () => {
+      mockFeatureAccess.hasAccess = true;
+      mockSubscriptionTier.isAtLeast = vi.fn(() => true);
 
       render(
         <FeatureGate feature="podcast_audio">
           <div>Podcast Content</div>
-        </FeatureGate>,
-        { wrapper }
+        </FeatureGate>
       );
 
-      await waitFor(() => {
-        expect(screen.getByText('Podcast Content')).toBeInTheDocument();
-      });
+      expect(screen.getByText('Podcast Content')).toBeInTheDocument();
     });
 
-    it('should not render upgrade CTA when access granted', async () => {
-      vi.mocked(checkFeatureAccess).mockResolvedValue({
-        feature: 'podcast_audio',
-        tier: 'premium',
-        tierLabel: 'Premium',
-        hasAccess: true,
-        requiredTier: 'professional',
-        requiredTierLabel: 'Professional',
-        upgradeRequired: false,
-        upgradeMessage: null,
-        upgradeCtaUrl: null,
-      });
+    it('should not render upgrade CTA when access granted', () => {
+      mockFeatureAccess.hasAccess = true;
+      mockSubscriptionTier.tier = 'premium';
+      mockSubscriptionTier.label = 'Premium';
+      mockSubscriptionTier.isAtLeast = vi.fn(() => true);
 
       render(
         <FeatureGate feature="podcast_audio">
           <div>Podcast Content</div>
-        </FeatureGate>,
-        { wrapper }
+        </FeatureGate>
       );
 
-      await waitFor(() => {
-        expect(screen.getByText('Podcast Content')).toBeInTheDocument();
-      });
-
+      expect(screen.getByText('Podcast Content')).toBeInTheDocument();
       expect(screen.queryByText(/upgrade/i)).not.toBeInTheDocument();
     });
   });
 
   describe('Access Denied', () => {
-    it('should render upgrade CTA when user lacks access', async () => {
-      vi.mocked(checkFeatureAccess).mockResolvedValue({
-        feature: 'podcast_audio',
-        tier: 'starter',
-        tierLabel: 'Starter',
-        hasAccess: false,
-        requiredTier: 'professional',
-        requiredTierLabel: 'Professional',
-        upgradeRequired: true,
-        upgradeMessage: 'Upgrade to Professional tier to unlock audio podcasting.',
-        upgradeCtaUrl: '/pricing',
-      });
+    it('should render upgrade CTA when user lacks access', () => {
+      mockFeatureAccess.hasAccess = false;
+      mockFeatureAccess.requiredTier = 'professional';
+      mockFeatureAccess.requiredTierLabel = 'Professional';
+      mockFeatureAccess.upgradeMessage = 'Upgrade to Professional tier to unlock audio podcasting.';
+      mockFeatureAccess.upgradeCtaUrl = '/pricing';
+      mockSubscriptionTier.tier = 'starter';
+      mockSubscriptionTier.label = 'Starter';
+      mockSubscriptionTier.isAtLeast = vi.fn(() => false);
 
       render(
         <FeatureGate feature="podcast_audio">
           <div>Podcast Content</div>
-        </FeatureGate>,
-        { wrapper }
+        </FeatureGate>
       );
 
-      await waitFor(() => {
-        expect(screen.getByText('Upgrade Required')).toBeInTheDocument();
-      });
+      expect(screen.getByText('Upgrade Required')).toBeInTheDocument();
     });
 
-    it('should not render children when access denied', async () => {
-      vi.mocked(checkFeatureAccess).mockResolvedValue({
-        feature: 'podcast_video',
-        tier: 'professional',
-        tierLabel: 'Professional',
-        hasAccess: false,
-        requiredTier: 'premium',
-        requiredTierLabel: 'Premium',
-        upgradeRequired: true,
-        upgradeMessage: 'Upgrade to Premium tier to unlock video podcasting.',
-        upgradeCtaUrl: '/pricing',
-      });
+    it('should not render children when access denied', () => {
+      mockFeatureAccess.hasAccess = false;
+      mockFeatureAccess.requiredTier = 'premium';
+      mockFeatureAccess.requiredTierLabel = 'Premium';
+      mockFeatureAccess.upgradeMessage = 'Upgrade to Premium tier to unlock video podcasting.';
+      mockFeatureAccess.upgradeCtaUrl = '/pricing';
+      mockSubscriptionTier.tier = 'professional';
+      mockSubscriptionTier.label = 'Professional';
+      mockSubscriptionTier.isAtLeast = vi.fn(() => false);
 
       render(
         <FeatureGate feature="podcast_video">
           <div>Video Content</div>
-        </FeatureGate>,
-        { wrapper }
+        </FeatureGate>
       );
 
-      await waitFor(() => {
-        expect(screen.getByText('Upgrade Required')).toBeInTheDocument();
-      });
-
+      expect(screen.getByText('Upgrade Required')).toBeInTheDocument();
       expect(screen.queryByText('Video Content')).not.toBeInTheDocument();
     });
 
-    it('should display required tier in upgrade CTA', async () => {
-      vi.mocked(checkFeatureAccess).mockResolvedValue({
-        feature: 'podcast_video',
-        tier: 'professional',
-        tierLabel: 'Professional',
-        hasAccess: false,
-        requiredTier: 'premium',
-        requiredTierLabel: 'Premium',
-        upgradeRequired: true,
-        upgradeMessage: 'Upgrade to Premium tier to unlock video podcasting.',
-        upgradeCtaUrl: '/pricing',
-      });
+    it('should display required tier in upgrade CTA', () => {
+      mockFeatureAccess.hasAccess = false;
+      mockFeatureAccess.requiredTier = 'premium';
+      mockFeatureAccess.requiredTierLabel = 'Premium';
+      mockFeatureAccess.upgradeMessage = 'Upgrade to Premium tier to unlock video podcasting.';
+      mockFeatureAccess.upgradeCtaUrl = '/pricing';
+      mockSubscriptionTier.tier = 'professional';
+      mockSubscriptionTier.label = 'Professional';
+      mockSubscriptionTier.isAtLeast = vi.fn(() => false);
 
       render(
         <FeatureGate feature="podcast_video">
           <div>Video Content</div>
-        </FeatureGate>,
-        { wrapper }
+        </FeatureGate>
       );
 
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /upgrade to premium/i })).toBeInTheDocument();
-      });
+      expect(screen.getByRole('button', { name: /upgrade to premium/i })).toBeInTheDocument();
     });
   });
 
   describe('Loading State', () => {
     it('should show loading indicator while checking access', () => {
-      vi.mocked(checkFeatureAccess).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
-      );
+      mockFeatureAccess.isLoading = true;
+      mockSubscriptionTier.isLoading = false;
 
       render(
         <FeatureGate feature="podcast_audio">
           <div>Podcast Content</div>
-        </FeatureGate>,
-        { wrapper }
+        </FeatureGate>
       );
 
-      expect(screen.getByText(/loading/i)).toBeInTheDocument();
+      expect(screen.getByText(/checking feature access/i)).toBeInTheDocument();
     });
   });
 
   describe('Error State', () => {
-    it('should deny access by default when API fails', async () => {
-      vi.mocked(checkFeatureAccess).mockRejectedValue(
-        new Error('Network error')
-      );
+    it('should deny access by default when API fails', () => {
+      mockFeatureAccess.hasAccess = false;
+      mockFeatureAccess.error = new Error('Network error');
+      mockSubscriptionTier.isAtLeast = vi.fn(() => false);
 
       render(
         <FeatureGate feature="podcast_audio">
           <div>Podcast Content</div>
-        </FeatureGate>,
-        { wrapper }
+        </FeatureGate>
       );
 
-      await waitFor(() => {
-        expect(screen.getByText('Upgrade Required')).toBeInTheDocument();
-      });
-
+      expect(screen.getByText('Upgrade Required')).toBeInTheDocument();
       expect(screen.queryByText('Podcast Content')).not.toBeInTheDocument();
     });
 
-    it('should display error message when API fails', async () => {
-      vi.mocked(checkFeatureAccess).mockRejectedValue(
-        new Error('Network error')
-      );
+    it('should display error message when API fails', () => {
+      mockFeatureAccess.hasAccess = false;
+      mockFeatureAccess.error = new Error('Network error');
+      mockSubscriptionTier.isAtLeast = vi.fn(() => false);
 
       render(
         <FeatureGate feature="podcast_audio">
           <div>Podcast Content</div>
-        </FeatureGate>,
-        { wrapper }
+        </FeatureGate>
       );
 
-      await waitFor(() => {
-        expect(screen.getByText(/Error checking feature access/i)).toBeInTheDocument();
-      });
+      expect(screen.getByText(/could not verify access/i)).toBeInTheDocument();
     });
   });
 });
