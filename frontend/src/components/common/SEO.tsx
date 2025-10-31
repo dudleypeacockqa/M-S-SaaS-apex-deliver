@@ -1,6 +1,27 @@
 import { useEffect } from 'react';
 import { convertToWebP, supportsWebP } from '../../utils/imageUtils';
 
+export interface StructuredDataArticle {
+  '@type': 'Article' | 'BlogPosting';
+  headline: string;
+  description: string;
+  author: {
+    '@type': 'Person';
+    name: string;
+  };
+  datePublished?: string;
+  dateModified?: string;
+  image?: string;
+  publisher?: {
+    '@type': 'Organization';
+    name: string;
+    logo: {
+      '@type': 'ImageObject';
+      url: string;
+    };
+  };
+}
+
 export interface SEOProps {
   title: string;
   description: string;
@@ -14,6 +35,7 @@ export interface SEOProps {
   twitterDescription?: string;
   twitterImage?: string;
   canonical?: string;
+  structuredData?: StructuredDataArticle | Record<string, any>;
 }
 
 export const SEO: React.FC<SEOProps> = ({
@@ -29,6 +51,7 @@ export const SEO: React.FC<SEOProps> = ({
   twitterDescription,
   twitterImage,
   canonical,
+  structuredData,
 }) => {
   useEffect(() => {
     // Set document title
@@ -101,6 +124,35 @@ export const SEO: React.FC<SEOProps> = ({
 
       linkElement.setAttribute('href', canonical);
     }
+
+    // Add structured data (JSON-LD)
+    if (structuredData) {
+      const scriptId = 'structured-data-jsonld';
+      let scriptElement = document.getElementById(scriptId) as HTMLScriptElement;
+
+      if (!scriptElement) {
+        scriptElement = document.createElement('script');
+        scriptElement.id = scriptId;
+        scriptElement.type = 'application/ld+json';
+        document.head.appendChild(scriptElement);
+      }
+
+      // Add @context if not present
+      const dataWithContext = {
+        '@context': 'https://schema.org',
+        ...structuredData,
+      };
+
+      scriptElement.textContent = JSON.stringify(dataWithContext, null, 2);
+    }
+
+    // Cleanup function to remove structured data when component unmounts
+    return () => {
+      const scriptElement = document.getElementById('structured-data-jsonld');
+      if (scriptElement) {
+        scriptElement.remove();
+      }
+    };
   }, [
     title,
     description,
@@ -114,6 +166,7 @@ export const SEO: React.FC<SEOProps> = ({
     twitterDescription,
     twitterImage,
     canonical,
+    structuredData,
   ]);
 
   return null; // This component doesn't render anything
