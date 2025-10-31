@@ -13,7 +13,7 @@ describe('organizationSchema', () => {
     expect(schema['@context']).toBe('https://schema.org');
     expect(schema['@type']).toBe('Organization');
     expect(schema.name).toBe('ApexDeliver');
-    expect(schema.url).toBe('https://apexdeliver.com');
+    expect(schema.url).toBe('https://100daysandbeyond.com');
     expect(schema.logo).toContain('logo.png');
     expect(schema.description).toContain('M&A intelligence platform');
   });
@@ -21,7 +21,7 @@ describe('organizationSchema', () => {
   it('should include contact information', () => {
     const schema = createOrganizationSchema();
 
-    expect(schema.email).toBe('contact@apexdeliver.com');
+    expect(schema.email).toBe('support@apexdeliver.com');
     expect(schema.telephone).toBeTruthy();
   });
 
