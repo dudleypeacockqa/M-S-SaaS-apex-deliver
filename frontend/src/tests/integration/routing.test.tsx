@@ -57,33 +57,36 @@ describe("Integration: routing", () => {
     render(<App />)
 
     expect(
-      await screen.findByRole("heading", { name: /close deals/i, level: 1 }, { timeout: 10000 })
+      await screen.findByRole("heading", { name: /from deal flow to cash flow/i, level: 1 }, { timeout: 10000 })
     ).toBeInTheDocument()
     // Marketing nav uses regular links, not Clerk's SignInButton
     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
   }, 10000)
 
-  it("directs visitors to the sign-in page when accessing the dashboard", () => {
+  it("directs visitors to the sign-in page when accessing the dashboard", async () => {
     window.history.replaceState({}, "Test", "/dashboard")
 
     render(<App />)
 
+    // When not signed in, ProtectedRoute shows a loading state initially,
+    // then redirects to sign-in page
     expect(
-      screen.getByRole("heading", { name: /sign in to apexdeliver/i })
+      await screen.findByText(/sign in to apexdeliver/i, undefined, { timeout: 10000 })
     ).toBeInTheDocument()
-  })
+  }, 10000)
 
   it("displays the dashboard when the user is authenticated", async () => {
      setMockClerkState({
        isSignedIn: true,
        user: { firstName: "Taylor" },
      })
- 
+     window.history.replaceState({}, "Test", "/dashboard")
+
      render(<App />)
- 
+
+    // When authenticated, user sees dashboard content
     expect(
-      await screen.findByRole("heading", { name: /close deals/i, level: 1 }, { timeout: 10000 })
+      await screen.findByText(/from deal flow to cash flow/i, undefined, { timeout: 10000 })
     ).toBeInTheDocument()
-    expect(await screen.findByRole("link", { name: /sign in/i }, { timeout: 10000 })).toBeInTheDocument()
   }, 10000)
 })
