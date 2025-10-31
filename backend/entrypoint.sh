@@ -8,19 +8,31 @@ echo "========================================="
 echo "Starting Render Backend Service"
 echo "========================================="
 
-# Check if this is the first deployment (no migrations applied yet)
+# Check if database has an invalid migration stamp (like '001')
+CURRENT=$(alembic current 2>&1 || echo "none")
+
+if echo "$CURRENT" | grep -q "Can't locate revision identified by '001'"; then
+    echo "❌ Found invalid migration stamp '001' in database"
+    echo "🔧 Clearing alembic_version table and re-stamping..."
+
+    # Clear the alembic_version table using psql
+    echo "DELETE FROM alembic_version;" | psql "$DATABASE_URL"
+
+    echo "✅ Cleared alembic_version table"
+    echo "📌 Stamping with base migration (users table)..."
+
+    # Stamp with the first migration (users table - 8dcb6880a52b)
+    alembic stamp 8dcb6880a52b
+
+    echo "✅ Database stamped with base migration"
+fi
+
+# Check current status again
 CURRENT=$(alembic current 2>&1 || echo "none")
 
 if echo "$CURRENT" | grep -q "Can't locate revision\|No current revision"; then
-    echo "No current migration found - this might be a fresh database"
-    echo "Attempting to stamp with latest migration..."
-
-    # Get the latest migration head
-    LATEST=$(alembic heads | grep -oP '^\w+' | head -1)
-    echo "Latest migration: $LATEST"
-
-    # Try to stamp, if it fails, it means tables might exist
-    alembic stamp $LATEST 2>&1 || echo "Could not stamp - continuing anyway"
+    echo "No current migration found - stamping with base"
+    alembic stamp 8dcb6880a52b 2>&1 || echo "Could not stamp"
 fi
 
 # Now try to upgrade
@@ -29,6 +41,7 @@ alembic upgrade head
 
 if [ $? -eq 0 ]; then
     echo "✅ Migrations applied successfully"
+    alembic current
 else
     echo "❌ Migration failed - exiting"
     exit 1
