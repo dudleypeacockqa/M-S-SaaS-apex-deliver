@@ -21,6 +21,15 @@ vi.mock('../../components/podcast/VideoUploadModal', () => ({
     ) : null,
 }));
 
+vi.mock('../../components/podcast/LiveStreamManager', () => ({
+  default: ({ podcastId, tier }: { podcastId: string | null; tier?: string }) => (
+    <div data-testid="live-stream-manager">
+      <p>Live streaming for podcast: {podcastId || 'none'}</p>
+      {tier && <p>Tier: {tier}</p>}
+    </div>
+  ),
+}));
+
 vi.mock('../../services/api/podcasts', () => ({
   checkFeatureAccess: vi.fn(),
   getQuotaSummary: vi.fn(),
@@ -379,6 +388,9 @@ describe('PodcastStudio feature gates', () => {
     const user = userEvent.setup();
 
     render(<PodcastStudio />, { wrapper: createWrapper() });
+
+    // Wait for component to load before interacting with tabs
+    await screen.findByRole('tab', { name: /episodes/i });
 
     await user.click(screen.getByRole('tab', { name: /live streaming/i }));
 

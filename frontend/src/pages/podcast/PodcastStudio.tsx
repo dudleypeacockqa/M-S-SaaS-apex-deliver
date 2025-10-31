@@ -19,6 +19,7 @@ import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
 import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal';
 import VideoUploadModal from '../../components/podcast/VideoUploadModal';
 import { YouTubePublishModal } from '../../components/podcast/YouTubePublishModal';
+import LiveStreamManager from '../../components/podcast/LiveStreamManager';
 import {
   getQuotaSummary,
   listEpisodes,
@@ -462,7 +463,7 @@ function PodcastStudioContent() {
               </div>
             }
           >
-            <LiveStreamManager podcastId={liveStreamPodcastId} tier={subscription.tier} />
+            <LiveStreamManager podcastId={null} />
           </SectionErrorBoundary>
         </FeatureGate>
       )}
