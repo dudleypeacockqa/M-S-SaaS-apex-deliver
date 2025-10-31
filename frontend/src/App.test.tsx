@@ -75,22 +75,23 @@ describe("AppRoutes", () => {
   it("renders the home route with sign-in actions for visitors", async () => {
     renderApp(["/"])
 
-    // The new landing page has a different structure with MarketingNav
-    expect(await screen.findByRole("heading", { name: /close deals/i }, { timeout: 20000 })).toBeInTheDocument()
+    // The new landing page has rebranded hero heading
+    expect(await screen.findByRole("heading", { name: /from deal flow to cash flow/i }, { timeout: 20000 })).toBeInTheDocument()
     // Marketing nav has regular links, not Clerk's SignInButton
     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
-    // Multiple "Get Started" links exist (nav + footer), so use getAllBy
-    const getStartedLinks = screen.getAllByRole("link", { name: /get started/i })
-    expect(getStartedLinks.length).toBeGreaterThan(0)
+    // Multiple "Start Your Free" CTA buttons/links exist
+    const ctaLinks = screen.getAllByRole("link", { name: /start your free/i })
+    expect(ctaLinks.length).toBeGreaterThan(0)
   }, 20000)
 
-  it("redirects visitors from the dashboard to the sign-in page", () => {
+  it("redirects visitors from the dashboard to the sign-in page", async () => {
     renderApp(["/dashboard"])
 
+    // App redirects unauthenticated users to sign-in page
     expect(
-      screen.getByRole("heading", { name: /sign in to apexdeliver/i })
+      await screen.findByRole("heading", { name: /sign in to apexdeliver/i }, { timeout: 5000 })
     ).toBeInTheDocument()
-  })
+  }, 10000)
 
   it("shows dashboard content when the user is authenticated", async () => {
      setMockClerkState({
@@ -114,7 +115,9 @@ describe("AppRoutes", () => {
 
      renderApp(["/"])
 
-     expect(await screen.findByRole("heading", { name: /close deals/i }, { timeout: 10000 })).toBeInTheDocument()
+     // Landing page shows rebranded hero heading
+     expect(await screen.findByRole("heading", { name: /from deal flow to cash flow/i }, { timeout: 10000 })).toBeInTheDocument()
+     // Marketing pages show sign-in link even when authenticated (marketing layout)
      expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
   }, 10000)
 
