@@ -72,10 +72,10 @@ def upgrade() -> None:
         sa.Column('id', sa.String(length=36), primary_key=True),
         sa.Column('document_id', sa.String(length=36), nullable=True),
         sa.Column('folder_id', sa.String(length=36), nullable=True),
-        sa.Column('user_id', sa.String(length=36), nullable=False),
+        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False),  # Fixed: UUID to match users.id
         sa.Column('permission_level', sa.String(20), nullable=False),
         sa.Column('organization_id', sa.String(length=36), nullable=False),
-        sa.Column('granted_by', sa.String(length=36), nullable=False),
+        sa.Column('granted_by', postgresql.UUID(as_uuid=True), nullable=False),  # Fixed: UUID to match users.id
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.ForeignKeyConstraint(['document_id'], ['documents.id']),
         sa.ForeignKeyConstraint(['folder_id'], ['folders.id']),
@@ -97,7 +97,7 @@ def upgrade() -> None:
         'document_access_logs',
         sa.Column('id', sa.String(length=36), primary_key=True),
         sa.Column('document_id', sa.String(length=36), nullable=False),
-        sa.Column('user_id', sa.String(length=36), nullable=False),
+        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False),  # Fixed: UUID to match users.id
         sa.Column('action', sa.String(50), nullable=False),
         sa.Column('ip_address', sa.String(45), nullable=True),
         sa.Column('user_agent', sa.String(500), nullable=True),
