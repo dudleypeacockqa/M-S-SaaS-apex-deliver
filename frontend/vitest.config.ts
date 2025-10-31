@@ -12,6 +12,7 @@ export default defineConfig({
     teardownTimeout: 20000,
     pool: 'threads',
     env: {
+      NODE_ENV: 'development', // Force React development mode for act() support
       VITE_CLERK_PUBLISHABLE_KEY: 'pk_live_Y2xlcmsuMTAwZGF5c2FuZGJleW9uZC5jb20k',
       VITE_API_URL: 'http://localhost:8000',
       VITE_APP_NAME: 'ApexDeliver',
