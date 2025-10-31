@@ -34,7 +34,7 @@ describe('OptInPopup', () => {
 
     expect(screen.getByPlaceholderText(/enter your email/i)).toBeInTheDocument()
 
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    const user = userEvent.setup()
     await user.type(screen.getByPlaceholderText(/enter your email/i), 'deal@example.com')
     await user.click(screen.getByRole('button', { name: /get free insights/i }))
 
@@ -52,7 +52,7 @@ describe('OptInPopup', () => {
 
     expect(screen.getByPlaceholderText(/enter your email/i)).toBeInTheDocument()
 
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    const user = userEvent.setup()
     await user.type(screen.getByPlaceholderText(/enter your email/i), 'deal@example.com')
     await user.click(screen.getByRole('button', { name: /get free insights/i }))
 
