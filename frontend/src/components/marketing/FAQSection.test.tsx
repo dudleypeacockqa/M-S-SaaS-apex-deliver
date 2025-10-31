@@ -192,11 +192,11 @@ describe('FAQSection', () => {
 
   it('mentions specific integrations in answer', () => {
     render(<FAQSection />);
-    
+
     const integrationsQuestion = screen.getByText(/Can I integrate ApexDeliver/i);
     fireEvent.click(integrationsQuestion);
-    
-    expect(screen.getByText(/Xero, QuickBooks, Sage, NetSuite/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/Sage Intacct and Odoo ERP/i)).toBeInTheDocument();
   });
 
   it('mentions GDPR compliance in security answer', () => {

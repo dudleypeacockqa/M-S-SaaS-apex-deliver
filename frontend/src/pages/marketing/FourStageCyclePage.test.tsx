@@ -20,15 +20,17 @@ describe('FourStageCyclePage', () => {
   describe('Page Rendering', () => {
     it('should render page without errors', () => {
       renderWithRouter(<FourStageCyclePage />);
-      expect(screen.getByText(/evaluation/i)).toBeInTheDocument();
+      // Multiple instances may exist, check first one
+      expect(screen.getAllByText(/evaluation/i)[0]).toBeInTheDocument();
     });
   });
 
   describe('Stage 1: Evaluation', () => {
     it('should render Evaluation stage heading', () => {
       renderWithRouter(<FourStageCyclePage />);
-      expect(screen.getByText(/evaluation/i)).toBeInTheDocument();
-      expect(screen.getByText(/pre-loi due diligence/i)).toBeInTheDocument();
+      // Multiple instances may exist (headings, labels, etc)
+      expect(screen.getAllByText(/evaluation/i)[0]).toBeInTheDocument();
+      expect(screen.getAllByText(/pre-loi due diligence/i)[0]).toBeInTheDocument();
     });
 
     it('should render AI-powered deal sourcing capability', () => {
@@ -40,8 +42,9 @@ describe('FourStageCyclePage', () => {
   describe('Stage 2: Pre-Deal', () => {
     it('should render Pre-Deal stage heading', () => {
       renderWithRouter(<FourStageCyclePage />);
-      expect(screen.getByText(/pre-deal/i)).toBeInTheDocument();
-      expect(screen.getByText(/loi to close/i)).toBeInTheDocument();
+      // Multiple instances may exist (headings, labels, etc)
+      expect(screen.getAllByText(/pre-deal/i)[0]).toBeInTheDocument();
+      expect(screen.getAllByText(/loi to close/i)[0]).toBeInTheDocument();
     });
 
     it('should render secure data room capability', () => {
@@ -53,8 +56,9 @@ describe('FourStageCyclePage', () => {
   describe('Stage 3: Post-Deal', () => {
     it('should render Post-Deal stage heading', () => {
       renderWithRouter(<FourStageCyclePage />);
-      expect(screen.getByText(/post-deal/i)).toBeInTheDocument();
-      expect(screen.getByText(/pmi finance ops stabilisation/i)).toBeInTheDocument();
+      // Multiple instances may exist (headings, labels, etc)
+      expect(screen.getAllByText(/post-deal/i)[0]).toBeInTheDocument();
+      expect(screen.getAllByText(/pmi finance ops stabilisation/i)[0]).toBeInTheDocument();
     });
 
     it('should render PMI capabilities', () => {

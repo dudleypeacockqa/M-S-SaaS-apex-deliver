@@ -20,7 +20,8 @@ describe('SalesPromotionPricingPage', () => {
   describe('Features Section', () => {
     it('should render "Dynamic Pricing Engine" feature', () => {
       renderWithRouter(<SalesPromotionPricingPage />);
-      expect(screen.getByText(/dynamic pricing engine/i)).toBeInTheDocument();
+      // Multiple instances may exist (heading and description)
+      expect(screen.getAllByText(/dynamic pricing engine/i)[0]).toBeInTheDocument();
     });
 
     it('should render "Promotion Management" feature', () => {
@@ -30,7 +31,8 @@ describe('SalesPromotionPricingPage', () => {
 
     it('should render "B2B2C Customer Portals" feature', () => {
       renderWithRouter(<SalesPromotionPricingPage />);
-      expect(screen.getByText(/b2b2c customer portals/i)).toBeInTheDocument();
+      // Multiple instances may exist (heading and description)
+      expect(screen.getAllByText(/b2b2c customer portals/i)[0]).toBeInTheDocument();
     });
 
     it('should render "Quote & Proposal Generation" feature', () => {

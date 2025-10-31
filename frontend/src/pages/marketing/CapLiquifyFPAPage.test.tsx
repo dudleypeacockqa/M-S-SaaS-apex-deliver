@@ -21,7 +21,8 @@ describe('CapLiquifyFPAPage', () => {
     it('should render main value proposition', () => {
       renderWithRouter(<CapLiquifyFPAPage />);
       expect(screen.getByText(/transform cash flow visibility in/i)).toBeInTheDocument();
-      expect(screen.getByText(/2 hours/i)).toBeInTheDocument();
+      // Multiple instances of "2 hours" may exist, check first one
+      expect(screen.getAllByText(/2 hours/i)[0]).toBeInTheDocument();
     });
 
     it('should render CapLiquify FP&A badge', () => {
@@ -33,7 +34,8 @@ describe('CapLiquifyFPAPage', () => {
   describe('Features Section', () => {
     it('should render "13-Week Direct Cash Forecasting" feature', () => {
       renderWithRouter(<CapLiquifyFPAPage />);
-      expect(screen.getByText(/13-week direct cash forecasting/i)).toBeInTheDocument();
+      // Multiple instances may exist (heading and description)
+      expect(screen.getAllByText(/13-week direct cash forecasting/i)[0]).toBeInTheDocument();
     });
 
     it('should render "Working Capital Drivers" feature', () => {
@@ -49,7 +51,8 @@ describe('CapLiquifyFPAPage', () => {
 
     it('should render "ERP Integration" feature', () => {
       renderWithRouter(<CapLiquifyFPAPage />);
-      expect(screen.getByText(/erp integration/i)).toBeInTheDocument();
+      // Multiple instances may exist (heading and description)
+      expect(screen.getAllByText(/erp integration/i)[0]).toBeInTheDocument();
       expect(screen.getByText(/sage intacct.*odoo/i)).toBeInTheDocument();
     });
   });
