@@ -712,3 +712,592 @@ def update_deal(
     
     updated_deal = master_admin_service.update_admin_deal(deal, deal_update, db)
     return updated_deal
+
+
+
+# ============================================================================
+# Campaign Management Endpoints
+# ============================================================================
+
+@router.post("/campaigns", response_model=AdminCampaignResponse, status_code=status.HTTP_201_CREATED)
+def create_campaign(
+    campaign_data: AdminCampaignCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Create a new email/SMS campaign.
+    """
+    campaign = master_admin_service.create_admin_campaign(campaign_data, current_user, db)
+    return campaign
+
+
+@router.get("/campaigns", response_model=AdminCampaignListResponse)
+def list_campaigns(
+    page: int = Query(1, ge=1),
+    per_page: int = Query(50, ge=1, le=100),
+    status: Optional[str] = None,
+    campaign_type: Optional[str] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    List all campaigns with pagination and filtering.
+    """
+    campaigns, total = master_admin_service.list_admin_campaigns(
+        user_id=str(current_user.id),
+        db=db,
+        page=page,
+        per_page=per_page,
+        status=status,
+        campaign_type=campaign_type,
+    )
+    
+    return {
+        "items": campaigns,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+    }
+
+
+@router.get("/campaigns/{campaign_id}", response_model=AdminCampaignResponse)
+def get_campaign(
+    campaign_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get campaign details by ID.
+    """
+    campaign = master_admin_service.get_admin_campaign_by_id(campaign_id, str(current_user.id), db)
+    if not campaign:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Campaign not found"
+        )
+    return campaign
+
+
+@router.put("/campaigns/{campaign_id}", response_model=AdminCampaignResponse)
+def update_campaign(
+    campaign_id: int,
+    campaign_update: AdminCampaignUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Update an existing campaign.
+    """
+    campaign = master_admin_service.get_admin_campaign_by_id(campaign_id, str(current_user.id), db)
+    if not campaign:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Campaign not found"
+        )
+    
+    updated_campaign = master_admin_service.update_admin_campaign(campaign, campaign_update, db)
+    return updated_campaign
+
+
+@router.delete("/campaigns/{campaign_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_campaign(
+    campaign_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Delete a campaign.
+    """
+    campaign = master_admin_service.get_admin_campaign_by_id(campaign_id, str(current_user.id), db)
+    if not campaign:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Campaign not found"
+        )
+    
+    master_admin_service.delete_admin_campaign(campaign, db)
+    return None
+
+
+@router.post("/campaigns/{campaign_id}/send", response_model=AdminCampaignResponse)
+def send_campaign(
+    campaign_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Send a campaign (update status to sent).
+    """
+    campaign = master_admin_service.get_admin_campaign_by_id(campaign_id, str(current_user.id), db)
+    if not campaign:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Campaign not found"
+        )
+    
+    sent_campaign = master_admin_service.send_admin_campaign(campaign, db)
+    return sent_campaign
+
+
+# ============================================================================
+# Content Studio Endpoints
+# ============================================================================
+
+@router.post("/content/scripts", response_model=AdminContentScriptResponse, status_code=status.HTTP_201_CREATED)
+def create_content_script(
+    script_data: AdminContentScriptCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Create a new content script (YouTube/Podcast).
+    """
+    script = master_admin_service.create_admin_content_script(script_data, current_user, db)
+    return script
+
+
+@router.get("/content/scripts", response_model=AdminContentScriptListResponse)
+def list_content_scripts(
+    page: int = Query(1, ge=1),
+    per_page: int = Query(50, ge=1, le=100),
+    script_type: Optional[str] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    List all content scripts with pagination and filtering.
+    """
+    scripts, total = master_admin_service.list_admin_content_scripts(
+        user_id=str(current_user.id),
+        db=db,
+        page=page,
+        per_page=per_page,
+        script_type=script_type,
+    )
+    
+    return {
+        "items": scripts,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+    }
+
+
+@router.get("/content/scripts/{script_id}", response_model=AdminContentScriptResponse)
+def get_content_script(
+    script_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get content script details by ID.
+    """
+    script = master_admin_service.get_admin_content_script_by_id(script_id, str(current_user.id), db)
+    if not script:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content script not found"
+        )
+    return script
+
+
+@router.put("/content/scripts/{script_id}", response_model=AdminContentScriptResponse)
+def update_content_script(
+    script_id: int,
+    script_update: AdminContentScriptUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Update an existing content script.
+    """
+    script = master_admin_service.get_admin_content_script_by_id(script_id, str(current_user.id), db)
+    if not script:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content script not found"
+        )
+    
+    updated_script = master_admin_service.update_admin_content_script(script, script_update, db)
+    return updated_script
+
+
+@router.delete("/content/scripts/{script_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_content_script(
+    script_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Delete a content script.
+    """
+    script = master_admin_service.get_admin_content_script_by_id(script_id, str(current_user.id), db)
+    if not script:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content script not found"
+        )
+    
+    master_admin_service.delete_admin_content_script(script, db)
+    return None
+
+
+@router.post("/content/pieces", response_model=AdminContentPieceResponse, status_code=status.HTTP_201_CREATED)
+def create_content_piece(
+    content_data: AdminContentPieceCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Create a new content piece (YouTube video/Podcast episode).
+    """
+    content = master_admin_service.create_admin_content_piece(content_data, current_user, db)
+    return content
+
+
+@router.get("/content/pieces", response_model=AdminContentPieceListResponse)
+def list_content_pieces(
+    page: int = Query(1, ge=1),
+    per_page: int = Query(50, ge=1, le=100),
+    content_type: Optional[str] = None,
+    status: Optional[str] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    List all content pieces with pagination and filtering.
+    """
+    content_pieces, total = master_admin_service.list_admin_content_pieces(
+        user_id=str(current_user.id),
+        db=db,
+        page=page,
+        per_page=per_page,
+        content_type=content_type,
+        status=status,
+    )
+    
+    return {
+        "items": content_pieces,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+    }
+
+
+@router.get("/content/pieces/{content_id}", response_model=AdminContentPieceResponse)
+def get_content_piece(
+    content_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get content piece details by ID.
+    """
+    content = master_admin_service.get_admin_content_piece_by_id(content_id, str(current_user.id), db)
+    if not content:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content piece not found"
+        )
+    return content
+
+
+@router.put("/content/pieces/{content_id}", response_model=AdminContentPieceResponse)
+def update_content_piece(
+    content_id: int,
+    content_update: AdminContentPieceUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Update an existing content piece.
+    """
+    content = master_admin_service.get_admin_content_piece_by_id(content_id, str(current_user.id), db)
+    if not content:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content piece not found"
+        )
+    
+    updated_content = master_admin_service.update_admin_content_piece(content, content_update, db)
+    return updated_content
+
+
+@router.delete("/content/pieces/{content_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_content_piece(
+    content_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Delete a content piece.
+    """
+    content = master_admin_service.get_admin_content_piece_by_id(content_id, str(current_user.id), db)
+    if not content:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content piece not found"
+        )
+    
+    master_admin_service.delete_admin_content_piece(content, db)
+    return None
+
+
+# ============================================================================
+# Lead Capture Endpoints
+# ============================================================================
+
+@router.post("/lead-captures", response_model=AdminLeadCaptureResponse, status_code=status.HTTP_201_CREATED)
+def create_lead_capture(
+    lead_data: AdminLeadCaptureCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Create a new lead capture from networking event.
+    """
+    lead = master_admin_service.create_admin_lead_capture(lead_data, current_user, db)
+    return lead
+
+
+@router.get("/lead-captures", response_model=AdminLeadCaptureListResponse)
+def list_lead_captures(
+    page: int = Query(1, ge=1),
+    per_page: int = Query(50, ge=1, le=100),
+    event_name: Optional[str] = None,
+    interest_level: Optional[str] = None,
+    follow_up_sent: Optional[bool] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    List all lead captures with pagination and filtering.
+    """
+    leads, total = master_admin_service.list_admin_lead_captures(
+        user_id=str(current_user.id),
+        db=db,
+        page=page,
+        per_page=per_page,
+        event_name=event_name,
+        interest_level=interest_level,
+        follow_up_sent=follow_up_sent,
+    )
+    
+    return {
+        "items": leads,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+    }
+
+
+@router.get("/lead-captures/{lead_id}", response_model=AdminLeadCaptureResponse)
+def get_lead_capture(
+    lead_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get lead capture details by ID.
+    """
+    lead = master_admin_service.get_admin_lead_capture_by_id(lead_id, str(current_user.id), db)
+    if not lead:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Lead capture not found"
+        )
+    return lead
+
+
+@router.put("/lead-captures/{lead_id}", response_model=AdminLeadCaptureResponse)
+def update_lead_capture(
+    lead_id: int,
+    lead_update: AdminLeadCaptureUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Update an existing lead capture.
+    """
+    lead = master_admin_service.get_admin_lead_capture_by_id(lead_id, str(current_user.id), db)
+    if not lead:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Lead capture not found"
+        )
+    
+    updated_lead = master_admin_service.update_admin_lead_capture(lead, lead_update, db)
+    return updated_lead
+
+
+@router.delete("/lead-captures/{lead_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_lead_capture(
+    lead_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Delete a lead capture.
+    """
+    lead = master_admin_service.get_admin_lead_capture_by_id(lead_id, str(current_user.id), db)
+    if not lead:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Lead capture not found"
+        )
+    
+    master_admin_service.delete_admin_lead_capture(lead, db)
+    return None
+
+
+@router.post("/lead-captures/{lead_id}/sync-ghl", response_model=AdminLeadCaptureResponse)
+def sync_lead_to_gohighlevel(
+    lead_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Sync lead capture to GoHighLevel CRM.
+    """
+    lead = master_admin_service.get_admin_lead_capture_by_id(lead_id, str(current_user.id), db)
+    if not lead:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Lead capture not found"
+        )
+    
+    synced_lead = master_admin_service.sync_lead_to_ghl(lead, db)
+    return synced_lead
+
+
+# ============================================================================
+# Collateral Management Endpoints
+# ============================================================================
+
+@router.post("/collateral", response_model=AdminCollateralResponse, status_code=status.HTTP_201_CREATED)
+def create_collateral(
+    collateral_data: AdminCollateralCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Create a new sales collateral item.
+    """
+    collateral = master_admin_service.create_admin_collateral(collateral_data, current_user, db)
+    return collateral
+
+
+@router.get("/collateral", response_model=AdminCollateralListResponse)
+def list_collateral(
+    page: int = Query(1, ge=1),
+    per_page: int = Query(50, ge=1, le=100),
+    collateral_type: Optional[str] = None,
+    search: Optional[str] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    List all sales collateral with pagination and filtering.
+    """
+    collateral_items, total = master_admin_service.list_admin_collateral(
+        user_id=str(current_user.id),
+        db=db,
+        page=page,
+        per_page=per_page,
+        collateral_type=collateral_type,
+        search=search,
+    )
+    
+    return {
+        "items": collateral_items,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+    }
+
+
+@router.get("/collateral/{collateral_id}", response_model=AdminCollateralResponse)
+def get_collateral(
+    collateral_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get collateral details by ID.
+    """
+    collateral = master_admin_service.get_admin_collateral_by_id(collateral_id, str(current_user.id), db)
+    if not collateral:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Collateral not found"
+        )
+    return collateral
+
+
+@router.put("/collateral/{collateral_id}", response_model=AdminCollateralResponse)
+def update_collateral(
+    collateral_id: int,
+    collateral_update: AdminCollateralUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Update an existing collateral item.
+    """
+    collateral = master_admin_service.get_admin_collateral_by_id(collateral_id, str(current_user.id), db)
+    if not collateral:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Collateral not found"
+        )
+    
+    updated_collateral = master_admin_service.update_admin_collateral(collateral, collateral_update, db)
+    return updated_collateral
+
+
+@router.delete("/collateral/{collateral_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_collateral(
+    collateral_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Delete a collateral item.
+    """
+    collateral = master_admin_service.get_admin_collateral_by_id(collateral_id, str(current_user.id), db)
+    if not collateral:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Collateral not found"
+        )
+    
+    master_admin_service.delete_admin_collateral(collateral, db)
+    return None
+
+
+@router.post("/collateral/{collateral_id}/track-usage", response_model=dict)
+def track_collateral_usage_endpoint(
+    collateral_id: int,
+    prospect_id: Optional[int] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Track collateral usage.
+    """
+    collateral = master_admin_service.get_admin_collateral_by_id(collateral_id, str(current_user.id), db)
+    if not collateral:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Collateral not found"
+        )
+    
+    usage = master_admin_service.track_collateral_usage(
+        collateral_id=collateral_id,
+        user_id=str(current_user.id),
+        prospect_id=prospect_id,
+        db=db,
+    )
+    
+    return {"message": "Usage tracked successfully", "usage_id": usage.id}
