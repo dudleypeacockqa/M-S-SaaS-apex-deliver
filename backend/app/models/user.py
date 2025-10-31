@@ -6,6 +6,7 @@ import uuid
 from datetime import datetime, timezone
 
 from sqlalchemy import Boolean, Column, DateTime, Enum, String
+from sqlalchemy.orm import relationship
 
 from app.db.base import Base
 
@@ -62,6 +63,21 @@ class User(Base):
     role = Column(Enum(UserRole, native_enum=False, length=32), default=UserRole.solo, nullable=False)
     organization_id = Column(String(36), nullable=True)
     deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Master Admin Portal relationships
+    admin_goals = relationship("AdminGoal", back_populates="user", cascade="all, delete-orphan")
+    admin_activities = relationship("AdminActivity", back_populates="user", cascade="all, delete-orphan")
+    admin_scores = relationship("AdminScore", back_populates="user", cascade="all, delete-orphan")
+    admin_focus_sessions = relationship("AdminFocusSession", back_populates="user", cascade="all, delete-orphan")
+    admin_nudges = relationship("AdminNudge", back_populates="user", cascade="all, delete-orphan")
+    admin_meetings = relationship("AdminMeeting", back_populates="user", cascade="all, delete-orphan")
+    admin_prospects = relationship("AdminProspect", back_populates="user", cascade="all, delete-orphan")
+    admin_deals = relationship("AdminDeal", back_populates="user", cascade="all, delete-orphan")
+    admin_campaigns = relationship("AdminCampaign", back_populates="user", cascade="all, delete-orphan")
+    admin_content_pieces = relationship("AdminContentPiece", back_populates="user", cascade="all, delete-orphan")
+    admin_content_scripts = relationship("AdminContentScript", back_populates="user", cascade="all, delete-orphan")
+    admin_lead_captures = relationship("AdminLeadCapture", back_populates="user", cascade="all, delete-orphan")
+    admin_collateral = relationship("AdminCollateral", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:  # pragma: no cover - repr aid
         return f"User(id={self.id!s}, clerk_user_id={self.clerk_user_id!r})"

@@ -672,3 +672,25 @@ def auth_headers_match(match_user):
 
 
 
+
+
+# ============================================================================
+# Master Admin Portal Fixtures
+# ============================================================================
+
+@pytest.fixture
+def test_prospect(db_session, test_user):
+    """Create a test prospect for Master Admin activity linking."""
+    from app.models.master_admin import AdminProspect, ProspectStatus
+    
+    prospect = AdminProspect(
+        user_id=test_user.id,
+        name="Test Prospect",
+        email="prospect@example.com",
+        company="Test Company",
+        status=ProspectStatus.NEW
+    )
+    db_session.add(prospect)
+    db_session.commit()
+    db_session.refresh(prospect)
+    return prospect
