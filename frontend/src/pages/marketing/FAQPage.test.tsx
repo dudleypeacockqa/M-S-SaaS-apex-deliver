@@ -48,7 +48,8 @@ describe('FAQPage', () => {
 
     it('should render "About Us" category', () => {
       renderWithRouter(<FAQPage />);
-      expect(screen.getByText(/^about us$/i)).toBeInTheDocument();
+      // Multiple instances of "About Us" exist (category heading + nav link)
+      expect(screen.getAllByText(/^about us$/i)[0]).toBeInTheDocument();
     });
   });
 
