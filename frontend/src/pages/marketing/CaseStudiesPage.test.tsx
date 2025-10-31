@@ -25,7 +25,8 @@ describe('CaseStudiesPage', () => {
 
     it('should render key metrics in hero', () => {
       renderWithRouter(<CaseStudiesPage />);
-      expect(screen.getByText(/75%/i)).toBeInTheDocument();
+      // Multiple instances of "75%" may exist (hero, case studies, etc)
+      expect(screen.getAllByText(/75%/i)[0]).toBeInTheDocument();
       expect(screen.getByText(/faster pmi cycles/i)).toBeInTheDocument();
     });
   });
@@ -34,7 +35,8 @@ describe('CaseStudiesPage', () => {
     it('should render TechVentures PE case study', () => {
       renderWithRouter(<CaseStudiesPage />);
       expect(screen.getByText('TechVentures PE')).toBeInTheDocument();
-      expect(screen.getByText(/private equity/i)).toBeInTheDocument();
+      // Multiple instances of "private equity" may exist (multiple case studies)
+      expect(screen.getAllByText(/private equity/i)[0]).toBeInTheDocument();
     });
 
     it('should render PMI reduction result', () => {
