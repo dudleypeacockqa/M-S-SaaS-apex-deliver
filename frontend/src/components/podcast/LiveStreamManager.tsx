@@ -61,6 +61,7 @@ export default function LiveStreamManager({ podcastId, tier }: LiveStreamManager
     storageLocation: 'cloud',
     postProcessing: [],
   });
+  const pollTimeoutRef = React.useRef<number | null>(null);
 
   const stream = streamQuery.data;
   const shouldPollStatus = Boolean(

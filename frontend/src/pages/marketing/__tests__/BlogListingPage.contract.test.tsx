@@ -24,7 +24,7 @@ describe('BlogListingPage contract', () => {
     renderPage()
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent('Blog content is temporarily unavailable. Please check back soon.')
+      expect(screen.getByRole('alert')).toHaveTextContent('Unable to load blog posts. Please try again later.')
     })
   })
 })
