@@ -48,14 +48,17 @@ describe('StickyCTABar', () => {
     expect(container).toHaveClass('translate-y-full')
   })
 
-  it('should show after scrolling past 50%', () => {
+  it('should show after scrolling past 80%', () => {
     renderWithRouter(<StickyCTABar />)
 
-    // Simulate scrolling past 50%
+    // Simulate scrolling past 80%
+    // Component shows bar when scrollPercentage > 80
+    // Formula: (scrollY / (scrollHeight - innerHeight)) * 100 > 80
+    // Required: scrollY > 0.8 * (2000 - 1000) = 800
     Object.defineProperty(window, 'scrollY', {
       writable: true,
       configurable: true,
-      value: 600, // More than 50% of (2000 - 1000)
+      value: 850, // More than 80% of (2000 - 1000)
     })
 
     fireEvent.scroll(window)
@@ -67,19 +70,19 @@ describe('StickyCTABar', () => {
   it('should hide when scrolling back to top', () => {
     renderWithRouter(<StickyCTABar />)
 
-    // Scroll down first
+    // Scroll down first (past 80%)
     Object.defineProperty(window, 'scrollY', {
       writable: true,
       configurable: true,
-      value: 600,
+      value: 850,
     })
     fireEvent.scroll(window)
 
-    // Then scroll back up
+    // Then scroll back up (less than 80%)
     Object.defineProperty(window, 'scrollY', {
       writable: true,
       configurable: true,
-      value: 100, // Less than 50%
+      value: 100, // Less than 80%
     })
     fireEvent.scroll(window)
 
@@ -118,11 +121,11 @@ describe('StickyCTABar', () => {
     const closeButton = screen.getByLabelText(/Close/i)
     fireEvent.click(closeButton)
 
-    // Try to trigger scroll
+    // Try to trigger scroll (past 80%)
     Object.defineProperty(window, 'scrollY', {
       writable: true,
       configurable: true,
-      value: 600,
+      value: 850,
     })
     fireEvent.scroll(window)
 
