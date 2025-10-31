@@ -196,6 +196,7 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
           <button
             onClick={() => match.id && onRequestIntro(match.id)}
             className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors"
+            data-testid="request-intro-button"
           >
             Request Introduction
           </button>
