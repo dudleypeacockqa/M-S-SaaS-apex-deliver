@@ -1,7 +1,7 @@
 """API router definitions."""
 from fastapi import APIRouter
 
-from app.api.routes import admin, auth, blog, dashboard, deal_matching, deals, documents, financial, marketing, podcasts, subscriptions, tasks, valuation
+from app.api.routes import admin, auth, blog, dashboard, deal_matching, deals, documents, financial, marketing, master_admin, podcasts, subscriptions, tasks, valuation
 from app.api.webhooks import clerk
 
 api_router = APIRouter(prefix="/api")
@@ -19,5 +19,6 @@ api_router.include_router(tasks.router)
 api_router.include_router(valuation.router)
 api_router.include_router(blog.router)
 api_router.include_router(marketing.router)
+api_router.include_router(master_admin.router)
 
 
