@@ -76,6 +76,10 @@ const DocumentEditor = lazyNamed(() => import("./pages/documents/DocumentEditor"
 const MasterAdminDashboard = lazyNamed(() => import("./pages/master-admin/MasterAdminDashboard"), "MasterAdminDashboard")
 const ActivityTracker = lazyNamed(() => import("./pages/master-admin/ActivityTracker"), "ActivityTracker")
 const ProspectPipeline = lazyNamed(() => import("./pages/master-admin/ProspectPipeline"), "ProspectPipeline")
+const CampaignManager = lazyNamed(() => import("./pages/master-admin/CampaignManager"), "CampaignManager")
+const ContentStudio = lazyNamed(() => import("./pages/master-admin/ContentStudio"), "ContentStudio")
+const LeadCapture = lazyNamed(() => import("./pages/master-admin/LeadCapture"), "LeadCapture")
+const SalesCollateral = lazyNamed(() => import("./pages/master-admin/SalesCollateral"), "SalesCollateral")
 
 const DashboardRoute = () => {
   return (
@@ -148,6 +152,10 @@ export const AppRoutes = () => {
         <Route path="master-admin" element={<SignedIn><MasterAdminDashboard /></SignedIn>} />
         <Route path="master-admin/activity" element={<SignedIn><ActivityTracker /></SignedIn>} />
         <Route path="master-admin/prospects" element={<SignedIn><ProspectPipeline /></SignedIn>} />
+        <Route path="master-admin/campaigns" element={<SignedIn><CampaignManager /></SignedIn>} />
+        <Route path="master-admin/content" element={<SignedIn><ContentStudio /></SignedIn>} />
+        <Route path="master-admin/leads" element={<SignedIn><LeadCapture /></SignedIn>} />
+        <Route path="master-admin/collateral" element={<SignedIn><SalesCollateral /></SignedIn>} />
 
         {/* Deal Routes */}
         <Route path="deals" element={<SignedIn><DealPipeline /></SignedIn>} />

@@ -7,6 +7,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      'is-potential-custom-element-name': path.resolve(__dirname, 'src/test/stubs/isPotentialCustomElementName.ts'),
+      'tr46': path.resolve(__dirname, 'src/test/stubs/tr46.ts'),
     },
   },
   test: {

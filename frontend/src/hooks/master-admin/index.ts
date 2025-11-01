@@ -27,3 +27,24 @@ export * from './useProspects'
 
 // Deals
 export * from './useDeals'
+
+// Campaigns
+export * from './useCampaigns'
+
+// Campaign Recipients
+export * from './useCampaignRecipients'
+
+// Content Scripts
+export * from './useContentScripts'
+
+// Content Pieces
+export * from './useContentPieces'
+
+// Lead Captures
+export * from './useLeadCaptures'
+
+// Collateral
+export * from './useCollateral'
+
+// Collateral Usage
+export * from './useCollateralUsage'
