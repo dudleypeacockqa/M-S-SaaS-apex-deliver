@@ -6,16 +6,15 @@ from decimal import Decimal
 from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
-from pydantic.aliases import AliasChoices
 
-from app.models.master_admin import (
+from app.models.enums import (
     ActivityType,
     ActivityStatus,
     NudgeType,
     NudgePriority,
     MeetingType,
     ProspectStatus,
-    DealStage as AdminDealStage,
+    AdminDealStage,
     CampaignType,
     CampaignStatus,
     ContentType,
@@ -61,19 +60,12 @@ class AdminGoalResponse(AdminGoalBase):
 
 class AdminActivityBase(BaseModel):
     """Base schema for admin activities."""
-    activity_type: ActivityType = Field(
-        ...,
-        description="Activity type",
-        validation_alias=AliasChoices("type", "activity_type"),
-        serialization_alias="type",
-    )
+    activity_type: ActivityType = Field(..., description="Activity type")
     status: ActivityStatus = Field(..., description="Activity status")
     date: date_type = Field(..., description="Activity date")
     amount: int = Field(1, ge=1, description="Number of activities")
     notes: Optional[str] = Field(None, description="Activity notes")
     prospect_id: Optional[int] = Field(None, description="Related prospect ID")
-
-    model_config = ConfigDict(populate_by_name=True)
 
 
 class AdminActivityCreate(AdminActivityBase):
@@ -83,18 +75,12 @@ class AdminActivityCreate(AdminActivityBase):
 
 class AdminActivityUpdate(BaseModel):
     """Schema for updating an admin activity (all fields optional)."""
-    activity_type: Optional[ActivityType] = Field(
-        None,
-        validation_alias=AliasChoices("type", "activity_type"),
-        serialization_alias="type",
-    )
+    activity_type: Optional[ActivityType] = None
     status: Optional[ActivityStatus] = None
     date: Optional[date_type] = None
     amount: Optional[int] = Field(None, ge=1)
     notes: Optional[str] = None
     prospect_id: Optional[int] = None
-
-    model_config = ConfigDict(populate_by_name=True)
 
 
 class AdminActivityResponse(AdminActivityBase):
@@ -104,7 +90,7 @@ class AdminActivityResponse(AdminActivityBase):
     created_at: datetime
     updated_at: datetime
 
-    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AdminScoreBase(BaseModel):
@@ -139,7 +125,7 @@ class AdminScoreResponse(AdminScoreBase):
 
 class AdminScoreListResponse(BaseModel):
     """Schema for list of admin scores."""
-    items: list[AdminScoreResponse]
+    scores: list[AdminScoreResponse]
     total: int
 
 
@@ -177,42 +163,23 @@ class AdminFocusSessionResponse(AdminFocusSessionBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class AdminFocusSessionListResponse(BaseModel):
-    """Schema for list of admin focus sessions."""
-    items: list[AdminFocusSessionResponse]
-    total: int
-
-
 class AdminNudgeBase(BaseModel):
     """Base schema for admin nudges."""
-    nudge_type: NudgeType = Field(
-        ...,
-        description="Nudge type",
-        validation_alias=AliasChoices("type", "nudge_type"),
-        serialization_alias="type",
-    )
+    nudge_type: NudgeType = Field(..., description="Nudge type")
     message: str = Field(..., min_length=1, description="Nudge message")
     priority: NudgePriority = Field(NudgePriority.NORMAL, description="Nudge priority")
     read: bool = Field(False, description="Whether nudge has been read")
     action_url: Optional[str] = Field(None, description="Action URL")
     expires_at: Optional[datetime] = Field(None, description="Expiration time")
 
-    model_config = ConfigDict(populate_by_name=True)
-
 
 class AdminNudgeCreate(BaseModel):
     """Schema for creating a new nudge."""
-    nudge_type: NudgeType = Field(
-        ...,
-        validation_alias=AliasChoices("type", "nudge_type"),
-        serialization_alias="type",
-    )
+    nudge_type: NudgeType
     message: str = Field(..., min_length=1)
     priority: NudgePriority = NudgePriority.NORMAL
     action_url: Optional[str] = None
     expires_at: Optional[datetime] = None
-
-    model_config = ConfigDict(populate_by_name=True)
 
 
 class AdminNudgeUpdate(BaseModel):
@@ -226,30 +193,17 @@ class AdminNudgeResponse(AdminNudgeBase):
     user_id: str
     created_at: datetime
 
-    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
-
-
-class AdminNudgeListResponse(BaseModel):
-    """Schema for list of admin nudges."""
-    items: list[AdminNudgeResponse]
-    total: int
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AdminMeetingBase(BaseModel):
     """Base schema for admin meetings."""
     title: str = Field(..., min_length=1, max_length=255, description="Meeting title")
-    meeting_type: MeetingType = Field(
-        ...,
-        description="Meeting type",
-        validation_alias=AliasChoices("type", "meeting_type"),
-        serialization_alias="type",
-    )
+    meeting_type: MeetingType = Field(..., description="Meeting type")
     duration_minutes: int = Field(60, ge=1, description="Meeting duration in minutes")
     agenda: Optional[str] = Field(None, description="Meeting agenda")
     questions: Optional[str] = Field(None, description="Questions to ask")
     follow_up_tasks: Optional[str] = Field(None, description="Follow-up tasks")
-
-    model_config = ConfigDict(populate_by_name=True)
 
 
 class AdminMeetingCreate(AdminMeetingBase):
@@ -260,17 +214,11 @@ class AdminMeetingCreate(AdminMeetingBase):
 class AdminMeetingUpdate(BaseModel):
     """Schema for updating a meeting template (all fields optional)."""
     title: Optional[str] = Field(None, min_length=1, max_length=255)
-    meeting_type: Optional[MeetingType] = Field(
-        None,
-        validation_alias=AliasChoices("type", "meeting_type"),
-        serialization_alias="type",
-    )
+    meeting_type: Optional[MeetingType] = None
     duration_minutes: Optional[int] = Field(None, ge=1)
     agenda: Optional[str] = None
     questions: Optional[str] = None
     follow_up_tasks: Optional[str] = None
-
-    model_config = ConfigDict(populate_by_name=True)
 
 
 class AdminMeetingResponse(AdminMeetingBase):
@@ -280,13 +228,7 @@ class AdminMeetingResponse(AdminMeetingBase):
     created_at: datetime
     updated_at: datetime
 
-    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
-
-
-class AdminMeetingListResponse(BaseModel):
-    """Schema for list of admin meetings."""
-    items: list[AdminMeetingResponse]
-    total: int
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============================================================================
@@ -385,18 +327,11 @@ class AdminDealResponse(AdminDealBase):
 class AdminCampaignBase(BaseModel):
     """Base schema for admin campaigns."""
     name: str = Field(..., min_length=1, max_length=255, description="Campaign name")
-    campaign_type: CampaignType = Field(
-        ...,
-        description="Campaign type",
-        validation_alias=AliasChoices("type", "campaign_type"),
-        serialization_alias="type",
-    )
+    campaign_type: CampaignType = Field(..., description="Campaign type")
     status: CampaignStatus = Field(CampaignStatus.DRAFT, description="Campaign status")
     subject: Optional[str] = Field(None, max_length=500, description="Email subject or SMS preview")
     content: str = Field(..., min_length=1, description="Campaign content")
     scheduled_at: Optional[datetime] = Field(None, description="Scheduled send time")
-
-    model_config = ConfigDict(populate_by_name=True)
 
 
 class AdminCampaignCreate(AdminCampaignBase):
@@ -425,7 +360,7 @@ class AdminCampaignResponse(AdminCampaignBase):
     created_at: datetime
     updated_at: datetime
 
-    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AdminCampaignRecipientBase(BaseModel):
@@ -437,14 +372,6 @@ class AdminCampaignRecipientBase(BaseModel):
 class AdminCampaignRecipientCreate(AdminCampaignRecipientBase):
     """Schema for adding a recipient to a campaign."""
     pass
-
-
-class AdminCampaignRecipientUpdate(BaseModel):
-    """Schema for updating campaign recipient delivery metrics."""
-    sent: Optional[bool] = None
-    opened: Optional[bool] = None
-    clicked: Optional[bool] = None
-    bounced: Optional[bool] = None
 
 
 class AdminCampaignRecipientResponse(AdminCampaignRecipientBase):
@@ -468,17 +395,10 @@ class AdminCampaignRecipientResponse(AdminCampaignRecipientBase):
 class AdminContentScriptBase(BaseModel):
     """Base schema for content scripts."""
     title: str = Field(..., min_length=1, max_length=255, description="Script title")
-    content_type: ContentType = Field(
-        ...,
-        description="Content type",
-        validation_alias=AliasChoices("type", "content_type"),
-        serialization_alias="type",
-    )
+    content_content_type: ContentType = Field(..., description="Content type")
     script_text: str = Field(..., min_length=1, description="Script content")
     duration_minutes: Optional[int] = Field(None, ge=1, description="Estimated duration")
     keywords: Optional[str] = Field(None, description="Keywords (JSON array)")
-
-    model_config = ConfigDict(populate_by_name=True)
 
 
 class AdminContentScriptCreate(AdminContentScriptBase):
@@ -504,21 +424,10 @@ class AdminContentScriptResponse(AdminContentScriptBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class AdminContentScriptListResponse(BaseModel):
-    """Schema for list of content scripts."""
-    items: list[AdminContentScriptResponse]
-    total: int
-
-
 class AdminContentPieceBase(BaseModel):
     """Base schema for content pieces."""
     title: str = Field(..., min_length=1, max_length=500, description="Content title")
-    content_type: ContentType = Field(
-        ...,
-        description="Content type",
-        validation_alias=AliasChoices("type", "content_type"),
-        serialization_alias="type",
-    )
+    content_type: ContentType = Field(..., description="Content type")
     status: ContentStatus = Field(ContentStatus.IDEA, description="Content status")
     script_id: Optional[int] = Field(None, description="Related script ID")
     recording_url: Optional[str] = Field(None, description="Recording URL")
@@ -529,8 +438,6 @@ class AdminContentPieceBase(BaseModel):
     youtube_url: Optional[str] = Field(None, description="YouTube URL")
     spotify_url: Optional[str] = Field(None, description="Spotify URL")
     rss_url: Optional[str] = Field(None, description="RSS feed URL")
-
-    model_config = ConfigDict(populate_by_name=True)
 
 
 class AdminContentPieceCreate(AdminContentPieceBase):
@@ -564,7 +471,7 @@ class AdminContentPieceResponse(AdminContentPieceBase):
     created_at: datetime
     updated_at: datetime
 
-    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============================================================================
@@ -583,7 +490,6 @@ class AdminLeadCaptureBase(BaseModel):
     follow_up_type: Optional[str] = Field(None, max_length=100, description="Follow-up type")
     notes: Optional[str] = Field(None, description="Lead notes")
     voice_notes_url: Optional[str] = Field(None, description="Voice notes URL")
-    ghl_contact_id: Optional[str] = Field(None, max_length=100, description="GoHighLevel contact ID")
 
 
 class AdminLeadCaptureCreate(AdminLeadCaptureBase):
@@ -625,21 +531,12 @@ class AdminLeadCaptureResponse(AdminLeadCaptureBase):
 class AdminCollateralBase(BaseModel):
     """Base schema for sales collateral."""
     title: str = Field(..., min_length=1, max_length=255, description="Collateral title")
-    collateral_type: str = Field(
-        ...,
-        min_length=1,
-        max_length=100,
-        description="Collateral type",
-        validation_alias=AliasChoices("type", "collateral_type"),
-        serialization_alias="type",
-    )
+    collateral_type: str = Field(..., min_length=1, max_length=100, description="Collateral type")
     description: Optional[str] = Field(None, description="Collateral description")
     file_url: str = Field(..., min_length=1, description="File URL")
     file_size: Optional[int] = Field(None, ge=0, description="File size in bytes")
     mime_type: Optional[str] = Field(None, max_length=100, description="MIME type")
     tags: Optional[str] = Field(None, description="Tags (JSON array)")
-
-    model_config = ConfigDict(populate_by_name=True)
 
 
 class AdminCollateralCreate(AdminCollateralBase):
@@ -650,17 +547,9 @@ class AdminCollateralCreate(AdminCollateralBase):
 class AdminCollateralUpdate(BaseModel):
     """Schema for updating sales collateral (all fields optional)."""
     title: Optional[str] = Field(None, min_length=1, max_length=255)
-    collateral_type: Optional[str] = Field(
-        None,
-        min_length=1,
-        max_length=100,
-        validation_alias=AliasChoices("type", "collateral_type"),
-        serialization_alias="type",
-    )
+    collateral_type: Optional[str] = Field(None, min_length=1, max_length=100)
     description: Optional[str] = None
     tags: Optional[str] = None
-
-    model_config = ConfigDict(populate_by_name=True)
 
 
 class AdminCollateralResponse(AdminCollateralBase):
@@ -670,7 +559,7 @@ class AdminCollateralResponse(AdminCollateralBase):
     created_at: datetime
     updated_at: datetime
 
-    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AdminCollateralUsageBase(BaseModel):
@@ -727,12 +616,6 @@ class AdminCampaignListResponse(BaseModel):
     total: int
     page: int
     per_page: int
-
-
-class AdminCampaignRecipientListResponse(BaseModel):
-    """Schema for list of campaign recipients."""
-    items: list[AdminCampaignRecipientResponse]
-    total: int
 
 
 class AdminContentPieceListResponse(BaseModel):

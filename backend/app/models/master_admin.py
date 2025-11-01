@@ -12,7 +12,6 @@ SQLAlchemy models for the Master Admin Portal subsystems:
 All models follow the repository's established patterns and conventions.
 """
 from datetime import date, datetime
-from enum import Enum as PyEnum
 from typing import Optional
 
 from sqlalchemy import (
@@ -22,112 +21,11 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
-
-
-# ============================================================================
-# Enums
-# ============================================================================
-
-class ActivityType(str, PyEnum):
-    """Activity types for tracking."""
-    DISCOVERY = "discovery"
-    EMAIL = "email"
-    VIDEO = "video"
-    CALL = "call"
-
-
-class ActivityStatus(str, PyEnum):
-    """Activity completion status."""
-    DONE = "done"
-    PENDING = "pending"
-    CANCELLED = "cancelled"
-
-
-class NudgeType(str, PyEnum):
-    """Types of nudges/notifications."""
-    REMINDER = "reminder"
-    SUGGESTION = "suggestion"
-    ALERT = "alert"
-    CELEBRATION = "celebration"
-
-
-class NudgePriority(str, PyEnum):
-    """Priority levels for nudges."""
-    LOW = "low"
-    NORMAL = "normal"
-    HIGH = "high"
-    URGENT = "urgent"
-
-
-class MeetingType(str, PyEnum):
-    """Types of meetings."""
-    DISCOVERY = "discovery"
-    DEMO = "demo"
-    NEGOTIATION = "negotiation"
-    CLOSING = "closing"
-
-
-class ProspectStatus(str, PyEnum):
-    """Prospect lifecycle status."""
-    NEW = "new"
-    QUALIFIED = "qualified"
-    ENGAGED = "engaged"
-    PROPOSAL = "proposal"
-    NEGOTIATION = "negotiation"
-    CLOSED_WON = "closed_won"
-    CLOSED_LOST = "closed_lost"
-
-
-class DealStage(str, PyEnum):
-    """Deal pipeline stages."""
-    DISCOVERY = "discovery"
-    QUALIFICATION = "qualification"
-    PROPOSAL = "proposal"
-    NEGOTIATION = "negotiation"
-    CLOSING = "closing"
-    WON = "won"
-    LOST = "lost"
-
-
-class CampaignType(str, PyEnum):
-    """Campaign types."""
-    EMAIL = "email"
-    SMS = "sms"
-    MIXED = "mixed"
-
-
-class CampaignStatus(str, PyEnum):
-    """Campaign status."""
-    DRAFT = "draft"
-    SCHEDULED = "scheduled"
-    SENDING = "sending"
-    SENT = "sent"
-    PAUSED = "paused"
-    CANCELLED = "cancelled"
-
-
-class ContentType(str, PyEnum):
-    """Content piece types."""
-    YOUTUBE = "youtube"
-    PODCAST = "podcast"
-    BLOG = "blog"
-    SOCIAL = "social"
-
-
-class ContentStatus(str, PyEnum):
-    """Content production status."""
-    IDEA = "idea"
-    SCRIPTING = "scripting"
-    RECORDING = "recording"
-    EDITING = "editing"
-    READY = "ready"
-    PUBLISHED = "published"
-
-
-def enum_values(enum_cls):
-    """Return enum values for SQLAlchemy enum columns."""
-    return [member.value for member in enum_cls]
-
+from app.models.enums import (
+    ActivityType, ActivityStatus, NudgeType, NudgePriority, MeetingType,
+    ProspectStatus, AdminDealStage, CampaignType, CampaignStatus,
+    ContentType, ContentStatus
+)
 
 
 # ============================================================================
@@ -139,7 +37,7 @@ class AdminGoal(Base):
     __tablename__ = "admin_goals"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     week_start = Column(Date, nullable=False)
     target_discoveries = Column(Integer, default=0)
     target_emails = Column(Integer, default=0)
@@ -166,9 +64,9 @@ class AdminActivity(Base):
     __tablename__ = "admin_activities"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    type = Column(Enum(ActivityType, values_callable=enum_values), nullable=False)
-    status = Column(Enum(ActivityStatus, values_callable=enum_values), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    type = Column(Enum(ActivityType), nullable=False)
+    status = Column(Enum(ActivityStatus), nullable=False)
     date = Column(Date, nullable=False)
     amount = Column(Integer, default=1)
     notes = Column(Text)
@@ -195,7 +93,7 @@ class AdminScore(Base):
     __tablename__ = "admin_scores"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     date = Column(Date, nullable=False)
     score = Column(Integer, nullable=False)
     streak_days = Column(Integer, default=0)
@@ -222,7 +120,7 @@ class AdminFocusSession(Base):
     __tablename__ = "admin_focus_sessions"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime)
     duration_minutes = Column(Integer, default=50)
@@ -248,10 +146,10 @@ class AdminNudge(Base):
     __tablename__ = "admin_nudges"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    type = Column(Enum(NudgeType, values_callable=enum_values), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    type = Column(Enum(NudgeType), nullable=False)
     message = Column(Text, nullable=False)
-    priority = Column(Enum(NudgePriority, values_callable=enum_values), default=NudgePriority.NORMAL)
+    priority = Column(Enum(NudgePriority), default=NudgePriority.NORMAL)
     read = Column(Boolean, default=False)
     action_url = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
@@ -274,9 +172,9 @@ class AdminMeeting(Base):
     __tablename__ = "admin_meetings"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(255), nullable=False)
-    type = Column(Enum(MeetingType, values_callable=enum_values), nullable=False)
+    type = Column(Enum(MeetingType), nullable=False)
     duration_minutes = Column(Integer, default=60)
     agenda = Column(Text)
     questions = Column(Text)
@@ -305,13 +203,13 @@ class AdminProspect(Base):
     __tablename__ = "admin_prospects"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(255), nullable=False)
     email = Column(String(320))
     phone = Column(String(50))
     company = Column(String(255))
     title = Column(String(255))
-    status = Column(Enum(ProspectStatus, values_callable=enum_values), default=ProspectStatus.NEW)
+    status = Column(Enum(ProspectStatus), default=ProspectStatus.NEW)
     source = Column(String(100))  # networking, referral, inbound, etc.
     tags = Column(Text)  # JSON array of tags
     notes = Column(Text)
@@ -342,10 +240,10 @@ class AdminDeal(Base):
     __tablename__ = "admin_deals"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     prospect_id = Column(Integer, ForeignKey("admin_prospects.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(255), nullable=False)
-    stage = Column(Enum(DealStage, values_callable=enum_values), default=DealStage.DISCOVERY)
+    stage = Column(Enum(AdminDealStage), default=AdminDealStage.DISCOVERY)
     value = Column(Numeric(12, 2))  # Deal value in currency
     probability = Column(Integer, default=0)  # 0-100%
     expected_close_date = Column(Date)
@@ -377,10 +275,10 @@ class AdminCampaign(Base):
     __tablename__ = "admin_campaigns"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(255), nullable=False)
-    type = Column(Enum(CampaignType, values_callable=enum_values), nullable=False)
-    status = Column(Enum(CampaignStatus, values_callable=enum_values), default=CampaignStatus.DRAFT)
+    type = Column(Enum(CampaignType), nullable=False)
+    status = Column(Enum(CampaignStatus), default=CampaignStatus.DRAFT)
     subject = Column(String(500))  # Email subject or SMS preview
     content = Column(Text, nullable=False)
     scheduled_at = Column(DateTime)
@@ -443,10 +341,10 @@ class AdminContentPiece(Base):
     __tablename__ = "admin_content_pieces"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(500), nullable=False)
-    type = Column(Enum(ContentType, values_callable=enum_values), nullable=False)
-    status = Column(Enum(ContentStatus, values_callable=enum_values), default=ContentStatus.IDEA)
+    type = Column(Enum(ContentType), nullable=False)
+    status = Column(Enum(ContentStatus), default=ContentStatus.IDEA)
     script_id = Column(Integer, ForeignKey("admin_content_scripts.id", ondelete="SET NULL"))
     recording_url = Column(Text)  # S3 URL for raw recording
     edited_url = Column(Text)  # S3 URL for edited video/audio
@@ -480,9 +378,9 @@ class AdminContentScript(Base):
     __tablename__ = "admin_content_scripts"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(255), nullable=False)
-    content_type = Column(Enum(ContentType, values_callable=enum_values), nullable=False)
+    content_type = Column(Enum(ContentType), nullable=False)
     script_text = Column(Text, nullable=False)
     duration_minutes = Column(Integer)
     keywords = Column(Text)  # JSON array
@@ -511,7 +409,7 @@ class AdminLeadCapture(Base):
     __tablename__ = "admin_lead_captures"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(255), nullable=False)
     email = Column(String(320))
     phone = Column(String(50))
@@ -548,7 +446,7 @@ class AdminCollateral(Base):
     __tablename__ = "admin_collateral"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(255), nullable=False)
     type = Column(String(100), nullable=False)  # one-pager, deck, template, etc.
     description = Column(Text)
