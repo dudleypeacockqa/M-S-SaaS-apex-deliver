@@ -861,11 +861,11 @@ def get_dashboard_stats(user_id: str, db: Session) -> dict:
             AdminDeal.user_id == user_id,
             AdminDeal.stage.in_(
                 [
-                    DealStage.DISCOVERY,
-                    DealStage.QUALIFICATION,
-                    DealStage.PROPOSAL,
-                    DealStage.NEGOTIATION,
-                    DealStage.CLOSING,
+                    AdminDealStage.DISCOVERY,
+                    AdminDealStage.QUALIFICATION,
+                    AdminDealStage.PROPOSAL,
+                    AdminDealStage.NEGOTIATION,
+                    AdminDealStage.CLOSING,
                 ]
             ),
         )
