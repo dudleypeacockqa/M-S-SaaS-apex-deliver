@@ -73,6 +73,9 @@ const TermsOfService = lazyNamed(() => import("./pages/marketing/legal/TermsOfSe
 const PrivacyPolicy = lazyNamed(() => import("./pages/marketing/legal/PrivacyPolicy"), "PrivacyPolicy")
 const CookiePolicy = lazyNamed(() => import("./pages/marketing/legal/CookiePolicy"), "CookiePolicy")
 const DocumentEditor = lazyNamed(() => import("./pages/documents/DocumentEditor"), "DocumentEditor")
+const MasterAdminDashboard = lazyNamed(() => import("./pages/master-admin/MasterAdminDashboard"), "MasterAdminDashboard")
+const ActivityTracker = lazyNamed(() => import("./pages/master-admin/ActivityTracker"), "ActivityTracker")
+const ProspectPipeline = lazyNamed(() => import("./pages/master-admin/ProspectPipeline"), "ProspectPipeline")
 
 const DashboardRoute = () => {
   return (
@@ -140,6 +143,11 @@ export const AppRoutes = () => {
         <Route path="admin/users" element={<SignedIn><UserManagement /></SignedIn>} />
         <Route path="admin/organizations" element={<SignedIn><OrganizationManagement /></SignedIn>} />
         <Route path="admin/system" element={<SignedIn><SystemHealth /></SignedIn>} />
+
+        {/* Master Admin Portal Routes */}
+        <Route path="master-admin" element={<SignedIn><MasterAdminDashboard /></SignedIn>} />
+        <Route path="master-admin/activity" element={<SignedIn><ActivityTracker /></SignedIn>} />
+        <Route path="master-admin/prospects" element={<SignedIn><ProspectPipeline /></SignedIn>} />
 
         {/* Deal Routes */}
         <Route path="deals" element={<SignedIn><DealPipeline /></SignedIn>} />

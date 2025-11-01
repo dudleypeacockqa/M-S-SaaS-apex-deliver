@@ -37,7 +37,7 @@ class AdminGoal(Base):
     __tablename__ = "admin_goals"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     week_start = Column(Date, nullable=False)
     target_discoveries = Column(Integer, default=0)
     target_emails = Column(Integer, default=0)
@@ -64,7 +64,7 @@ class AdminActivity(Base):
     __tablename__ = "admin_activities"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     type = Column(Enum(ActivityType), nullable=False)
     status = Column(Enum(ActivityStatus), nullable=False)
     date = Column(Date, nullable=False)
@@ -93,7 +93,7 @@ class AdminScore(Base):
     __tablename__ = "admin_scores"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     date = Column(Date, nullable=False)
     score = Column(Integer, nullable=False)
     streak_days = Column(Integer, default=0)
@@ -120,7 +120,7 @@ class AdminFocusSession(Base):
     __tablename__ = "admin_focus_sessions"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime)
     duration_minutes = Column(Integer, default=50)
@@ -146,7 +146,7 @@ class AdminNudge(Base):
     __tablename__ = "admin_nudges"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     type = Column(Enum(NudgeType), nullable=False)
     message = Column(Text, nullable=False)
     priority = Column(Enum(NudgePriority), default=NudgePriority.NORMAL)
@@ -172,7 +172,7 @@ class AdminMeeting(Base):
     __tablename__ = "admin_meetings"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(255), nullable=False)
     type = Column(Enum(MeetingType), nullable=False)
     duration_minutes = Column(Integer, default=60)
@@ -203,7 +203,7 @@ class AdminProspect(Base):
     __tablename__ = "admin_prospects"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(255), nullable=False)
     email = Column(String(320))
     phone = Column(String(50))
@@ -240,7 +240,7 @@ class AdminDeal(Base):
     __tablename__ = "admin_deals"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     prospect_id = Column(Integer, ForeignKey("admin_prospects.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(255), nullable=False)
     stage = Column(Enum(AdminDealStage), default=AdminDealStage.DISCOVERY)
@@ -275,7 +275,7 @@ class AdminCampaign(Base):
     __tablename__ = "admin_campaigns"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(255), nullable=False)
     type = Column(Enum(CampaignType), nullable=False)
     status = Column(Enum(CampaignStatus), default=CampaignStatus.DRAFT)
@@ -341,7 +341,7 @@ class AdminContentPiece(Base):
     __tablename__ = "admin_content_pieces"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(500), nullable=False)
     type = Column(Enum(ContentType), nullable=False)
     status = Column(Enum(ContentStatus), default=ContentStatus.IDEA)
@@ -378,7 +378,7 @@ class AdminContentScript(Base):
     __tablename__ = "admin_content_scripts"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(255), nullable=False)
     content_type = Column(Enum(ContentType), nullable=False)
     script_text = Column(Text, nullable=False)
@@ -409,7 +409,7 @@ class AdminLeadCapture(Base):
     __tablename__ = "admin_lead_captures"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(255), nullable=False)
     email = Column(String(320))
     phone = Column(String(50))
@@ -446,7 +446,7 @@ class AdminCollateral(Base):
     __tablename__ = "admin_collateral"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(255), nullable=False)
     type = Column(String(100), nullable=False)  # one-pager, deck, template, etc.
     description = Column(Text)

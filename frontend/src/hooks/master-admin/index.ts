@@ -21,3 +21,9 @@ export * from './useNudges'
 
 // Dashboard
 export * from './useDashboard'
+
+// Prospects
+export * from './useProspects'
+
+// Deals
+export * from './useDeals'
