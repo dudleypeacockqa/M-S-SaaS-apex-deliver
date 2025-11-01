@@ -5,7 +5,7 @@ from datetime import date as date_type, datetime
 from decimal import Decimal
 from typing import Optional
 
-from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from pydantic import BaseModel, Field, ConfigDict, EmailStr, AliasChoices
 
 from app.models.master_admin import (
     ActivityType,
@@ -60,7 +60,12 @@ class AdminGoalResponse(AdminGoalBase):
 
 class AdminActivityBase(BaseModel):
     """Base schema for admin activities."""
-    type: ActivityType = Field(..., description="Activity type")
+    activity_type: ActivityType = Field(
+        ...,
+        description="Activity type",
+        validation_alias=AliasChoices("type", "activity_type"),
+        serialization_alias="type",
+    )
     status: ActivityStatus = Field(..., description="Activity status")
     date: date_type = Field(..., description="Activity date")
     amount: int = Field(1, ge=1, description="Number of activities")
@@ -159,7 +164,12 @@ class AdminFocusSessionResponse(AdminFocusSessionBase):
 
 class AdminNudgeBase(BaseModel):
     """Base schema for admin nudges."""
-    type: NudgeType = Field(..., description="Nudge type")
+    nudge_type: NudgeType = Field(
+        ...,
+        description="Nudge type",
+        validation_alias=AliasChoices("type", "nudge_type"),
+        serialization_alias="type",
+    )
     message: str = Field(..., min_length=1, description="Nudge message")
     priority: NudgePriority = Field(NudgePriority.NORMAL, description="Nudge priority")
     read: bool = Field(False, description="Whether nudge has been read")
@@ -169,7 +179,12 @@ class AdminNudgeBase(BaseModel):
 
 class AdminNudgeCreate(BaseModel):
     """Schema for creating a new nudge."""
-    type: NudgeType
+    nudge_type: NudgeType = Field(
+        ...,
+        description="Nudge type",
+        validation_alias=AliasChoices("type", "nudge_type"),
+        serialization_alias="type",
+    )
     message: str = Field(..., min_length=1)
     priority: NudgePriority = NudgePriority.NORMAL
     action_url: Optional[str] = None
@@ -193,7 +208,12 @@ class AdminNudgeResponse(AdminNudgeBase):
 class AdminMeetingBase(BaseModel):
     """Base schema for admin meetings."""
     title: str = Field(..., min_length=1, max_length=255, description="Meeting title")
-    type: MeetingType = Field(..., description="Meeting type")
+    meeting_type: MeetingType = Field(
+        ...,
+        description="Meeting type",
+        validation_alias=AliasChoices("type", "meeting_type"),
+        serialization_alias="type",
+    )
     duration_minutes: int = Field(60, ge=1, description="Meeting duration in minutes")
     agenda: Optional[str] = Field(None, description="Meeting agenda")
     questions: Optional[str] = Field(None, description="Questions to ask")
@@ -321,7 +341,12 @@ class AdminDealResponse(AdminDealBase):
 class AdminCampaignBase(BaseModel):
     """Base schema for admin campaigns."""
     name: str = Field(..., min_length=1, max_length=255, description="Campaign name")
-    type: CampaignType = Field(..., description="Campaign type")
+    campaign_type: CampaignType = Field(
+        ...,
+        description="Campaign type",
+        validation_alias=AliasChoices("type", "campaign_type"),
+        serialization_alias="type",
+    )
     status: CampaignStatus = Field(CampaignStatus.DRAFT, description="Campaign status")
     subject: Optional[str] = Field(None, max_length=500, description="Email subject or SMS preview")
     content: str = Field(..., min_length=1, description="Campaign content")
@@ -546,7 +571,14 @@ class AdminLeadCaptureResponse(AdminLeadCaptureBase):
 class AdminCollateralBase(BaseModel):
     """Base schema for sales collateral."""
     title: str = Field(..., min_length=1, max_length=255, description="Collateral title")
-    type: str = Field(..., min_length=1, max_length=100, description="Collateral type")
+    collateral_type: str = Field(
+        ...,
+        min_length=1,
+        max_length=100,
+        description="Collateral type",
+        validation_alias=AliasChoices("type", "collateral_type"),
+        serialization_alias="type",
+    )
     description: Optional[str] = Field(None, description="Collateral description")
     file_url: str = Field(..., min_length=1, description="File URL")
     file_size: Optional[int] = Field(None, ge=0, description="File size in bytes")

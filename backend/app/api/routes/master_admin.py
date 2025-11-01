@@ -378,7 +378,7 @@ def get_weekly_scores(
     Returns scores for Monday through Sunday.
     """
     scores = master_admin_service.get_weekly_scores(str(current_user.id), week_start, db)
-    return {"items": scores, "total": len(scores)}
+    return {"items": scores, "total": len(scores), "page": 1, "per_page": len(scores)}
 
 
 # ============================================================================
@@ -479,7 +479,7 @@ def get_unread_nudges(
     Returns nudges that haven't been read and haven't expired.
     """
     nudges = master_admin_service.get_unread_nudges(str(current_user.id), db)
-    return {"items": nudges, "total": len(nudges)}
+    return {"items": nudges, "total": len(nudges), "page": 1, "per_page": len(nudges)}
 
 
 @router.put("/nudges/{nudge_id}/read", response_model=AdminNudgeResponse)
@@ -536,7 +536,7 @@ def get_meeting_templates_by_type(
     templates = master_admin_service.get_meeting_templates_by_type(
         str(current_user.id), meeting_type, db
     )
-    return {"items": templates, "total": len(templates)}
+    return {"items": templates, "total": len(templates), "page": 1, "per_page": len(templates)}
 
 
 # ============================================================================
@@ -916,7 +916,7 @@ def list_campaign_recipients(
         user_id=str(current_user.id),
         db=db,
     )
-    return {"items": recipients, "total": len(recipients)}
+    return {"items": recipients, "total": len(recipients), "page": 1, "per_page": len(recipients)}
 
 
 @router.put(
