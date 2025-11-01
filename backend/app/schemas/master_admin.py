@@ -7,14 +7,14 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 
-from app.models.master_admin import (
+from app.models.enums import (
     ActivityType,
     ActivityStatus,
     NudgeType,
     NudgePriority,
     MeetingType,
     ProspectStatus,
-    DealStage as AdminDealStage,
+    AdminDealStage,
     CampaignType,
     CampaignStatus,
     ContentType,
@@ -60,7 +60,7 @@ class AdminGoalResponse(AdminGoalBase):
 
 class AdminActivityBase(BaseModel):
     """Base schema for admin activities."""
-    type: ActivityType = Field(..., description="Activity type")
+    activity_type: ActivityType = Field(..., description="Activity type")
     status: ActivityStatus = Field(..., description="Activity status")
     date: date_type = Field(..., description="Activity date")
     amount: int = Field(1, ge=1, description="Number of activities")
@@ -75,7 +75,7 @@ class AdminActivityCreate(AdminActivityBase):
 
 class AdminActivityUpdate(BaseModel):
     """Schema for updating an admin activity (all fields optional)."""
-    type: Optional[ActivityType] = None
+    activity_type: Optional[ActivityType] = None
     status: Optional[ActivityStatus] = None
     date: Optional[date_type] = None
     amount: Optional[int] = Field(None, ge=1)
@@ -165,7 +165,7 @@ class AdminFocusSessionResponse(AdminFocusSessionBase):
 
 class AdminNudgeBase(BaseModel):
     """Base schema for admin nudges."""
-    type: NudgeType = Field(..., description="Nudge type")
+    nudge_type: NudgeType = Field(..., description="Nudge type")
     message: str = Field(..., min_length=1, description="Nudge message")
     priority: NudgePriority = Field(NudgePriority.NORMAL, description="Nudge priority")
     read: bool = Field(False, description="Whether nudge has been read")
@@ -175,7 +175,7 @@ class AdminNudgeBase(BaseModel):
 
 class AdminNudgeCreate(BaseModel):
     """Schema for creating a new nudge."""
-    type: NudgeType
+    nudge_type: NudgeType
     message: str = Field(..., min_length=1)
     priority: NudgePriority = NudgePriority.NORMAL
     action_url: Optional[str] = None
@@ -199,7 +199,7 @@ class AdminNudgeResponse(AdminNudgeBase):
 class AdminMeetingBase(BaseModel):
     """Base schema for admin meetings."""
     title: str = Field(..., min_length=1, max_length=255, description="Meeting title")
-    type: MeetingType = Field(..., description="Meeting type")
+    meeting_type: MeetingType = Field(..., description="Meeting type")
     duration_minutes: int = Field(60, ge=1, description="Meeting duration in minutes")
     agenda: Optional[str] = Field(None, description="Meeting agenda")
     questions: Optional[str] = Field(None, description="Questions to ask")
@@ -214,7 +214,7 @@ class AdminMeetingCreate(AdminMeetingBase):
 class AdminMeetingUpdate(BaseModel):
     """Schema for updating a meeting template (all fields optional)."""
     title: Optional[str] = Field(None, min_length=1, max_length=255)
-    type: Optional[MeetingType] = None
+    meeting_type: Optional[MeetingType] = None
     duration_minutes: Optional[int] = Field(None, ge=1)
     agenda: Optional[str] = None
     questions: Optional[str] = None
@@ -327,7 +327,7 @@ class AdminDealResponse(AdminDealBase):
 class AdminCampaignBase(BaseModel):
     """Base schema for admin campaigns."""
     name: str = Field(..., min_length=1, max_length=255, description="Campaign name")
-    type: CampaignType = Field(..., description="Campaign type")
+    campaign_type: CampaignType = Field(..., description="Campaign type")
     status: CampaignStatus = Field(CampaignStatus.DRAFT, description="Campaign status")
     subject: Optional[str] = Field(None, max_length=500, description="Email subject or SMS preview")
     content: str = Field(..., min_length=1, description="Campaign content")
@@ -395,7 +395,7 @@ class AdminCampaignRecipientResponse(AdminCampaignRecipientBase):
 class AdminContentScriptBase(BaseModel):
     """Base schema for content scripts."""
     title: str = Field(..., min_length=1, max_length=255, description="Script title")
-    content_type: ContentType = Field(..., description="Content type")
+    content_content_type: ContentType = Field(..., description="Content type")
     script_text: str = Field(..., min_length=1, description="Script content")
     duration_minutes: Optional[int] = Field(None, ge=1, description="Estimated duration")
     keywords: Optional[str] = Field(None, description="Keywords (JSON array)")
@@ -427,7 +427,7 @@ class AdminContentScriptResponse(AdminContentScriptBase):
 class AdminContentPieceBase(BaseModel):
     """Base schema for content pieces."""
     title: str = Field(..., min_length=1, max_length=500, description="Content title")
-    type: ContentType = Field(..., description="Content type")
+    content_type: ContentType = Field(..., description="Content type")
     status: ContentStatus = Field(ContentStatus.IDEA, description="Content status")
     script_id: Optional[int] = Field(None, description="Related script ID")
     recording_url: Optional[str] = Field(None, description="Recording URL")
@@ -531,7 +531,7 @@ class AdminLeadCaptureResponse(AdminLeadCaptureBase):
 class AdminCollateralBase(BaseModel):
     """Base schema for sales collateral."""
     title: str = Field(..., min_length=1, max_length=255, description="Collateral title")
-    type: str = Field(..., min_length=1, max_length=100, description="Collateral type")
+    collateral_type: str = Field(..., min_length=1, max_length=100, description="Collateral type")
     description: Optional[str] = Field(None, description="Collateral description")
     file_url: str = Field(..., min_length=1, description="File URL")
     file_size: Optional[int] = Field(None, ge=0, description="File size in bytes")
@@ -547,7 +547,7 @@ class AdminCollateralCreate(AdminCollateralBase):
 class AdminCollateralUpdate(BaseModel):
     """Schema for updating sales collateral (all fields optional)."""
     title: Optional[str] = Field(None, min_length=1, max_length=255)
-    type: Optional[str] = Field(None, min_length=1, max_length=100)
+    collateral_type: Optional[str] = Field(None, min_length=1, max_length=100)
     description: Optional[str] = None
     tags: Optional[str] = None
 

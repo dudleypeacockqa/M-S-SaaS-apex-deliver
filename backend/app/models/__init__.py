@@ -51,7 +51,7 @@ from .master_admin import (
     NudgePriority,
     MeetingType,
     ProspectStatus,
-    DealStage as AdminDealStage,
+    AdminDealStage,
     CampaignType,
     CampaignStatus,
     ContentType,
