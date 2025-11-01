@@ -117,3 +117,6 @@ class ContentStatus(str, PyEnum):
     EDITING = "editing"
     READY = "ready"
     PUBLISHED = "published"
+
+# Compatibility alias
+DealStage = AdminDealStage
