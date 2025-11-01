@@ -11,6 +11,7 @@ import type { Deal, DealStage } from '@/services/api/deals'
 import { getStageDisplayName, formatCurrency } from '@/services/api/deals'
 import { Loader2, AlertCircle, Plus } from 'lucide-react'
 import { cn } from '@/styles/design-tokens'
+import { DealFilters } from './DealFilters'
 
 /**
  * Pipeline Stage Configuration
@@ -25,8 +26,24 @@ const PIPELINE_STAGES: Array<{ id: DealStage; name: string; color: string }> = [
 
 export const DealKanbanBoard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
-  const { data, isLoading, error } = useDeals({ include_archived: false })
+  const [stageFilter, setStageFilter] = useState<DealStage | undefined>(undefined)
+
+  const { data, isLoading, error } = useDeals({
+    include_archived: false,
+    search: searchQuery || undefined,
+    stage: stageFilter,
+  })
   const updateDealStage = useUpdateDealStage()
+
+  const handleSearchChange = (search: string) => {
+    setSearchQuery(search)
+  }
+
+  const handleFilterChange = (filters: { stage?: DealStage }) => {
+    setStageFilter(filters.stage)
+  }
+
+  const activeFiltersCount = [searchQuery, stageFilter].filter(Boolean).length
 
   // Group deals by stage
   const dealsByStage = React.useMemo(() => {
@@ -109,9 +126,17 @@ export const DealKanbanBoard: React.FC = () => {
   }
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col">
+      {/* Filters */}
+      <DealFilters
+        onSearchChange={handleSearchChange}
+        onFilterChange={handleFilterChange}
+        activeFilters={activeFiltersCount}
+      />
+
+      {/* Kanban Board */}
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="flex gap-4 overflow-x-auto pb-4">
+        <div className="flex gap-4 overflow-x-auto pb-4 p-4">
           {PIPELINE_STAGES.map((stage) => {
             const dealsInStage = dealsByStage[stage.id] || []
 
