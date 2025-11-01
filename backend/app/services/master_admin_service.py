@@ -25,6 +25,10 @@ from app.models.master_admin import (
     AdminCollateral,
     AdminCollateralUsage,
     ActivityType,
+    ActivityStatus,
+    ProspectStatus,
+    DealStage,
+    CampaignStatus,
 )
 from app.schemas.master_admin import (
     AdminGoalCreate,
@@ -164,7 +168,7 @@ def create_admin_activity(activity_data: AdminActivityCreate, user: User, db: Se
     """
     activity = AdminActivity(
         user_id=str(user.id),
-        type=activity_data.type,
+        type=activity_data.activity_type,
         status=activity_data.status,
         date=activity_data.date,
         amount=activity_data.amount,
@@ -237,8 +241,8 @@ def update_admin_activity(activity: AdminActivity, activity_data: AdminActivityU
     Returns:
         Updated activity instance
     """
-    if activity_data.type is not None:
-        activity.type = activity_data.type
+    if activity_data.activity_type is not None:
+        activity.type = activity_data.activity_type
     if activity_data.status is not None:
         activity.status = activity_data.status
     if activity_data.date is not None:
@@ -481,7 +485,7 @@ def create_admin_nudge(nudge_data: AdminNudgeCreate, user: User, db: Session) ->
     """
     nudge = AdminNudge(
         user_id=str(user.id),
-        type=nudge_data.type,
+        type=nudge_data.nudge_type,
         message=nudge_data.message,
         priority=nudge_data.priority,
         action_url=nudge_data.action_url,
@@ -546,7 +550,7 @@ def create_admin_meeting_template(meeting_data: AdminMeetingCreate, user: User, 
     meeting = AdminMeeting(
         user_id=str(user.id),
         title=meeting_data.title,
-        type=meeting_data.type,
+        type=meeting_data.meeting_type,
         duration_minutes=meeting_data.duration_minutes,
         agenda=meeting_data.agenda,
         questions=meeting_data.questions,
@@ -693,7 +697,7 @@ def update_admin_prospect(prospect: AdminProspect, prospect_data: AdminProspectU
     Returns:
         Updated prospect instance
     """
-    update_fields = prospect_data.model_dump(exclude_unset=True)
+    update_fields = prospect_data.model_dump(exclude_unset=True, by_alias=True)
     for field, value in update_fields.items():
         setattr(prospect, field, value)
     
@@ -792,7 +796,7 @@ def update_admin_deal(deal: AdminDeal, deal_data: AdminDealUpdate, db: Session) 
     Returns:
         Updated deal instance
     """
-    update_fields = deal_data.model_dump(exclude_unset=True)
+    update_fields = deal_data.model_dump(exclude_unset=True, by_alias=True)
     for field, value in update_fields.items():
         setattr(deal, field, value)
     
@@ -830,7 +834,7 @@ def get_dashboard_stats(user_id: str, db: Session) -> dict:
         select(func.count()).where(
             AdminActivity.user_id == user_id,
             AdminActivity.date >= week_start,
-            AdminActivity.status == "done"
+            AdminActivity.status == ActivityStatus.DONE,
         )
     ) or 0
     
@@ -838,7 +842,14 @@ def get_dashboard_stats(user_id: str, db: Session) -> dict:
     active_prospects = db.scalar(
         select(func.count()).where(
             AdminProspect.user_id == user_id,
-            AdminProspect.status.in_(["qualified", "engaged", "proposal", "negotiation"])
+            AdminProspect.status.in_(
+                [
+                    ProspectStatus.QUALIFIED,
+                    ProspectStatus.ENGAGED,
+                    ProspectStatus.PROPOSAL,
+                    ProspectStatus.NEGOTIATION,
+                ]
+            ),
         )
     ) or 0
     
@@ -846,7 +857,15 @@ def get_dashboard_stats(user_id: str, db: Session) -> dict:
     open_deals = db.scalar(
         select(func.count()).where(
             AdminDeal.user_id == user_id,
-            AdminDeal.stage.in_(["discovery", "qualification", "proposal", "negotiation", "closing"])
+            AdminDeal.stage.in_(
+                [
+                    DealStage.DISCOVERY,
+                    DealStage.QUALIFICATION,
+                    DealStage.PROPOSAL,
+                    DealStage.NEGOTIATION,
+                    DealStage.CLOSING,
+                ]
+            ),
         )
     ) or 0
     
@@ -882,12 +901,11 @@ def create_admin_campaign(campaign_data: AdminCampaignCreate, user: User, db: Se
     campaign = AdminCampaign(
         user_id=str(user.id),
         name=campaign_data.name,
-        type=campaign_data.type,
+        type=campaign_data.campaign_type,
         status=campaign_data.status,
         subject=campaign_data.subject,
         content=campaign_data.content,
         scheduled_at=campaign_data.scheduled_at,
-        segment_filter=campaign_data.segment_filter,
     )
     db.add(campaign)
     db.commit()
@@ -967,7 +985,7 @@ def update_admin_campaign(campaign: AdminCampaign, campaign_data: AdminCampaignU
     Returns:
         Updated campaign instance
     """
-    update_fields = campaign_data.model_dump(exclude_unset=True)
+    update_fields = campaign_data.model_dump(exclude_unset=True, by_alias=True)
     for field, value in update_fields.items():
         setattr(campaign, field, value)
     
@@ -1000,13 +1018,152 @@ def send_admin_campaign(campaign: AdminCampaign, db: Session) -> AdminCampaign:
     Returns:
         Updated campaign instance
     """
-    campaign.status = "sent"
+    campaign.status = CampaignStatus.SENT
     campaign.sent_at = datetime.now(timezone.utc)
     campaign.updated_at = datetime.now(timezone.utc)
-    
+
     db.commit()
     db.refresh(campaign)
     return campaign
+
+
+def _refresh_campaign_recipient_stats(campaign: AdminCampaign, db: Session) -> None:
+    """Recalculate recipient engagement counters and persist them on the campaign."""
+
+    totals = db.scalar(
+        select(func.count()).where(AdminCampaignRecipient.campaign_id == campaign.id)
+    ) or 0
+    sent_count = db.scalar(
+        select(func.count()).where(
+            AdminCampaignRecipient.campaign_id == campaign.id,
+            AdminCampaignRecipient.sent.is_(True),
+        )
+    ) or 0
+    opened_count = db.scalar(
+        select(func.count()).where(
+            AdminCampaignRecipient.campaign_id == campaign.id,
+            AdminCampaignRecipient.opened.is_(True),
+        )
+    ) or 0
+    clicked_count = db.scalar(
+        select(func.count()).where(
+            AdminCampaignRecipient.campaign_id == campaign.id,
+            AdminCampaignRecipient.clicked.is_(True),
+        )
+    ) or 0
+
+    campaign.total_recipients = totals
+    campaign.sent_count = sent_count
+    campaign.opened_count = opened_count
+    campaign.clicked_count = clicked_count
+    campaign.updated_at = datetime.now(timezone.utc)
+
+
+def add_admin_campaign_recipient(
+    campaign: AdminCampaign,
+    prospect_id: int,
+    db: Session,
+) -> AdminCampaignRecipient:
+    """Attach a prospect to a campaign recipient list."""
+
+    existing = db.scalar(
+        select(AdminCampaignRecipient).where(
+            AdminCampaignRecipient.campaign_id == campaign.id,
+            AdminCampaignRecipient.prospect_id == prospect_id,
+        )
+    )
+    if existing:
+        raise ValueError("Prospect already added to this campaign")
+
+    recipient = AdminCampaignRecipient(
+        campaign_id=campaign.id,
+        prospect_id=prospect_id,
+    )
+    db.add(recipient)
+    db.flush()
+    _refresh_campaign_recipient_stats(campaign, db)
+    db.commit()
+    db.refresh(recipient)
+    db.refresh(campaign)
+    return recipient
+
+
+def list_admin_campaign_recipients(
+    campaign_id: int,
+    user_id: str,
+    db: Session,
+) -> list[AdminCampaignRecipient]:
+    """Return all recipients for a given campaign owned by the user."""
+
+    query = (
+        select(AdminCampaignRecipient)
+        .join(AdminCampaign, AdminCampaign.id == AdminCampaignRecipient.campaign_id)
+        .where(
+            AdminCampaign.id == campaign_id,
+            AdminCampaign.user_id == user_id,
+        )
+        .order_by(AdminCampaignRecipient.id)
+    )
+    return list(db.scalars(query))
+
+
+def get_admin_campaign_recipient(
+    recipient_id: int,
+    campaign_id: int,
+    user_id: str,
+    db: Session,
+) -> Optional[AdminCampaignRecipient]:
+    """Fetch a single campaign recipient ensuring it belongs to the user."""
+
+    return db.scalar(
+        select(AdminCampaignRecipient)
+        .join(AdminCampaign, AdminCampaign.id == AdminCampaignRecipient.campaign_id)
+        .where(
+            AdminCampaignRecipient.id == recipient_id,
+            AdminCampaign.id == campaign_id,
+            AdminCampaign.user_id == user_id,
+        )
+    )
+
+
+def update_admin_campaign_recipient(
+    recipient: AdminCampaignRecipient,
+    recipient_data: AdminCampaignRecipientUpdate,
+    campaign: AdminCampaign,
+    db: Session,
+) -> AdminCampaignRecipient:
+    """Update recipient engagement attributes and refresh campaign metrics."""
+
+    update_fields = recipient_data.model_dump(exclude_unset=True)
+    for field, value in update_fields.items():
+        setattr(recipient, field, value)
+        if field == "sent" and value and recipient.sent_at is None:
+            recipient.sent_at = datetime.now(timezone.utc)
+        if field == "opened" and value and recipient.opened_at is None:
+            recipient.opened_at = datetime.now(timezone.utc)
+        if field == "clicked" and value and recipient.clicked_at is None:
+            recipient.clicked_at = datetime.now(timezone.utc)
+
+    db.flush()
+    _refresh_campaign_recipient_stats(campaign, db)
+    db.commit()
+    db.refresh(recipient)
+    db.refresh(campaign)
+    return recipient
+
+
+def delete_admin_campaign_recipient(
+    recipient: AdminCampaignRecipient,
+    campaign: AdminCampaign,
+    db: Session,
+) -> None:
+    """Remove a recipient from a campaign and update aggregate counters."""
+
+    db.delete(recipient)
+    db.flush()
+    _refresh_campaign_recipient_stats(campaign, db)
+    db.commit()
+    db.refresh(campaign)
 
 
 # ============================================================================
@@ -1028,11 +1185,10 @@ def create_admin_content_script(script_data: AdminContentScriptCreate, user: Use
     script = AdminContentScript(
         user_id=str(user.id),
         title=script_data.title,
-        type=script_data.type,
-        topic=script_data.topic,
-        target_duration=script_data.target_duration,
+        content_type=script_data.content_type,
         script_text=script_data.script_text,
-        notes=script_data.notes,
+        duration_minutes=script_data.duration_minutes,
+        keywords=script_data.keywords,
     )
     db.add(script)
     db.commit()
@@ -1083,7 +1239,7 @@ def list_admin_content_scripts(
     query = select(AdminContentScript).where(AdminContentScript.user_id == user_id)
     
     if script_type:
-        query = query.where(AdminContentScript.type == script_type)
+        query = query.where(AdminContentScript.content_type == script_type)
     
     # Get total count
     total = db.scalar(select(func.count()).select_from(query.subquery()))
@@ -1108,7 +1264,7 @@ def update_admin_content_script(script: AdminContentScript, script_data: AdminCo
     Returns:
         Updated script instance
     """
-    update_fields = script_data.model_dump(exclude_unset=True)
+    update_fields = script_data.model_dump(exclude_unset=True, by_alias=True)
     for field, value in update_fields.items():
         setattr(script, field, value)
     
@@ -1131,33 +1287,22 @@ def delete_admin_content_script(script: AdminContentScript, db: Session) -> None
 
 
 def create_admin_content_piece(content_data: AdminContentPieceCreate, user: User, db: Session) -> AdminContentPiece:
-    """
-    Create a new content piece.
+    """Create a new content piece (video, podcast, blog, etc.)."""
 
-    Args:
-        content_data: Content creation data
-        user: User creating the content
-        db: Database session
-
-    Returns:
-        Created content instance
-    """
     content = AdminContentPiece(
         user_id=str(user.id),
         script_id=content_data.script_id,
         title=content_data.title,
-        type=content_data.type,
+        type=content_data.content_type,
         status=content_data.status,
-        video_url=content_data.video_url,
-        audio_url=content_data.audio_url,
+        recording_url=content_data.recording_url,
+        edited_url=content_data.edited_url,
         thumbnail_url=content_data.thumbnail_url,
         description=content_data.description,
         tags=content_data.tags,
-        published_at=content_data.published_at,
-        youtube_id=content_data.youtube_id,
-        spotify_id=content_data.spotify_id,
-        views_count=content_data.views_count,
-        engagement_score=content_data.engagement_score,
+        youtube_url=content_data.youtube_url,
+        spotify_url=content_data.spotify_url,
+        rss_url=content_data.rss_url,
     )
     db.add(content)
     db.commit()
@@ -1237,7 +1382,7 @@ def update_admin_content_piece(content: AdminContentPiece, content_data: AdminCo
     Returns:
         Updated content instance
     """
-    update_fields = content_data.model_dump(exclude_unset=True)
+    update_fields = content_data.model_dump(exclude_unset=True, by_alias=True)
     for field, value in update_fields.items():
         setattr(content, field, value)
     
@@ -1264,32 +1409,22 @@ def delete_admin_content_piece(content: AdminContentPiece, db: Session) -> None:
 # ============================================================================
 
 def create_admin_lead_capture(lead_data: AdminLeadCaptureCreate, user: User, db: Session) -> AdminLeadCapture:
-    """
-    Create a new lead capture.
+    """Create a new networking lead capture."""
 
-    Args:
-        lead_data: Lead capture data
-        user: User creating the lead
-        db: Database session
-
-    Returns:
-        Created lead capture instance
-    """
     lead = AdminLeadCapture(
         user_id=str(user.id),
         name=lead_data.name,
         email=lead_data.email,
         phone=lead_data.phone,
         company=lead_data.company,
-        title=lead_data.title,
         event_name=lead_data.event_name,
         event_date=lead_data.event_date,
         interest_level=lead_data.interest_level,
+        follow_up_type=lead_data.follow_up_type,
         notes=lead_data.notes,
         voice_notes_url=lead_data.voice_notes_url,
-        follow_up_sent=lead_data.follow_up_sent,
-        ghl_synced=lead_data.ghl_synced,
-        ghl_contact_id=lead_data.ghl_contact_id,
+        synced_to_ghl=False,
+        ghl_contact_id=None,
     )
     db.add(lead)
     db.commit()
@@ -1348,7 +1483,7 @@ def list_admin_lead_captures(
     if interest_level:
         query = query.where(AdminLeadCapture.interest_level == interest_level)
     if follow_up_sent is not None:
-        query = query.where(AdminLeadCapture.follow_up_sent == follow_up_sent)
+        query = query.where(AdminLeadCapture.synced_to_ghl == follow_up_sent)
     
     # Get total count
     total = db.scalar(select(func.count()).select_from(query.subquery()))
@@ -1362,22 +1497,12 @@ def list_admin_lead_captures(
 
 
 def update_admin_lead_capture(lead: AdminLeadCapture, lead_data: AdminLeadCaptureUpdate, db: Session) -> AdminLeadCapture:
-    """
-    Update an existing lead capture.
+    """Apply partial updates to a lead capture."""
 
-    Args:
-        lead: Lead capture instance to update
-        lead_data: Update data
-        db: Database session
-
-    Returns:
-        Updated lead capture instance
-    """
-    update_fields = lead_data.model_dump(exclude_unset=True)
+    update_fields = lead_data.model_dump(exclude_unset=True, by_alias=True)
     for field, value in update_fields.items():
         setattr(lead, field, value)
-    
-    lead.updated_at = datetime.now(timezone.utc)
+
     db.commit()
     db.refresh(lead)
     return lead
@@ -1396,21 +1521,12 @@ def delete_admin_lead_capture(lead: AdminLeadCapture, db: Session) -> None:
 
 
 def sync_lead_to_ghl(lead: AdminLeadCapture, db: Session) -> AdminLeadCapture:
-    """
-    Sync lead capture to GoHighLevel.
+    """Mark a lead capture as synced to GoHighLevel and assign a mock contact id."""
 
-    Args:
-        lead: Lead capture instance to sync
-        db: Database session
+    lead.synced_to_ghl = True
+    if not lead.ghl_contact_id:
+        lead.ghl_contact_id = f"ghl-{lead.id}"
 
-    Returns:
-        Updated lead capture instance with GHL contact ID
-    """
-    # TODO: Implement actual GoHighLevel API integration
-    # For now, just mark as synced
-    lead.ghl_synced = True
-    lead.updated_at = datetime.now(timezone.utc)
-    
     db.commit()
     db.refresh(lead)
     return lead
@@ -1434,13 +1550,13 @@ def create_admin_collateral(collateral_data: AdminCollateralCreate, user: User, 
     """
     collateral = AdminCollateral(
         user_id=str(user.id),
-        name=collateral_data.name,
-        type=collateral_data.type,
+        title=collateral_data.title,
+        type=collateral_data.collateral_type,
         description=collateral_data.description,
         file_url=collateral_data.file_url,
-        thumbnail_url=collateral_data.thumbnail_url,
+        file_size=collateral_data.file_size,
+        mime_type=collateral_data.mime_type,
         tags=collateral_data.tags,
-        version=collateral_data.version,
     )
     db.add(collateral)
     db.commit()
@@ -1498,8 +1614,8 @@ def list_admin_collateral(
         search_term = f"%{search}%"
         query = query.where(
             or_(
-                AdminCollateral.name.ilike(search_term),
-                AdminCollateral.description.ilike(search_term)
+                AdminCollateral.title.ilike(search_term),
+                AdminCollateral.description.ilike(search_term),
             )
         )
     
@@ -1526,7 +1642,7 @@ def update_admin_collateral(collateral: AdminCollateral, collateral_data: AdminC
     Returns:
         Updated collateral instance
     """
-    update_fields = collateral_data.model_dump(exclude_unset=True)
+    update_fields = collateral_data.model_dump(exclude_unset=True, by_alias=True)
     for field, value in update_fields.items():
         setattr(collateral, field, value)
     
@@ -1563,9 +1679,8 @@ def track_collateral_usage(collateral_id: int, user_id: str, prospect_id: Option
     """
     usage = AdminCollateralUsage(
         collateral_id=collateral_id,
-        user_id=user_id,
         prospect_id=prospect_id,
-        used_at=datetime.now(timezone.utc),
+        used_at=datetime.utcnow(),
     )
     db.add(usage)
     db.commit()

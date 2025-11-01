@@ -44,20 +44,21 @@ def upgrade() -> None:
         "idea", "scripting", "recording", "editing", "ready", "published",
         name="contentstatus"
     )
-    
-    # Create enums
-    activity_type_enum.create(op.get_bind(), checkfirst=True)
-    activity_status_enum.create(op.get_bind(), checkfirst=True)
-    nudge_type_enum.create(op.get_bind(), checkfirst=True)
-    nudge_priority_enum.create(op.get_bind(), checkfirst=True)
-    meeting_type_enum.create(op.get_bind(), checkfirst=True)
-    prospect_status_enum.create(op.get_bind(), checkfirst=True)
-    admin_deal_stage_enum.create(op.get_bind(), checkfirst=True)
-    campaign_type_enum.create(op.get_bind(), checkfirst=True)
-    campaign_status_enum.create(op.get_bind(), checkfirst=True)
-    content_type_enum.create(op.get_bind(), checkfirst=True)
-    content_status_enum.create(op.get_bind(), checkfirst=True)
-    
+
+    # NOTE: Enums are created automatically by SQLAlchemy when creating tables
+    # No need to explicitly create them here - commenting out to avoid duplicates
+    # activity_type_enum.create(op.get_bind(), checkfirst=True)
+    # activity_status_enum.create(op.get_bind(), checkfirst=True)
+    # nudge_type_enum.create(op.get_bind(), checkfirst=True)
+    # nudge_priority_enum.create(op.get_bind(), checkfirst=True)
+    # meeting_type_enum.create(op.get_bind(), checkfirst=True)
+    # prospect_status_enum.create(op.get_bind(), checkfirst=True)
+    # admin_deal_stage_enum.create(op.get_bind(), checkfirst=True)
+    # campaign_type_enum.create(op.get_bind(), checkfirst=True)
+    # campaign_status_enum.create(op.get_bind(), checkfirst=True)
+    # content_type_enum.create(op.get_bind(), checkfirst=True)
+    # content_status_enum.create(op.get_bind(), checkfirst=True)
+
     # ========================================================================
     # Activity Tracker Tables
     # ========================================================================

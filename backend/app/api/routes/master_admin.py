@@ -51,6 +51,30 @@ from app.schemas.master_admin import (
     AdminDealUpdate,
     AdminDealResponse,
     AdminDealListResponse,
+    AdminCampaignCreate,
+    AdminCampaignUpdate,
+    AdminCampaignResponse,
+    AdminCampaignListResponse,
+    AdminCampaignRecipientCreate,
+    AdminCampaignRecipientUpdate,
+    AdminCampaignRecipientResponse,
+    AdminCampaignRecipientListResponse,
+    AdminContentScriptCreate,
+    AdminContentScriptUpdate,
+    AdminContentScriptResponse,
+    AdminContentScriptListResponse,
+    AdminContentPieceCreate,
+    AdminContentPieceUpdate,
+    AdminContentPieceResponse,
+    AdminContentPieceListResponse,
+    AdminLeadCaptureCreate,
+    AdminLeadCaptureUpdate,
+    AdminLeadCaptureResponse,
+    AdminLeadCaptureListResponse,
+    AdminCollateralCreate,
+    AdminCollateralUpdate,
+    AdminCollateralResponse,
+    AdminCollateralListResponse,
 )
 from app.services import master_admin_service
 
@@ -309,6 +333,20 @@ def get_today_score(
     return score
 
 
+@router.get("/scores/streak", response_model=dict)
+def get_current_streak(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get the current streak in days.
+
+    Returns the number of consecutive days with score > 0.
+    """
+    streak = master_admin_service.get_current_streak(str(current_user.id), db)
+    return {"streak_days": streak}
+
+
 @router.get("/scores/{score_date}", response_model=AdminScoreResponse)
 def get_score_by_date(
     score_date: date,
@@ -341,20 +379,6 @@ def get_weekly_scores(
     """
     scores = master_admin_service.get_weekly_scores(str(current_user.id), week_start, db)
     return {"items": scores, "total": len(scores)}
-
-
-@router.get("/scores/streak", response_model=dict)
-def get_current_streak(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """
-    Get the current streak in days.
-    
-    Returns the number of consecutive days with score > 0.
-    """
-    streak = master_admin_service.get_current_streak(str(current_user.id), db)
-    return {"streak_days": streak}
 
 
 # ============================================================================
@@ -838,6 +862,124 @@ def send_campaign(
     
     sent_campaign = master_admin_service.send_admin_campaign(campaign, db)
     return sent_campaign
+
+
+@router.post(
+    "/campaigns/{campaign_id}/recipients",
+    response_model=AdminCampaignRecipientResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def add_campaign_recipient(
+    campaign_id: int,
+    recipient_data: AdminCampaignRecipientCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Attach a prospect to the campaign recipient list."""
+
+    campaign = master_admin_service.get_admin_campaign_by_id(campaign_id, str(current_user.id), db)
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+
+    if recipient_data.campaign_id and recipient_data.campaign_id != campaign_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Campaign id mismatch")
+
+    try:
+        recipient = master_admin_service.add_admin_campaign_recipient(
+            campaign,
+            prospect_id=recipient_data.prospect_id,
+            db=db,
+        )
+    except ValueError as exc:  # Duplicate recipient
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+    return recipient
+
+
+@router.get(
+    "/campaigns/{campaign_id}/recipients",
+    response_model=AdminCampaignRecipientListResponse,
+)
+def list_campaign_recipients(
+    campaign_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Return all recipients for a campaign."""
+
+    campaign = master_admin_service.get_admin_campaign_by_id(campaign_id, str(current_user.id), db)
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+
+    recipients = master_admin_service.list_admin_campaign_recipients(
+        campaign_id=campaign_id,
+        user_id=str(current_user.id),
+        db=db,
+    )
+    return {"items": recipients, "total": len(recipients)}
+
+
+@router.put(
+    "/campaigns/{campaign_id}/recipients/{recipient_id}",
+    response_model=AdminCampaignRecipientResponse,
+)
+def update_campaign_recipient(
+    campaign_id: int,
+    recipient_id: int,
+    recipient_update: AdminCampaignRecipientUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Update recipient engagement state."""
+
+    campaign = master_admin_service.get_admin_campaign_by_id(campaign_id, str(current_user.id), db)
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+
+    recipient = master_admin_service.get_admin_campaign_recipient(
+        recipient_id=recipient_id,
+        campaign_id=campaign_id,
+        user_id=str(current_user.id),
+        db=db,
+    )
+    if not recipient:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipient not found")
+
+    updated = master_admin_service.update_admin_campaign_recipient(
+        recipient,
+        recipient_update,
+        campaign,
+        db,
+    )
+    return updated
+
+
+@router.delete(
+    "/campaigns/{campaign_id}/recipients/{recipient_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_campaign_recipient(
+    campaign_id: int,
+    recipient_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Remove a prospect from the campaign recipient list."""
+
+    campaign = master_admin_service.get_admin_campaign_by_id(campaign_id, str(current_user.id), db)
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+
+    recipient = master_admin_service.get_admin_campaign_recipient(
+        recipient_id=recipient_id,
+        campaign_id=campaign_id,
+        user_id=str(current_user.id),
+        db=db,
+    )
+    if not recipient:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipient not found")
+
+    master_admin_service.delete_admin_campaign_recipient(recipient, campaign, db)
 
 
 # ============================================================================

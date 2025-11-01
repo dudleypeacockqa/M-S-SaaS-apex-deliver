@@ -21,6 +21,23 @@ from app.models.financial_connection import FinancialConnection  # noqa: F401, E
 from app.models.financial_statement import FinancialStatement  # noqa: F401, E402
 from app.models.financial_ratio import FinancialRatio  # noqa: F401, E402
 from app.models.financial_narrative import FinancialNarrative  # noqa: F401, E402
+from app.models.master_admin import (  # noqa: F401, E402
+    AdminGoal,
+    AdminActivity,
+    AdminScore,
+    AdminFocusSession,
+    AdminNudge,
+    AdminMeeting,
+    AdminProspect,
+    AdminDeal,
+    AdminCampaign,
+    AdminCampaignRecipient,
+    AdminContentScript,
+    AdminContentPiece,
+    AdminLeadCapture,
+    AdminCollateral,
+    AdminCollateralUsage,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
