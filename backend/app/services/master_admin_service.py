@@ -24,10 +24,12 @@ from app.models.master_admin import (
     AdminLeadCapture,
     AdminCollateral,
     AdminCollateralUsage,
+)
+from app.models.enums import (
     ActivityType,
     ActivityStatus,
     ProspectStatus,
-    DealStage,
+    AdminDealStage,
     CampaignStatus,
 )
 from app.schemas.master_admin import (

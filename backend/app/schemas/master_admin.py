@@ -7,7 +7,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 
-from app.models.enums import (
+from app.models.master_admin import (
     ActivityType,
     ActivityStatus,
     NudgeType,
@@ -60,7 +60,7 @@ class AdminGoalResponse(AdminGoalBase):
 
 class AdminActivityBase(BaseModel):
     """Base schema for admin activities."""
-    activity_type: ActivityType = Field(..., description="Activity type")
+    type: ActivityType = Field(..., description="Activity type")
     status: ActivityStatus = Field(..., description="Activity status")
     date: date_type = Field(..., description="Activity date")
     amount: int = Field(1, ge=1, description="Number of activities")
@@ -123,12 +123,6 @@ class AdminScoreResponse(AdminScoreBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class AdminScoreListResponse(BaseModel):
-    """Schema for list of admin scores."""
-    scores: list[AdminScoreResponse]
-    total: int
-
-
 class AdminFocusSessionBase(BaseModel):
     """Base schema for admin focus sessions."""
     start_time: datetime = Field(..., description="Session start time")
@@ -165,7 +159,7 @@ class AdminFocusSessionResponse(AdminFocusSessionBase):
 
 class AdminNudgeBase(BaseModel):
     """Base schema for admin nudges."""
-    nudge_type: NudgeType = Field(..., description="Nudge type")
+    type: NudgeType = Field(..., description="Nudge type")
     message: str = Field(..., min_length=1, description="Nudge message")
     priority: NudgePriority = Field(NudgePriority.NORMAL, description="Nudge priority")
     read: bool = Field(False, description="Whether nudge has been read")
@@ -175,7 +169,7 @@ class AdminNudgeBase(BaseModel):
 
 class AdminNudgeCreate(BaseModel):
     """Schema for creating a new nudge."""
-    nudge_type: NudgeType
+    type: NudgeType
     message: str = Field(..., min_length=1)
     priority: NudgePriority = NudgePriority.NORMAL
     action_url: Optional[str] = None
@@ -199,7 +193,7 @@ class AdminNudgeResponse(AdminNudgeBase):
 class AdminMeetingBase(BaseModel):
     """Base schema for admin meetings."""
     title: str = Field(..., min_length=1, max_length=255, description="Meeting title")
-    meeting_type: MeetingType = Field(..., description="Meeting type")
+    type: MeetingType = Field(..., description="Meeting type")
     duration_minutes: int = Field(60, ge=1, description="Meeting duration in minutes")
     agenda: Optional[str] = Field(None, description="Meeting agenda")
     questions: Optional[str] = Field(None, description="Questions to ask")
@@ -327,7 +321,7 @@ class AdminDealResponse(AdminDealBase):
 class AdminCampaignBase(BaseModel):
     """Base schema for admin campaigns."""
     name: str = Field(..., min_length=1, max_length=255, description="Campaign name")
-    campaign_type: CampaignType = Field(..., description="Campaign type")
+    type: CampaignType = Field(..., description="Campaign type")
     status: CampaignStatus = Field(CampaignStatus.DRAFT, description="Campaign status")
     subject: Optional[str] = Field(None, max_length=500, description="Email subject or SMS preview")
     content: str = Field(..., min_length=1, description="Campaign content")
@@ -374,6 +368,17 @@ class AdminCampaignRecipientCreate(AdminCampaignRecipientBase):
     pass
 
 
+class AdminCampaignRecipientUpdate(BaseModel):
+    """Schema for updating campaign recipient engagement flags."""
+    sent: Optional[bool] = None
+    opened: Optional[bool] = None
+    clicked: Optional[bool] = None
+    bounced: Optional[bool] = None
+    sent_at: Optional[datetime] = None
+    opened_at: Optional[datetime] = None
+    clicked_at: Optional[datetime] = None
+
+
 class AdminCampaignRecipientResponse(AdminCampaignRecipientBase):
     """Schema for campaign recipient responses."""
     id: int
@@ -395,7 +400,12 @@ class AdminCampaignRecipientResponse(AdminCampaignRecipientBase):
 class AdminContentScriptBase(BaseModel):
     """Base schema for content scripts."""
     title: str = Field(..., min_length=1, max_length=255, description="Script title")
-    content_content_type: ContentType = Field(..., description="Content type")
+    content_type: ContentType = Field(
+        ...,
+        description="Content type",
+        validation_alias=AliasChoices("type", "content_type"),
+        serialization_alias="type",
+    )
     script_text: str = Field(..., min_length=1, description="Script content")
     duration_minutes: Optional[int] = Field(None, ge=1, description="Estimated duration")
     keywords: Optional[str] = Field(None, description="Keywords (JSON array)")
@@ -427,7 +437,12 @@ class AdminContentScriptResponse(AdminContentScriptBase):
 class AdminContentPieceBase(BaseModel):
     """Base schema for content pieces."""
     title: str = Field(..., min_length=1, max_length=500, description="Content title")
-    content_type: ContentType = Field(..., description="Content type")
+    content_type: ContentType = Field(
+        ...,
+        description="Content type",
+        validation_alias=AliasChoices("type", "content_type"),
+        serialization_alias="type",
+    )
     status: ContentStatus = Field(ContentStatus.IDEA, description="Content status")
     script_id: Optional[int] = Field(None, description="Related script ID")
     recording_url: Optional[str] = Field(None, description="Recording URL")
@@ -531,7 +546,7 @@ class AdminLeadCaptureResponse(AdminLeadCaptureBase):
 class AdminCollateralBase(BaseModel):
     """Base schema for sales collateral."""
     title: str = Field(..., min_length=1, max_length=255, description="Collateral title")
-    collateral_type: str = Field(..., min_length=1, max_length=100, description="Collateral type")
+    type: str = Field(..., min_length=1, max_length=100, description="Collateral type")
     description: Optional[str] = Field(None, description="Collateral description")
     file_url: str = Field(..., min_length=1, description="File URL")
     file_size: Optional[int] = Field(None, ge=0, description="File size in bytes")
@@ -594,6 +609,38 @@ class AdminActivityListResponse(BaseModel):
     per_page: int
 
 
+class AdminScoreListResponse(BaseModel):
+    """Schema for paginated list of scores."""
+    items: list[AdminScoreResponse]
+    total: int
+    page: int
+    per_page: int
+
+
+class AdminFocusSessionListResponse(BaseModel):
+    """Schema for paginated list of focus sessions."""
+    items: list[AdminFocusSessionResponse]
+    total: int
+    page: int
+    per_page: int
+
+
+class AdminNudgeListResponse(BaseModel):
+    """Schema for paginated list of nudges."""
+    items: list[AdminNudgeResponse]
+    total: int
+    page: int
+    per_page: int
+
+
+class AdminMeetingListResponse(BaseModel):
+    """Schema for paginated list of meeting templates."""
+    items: list[AdminMeetingResponse]
+    total: int
+    page: int
+    per_page: int
+
+
 class AdminProspectListResponse(BaseModel):
     """Schema for paginated list of prospects."""
     items: list[AdminProspectResponse]
@@ -613,6 +660,22 @@ class AdminDealListResponse(BaseModel):
 class AdminCampaignListResponse(BaseModel):
     """Schema for paginated list of campaigns."""
     items: list[AdminCampaignResponse]
+    total: int
+    page: int
+    per_page: int
+
+
+class AdminCampaignRecipientListResponse(BaseModel):
+    """Schema for paginated list of campaign recipients."""
+    items: list[AdminCampaignRecipientResponse]
+    total: int
+    page: int
+    per_page: int
+
+
+class AdminContentScriptListResponse(BaseModel):
+    """Schema for paginated list of content scripts."""
+    items: list[AdminContentScriptResponse]
     total: int
     page: int
     per_page: int

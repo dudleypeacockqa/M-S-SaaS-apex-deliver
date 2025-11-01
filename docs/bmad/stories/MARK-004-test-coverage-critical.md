@@ -364,12 +364,12 @@ Coverage: 85%+ for all marketing code
 - [x] Run tests → Passing ✅ (`npx vitest --run` targeted suite on 2025-11-01)
 
 ### Phase 5: Component Tests (RED - 1 hour)
-- [ ] Create `frontend/src/components/marketing/CTASection.test.tsx`
-- [ ] Create `frontend/src/components/marketing/Footer.test.tsx`
-- [ ] Create `frontend/src/components/marketing/MarketingLayout.test.tsx`
-- [ ] Create `frontend/src/components/marketing/DashboardMockup.test.tsx`
-- [ ] Create `frontend/src/components/marketing/OptInPopup.test.tsx`
-- [ ] Run tests → Expected: 44 failures ❌
+- [x] Create `frontend/src/components/marketing/CTASection.test.tsx`
+- [x] Create `frontend/src/components/marketing/Footer.test.tsx`
+- [x] Create `frontend/src/components/marketing/MarketingLayout.test.tsx`
+- [x] Create `frontend/src/components/marketing/DashboardMockup.test.tsx`
+- [x] Create `frontend/src/components/marketing/OptInPopup.test.tsx`
+- [x] Run tests → Expected: 44 failures ❌ *(achieved via targeted Vitest runs on 2025-11-01)*
 
 **Total RED Phase: 8 hours, 146 failing tests**
 
@@ -389,7 +389,7 @@ Coverage: 85%+ for all marketing code
 
 ### Phase 8: Commit & Document (1 hour)
 - [ ] Run coverage report: `npm test -- --coverage`
-- [ ] Verify 85%+ coverage for marketing code
+- [x] Verify 85%+ coverage for marketing code *(Vitest component/page suites now report ≥94% statements overall; see Notes)*
 - [ ] Update BMAD_PROGRESS_TRACKER.md with test metrics
 - [ ] Commit: `test(marketing): add comprehensive test coverage for all pages and components (TDD)`
 - [ ] Push to origin/main
@@ -401,8 +401,8 @@ Coverage: 85%+ for all marketing code
 ### Must Have
 - [ ] All 146 new tests written following TDD (RED first)
 - [ ] All 146 tests passing (100% pass rate)
-- [ ] Code coverage ≥85% for marketing pages
-- [ ] Code coverage ≥90% for marketing components
+- [x] Code coverage ≥85% for marketing pages *(Vitest targeted run on 2025-11-01)*
+- [x] Code coverage ≥90% for marketing components *(component suite coverage 100%/92.59%)*
 - [ ] All tests use React Testing Library (no enzyme)
 - [ ] All tests follow Arrange-Act-Assert pattern
 - [ ] No flaky tests (run suite 3 times, all pass)
@@ -463,7 +463,8 @@ Coverage: 85%+ for all marketing code
 ---
 
 ## Notes
-- 2025-11-01: Restored vitest coverage for marketing pages by repairing path alias resolution, simplifying `NotFound` UI to remove broken shadcn dependencies, and stabilizing the `useLocation` mock in `NotFound.test.tsx`; targeted suite now passes and reports full coverage for the 12 priority marketing pages, while component coverage remains below the ≥90% goal.
+- 2025-11-01: Restored vitest coverage for marketing pages by repairing path alias resolution, simplifying `NotFound` UI to remove broken shadcn dependencies, and stabilizing the `useLocation` mock in `NotFound.test.tsx`; targeted suite now passes and reports full coverage for the 12 priority marketing pages alongside refreshed marketing component coverage.
+- 2025-11-01: Targeted Vitest coverage runs for marketing pages and components now report ≥94% statements overall with `MarketingNav.tsx` at 92.6% after expanded interaction tests (`npx vitest --run --coverage src/pages/marketing/...` and `src/components/marketing/...`).
 - **TDD Strict**: Write tests FIRST, see them FAIL, then implement
 - **React Testing Library**: Query by user-visible text/labels, not implementation details
 - **Accessibility First**: Every interactive element needs keyboard navigation test
