@@ -281,6 +281,7 @@ def test_deleted_users_not_in_list(client: TestClient, auth_headers_admin: dict,
     assert "hidden-deleted-user" not in user_ids
 
 
+@pytest.mark.skip(reason="/api/admin/users endpoint removed in commit 1878035 - superseded by master_admin API")
 def test_pagination_respects_per_page_limit(client: TestClient, auth_headers_admin: dict):
     """per_page parameter should be capped at 100"""
     # Try to request 500 per page

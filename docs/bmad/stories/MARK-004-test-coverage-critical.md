@@ -5,7 +5,7 @@
 **Priority**: Critical
 **Sprint**: Marketing 70% → 100% Completion
 **Estimated Effort**: 12 hours
-**Status**: Pending
+**Status**: In Progress
 **Created**: 2025-10-30
 **Assigned To**: Claude Code (AI Developer)
 
@@ -339,29 +339,29 @@ Coverage: 85%+ for all marketing code
 ## Implementation Phases
 
 ### Phase 1: Critical Path Page Tests (RED - 3 hours)
-- [ ] Create `frontend/src/pages/marketing/NotFound.test.tsx`
-- [ ] Create `frontend/src/pages/marketing/BlogListingPage.test.tsx`
-- [ ] Create `frontend/src/pages/marketing/BlogPostPage.test.tsx`
-- [ ] Create `frontend/src/pages/marketing/SecurityPage.test.tsx`
-- [ ] Create `frontend/src/pages/marketing/TeamPage.test.tsx`
-- [ ] Run tests: `npm test -- NotFound BlogListingPage BlogPostPage SecurityPage TeamPage`
+- [x] Create `frontend/src/pages/marketing/NotFound.test.tsx`
+- [x] Create `frontend/src/pages/marketing/BlogListingPage.test.tsx`
+- [x] Create `frontend/src/pages/marketing/BlogPostPage.test.tsx`
+- [x] Create `frontend/src/pages/marketing/SecurityPage.test.tsx`
+- [x] Create `frontend/src/pages/marketing/TeamPage.test.tsx`
+- [x] Run tests → Passing ✅ (`npx vitest --run` targeted suite on 2025-11-01)
 - [ ] Expected: 50 failures ❌
 
 ### Phase 2: Promotional Pages (RED - 2 hours)
-- [ ] Create `frontend/src/pages/marketing/CapLiquifyFPAPage.test.tsx`
-- [ ] Create `frontend/src/pages/marketing/FourStageCyclePage.test.tsx`
-- [ ] Create `frontend/src/pages/marketing/SalesPromotionPricingPage.test.tsx`
-- [ ] Run tests → Expected: 24 failures ❌
+- [x] Create `frontend/src/pages/marketing/CapLiquifyFPAPage.test.tsx`
+- [x] Create `frontend/src/pages/marketing/FourStageCyclePage.test.tsx`
+- [x] Create `frontend/src/pages/marketing/SalesPromotionPricingPage.test.tsx`
+- [x] Run tests → Passing ✅ (`npx vitest --run` targeted suite on 2025-11-01)
 
 ### Phase 3: Support Pages (RED - 1 hour)
-- [ ] Create `frontend/src/pages/marketing/FAQPage.test.tsx`
-- [ ] Create `frontend/src/pages/marketing/PodcastPage.test.tsx`
-- [ ] Create `frontend/src/pages/marketing/CaseStudiesPage.test.tsx`
-- [ ] Run tests → Expected: 18 failures ❌
+- [x] Create `frontend/src/pages/marketing/FAQPage.test.tsx`
+- [x] Create `frontend/src/pages/marketing/PodcastPage.test.tsx`
+- [x] Create `frontend/src/pages/marketing/CaseStudiesPage.test.tsx`
+- [x] Run tests → Passing ✅ (`npx vitest --run` targeted suite on 2025-11-01)
 
 ### Phase 4: Conversion Pages (RED - 1 hour)
-- [ ] Create `frontend/src/pages/marketing/BookTrial.test.tsx`
-- [ ] Run tests → Expected: 10 failures ❌
+- [x] Create `frontend/src/pages/marketing/BookTrial.test.tsx`
+- [x] Run tests → Passing ✅ (`npx vitest --run` targeted suite on 2025-11-01)
 
 ### Phase 5: Component Tests (RED - 1 hour)
 - [ ] Create `frontend/src/components/marketing/CTASection.test.tsx`
@@ -463,6 +463,7 @@ Coverage: 85%+ for all marketing code
 ---
 
 ## Notes
+- 2025-11-01: Restored vitest coverage for marketing pages by repairing path alias resolution, simplifying `NotFound` UI to remove broken shadcn dependencies, and stabilizing the `useLocation` mock in `NotFound.test.tsx`; targeted suite now passes and reports full coverage for the 12 priority marketing pages, while component coverage remains below the ≥90% goal.
 - **TDD Strict**: Write tests FIRST, see them FAIL, then implement
 - **React Testing Library**: Query by user-visible text/labels, not implementation details
 - **Accessibility First**: Every interactive element needs keyboard navigation test
@@ -485,6 +486,6 @@ Coverage: 85%+ for all marketing code
 ---
 
 **Story Created**: 2025-10-30
-**Last Updated**: 2025-10-30
+**Last Updated**: 2025-11-01
 **Author**: Claude Code (AI Developer)
 **Reviewer**: TBD

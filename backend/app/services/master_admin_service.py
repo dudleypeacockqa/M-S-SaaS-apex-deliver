@@ -1424,7 +1424,7 @@ def create_admin_lead_capture(lead_data: AdminLeadCaptureCreate, user: User, db:
         notes=lead_data.notes,
         voice_notes_url=lead_data.voice_notes_url,
         synced_to_ghl=False,
-        ghl_contact_id=None,
+        ghl_contact_id=getattr(lead_data, "ghl_contact_id", None),
     )
     db.add(lead)
     db.commit()

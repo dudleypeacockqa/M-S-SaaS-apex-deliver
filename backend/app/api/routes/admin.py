@@ -145,7 +145,7 @@ def list_users(
     current_admin: User = Depends(get_current_admin_user),
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
-    per_page: int = Query(20, ge=1, le=100),
+    per_page: int = Query(20, ge=1),
     search: Optional[str] = None
 ):
     """
@@ -158,6 +158,9 @@ def list_users(
 
     Requires: admin role
     """
+    # Cap per_page at 100 for performance (graceful degradation)
+    per_page = min(per_page, 100)
+
     query = select(User).where(User.deleted_at.is_(None))
 
     # Apply search filter

@@ -2,9 +2,9 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, FileText } from 'lucide-react';
 import MarketingNav from '@/components/MarketingNav';
 import MarketingFooter from '@/components/MarketingFooter';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 
 // --- Types ---
 

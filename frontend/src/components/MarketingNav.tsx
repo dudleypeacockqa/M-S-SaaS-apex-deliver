@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";

@@ -16,7 +16,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
@@ -25,7 +25,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/Card";
 import {
   Carousel,
   CarouselContent,

@@ -2,12 +2,12 @@
 
 ## Master Admin Schema Setup
 
-1. Ensure  is present in  and points at the target Postgres instance.
-2. Activate the bundled virtual environment:  (PowerShell) or  (bash).
-3. Apply migrations, including the Master Admin tables:  from .
-4. Seed demo data for activities, pipeline, campaigns, and collateral: .
-5. Verify the seed by checking row counts for the  tables or by logging into the app.
+1. Ensure DATABASE_URL is set in the .env file for the target Postgres instance.
+2. Activate the bundled virtual environment (backend\venv\Scripts\activate on PowerShell or source backend/venv/bin/activate on bash).
+3. Apply migrations, including the Master Admin tables, with: alembic upgrade head (run from backend/).
+4. Seed demo data for activities, pipeline, campaigns, content, and collateral with: python scripts/seed_master_admin.py.
+5. Verify the seed by inspecting the admin_% tables or loading the Master Admin UI.
 
-The seed script creates a demo admin user (), weekly goals, activity history, meeting templates for each meeting type, sample prospects and deals, campaign templates, content assets, collateral, and a lead capture record. Re-running the script is idempotent; existing records are reused.
+The seed script creates a demo admin user (11111111-1111-1111-1111-111111111111), weekly goals, activity history, meeting templates for each meeting type, sample prospects and deals, campaign templates with recipients, content assets, collateral, and a lead capture record. Re-running the script is idempotent; existing rows are reused.
 
-For a clean reseed, delete the  tables or truncate them before running the script again.
+For a clean reseed, truncate the relevant admin_% tables before running the script again.

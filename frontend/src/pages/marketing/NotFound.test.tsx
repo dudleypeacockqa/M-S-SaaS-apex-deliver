@@ -7,14 +7,22 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import NotFound from './NotFound';
 
 // Mock wouter's useLocation hook
-vi.mock('wouter', () => ({
-  useLocation: () => {
+const mockUseLocation = vi.hoisted(() =>
+  vi.fn(() => {
     const setLocation = vi.fn();
     return ['/', setLocation];
-  },
+  })
+);
+
+vi.mock('wouter', () => ({
+  useLocation: mockUseLocation,
 }));
 
 describe('NotFound Page', () => {
+  beforeEach(() => {
+    mockUseLocation.mockReset();
+  });
+
   it('should render 404 heading', () => {
     render(<NotFound />);
     expect(screen.getByText('404')).toBeInTheDocument();
