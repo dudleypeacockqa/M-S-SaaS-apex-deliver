@@ -96,7 +96,7 @@ def test_get_user_details_as_admin(client: TestClient, auth_headers_admin: dict,
         email="detail@example.com",
         first_name="Detail",
         last_name="Test",
-        role="professional",
+        role="growth",
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
     )
@@ -111,7 +111,7 @@ def test_get_user_details_as_admin(client: TestClient, auth_headers_admin: dict,
     data = response.json()
     assert data["id"] == test_user.id
     assert data["email"] == "detail@example.com"
-    assert data["role"] == "professional"
+    assert data["role"] == "growth"
 
 
 def test_get_user_not_found(client: TestClient, auth_headers_admin: dict):
@@ -137,19 +137,19 @@ def test_update_user_role_as_admin(client: TestClient, auth_headers_admin: dict,
     db_session.add(test_user)
     db_session.commit()
 
-    # Update role to professional
+    # Update role to growth
     response = client.put(
         f"/api/admin/users/{test_user.id}",
-        json={"role": "professional"},
+        json={"role": "growth"},
         headers=auth_headers_admin
     )
     assert response.status_code == 200
     data = response.json()
-    assert data["role"] == "professional"
+    assert data["role"] == "growth"
 
     # Verify in database
     db_session.refresh(test_user)
-    assert test_user.role == "professional"
+    assert test_user.role == "growth"
 
 
 def test_update_user_name_as_admin(client: TestClient, auth_headers_admin: dict, db_session):
