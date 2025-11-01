@@ -116,6 +116,13 @@ export async function updateDeal(dealId: string, updates: DealUpdate): Promise<D
 }
 
 /**
+ * Update deal stage (for Kanban drag-drop)
+ */
+export async function updateDealStage(dealId: string, stage: DealStage): Promise<Deal> {
+  return apiClient.put<Deal>(`/api/deals/${dealId}/stage`, { stage })
+}
+
+/**
  * Archive a deal (soft delete)
  */
 export async function archiveDeal(dealId: string): Promise<{ message: string; deal_id: string }> {
