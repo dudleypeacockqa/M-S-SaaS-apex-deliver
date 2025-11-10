@@ -76,7 +76,8 @@ def upgrade() -> None:
     op.alter_column('users', 'id',
                existing_type=sa.UUID(),
                type_=sa.String(length=36),
-               existing_nullable=False)
+               existing_nullable=False,
+               postgresql_using='id::text')
     op.alter_column('users', 'is_active',
                existing_type=sa.BOOLEAN(),
                server_default=None,
@@ -88,7 +89,8 @@ def upgrade() -> None:
     op.alter_column('users', 'organization_id',
                existing_type=sa.UUID(),
                type_=sa.String(length=36),
-               existing_nullable=True)
+               existing_nullable=True,
+               postgresql_using='organization_id::text')
     op.drop_index('ix_users_email', table_name='users')
     op.drop_constraint('users_clerk_user_id_key', 'users', type_='unique')
     # ### end Alembic commands ###
@@ -101,7 +103,8 @@ def downgrade() -> None:
     op.alter_column('users', 'organization_id',
                existing_type=sa.String(length=36),
                type_=sa.UUID(),
-               existing_nullable=True)
+               existing_nullable=True,
+               postgresql_using='organization_id::uuid')
     op.alter_column('users', 'role',
                existing_type=sa.VARCHAR(length=32),
                server_default=sa.text("'solo'::character varying"),
@@ -113,7 +116,8 @@ def downgrade() -> None:
     op.alter_column('users', 'id',
                existing_type=sa.String(length=36),
                type_=sa.UUID(),
-               existing_nullable=False)
+               existing_nullable=False,
+               postgresql_using='id::uuid')
     op.drop_column('users', 'deleted_at')
     op.drop_index(op.f('ix_pipeline_stages_organization_id'), table_name='pipeline_stages')
     op.drop_index('idx_pipeline_stages_organization_id', table_name='pipeline_stages')

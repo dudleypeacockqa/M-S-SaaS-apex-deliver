@@ -112,6 +112,20 @@ export const CreateDealModal: React.FC<CreateDealModalProps> = ({
     }
   }, [isOpen])
 
+  // Handle Escape key globally
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+      return () => document.removeEventListener('keydown', handleEscape)
+    }
+  }, [isOpen, onClose])
+
   const validate = (): boolean => {
     const newErrors: FormErrors = {}
 
@@ -146,6 +160,9 @@ export const CreateDealModal: React.FC<CreateDealModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Mark all fields as touched before validation
+    setTouched(new Set(['name', 'target_company', 'deal_size']))
 
     if (!validate()) {
       return
