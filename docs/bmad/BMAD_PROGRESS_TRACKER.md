@@ -148,6 +148,77 @@
 2. Trigger backend + frontend redeploys from a network-enabled environment; attach updated `backend-deploy*.json` / `frontend-deploy*.json` and health check evidence.
 
 ---
+
+## Session 2025-11-10F - Migration FK Type Mismatch Fix ✅
+
+**Status**: ✅ **COMPLETE** - Migration d37ed4cd3013 fixed and deployed
+**Duration**: ~45 minutes (Claude Code session)
+**Priority**: P0 - Critical blocker preventing all Render deployments
+**Progress**: Deployment blocker → RESOLVED
+
+### Problem
+Render backend deployment failing with:
+```
+sqlalchemy.exc.ProgrammingError: foreign key constraint
+"folders_organization_id_fkey" cannot be implemented
+DETAIL: Key columns "organization_id" and "id" are of
+incompatible types: character varying and uuid
+```
+
+### Root Cause Analysis
+1. Migration d37ed4cd3013 (folders/documents) had `down_revision = '8dcb6880a52b'` (base users table)
+2. Migration 36b3e62b4148 (parallel branch from same parent) converts users.id from UUID → String(36)
+3. Migration d37ed4cd3013 incorrectly used `postgresql.UUID(as_uuid=True)` for 5 user FK columns
+4. But migration 36b3e62b4148 had already converted the referenced users.id to String(36)
+5. Result: FK constraint failure due to type mismatch (UUID → String reference invalid)
+
+### Fix Applied
+**File Modified**: `backend/alembic/versions/d37ed4cd3013_add_document_and_folder_tables_for_.py`
+
+**Changes**:
+1. Converted 5 user FK columns from `postgresql.UUID(as_uuid=True)` → `sa.String(length=36)`:
+   - `folders.created_by`
+   - `documents.uploaded_by`
+   - `document_permissions.user_id`
+   - `document_permissions.granted_by`
+   - `document_access_logs.user_id`
+
+2. Updated migration dependency:
+   - `down_revision`: `'8dcb6880a52b'` → `'36b3e62b4148'`
+   - Forces proper ordering: users.id conversion MUST complete before folders/documents creation
+
+3. Removed unused `from sqlalchemy.dialects import postgresql` import
+
+**Migration Chain (Fixed)**:
+```
+8dcb6880a52b (base users - UUID type)
+    ↓
+36b3e62b4148 (convert users.id to String, create organizations/deals)
+    ↓
+d37ed4cd3013 (create folders/documents - NOW depends on 36b3e62b4148) ← FIXED
+    ↓
+58ea862c1242 (merge)
+    ↓
+[...subsequent migrations to dc2c0f69c1b1 head...]
+```
+
+### Testing
+- `alembic check`: ✅ Passed (no errors, only expected schema diffs)
+- Local validation: Migration chain integrity verified
+- Deployment: Commit `3d15ca6` pushed to trigger Render auto-deploy
+
+### Documentation Updates
+- ✅ `docs/migrations/UUID_CONVERSION_STRATEGY.md` - Added resolution section with full fix details
+- ✅ Commit message: Comprehensive conventional commit explaining problem, root cause, fix, and expected outcome
+
+### Next Steps
+1. Monitor Render auto-deploy for commit `3d15ca6`
+2. Verify `prestart.sh` runs `alembic upgrade head` successfully
+3. Confirm production health check after deployment
+4. Update PRODUCTION-DEPLOYMENT-CHECKLIST.md with verification results
+
+---
+
 ## Session 2025-11-10E - Status Audit & Completion Plan Refresh
 
 **Status**: [ANALYSIS] **COMPLETE** - Current-state review + roadmap sync finished ahead of W1 execution  

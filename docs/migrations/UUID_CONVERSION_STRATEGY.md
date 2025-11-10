@@ -1,10 +1,65 @@
 # UUID to String(36) Conversion Strategy
 
 **Date**: 2025-11-10
-**Status**: CRITICAL - Blocking Production Deployments
+**Status**: ✅ RESOLVED - Migration d37ed4cd3013 Fixed (2025-11-10 18:27 UTC)
 **Author**: System Recovery Process
 
 ---
+
+## ✅ Resolution Update (2025-11-10 18:27 UTC)
+
+### Fix Applied: Migration d37ed4cd3013 FK Type Mismatch
+
+**Problem**: Migration d37ed4cd3013 (folders/documents) was failing on Render with:
+```
+sqlalchemy.exc.ProgrammingError: foreign key constraint
+"folders_organization_id_fkey" cannot be implemented
+DETAIL: Key columns "organization_id" and "id" are of
+incompatible types: character varying and uuid
+```
+
+**Root Cause**:
+- Migration d37ed4cd3013 had `down_revision = '8dcb6880a52b'` (base users)
+- Migration 36b3e62b4148 (parallel branch) converts users.id UUID → String(36)
+- Migration d37ed4cd3013 used `postgresql.UUID(as_uuid=True)` for user FK columns
+- But 36b3e62b4148 had already converted users.id to String(36)
+- Result: FK type mismatch (UUID columns trying to reference String columns)
+
+**Fix Applied** (Commit: `3d15ca6`):
+1. Changed 5 user FK columns from UUID → String(36):
+   - `folders.created_by`
+   - `documents.uploaded_by`
+   - `document_permissions.user_id`
+   - `document_permissions.granted_by`
+   - `document_access_logs.user_id`
+
+2. Updated migration dependency:
+   - Changed `down_revision` from `'8dcb6880a52b'` → `'36b3e62b4148'`
+   - Ensures folders/documents migration runs AFTER users.id conversion
+
+3. Removed unused `postgresql` import
+
+**Migration Chain (Fixed)**:
+```
+8dcb6880a52b (base users table - UUID type)
+    ↓
+36b3e62b4148 (converts users.id to String, creates organizations/deals)
+    ↓
+d37ed4cd3013 (creates folders/documents - NOW depends on 36b3e62b4148) ← FIXED
+    ↓
+58ea862c1242 (merge)
+    ↓
+[...subsequent migrations...]
+```
+
+**Deployment Status**:
+- Commit `3d15ca6` pushed to main
+- Render auto-deploy triggered
+- Monitoring for successful deployment with corrected migration chain
+
+---
+
+## Historical Context (Original Issue - Now Resolved)
 
 ## Problem Summary
 
