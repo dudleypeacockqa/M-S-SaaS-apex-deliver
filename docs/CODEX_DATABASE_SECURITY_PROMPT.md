@@ -79,8 +79,9 @@ Once you've secured your database (either via CODEX or the Python script), verif
 
 1. **Local Connection Works**:
    ```bash
-   psql postgresql://ma_saas_user:iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform
+   psql postgresql://ma_saas_user:YOUR_PASSWORD_HERE@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform
    ```
+   ⚠️ **SECURITY NOTE**: Replace `YOUR_PASSWORD_HERE` with your actual database password from Render dashboard
 
 2. **Backend Can Connect**:
    Visit https://ma-saas-backend.onrender.com/health
