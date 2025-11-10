@@ -156,6 +156,9 @@ export const CreateDealModal: React.FC<CreateDealModalProps> = ({
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name } = e.target
     setTouched(prev => new Set(prev).add(name))
+
+    // Validate after blur to show errors immediately
+    validate()
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
