@@ -103,3 +103,4 @@ bmad/
 # BMAD (local only)
 .bmad-core/
 .bmad-*/
+bmad-bak/

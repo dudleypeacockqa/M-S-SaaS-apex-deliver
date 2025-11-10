@@ -24,6 +24,11 @@ from .task_template_service import (
     log_execution,
     list_logs,
 )
+from .rbac_audit_service import (
+    log_role_change,
+    log_user_status_change,
+    log_claim_mismatch,
+)
 
 __all__ = [
     "create_user_from_clerk",
@@ -48,4 +53,7 @@ __all__ = [
     "list_rules",
     "log_execution",
     "list_logs",
+    "log_role_change",
+    "log_user_status_change",
+    "log_claim_mismatch",
 ]

@@ -23,6 +23,7 @@ from .valuation import (
 from .task import DealTask, TaskTemplate, TaskAutomationRule, TaskAutomationLog
 from .podcast import PodcastEpisode, PodcastTranscript, PodcastAnalytics
 from .podcast_usage import PodcastUsage
+from .rbac_audit_log import RBACAuditLog, RBACAuditAction
 
 from .deal_match import DealMatchCriteria, DealMatch, DealMatchAction
 from .blog_post import BlogPost
@@ -90,6 +91,8 @@ __all__ = [
     "PodcastTranscript",
     "PodcastAnalytics",
     "PodcastUsage",
+    "RBACAuditLog",
+    "RBACAuditAction",
     "DealMatchCriteria",
     "DealMatch",
     "DealMatchAction",

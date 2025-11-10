@@ -13,8 +13,8 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, EmailStr
 from sqlalchemy import func, select, or_
 from sqlalchemy.orm import Session
 
@@ -22,6 +22,13 @@ from app.api.dependencies.auth import get_current_admin_user
 from app.db.session import get_db
 from app.models.user import User, UserRole
 from app.models.organization import Organization
+from app.models.rbac_audit_log import RBACAuditAction
+from app.services.rbac_audit_service import (
+    log_role_change,
+    log_user_status_change,
+)
+from app.services import invite_service
+from app.services.invite_service import InvitationError
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -43,6 +50,46 @@ class UserUpdate(BaseModel):
     role: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+
+
+class OrganizationInviteRequest(BaseModel):
+    """Create organization invitation request."""
+
+    email: EmailStr
+    role: str = "basic_member"
+    redirect_url: Optional[str] = None
+    playbook_focus: Optional[str] = None
+    note: Optional[str] = None
+
+
+class OrganizationInviteResponse(BaseModel):
+    id: str
+    email: EmailStr
+    role: str
+    status: str
+    created_at: datetime
+    organization_id: str
+
+
+class OrganizationInviteList(BaseModel):
+    items: list[OrganizationInviteResponse]
+    total: int
+
+
+def _serialize_invitation(invite) -> OrganizationInviteResponse:
+    created = (
+        datetime.fromtimestamp(invite.created_at, tz=timezone.utc)
+        if getattr(invite, "created_at", None)
+        else datetime.now(timezone.utc)
+    )
+    return OrganizationInviteResponse(
+        id=str(getattr(invite, "id", "")),
+        email=getattr(invite, "email_address", ""),
+        role=getattr(invite, "role", ""),
+        status=getattr(invite, "status", ""),
+        organization_id=getattr(invite, "organization_id", ""),
+        created_at=created,
+    )
 
 
 # ============================================================================
@@ -248,6 +295,9 @@ def update_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
+    previous_role = user.role
+    role_changed = False
+
     # Update fields if provided
     if user_update.role:
         # Validate role
@@ -255,6 +305,8 @@ def update_user(
             user.role = UserRole(user_update.role)
         except ValueError:
             raise HTTPException(status_code=400, detail=f"Invalid role: {user_update.role}")
+        else:
+            role_changed = user.role != previous_role
 
     if user_update.first_name is not None:
         user.first_name = user_update.first_name
@@ -266,6 +318,16 @@ def update_user(
 
     db.commit()
     db.refresh(user)
+
+    if role_changed:
+        log_role_change(
+            db,
+            actor_user_id=current_admin.id,
+            target_user_id=user.id,
+            organization_id=user.organization_id,
+            previous_role=previous_role.value if isinstance(previous_role, UserRole) else str(previous_role),
+            new_role=user.role.value if isinstance(user.role, UserRole) else str(user.role),
+        )
 
     return {
         "id": str(user.id),
@@ -295,6 +357,14 @@ def delete_user(
 
     user.deleted_at = datetime.now(timezone.utc)
     db.commit()
+    log_user_status_change(
+        db,
+        actor_user_id=current_admin.id,
+        target_user_id=user.id,
+        organization_id=user.organization_id,
+        action=RBACAuditAction.USER_DELETED,
+        detail="User soft deleted via admin API",
+    )
 
     return {"message": "User deleted successfully", "user_id": str(user.id)}
 
@@ -317,6 +387,14 @@ def restore_user(
     user.deleted_at = None
     db.commit()
     db.refresh(user)
+    log_user_status_change(
+        db,
+        actor_user_id=current_admin.id,
+        target_user_id=user.id,
+        organization_id=user.organization_id,
+        action=RBACAuditAction.USER_RESTORED,
+        detail="User restored via admin API",
+    )
 
     return {
         "id": str(user.id),
@@ -397,6 +475,78 @@ def get_organization_details(
         "created_at": org.created_at.isoformat() if org.created_at else None,
         "updated_at": org.updated_at.isoformat() if org.updated_at else None
     }
+
+
+@router.get("/organizations/{org_id}/invites", response_model=OrganizationInviteList)
+def list_organization_invites(
+    org_id: str,
+    current_admin: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db),
+) -> OrganizationInviteList:
+    """List pending invitations for an organization."""
+
+    org = db.get(Organization, org_id)
+    if not org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+
+    try:
+        invites = invite_service.list_pending_invitations(organization_id=org_id, limit=50, offset=0)
+    except InvitationError as exc:  # pragma: no cover - network failure path
+        raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc
+
+    invite_items = invites.data if invites else []
+    total = invites.total_count if invites else 0
+    return OrganizationInviteList(
+        items=[_serialize_invitation(invite) for invite in invite_items],
+        total=total,
+    )
+
+
+@router.post("/organizations/{org_id}/invites", response_model=OrganizationInviteResponse)
+def create_organization_invite(
+    org_id: str,
+    invite: OrganizationInviteRequest,
+    current_admin: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db),
+) -> OrganizationInviteResponse:
+    """Create and send an organization invitation via Clerk."""
+
+    org = db.get(Organization, org_id)
+    if not org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+
+    if not current_admin.organization_id:
+        raise HTTPException(status_code=400, detail="Admin profile missing organization assignment")
+
+    if current_admin.organization_id != org_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You must belong to the organization to send invites",
+        )
+
+    public_metadata = {
+        "playbook_focus": invite.playbook_focus or "pmi-stability-sprint",
+        "toolkit": "post-merger-integration",
+    }
+    private_metadata = {k: v for k, v in {
+        "note": invite.note,
+        "source": "master-admin-console",
+    }.items() if v}
+
+    try:
+        invitation = invite_service.create_invitation(
+            organization_id=org_id,
+            email_address=invite.email,
+            role=invite.role,
+            inviter_user_id=current_admin.clerk_user_id,
+            public_metadata=public_metadata,
+            private_metadata=private_metadata or None,
+            redirect_url=invite.redirect_url,
+        )
+    except InvitationError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc
+
+    return _serialize_invitation(invitation)
 
 
 @router.get("/organizations/{org_id}/users")

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>M&A Intelligence Platform – UX Color Themes</title>
+    <style>
+      body {
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f8fafc;
+        color: #0f172a;
+        margin: 2rem;
+      }
+      h1 {
+        margin-bottom: 0.25rem;
+      }
+      .theme-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+      .swatch-card {
+        background: #fff;
+        border-radius: 0.75rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+        overflow: hidden;
+      }
+      .swatch {
+        height: 120px;
+      }
+      .swatch-info {
+        padding: 1rem;
+      }
+      .swatch-info h2 {
+        font-size: 1rem;
+        margin-bottom: 0.35rem;
+      }
+      .roles {
+        font-size: 0.85rem;
+        color: #475569;
+      }
+      .inline-palette {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+      }
+      .inline-palette div {
+        width: 38px;
+        height: 38px;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(15, 23, 42, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>M&A Intelligence Platform – Color System</h1>
+    <p>Palette derived from Tailwind tokens; aligns marketing + workspace UI for the “calm control” experience.</p>
+
+    <div class="theme-grid">
+      <div class="swatch-card">
+        <div class="swatch" style="background: linear-gradient(120deg, #312e81, #6366f1)"></div>
+        <div class="swatch-info">
+          <h2>Primary Indigo</h2>
+          <div class="roles">CTAs, primary buttons, focus gradients (Indigo 900 → 500)</div>
+          <div class="inline-palette">
+            <div style="background:#312e81"></div>
+            <div style="background:#4338ca"></div>
+            <div style="background:#4f46e5"></div>
+            <div style="background:#6366f1"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatch-card">
+        <div class="swatch" style="background:#0f172a"></div>
+        <div class="swatch-info">
+          <h2>Slate Neutrals</h2>
+          <div class="roles">Backgrounds, typography, cards (Slate 950–200)</div>
+          <div class="inline-palette">
+            <div style="background:#0f172a"></div>
+            <div style="background:#1e293b"></div>
+            <div style="background:#334155"></div>
+            <div style="background:#cbd5f5"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatch-card">
+        <div class="swatch" style="background:#10b981"></div>
+        <div class="swatch-info">
+          <h2>Emerald Signals</h2>
+          <div class="roles">Success states, SLA healthy, Copilot confirmations (#047857–#34d399)</div>
+          <div class="inline-palette">
+            <div style="background:#047857"></div>
+            <div style="background:#059669"></div>
+            <div style="background:#10b981"></div>
+            <div style="background:#34d399"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatch-card">
+        <div class="swatch" style="background:#f97316"></div>
+        <div class="swatch-info">
+          <h2>Amber Alerts</h2>
+          <div class="roles">SLA breach, automation warnings, Q&A approvals (#c2410c–#fdba74)</div>
+          <div class="inline-palette">
+            <div style="background:#c2410c"></div>
+            <div style="background:#ea580c"></div>
+            <div style="background:#f97316"></div>
+            <div style="background:#fdba74"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatch-card">
+        <div class="swatch" style="background:#dc2626"></div>
+        <div class="swatch-info">
+          <h2>Rose Critical</h2>
+          <div class="roles">Compliance failures, legal holds, destructive confirmations (#991b1b–#f87171)</div>
+          <div class="inline-palette">
+            <div style="background:#991b1b"></div>
+            <div style="background:#b91c1c"></div>
+            <div style="background:#dc2626"></div>
+            <div style="background:#f87171"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

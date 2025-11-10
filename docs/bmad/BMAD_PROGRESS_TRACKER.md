@@ -1,5 +1,27 @@
 # BMAD Progress Tracker
 
+## Session 2025-11-10A - BMAD v6 Alignment ✅
+
+**Status**: ✅ **COMPLETE** – Tooling upgrade to BMAD v6.0.0-alpha.8 finalized  
+**Duration**: ~45 minutes (Cursor session)  
+**Priority**: P0 – Required to keep agents and workflows current  
+**Progress**: Foundational tooling alignment for all future TDD stories
+
+### Achievements:
+
+- Upgraded `_vendor/BMAD-METHOD` to tag `v6.0.0-alpha.8`
+- Regenerated `.bmad/` installation (core, bmb, bmm, cis) with new docs, party-mode, and test-architecture libraries
+- Confirmed `.bmad-ephemeral/` path for transient artifacts and removed legacy `bmad/` (archived to gitignore/deleted)
+- Rebuilt Codex + Claude Code command manifests from the new release
+- Updated `bmm-workflow-status` to enterprise-method track and logged next step (`workflow-init`)
+
+### Test/TDD Notes:
+
+- No new application code delivered; last known backend coverage remains 83% (≥80% target)
+- Next development action requires running `workflow-init` before starting the next TDD story loop
+
+---
+
 ## Session 2025-11-01C - Deal Pipeline Enhancements (Session 3B) ✅
 
 **Status**: ✅ **COMPLETE** - DealCard and CreateDealModal components implemented

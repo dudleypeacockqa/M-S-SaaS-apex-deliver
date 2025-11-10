@@ -4,10 +4,10 @@
 
 PROJECT_NAME: M&A Intelligence Platform
 PROJECT_TYPE: software
-PROJECT_LEVEL: 4
+PROJECT_TRACK: enterprise-method
 FIELD_TYPE: greenfield
 START_DATE: 2025-10-28
-WORKFLOW_PATH: bmad/bmm/workflows/workflow-status/paths/greenfield-level-4.yaml
+WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.yaml
 
 ## Current State
 
@@ -28,21 +28,21 @@ BLOCKERS: None
 
 ## Next Action
 
-NEXT_ACTION: Begin Session 3A - Write comprehensive test suite for Master Admin Portal (170+ tests covering 8 feature modules)
-NEXT_COMMAND: Create test plan for Master Admin Portal covering Activity Tracker, Focus Sessions, Nudges, Prospects, Campaigns, Content, Leads, Collateral
-NEXT_AGENT: tea (Test Architect)
+NEXT_ACTION: Re-run workflow-init under BMAD v6 to confirm enterprise-method track and refresh story backlog
+NEXT_COMMAND: Analyst agent → `*workflow-init` (confirm enterprise-method track, update NEXT_ACTION to current sprint)
+NEXT_AGENT: analyst
 PRIORITY: HIGH
-RATIONALE: Backend stable (655 tests, 83% coverage), frontend component exports fixed. Ready for Master Admin frontend test development per BMAD TDD methodology.
+RATIONALE: BMAD tooling upgraded to v6.0.0-alpha.8; workflow baseline must be regenerated before continuing TDD story loop.
 
 ## Completed This Session
 
 SESSION_ID: Session-2D
 COMPLETED_WORK:
-- Generated backend coverage report: 83% (6,914/8,356 statements)
-- Fixed frontend component export issues (button.ts, card.ts re-exports)
-- Verified Render deployment health (HEALTHY status)
-- Confirmed Master Admin frontend components committed
-- Identified coverage gaps: RBAC (0%), subscription (59%), task automation (36%)
+- Upgraded `_vendor/BMAD-METHOD` to v6.0.0-alpha.8
+- Regenerated `.bmad/` installation with new party-mode and test architecture resources
+- Migrated BMAD workspace to `.bmad/` and archived legacy `bmad/`
+- Verified `.bmad-ephemeral/` workspace for transient story artifacts
+- Confirmed codex/claude-code IDE integrations rebuilt from new manifests
 
 FILES_MODIFIED:
 - frontend/src/components/ui/button.ts (created)
@@ -52,11 +52,8 @@ FILES_MODIFIED:
 - docs/bmad/BMAD_PROGRESS_TRACKER.md (Session 2D added)
 
 TEST_RESULTS:
-- Backend: 655 passing, 71 skipped (100% pass rate maintained)
-- Coverage: 83% (exceeds 80% target)
-- Runtime: 345.51 seconds (5:45)
-- Deployment: Healthy on Render
+- No new automated test suite executed during tooling upgrade (last recorded coverage: Backend 83%)
 
 ---
 
-_Last Updated: 2025-11-01T[TIMESTAMP]_
+_Last Updated: 2025-11-10T08:05:00Z_

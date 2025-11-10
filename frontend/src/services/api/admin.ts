@@ -96,6 +96,28 @@ export interface OrganizationMetrics {
   active_users_last_30_days: number;
 }
 
+export interface OrganizationInvite {
+  id: string;
+  email: string;
+  role: string;
+  status: string;
+  created_at: string;
+  organization_id: string;
+}
+
+export interface OrganizationInviteList {
+  items: OrganizationInvite[];
+  total: number;
+}
+
+export interface OrganizationInvitePayload {
+  email: string;
+  role?: string;
+  redirect_url?: string;
+  playbook_focus?: string;
+  note?: string;
+}
+
 /**
  * System Health Types
  */
@@ -186,6 +208,17 @@ export async function getOrganizationUsers(orgId: string): Promise<OrganizationU
 
 export async function getOrganizationMetrics(orgId: string): Promise<OrganizationMetrics> {
   return apiClient.get<OrganizationMetrics>(`/api/admin/organizations/${orgId}/metrics`)
+}
+
+export async function listOrganizationInvites(orgId: string): Promise<OrganizationInviteList> {
+  return apiClient.get<OrganizationInviteList>(`/api/admin/organizations/${orgId}/invites`)
+}
+
+export async function createOrganizationInvite(
+  orgId: string,
+  payload: OrganizationInvitePayload,
+): Promise<OrganizationInvite> {
+  return apiClient.post<OrganizationInvite>(`/api/admin/organizations/${orgId}/invites`, payload)
 }
 
 /**

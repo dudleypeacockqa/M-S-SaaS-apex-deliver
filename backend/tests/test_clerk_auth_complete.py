@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.models.organization import Organization
 from app.models.user import User, UserRole
+from app.models.rbac_audit_log import RBACAuditLog
 
 
 def _sign_payload(payload: dict) -> tuple[str, bytes]:
@@ -453,6 +454,66 @@ def test_auth_me_rejects_token_without_sub(client, db_session: Session) -> None:
 
     assert response.status_code == 401
     assert "Invalid token payload" in response.json()["detail"]
+
+
+def test_auth_me_rejects_org_claim_mismatch(client, db_session: Session) -> None:
+    """Organization claims must match the persisted user organization."""
+    org = Organization(id="org-secure", name="Secure Org", slug="secure-org", subscription_tier="starter")
+    db_session.add(org)
+    user = User(
+        clerk_user_id="user_org_mismatch",
+        email="orgmismatch@example.com",
+        role=UserRole.solo,
+        organization_id="org-secure",
+    )
+    db_session.add(user)
+    db_session.commit()
+
+    token = _make_token("user_org_mismatch", extra={"org_id": "rogue-org"})
+    response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid session claims"
+    audit_entry = db_session.query(RBACAuditLog).one()
+    assert audit_entry.action == "claim_mismatch"
+    assert audit_entry.actor_user_id == user.id
+
+
+def test_auth_me_rejects_role_claim_mismatch(client, db_session: Session) -> None:
+    """Role escalation attempts via claims are rejected and audited."""
+    user = User(
+        clerk_user_id="user_role_mismatch",
+        email="rolemismatch@example.com",
+        role=UserRole.solo,
+    )
+    db_session.add(user)
+    db_session.commit()
+
+    token = _make_token("user_role_mismatch", extra={"org_role": "admin"})
+    response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
+
+    assert response.status_code == 401
+    audit_entry = db_session.query(RBACAuditLog).one()
+    assert audit_entry.action == "claim_mismatch"
+    assert "Role claim mismatch" in (audit_entry.detail or "")
+
+
+def test_auth_me_populates_missing_org_from_claim(client, db_session: Session) -> None:
+    """Users without org assignment inherit org_id from trusted claim."""
+    user = User(
+        clerk_user_id="user_org_assign",
+        email="orgassign@example.com",
+        role=UserRole.growth,
+    )
+    db_session.add(user)
+    db_session.commit()
+
+    token = _make_token("user_org_assign", extra={"org_id": "new-org"})
+    response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
+
+    assert response.status_code == 200
+    db_session.refresh(user)
+    assert user.organization_id == "new-org"
 
 
 # ============================================================================

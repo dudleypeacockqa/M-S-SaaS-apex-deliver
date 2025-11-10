@@ -1,8 +1,8 @@
 """Authentication dependencies."""
 from __future__ import annotations
 
-from typing import Callable
 import logging
+from typing import Callable, Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -17,10 +17,61 @@ from app.services.entitlement_service import (
     get_required_tier,
     get_feature_upgrade_message,
 )
+from app.services.rbac_audit_service import log_claim_mismatch
 
 logger = logging.getLogger(__name__)
 
 http_bearer = HTTPBearer(auto_error=False)
+
+
+def _extract_claim(claims: dict[str, Any], *keys: str) -> str | None:
+    for key in keys:
+        value = claims.get(key)
+        if value:
+            return value
+    return None
+
+
+def _sanitize_claims(claims: dict[str, Any]) -> dict[str, Any]:
+    allowed = ("sub", "org_id", "org_role", "sid", "iss", "session_id")
+    return {key: claims[key] for key in allowed if key in claims}
+
+
+def _enforce_claim_integrity(user: User, claims: dict[str, Any], db: Session) -> None:
+    org_claim = _extract_claim(claims, "org_id", "orgId", "organization_id", "organizationId")
+    role_claim = _extract_claim(claims, "org_role", "orgRole")
+
+    def _raise(detail: str) -> None:
+        log_claim_mismatch(
+            db,
+            actor_user_id=user.id,
+            organization_id=user.organization_id or org_claim,
+            detail=detail,
+            claim_snapshot=_sanitize_claims(claims),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid session claims",
+        )
+
+    if user.organization_id:
+        if org_claim is None:
+            _raise("Missing organization claim")
+        if org_claim != user.organization_id:
+            _raise(f"Organization claim mismatch (token={org_claim}, db={user.organization_id})")
+    elif org_claim:
+        user.organization_id = org_claim
+        db.commit()
+        db.refresh(user)
+
+    if role_claim:
+        try:
+            claim_role = UserRole(role_claim)
+        except ValueError:
+            _raise(f"Unknown role claim '{role_claim}'")
+        else:
+            if claim_role != user.role:
+                _raise(f"Role claim mismatch (token={claim_role.value}, db={user.role.value})")
 
 
 def get_current_user(
@@ -45,6 +96,7 @@ def get_current_user(
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not registered")
 
+    _enforce_claim_integrity(user, claims, db)
     return user
 
 

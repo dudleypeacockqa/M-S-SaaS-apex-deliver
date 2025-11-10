@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from fastapi.testclient import TestClient
 from sqlalchemy import select
 from app.models.user import User
+from app.models.rbac_audit_log import RBACAuditLog
 
 
 def test_list_users_as_admin(client: TestClient, auth_headers_admin: dict, db_session):
@@ -123,7 +124,7 @@ def test_get_user_not_found(client: TestClient, auth_headers_admin: dict):
     assert response.status_code == 404
 
 
-def test_update_user_role_as_admin(client: TestClient, auth_headers_admin: dict, db_session):
+def test_update_user_role_as_admin(client: TestClient, auth_headers_admin: dict, db_session, admin_user):
     """Admin can update user role"""
     # Create test user
     test_user = User(
@@ -150,6 +151,13 @@ def test_update_user_role_as_admin(client: TestClient, auth_headers_admin: dict,
     # Verify in database
     db_session.refresh(test_user)
     assert test_user.role == "growth"
+
+    logs = db_session.query(RBACAuditLog).all()
+    assert len(logs) == 1
+    log_entry = logs[0]
+    assert log_entry.action == "role_change"
+    assert log_entry.actor_user_id == admin_user.id
+    assert log_entry.target_user_id == test_user.id
 
 
 def test_update_user_name_as_admin(client: TestClient, auth_headers_admin: dict, db_session):
