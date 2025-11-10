@@ -1,7 +1,7 @@
 """add pipeline templates
 
 Revision ID: dc2c0f69c1b1
-Revises: c3a7b4bbf913
+Revises: 3a15202c7dc2
 Create Date: 2025-11-10 12:20:00.000000
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = "dc2c0f69c1b1"
-down_revision: Union[str, None] = "3a15202c7dc2"
+down_revision: Union[str, None] = "c3a7b4bbf913"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

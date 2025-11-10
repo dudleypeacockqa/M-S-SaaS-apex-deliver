@@ -10,20 +10,23 @@
 ## 1. Current State (Sources: `BMAD_PROGRESS_TRACKER`, `bmm-workflow-status`, deploy logs)
 
 ### 1.1 Git & Worktree
-- `HEAD`: `e956184 fix(migrations): add users.id type fix and additional UUID migration fixes`
-- Local diffs: Alembic revisions in-flight (`0cbf1e0e3ab5`, `dc2c0f69c1b1`, new `3a15202c7dc2`), deletions of obsolete migrations, new React hook/service for pipeline templates.
-- BMAD directive: Run `workflow-init` under v6 to realign backlog before next dev story (pending).
+- `HEAD (local)`: `0bc72b4 chore(frontend): fix build dependencies and clean up UI component files` (adds dependency fixes + doc updates).
+- `origin/main`: `ded9734 fix(migrations): restructure UUID to String migrations and eliminate circular dependencies`.
+- Status: local `main` is **ahead by 1 commit**; `0bc72b4` has not been pushed or referenced by any PR yet (risk of drift if workstation lost).
+- Local diffs: Alembic revisions in-flight (`0cbf1e0e3ab5`, `dc2c0f69c1b1`, new `3a15202c7dc2`), deletions of obsolete migrations, new React hook/service for pipeline templates, plus mass `.bmad` doc edits tracked but not yet reviewed.
+- BMAD directive: Run `workflow-init` under v6 to realign backlog before next dev story (still pending after dependency cleanup commit).
 
 ### 1.2 Tests & Coverage
-- Backend: 663 tests passing (82.9% coverage) �� last recorded full run before migration work (`docs/bmad/BMAD_PROGRESS_TRACKER.md`).
-- Frontend (app): ~1,066 tests passing (≈99% success) – pipeline/podcast suites green but valuation UI still partially absent.
+- Backend: 663 tests passing (82.9% coverage) — last recorded run prior to migration shuffle; no new pytest evidence since commit `0bc72b4`.
+- Frontend (app): ~1,066 tests passing (≈99% success) – pipeline/podcast suites green but valuation UI + financial dashboards still RED/not implemented.
 - Marketing frontend: Phase 1 suite at 90% pass rate (206 specs) with Phase 2 asset integration outstanding.
+- Gap: Need fresh end-to-end verification after dependency fixes plus RED-first tests for valuations/task automation per DEV-011/012 stories.
 
 ### 1.3 Deployments
-- Backend Render service `dep-d48vc7qdbo4c73fm1n5g` (commit `f9ee907`) = `update_failed` (multiple Alembic heads).
-- Backend re-attempt `dep-d48vt3adbo4c73fm6svg` (commit `8707204`) = `update_failed` (migration merge not yet applied in production).
-- Frontend Render service `dep-d48vc72dbo4c73fm1mv0` (commit `f9ee907`) remains in `build_in_progress` / no health confirmation recorded.
-- No evidence that commits `8469e49` or `e956184` deployed; Render health **NOT 100%**.
+- Backend Render service `dep-d48vc7qdbo4c73fm1n5g` (commit `f9ee907`) = `update_failed` (multi-head Alembic chain).
+- Backend follow-up `dep-d48vt3adbo4c73fm6svg` (commit `8707204`) = `update_failed`; latest `latest-deploy.json` entry (`dep-d491s6ffte5s73aai0ig`, commit `ded9734`) is stuck at `update_in_progress` with no success timestamp.
+- Frontend Render service `dep-d48vc72dbo4c73fm1mv0` (commit `f9ee907`) still `build_in_progress` with no confirmation of a green deploy post-migration shuffle; production health unknown.
+- Conclusion: Render environment is **not 100% healthy**; backend migrations have never completed on Render since UUID→String restructure, and frontend deploy status is stale.
 
 ### 1.4 Feature Completion Snapshot (PRD reference `CODEX-COMPLETE-PROJECT-GUIDE.md`)
 - ✅ DEV-001 .. DEV-010 foundations running in production.
@@ -35,9 +38,10 @@
 
 ### 1.5 Blockers / Risks
 1. **Alembic divergence**: Production DB still on UUID-based `users.id`. New migrations require careful sequencing + data verification before redeploy.
-2. **Render drift**: Last healthy checks dated 2025-10-28. Need fresh smoke tests post-migration fix.
-3. **Story tracking**: `bmm-workflow-status.md` still points to pre-plan action; BMAD loop needs reset before coding.
+2. **Render drift**: Last confirmed healthy checks dated 2025-10-28; current deploy logs show repeated `update_failed` / stuck builds.
+3. **Story tracking**: `bmm-workflow-status.md` still mid-story (`W1` migrations). Need BMAD `workflow-init` + tracker sync before writing new code.
 4. **Coverage debt**: Backend coverage target 80%+ threatened by new migrations + upcoming services; frontend valuation UI lacks automated tests.
+5. **Source control hygiene**: Local main ahead of origin with unpushed dependency-fix commit; losing context risks rework. Need push/PR discipline aligned with BMAD artifacts.
 
 ---
 
@@ -129,9 +133,10 @@ _Done when:_ Roadmap doc shows 10/10 phases complete, marketing tests ≥90% pas
 ---
 
 ## 6. Immediate Next Steps (2025-11-10)
-1. **Analyst**: Execute `workflow-init` (document outcome) to move BMAD state from tooling upgrade to actionable backlog.
-2. **Dev**: Treat migrations + Render recovery as Story `PLAN-2E-Migrations-Render` under W1 with RED tests for Alembic.
-3. **QA**: Once migrations green locally, rerun backend smoke + targeted pytest subset, prep for redeploy attempt.
-4. **Documentation**: Update `DEPLOYMENT_HEALTH` + `STATUS.md` after smoke tests; ensure Render question ("health 100%?") answered with logs.
+1. **Analyst (W0)**: Run/record `workflow-init` + backlog reconciliation so BMAD records move from tooling upgrade → actionable migration story. Capture outcome in `bmm-workflow-status.md` and tracker.
+2. **DevOps (W1)**: Finish Alembic verification story by writing RED pytest cases for billing/subscription smoke paths, re-running `pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --cov ...` + `alembic upgrade head` on a clean DB, then packaging logs for deployment.
+3. **Release (W1)**: Push commit `0bc72b4` (or integrate into new Conventional Commit) and open/refresh PR per `PR_DESCRIPTION.md` so Render/autodeploy can consume the fixes once verified.
+4. **QA/DevOps (W1)**: Trigger backend + frontend Render redeploys only after smoke suite passes; capture new `backend-deploy*.json`, `frontend-deploy*.json`, and health-check screenshots proving 100% deploy health.
+5. **Documentation (W1/W2)**: Update `DEPLOYMENT-SESSION-SUMMARY.md`, `STATUS.md`, and marketing/feature story docs with new coverage metrics + Render evidence; these artefacts answer stakeholder question re: deploy health.
 
-_On completion of these steps, resume DEV-011 via BMAD `dev-story` workflow with TDD._
+_After W1 closes green, resume DEV-011 valuation suite via BMAD `dev-story` cycle with strict RED → GREEN → REFACTOR._

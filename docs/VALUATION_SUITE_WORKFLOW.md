@@ -16,6 +16,10 @@ Valuation Suite now supports full creation-to-analysis flow under Phase B of the
 - Responsive analytics grid (single column on mobile, five columns on desktop).
 - Enforce subscription gating (403) for tiers below Growth.
 
+### Spreadsheet Parity KPIs
+- `valuation_service.calculate_go_to_market_kpis()` now mirrors the CAC, LTV, payback, and magic-number formulas inside Eric Andrews’ `Customer_Acquisition_Cost_.xlsx` and `SaaS_Financial_Model_Video_Download.xlsx`.
+- API consumers can call the new helper (or expose it via UI hooks) to produce Customer Acquisition Cost, Lifetime Value, LTV:CAC ratios, CAC payback months, sales efficiency, and net-new ARR in a single payload, ensuring SaaS operators see the exact KPIs they track in their modelling sheets.
+
 ## User Journey
 
 1. **Workspace Entry**

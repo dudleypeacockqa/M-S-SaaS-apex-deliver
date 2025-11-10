@@ -1,13 +1,103 @@
-## Session 2025-11-10C - Workflow Rebaseline & Roadmap Refresh ✅
+## Session 2025-11-10F - Completion Plan Refresh & Deploy Status Audit
 
-**Status**: ✅ **COMPLETE** – Governance + planning loop executed before next TDD story  
+**Status**: [ANALYSIS] COMPLETE - Roadmap + BMAD artefacts refreshed, deploy blockers documented  
+**Duration**: ~40 min (Codex CLI)  
+**Priority**: P0 - Required to answer "are we 100% complete?" and unblock next dev-story  
+**Progress Impact**: Execution clarity +1% (all stakeholders aligned on gaps + actions)
+
+### Achievements
+- Reviewed `docs/100-PERCENT-COMPLETION-PLAN.md`, `docs/bmad/PROJECT_COMPLETION_PLAN.md`, deploy JSON logs, and git history to confirm outstanding scope.
+- Updated `docs/100-PERCENT-COMPLETION-PLAN.md` with accurate test/deploy/git snapshots, refreshed dirty tree mapping, and TDD notes per workstream.
+- Added 2025-11-10 refresh workstream matrix + loop breakdown to `docs/bmad/BMAD_METHOD_PLAN.md` to steer DEV-008/016/018 + MARK-002 completion.
+- Logged this session plus next steps in tracker + prepared to sync `bmm-workflow-status.md` with new governance actions.
+
+### Testing/TDD Notes
+- No automated suites run; focus on planning/governance. Next command remains `pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --cov ...` once environment ready.
+
+### Next Steps
+1. Update `docs/bmad/bmm-workflow-status.md` with refreshed next action + blockers after plan sync.
+2. Provision Postgres target and rerun Alembic upgrade + billing/subscription smoke suite (W1 deliverable).
+3. Begin DEV-008 RED test writing immediately after migrations/deploy story unblocks.
+
+---
+## Session 2025-11-10E - Subscription Smoke Tests & Deploy Prep
+
+**Status**: [IN PROGRESS] **PENDING DEPLOY** - Subscription routes verified; awaiting DB replay + Render redeploy  
+**Duration**: ~25 min (Codex CLI)  
+**Priority**: P0 - Required before declaring migrations safe for production  
+**Progress Impact**: Backend confidence +1% (route coverage confirmed)
+
+### Achievements
+- Ran `pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --cov=app.api.routes.subscriptions --cov=app.services.subscription_service --cov-report=term-missing` (26 pass / 4 skip) to verify billing + subscription endpoints still behave after migration shuffles.
+- Captured coverage snapshot: routes 79%, service 59%; logged remaining uncovered lines for Sprint 1A follow-up.
+- Attempted `alembic upgrade head` using local SQLite fallback DB to simulate clean upgrade run; documented why it fails before first revision.
+
+### Testing/TDD Notes
+- Tests executed: billing + subscription suites with coverage (pass, warnings only for Pydantic validators + httpx deprecation).
+- Command output attaches coverage diff for routes/services; no regressions introduced.
+
+### Blockers / Risks
+1. `alembic upgrade head` requires PostgreSQL because migrations rely on UUID column types; SQLite fallback raises `UnsupportedCompilationError`. Need local/staging Postgres to finish this step.
+2. Render redeploy calls require outbound network + valid API key. Sandbox has network access disabled, so deploys must run outside this environment.
+
+### Next Steps
+1. Re-run `alembic upgrade head` against a Postgres instance (local docker or staging DB) and save the console transcript for the deploy log.
+2. Trigger backend + frontend redeploys from a network-enabled environment; attach updated `backend-deploy*.json` / `frontend-deploy*.json` and health check evidence.
+
+---
+## Session 2025-11-10E - Status Audit & Completion Plan Refresh
+
+**Status**: [ANALYSIS] **COMPLETE** - Current-state review + roadmap sync finished ahead of W1 execution  
+**Duration**: ~35 min (Codex CLI)  
+**Priority**: P0 - Required to answer stakeholder status questions and unblock BMAD/TDD next steps  
+**Progress Impact**: Project confidence +1% (plan + deployment clarity, action list for migrations story)
+
+### Achievements
+- Reviewed `PROJECT_STATUS_REPORT.md`, `docs/bmad/BMAD_METHOD_PLAN.md`, `docs/bmad/PROJECT_COMPLETION_PLAN.md`, Render deploy logs (`latest-deploy*.json`, `backend-deploy*.json`, `frontend-deploy*.json`), and git history to capture the real current state.
+- Updated `docs/bmad/PROJECT_COMPLETION_PLAN.md` with: new HEAD vs origin (`0bc72b4` ahead of `ded9734`), explicit Render failure IDs, refreshed blockers/risks, and a five-step immediate-action list aligned with BMAD + TDD.
+- Recorded this session in the tracker to satisfy the “keep BMAD docs updated” directive and surfaced unpushed commit risk + dependency context for the next workflow loop.
+- Defined next actionable items: run `workflow-init`, finish migration smoke tests, push/publish latest commit, and gather Render health evidence once suites pass.
+
+### Testing/TDD Notes
+- No automated suites executed during this planning session. W1 migration story still owes RED-first smoke tests (`tests/test_billing_endpoints.py`, `tests/test_subscription_error_paths.py`) before any redeploy attempt.
+
+### Next Steps
+1. Execute BMAD `workflow-init` + backlog reconciliation, then update `bmm-workflow-status.md`.
+2. Run billing/subscription smoke pytest with coverage + `alembic upgrade head` on clean DB, capture logs.
+3. Push/publish commit `0bc72b4` (or roll into next Conventional Commit) and refresh PR description/status.
+4. Trigger backend + frontend Render redeploys post-tests, archive new deploy health evidence in docs + JSON logs.
+
+## Session 2025-11-10D - W1 Alembic Verification
+
+**Status**: [GREEN] **COMPLETE** - Migration-focused TDD checks passed; schema chain ready for smoke + deploy steps  
+**Duration**: ~20 min (Codex CLI)  
+**Priority**: P0 - Blocks Render recovery and all downstream stories  
+**Progress Impact**: Platform stability +1% (validated single Alembic head and tests)
+
+### Achievements
+- Ran `pytest tests/test_migrations -k users_id` (2 tests) to confirm UUID->String revisions behave as expected after recent restructuring
+- Executed `alembic heads` and verified single head `9a3aba324f7f`, proving no stray revisions remain
+- Captured Pydantic V2 validator warnings for pipeline template schemas; logged for W3 frontend refactor follow-up
+
+### Testing/TDD Notes
+- Tests executed: `pytest tests/test_migrations -k users_id` (pass), `alembic heads` (single head)
+- Result: 2/2 tests green, warnings only (Pydantic validator deprecations) — no coverage regressions introduced
+
+### Next Steps
+1. Run backend smoke suite for billing/subscription flows (`pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --cov=app.api.routes.subscriptions --cov=app.services.subscription_service`)
+2. Execute `alembic upgrade head` against a clean local database to snapshot migration chain output for Render
+3. Trigger Render backend + frontend redeploys once smoke tests succeed, capturing `backend-deploy*.json`/`frontend-deploy*.json` health logs
+
+---## Session 2025-11-10C - Workflow Rebaseline & Roadmap Refresh ✅
+
+**Status**: ✅ **COMPLETE** - Governance + planning loop executed before next TDD story  
 **Duration**: ~60 min (Codex CLI)  
-**Priority**: P0 – Required before migrations and feature work  
+**Priority**: P0 - Required before migrations and feature work  
 **Progress Impact**: Overall project confidence +2% (plan + deployment blockers captured)
 
 ### Highlights
 - Re-ran BMAD workflow-init manually (analysis) and aligned project to enterprise greenfield track under v6.
-- Refreshed `docs/bmad/PROJECT_COMPLETION_PLAN.md` with W0–W5 workstreams (migrations, backend, frontend, marketing, QA) and sequencing.
+- Refreshed `docs/bmad/PROJECT_COMPLETION_PLAN.md` with W0-W5 workstreams (migrations, backend, frontend, marketing, QA) and sequencing.
 - Updated `docs/bmad/bmm-workflow-status.md` to reflect completed planning story and set next action to W1 dev-story (migrations + Render recovery).
 - Audited Render deploy logs (`backend-deploy*.json`, `frontend-deploy*.json`, `latest-deploy*.json`) confirming current health = **NOT green** (update_failed) and documented in plan.
 - Catalogued in-flight migrations (`3a15202c7dc2`, edits to `0cbf1e0e3ab5`, `dc2c0f69c1b1`) plus new React pipeline template hook/service requiring TDD coverage.
@@ -138,9 +228,9 @@
 
 ## Session 2025-11-10A - BMAD v6 Alignment ✅
 
-**Status**: ✅ **COMPLETE** – Tooling upgrade to BMAD v6.0.0-alpha.8 finalized  
+**Status**: ✅ **COMPLETE** - Tooling upgrade to BMAD v6.0.0-alpha.8 finalized  
 **Duration**: ~45 minutes (Cursor session)  
-**Priority**: P0 – Required to keep agents and workflows current  
+**Priority**: P0 - Required to keep agents and workflows current  
 **Progress**: Foundational tooling alignment for all future TDD stories
 
 ### Achievements:
@@ -823,7 +913,7 @@ codex                                       # ✅ Interactive mode functional
 
 ---
 
-## Session 2025-10-31 Phase 1 Sprint 1A (🚀 TRUE 100% COMPLETION PLAN - Comprehensive Assessment – 13:00 UTC)
+## Session 2025-10-31 Phase 1 Sprint 1A (🚀 TRUE 100% COMPLETION PLAN - Comprehensive Assessment - 13:00 UTC)
 
 **Status**: COMPREHENSIVE ASSESSMENT COMPLETE - TRUTH REVEALED ⚠️
 
@@ -1071,6 +1161,8 @@ Fixes #[issue-number]
 ### Status: COMPLETE ✅
 
 **Next Agent**: Update workflow status and continue with Phase 3 (frontend tests)
+
+
 
 
 

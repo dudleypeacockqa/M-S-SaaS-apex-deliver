@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { DealKanbanBoard } from './DealKanbanBoard'
 import * as dealHooks from '@/hooks/deals'
@@ -52,7 +52,7 @@ describe('DealKanbanBoard', () => {
       id: '1',
       name: 'Acme Corp Acquisition',
       target_company: 'Acme Corp',
-      stage: DealStage.SOURCING,
+      stage: 'sourcing' as DealStage,
       deal_size: 5000000,
       currency: 'GBP',
       owner_id: 'user-1',
@@ -64,7 +64,7 @@ describe('DealKanbanBoard', () => {
       id: '2',
       name: 'Beta Ltd Deal',
       target_company: 'Beta Ltd',
-      stage: DealStage.EVALUATION,
+      stage: 'evaluation' as DealStage,
       deal_size: 2000000,
       currency: 'GBP',
       owner_id: 'user-1',
@@ -76,7 +76,7 @@ describe('DealKanbanBoard', () => {
       id: '3',
       name: 'Gamma Inc Merger',
       target_company: 'Gamma Inc',
-      stage: DealStage.DUE_DILIGENCE,
+      stage: 'due_diligence' as DealStage,
       deal_size: 10000000,
       currency: 'USD',
       owner_id: 'user-1',
@@ -160,11 +160,11 @@ describe('DealKanbanBoard', () => {
     it('should render all pipeline stages', () => {
       renderKanbanBoard()
 
-      expect(screen.getByText('Sourcing')).toBeInTheDocument()
-      expect(screen.getByText('Evaluation')).toBeInTheDocument()
-      expect(screen.getByText('Due Diligence')).toBeInTheDocument()
-      expect(screen.getByText('Negotiation')).toBeInTheDocument()
-      expect(screen.getByText('Closing')).toBeInTheDocument()
+      expect(screen.getByTestId('pipeline-stage-sourcing')).toBeInTheDocument()
+      expect(screen.getByTestId('pipeline-stage-evaluation')).toBeInTheDocument()
+      expect(screen.getByTestId('pipeline-stage-due_diligence')).toBeInTheDocument()
+      expect(screen.getByTestId('pipeline-stage-negotiation')).toBeInTheDocument()
+      expect(screen.getByTestId('pipeline-stage-closing')).toBeInTheDocument()
     })
 
     it('should render deals in correct columns', () => {
@@ -178,14 +178,9 @@ describe('DealKanbanBoard', () => {
     it('should display deal count for each stage', () => {
       renderKanbanBoard()
 
-      // Each stage should show count
-      const sourcingColumn = screen.getByText('Sourcing').closest('div')
-      const evaluationColumn = screen.getByText('Evaluation').closest('div')
-      const ddColumn = screen.getByText('Due Diligence').closest('div')
-
-      expect(sourcingColumn).toContainHTML('1') // 1 deal in sourcing
-      expect(evaluationColumn).toContainHTML('1') // 1 deal in evaluation
-      expect(ddColumn).toContainHTML('1') // 1 deal in due diligence
+      expect(screen.getByTestId('stage-count-sourcing')).toHaveTextContent('1')
+      expect(screen.getByTestId('stage-count-evaluation')).toHaveTextContent('1')
+      expect(screen.getByTestId('stage-count-due_diligence')).toHaveTextContent('1')
     })
 
     it('should render DragDropContext', () => {
@@ -210,6 +205,55 @@ describe('DealKanbanBoard', () => {
       expect(screen.getByTestId('draggable-1')).toBeInTheDocument()
       expect(screen.getByTestId('draggable-2')).toBeInTheDocument()
       expect(screen.getByTestId('draggable-3')).toBeInTheDocument()
+    })
+
+    it('should render SLA and probability badges defined in pipeline templates', () => {
+      setPipelineTemplateResponse([
+        {
+          id: 'tpl-1',
+          name: 'PMI Default',
+          description: 'M&A sprint template',
+          is_default: true,
+          stages: [
+            { id: 'stage-1', name: 'Sourcing', order_index: 1, probability: 45, sla_hours: 36, color: '#fcd34d' },
+            { id: 'stage-2', name: 'Evaluation', order_index: 2, probability: 55, sla_hours: 72, color: '#93c5fd' },
+          ],
+        } as PipelineTemplate,
+      ])
+
+      renderKanbanBoard()
+
+      const sourcingStage = screen.getByTestId('pipeline-stage-sourcing')
+      expect(within(sourcingStage).getByText('SLA 36h')).toBeInTheDocument()
+      expect(within(sourcingStage).getByText('Win 45%')).toBeInTheDocument()
+
+      const evaluationStage = screen.getByTestId('pipeline-stage-evaluation')
+      expect(within(evaluationStage).getByText('SLA 72h')).toBeInTheDocument()
+      expect(within(evaluationStage).getByText('Win 55%')).toBeInTheDocument()
+    })
+
+    it('should display weighted pipeline totals when probability metadata exists', () => {
+      setPipelineTemplateResponse([
+        {
+          id: 'tpl-1',
+          name: 'PMI Default',
+          description: 'M&A sprint template',
+          is_default: true,
+          stages: [
+            { id: 'stage-1', name: 'Sourcing', order_index: 1, probability: 25, sla_hours: 48, color: '#fed7aa' },
+            { id: 'stage-2', name: 'Evaluation', order_index: 2, probability: 60, sla_hours: 72, color: '#bfdbfe' },
+            { id: 'stage-3', name: 'Due Diligence', order_index: 3, probability: 75, sla_hours: 120, color: '#fef3c7' },
+          ],
+        } as PipelineTemplate,
+      ])
+
+      renderKanbanBoard()
+
+      const sourcingStage = screen.getByTestId('pipeline-stage-sourcing')
+      expect(within(sourcingStage).getByText(/Weighted/i)).toHaveTextContent('£1,250,000')
+
+      const evaluationStage = screen.getByTestId('pipeline-stage-evaluation')
+      expect(within(evaluationStage).getByText(/Weighted/i)).toHaveTextContent('£1,200,000')
     })
   })
 
@@ -263,18 +307,17 @@ describe('DealKanbanBoard', () => {
     it('should display target company for each card', () => {
       renderKanbanBoard()
 
-      expect(screen.getByText(/Acme Corp/)).toBeInTheDocument()
-      expect(screen.getByText(/Beta Ltd/)).toBeInTheDocument()
-      expect(screen.getByText(/Gamma Inc/)).toBeInTheDocument()
+      expect(screen.getByText('Acme Corp', { exact: true })).toBeInTheDocument()
+      expect(screen.getByText('Beta Ltd', { exact: true })).toBeInTheDocument()
+      expect(screen.getByText('Gamma Inc', { exact: true })).toBeInTheDocument()
     })
 
     it('should display formatted deal size', () => {
       renderKanbanBoard()
 
-      // Should show formatted currency amounts
-      expect(screen.getByText(/5.*M/)).toBeInTheDocument() // £5M
-      expect(screen.getByText(/2.*M/)).toBeInTheDocument() // £2M
-      expect(screen.getByText(/10.*M/)).toBeInTheDocument() // $10M
+      expect(screen.getByText('£5,000,000')).toBeInTheDocument()
+      expect(screen.getByText('£2,000,000')).toBeInTheDocument()
+      expect(screen.getByText('US$10,000,000')).toBeInTheDocument()
     })
   })
 
@@ -342,9 +385,8 @@ describe('DealKanbanBoard', () => {
     it('should support keyboard navigation for draggable items', () => {
       renderKanbanBoard()
 
-      // Draggable items should be keyboard accessible
-      const dealCards = screen.getAllByText(/acquisition|deal|merger/i)
-      expect(dealCards.length).toBe(3)
+      const dealCards = screen.getAllByTestId(/draggable-/)
+      expect(dealCards.length).toBe(mockDeals.length)
     })
   })
 })

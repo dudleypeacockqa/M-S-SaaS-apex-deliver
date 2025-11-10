@@ -17,6 +17,65 @@ This document outlines the systematic approach to achieving 100% completion of t
 
 ---
 
+## 2025-11-10 Refresh - ApexDeliver Platform & Marketing
+
+**Objective:** Drive DEV-008, DEV-016, DEV-018, MARK-002, and deployment hardening to 100% completion using BMAD v6 + strict TDD while maintaining governance evidence.
+
+### Workstream Matrix
+
+| Workstream | Scope | Primary TDD Entry Point | Definition of Done |
+|------------|-------|-------------------------|--------------------|
+| W0 | Governance + workflow-init | `npx bmad-method workflow-init`, tracker updates | `docs/bmad/bmm-workflow-status.md` + `BMAD_PROGRESS_TRACKER.md` synced, backlog prioritized |
+| W1 | Migration + deploy recovery | `pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --cov ...` + `alembic upgrade head` | Postgres upgrade transcript captured, Render deploy checklist updated |
+| W2 | DEV-008 Document Room UI | `npm --prefix frontend run test -- src/components/documents/*.test.tsx` | Folder tree, permissions, uploads fully covered with Vitest + Story docs updated |
+| W3 | DEV-016 Podcast Studio (video + transcription) | `pytest backend/tests/test_podcast_api.py -k video` + `npm --prefix frontend run test -- VideoUploadModal.test.tsx` | Video upload + transcription services deployed with >=90% backend / >=85% frontend coverage |
+| W4 | DEV-018 Deal Matching intelligence | `npm --prefix frontend run test -- src/pages/deals/MatchingWorkspace.test.tsx` | Criteria builder + analytics actions pass Vitest and backend contract tests |
+| W5 | MARK-002 website + ops | `npm --prefix frontend run test -- --runInBand` + Lighthouse + `scripts/verify_deployment.py production` | Marketing site phases 3-10 complete, Render health = 100% with evidence |
+
+### Loop Breakdown
+
+#### W0 - Governance + Environment Prep (Analyst/PM)
+- Run `npx bmad-method workflow-init` to register the next dev story and confirm Phase 4 implementation loop context.
+- Update `docs/bmad/bmm-workflow-status.md`, `docs/bmad/BMAD_PROGRESS_TRACKER.md`, and `docs/100-PERCENT-COMPLETION-PLAN.md` with refreshed statuses.
+- Produce risk + dependency snapshot (Postgres availability, Render API access) before dev work.
+
+#### W1 - Migration + Deploy Recovery (DevOps/Backend)
+- RED: execute billing/subscription smoke suite to reproduce failures under current env, log output.
+- GREEN: patch Alembic revisions if needed, rerun tests, then run `alembic upgrade head` against Postgres (Docker/staging) capturing transcript.
+- REFACTOR: document changes, prep Conventional Commit + PR update, refresh `DEPLOYMENT_HEALTH.md` and deploy JSON logs.
+- Exit criteria: single-head verified on Postgres, commit ready for push, deployment checklist updated.
+
+#### W2 - DEV-008 Secure Document Room (Frontend)
+- RED: extend Vitest specs for folder tree navigation, permission modal states, upload lifecycle, bulk actions.
+- GREEN: implement components + hooks, wire APIs with MSW mocks, ensure success/error toasts tracked.
+- REFACTOR: share design tokens, ensure accessibility + analytics instrumentation, update story docs.
+- Exit criteria: >=85% coverage for document components, UX parity with PRD, smoke demo captured.
+
+#### W3 - DEV-016 Podcast Studio Video + Transcription (Full-stack)
+- RED: add backend tests for tier gating, video upload, transcription job states; add frontend modal + progress specs.
+- GREEN: build FastAPI endpoints + services, plug in storage + transcription adapters, finalize React modal + dashboards.
+- REFACTOR: consolidate quota logic, add telemetry + admin audit logs, refresh documentation.
+- Exit criteria: backend coverage >=90% for podcast module, frontend video workflow fully tested, Render backend redeployed successfully.
+
+#### W4 - DEV-018 Deal Matching Intelligence (Frontend + Backend integration)
+- RED: update `MatchingWorkspace.test.tsx` for criteria builder, analytics, save/pass/request-intro flows; add backend contract tests if new endpoints needed.
+- GREEN: implement modals/workspace updates, wire React Query caches, ensure optimistic updates + toasts.
+- REFACTOR: extract shared form config, document analytics definitions, update PRD + release notes.
+- Exit criteria: match workspace feature complete with passing suites and telemetry hooks.
+
+#### W5 - MARK-002 Marketing Website + Ops/Deployment
+- RED: rerun Vitest + Lighthouse to capture current failures; document metrics in docs/marketing.
+- GREEN: finish phases 3-10 (SEO, assets, gating, CTAs), fix tests, rerun Lighthouse to meet >=90.
+- REFACTOR: compress assets, align Render preview, capture screenshots/video proof.
+- Exit criteria: marketing tests >=90% pass, Lighthouse 90+/category, Render frontend redeployed with new assets.
+
+#### Final Release & Handover
+- Run full-platform backend + frontend suites, lint/build, manual smoke on Render (`uvicorn`, `npm run preview`).
+- Update `PRODUCTION_DEPLOYMENT_CHECKLIST.md`, `DEPLOYMENT-SESSION-SUMMARY.md`, release notes, and PR description with final evidence.
+- Secure sign-off by delivering coverage reports, deploy logs, and BMAD tracker entries showing all stories closed.
+
+---
+
 ## Current Status Assessment
 
 ### ✅ Completed (35% of total scope)

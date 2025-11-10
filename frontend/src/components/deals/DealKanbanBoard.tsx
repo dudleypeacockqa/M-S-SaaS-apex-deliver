@@ -22,6 +22,9 @@ type StageConfig = {
   name: string
   color: string
   defaultSla?: number
+  slaHours?: number | null
+  probability?: number | null
+  hexColor?: string | null
 }
 
 const DEFAULT_STAGE_CONFIG: Record<DealStage, StageConfig> = {
@@ -38,27 +41,30 @@ const slugify = (value: string) => value.toLowerCase().replace(/[\s-]+/g, '_')
 
 const buildStageConfigs = (template?: PipelineTemplate | null) => {
   const lookup =
-    template?.stages.reduce<Record<string, { probability?: number | null; sla_hours?: number | null }>>(
-      (acc, stage) => {
-        acc[slugify(stage.name)] = {
-          probability: stage.probability,
-          sla_hours: stage.sla_hours,
-        }
-        return acc
-      },
-      {}
-    ) ?? {}
+    template?.stages.reduce<
+      Record<string, { probability?: number | null; sla_hours?: number | null; color?: string | null; label: string }>
+    >((acc, stage) => {
+      acc[slugify(stage.name)] = {
+        probability: stage.probability,
+        sla_hours: stage.sla_hours,
+        color: stage.color,
+        label: stage.name,
+      }
+      return acc
+    }, {}) ?? {}
 
   return STAGE_ORDER.map((stageId) => {
     const defaults = DEFAULT_STAGE_CONFIG[stageId]
     const templateStage = lookup[stageId]
-    const slaHours = templateStage?.sla_hours ?? defaults.defaultSla
+    const slaHours = templateStage?.sla_hours ?? defaults.defaultSla ?? undefined
     const probability = templateStage?.probability ?? undefined
 
     return {
       ...defaults,
+      name: templateStage?.label ?? defaults.name,
       slaHours,
       probability,
+      hexColor: templateStage?.color ?? null,
     }
   })
 }
@@ -188,10 +194,24 @@ export const DealKanbanBoard: React.FC = () => {
         <div className="flex gap-4 overflow-x-auto pb-4 p-4">
           {pipelineStages.map((stage) => {
             const dealsInStage = dealsByStage[stage.id] || []
+            const totalValue = dealsInStage.reduce((sum, deal) => sum + (deal.deal_size ?? 0), 0)
+            const hasProbability = typeof stage.probability === 'number'
+            const hasSlaHours = typeof stage.slaHours === 'number'
+            const weightedValue =
+              hasProbability && totalValue > 0 ? totalValue * ((stage.probability ?? 0) / 100) : null
+            const displayCurrency = dealsInStage.find((deal) => deal.currency)?.currency ?? 'GBP'
+            const countClasses = cn(
+              'px-2 py-1 text-xs font-medium rounded-full border border-transparent',
+              !stage.hexColor && stage.color
+            )
+            const countStyle = stage.hexColor
+              ? { backgroundColor: stage.hexColor, borderColor: stage.hexColor, color: '#0f172a' }
+              : undefined
 
             return (
               <div
                 key={stage.id}
+                data-testid={`pipeline-stage-${stage.id}`}
                 className="flex-shrink-0 w-80 bg-gray-50 rounded-lg border border-gray-200"
               >
                 {/* Column Header */}
@@ -199,21 +219,20 @@ export const DealKanbanBoard: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <h3 className="font-semibold text-gray-900">{stage.name}</h3>
                     <span
-                      className={cn(
-                        'px-2 py-1 text-xs font-medium rounded-full',
-                        stage.color
-                      )}
+                      className={countClasses}
+                      style={countStyle}
+                      data-testid={`stage-count-${stage.id}`}
                     >
                       {dealsInStage.length}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
-                    {stage.slaHours && (
+                    {hasSlaHours && (
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full">
                         SLA {stage.slaHours}h
                       </span>
                     )}
-                    {stage.probability && (
+                    {hasProbability && (
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-1 rounded-full">
                         Win {stage.probability}%
                       </span>
@@ -223,6 +242,24 @@ export const DealKanbanBoard: React.FC = () => {
                       Automation
                     </span>
                   </div>
+                  {totalValue > 0 && (
+                    <div className="flex items-center gap-2 mt-3 flex-wrap text-xs text-slate-600">
+                      <span
+                        data-testid={`stage-volume-${stage.id}`}
+                        className="font-medium text-slate-700"
+                      >
+                        Volume {formatCurrency(totalValue, displayCurrency)}
+                      </span>
+                      {weightedValue !== null && (
+                        <span
+                          data-testid={`stage-weighted-${stage.id}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full"
+                        >
+                          Weighted {formatCurrency(weightedValue, displayCurrency)}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Droppable Column */}

@@ -596,6 +596,48 @@ class TestValuationServiceOperations:
         assert payload["status"] == "queued"
         assert payload["export_type"] == "pdf"
 
+
+class TestGoToMarketKpis:
+    def test_calculate_go_to_market_kpis_matches_reference_spreadsheet(self):
+        metrics = valuation_service.calculate_go_to_market_kpis(
+            marketing_spend=300_000,
+            sales_spend=150_000,
+            new_customers=150,
+            average_revenue_per_account=1_200,
+            gross_margin_percentage=75,
+            monthly_churn_percentage=2.5,
+            current_arr=5_200_000,
+            previous_arr=4_800_000,
+        )
+
+        assert metrics["customer_acquisition_cost"] == pytest.approx(3_000.0)
+        assert metrics["lifetime_value"] == pytest.approx(36_000.0)
+        assert metrics["ltv_to_cac_ratio"] == pytest.approx(12.0)
+        assert metrics["cac_payback_months"] == pytest.approx(3.333333333, rel=1e-6)
+        assert metrics["magic_number"] == pytest.approx(3.555555555, rel=1e-6)
+        assert metrics["sales_efficiency"] == pytest.approx(0.888888888, rel=1e-6)
+        assert metrics["net_new_arr"] == 400_000
+
+    def test_calculate_go_to_market_kpis_handles_zero_inputs(self):
+        metrics = valuation_service.calculate_go_to_market_kpis(
+            marketing_spend=0,
+            sales_spend=0,
+            new_customers=0,
+            average_revenue_per_account=0,
+            gross_margin_percentage=0,
+            monthly_churn_percentage=0,
+            current_arr=1_000_000,
+            previous_arr=1_000_000,
+        )
+
+        assert metrics["customer_acquisition_cost"] is None
+        assert metrics["lifetime_value"] is None
+        assert metrics["ltv_to_cac_ratio"] is None
+        assert metrics["cac_payback_months"] is None
+        assert metrics["magic_number"] is None
+        assert metrics["sales_efficiency"] is None
+        assert metrics["net_new_arr"] == 0
+
     def test_ensure_test_reference_entities_noop_when_not_test(self, db_session, monkeypatch):
         org_id = str(uuid4())
         user_id = str(uuid4())

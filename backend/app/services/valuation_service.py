@@ -185,6 +185,14 @@ def _calculate_enterprise_value(
     return pv_cash_flows + pv_terminal_value
 
 
+def _safe_division(numerator: float, denominator: Optional[float]) -> Optional[float]:
+    """Helper to divide numbers while guarding against zero denominators."""
+
+    if denominator is None or denominator == 0:
+        return None
+    return numerator / denominator
+
+
 def _apply_valuation_metrics(valuation) -> None:
     enterprise_value_decimal = _calculate_enterprise_value(
         cash_flows=list(valuation.cash_flows or []),
@@ -240,6 +248,71 @@ def generate_sensitivity_matrix(
         matrix.append(row)
 
     return matrix
+
+
+def calculate_go_to_market_kpis(
+    *,
+    marketing_spend: float,
+    sales_spend: float,
+    new_customers: float,
+    average_revenue_per_account: float,
+    gross_margin_percentage: float,
+    monthly_churn_percentage: float,
+    current_arr: float,
+    previous_arr: float,
+) -> Dict[str, Optional[float]]:
+    """Calculate CAC/LTV metrics inspired by Eric Andrews SaaS modelling spreadsheets."""
+
+    spend = max(marketing_spend, 0.0) + max(sales_spend, 0.0)
+    cac = _safe_division(spend, new_customers) if new_customers > 0 else None
+
+    gross_margin_decimal = max(gross_margin_percentage, 0.0) / 100
+    churn_decimal = max(monthly_churn_percentage, 0.0) / 100
+    margin_per_customer = average_revenue_per_account * gross_margin_decimal
+
+    ltv = (
+        _safe_division(margin_per_customer, churn_decimal)
+        if churn_decimal > 0 and margin_per_customer > 0
+        else None
+    )
+    ltv_to_cac = (
+        _safe_division(ltv, cac)
+        if (ltv is not None and cac not in (None, 0))
+        else None
+    )
+    cac_payback = (
+        _safe_division(cac, margin_per_customer)
+        if (cac is not None and margin_per_customer > 0)
+        else None
+    )
+
+    net_new_arr = current_arr - previous_arr
+    magic_number = (
+        _safe_division(net_new_arr * 4, spend)
+        if spend > 0
+        else None
+    )
+    sales_efficiency = _safe_division(net_new_arr, spend) if spend > 0 else None
+
+    return {
+        "customer_acquisition_cost": cac,
+        "lifetime_value": ltv,
+        "ltv_to_cac_ratio": ltv_to_cac,
+        "cac_payback_months": cac_payback,
+        "magic_number": magic_number,
+        "sales_efficiency": sales_efficiency,
+        "net_new_arr": net_new_arr,
+        "inputs": {
+            "marketing_spend": marketing_spend,
+            "sales_spend": sales_spend,
+            "new_customers": new_customers,
+            "average_revenue_per_account": average_revenue_per_account,
+            "gross_margin_percentage": gross_margin_percentage,
+            "monthly_churn_percentage": monthly_churn_percentage,
+            "current_arr": current_arr,
+            "previous_arr": previous_arr,
+        },
+    }
 
 
 def create_valuation(
