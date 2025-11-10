@@ -7,13 +7,15 @@ from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.models.blog_post import BlogPost
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 router = APIRouter(prefix="/blog", tags=["blog"])
 
 
 class BlogPostResponse(BaseModel):
     """Blog post response schema."""
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     title: str
     slug: str
@@ -30,9 +32,6 @@ class BlogPostResponse(BaseModel):
     published_at: Optional[str]
     created_at: str
     updated_at: str
-
-    class Config:
-        from_attributes = True
 
 
 @router.get("", response_model=List[BlogPostResponse])
