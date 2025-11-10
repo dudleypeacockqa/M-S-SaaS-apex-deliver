@@ -12,3 +12,4 @@ The seed script creates a demo admin user (11111111-1111-1111-1111-111111111111)
 
 For a clean reseed, truncate the relevant admin_% tables before running the script again.
 # Pre-Deploy Command configured: alembic upgrade head
+# Pre-Deploy Command corrected: cd backend && alembic upgrade head
