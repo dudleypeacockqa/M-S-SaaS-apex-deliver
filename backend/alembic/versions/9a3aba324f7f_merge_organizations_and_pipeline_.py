@@ -1,8 +1,8 @@
-"""merge pipeline templates and user fk fix branches
+"""merge organizations and pipeline templates UUID fixes
 
-Revision ID: c80cbaa32b50
-Revises: dc2c0f69c1b1, 1a11396903e4
-Create Date: 2025-11-10 15:01:25.283518
+Revision ID: 9a3aba324f7f
+Revises: 0cbf1e0e3ab5, dc2c0f69c1b1
+Create Date: 2025-11-10 17:15:53.375517
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'c80cbaa32b50'
-down_revision: Union[str, None] = ('dc2c0f69c1b1', '1a11396903e4')
+revision: str = '9a3aba324f7f'
+down_revision: Union[str, None] = ('0cbf1e0e3ab5', 'dc2c0f69c1b1')
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

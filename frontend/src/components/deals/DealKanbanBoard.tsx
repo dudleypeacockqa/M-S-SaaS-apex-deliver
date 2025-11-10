@@ -4,25 +4,64 @@
  * Kanban board for managing deal pipeline with drag-and-drop functionality
  */
 
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
 import { useDeals, useUpdateDealStage } from '@/hooks/deals'
 import type { Deal, DealStage } from '@/services/api/deals'
-import { getStageDisplayName, formatCurrency } from '@/services/api/deals'
-import { Loader2, AlertCircle, Plus } from 'lucide-react'
+import { formatCurrency } from '@/services/api/deals'
+import { Loader2, AlertCircle, Plus, Zap } from 'lucide-react'
 import { cn } from '@/styles/design-tokens'
 import { DealFilters } from './DealFilters'
+import { usePipelineTemplates } from '@/hooks/pipelineTemplates'
+import type { PipelineTemplate } from '@/services/api/pipelineTemplates'
 
-/**
- * Pipeline Stage Configuration
- */
-const PIPELINE_STAGES: Array<{ id: DealStage; name: string; color: string }> = [
-  { id: 'sourcing', name: 'Sourcing', color: 'bg-gray-100 text-gray-800' },
-  { id: 'evaluation', name: 'Evaluation', color: 'bg-blue-100 text-blue-800' },
-  { id: 'due_diligence', name: 'Due Diligence', color: 'bg-yellow-100 text-yellow-800' },
-  { id: 'negotiation', name: 'Negotiation', color: 'bg-orange-100 text-orange-800' },
-  { id: 'closing', name: 'Closing', color: 'bg-green-100 text-green-800' },
-]
+const STAGE_ORDER: DealStage[] = ['sourcing', 'evaluation', 'due_diligence', 'negotiation', 'closing']
+
+type StageConfig = {
+  id: DealStage
+  name: string
+  color: string
+  defaultSla?: number
+}
+
+const DEFAULT_STAGE_CONFIG: Record<DealStage, StageConfig> = {
+  sourcing: { id: 'sourcing', name: 'Sourcing', color: 'bg-gray-100 text-gray-800', defaultSla: 48 },
+  evaluation: { id: 'evaluation', name: 'Evaluation', color: 'bg-blue-100 text-blue-800', defaultSla: 72 },
+  due_diligence: { id: 'due_diligence', name: 'Due Diligence', color: 'bg-yellow-100 text-yellow-800', defaultSla: 120 },
+  negotiation: { id: 'negotiation', name: 'Negotiation', color: 'bg-orange-100 text-orange-800', defaultSla: 96 },
+  closing: { id: 'closing', name: 'Closing', color: 'bg-green-100 text-green-800', defaultSla: 72 },
+  won: { id: 'won', name: 'Won', color: 'bg-emerald-100 text-emerald-800' },
+  lost: { id: 'lost', name: 'Lost', color: 'bg-rose-100 text-rose-800' },
+}
+
+const slugify = (value: string) => value.toLowerCase().replace(/[\s-]+/g, '_')
+
+const buildStageConfigs = (template?: PipelineTemplate | null) => {
+  const lookup =
+    template?.stages.reduce<Record<string, { probability?: number | null; sla_hours?: number | null }>>(
+      (acc, stage) => {
+        acc[slugify(stage.name)] = {
+          probability: stage.probability,
+          sla_hours: stage.sla_hours,
+        }
+        return acc
+      },
+      {}
+    ) ?? {}
+
+  return STAGE_ORDER.map((stageId) => {
+    const defaults = DEFAULT_STAGE_CONFIG[stageId]
+    const templateStage = lookup[stageId]
+    const slaHours = templateStage?.sla_hours ?? defaults.defaultSla
+    const probability = templateStage?.probability ?? undefined
+
+    return {
+      ...defaults,
+      slaHours,
+      probability,
+    }
+  })
+}
 
 export const DealKanbanBoard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
@@ -34,6 +73,7 @@ export const DealKanbanBoard: React.FC = () => {
     stage: stageFilter,
   })
   const updateDealStage = useUpdateDealStage()
+  const { data: pipelineTemplates } = usePipelineTemplates()
 
   const handleSearchChange = (search: string) => {
     setSearchQuery(search)
@@ -44,6 +84,15 @@ export const DealKanbanBoard: React.FC = () => {
   }
 
   const activeFiltersCount = [searchQuery, stageFilter].filter(Boolean).length
+
+  const selectedTemplate = useMemo(() => {
+    if (!pipelineTemplates || pipelineTemplates.length === 0) {
+      return null
+    }
+    return pipelineTemplates.find((tpl) => tpl.is_default) ?? pipelineTemplates[0]
+  }, [pipelineTemplates])
+
+  const pipelineStages = useMemo(() => buildStageConfigs(selectedTemplate), [selectedTemplate])
 
   // Group deals by stage
   const dealsByStage = React.useMemo(() => {
@@ -137,7 +186,7 @@ export const DealKanbanBoard: React.FC = () => {
       {/* Kanban Board */}
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex gap-4 overflow-x-auto pb-4 p-4">
-          {PIPELINE_STAGES.map((stage) => {
+          {pipelineStages.map((stage) => {
             const dealsInStage = dealsByStage[stage.id] || []
 
             return (
@@ -156,6 +205,22 @@ export const DealKanbanBoard: React.FC = () => {
                       )}
                     >
                       {dealsInStage.length}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    {stage.slaHours && (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full">
+                        SLA {stage.slaHours}h
+                      </span>
+                    )}
+                    {stage.probability && (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-1 rounded-full">
+                        Win {stage.probability}%
+                      </span>
+                    )}
+                    <span className="inline-flex items-center gap-1 text-xs text-slate-500">
+                      <Zap className="h-3 w-3 text-slate-400" />
+                      Automation
                     </span>
                   </div>
                 </div>

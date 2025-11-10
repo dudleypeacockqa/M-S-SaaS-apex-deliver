@@ -83,6 +83,7 @@ After completing each sprint or major story, update:
 
 ### Full Documentation
 
+- **[AGENTS.md](./AGENTS.md)** - Repository guidelines for contributors
 - **[CLAUDE.md](./CLAUDE.md)** - AI assistant context (primary developer reference)
 - **[CODEX-COMPLETE-PROJECT-GUIDE.md](./CODEX-COMPLETE-PROJECT-GUIDE.md)** - Complete implementation guide
 - **[docs/BMAD-METHOD-IMPLEMENTATION.md](./docs/BMAD-METHOD-IMPLEMENTATION.md)** - BMAD setup details and troubleshooting

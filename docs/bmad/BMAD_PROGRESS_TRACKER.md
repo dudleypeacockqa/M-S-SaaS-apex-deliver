@@ -1,11 +1,40 @@
 # BMAD Progress Tracker
 
+## Session 2025-11-10C - Render Audit & Roadmap Reset
+
+**Status**: [PLANNING] **PLANNING COMPLETE** - 100% completion roadmap refreshed, Render issues logged
+**Duration**: ~60 minutes (Codex session)
+**Priority**: P0 - Must restore BMAD workflow + deployment confidence before coding
+**Progress**: Project 65% -> 65% (analysis only)
+
+### Achievements:
+
+- Reviewed CODEX-COMPLETE-PROJECT-GUIDE.md, MASTER_PLAN_100_PERCENT.md, BMAD_PROGRESS_TRACKER.md, and bmm-workflow-status.md to re-sync methodology context
+- Audited git log (`e956184` head) vs origin/main and noted unstaged migration + frontend changes requiring follow-up
+- Parsed Render deploy telemetry (`latest-deploy*.json`) confirming deploy `dep-d48vt3adbo4c73fm6svg` failed on commit `8707204` and newer commits never deployed
+- Authored 4-phase BMAD/TDD roadmap (backend coverage, frontend stability, feature completion, deployment verification) with explicit Sprint 1A subscription coverage entry
+- Updated BMAD docs (workflow status + this tracker) with new session and next actions
+
+### Testing/TDD Notes:
+
+- No automated suites run; planning-only session
+- Next session begins with RED tests for subscription error paths per Sprint 1A
+
+### Next Steps:
+
+1. Sprint 1A: add failing pytest cases for subscription route/service error paths, then implement fixes until backend coverage  >= 80%
+2. Sprint 1B: remove dead admin APIs to drop uncovered statements, rerun `pytest --cov`
+3. Sprint 2A: triage 93 Vitest failures (security/auth + marketing pages) once backend stabilized
+4. Continuous: after each sprint, update BMAD docs, rerun `npm run test` / `pytest --cov`, and refresh Render deploy JSONs
+
+---
+
 ## Session 2025-11-10B - Autonomous Execution Phase 1 (Housekeeping) ✅
 
 **Status**: ✅ **COMPLETE** - Phase 1 housekeeping complete, deployment verified healthy
 **Duration**: ~45 minutes (Claude Code session)
 **Priority**: P0 - Required before beginning autonomous feature implementation
-**Progress**: Project 65% → 65% (foundation consolidation, no new features)
+**Progress**: Project 65% -> 65% (foundation consolidation, no new features)
 
 ### Achievements:
 
@@ -13,7 +42,7 @@
 **Consolidated:**
 - BMAD v6 Integration (.bmad/ directory with 365 files, 78K+ insertions)
   - Modules: core, bmb (builder), bmm (method), cis (creativity)
-  - 25 compiled agents (YAML → Markdown)
+  - 25 compiled agents (YAML -> Markdown)
   - 34 workflows across all modules
   - Configuration manifests (agent, workflow, task, tool CSVs)
 
@@ -98,7 +127,7 @@
 
 ### Test/TDD Notes:
 
-- No new application code delivered; last known backend coverage remains 83% (≥80% target)
+- No new application code delivered; last known backend coverage remains 83% ( >= 80% target)
 - Next development action requires running `workflow-init` before starting the next TDD story loop
 
 ---
@@ -108,7 +137,7 @@
 **Status**: ✅ **COMPLETE** - DealCard and CreateDealModal components implemented
 **Duration**: ~2 hours (Claude Code session - autonomous continuation)
 **Priority**: P1 - High-value backend-ready feature completion
-**Progress**: Project 58% → 60%, Deal Pipeline (F-002) 63% → 75%
+**Progress**: Project 58% -> 60%, Deal Pipeline (F-002) 63% -> 75%
 
 ### Achievements:
 
@@ -140,7 +169,7 @@
 
 **Test Coverage:**
 - 70+ test cases across both components
-- TDD methodology: RED → GREEN → REFACTOR
+- TDD methodology: RED -> GREEN -> REFACTOR
 - Comprehensive coverage: rendering, validation, submission, accessibility, edge cases
 
 **Files Modified:**
@@ -171,7 +200,7 @@
 **Status**: ✅ **COMPLETE** - All 4 sprints of Master Admin Portal Phase 1 implemented
 **Duration**: ~12 hours (Claude Code session - continuation)
 **Priority**: P0 - Critical internal tool for founder's business operations
-**Progress**: Project 58% → 65% (Master Admin Portal 30% → 100%)
+**Progress**: Project 58% -> 65% (Master Admin Portal 30% -> 100%)
 
 ### Achievements:
 
@@ -362,7 +391,7 @@
 **Status**: ✅ **COMPLETE** - Deal Pipeline Kanban board with drag-drop implemented
 **Duration**: ~1.5 hours (Claude Code session)
 **Priority**: P1 - High-priority feature (F-002 Deal Pipeline)
-**Progress**: Project 55% → 58% (Deal Pipeline 63% → 75%)
+**Progress**: Project 55% -> 58% (Deal Pipeline 63% -> 75%)
 
 ### Achievements:
 
@@ -687,7 +716,7 @@ Frontend Build:
 ```
 
 ### Files Modified:
-- `backend/app/services/master_admin_service.py` - DealStage → AdminDealStage
+- `backend/app/services/master_admin_service.py` - DealStage -> AdminDealStage
 - `backend/app/schemas/master_admin.py` - AliasChoices import, pagination fixes
 - `frontend/index.html` - LinkedIn noscript moved
 - `frontend/package.json` - Terser added
@@ -718,7 +747,7 @@ Frontend Build:
 - **Linter Interference**: Resolved (immediate commits)
 
 ### BMAD Compliance:
-- ✅ TDD methodology followed (RED → GREEN → REFACTOR)
+- ✅ TDD methodology followed (RED -> GREEN -> REFACTOR)
 - ✅ All tests passing before commit
 - ✅ Documentation updated
 - ✅ Git commits with detailed messages
@@ -740,9 +769,9 @@ Codex CLI was opening but not accepting any commands (text input or BMAD instruc
 2. **Context Overflow**: 5.3 MB conversation history + large project files exceeded model context window
 
 ### Solution Applied:
-1. ✅ Changed model: `gpt-5-codex` → `gpt-4o` (128K context window)
-2. ✅ Backed up history: `history.jsonl` (5.3 MB) → `history.jsonl.backup-2025-10-31`
-3. ✅ Cleared history: `history.jsonl` → 0 bytes (fresh start)
+1. ✅ Changed model: `gpt-5-codex` -> `gpt-4o` (128K context window)
+2. ✅ Backed up history: `history.jsonl` (5.3 MB) -> `history.jsonl.backup-2025-10-31`
+3. ✅ Cleared history: `history.jsonl` -> 0 bytes (fresh start)
 
 ### Files Modified:
 - `~/.codex/config.toml` - Model configuration updated
@@ -787,7 +816,7 @@ codex                                       # ✅ Interactive mode functional
 #### Backend Test Results: 100% Pass Rate ✅
 - **Before**: 637 passing, 11 failing (98.3% pass rate)
 - **After**: 655 passing, 0 failing (100.0% pass rate)
-- **Tests Fixed**: 11 failures → 0 failures
+- **Tests Fixed**: 11 failures -> 0 failures
 - **New Tests**: +18 tests (previously skipped now running)
 - **Runtime**: 24.87 seconds
 
@@ -801,7 +830,7 @@ codex                                       # ✅ Interactive mode functional
 
 1. **Schema Import Issues** (5 test failures)
    - Missing `AliasChoices` import from Pydantic
-   - Wrong import path: `app.models.enums` → should be `app.models.master_admin`
+   - Wrong import path: `app.models.enums` -> should be `app.models.master_admin`
 
 2. **Missing Pagination Fields** (4 test failures)
    - List endpoints missing `page` and `per_page` in responses
@@ -877,16 +906,16 @@ AdminDeal.stage.in_([
 ### Test Results Progression:
 
 **Iteration 1: Schema Imports**
-- Result: 6 → 11 failures (exposed hidden validation errors)
+- Result: 6 -> 11 failures (exposed hidden validation errors)
 
 **Iteration 2: API Pagination**
-- Result: 11 → 7 failures (fixed KeyError issues)
+- Result: 11 -> 7 failures (fixed KeyError issues)
 
 **Iteration 3: Service Layer Fields**
-- Result: 7 → 1 failure (fixed ValidationError issues)
+- Result: 7 -> 1 failure (fixed ValidationError issues)
 
 **Iteration 4: Enum References**
-- Result: 1 → 0 failures ✅
+- Result: 1 -> 0 failures ✅
 
 **Final: Full Backend Suite**
 ```
@@ -917,7 +946,7 @@ AdminDeal.stage.in_([
   - Field attribute: `activity_type` (Python code)
   - API input/output: `"type"` (JSON via aliases)
   - Model column: `type` (database)
-- **Pattern**: Schema `*_type` → Model `type`
+- **Pattern**: Schema `*_type` -> Model `type`
 
 #### 3. Enum Collision
 - **Problem**: Two deal systems with similar enum names
@@ -973,7 +1002,7 @@ type=activity_data.activity_type  # Explicit mapping
 - Documentation: Comprehensive session report
 
 **BMAD Compliance**:
-- ✅ TDD RED → GREEN → REFACTOR cycle
+- ✅ TDD RED -> GREEN -> REFACTOR cycle
 - ✅ All tests pass before next phase
 - ✅ Documentation updated
 - ✅ Progress tracked
@@ -993,9 +1022,9 @@ fix(backend): resolve all 11 Master Admin test failures
 - Fix import path: app.models.master_admin
 - Add pagination fields to 4 list endpoints
 - Fix service layer field access patterns
-- Update DealStage → AdminDealStage references
+- Update DealStage -> AdminDealStage references
 
-Tests: 637→655 passing, 11→0 failing (100% pass rate)
+Tests: 637->655 passing, 11->0 failing (100% pass rate)
 
 Fixes #[issue-number]
 ```
@@ -1016,4 +1045,5 @@ Fixes #[issue-number]
 ### Status: COMPLETE ✅
 
 **Next Agent**: Update workflow status and continue with Phase 3 (frontend tests)
+
 
