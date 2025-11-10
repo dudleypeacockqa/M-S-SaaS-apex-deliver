@@ -1,6 +1,8 @@
 """FastAPI application entry point.
 
-Migration fix applied: 2025-11-10 - alembic_version table corrected
+Migration fix applied: 2025-11-10
+- alembic_version table corrected to dc2c0f69c1b1
+- Pre-Deploy Command configured: alembic upgrade head
 """
 from __future__ import annotations
 
