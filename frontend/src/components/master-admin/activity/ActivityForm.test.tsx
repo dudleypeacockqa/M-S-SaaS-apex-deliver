@@ -296,7 +296,7 @@ describe('ActivityForm', () => {
       renderActivityForm()
 
       const submitButton = screen.getByRole('button', { name: /Log Activity/i })
-      expect(submitButton).toHaveAttribute('aria-busy', 'true')
+      expect(submitButton).toBeDisabled()
     })
 
     it('should not reset form if submission fails', async () => {

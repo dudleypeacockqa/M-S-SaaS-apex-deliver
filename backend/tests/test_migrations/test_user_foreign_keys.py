@@ -143,7 +143,12 @@ class TestForeignKeyIntegrity:
         Test FK enforcement: folders.created_by must reference valid user.
 
         This may fail if FK constraints are not enforced due to type mismatch.
+        NOTE: Requires PostgreSQL - SQLite doesn't enforce FK constraints.
         """
+        dialect_name = db_session.bind.dialect.name
+        if dialect_name == 'sqlite':
+            pytest.skip("SQLite doesn't enforce FK constraints by default - test requires PostgreSQL")
+
         with pytest.raises(IntegrityError, match="violates foreign key constraint"):
             folder = Folder(
                 id=str(uuid4()),
@@ -157,6 +162,10 @@ class TestForeignKeyIntegrity:
 
     def test_document_rejects_invalid_uploaded_by(self, db_session):
         """Test FK enforcement: documents.uploaded_by must reference valid user."""
+        dialect_name = db_session.bind.dialect.name
+        if dialect_name == 'sqlite':
+            pytest.skip("SQLite doesn't enforce FK constraints by default - test requires PostgreSQL")
+
         with pytest.raises(IntegrityError, match="violates foreign key constraint"):
             doc = Document(
                 id=str(uuid4()),
@@ -175,6 +184,10 @@ class TestForeignKeyIntegrity:
 
     def test_document_permission_rejects_invalid_user_id(self, db_session):
         """Test FK enforcement: document_permissions.user_id must reference valid user."""
+        dialect_name = db_session.bind.dialect.name
+        if dialect_name == 'sqlite':
+            pytest.skip("SQLite doesn't enforce FK constraints by default - test requires PostgreSQL")
+
         # First create a valid document
         doc = Document(
             id=str(uuid4()),
