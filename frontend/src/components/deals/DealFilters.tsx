@@ -30,7 +30,7 @@ export const DealFilters: React.FC<DealFiltersProps> = ({
   onFilterChange,
   defaultSearch = '',
   defaultStage,
-  activeFilters = 0,
+  activeFilters,
 }) => {
   const [searchValue, setSearchValue] = useState(defaultSearch)
   const [stageFilter, setStageFilter] = useState<DealStage | ''>(defaultStage || '')

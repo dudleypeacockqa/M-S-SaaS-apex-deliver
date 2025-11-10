@@ -1,4 +1,23 @@
-## Session 2025-11-10G - Migration Suite & Alembic Verification ✅
+## Session 2025-11-10H - Pipeline Template Schema Hardening ✅
+
+**Status**: ✅ COMPLETE – Added schema tests + Pydantic v2 validators for pipeline templates  
+**Duration**: ~25 min (Codex CLI)  
+**Priority**: P1 – Removes schema drift risks ahead of pipeline template UI work  
+**Progress Impact**: Backend quality +1% (new coverage + warning cleanup)
+
+### Achievements
+- Added `backend/tests/test_pipeline_template_schemas.py` to lock color normalization, uppercase formatting, and stage presence rules.
+- Converted `app/schemas/pipeline_template.py` to Pydantic v2 style (`field_validator`, `ConfigDict`) ensuring normalized hex colors and consistent API serialization.
+- Custom error handling via `PydanticCustomError` guarantees user-friendly validation messages for empty stage lists.
+
+### Testing/TDD Notes
+- RED → GREEN cycle executed with `pytest tests/test_pipeline_template_schemas.py tests/test_valuation_api.py -q` (17 passed, warnings limited to existing httpx deprecation notice).
+
+### Next Steps
+1. Wire new pipeline template hook/service into Deal Kanban once backend deploy confirmed.
+2. Continue W2 backlog (valuation + automation stories) after Render health evidence arrives.
+
+---## Session 2025-11-10G - Migration Suite & Alembic Verification ✅
 
 **Status**: ✅ **COMPLETE** – Local migration tests + Alembic upgrade pass, awaiting Render deploy evidence  
 **Duration**: ~20 min (Codex CLI)  
@@ -18,7 +37,71 @@
 1. Await Render auto-deploy completion for commit `01d4814` and capture results in `backend-deploy*.json` / deployment checklist.
 2. Once deploy evidence available, move to W2 backend stories (DEV-011/012) per roadmap.
 
----## Session 2025-11-10F - Completion Plan Refresh & Deploy Status Audit
+---
+## Session 2025-11-11A - Postgres Migration Verification ✅
+
+**Status**: ✅ **COMPLETE** – Production DB migrations + subscription smoke suite revalidated  
+**Duration**: ~20 min (Codex CLI)  
+**Priority**: P0 – Required before resuming implementation workstreams  
+**Progress Impact**: Platform confidence +1% (database state confirmed at head)
+
+### Achievements
+- Ran `DATABASE_URL=… ../backend/venv/Scripts/python.exe -m alembic upgrade head` against the Render Postgres instance (`ma_saas_platform`); Alembic reported successful execution using the PostgresqlImpl context.
+- Re-ran billing + subscription smoke tests (`pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --maxfail=1 --disable-warnings`) with 26 pass / 4 skip to confirm subscription flows remain stable.
+- Logged both command transcripts in `docs/DEPLOYMENT_HEALTH.md` and `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md` for BMAD compliance.
+
+### Remaining Risks
+1. Backend deploy `dep-d492pa0m2f8s73dis3i0` still in-progress; we need to capture the final log tail once Render marks it complete.
+2. Browser-level frontend smoke verification (SLA badges, valuation KPIs, console errors) still pending after the next feature merge.
+
+### Next Steps
+1. Record the deploy log output once `dep-d492pa0m2f8s73dis3i0` finishes to close the deployment evidence loop.
+2. Begin DEV-008 RED tests per the completion plan now that migrations are verified.
+
+---
+## Session 2025-11-10I - Governance Refresh & Execution Plan Update
+
+**Status**: [ANALYSIS] COMPLETE - Re-reviewed governance docs, updated 100% plan + BMAD method plan, captured latest git/deploy status  
+**Duration**: ~30 min (Codex CLI)  
+**Priority**: P0 - Required before resuming BMAD dev-story loops  
+**Progress Impact**: Plan clarity +1% (documents + workflow status now reflect current head eb78abd and outstanding blockers)
+
+### Achievements
+- Re-read `docs/100-PERCENT-COMPLETION-PLAN.md`, `docs/bmad/PROJECT_COMPLETION_PLAN.md`, Render deploy logs, and git history to confirm current scope + dirty tree state.
+- Updated `docs/100-PERCENT-COMPLETION-PLAN.md` (timestamp, snapshot, immediate actions) and `docs/bmad/BMAD_METHOD_PLAN.md` (status + W0-W5 loop context) to guide DEV-008/016/018 + ops tracks.
+- Documented next steps + blockers (Postgres upgrade evidence, workflow-init) for stakeholder visibility; prepped to update workflow status next.
+
+### Testing/TDD Notes
+- Planning-only session; next automated command remains `pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --cov ...` once Postgres target available.
+
+### Next Steps
+1. Update `docs/bmad/bmm-workflow-status.md` with refreshed completed work + next action (still `alembic upgrade head` on Postgres).
+2. Run `npx bmad-method workflow-init` to register the upcoming dev-story, then begin DEV-008 RED specs after migration proof.
+3. Assemble Render readiness evidence (deploy logs, smoke tests) once migrations verified.
+
+---
+## Session 2025-11-10H - Repo Resync & Security Risk Capture
+
+**Status**: [ANALYSIS] COMPLETE – Re-synced with latest `main`, refreshed completion plan, flagged leaked credentials  
+**Duration**: ~30 min (Codex CLI)  
+**Priority**: P0 – Required before continuing W1 migrations story after upstream commits landed  
+**Progress Impact**: Governance clarity +1% (plan + risk register updated)
+
+### Achievements
+- Pulled newest `main` and confirmed HEAD = `064820d fix(deploy): fix production database and trigger final deployment` (Render pre-deploy fix + `fix_production_alembic.py`).
+- Reviewed `docs/bmad/PROJECT_COMPLETION_PLAN.md` + deploy logs; updated Section 1.1 + Immediate Next Steps to reflect the new commit, current dirty state, and the need to scrub leaked production DB credentials from `fix_production_alembic.py`.
+- Documented ongoing blockers (workflow-init pending, Postgres migrations unverified, Render still reporting failed deploys) and aligned next-step bullets with BMAD/TDD expectations.
+
+### Testing/TDD Notes
+- No automated suites executed (analysis-only). Next RED step remains billing/subscription smoke pytest + `alembic upgrade head` once Postgres target + secrets rotation are in place.
+
+### Next Steps
+1. Run BMAD `workflow-init` + backlog reconciliation; update `bmm-workflow-status.md`.
+2. Rotate exposed Render Postgres password, delete/replace `fix_production_alembic.py`, and capture evidence in `DEPLOYMENT-SESSION-SUMMARY.md`.
+3. Resume W1 migrations story: re-run smoke pytest + Postgres `alembic upgrade head`, then capture logs for redeploy.
+
+---
+## Session 2025-11-10F - Completion Plan Refresh & Deploy Status Audit
 
 **Status**: [ANALYSIS] COMPLETE - Roadmap + BMAD artefacts refreshed, deploy blockers documented  
 **Duration**: ~40 min (Codex CLI)  
@@ -1253,5 +1336,23 @@ Fixes #[issue-number]
 
 
 
+## Session 2025-11-10J - Workflow-Init Attempt & Status Sync
 
+**Status**: [BLOCKED] – `npx bmad-method` CLI lacks `workflow-init`; manual status update required  
+**Duration**: ~10 min (Codex CLI)  
+**Priority**: P0 – Needed before resuming W1 dev-story  
+**Progress Impact**: 0% (governance loop still pending)
 
+### Achievements
+- Attempted to run `npx bmad-method workflow-init` from repo root; CLI returned "unknown command" (toolbox only supports install/update/status).
+- Logged the failure here to preserve BMAD audit trail and avoid re-attempting the non-existent command.
+- Prepared to manually update `bmm-workflow-status.md` so the workflow state still reflects an active `workflow-init` step despite CLI limitation.
+
+### Testing/TDD Notes
+- None (governance step only). RED-first smoke suite still queued after workflow-init + secret remediation.
+
+### Next Steps
+1. Manually edit `docs/bmad/bmm-workflow-status.md` to set `CURRENT_WORKFLOW: workflow-init`, record new Story ID, and outline blockers.
+2. Proceed with secret rotation / `fix_production_alembic.py` remediation once governance doc reflects the pending action.
+
+---

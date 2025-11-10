@@ -51,3 +51,16 @@ Test Results:
 - Pipeline template models importing successfully (no app.models.pipeline_template errors)
 - Migration chain stable (single head: dc2c0f69c1b1)
 - Frontend Cloudflare 403 expected for automated requests (manual browser check shows normal operation)
+
+### Postgres Migration Verification (2025-11-11 09:20 UTC)
+
+```bash
+cd backend && DATABASE_URL="postgresql://ma_saas_user:***@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform" ../backend/venv/Scripts/python.exe -m alembic upgrade head
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+
+cd backend && ../backend/venv/Scripts/python.exe -m pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --maxfail=1 --disable-warnings
+================= 26 passed, 4 skipped, 27 warnings in 7.40s ==================
+```
+
+Result: production database confirmed at migration head `dc2c0f69c1b1`, and billing/subscription smoke tests remain GREEN.

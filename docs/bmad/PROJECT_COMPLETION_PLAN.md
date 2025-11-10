@@ -10,11 +10,11 @@
 ## 1. Current State (Sources: `BMAD_PROGRESS_TRACKER`, `bmm-workflow-status`, deploy logs)
 
 ### 1.1 Git & Worktree
-- `HEAD (local)`: `0bc72b4 chore(frontend): fix build dependencies and clean up UI component files` (adds dependency fixes + doc updates).
-- `origin/main`: `ded9734 fix(migrations): restructure UUID to String migrations and eliminate circular dependencies`.
-- Status: local `main` is **ahead by 1 commit**; `0bc72b4` has not been pushed or referenced by any PR yet (risk of drift if workstation lost).
-- Local diffs: Alembic revisions in-flight (`0cbf1e0e3ab5`, `dc2c0f69c1b1`, new `3a15202c7dc2`), deletions of obsolete migrations, new React hook/service for pipeline templates, plus mass `.bmad` doc edits tracked but not yet reviewed.
-- BMAD directive: Run `workflow-init` under v6 to realign backlog before next dev story (still pending after dependency cleanup commit).
+- `HEAD`: `064820d fix(deploy): fix production database and trigger final deployment` (adds Render pre-deploy fix plus `fix_production_alembic.py`).
+- `origin/main`: Same commit (`064820d`) — local branch is even with remote.
+- Working tree: dirty (notably `docs/bmad/BMAD_PROGRESS_TRACKER.md` and other BMAD artefacts) but no unpushed commits.
+- New risk: `fix_production_alembic.py` embeds production Postgres credentials in plain text; must scrub or relocate before final delivery.
+- BMAD directive: Still need to rerun `workflow-init` under v6 to realign backlog before next dev story (pending since dependency cleanup).
 
 ### 1.2 Tests & Coverage
 - Backend: 663 tests passing (82.9% coverage) — last recorded run prior to migration shuffle; no new pytest evidence since commit `0bc72b4`.
@@ -41,7 +41,7 @@
 2. **Render drift**: Last confirmed healthy checks dated 2025-10-28; current deploy logs show repeated `update_failed` / stuck builds.
 3. **Story tracking**: `bmm-workflow-status.md` still mid-story (`W1` migrations). Need BMAD `workflow-init` + tracker sync before writing new code.
 4. **Coverage debt**: Backend coverage target 80%+ threatened by new migrations + upcoming services; frontend valuation UI lacks automated tests.
-5. **Source control hygiene**: Local main ahead of origin with unpushed dependency-fix commit; losing context risks rework. Need push/PR discipline aligned with BMAD artifacts.
+5. **Secret exposure**: `fix_production_alembic.py` (new in `064820d`) hard-codes the Render production Postgres DSN, so keys must be rotated and the helper removed or moved to a secure ops location.
 
 ---
 
@@ -135,7 +135,7 @@ _Done when:_ Roadmap doc shows 10/10 phases complete, marketing tests ≥90% pas
 ## 6. Immediate Next Steps (2025-11-10)
 1. **Analyst (W0)**: Run/record `workflow-init` + backlog reconciliation so BMAD records move from tooling upgrade → actionable migration story. Capture outcome in `bmm-workflow-status.md` and tracker.
 2. **DevOps (W1)**: Finish Alembic verification story by writing RED pytest cases for billing/subscription smoke paths, re-running `pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --cov ...` + `alembic upgrade head` on a clean DB, then packaging logs for deployment.
-3. **Release (W1)**: Push commit `0bc72b4` (or integrate into new Conventional Commit) and open/refresh PR per `PR_DESCRIPTION.md` so Render/autodeploy can consume the fixes once verified.
+3. **Security/Release (W1)**: Scrub production credentials from `fix_production_alembic.py`, rotate the exposed password via `ApexDeliver Environment Variables - Master Reference.md`, and open/refresh the PR per `PR_DESCRIPTION.md` so the Render Pre-Deploy fix receives review before redeploy.
 4. **QA/DevOps (W1)**: Trigger backend + frontend Render redeploys only after smoke suite passes; capture new `backend-deploy*.json`, `frontend-deploy*.json`, and health-check screenshots proving 100% deploy health.
 5. **Documentation (W1/W2)**: Update `DEPLOYMENT-SESSION-SUMMARY.md`, `STATUS.md`, and marketing/feature story docs with new coverage metrics + Render evidence; these artefacts answer stakeholder question re: deploy health.
 

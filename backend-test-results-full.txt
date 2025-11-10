@@ -1,0 +1,48 @@
+WARNING: xero-python SDK not installed. Using mock client for development.
+[WARNING] xero-python SDK not installed - using mock client
+[WARNING] python-quickbooks SDK not installed. Using mock client for development.
+[WARNING] python-quickbooks SDK not installed - using mock client
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collected 0 items / 1 error
+
+=================================== ERRORS ====================================
+________________________ ERROR collecting test session ________________________
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\runner.py:341: in from_call
+    result: Optional[TResult] = func()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\runner.py:372: in <lambda>
+    call = CallInfo.from_call(lambda: list(collector.collect()), "collect")
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\main.py:749: in collect
+    for x in self._collectfile(path):
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\main.py:584: in _collectfile
+    fspath.is_file()
+E   AssertionError: WindowsPath('C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/backend/nul') is not a file (isdir=False, exists=True, islink=False)
+============================== warnings summary ===============================
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.8/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+app\schemas\pipeline_template.py:17
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\app\schemas\pipeline_template.py:17: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.8/migration/
+    @validator("color")
+
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:341
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:341: UserWarning: Valid config keys have changed in V2:
+  * 'orm_mode' has been renamed to 'from_attributes'
+    warnings.warn(message, UserWarning)
+
+app\schemas\pipeline_template.py:48
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\app\schemas\pipeline_template.py:48: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.8/migration/
+    @validator("stages")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR .. - AssertionError: WindowsPath('C:/Projects/ma-saas-platform/M-S-SaaS...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+======================== 6 warnings, 1 error in 0.31s =========================

@@ -102,8 +102,13 @@ describe('DealFilters', () => {
         expect(searchInput.value).toBe('Acme')
       })
 
-      // Click clear
+      // Wait for clear button to become enabled (state update is async)
       const clearButton = screen.getByRole('button', { name: /clear/i })
+      await waitFor(() => {
+        expect(clearButton).not.toBeDisabled()
+      })
+
+      // Click clear
       await user.click(clearButton)
 
       await waitFor(() => {
@@ -149,8 +154,13 @@ describe('DealFilters', () => {
 
       expect(stageSelect.value).toBe('due_diligence')
 
-      // Click clear
+      // Wait for clear button to become enabled
       const clearButton = screen.getByRole('button', { name: /clear/i })
+      await waitFor(() => {
+        expect(clearButton).not.toBeDisabled()
+      })
+
+      // Click clear
       await user.click(clearButton)
 
       await waitFor(() => {
@@ -191,8 +201,13 @@ describe('DealFilters', () => {
       const stageSelect = screen.getByLabelText(/filter by stage/i)
       await user.selectOptions(stageSelect, 'negotiation')
 
-      // Click clear
+      // Wait for clear button to become enabled (both filters active)
       const clearButton = screen.getByRole('button', { name: /clear/i })
+      await waitFor(() => {
+        expect(clearButton).not.toBeDisabled()
+      })
+
+      // Click clear
       await user.click(clearButton)
 
       await waitFor(() => {
