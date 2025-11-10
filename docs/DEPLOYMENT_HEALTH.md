@@ -1,14 +1,44 @@
 # Deployment Health Report
 
-**Last Updated**: 2025-11-10
+**Last Updated**: 2025-11-10 19:45 UTC
 **Latest Commits**:
-- `01d4814` - fix(auth): auto-create organization from Clerk claim if missing
-- `7b30a20` - docs(progress): document Sprint 1 Kanban SLA + KPI implementation session
-**Status**: ⏳ Awaiting Render Auto-Deploy
+- `64ad4fb` - fix(migrations): correct migration order - d37ed4cd3013 must run after UUID conversion
+- `afc09a3` - docs(migrations): document d37ed4cd3013 FK type mismatch resolution
+**Status**: ✅ **VERIFIED HEALTHY** - Both services live and operational
 
 ---
 
-## 🎯 Latest Deployment (2025-11-10)
+## ✅ Current Deployment Status (VERIFIED 2025-11-10 19:45 UTC)
+
+### Backend Service
+- **Service ID**: `srv-d3ii9qk9c44c73aqsli0`
+- **Deploy ID**: `dep-d492u7ag0ims73e3mkc0`
+- **Commit**: `64ad4fb` (fix(migrations): correct migration order)
+- **Status**: ✅ **LIVE**
+- **Deployed At**: 2025-11-10 18:32:27 UTC
+- **Health Check**: ✅ `https://ma-saas-backend.onrender.com/health`
+  - HTTP Status: 200 OK
+  - Response: `{"status":"healthy","timestamp":"2025-11-10T19:45:49.059180+00:00","clerk_configured":true,"database_configured":true,"webhook_configured":true}`
+- **All Configurations**: ✅ Clerk, Database, Webhooks all configured
+
+### Frontend Service
+- **Service ID**: `srv-d3ihptbipnbc73e72ne0`
+- **Deploy ID**: `dep-d492tq2g0ims73e3miig`
+- **Commit**: `afc09a3` (docs(migrations): document FK type mismatch resolution)
+- **Status**: ✅ **LIVE**
+- **Deployed At**: 2025-11-10 18:46:49 UTC
+- **URL**: ✅ `https://ma-saas-platform.onrender.com`
+  - HTTP Status: 200 OK
+  - HTML serving correctly with meta tags, GA4, SEO optimizations
+
+### Database
+- **Current Head**: `dc2c0f69c1b1` (add_pipeline_templates)
+- **Status**: ✅ **VERIFIED** - Single head, no conflicts
+- **Last Verification**: 2025-11-10 (production database check)
+
+---
+
+## 🎯 Previous Deployment (2025-11-10 18:30 UTC)
 
 ### Changes in Commits `7b30a20` and `01d4814`
 
@@ -254,25 +284,28 @@ tests/smoke_tests.py::test_root_redirects PASSED
 | Field | Value |
 | --- | --- |
 | Service ID | `srv-d3ii9qk9c44c73aqsli0` |
-| Latest Deploy | `dep-d492nk2dbo4c73fn3qv0` (commit `064820dbae40d2230a834c0f49ab7fcd9d0587a3`) |
+| Latest Deploy | `dep-d492u7ag0ims73e3mkc0` (commit `64ad4fb5501aaf3289f147b986af552c642f23bb`) |
 | Trigger | Auto (new commit) |
-| Status | ✅ `live` (finished 2025-11-10T18:17:03Z) |
+| Status | ✅ `live` (finished 2025-11-10T18:31:52Z) |
 | Pre-Deploy Command | `cd backend && alembic upgrade head` |
 | Build Plan | Starter (Docker) |
 
 ### Deployment Timeline (UTC)
 
-1. **18:12-18:14** – `dep-d492m9t6ubrc7393qumg` failed because Alembic ran from repository root (Pre-Deploy command fixed afterwards).
-2. **18:15-18:17** – `dep-d492nk2dbo4c73fn3qv0` succeeded with commit `064820d…` (deploy_ended event reports `deployStatus: succeeded`).
-3. **18:18-18:20** – Additional docs-only commit `d2afc008…` attempted to redeploy; still in progress while docs updates were happening.
+1. **18:12-18:14** – `dep-d492m9t6ubrc7393qumg` failed because Alembic ran from repository root (pre-deploy command fixed afterwards).
+2. **18:15-18:17** – `dep-d492nk2dbo4c73fn3qv0` succeeded with commit `064820d…`.
+3. **18:18-18:21** – Docs-only deploy `dep-d492pa0m2f8s73dis3i0` (commit `d2afc008…`) completed successfully.
+4. **18:29-18:31** – Latest deploy `dep-d492u7ag0ims73e3mkc0` (commit `64ad4fb5…`) verified migration ordering fix; status `live`.
 
-These events confirm the backend is healthy at commit `064820d…` with database migrations applied (Alembic command runs from `backend/` now).
+These events confirm the backend is healthy at commit `64ad4fb5…` with database migrations applied (Alembic command runs from `backend/` now).
 
 ### Evidence
 
-- Render API deploy log (`dep-d492nk2dbo4c73fn3qv0`): status `live`, build/ deploy ended successfully at 18:17Z.
+- Render API deploy log (`dep-d492u7ag0ims73e3mkc0`): status `live`, build/ deploy ended successfully at 18:31Z.
 - Render events show Pre-Deploy command corrected (`cd backend && alembic upgrade head`), eliminating the previous migration error.
 - Health check `https://ma-saas-backend.onrender.com/health` recorded as **healthy** in production verification (2025-11-10 18:05 UTC).
+
+> Note: `GET /deploys/{id}/logs` currently returns `404 page not found` via the Render API for this service, so only deploy metadata is available. Screenshot/log capture from the dashboard is recommended if further evidence is required.
 
 ---
 
