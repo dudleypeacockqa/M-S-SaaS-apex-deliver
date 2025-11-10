@@ -11,7 +11,8 @@ All endpoints require admin role via get_current_admin_user dependency.
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from typing import Optional
+from typing import Optional, Iterable, Dict
+import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, EmailStr
@@ -31,6 +32,7 @@ from app.services import invite_service
 from app.services.invite_service import InvitationError
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+logger = logging.getLogger(__name__)
 
 
 # ============================================================================
@@ -74,6 +76,19 @@ class OrganizationInviteResponse(BaseModel):
 class OrganizationInviteList(BaseModel):
     items: list[OrganizationInviteResponse]
     total: int
+
+
+class OrganizationHealthCheck(BaseModel):
+    key: str
+    label: str
+    status: bool
+    detail: str
+
+
+class OrganizationHealthResponse(BaseModel):
+    status: str
+    summary: str
+    checks: list[OrganizationHealthCheck]
 
 
 def _serialize_invitation(invite) -> OrganizationInviteResponse:
@@ -415,7 +430,8 @@ def list_organizations(
     current_admin: User = Depends(get_current_admin_user),
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
-    per_page: int = Query(20, ge=1, le=100)
+    per_page: int = Query(20, ge=1, le=100),
+    search: str | None = Query(None),
 ):
     """
     List all organizations with pagination.
@@ -423,15 +439,33 @@ def list_organizations(
     Requires: admin role
     """
     query = select(Organization)
+    if search:
+        pattern = f"%{search.lower()}%"
+        query = query.where(
+            or_(
+                func.lower(Organization.name).like(pattern),
+                func.lower(Organization.slug).like(pattern),
+            )
+        )
 
     # Get total count
-    total = db.scalar(select(func.count(Organization.id))) or 0
+    total = db.scalar(select(func.count(Organization.id)).select_from(query.subquery())) or 0
 
     # Apply pagination
     offset = (page - 1) * per_page
     query = query.offset(offset).limit(per_page).order_by(Organization.created_at.desc())
 
     orgs = list(db.scalars(query).all())
+    org_ids = [org.id for org in orgs]
+    user_counts: Dict[str, int] = {}
+    if org_ids:
+        counts = db.execute(
+            select(User.organization_id, func.count(User.id))
+            .where(User.organization_id.in_(org_ids))
+            .where(User.deleted_at.is_(None))
+            .group_by(User.organization_id)
+        ).all()
+        user_counts = {org_id: count for org_id, count in counts}
 
     return {
         "items": [
@@ -441,7 +475,9 @@ def list_organizations(
                 "slug": org.slug,
                 "subscription_tier": org.subscription_tier,
                 "is_active": org.is_active,
-                "created_at": org.created_at.isoformat() if org.created_at else None
+                "created_at": org.created_at.isoformat() if org.created_at else None,
+                "user_count": user_counts.get(org.id, 0),
+                "health_status": _calculate_health(org, user_counts.get(org.id, 0)).status,
             }
             for org in orgs
         ],
@@ -466,14 +502,23 @@ def get_organization_details(
     if not org:
         raise HTTPException(status_code=404, detail="Organization not found")
 
+    user_count = db.scalar(
+        select(func.count(User.id))
+        .where(User.organization_id == org_id)
+        .where(User.deleted_at.is_(None))
+    ) or 0
+    health = _calculate_health(org, user_count)
+
     return {
         "id": str(org.id),
         "name": org.name,
         "slug": org.slug,
         "subscription_tier": org.subscription_tier,
         "is_active": org.is_active,
+        "user_count": user_count,
         "created_at": org.created_at.isoformat() if org.created_at else None,
-        "updated_at": org.updated_at.isoformat() if org.updated_at else None
+        "updated_at": org.updated_at.isoformat() if org.updated_at else None,
+        "health": health.dict(),
     }
 
 
@@ -613,6 +658,35 @@ def get_organization_metrics(
     }
 
 
+@router.get("/organizations/{org_id}/health", response_model=OrganizationHealthResponse)
+def get_organization_health(
+    org_id: str,
+    current_admin: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db),
+) -> OrganizationHealthResponse:
+    """Detailed health report for an organization aligned with PMI stages."""
+
+    org = db.get(Organization, org_id)
+    if not org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+
+    user_count = db.scalar(
+        select(func.count(User.id))
+        .where(User.organization_id == org_id)
+        .where(User.deleted_at.is_(None))
+    ) or 0
+
+    invite_count = 0
+    try:
+        invites = invite_service.list_pending_invitations(organization_id=org_id, limit=5, offset=0)
+        invite_count = invites.total_count if invites else 0
+    except InvitationError as exc:  # pragma: no cover
+        logger.warning("Failed to load invites for org %s: %s", org_id, exc.message)
+        invite_count = 0
+
+    return _calculate_health(org, user_count, invite_count)
+
+
 # ============================================================================
 # SYSTEM HEALTH ENDPOINTS
 # ============================================================================
@@ -653,3 +727,69 @@ def get_system_health(
             "avg_response_time_ms": 50  # Placeholder
         }
     }
+def _calculate_health(
+    org: Organization,
+    user_count: int,
+    invite_count: int | None = None,
+) -> OrganizationHealthResponse:
+    """
+    Heuristic health evaluation aligned with PMI toolkit guidance.
+    """
+    checks: list[OrganizationHealthCheck] = []
+
+    # Stability sprint: org active & tier configured
+    stability = org.is_active and org.subscription_tier is not None
+    checks.append(
+        OrganizationHealthCheck(
+            key="stability",
+            label="Sprint 0 · Stability & Protection",
+            status=stability,
+            detail="Org active with baseline subscription tier." if stability else "Activate tenant and align tier before proceeding.",
+        )
+    )
+
+    # Quick wins: at least 3 users invited/onboarded
+    quick_wins_ready = user_count >= 3
+    checks.append(
+        OrganizationHealthCheck(
+            key="quick_wins",
+            label="Sprint 1 · Quick-Win Crew Ready",
+            status=quick_wins_ready,
+            detail="Cross-functional team onboarded." if quick_wins_ready else "Invite ops/finance/security leads to reach minimum crew of 3.",
+        )
+    )
+
+    # Revenue acceleration: professional+ tier
+    revenue_ready = org.subscription_tier in {"professional", "premium", "enterprise"}
+    checks.append(
+        OrganizationHealthCheck(
+            key="revenue_accel",
+            label="Sprint 2 · Revenue Acceleration",
+            status=revenue_ready,
+            detail="Tier unlocks automation & valuation features." if revenue_ready else "Upgrade tier to unlock automation + valuation copilots.",
+        )
+    )
+
+    # Enablement: outstanding invites guiding onboarding
+    invite_available = (invite_count or 0) > 0
+    checks.append(
+        OrganizationHealthCheck(
+            key="enablement",
+            label="Sprint 3 · Enablement & Culture",
+            status=invite_available,
+            detail="Pending invites carrying PMI playbook." if invite_available else "Queue invites with PMI context for new leaders.",
+        )
+    )
+
+    healthy_checks = sum(1 for c in checks if c.status)
+    if healthy_checks == len(checks):
+        overall = "green"
+        summary = "Tenant is ready for PMI Sprint 3 enablement."
+    elif healthy_checks >= 2:
+        overall = "amber"
+        summary = "Foundation set; complete quick wins + invites before deep builds."
+    else:
+        overall = "red"
+        summary = "Stabilize tenant and onboard core team before advanced work."
+
+    return OrganizationHealthResponse(status=overall, summary=summary, checks=checks)

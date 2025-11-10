@@ -45,10 +45,10 @@ def upgrade() -> None:
     Converts all user reference columns to match users.id type (String(36)).
     Uses postgresql_using='column::text' for safe data conversion.
     """
-    print("🔧 Fixing user foreign key types in document tables...")
+    print("Fixing user foreign key types in document tables...")
 
     # 1. folders.created_by: UUID → String(36)
-    print("   → Converting folders.created_by (UUID → String)...")
+    print("   - Converting folders.created_by (UUID -> String)...")
     op.alter_column(
         'folders',
         'created_by',
@@ -59,7 +59,7 @@ def upgrade() -> None:
     )
 
     # 2. documents.uploaded_by: UUID → String(36)
-    print("   → Converting documents.uploaded_by (UUID → String)...")
+    print("   - Converting documents.uploaded_by (UUID -> String)...")
     op.alter_column(
         'documents',
         'uploaded_by',
@@ -70,7 +70,7 @@ def upgrade() -> None:
     )
 
     # 3. document_permissions.user_id: UUID → String(36)
-    print("   → Converting document_permissions.user_id (UUID → String)...")
+    print("   - Converting document_permissions.user_id (UUID -> String)...")
     op.alter_column(
         'document_permissions',
         'user_id',
@@ -81,7 +81,7 @@ def upgrade() -> None:
     )
 
     # 4. document_permissions.granted_by: UUID → String(36)
-    print("   → Converting document_permissions.granted_by (UUID → String)...")
+    print("   - Converting document_permissions.granted_by (UUID -> String)...")
     op.alter_column(
         'document_permissions',
         'granted_by',
@@ -92,7 +92,7 @@ def upgrade() -> None:
     )
 
     # 5. document_access_logs.user_id: UUID → String(36)
-    print("   → Converting document_access_logs.user_id (UUID → String)...")
+    print("   - Converting document_access_logs.user_id (UUID -> String)...")
     op.alter_column(
         'document_access_logs',
         'user_id',
@@ -102,7 +102,7 @@ def upgrade() -> None:
         postgresql_using='user_id::text'
     )
 
-    print("✅ User foreign key types fixed successfully!")
+    print("User foreign key types fixed successfully.")
     print("   All 5 columns now use String(36) to match users.id type.")
 
 
@@ -114,10 +114,10 @@ def downgrade() -> None:
     Note: This is primarily for development rollback. In production,
     rolling forward with a new fix migration is preferred.
     """
-    print("⚠️  Rolling back user foreign key type fixes...")
+    print("Rolling back user foreign key type fixes...")
 
     # Reverse order of upgrade
-    print("   → Reverting document_access_logs.user_id (String → UUID)...")
+    print("   - Reverting document_access_logs.user_id (String -> UUID)...")
     op.alter_column(
         'document_access_logs',
         'user_id',

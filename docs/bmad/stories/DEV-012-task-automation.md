@@ -1,0 +1,6 @@
+
+### TDD Execution Log (2025-10-30 13:05 UTC)
+- ✅ **RED**: Confirmed 13 failing specs in ; documented reopen in story + tracker.
+- ✅ **GREEN**: Implemented TaskBoard React UI with React Query integration, filter persistence, modals, optimistic DnD status updates, and keyboard shortcut;  now 22/22 passing.
+- 🔄 **REFACTOR**: Pending full frontend regression sweep, lint run, and Render smoke test once deployment prep complete.
+EOF

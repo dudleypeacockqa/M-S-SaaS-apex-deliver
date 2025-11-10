@@ -10,6 +10,8 @@ import {
   listOrganizationInvites,
   OrganizationInvite,
   createOrganizationInvite,
+  getOrganizationHealth,
+  OrganizationHealth,
 } from '../../services/api/admin';
 
 export const UserManagement: React.FC = () => {
@@ -32,6 +34,7 @@ export const UserManagement: React.FC = () => {
   const [inviteSubmitting, setInviteSubmitting] = useState(false);
   const [inviteStatusMessage, setInviteStatusMessage] = useState<string | null>(null);
   const [inviteError, setInviteError] = useState<string | null>(null);
+  const [orgHealth, setOrgHealth] = useState<OrganizationHealth | null>(null);
 
   const perPage = 20;
 
@@ -64,15 +67,21 @@ export const UserManagement: React.FC = () => {
   const fetchInvites = async (orgId: string) => {
     if (!orgId) {
       setInvites([]);
+      setOrgHealth(null);
       return;
     }
     try {
       setInvitesLoading(true);
-      const data = await listOrganizationInvites(orgId);
-      setInvites(data.items);
+      const [inviteData, healthData] = await Promise.all([
+        listOrganizationInvites(orgId),
+        getOrganizationHealth(orgId),
+      ]);
+      setInvites(inviteData.items);
+      setOrgHealth(healthData);
     } catch (err) {
-      console.error('Failed to load invites', err);
+      console.error('Failed to load invites/health', err);
       setInvites([]);
+      setOrgHealth(null);
     } finally {
       setInvitesLoading(false);
     }
@@ -324,6 +333,57 @@ export const UserManagement: React.FC = () => {
             )}
           </div>
         </article>
+
+        {orgHealth && (
+          <article
+            style={{
+              background: 'white',
+              borderRadius: '12px',
+              border: '1px solid #e2e8f0',
+              padding: '1.5rem',
+              boxShadow: '0 12px 24px rgba(15, 23, 42, 0.05)',
+            }}
+          >
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h2 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Tenant health</h2>
+                <p style={{ color: '#475569', fontSize: '0.9rem' }}>{orgHealth.summary}</p>
+              </div>
+              <span
+                style={{
+                  padding: '0.35rem 0.9rem',
+                  borderRadius: '999px',
+                  fontWeight: 600,
+                  color: orgHealth.status === 'green' ? '#065f46' : orgHealth.status === 'amber' ? '#92400e' : '#991b1b',
+                  background:
+                    orgHealth.status === 'green'
+                      ? 'rgba(16, 185, 129, 0.15)'
+                      : orgHealth.status === 'amber'
+                        ? 'rgba(251, 191, 36, 0.18)'
+                        : 'rgba(248, 113, 113, 0.18)',
+                }}
+              >
+                {orgHealth.status.toUpperCase()}
+              </span>
+            </header>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.75rem' }}>
+              {orgHealth.checks.map((check) => (
+                <li
+                  key={check.key}
+                  style={{
+                    padding: '0.85rem 1rem',
+                    borderRadius: '10px',
+                    border: '1px solid #e2e8f0',
+                    background: check.status ? '#f0fdf4' : '#fff7ed',
+                  }}
+                >
+                  <div style={{ fontWeight: 600, color: '#0f172a' }}>{check.label}</div>
+                  <div style={{ fontSize: '0.9rem', color: '#475569', marginTop: '0.2rem' }}>{check.detail}</div>
+                </li>
+              ))}
+            </ul>
+          </article>
+        )}
 
         <article
           style={{

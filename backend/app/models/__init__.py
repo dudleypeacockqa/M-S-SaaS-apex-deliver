@@ -11,6 +11,7 @@ from .financial_narrative import FinancialNarrative
 
 # Now import Deal (has FK relationships to financial models)
 from .deal import Deal, DealStage, PipelineStage
+from .pipeline_template import PipelineTemplate, PipelineTemplateStage
 from .document import Document, Folder, DocumentPermission, DocumentAccessLog
 from .subscription import Subscription, Invoice, SubscriptionTier, SubscriptionStatus
 from .valuation import (
@@ -70,6 +71,8 @@ __all__ = [
     "Deal",
     "DealStage",
     "PipelineStage",
+    "PipelineTemplate",
+    "PipelineTemplateStage",
     "Document",
     "Folder",
     "DocumentPermission",

@@ -31,6 +31,7 @@ Deliver a hardened **Identity & Trust + Pipeline Foundations** slice that real M
 | SP1-05 | E2.2 | Kanban board enhancements (SLA badges, inline actions) | Frontend | SP1-04 | UI updates from UX spec 4.1; use CTA tokens from `docs/ux-color-themes.html`. |
 | SP1-06 | E4.* | Valuation ratio baseline with spreadsheet parity | Backend + Data | None | Map Eric Andrews KPI sheets into `valuation_service.py` and tests; document mapping in repo. |
 | SP1-07 | Ops | Render deployment dry-run + rollback rehearsal | DevOps | All above | Branch strategy: feature branches → PR → merge; verify `prestart.sh` logs; update `PRODUCTION-DEPLOYMENT-CHECKLIST.md`. |
+| SP1-08 | E2.1 | Pipeline template service & API (PMI sprint metadata) | Full-stack | SP1-04 | Restore template models/routes/migration so Alembic + Render deployments remain stable. |
 
 ---
 

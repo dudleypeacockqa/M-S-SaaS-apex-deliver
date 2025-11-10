@@ -6,6 +6,7 @@ from typing import Any, Mapping, Optional
 
 from clerk_backend_api import Clerk
 from clerk_backend_api.models import ClerkErrors, ClerkErrorsData, ClerkError, OrganizationInvitation, OrganizationInvitations
+from clerk_backend_api.models.sdkerror import SDKError
 
 from app.core.config import settings
 
@@ -59,8 +60,9 @@ def create_invitation(
             private_metadata=private_metadata,
             redirect_url=redirect_url,
         )
-    except ClerkErrors as exc:  # pragma: no cover - exercised via unit tests with fake errors
-        raise InvitationError(_extract_error_message(exc), status_code=400) from exc
+    except (ClerkErrors, SDKError) as exc:  # pragma: no cover - exercised via unit tests with fake errors
+        message = _extract_error_message(exc) if isinstance(exc, ClerkErrors) else str(exc)
+        raise InvitationError(message, status_code=400) from exc
 
 
 def list_pending_invitations(
@@ -78,5 +80,6 @@ def list_pending_invitations(
             limit=limit,
             offset=offset,
         )
-    except ClerkErrors as exc:  # pragma: no cover
-        raise InvitationError(_extract_error_message(exc), status_code=400) from exc
+    except (ClerkErrors, SDKError) as exc:  # pragma: no cover
+        message = _extract_error_message(exc) if isinstance(exc, ClerkErrors) else str(exc)
+        raise InvitationError(message, status_code=400) from exc

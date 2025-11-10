@@ -69,6 +69,7 @@ export interface Organization {
   created_at: string;
   updated_at: string;
   user_count?: number;
+  health_status?: string;
 }
 
 export interface PaginatedOrganizations {
@@ -96,6 +97,18 @@ export interface OrganizationMetrics {
   active_users_last_30_days: number;
 }
 
+export interface OrganizationHealthCheck {
+  key: string;
+  label: string;
+  status: boolean;
+  detail: string;
+}
+
+export interface OrganizationHealth {
+  status: string;
+  summary: string;
+  checks: OrganizationHealthCheck[];
+}
 export interface OrganizationInvite {
   id: string;
   email: string;
@@ -208,6 +221,10 @@ export async function getOrganizationUsers(orgId: string): Promise<OrganizationU
 
 export async function getOrganizationMetrics(orgId: string): Promise<OrganizationMetrics> {
   return apiClient.get<OrganizationMetrics>(`/api/admin/organizations/${orgId}/metrics`)
+}
+
+export async function getOrganizationHealth(orgId: string): Promise<OrganizationHealth> {
+  return apiClient.get<OrganizationHealth>(`/api/admin/organizations/${orgId}/health`)
 }
 
 export async function listOrganizationInvites(orgId: string): Promise<OrganizationInviteList> {

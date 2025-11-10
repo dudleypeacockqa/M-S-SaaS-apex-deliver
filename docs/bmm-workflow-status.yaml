@@ -37,3 +37,4 @@ notes: |
       • docs/development-guide.md
       • docs/source-tree-analysis.md
   - PRD generated (docs/PRD.md) and validated (docs/planning/prd-validation.md); UX design captured in docs/ux-design-specification.md (with companion color/direction HTML). Architecture updated in docs/architecture.md to reflect Render via GitHub deployment. Solutioning gate check complete (docs/implementation-readiness-report-2025-11-10.md). Next up: sprint-planning + implementation workflows.
+  - Sprint 1 execution in progress: pipeline template infrastructure restored (SP1-08) and UUID conversion migration for users prepared (revision e19f4551fcb0) to stabilize Render migrations.
