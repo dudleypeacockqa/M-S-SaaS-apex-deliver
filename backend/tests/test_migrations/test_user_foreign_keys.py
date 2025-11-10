@@ -112,9 +112,11 @@ class TestForeignKeyIntegrity:
     def setup_test_data(self, db_session):
         """Create test organization and user for FK testing."""
         # Create organization
+        org_id = str(uuid4())
         self.org = Organization(
-            id=str(uuid4()),
+            id=org_id,
             name="Test Org",
+            slug="test-org",  # Required field
             subscription_tier="professional"
         )
         db_session.add(self.org)

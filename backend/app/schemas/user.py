@@ -31,11 +31,11 @@ class UserRead(UserBase):
     id: UUID  # UUID from database, serialized as string in JSON
     created_at: datetime
     updated_at: datetime
-    organization_id: Optional[UUID] = None
+    organization_id: Optional[str] = None  # String(36) in DB after UUID migration
 
     model_config = ConfigDict(from_attributes=True)
 
-    @field_serializer('id', 'organization_id')
+    @field_serializer('id')
     def _serialize_uuid(cls, value: Optional[UUID]):
         return str(value) if value is not None else None
 
