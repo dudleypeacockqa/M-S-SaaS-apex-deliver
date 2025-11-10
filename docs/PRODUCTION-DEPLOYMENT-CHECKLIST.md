@@ -51,6 +51,7 @@ Test Results:
 - Pipeline template models importing successfully (no app.models.pipeline_template errors)
 - Migration chain stable (single head: dc2c0f69c1b1)
 - Frontend Cloudflare 403 expected for automated requests (manual browser check shows normal operation)
+- Subsequent backend deploy `dep-d492u7ag0ims73e3mkc0` (commit `64ad4fb5…`) finished `live` at 18:31 UTC; Render API log endpoint currently returns `404`, so dashboard screenshot/log capture is required if deeper auditing is needed.
 
 ### Postgres Migration Verification (2025-11-11 09:20 UTC)
 
