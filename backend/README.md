@@ -11,3 +11,4 @@
 The seed script creates a demo admin user (11111111-1111-1111-1111-111111111111), weekly goals, activity history, meeting templates for each meeting type, sample prospects and deals, campaign templates with recipients, content assets, collateral, and a lead capture record. Re-running the script is idempotent; existing rows are reused.
 
 For a clean reseed, truncate the relevant admin_% tables before running the script again.
+# Pre-Deploy Command configured: alembic upgrade head
