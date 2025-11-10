@@ -83,10 +83,11 @@ export enum CampaignStatus {
 }
 
 export enum ContentType {
-  YOUTUBE = 'youtube',
+  ARTICLE = 'article',
+  VIDEO = 'video',
   PODCAST = 'podcast',
-  BLOG = 'blog',
   SOCIAL = 'social',
+  NEWSLETTER = 'newsletter',
 }
 
 export enum ContentStatus {
@@ -95,6 +96,12 @@ export enum ContentStatus {
   RECORDING = 'recording',
   EDITING = 'editing',
   READY = 'ready',
+  PUBLISHED = 'published',
+}
+
+export enum PublishStatus {
+  DRAFT = 'draft',
+  SCHEDULED = 'scheduled',
   PUBLISHED = 'published',
 }
 
@@ -593,6 +600,7 @@ export type AdminContentScriptListResponse = PaginatedResponse<AdminContentScrip
 export type AdminContentPieceListResponse = PaginatedResponse<AdminContentPiece>
 export type AdminLeadCaptureListResponse = PaginatedResponse<AdminLeadCapture>
 export type AdminCollateralListResponse = PaginatedResponse<AdminCollateral>
+export type AdminCollateralUsageListResponse = PaginatedResponse<AdminCollateralUsage>
 
 // ============================================================================
 // Dashboard Stats Type
@@ -848,12 +856,31 @@ export async function sendCampaign(campaignId: number): Promise<AdminCampaign> {
 }
 
 // Campaign Recipients
-export async function listCampaignRecipients(campaignId: number, page = 1, perPage = 50): Promise<AdminCampaignRecipientListResponse> {
-  return apiClient.get<AdminCampaignRecipientListResponse>(`/api/master-admin/campaigns/${campaignId}/recipients?page=${page}&per_page=${perPage}`)
+export interface CampaignRecipientFilters {
+  page?: number
+  per_page?: number
+  campaign_id?: number
+}
+
+export async function listCampaignRecipients(filters?: CampaignRecipientFilters): Promise<AdminCampaignRecipientListResponse> {
+  const params = new URLSearchParams()
+  if (filters?.page) params.append('page', filters.page.toString())
+  if (filters?.per_page) params.append('per_page', filters.per_page.toString())
+  if (filters?.campaign_id) params.append('campaign_id', filters.campaign_id.toString())
+
+  const query = params.toString()
+  return apiClient.get<AdminCampaignRecipientListResponse>(`/api/master-admin/campaigns/recipients${query ? `?${query}` : ''}`)
 }
 
 export async function addCampaignRecipient(recipient: AdminCampaignRecipientCreate): Promise<AdminCampaignRecipient> {
   return apiClient.post<AdminCampaignRecipient>('/api/master-admin/campaigns/recipients', recipient)
+}
+
+// Alias for consistency with other create functions
+export const createCampaignRecipient = addCampaignRecipient
+
+export async function deleteCampaignRecipient(recipientId: number): Promise<void> {
+  return apiClient.delete<void>(`/api/master-admin/campaigns/recipients/${recipientId}`)
 }
 
 // ============================================================================
@@ -982,6 +1009,27 @@ export async function deleteCollateral(collateralId: number): Promise<void> {
 
 export async function trackCollateralUsage(usage: AdminCollateralUsageCreate): Promise<AdminCollateralUsage> {
   return apiClient.post<AdminCollateralUsage>('/api/master-admin/collateral/usage', usage)
+}
+
+// Alias for consistency with other create functions
+export const createCollateralUsage = trackCollateralUsage
+
+export interface CollateralUsageFilters {
+  page?: number
+  per_page?: number
+  collateral_id?: number
+  event_type?: string
+}
+
+export async function listCollateralUsage(filters?: CollateralUsageFilters): Promise<AdminCollateralUsageListResponse> {
+  const params = new URLSearchParams()
+  if (filters?.page) params.append('page', filters.page.toString())
+  if (filters?.per_page) params.append('per_page', filters.per_page.toString())
+  if (filters?.collateral_id) params.append('collateral_id', filters.collateral_id.toString())
+  if (filters?.event_type) params.append('event_type', filters.event_type)
+
+  const query = params.toString()
+  return apiClient.get<AdminCollateralUsageListResponse>(`/api/master-admin/collateral/usage${query ? `?${query}` : ''}`)
 }
 
 // ============================================================================
