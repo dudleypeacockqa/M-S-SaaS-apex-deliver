@@ -1,4 +1,7 @@
-"""FastAPI application entry point."""
+"""FastAPI application entry point.
+
+Migration fix applied: 2025-11-10 - alembic_version table corrected
+"""
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
