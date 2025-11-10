@@ -98,8 +98,9 @@ AGENTS.md
 # Ignore duplicate package-lock.json in root
 /package-lock.json
 
-# Ignore bmad working directory
-bmad/
+# Ignore bmad working directory (but keep docs/bmad/ tracked)
+/bmad/
+!docs/bmad/
 # BMAD (local only)
 .bmad-core/
 .bmad-*/
