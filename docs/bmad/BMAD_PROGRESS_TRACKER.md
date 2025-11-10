@@ -145,6 +145,30 @@
 
 ---
 
+## Session 2025-11-10D - Sprint 1 Implementation Loop (Kanban SLA + KPI Parity) 🚧
+
+**Status**: [IMPLEMENTATION] In progress – sprint backlog items SP1-05, SP1-06, SP1-07 advanced  
+**Duration**: ~90 minutes (Codex CLI session)  
+**Priority**: P0 – Required to unblock Render deployment rehearse + valuation readiness  
+**Progress**: Project 65% -> 67% (Deal Pipeline + Valuation epics inching toward 100%)
+
+### Achievements
+- **SP1-05 Kanban SLA UI**: Updated `DealKanbanBoard.tsx` to consume pipeline template metadata (SLA hours, win probability, weighted volume). Added React Testing Library coverage verifying SLA chips, weighted totals, and stage counts w/ new data-test hooks. (`npm run test -- DealKanbanBoard` → 18/18 GREEN).
+- **SP1-06 Valuation parity**: Implemented `valuation_service.calculate_go_to_market_kpis` mirroring Eric Andrews CAC/LTV spreadsheets. Added pytest coverage for CAC, LTV, payback, magic number, and sales efficiency plus documentation update in `docs/VALUATION_SUITE_WORKFLOW.md`. (`backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py` → 29/29 GREEN).
+- **SP1-07 Render dry-run prep**: Logged latest local test evidence in `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md` and captured Render failure context (missing `app.models.pipeline_template`) so redeploy will focus on pushing current changes + monitoring `prestart.sh` output.
+
+### Testing / Tooling
+- Frontend: `npm run test -- DealKanbanBoard`
+- Backend: `backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py`
+- Documentation: Updated `docs/VALUATION_SUITE_WORKFLOW.md`, `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md`, BMAD tracker (this file)
+
+### Next Steps
+1. Commit + push current work to GitHub `main`, open PR with Conventional Commit summary referencing BMAD sprint shard.
+2. Trigger Render redeploy, monitor Alembic output to confirm pipeline template modules load, capture logs in `DEPLOYMENT_HEALTH.md`.
+3. Extend dry-run rehearsal by executing `scripts/run_smoke_tests.sh` (local uvicorn + npm preview) and recording outcomes in deployment checklist.
+
+---
+
 ## Session 2025-11-10B - Autonomous Execution Phase 1 (Housekeeping) ✅
 
 **Status**: ✅ **COMPLETE** - Phase 1 housekeeping complete, deployment verified healthy
