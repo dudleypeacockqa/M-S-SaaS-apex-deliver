@@ -154,11 +154,19 @@ export const CreateDealModal: React.FC<CreateDealModalProps> = ({
   }
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name } = e.target
+    const { name, value } = e.target
     setTouched(prev => new Set(prev).add(name))
 
-    // Validate after blur to show errors immediately
-    validate()
+    // Validate deal_size specifically for negative values
+    if (name === 'deal_size' && value && parseFloat(value) < 0) {
+      setErrors(prev => ({ ...prev, deal_size: 'Deal size must be positive' }))
+    } else if (name === 'deal_size') {
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors.deal_size
+        return newErrors
+      })
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
