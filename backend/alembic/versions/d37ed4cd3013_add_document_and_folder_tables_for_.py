@@ -9,10 +9,10 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
+
 # revision identifiers, used by Alembic.
 revision: str = 'd37ed4cd3013'
-down_revision: Union[str, None] = '8dcb6880a52b'
+down_revision: Union[str, None] = '36b3e62b4148'  # MUST run after users.id conversion
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -26,7 +26,7 @@ def upgrade() -> None:
         sa.Column('deal_id', sa.String(36), nullable=False),
         sa.Column('parent_folder_id', sa.String(length=36), nullable=True),
         sa.Column('organization_id', sa.String(length=36), nullable=False),
-        sa.Column('created_by', postgresql.UUID(as_uuid=True), nullable=False),  # Fixed: UUID to match users.id
+        sa.Column('created_by', sa.String(length=36), nullable=False),  # FK to users.id (String after 36b3e62b4148 conversion)
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
         sa.ForeignKeyConstraint(['parent_folder_id'], ['folders.id']),
@@ -48,7 +48,7 @@ def upgrade() -> None:
         sa.Column('deal_id', sa.String(36), nullable=False),
         sa.Column('folder_id', sa.String(length=36), nullable=True),
         sa.Column('organization_id', sa.String(length=36), nullable=False),
-        sa.Column('uploaded_by', postgresql.UUID(as_uuid=True), nullable=False),  # Fixed: UUID to match users.id
+        sa.Column('uploaded_by', sa.String(length=36), nullable=False),  # FK to users.id (String after 36b3e62b4148 conversion)
         sa.Column('version', sa.Integer, default=1, nullable=False),
         sa.Column('parent_document_id', sa.String(length=36), nullable=True),
         sa.Column('archived_at', sa.DateTime(timezone=True), nullable=True),
@@ -72,10 +72,10 @@ def upgrade() -> None:
         sa.Column('id', sa.String(length=36), primary_key=True),
         sa.Column('document_id', sa.String(length=36), nullable=True),
         sa.Column('folder_id', sa.String(length=36), nullable=True),
-        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False),  # Fixed: UUID to match users.id
+        sa.Column('user_id', sa.String(length=36), nullable=False),  # FK to users.id (String after 36b3e62b4148 conversion)
         sa.Column('permission_level', sa.String(20), nullable=False),
         sa.Column('organization_id', sa.String(length=36), nullable=False),
-        sa.Column('granted_by', postgresql.UUID(as_uuid=True), nullable=False),  # Fixed: UUID to match users.id
+        sa.Column('granted_by', sa.String(length=36), nullable=False),  # FK to users.id (String after 36b3e62b4148 conversion)
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.ForeignKeyConstraint(['document_id'], ['documents.id']),
         sa.ForeignKeyConstraint(['folder_id'], ['folders.id']),
@@ -97,7 +97,7 @@ def upgrade() -> None:
         'document_access_logs',
         sa.Column('id', sa.String(length=36), primary_key=True),
         sa.Column('document_id', sa.String(length=36), nullable=False),
-        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False),  # Fixed: UUID to match users.id
+        sa.Column('user_id', sa.String(length=36), nullable=False),  # FK to users.id (String after 36b3e62b4148 conversion)
         sa.Column('action', sa.String(50), nullable=False),
         sa.Column('ip_address', sa.String(45), nullable=True),
         sa.Column('user_agent', sa.String(500), nullable=True),
