@@ -105,6 +105,14 @@ export enum PublishStatus {
   PUBLISHED = 'published',
 }
 
+export enum CollateralType {
+  PDF = 'pdf',
+  VIDEO = 'video',
+  PRESENTATION = 'presentation',
+  DOCUMENT = 'document',
+  SPREADSHEET = 'spreadsheet',
+}
+
 // ============================================================================
 // Activity Tracker Types
 // ============================================================================
