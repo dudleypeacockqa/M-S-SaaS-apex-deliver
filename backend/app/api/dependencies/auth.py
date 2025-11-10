@@ -60,6 +60,18 @@ def _enforce_claim_integrity(user: User, claims: dict[str, Any], db: Session) ->
         if org_claim != user.organization_id:
             _raise(f"Organization claim mismatch (token={org_claim}, db={user.organization_id})")
     elif org_claim:
+        # Populate missing organization_id from trusted claim
+        # Create organization if it doesn't exist (happens when Clerk creates org first)
+        from app.models.organization import Organization
+        org = db.get(Organization, org_claim)
+        if not org:
+            org = Organization(
+                id=org_claim,
+                name=f"Organization {org_claim}",  # Will be updated by webhook
+                slug=org_claim,
+                subscription_tier="starter"  # Default tier
+            )
+            db.add(org)
         user.organization_id = org_claim
         db.commit()
         db.refresh(user)
