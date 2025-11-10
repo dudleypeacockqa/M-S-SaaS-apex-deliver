@@ -38,6 +38,8 @@ from app.models.master_admin import (  # noqa: F401, E402
     AdminCollateral,
     AdminCollateralUsage,
 )
+from app.models.rbac_audit_log import RBACAuditLog  # noqa: F401, E402
+from app.models.pipeline_template import PipelineTemplate, PipelineTemplateStage  # noqa: F401, E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
