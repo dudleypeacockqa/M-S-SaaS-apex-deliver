@@ -1,4 +1,30 @@
-# BMAD Progress Tracker
+## Session 2025-11-10C - Workflow Rebaseline & Roadmap Refresh ✅
+
+**Status**: ✅ **COMPLETE** – Governance + planning loop executed before next TDD story  
+**Duration**: ~60 min (Codex CLI)  
+**Priority**: P0 – Required before migrations and feature work  
+**Progress Impact**: Overall project confidence +2% (plan + deployment blockers captured)
+
+### Highlights
+- Re-ran BMAD workflow-init manually (analysis) and aligned project to enterprise greenfield track under v6.
+- Refreshed `docs/bmad/PROJECT_COMPLETION_PLAN.md` with W0–W5 workstreams (migrations, backend, frontend, marketing, QA) and sequencing.
+- Updated `docs/bmad/bmm-workflow-status.md` to reflect completed planning story and set next action to W1 dev-story (migrations + Render recovery).
+- Audited Render deploy logs (`backend-deploy*.json`, `frontend-deploy*.json`, `latest-deploy*.json`) confirming current health = **NOT green** (update_failed) and documented in plan.
+- Catalogued in-flight migrations (`3a15202c7dc2`, edits to `0cbf1e0e3ab5`, `dc2c0f69c1b1`) plus new React pipeline template hook/service requiring TDD coverage.
+
+### Artefacts Updated
+- `docs/bmad/PROJECT_COMPLETION_PLAN.md`
+- `docs/bmad/bmm-workflow-status.md`
+
+### Test/TDD Notes
+- No automated suites executed during planning. Last known baselines: backend 663 tests @ 82.9% cov, frontend ~1,066 tests ≈99% pass. Next story (W1) must start with RED migrations tests before touching production schema.
+
+### Next Steps
+1. Run BMAD `dev-story` for W1 (migrations + Render recovery) using RED tests in `backend/tests/test_migrations`.
+2. Apply Alembic fixes, rerun smoke tests, capture deployment evidence.
+3. Once deployments are healthy, resume DEV-011 backend/frontend pairing per refreshed plan.
+
+---# BMAD Progress Tracker
 
 ## Session 2025-11-10C - Render Audit & Roadmap Reset
 
@@ -1045,5 +1071,6 @@ Fixes #[issue-number]
 ### Status: COMPLETE ✅
 
 **Next Agent**: Update workflow status and continue with Phase 3 (frontend tests)
+
 
 

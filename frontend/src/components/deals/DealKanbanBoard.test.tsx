@@ -9,6 +9,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { DealKanbanBoard } from './DealKanbanBoard'
 import * as dealHooks from '@/hooks/deals'
+import * as pipelineTemplateHooks from '@/hooks/pipelineTemplates'
+import type { PipelineTemplate } from '@/services/api/pipelineTemplates'
 import { DealStage } from '@/services/api/deals'
 
 // Mock hooks
@@ -30,8 +32,20 @@ vi.mock('@hello-pangea/dnd', () => ({
   ),
 }))
 
+vi.mock('@/hooks/pipelineTemplates', () => ({
+  usePipelineTemplates: vi.fn(),
+}))
+
 describe('DealKanbanBoard', () => {
   let queryClient: QueryClient
+
+  const setPipelineTemplateResponse = (templates: PipelineTemplate[] = []) => {
+    vi.mocked(pipelineTemplateHooks.usePipelineTemplates).mockReturnValue({
+      data: templates,
+      isLoading: false,
+      error: null,
+    } as any)
+  }
 
   const mockDeals = [
     {
@@ -80,6 +94,7 @@ describe('DealKanbanBoard', () => {
       },
     })
     vi.clearAllMocks()
+    setPipelineTemplateResponse([])
   })
 
   const renderKanbanBoard = () => {
