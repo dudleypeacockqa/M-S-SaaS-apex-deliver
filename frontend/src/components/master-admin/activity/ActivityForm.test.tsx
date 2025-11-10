@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ActivityForm } from './ActivityForm'
@@ -47,7 +47,7 @@ describe('ActivityForm', () => {
 
       renderActivityForm()
 
-      expect(screen.getByText('Log Activity')).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Log Activity' })).toBeInTheDocument()
       expect(screen.getByLabelText(/Activity Type/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/Status/i)).toBeInTheDocument()
       expect(screen.getByLabelText(/Date/i)).toBeInTheDocument()
@@ -162,8 +162,7 @@ describe('ActivityForm', () => {
       renderActivityForm()
 
       const amountInput = screen.getByLabelText(/Amount/i) as HTMLInputElement
-      await user.clear(amountInput)
-      await user.type(amountInput, '5')
+      fireEvent.change(amountInput, { target: { value: '5' } })
 
       expect(amountInput.value).toBe('5')
     })
@@ -236,8 +235,7 @@ describe('ActivityForm', () => {
       await user.type(dateInput, '2025-11-15')
 
       const amountInput = screen.getByLabelText(/Amount/i)
-      await user.clear(amountInput)
-      await user.type(amountInput, '3')
+      fireEvent.change(amountInput, { target: { value: '3' } })
 
       await user.type(screen.getByLabelText(/Notes/i), 'Test activity note')
 
