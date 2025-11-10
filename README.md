@@ -1,10 +1,28 @@
 <!-- markdownlint-disable MD013 MD022 MD032 MD031 MD040 MD036 -->
 # M&A Intelligence Platform
 
-**Version**: 2.0 (Full Production Build)  
-**Status**: Active Development  
-**Methodology**: BMAD v6-alpha  
+**Version**: 2.0 (Full Production Build)
+**Status**: 🚧 Active Development - **DATABASE RECOVERY REQUIRED**
+**Methodology**: BMAD v6-alpha
 **Development Approach**: Test-Driven Development (TDD) + Continuous Development
+
+---
+
+## ⚠️ IMPORTANT: Production Database Recovery Required
+
+**If you're the project owner or DevOps engineer**, there's a critical database schema mismatch that needs attention:
+
+📋 **START HERE**: [docs/NEXT_STEPS_FOR_USER.md](docs/NEXT_STEPS_FOR_USER.md)
+
+**Quick Summary**:
+- Production database uses UUID types, application code expects VARCHAR(36)
+- 165 tables exist but missing 4 critical tables (folders, pipeline_templates, etc.)
+- Health checks pass but operations fail with type mismatches
+- Estimated time to fix: 2-3 days
+
+**All documentation and scripts are ready** - execution requires database admin access.
+
+For complete recovery documentation, see: [docs/DATABASE_RECOVERY_INDEX.md](docs/DATABASE_RECOVERY_INDEX.md)
 
 ---
 
