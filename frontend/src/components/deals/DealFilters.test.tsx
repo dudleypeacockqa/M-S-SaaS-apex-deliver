@@ -106,7 +106,9 @@ describe('DealFilters', () => {
       const clearButton = screen.getByRole('button', { name: /clear/i })
       await user.click(clearButton)
 
-      expect(searchInput.value).toBe('')
+      await waitFor(() => {
+        expect(searchInput.value).toBe('')
+      })
       expect(mockOnSearchChange).toHaveBeenCalledWith('')
     })
   })
@@ -151,7 +153,9 @@ describe('DealFilters', () => {
       const clearButton = screen.getByRole('button', { name: /clear/i })
       await user.click(clearButton)
 
-      expect(stageSelect.value).toBe('')
+      await waitFor(() => {
+        expect(stageSelect.value).toBe('')
+      })
       expect(mockOnFilterChange).toHaveBeenCalledWith({ stage: undefined })
     })
   })
@@ -191,8 +195,10 @@ describe('DealFilters', () => {
       const clearButton = screen.getByRole('button', { name: /clear/i })
       await user.click(clearButton)
 
-      expect((searchInput as HTMLInputElement).value).toBe('')
-      expect((stageSelect as HTMLSelectElement).value).toBe('')
+      await waitFor(() => {
+        expect((searchInput as HTMLInputElement).value).toBe('')
+        expect((stageSelect as HTMLSelectElement).value).toBe('')
+      })
     })
   })
 

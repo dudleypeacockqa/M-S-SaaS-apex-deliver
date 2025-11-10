@@ -1,6 +1,6 @@
 # 100% Project Completion Plan
 **Project**: M&A Intelligence Platform (ApexDeliver)
-**Last Updated**: 2025-11-10 19:15 UTC
+**Last Updated**: 2025-11-10 21:20 UTC
 **Methodology**: BMAD v6-alpha + TDD (RED -> GREEN -> REFACTOR)
 
 ---
@@ -9,7 +9,7 @@
 - **Backend tests**: ⚠️ Last recorded green run (606 pass / 38 skip) predates uuid->string migration shuffle; billing/subscription smoke (`pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --cov …`) rerun locally 2025-11-10E but Alembic upgrade still unverified on PostgreSQL.
 - **Frontend tests**: 🔴 Full Vitest run outstanding; only targeted suites (valuation 13/13, podcast 26/26) revalidated. Need end-to-end `npm run test -- --runInBand` + coverage after DEV-008/016/018 changes.
 - **Deployment**: 🔴 Render backend deploys `dep-d48vc7qdbo4c73fm1n5g` and `dep-d48vt3adbo4c73fm6svg` failed (multi-head migrations). Latest attempt `dep-d491s6ffte5s73aai0ig` (commit `ded9734`) still `update_in_progress`. Frontend deploy `dep-d48vc72dbo4c73fm1mv0` never confirmed healthy. Deploy health is **not 100%**.
-- **Git state**: `HEAD` `0bc72b4` matches `origin/main` but worktree remains very dirty ( >900 tracked modifications across `.bmad`, backend migrations/podcast suites, frontend deal-matching UI, deployment scripts). No refreshed PR referencing this head.
+- **Git state**: `HEAD` `eb78abd fix(deploy): correct Pre-Deploy Command to include backend/ directory` matches `origin/main`; worktree still extremely dirty (>900 tracked modifications spanning `.bmad`, backend migrations/podcast suites, frontend deal-matching UI, deployment scripts). No refreshed PR references this head.
 - **Migrations**: ✅ Logical order fixed (single head `9a3aba324f7f`), but `alembic upgrade head` still blocked on missing Postgres target + Render failure evidence.
 - **BMAD artefacts**: Tracker + workflow updated through Session 2025-11-10E; Completion plan/roadmap refreshed in this session.
 
@@ -83,11 +83,11 @@
 ---
 
 ## Immediate Next Actions (Next 48 Hours)
-1. **Postgres-ready migration dry run**: Provision local/staging Postgres, run `alembic upgrade head` + billing/subscription smoke tests, archive logs in `docs/DEPLOYMENT_HEALTH.md`.
-2. **BMAD governance sync**: Execute `npx bmad-method workflow-init` + update `docs/bmad/bmm-workflow-status.md`, `BMAD_PROGRESS_TRACKER.md`, and story files to reflect W1 migration work + W2 document room story.
+1. **Postgres-ready migration dry run**: Provision local/staging Postgres (local Docker or approved cloud DB), run `alembic upgrade head` + billing/subscription smoke tests, archive logs in `docs/DEPLOYMENT_HEALTH.md`.
+2. **BMAD governance sync**: Execute `npx bmad-method workflow-init`, then update `docs/bmad/bmm-workflow-status.md`, `BMAD_PROGRESS_TRACKER.md`, and story files with the refreshed W1 (migrations) and W2 (document room) loops.
 3. **DEV-008 RED tests**: Commit failing Vitest specs for FolderTree + PermissionModal, align with new API mocks, then begin implementation once tests assert desired UX.
 4. **DEV-018 criteria builder**: Extend `MatchingWorkspace.test.tsx` with RED cases for save/pass/request intro + analytics tabs; follow with implementation + React Query cache tests.
-5. **Render readiness package**: Prepare Conventional Commit + PR summary referencing commits `0bc72b4` / `ded9734`, ensure `PR_DESCRIPTION.md` matches scope, and document deploy blockers for stakeholder transparency.
+5. **Render readiness package**: Prepare a new Conventional Commit + PR summary (current `PR_DESCRIPTION.md` still references MARK-002 only), and document deploy blockers + required evidence for stakeholder transparency.
 
 ---
 

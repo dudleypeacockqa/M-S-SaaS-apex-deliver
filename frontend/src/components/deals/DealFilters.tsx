@@ -61,7 +61,9 @@ export const DealFilters: React.FC<DealFiltersProps> = ({
     onFilterChange({ stage: undefined })
   }
 
-  const hasActiveFilters = activeFilters > 0
+  // Calculate active filters internally if not provided
+  const calculatedActiveFilters = (searchValue ? 1 : 0) + (stageFilter ? 1 : 0)
+  const hasActiveFilters = activeFilters !== undefined ? activeFilters > 0 : calculatedActiveFilters > 0
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 p-4 bg-white border-b border-gray-200">
@@ -111,7 +113,7 @@ export const DealFilters: React.FC<DealFiltersProps> = ({
       <div className="flex items-center gap-2">
         {hasActiveFilters && (
           <span className="text-sm text-gray-600">
-            {activeFilters} {activeFilters === 1 ? 'filter' : 'filters'} active
+            {activeFilters !== undefined ? activeFilters : calculatedActiveFilters} {(activeFilters !== undefined ? activeFilters : calculatedActiveFilters) === 1 ? 'filter' : 'filters'} active
           </span>
         )}
         <button

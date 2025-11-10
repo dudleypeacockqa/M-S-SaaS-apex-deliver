@@ -272,6 +272,14 @@ tests/smoke_tests.py::test_root_redirects PASSED
 
 ---
 
+## Outstanding Actions (Session 2025-11-10G)
+
+- Attempted to query `https://api.render.com/v1/services` using the provided API key from this sandbox; the call returned an empty response, indicating outbound network access is blocked. Run the Render dry-run (backend + frontend) from a network-enabled machine and paste the resulting deploy IDs/logs here (and in `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md`) once complete.
+- Postgres verification remains pending: execute `alembic upgrade head` against a real database plus the billing/subscription smoke pytest suite, then archive the console transcript for BMAD compliance.
+- After those remote steps succeed, refresh this document’s checklist and the Render deploy JSON artefacts before claiming deployment health = 100%.
+
+---
+
 ## 🔗 Quick Links
 
 - **Render Dashboard**: https://dashboard.render.com
