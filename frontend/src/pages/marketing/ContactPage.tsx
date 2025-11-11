@@ -11,7 +11,7 @@ export const ContactPage: React.FC = () => {
     '@type': 'ContactPage',
     name: 'Contact 100 Days & Beyond',
     description: 'Get in touch with our team for demos, sales inquiries, or support',
-    url: 'https://apexdeliver.com/contact',
+    url: 'https://100daysandbeyond.com/contact',
     mainEntity: createOrganizationSchema(),
   };
   const [formData, setFormData] = useState({
