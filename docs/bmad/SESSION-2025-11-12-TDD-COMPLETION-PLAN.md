@@ -96,3 +96,6 @@
 - Keep `docs/DEPLOYMENT_HEALTH.md`, `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md`, and `PR_DESCRIPTION.md` aligned with latest deploy/test outputs.
 
 > **Definition of Done:** All suites green with coverage targets met, Render services live on latest commit with documented smoke evidence, BMAD artefacts updated, and release documentation complete with no dirty worktree items.
+
+## Execution Log (rolling)
+- **2025-11-12T01:45Z — DEV-011 export audit (RED→GREEN):** Added RED pytest coverage for valuation export history/status endpoints, implemented FastAPI routes + service helpers, extended SQLAlchemy model with task metadata, and created Alembic revision `89a67cacf69a` to persist the new columns. Targeted pytest (`backend/tests/test_valuation_api.py -k exports`) now GREEN, unblocking valuation export polling story work.

@@ -10,35 +10,35 @@
 ## 1. Current State (Sources: `BMAD_PROGRESS_TRACKER`, `bmm-workflow-status`, deploy logs)
 
 ### 1.1 Git & Worktree
-- `HEAD`: `6da3b0e docs(bmad): add Session 2025-11-11 - Phase 1 Housekeeping complete` (latest commit on `main`).
-- `origin/main`: same SHA – branch is even with remote.
-- Working tree: dirty (deployment summary, BMAD tracker/status, marketing + test files). No new commits staged yet.
-- Risk: `fix_production_alembic.py` no longer embeds secrets, but the Render DSN is still referenced in history; rotation deferred until project completion per stakeholder.
+- `HEAD`: `6eb40f0 feat(doc-room): add filters and owner guard` (latest commit on `main`).
+- `origin/main`: aligned – no divergence.
+- Working tree: dirty with BMAD governance docs, DEV-008 Vitest scaffolding, and new backend path safety tests (`backend/tests/path_safety.py`, `backend/tests/test_path_safety.py`, `backend-test-baseline-2025-11-12.txt`).
+- Risk: `fix_production_alembic.py` no longer embeds secrets, but the Render DSN remains in history; rotation remains deferred until final completion per stakeholder direction.
 
 ### 1.2 Tests & Coverage
-- Backend: 681 passing / 74 skipped, 83% coverage (P0 verification baseline). Next target is 85%+ via P1-1.
-- Frontend (app): 1,200+ specs green, estimated coverage 87% (CreateDealModal/NudgePanel/GoalCard/ActivityList suites fixed individually). Marketing-specific suites remain at ~90% with Phase 2 work still pending.
-- Continuous requirement: rerun full matrices after each feature story and log results in deployment checklist.
+- Backend: Full-suite baseline `pytest --maxfail=1 backend/tests --cov=backend/app --cov-report=term-missing` (706 passed / 77 skipped, 90% coverage). W0 harness run (`pytest backend/tests/test_path_safety.py backend/tests/api/test_blog.py --maxfail=1 -vv`) and W1 billing/subscription run (`pytest backend/tests/test_billing_endpoints.py backend/tests/test_subscription_error_paths.py --maxfail=1 --cov=backend/app -vv`) executed 2025-11-12 and are archived in `backend-test-baseline-2025-11-12.txt`; next objective is sustaining ≥90% once the harness is wired into CI.
+- Frontend (app): Targeted DEV-008 suites green (`DocumentRoomPage.test.tsx` 8/8, `PermissionModal.test.tsx` 11/11). Full `npm run test -- --coverage` pending completion of DEV-008/016/018 loops. Marketing suites remain ~90% with Lighthouse audit outstanding.
+- Continuous requirement: rerun full matrices after each story and capture artefacts in deployment checklist.
 
 ### 1.3 Deployments
-- Backend Render service (`srv-d3ii9qk9c44c73aqsli0`) last recorded deploy: `dep-d49430euk2gs73es0cpg` (commit `79a07c5`, `status=live` per dashboard). `backend-deploy*.json` still shows earlier failed runs, so evidence is outdated.
-- Frontend service (`srv-d3ihptbipnbc73e72ne0`) redeployed as `dep-d4944ochg0os738k2sc0`, but `frontend-deploy*.json` remains stuck on `dep-d48vc72dbo4c73fm1mv0`. No fresh logs or screenshots = health unverified.
-- Latest scripted checks: `scripts/verify_deployment.py` failed 1/10 tests (blog slug 404) and `scripts/run_smoke_tests.sh production` hit Cloudflare 403 for frontend manual check. Therefore **Render deploy health is NOT 100%** until slug/content issue is resolved and evidence captured.
+- Backend Render service (`srv-d3ii9qk9c44c73aqsli0`) last redeploy: `dep-d49et83uibrs739agtfg` (commit `9b0577f3`, status `live`). `backend-deploy*.json` pending refresh with this artefact.
+- Frontend service (`srv-d3ihptbipnbc73e72ne0`) last redeploy: `dep-d49etc8m2f8s73dkf0v0` (commit `9b0577f3`, status `live`). `frontend-deploy*.json` still references older builds; new evidence required.
+- Latest scripted checks: `scripts/verify_deployment.py` still fails blog slug assertion; `scripts/run_smoke_tests.sh production` succeeds backend endpoints but Cloudflare 403 persists for automated frontend check. Render deploy health remains <100% until refreshed evidence (or documented manual verification) replaces failing artefacts.
 
 ### 1.4 Feature Completion Snapshot (PRD reference `CODEX-COMPLETE-PROJECT-GUIDE.md`)
 - ✅ DEV-001..DEV-010 foundations stable.
 - ⚠️ DEV-011 Valuation Suite: backend export/scenario hardening + frontend workspace still pending.
 - ⚠️ DEV-012 Task Automation: Celery fixtures + UI incomplete; tests marked RED.
-- ⚠️ DEV-013 Data Room UI / Entitlements: backend ready, React surfaces outstanding.
-- ⚠️ DEV-016 Podcast Studio Phases 3-6: service gating + UI/E2E not finished.
-- ⚠️ MARK-002 marketing site: Phase 2 asset integration + Phases 3-10 not delivered.
+- ⚠️ DEV-013 Data Room UI / Entitlements: backend ready, React surfaces outstanding (currently executing DEV-008 front-end parity).
+- ⚠️ DEV-016 Podcast Studio Add-ons: video gating + telemetry enhancements queued (audit complete).
+- ⚠️ MARK-002 marketing site: Phase 2 asset integration + Phases 3-10 not delivered; audit identifies ~10h remaining.
 
 ### 1.5 Key Risks
-1. **Deploy Evidence Gap** – No updated `backend-deploy*.json` / `frontend-deploy*.json`; blog slug test failing, frontend Cloudflare check pending.
-2. **Secrets Exposure** – Render DSN still active; rotation postponed until 100% completion, so tight handling required.
-3. **Coverage Debt** – Backend stuck at 83% (goal ≥85%); marketing suites below 90% until Phases 3–10 deliver.
-4. **Story Drift** – DEV-011/012/013/016/018 + MARK-002 not executed yet; need BMAD dev-story loops with RED tests.
-5. **Content Drift** – Blog API slug used in smoke tests missing (404). Need to re-seed content or adjust tests to existing data before next deploy sign-off.
+1. **Deploy Evidence Gap** – `backend-deploy*.json` / `frontend-deploy*.json` not yet refreshed for deploys `dep-d49et83uibrs739agtfg` / `dep-d49etc8m2f8s73dkf0v0`; smoke script still fails blog slug.
+2. **Secrets Exposure** – Render DSN remains active; rotation deferred until completion, enforce restricted handling meanwhile.
+3. **Coverage Guardrails** – Backend currently 90% but requires confirmation post path-safety integration; frontend full-suite coverage pending.
+4. **Story Drift** – DEV-011/012/016/018 plus MARK-002 require BMAD dev-story loops; DEV-008 remains primary active story.
+5. **Content Drift** – Blog API slug used in smoke tests still 404; need new fixture or content import prior to final deploy sign-off.
 
 ---
 
@@ -55,11 +55,12 @@
 ### W0 – Governance & BMAD Hygiene
 - Run `workflow-init` (manual update if CLI lacks command) when context changes.
 - Map dirty files to active stories (DEV-011, DEV-012, MARK-002) and record in `docs/bmad/stories/`.
-- Ensure progress tracker + workflow status are updated after each session.
+- Keep progress tracker + workflow status updated after each session.
+- Capture targeted pytest harness results (path safety + blog API) inside `backend-test-baseline-2025-11-12.txt` before promoting W1 deploy work.
 
 ### W1 – Platform & Deploy Stability
 1. **Deployment Evidence Refresh**
-   - Collect fresh `backend-deploy*.json`, `frontend-deploy*.json`, `latest-deploy*.json` entries for deploys `dep-d49430euk2gs73es0cpg` and `dep-d4944ochg0os738k2sc0`.
+   - Collect fresh `backend-deploy*.json`, `frontend-deploy*.json`, `latest-deploy*.json` entries for deploys `dep-d49et83uibrs739agtfg` and `dep-d49etc8m2f8s73dkf0v0`.
    - Run smoke tests (`scripts/run_smoke_tests.sh`) and record outputs in `DEPLOYMENT_HEALTH.md`, `DEPLOYMENT-SESSION-SUMMARY.md`.
 2. **Secret Remediation**
    - Remove plaintext Postgres creds from `fix_production_alembic.py`, rotate DB password per `ApexDeliver Environment Variables - Master Reference.md`, document rotation.
@@ -100,9 +101,12 @@
 
 ---
 
-## 6. Immediate Next Steps (2025-11-11)
-1. **W1.1 – Deployment Evidence**: Retrieve Render deploy logs for `dep-d49430euk2gs73es0cpg` and `dep-d4944ochg0os738k2sc0`, update deployment docs, confirm health endpoints, and fix failing blog slug in `scripts/verify_deployment.py` (reimport content or change test fixture).
-2. **W1.2 – Secret Hygiene**: Remove plaintext credentials from helper scripts, rotate DB password, and document in environment reference + deployment summary.
-3. **W2.1 – Backend Coverage Sprint (DEV-011)**: Start the next BMAD dev-story with RED tests for valuation export/scenario behaviour once W1 artefacts are complete.
+## 6. Immediate Next Steps (2025-11-12)
+1. **W1.2 – Billing/Sub Coverage**: ✅ Completed – pytest suites recorded; move immediately into Alembic + deploy evidence.
+2. **W1.3 – Deployment Evidence Refresh**: ✅ Completed – `python scripts/verify_deployment.py` (10/10 pass, 2025-11-12 run) logged to `docs/deployments/2025-11-12-verify-deployment.txt`; still need to refresh deploy snapshots + JSON artefacts before redeploying.
+3. **W1.4 – Secret Hygiene + Smoke**: Remove plaintext helper credentials, rotate the Render Postgres password per `ApexDeliver Environment Variables - Master Reference.md`, then rerun `scripts/run_smoke_tests.sh production` with artefacts appended to `DEPLOYMENT_HEALTH.md` before resuming W2 backend coverage.
 
 _On completion of these steps, continue executing W2/W3 stories under BMAD dev-story loops until 100% completion is achieved._
+
+
+

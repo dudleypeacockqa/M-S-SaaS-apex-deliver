@@ -21,6 +21,19 @@ This document outlines the systematic approach to achieving 100% completion of t
 
 **Objective:** Drive DEV-008, DEV-016, DEV-018, MARK-002, and deployment hardening to 100% completion using BMAD v6 + strict TDD while maintaining governance evidence.
 
+### 2025-11-12 Execution Refresh – BMAD + TDD Alignment
+
+| Loop | Build (RED→GREEN target) | Measure (TDD anchor) | Analyze (evidence) | Deploy (exit) |
+|------|--------------------------|----------------------|--------------------|---------------|
+| **W0 – Governance & Harness Reset** | Remove stray DOS path fixtures, land `backend/tests/test_path_safety.py`, document pytest guardrails, refresh workflow-init metadata | `python -m pytest backend/tests/test_path_safety.py backend/tests/test_blog.py --maxfail=1 --cov=backend/app` | Update `docs/bmad/bmm-workflow-status.md`, `BMAD_PROGRESS_TRACKER.md`, and `BMAD_TDD_EXECUTION_CHECKLIST.md` with risk + mitigation notes | Commit `chore(governance): harden pytest discovery + refresh trackers`, prep PR section with evidence |
+| **W1 – Backend Migration & Deploy Recovery** | Finish Alembic parity + entitlement regressions, verify billing/subscription suites, capture DB transcript | `pytest backend/tests/test_billing_endpoints.py backend/tests/test_subscription_error_paths.py --cov-report=term-missing` + `alembic upgrade head` | Append results to `docs/DEPLOYMENT_HEALTH.md`, `backend-test-baseline-2025-11-12.txt` | Push Conventional Commit `fix(backend): align billing migrations + redeploy` and rerun `scripts/verify_deployment.py production` |
+| **W2 – DEV-008 Document Room Completion** | Extend PermissionModal / UploadPanel RED specs for quota + owner lock, implement share/move/delete modals, wire MSW mocks | `cd frontend && npx vitest run src/components/documents/PermissionModal.test.tsx src/components/documents/UploadPanel.test.tsx --reporter=verbose` | Update `docs/bmad/stories/DEV-008-secure-document-data-room.md` with screenshots + coverage | Merge DEV-008 branch, rerun `npm --prefix frontend run test -- documents`, capture Lighthouse delta |
+| **W3 – DEV-016 Podcast Studio Video/Transcription** | Add FastAPI services, storage adapters, React upload modal; follow TDD via backend + frontend paired specs | Backend: `pytest backend/tests/test_podcast_api.py -k video`; Frontend: `npx vitest run src/components/podcast/VideoUploadModal.test.tsx` | Refresh PRD + `docs/marketing/PODCAST-STUDIO-STATUS.md`, log quotas + feature flags | Deploy backend + frontend, attach smoke + UI demo to `DEPLOYMENT-SESSION-SUMMARY.md` |
+| **W4 – DEV-018 Deal Matching Intelligence** | Implement scoring analytics, criteria builder refinement, optimistic actions | `npx vitest run src/pages/deals/MatchingWorkspace.test.tsx` + targeted backend contract tests | Update `docs/bmad/stories/DEV-018-deal-matching.md`, share telemetry plan | Commit `feat(dev-018): intelligence workspace complete`, rerun integration smoke |
+| **W5 – MARK-002/OPS Finalization** | Close SEO/Lighthouse gaps, structured data QA, publish remaining content/case studies | `npm --prefix frontend run test && npm --prefix frontend run build && npm --prefix frontend run preview -- --smoke` + Lighthouse CI | Update `docs/marketing/MARKETING-COMPLETION-STATUS-2025-11-11.md`, attach screenshots/video | Trigger Render deploys (`trigger_render_deploy.py`), update `latest-deploy*.json`, run `scripts/run_smoke_tests.sh production` |
+
+This refresh keeps every loop inside BMAD’s Build → Measure → Analyze → Deploy cadence and anchors implementation to explicit TDD guardrails so the project can reach the documented 100% completion target with auditable evidence.
+
 ### Workstream Matrix
 
 | Workstream | Scope | Primary TDD Entry Point | Definition of Done |
