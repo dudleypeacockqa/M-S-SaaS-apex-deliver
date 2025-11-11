@@ -13,7 +13,7 @@ WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.y
 
 CURRENT_PHASE: 4-Implementation
 CURRENT_WORKFLOW: dev-story
-CURRENT_AGENT: dev
+CURRENT_AGENT: devops
 PHASE_1_COMPLETE: true
 PHASE_2_COMPLETE: true
 PHASE_3_COMPLETE: true
@@ -21,36 +21,37 @@ PHASE_4_COMPLETE: false
 
 ## Current Story Status
 
-STORY_ID: Sprint-1B-Admin-Code-Prune
-STORY_STATUS: NOT_STARTED
-STORY_RESULT: Sprint 1A coverage uplift complete — routes 94% and service 84% after executing targeted subscription suites.
+STORY_ID: W1-2025-11-11A-Deploy-Evidence
+STORY_STATUS: COMPLETE
+STORY_RESULT: Backend/frontend deploy logs + smoke outputs captured; ready to scrub plaintext DB credential
 BLOCKERS: None
 
 ## Next Action
 
-NEXT_ACTION: Remove unused admin API modules/tests and rerun `pytest --cov=app` to lock in ≥80% backend coverage.
-NEXT_COMMAND: cd backend && pytest --maxfail=1 --cov=app --cov-report=term-missing
-NEXT_AGENT: dev
+NEXT_ACTION: Remove plaintext DSN from `fix_production_alembic.py`, rotate DB credential per env reference, document rotation
+NEXT_COMMAND: Update helper script + env docs, log in deployment checklist
+NEXT_AGENT: devops
 PRIORITY: P0
-RATIONALE: Cleaning dead code lifts coverage denominator and unblocks W2 feature delivery.
+RATIONALE: Secret hygiene needed before moving to W2 DEV-011 work
 
 ## Completed This Session
 
-SESSION_ID: Session-2025-11-10I
+SESSION_ID: Session-2025-11-11F
 COMPLETED_WORK:
-- Added webhook dispatch tests in `test_subscription_error_paths.py` to exercise `stripe_webhook` branches.
-- Re-ran subscription billing + service edge case suites with coverage.
-- Recorded new coverage baseline (routes 94%, service 84%) in BMAD tracker.
+- Captured curl output for backend /health and frontend HEAD request
+- Logged smoke evidence in deployment docs
 
-FILES_MODIFIED:
-- backend/tests/test_subscription_error_paths.py
+FILES MODIFIED:
+- docs/DEPLOYMENT_HEALTH.md
+- docs/DEPLOYMENT-SESSION-SUMMARY.md
+- backend-deploy.json, frontend-deploy.json
 - docs/bmad/BMAD_PROGRESS_TRACKER.md
-- docs/bmad/bmm-workflow-status.md
+- docs/bmad/bmm-workflow-status.md (this file)
 
 TEST_RESULTS:
-- pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py tests/test_subscription_service_edge_cases.py --cov=app.api.routes.subscriptions --cov=app.services.subscription_service --cov-report=term-missing
-  - 53 passed / 4 skipped, routes 94%, service 84%
+- Backend curl /health → 200, payload recorded
+- Frontend curl -I root → 200, headers recorded
 
 ---
 
-_Last Updated: 2025-11-10T20:20:00Z_
+_Last Updated: 2025-11-11T06:35:00Z_

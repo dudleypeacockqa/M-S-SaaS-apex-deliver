@@ -1,18 +1,33 @@
 """Route package exports."""
 
-from . import admin, auth, dashboard, deal_matching, deals, documents, financial, podcasts, subscriptions, tasks, valuation
-# NOTE: master_admin temporarily disabled - incomplete schemas
-# from . import master_admin
+from . import (
+    auth,
+    blog,
+    dashboard,
+    deal_matching,
+    deals,
+    documents,
+    financial,
+    marketing,
+    master_admin,
+    pipeline_templates,
+    podcasts,
+    subscriptions,
+    tasks,
+    valuation,
+)
 
 __all__ = [
-    "admin",
     "auth",
+    "blog",
     "dashboard",
     "deal_matching",
     "deals",
     "documents",
     "financial",
-    # "master_admin",  # Disabled - incomplete schemas
+    "marketing",
+    "master_admin",
+    "pipeline_templates",
     "podcasts",
     "subscriptions",
     "tasks",
