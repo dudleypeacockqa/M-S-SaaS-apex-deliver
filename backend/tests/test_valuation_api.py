@@ -4,6 +4,8 @@ from uuid import uuid4
 
 from fastapi import status
 
+from app.services import valuation_service
+
 
 def _create_valuation(client, deal_id: str, headers: dict, payload: dict):
     return client.post(
@@ -299,6 +301,35 @@ class TestValuationApi:
         assert scenario_log is not None
         assert scenario_log.scenario_id == scenario_id
 
+    def test_generate_export_forbidden_for_solo(self,
+        client,
+        create_deal_for_org,
+        solo_user,
+        growth_user,
+    ):
+        from app.api.dependencies.auth import get_current_user
+        from app.main import app
+
+        deal, _, _ = create_deal_for_org()
+
+        # Create valuation as growth user
+        app.dependency_overrides[get_current_user] = lambda: growth_user
+        create_resp = _create_valuation(client, deal.id, {"Authorization": "Bearer growth"}, VALUATION_PAYLOAD)
+        valuation_id = create_resp.json()["id"]
+
+        # Try to export as solo user (should fail)
+        app.dependency_overrides[get_current_user] = lambda: solo_user
+        response = client.post(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/exports",
+            json={"export_type": "pdf"},
+            headers={"Authorization": "Bearer solo"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+        # Cleanup
+        app.dependency_overrides.pop(get_current_user, None)
+
     def test_generate_export_rejects_foreign_scenario(
         self,
         client,
@@ -390,3 +421,26 @@ class TestValuationApi:
         summary = response.json()
         assert summary["count"] == 1
         assert summary["enterprise_value_range"]["median"] is None  # no EV yet
+
+    def test_get_scenario_summary_forbidden_for_solo_tier(
+        self,
+        client,
+        create_deal_for_org,
+        auth_headers,
+        db_session,
+    ):
+        deal, growth_user, _ = create_deal_for_org()
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+            created_by=growth_user.id,
+            **VALUATION_PAYLOAD,
+        )
+
+        response = client.get(
+            f"/api/deals/{deal.id}/valuations/{valuation.id}/scenarios/summary",
+            headers=auth_headers,
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
