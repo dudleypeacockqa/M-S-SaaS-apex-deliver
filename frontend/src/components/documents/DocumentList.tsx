@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   deleteDocument,
@@ -7,6 +7,7 @@ import {
   listDocuments,
   type Document,
 } from '../../services/api/documents'
+import { BulkActionsToolbar } from './BulkActionsToolbar'
 
 interface DocumentListProps {
   dealId: string
@@ -50,6 +51,10 @@ export const DocumentList: React.FC<DocumentListProps> = ({
   })
 
   const documents = data?.items ?? []
+  const selectedDocuments = useMemo(
+    () => documents.filter((doc) => selectedIds.includes(doc.id)),
+    [documents, selectedIds]
+  )
 
   useEffect(() => {
     setSelectedIds([])
@@ -57,9 +62,8 @@ export const DocumentList: React.FC<DocumentListProps> = ({
 
   useEffect(() => {
     if (!onSelectionChange) return
-    const selectedDocuments = documents.filter((doc) => selectedIds.includes(doc.id))
     onSelectionChange(selectedDocuments)
-  }, [documents, selectedIds, onSelectionChange])
+  }, [selectedDocuments, onSelectionChange])
 
   useEffect(() => {
     if (error && onError) {
@@ -130,6 +134,23 @@ export const DocumentList: React.FC<DocumentListProps> = ({
     }
   }
 
+  const handleClearSelection = useCallback(() => {
+    setSelectedIds([])
+  }, [])
+
+  const handleBulkDownload = useCallback(() => {
+    selectedDocuments.forEach((doc) => downloadMutation.mutate(doc.id))
+  }, [selectedDocuments, downloadMutation])
+
+  const handleBulkDelete = useCallback(() => {
+    if (selectedDocuments.length === 0) return
+    if (!window.confirm('Delete selected documents?')) {
+      return
+    }
+    selectedDocuments.forEach((doc) => deleteMutation.mutate(doc.id))
+    setSelectedIds([])
+  }, [selectedDocuments, deleteMutation])
+
   if (error) {
     const message = error instanceof Error ? error.message : 'Failed to load documents'
     return (
@@ -153,6 +174,17 @@ export const DocumentList: React.FC<DocumentListProps> = ({
 
   return (
     <div className="space-y-3">
+      {selectedIds.length > 0 && (
+        <BulkActionsToolbar
+          selectedCount={selectedIds.length}
+          disableDownload={downloadMutation.isPending}
+          disableDelete={deleteMutation.isPending}
+          onDownload={handleBulkDownload}
+          onDelete={handleBulkDelete}
+          onClearSelection={handleClearSelection}
+        />
+      )}
+
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2">
           <label className="text-xs font-medium text-slate-500" htmlFor="document-search">

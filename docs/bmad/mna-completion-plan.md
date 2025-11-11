@@ -24,7 +24,7 @@ _Last updated: 2025-11-11_
   3. Implement components + shared `useDocumentRoom` hook until tests pass; refactor UI state once GREEN.
   4. Extend backend pytest coverage for any new entitlement checks if API updates needed.
 - **Docs to touch**: story file in `docs/stories/` (create if missing), PRD addendum, UX spec updates, completion plan progress note.
-- **Status 2025-11-11**: Upload panel enhanced tests running GREEN via `VITEST_POOL=forks`; new RED tests added for FolderTree persistence + permission entitlement errors (Vitest worker pool needs permanent fix before GREEN work begins).
+- **Status 2025-11-11**: Upload panel suite GREEN (`--pool vmThreads` workaround); FolderTree persistence + PermissionModal entitlement alerts implemented; DocumentList now exposes bulk download/delete/clear with Vitest coverage.
 
 ### 3.2 DEV-016 Podcast Studio Subscription Add-On (P0)
 - **Goal**: Deliver video upload, transcription, quota reset, YouTube metadata sync, live streaming.

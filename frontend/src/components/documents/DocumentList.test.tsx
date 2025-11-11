@@ -398,4 +398,100 @@ describe('DocumentList', () => {
 
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
+
+  it('shows bulk actions toolbar when documents are selected', async () => {
+    const { listDocuments } = await import('../../services/api/documents');
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Ops Guide.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+        { id: 'doc-2', name: 'Playbook.docx', file_size: 2048, file_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', version: 2, created_at: '2025-01-02', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 2,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
+
+    renderWithProviders(
+      <DocumentList dealId="deal-1" folderId={null} />
+    );
+
+    const firstCheckbox = await screen.findByRole('checkbox', { name: /select ops guide/i });
+    fireEvent.click(firstCheckbox);
+    const secondCheckbox = await screen.findByRole('checkbox', { name: /select playbook/i });
+    fireEvent.click(secondCheckbox);
+
+    expect(screen.getByText(/2 selected/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /clear selection/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByText(/selected/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it('bulk download triggers download for each selected document', async () => {
+    const { listDocuments, downloadDocument } = await import('../../services/api/documents');
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Checklist.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+        { id: 'doc-2', name: 'Brief.docx', file_size: 2048, file_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', version: 3, created_at: '2025-01-02', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 2,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
+    vi.mocked(downloadDocument).mockResolvedValue('blob:url');
+
+    renderWithProviders(
+      <DocumentList dealId="deal-1" folderId={null} />
+    );
+
+    fireEvent.click(await screen.findByRole('checkbox', { name: /select checklist/i }));
+    fireEvent.click(await screen.findByRole('checkbox', { name: /select brief/i }));
+
+    const bulkDownloadButton = await screen.findByRole('button', { name: /download selected documents/i });
+    fireEvent.click(bulkDownloadButton);
+
+    await waitFor(() => {
+      expect(downloadDocument).toHaveBeenCalledTimes(2);
+      expect(downloadDocument).toHaveBeenCalledWith('deal-1', 'doc-1');
+      expect(downloadDocument).toHaveBeenCalledWith('deal-1', 'doc-2');
+    });
+  });
+
+  it('bulk delete calls delete API for each selected document when confirmed', async () => {
+    const { listDocuments, deleteDocument } = await import('../../services/api/documents');
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Archive1.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+        { id: 'doc-2', name: 'Archive2.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-02', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 2,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
+    vi.mocked(deleteDocument).mockResolvedValue(undefined);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    renderWithProviders(
+      <DocumentList dealId="deal-1" folderId={null} />
+    );
+
+    fireEvent.click(await screen.findByRole('checkbox', { name: /select archive1/i }));
+    fireEvent.click(await screen.findByRole('checkbox', { name: /select archive2/i }));
+
+    const bulkDeleteButton = await screen.findByRole('button', { name: /delete selected documents/i });
+    fireEvent.click(bulkDeleteButton);
+
+    await waitFor(() => {
+      expect(confirmSpy).toHaveBeenCalled();
+      expect(deleteDocument).toHaveBeenCalledWith('deal-1', 'doc-1');
+      expect(deleteDocument).toHaveBeenCalledWith('deal-1', 'doc-2');
+    });
+
+    confirmSpy.mockRestore();
+  });
 });

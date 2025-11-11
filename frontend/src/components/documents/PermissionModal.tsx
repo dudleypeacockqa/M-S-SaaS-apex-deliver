@@ -23,6 +23,19 @@ const ROLE_OPTIONS: Array<{ value: DocumentPermission['role']; label: string }> 
 export const PermissionModal: React.FC<PermissionModalProps> = ({ documentId, isOpen, onClose }) => {
   const queryClient = useQueryClient()
   const [email, setEmail] = useState('')
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const handleError = (error: unknown) => {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const response = (error as { response?: { data?: { detail?: string } } }).response
+      const detail = response?.data?.detail
+      setErrorMessage(detail ?? 'Unable to update permissions right now.')
+    } else if (error instanceof Error) {
+      setErrorMessage(error.message)
+    } else {
+      setErrorMessage('Unable to update permissions right now.')
+    }
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ['document-permissions', documentId],
@@ -38,19 +51,29 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({ documentId, is
     mutationFn: (payload: { user_email: string }) => addPermission(documentId, { ...payload, role: 'viewer' }),
     onSuccess: () => {
       setEmail('')
+      setErrorMessage(null)
       invalidate()
     },
+    onError: handleError,
   })
 
   const updateMutation = useMutation({
     mutationFn: (args: { permissionId: string; role: DocumentPermission['role'] }) =>
       updatePermission(args.permissionId, { role: args.role }),
-    onSuccess: () => invalidate(),
+    onSuccess: () => {
+      setErrorMessage(null)
+      invalidate()
+    },
+    onError: handleError,
   })
 
   const removeMutation = useMutation({
     mutationFn: (permissionId: string) => removePermission(permissionId),
-    onSuccess: () => invalidate(),
+    onSuccess: () => {
+      setErrorMessage(null)
+      invalidate()
+    },
+    onError: handleError,
   })
 
   if (!isOpen) {
@@ -71,6 +94,12 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({ documentId, is
         </div>
 
         <div className="mt-4 space-y-3">
+          {errorMessage && (
+            <div role="alert" className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {errorMessage}
+            </div>
+          )}
+
           <div className="flex gap-2">
             <input
               type="email"

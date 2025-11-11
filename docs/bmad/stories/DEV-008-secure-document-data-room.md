@@ -59,7 +59,12 @@ _Last updated: 2025-11-11_
 - Coordinate with deployment plan to ensure new environment variables or storage configs are documented.
 - Keep BMAD workflow tracker updated after each significant milestone (brainstorm/design already completed, next entry under Implementation).
 
+## Progress Log
+- 2025-11-11: UploadPanel enhanced Vitest suite running GREEN (PowerShell + `--pool vmThreads` workaround) with drag/drop + queue behaviours.
+- 2025-11-11: FolderTree persistence + PermissionModal entitlement alerts implemented after RED tests; Vitest suites now pass under `--pool vmThreads`.
+- 2025-11-11: DocumentList integrates BulkActionsToolbar for multi-select download/delete/clear; new Vitest coverage exercises optimistic flows.
+
 ## Next Steps
-1. Finalize MSW handler scaffolding + ensure Vitest config loads it.
-2. Write RED tests for FolderTree + UploadPanel (first loop).
-3. Implement functionality to satisfy tests, capture evidence, update docs, and repeat for remaining areas.
+1. Extend BulkActions coverage to move/archive flows and optimistic rollback/error toasts (DocumentWorkspace wiring).
+2. Finalize MSW handler scaffolding + ensure Vitest config loads it.
+3. Implement remaining UI polish and update PRD/UX docs after GREEN.
