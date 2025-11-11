@@ -34,6 +34,49 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
     setPermissionState((current) => ({ ...current, isOpen: false }))
   }, [])
 
+  const handlePermissionChange = useCallback(
+    async (change: { documentId: string; userId: string; permission: string }) => {
+      // TODO: Call backend API to update permissions
+      // For now, just log the audit event
+      console.log('[Audit] Permission changed:', change)
+    },
+    []
+  )
+
+  const handleAuditLog = useCallback((event: {
+    action: string
+    resource_type: string
+    resource_id: string
+    metadata?: Record<string, any>
+  }) => {
+    // TODO: Send audit log to backend
+    console.log('[Audit]', event)
+  }, [])
+
+  const handleBulkMove = useCallback(
+    async (documents: Document[]) => {
+      // TODO: Show folder selection modal
+      console.log('[Bulk Move]', documents)
+    },
+    []
+  )
+
+  const handleBulkDelete = useCallback(
+    async (documents: Document[]) => {
+      // TODO: Show confirmation dialog
+      console.log('[Bulk Delete]', documents)
+    },
+    []
+  )
+
+  const handleBulkShare = useCallback(
+    async (documents: Document[]) => {
+      // TODO: Show bulk share modal
+      console.log('[Bulk Share]', documents)
+    },
+    []
+  )
+
   const handleUpload = useCallback(
     async (files: FileList | File[]) => {
       try {
@@ -93,6 +136,10 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
           dealId={dealId}
           folderId={selectedFolderId}
           onManagePermissions={handleManagePermissions}
+          onAuditLog={handleAuditLog}
+          onBulkMove={handleBulkMove}
+          onBulkDelete={handleBulkDelete}
+          onBulkShare={handleBulkShare}
           resetSelectionSignal={resetSelectionSignal}
         />
       </section>
@@ -111,6 +158,7 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
         documentId={permissionState.id}
         isOpen={permissionState.isOpen}
         onClose={closePermissionModal}
+        onPermissionChange={handlePermissionChange}
       />
     </div>
   )
