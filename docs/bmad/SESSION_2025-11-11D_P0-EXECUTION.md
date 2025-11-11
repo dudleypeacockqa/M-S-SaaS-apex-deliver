@@ -99,7 +99,7 @@ test_root_redirects - PASSED ✅
 Files Scanned: 14
 Files Modified: 13
 Total Replacements: 18
-Pattern: iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t → [REDACTED-ROTATED-2025-11-11]
+Pattern: [REDACTED-ROTATED-2025-11-11] → [REDACTED-ROTATED-2025-11-11]
 ```
 
 **Files Scrubbed**:

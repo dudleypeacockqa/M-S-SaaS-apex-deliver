@@ -1,3 +1,7 @@
+> **2025-11-11 07:15 UTC**
+> - Backend deploy `dep-d49e0qfdiees73ae691g` (service `srv-d3ii9qk9c44c73aqsli0`, commit `863f8dcf`) is LIVE. Health endpoint returned 200 with `{"status":"healthy","clerk_configured":true,...}`.
+> - Frontend deploy `dep-d49e05ig0ims73e55qk0` (service `srv-d3ihptbipnbc73e72ne0`, commit `06c15cc3`) **failed during build**. Build logs pending review; deployment remains on prior commit until resolved.
+> - Smoke script `bash scripts/run_smoke_tests.sh production` passed (backend health, frontend 200, backend smoke pytest 2/2).
 # Deployment Health Log - 2025-11-11
 
 ## ✅ P1-3 Deployment Validation (2025-11-11T07:05Z)
@@ -101,4 +105,5 @@ Smoke checks (2025-11-11 06:32Z):
 
 ## Frontend Manual Verification (2025-11-11)
 - Cloudflare 403 blocks automated check; manual browser verification is pending. Capture screenshot + note once available.
+
 

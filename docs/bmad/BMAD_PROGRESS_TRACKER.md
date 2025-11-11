@@ -1,4 +1,24 @@
-## Session 2025-11-11J - DEV-011 Scenario Summary Commit ✅
+## Session 2025-11-11H - Deploy Evidence & Smoke Tests ✅
+
+**Status**: [GREEN] **COMPLETE** – Blog slug routing fixed, backend smoke suite passed, Render deploys refreshed (frontend build still failing)
+**Duration**: ~40 min (Codex CLI)
+**Priority**: P1 – Required before moving to DEV-008
+
+### Achievements
+- Updated `BlogPost.tsx` related-post links to use slugs and added `@/components/ui/separator` + Vitest guard (`BlogPost.test.tsx`).
+- Triggered new backend deploy `dep-d49e0qfdiees73ae691g` (commit `863f8dcf`, LIVE) and attempted frontend deploy `dep-d49e05ig0ims73e55qk0` (build_failed) via Render API.
+- Ran `bash scripts/run_smoke_tests.sh production`: backend health 200/healthy, frontend 200, backend smoke pytest 2/2.
+- Captured deploy metadata in `latest-deploy*.json` and appended results to `docs/DEPLOYMENT_HEALTH.md` + `PRODUCTION-DEPLOYMENT-CHECKLIST.md`.
+
+### Testing/TDD Notes
+- `npx vitest run src/pages/marketing/BlogPost.test.tsx --pool=vmThreads` (passes).
+- `bash scripts/run_smoke_tests.sh production` (passes; backend health JSON + frontend HTTP 200).
+
+### Next Steps
+1. Retry frontend deploy after reviewing Render build logs.
+2. Begin Sprint 1B (admin code prune) once frontend deploy is green or blocker documented.
+
+---## Session 2025-11-11J - DEV-011 Scenario Summary Commit ✅
 
 **Status**: ✅ COMPLETE – Scenario summary work committed (8f3aafe)
 **Duration**: ~10 min (Claude Code)
@@ -3283,6 +3303,7 @@ render(
 - Upload queue persistence across page refreshes
 
 ---
+
 
 
 

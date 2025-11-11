@@ -25,6 +25,7 @@ _Last updated: 2025-11-11_
    - Create `frontend/src/components/documents/UploadPanel.enhanced.test.tsx` (already staged) plus new suites for FolderTree, PermissionModal, BulkActions toolbar.
    - Configure MSW handlers in `frontend/src/tests/mocks/documentsHandlers.ts` (new) to simulate API responses + error cases.
    - Ensure `vitest.config.ts` loads the new MSW layer (already dirty in repo—review and finalize once tests fail as expected).
+   - Harness note: single-file Vitest runs currently hang when launched from bash; use PowerShell with `VITEST_POOL=forks` (documented 2025-11-11) until we land a config-level fix.
 
 2. **RED Cycles**
    - Write failing tests for:

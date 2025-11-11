@@ -33,7 +33,7 @@ Files scanned:   14
 Files modified:  13
 Total replacements: 18
 
-Replacement Pattern: iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t → [REDACTED-ROTATED-2025-11-11]
+Replacement Pattern: [REDACTED-ROTATED-2025-11-11] → [REDACTED-ROTATED-2025-11-11]
 ```
 
 ### Files Modified
@@ -191,4 +191,12 @@ Replacement Pattern: iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t → [REDACTED-ROTATED-2025
 **Phase 2 Status**: ⏳ PENDING (Manual rotation required in Render Dashboard)
 **Phase 3 Status**: ⏳ PENDING (Awaits Phase 2 completion)
 
-**Last Updated**: 2025-11-11 06:27 UTC
+**Last Updated**: 2025-11-11 06:45 UTC
+
+---
+
+## Environment Reference Update (2025-11-11 06:45 UTC)
+
+- `ApexDeliver Environment Variables - Master Reference.md` (gitignored) now records the rotated placeholder `[REDACTED-ROTATED-2025-11-11]` for `DATABASE_URL` and the new helper-only `RENDER_PROD_DATABASE_URL`.
+- Added post-rotation instruction block reminding operators to update both env vars immediately after Render issues the new password.
+- Cross-referenced the sanitized `fix_production_alembic.py`, which now reads exclusively from `RENDER_PROD_DATABASE_URL` and masks credentials in console output to avoid future leakage.

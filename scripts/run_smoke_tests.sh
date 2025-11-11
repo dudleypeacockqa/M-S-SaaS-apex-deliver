@@ -23,7 +23,7 @@ log ""
 case "$ENVIRONMENT" in
     production)
         export SMOKE_TEST_BASE_URL="https://ma-saas-backend.onrender.com"
-        export SMOKE_TEST_FRONTEND_URL="https://apexdeliver.com"
+        export SMOKE_TEST_FRONTEND_URL="https://100daysandbeyond.com"
         ;;
     staging)
         export SMOKE_TEST_BASE_URL="https://staging-ma-saas-backend.onrender.com"
@@ -102,4 +102,3 @@ log ""
 divider
 log "✅ Smoke tests completed successfully"
 divider
-

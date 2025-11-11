@@ -228,4 +228,30 @@ describe('PermissionModal', () => {
 
     expect(onClose).toHaveBeenCalled();
   });
+
+  it('should show entitlement error when add user request is rejected', async () => {
+    const { listPermissions, addPermission } = await import('../../services/api/documents');
+    vi.mocked(listPermissions).mockResolvedValue([]);
+    vi.mocked(addPermission).mockRejectedValue({
+      response: { status: 403, data: { detail: 'Upgrade required to share documents' } },
+    });
+
+    renderWithProviders(
+      <PermissionModal
+        documentId="doc-1"
+        isOpen={true}
+        onClose={vi.fn()}
+      />
+    );
+
+    const emailInput = await screen.findByPlaceholderText(/enter email/i);
+    fireEvent.change(emailInput, { target: { value: 'restricted@example.com' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /add user/i }));
+
+    await waitFor(() => {
+      expect(addPermission).toHaveBeenCalled();
+      expect(screen.getByRole('alert')).toHaveTextContent('Upgrade required to share documents');
+    });
+  });
 });

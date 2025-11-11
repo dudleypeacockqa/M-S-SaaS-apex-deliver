@@ -5,15 +5,15 @@
 
 ---
 
-## Current Delivery Snapshot (2025-11-12 00:10 UTC)
-- **Backend tests**: Full pytest run (681 pass / 74 skip) last executed 2025-11-10; latest targeted subscription/billing suite (26 pass / 4 skip) executed directly against Render Postgres with 79%/59% coverage.
-- **Frontend tests**: Only targeted valuation/podcast suites are green; full npm run test -- --runInBand --coverage still outstanding until DEV-008/016/018 complete.
-- **Deployment**: Backend service srv-d3ii9qk9c44c73aqsli0 remains on deploy dep-d492u7ag0ims73e3mkc0 (commit 64ad4fb5). Frontend service srv-d3ihptbipnbc73e72ne0 deploy dep-d492tq2g0ims73e3miig is stuck build_in_progress. Health endpoints return 200, but redeploy logs + smoke evidence must be refreshed.
-- **Git state**: HEAD a027963 (docs/bmad: add Session 2025-11-11C - Phase 2 Complete Summary) matches origin; worktree still very dirty (>.9k tracked files) across BMAD manifests, migrations, podcast tests, document/deal-matching UIs, and deployment notes.
-- **Migrations**: Alembic upgrade head executed 2025-11-10 21:45 UTC against Render Postgres; chain currently at dc2c0f69c1b1. Re-run required after the next deploy.
-- **BMAD artefacts**: Plan updated in this file; tracker refreshed through Session 2025-11-10K; workflow file still reflects earlier phase summary because npx bmad-method workflow-init is unavailable in this shell.
+## Current Delivery Snapshot (2025-11-12 00:20 UTC)
+- **Backend tests**: Full suite `pytest --maxfail=1 backend/tests --cov=backend/app --cov-report=term-missing` (706 passed / 77 skipped) with overall coverage 90%. Subscription routes 94%, subscription service 84%.
+- **Frontend tests**: Only targeted valuation (13/13) and podcast (26/26) suites re-run; full `npm run test -- --runInBand --coverage` still pending until DEV-008/016/018 work lands.
+- **Deployment**: ✅ Backend `srv-d3ii9qk9c44c73aqsli0` live on deploy `dep-d49430euk2gs73es0cpg` (commit `79a07c5`). ✅ Frontend `srv-d3ihptbipnbc73e72ne0` live on deploy `dep-d4944ochg0os738k2sc0` (commit `be33237`). Health endpoints 200; smoke evidence to be refreshed per P1-3 checklist.
+- **Git state**: `HEAD` `b32bac0 refactor(tests): simplify PodcastStudioRouting integration test`; branch matches `origin/main` but worktree contains ongoing story edits (BMAD docs, DEV-008 stubs, valuation tests).
+- **Migrations**: `alembic upgrade head` executed directly against Render Postgres (Session 2025-11-10G); chain at `dc2c0f69c1b1`. Re-run after next deploy for evidence.
+- **BMAD artefacts**: Tracker + workflow updated through Session 2025-11-12A (coverage baseline); npx workflow tooling still unavailable in this shell.
 
-### Dirty Tree Mapping (2025-11-12 00:00 UTC)
+### Dirty Tree Mapping (2025-11-12 00:20 UTC)
 - `.bmad/**` manifests + docs - BMAD v6 install plus session logs still uncommitted upstream.
 - `backend/app/api/routes/podcasts.py`, `backend/tests/test_podcast_api.py`, `backend/app/services/transcription_service.py` - DEV-016 video/transcription + quota reset WIP.
 - `backend/alembic/versions/*.py` - uuid->string chain rewrite plus merge migrations awaiting Postgres verification.
@@ -57,7 +57,7 @@
   - **TDD cadence**: Continue component-by-component RED->GREEN loops; archive Lighthouse + Vitest outputs per phase under docs/marketing/.
 
 ### 5. Operations & Deployment Hardening (P0/P1)
-- **Status**: Backend still on deploy dep-d492u7ag0ims73e3mkc0 (64ad4fb5) and frontend deploy dep-d492tq2g0ims73e3miig remains build_in_progress; smoke artefacts updated 2025-11-10 21:45 UTC with Postgres verification but redeploy logs still missing.
+- **Status**: Latest backend/frontend redeploys (dep-d49430euk2gs73es0cpg / dep-d4944ochg0os738k2sc0) verified 2025-11-10 20:05 UTC; smoke artefacts/logs need refreshing after each sprint per P1-3 checklist.
 - **Actions**:
   - Refresh `.env` secrets, rerun `scripts/run_smoke_tests.sh production`, and capture outputs in DEPLOYMENT_HEALTH.md + PRODUCTION_DEPLOYMENT_CHECKLIST.md after each deploy.
   - Apply outstanding migrations in staging, confirm worker configs, update monitoring alerts.

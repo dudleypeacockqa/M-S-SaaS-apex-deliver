@@ -229,5 +229,84 @@ class BulkDeleteResponse(BaseModel):
     failed_reasons: dict[str, str] = {}
 
 
+# Document Sharing Schemas
+
+class ShareLinkCreate(BaseModel):
+    """Schema for creating a document share link."""
+
+    expires_in_days: int = Field(..., ge=0, le=365, description="Days until link expires (0 = immediate)")
+    allow_download: bool = Field(True, description="Allow file download via share link")
+    password_protected: bool = Field(False, description="Require password to access")
+    password: Optional[str] = Field(None, min_length=8, max_length=100, description="Password if protected")
+
+    @field_validator('password')
+    @classmethod
+    def password_required_when_protected(cls, v: Optional[str], values) -> Optional[str]:
+        # Access password_protected from values.data if available
+        data = values.data if hasattr(values, 'data') else {}
+        password_protected = data.get('password_protected', False)
+        if password_protected and not v:
+            raise ValueError('Password is required when password_protected is True')
+        if not password_protected and v:
+            raise ValueError('Password should not be provided when password_protected is False')
+        return v
+
+
+class ShareLinkResponse(BaseModel):
+    """Schema for share link response."""
+
+    share_link_id: str
+    share_url: str
+    expires_at: datetime
+    created_at: datetime
+    allow_download: bool
+    password_required: bool
+    access_count: int = 0
+
+    model_config = {"from_attributes": True}
+
+
+class ShareLinkListResponse(BaseModel):
+    """Schema for listing share links."""
+
+    share_links: List[ShareLinkResponse]
+
+
+class SharedDocumentResponse(BaseModel):
+    """Schema for accessing a shared document."""
+
+    document_name: str
+    file_size: int
+    file_type: str
+    allow_download: bool
+    download_url: Optional[str] = None
+
+    model_config = {"from_attributes": True}
+
+
+class ShareLinkPasswordVerify(BaseModel):
+    """Schema for verifying password-protected share link."""
+
+    password: str = Field(..., min_length=1, max_length=100)
+
+
+class ShareLinkStats(BaseModel):
+    """Schema for share link statistics."""
+
+    access_count: int
+    download_count: int = 0
+    last_accessed_at: Optional[datetime]
+    total_downloads: int = 0  # Alias for download_count
+
+    model_config = {"from_attributes": True}
+
+
+class ShareLinkRevokeResponse(BaseModel):
+    """Schema for share link revocation response."""
+
+    message: str
+    revoked_at: datetime
+
+
 
 

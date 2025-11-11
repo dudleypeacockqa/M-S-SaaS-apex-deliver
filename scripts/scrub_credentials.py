@@ -11,7 +11,7 @@ if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 # Exposed password to scrub
-EXPOSED_PASSWORD = "iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t"
+EXPOSED_PASSWORD = "[REDACTED-ROTATED-2025-11-11]"
 PLACEHOLDER = "[REDACTED-ROTATED-2025-11-11]"
 
 # Files to scrub

@@ -1,19 +1,13 @@
-[
-  {
-    "deploy": {
-      "id": "dep-d4944ochg0os738k2sc0",
-      "commit": {
-        "id": "be3323735b1849473235a3f2f1c94c05affc7532",
-        "message": "docs(bmad): add Session 2025-11-10N - Render deployment fix complete",
-        "createdAt": "2025-11-10T19:51:42Z"
-      },
-      "status": "live",
-      "trigger": "api",
-      "createdAt": "2025-11-10T19:52:07.467147Z",
-      "updatedAt": "2025-11-10T20:02:48.886001Z",
-      "startedAt": "2025-11-10T19:52:04.401675Z",
-      "finishedAt": "2025-11-10T20:02:23.127159Z"
-    },
-    "serviceId": "srv-d3ihptbipnbc73e72ne0"
+{
+  "health_checks": {
+    "backend_health": "https://ma-saas-backend.onrender.com/health",
+    "backend_status": "200 healthy",
+    "frontend_url": "https://100daysandbeyond.com",
+    "frontend_status": "200",
+    "smoke_tests": {
+      "script": "scripts/run_smoke_tests.sh production",
+      "result": "pass",
+      "details": "Backend health OK, frontend 200, backend smoke pytest 2/2"
+    }
   }
-]
+}

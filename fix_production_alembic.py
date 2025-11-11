@@ -8,9 +8,11 @@ import sys
 from typing import Optional
 
 from sqlalchemy import create_engine, text
+from sqlalchemy.engine import make_url
 
 DB_URL_ENV = "RENDER_PROD_DATABASE_URL"
 TARGET_HEAD = "dc2c0f69c1b1"
+MASKED_PASSWORD = "********"
 
 
 def _configure_stdout() -> None:
@@ -31,6 +33,18 @@ def _get_database_url() -> str:
     return url
 
 
+def _mask_database_url(url: str) -> str:
+    try:
+        parsed = make_url(url)
+    except Exception:
+        return "<unable to parse database URL>"
+
+    if parsed.password is None:
+        return str(parsed)
+
+    return str(parsed.set(password=MASKED_PASSWORD))
+
+
 def main() -> int:
     _configure_stdout()
     print("=" * 70)
@@ -39,7 +53,9 @@ def main() -> int:
     print()
 
     try:
-        engine = create_engine(_get_database_url())
+        db_url = _get_database_url()
+        print(f"[INFO] Using {DB_URL_ENV} with password masked: {_mask_database_url(db_url)}")
+        engine = create_engine(db_url)
     except Exception as exc:  # pragma: no cover
         print(f"[ERROR] Unable to create engine: {exc}")
         return 1

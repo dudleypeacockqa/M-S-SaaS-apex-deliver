@@ -201,3 +201,41 @@ class DocumentAccessLog(Base):
             f"action={self.action}, user_id={self.user_id})>"
         )
 
+
+class DocumentShareLink(Base):
+    """Document share link model for external secure sharing with expiring links."""
+
+    __tablename__ = "document_share_links"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    document_id = Column(String(36), ForeignKey("documents.id"), nullable=False)
+    share_token = Column(String(64), nullable=False, unique=True, index=True)  # Secure random token
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    allow_download = Column(Integer, default=1, nullable=False)  # SQLite: 1=True, 0=False
+    password_hash = Column(String(255), nullable=True)  # Bcrypt hash if password protected
+    access_count = Column(Integer, default=0, nullable=False)
+    last_accessed_at = Column(DateTime(timezone=True), nullable=True)
+    download_count = Column(Integer, default=0, nullable=False)
+    revoked_at = Column(DateTime(timezone=True), nullable=True)  # NULL = active, non-NULL = revoked
+    created_by = Column(String(36), ForeignKey("users.id"), nullable=False)
+    organization_id = Column(String(36), ForeignKey("organizations.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Relationships
+    document = relationship("Document")
+    creator = relationship("User", foreign_keys=[created_by])
+    organization = relationship("Organization")
+
+    __table_args__ = (
+        Index("idx_share_links_document_id", "document_id"),
+        Index("idx_share_links_token", "share_token"),
+        Index("idx_share_links_expires_at", "expires_at"),
+        Index("idx_share_links_org_id", "organization_id"),
+    )
+
+    def __repr__(self):
+        return (
+            f"<DocumentShareLink(id={self.id}, document_id={self.document_id}, "
+            f"expires_at={self.expires_at})>"
+        )
+

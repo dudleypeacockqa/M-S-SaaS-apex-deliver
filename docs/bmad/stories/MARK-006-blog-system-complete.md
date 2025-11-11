@@ -42,6 +42,7 @@ Completing this enables the content marketing pillar of the £1.4M ARR Year 1 go
   - Implement CMS/admin CRUD and production blog content sync.
   - Wire tests to MSW/MSR mocks for deterministic API responses.
   - Ensure marketing coverage ≥90% once DEV-011/016 dependencies land.
+- Coverage sprint 2025-11-12B: Extended Vitest suite with category/search query assertions, loading spinner checks, and error banner (`role="alert"`). Updated button variants and added clear-filters control for improved UX.
 
 ### Success Metrics
 - Blog API endpoints return 200 OK

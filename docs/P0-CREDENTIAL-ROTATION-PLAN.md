@@ -15,7 +15,7 @@ Database credentials were exposed in repository documentation and scripts during
 ## Exposed Credentials Inventory
 
 ### Database Password
-- **Exposed Value**: `iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t`
+- **Exposed Value**: `[REDACTED-ROTATED-2025-11-11]`
 - **Database**: `ma_saas_platform` (PostgreSQL on Render)
 - **Host**: `dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com`
 - **User**: `ma_saas_user`
@@ -44,7 +44,7 @@ Database credentials were exposed in repository documentation and scripts during
 **Duration**: 15-20 minutes
 
 1. **Replace exposed password with placeholder** in all 14 files
-   - Pattern: `iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t`
+   - Pattern: `[REDACTED-ROTATED-2025-11-11]`
    - Replacement: `[REDACTED-ROTATED-2025-11-11]`
 
 2. **Commit scrubbed files**

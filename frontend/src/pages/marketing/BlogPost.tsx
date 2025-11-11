@@ -45,6 +45,7 @@ const mockPost = {
 const mockRelatedPosts = [
   {
     id: "capital-structure-optimization",
+    slug: "capital-structure-optimization",
     title: "How CapLiquify Optimizes Capital Structure for Growth",
     excerpt: "A deep dive into debt-equity ratios and strategic financing for M&A targets.",
     category: "Finance",
@@ -52,6 +53,7 @@ const mockRelatedPosts = [
   },
   {
     id: "due-diligence-checklist",
+    slug: "due-diligence-checklist",
     title: "The Ultimate Due Diligence Checklist for Tech Acquisitions",
     excerpt: "A comprehensive guide to technical, legal, and financial due diligence.",
     category: "M&A Strategy",
@@ -59,6 +61,7 @@ const mockRelatedPosts = [
   },
   {
     id: "exit-strategy-planning",
+    slug: "exit-strategy-planning",
     title: "Planning Your Exit: From Seed to Strategic Acquisition",
     excerpt: "Understanding the timeline and valuation multiples for a successful company sale.",
     category: "Strategy",
@@ -76,7 +79,7 @@ const RelatedPostCard: React.FC<RelatedPostCardProps> = ({ post }) => (
   <Card className="flex flex-col h-full hover:shadow-lg transition-shadow duration-300">
     <CardHeader>
       <CardTitle className="text-lg font-semibold text-navy-800 hover:text-emerald-600 transition-colors">
-        <a href={`/blog/${post.id}`}>{post.title}</a>
+        <a href={`/blog/${post.slug}`}>{post.title}</a>
       </CardTitle>
     </CardHeader>
     <CardContent className="flex-grow">

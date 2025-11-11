@@ -313,4 +313,50 @@ describe('FolderTree', () => {
 
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
+
+  it('should persist expanded folders across remounts using localStorage', async () => {
+    const storageKey = 'folder-tree-expanded-deal-1';
+    const storageProto = Object.getPrototypeOf(window.localStorage);
+    const setItemSpy = vi.spyOn(storageProto, 'setItem');
+    const getItemSpy = vi.spyOn(storageProto, 'getItem').mockReturnValue(null);
+
+    const { listFolders } = await import('../../services/api/documents');
+    vi.mocked(listFolders).mockResolvedValue([
+      { id: 'folder-1', name: 'Playbooks', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0 },
+      { id: 'folder-2', name: 'Ops', parent_id: 'folder-1', deal_id: 'deal-1', created_at: '2025-01-02', document_count: 0 },
+    ]);
+
+    const renderTree = () =>
+      renderWithProviders(
+        <FolderTree
+          dealId="deal-1"
+          selectedFolderId={null}
+          onFolderSelect={vi.fn()}
+        />
+      );
+
+    const { unmount } = renderTree();
+
+    const expandTrigger = await screen.findByRole('button', { name: /expand playbooks/i });
+    fireEvent.click(expandTrigger);
+
+    await waitFor(() => {
+      expect(setItemSpy).toHaveBeenCalledWith(storageKey, JSON.stringify(['folder-1']));
+    });
+
+    // Simulate reload with stored expansion state
+    getItemSpy.mockReturnValue(JSON.stringify(['folder-1']));
+
+    unmount();
+    renderTree();
+
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: /expand playbooks/i })).not.toBeInTheDocument();
+      expect(screen.getByText('Ops')).toBeInTheDocument();
+    });
+
+    setItemSpy.mockRestore();
+    getItemSpy.mockRestore();
+    window.localStorage.removeItem(storageKey);
+  });
 });

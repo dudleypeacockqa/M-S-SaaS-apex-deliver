@@ -1,0 +1,46 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`YouTubeStatusBadge > matches snapshot for failed status 1`] = `
+<span
+  class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium capitalize bg-red-100 text-red-700"
+  data-testid="youtube-status-badge"
+>
+  Failed
+</span>
+`;
+
+exports[`YouTubeStatusBadge > matches snapshot for not_published status 1`] = `
+<span
+  class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium capitalize bg-gray-100 text-gray-700"
+  data-testid="youtube-status-badge"
+>
+  Not published
+</span>
+`;
+
+exports[`YouTubeStatusBadge > matches snapshot for processing status 1`] = `
+<span
+  class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium capitalize bg-amber-100 text-amber-700"
+  data-testid="youtube-status-badge"
+>
+  Processing…
+</span>
+`;
+
+exports[`YouTubeStatusBadge > matches snapshot for published status 1`] = `
+<span
+  class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium capitalize bg-emerald-100 text-emerald-700"
+  data-testid="youtube-status-badge"
+>
+  Published
+</span>
+`;
+
+exports[`YouTubeStatusBadge > matches snapshot for uploading status 1`] = `
+<span
+  class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium capitalize bg-blue-100 text-blue-700"
+  data-testid="youtube-status-badge"
+>
+  Uploading…
+</span>
+`;

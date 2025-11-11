@@ -1,3 +1,4 @@
+> 2025-11-11 07:15 UTC – Backend deploy dep-d49e0qfdiees73ae691g LIVE (commit 863f8dcf). Frontend deploy dep-d49e05ig0ims73e55qk0 failed during build; remain on previous commit until retry after fix. Smoke tests (scripts/run_smoke_tests.sh production) completed successfully.
 > **2025-11-10 20:05 UTC** – Backend deploy `dep-d49430euk2gs73es0cpg` & frontend deploy `dep-d4944ochg0os738k2sc0` triggered via API and verified healthy. Continue checklist from Phase 3 for post-deploy validation.
 - 2025-10-30 12:32 UTC: Smoke tests green (backend OK, frontend 403 due to Cloudflare; manual check next)
 - 2025-11-10 17:31 UTC: Render dry-run rehearsal prepped locally — Kanban SLA UI + valuation KPI suites green, migrations verified via pytest. Pending git push & Render redeploy to resolve `app.models.pipeline_template` error observed in latest Render logs.
@@ -70,4 +71,34 @@ INFO  [alembic.runtime.migration] Will assume transactional DDL.
 ```
 
 Result: production database confirmed at migration head `dc2c0f69c1b1`, and billing/subscription smoke tests remain GREEN (26 pass / 4 skip) against the live Render database.
+
+### API-triggered redeploy (2025-11-11 06:37 UTC)
+
+```bash
+# Trigger backend deploy
+curl -s -X POST -H "Authorization: Bearer rnd_oMIm1MFTqRNH8SE4fgiIiXTsNAqM" \
+  -H "Content-Type: application/json" --data '{}' \
+  https://api.render.com/v1/services/srv-d3ii9qk9c44c73aqsli0/deploys
+
+# Trigger frontend deploy
+curl -s -X POST -H "Authorization: Bearer rnd_oMIm1MFTqRNH8SE4fgiIiXTsNAqM" \
+  -H "Content-Type: application/json" --data '{}' \
+  https://api.render.com/v1/services/srv-d3ihptbipnbc73e72ne0/deploys
+
+# Poll backend status
+curl -s -H "Authorization: Bearer …" \
+  https://api.render.com/v1/services/srv-d3ii9qk9c44c73aqsli0/deploys/dep-d49difngi27c73c9ok5g
+
+# Poll frontend status
+curl -s -H "Authorization: Bearer …" \
+  https://api.render.com/v1/services/srv-d3ihptbipnbc73e72ne0/deploys/dep-d49dim6mcj7s73ee9vt0
+
+# Health checks
+curl -s https://ma-saas-backend.onrender.com/health
+curl -s -o /dev/null -w "%{http_code}" https://ma-saas-platform.onrender.com
+```
+
+- Backend deploy `dep-d49difngi27c73c9ok5g` (commit `17ce33b`) → **live** at 06:37Z; `/health` responded 200 with `clerk_configured`, `database_configured`, and `webhook_configured` all true.
+- Frontend deploy `dep-d49dim6mcj7s73ee9vt0` (commit `17ce33b`) currently `build_in_progress`; continue polling until Render reports `live` or `update_failed`, then rerun smoke scripts and capture screenshots/logs.
+- Evidence stored in `latest-deploy.json` (backend + frontend responses) and `docs/DEPLOYMENT_HEALTH.md`.
 
