@@ -616,10 +616,13 @@ describe('UploadPanel - Enhanced Features (Sprint 2 Task 1)', () => {
 
       await user.upload(fileInput, invalidFile);
 
-      await waitFor(() => {
-        expect(screen.getByRole('alert')).toHaveTextContent(/file type not allowed/i);
-        expect(screen.getByText(/allowed types: pdf, docx/i)).toBeInTheDocument();
-      });
+      const alerts = await screen.findAllByRole('alert');
+      const errorAlert = alerts.find((element) =>
+        element.textContent?.toLowerCase().includes('file type not allowed')
+      );
+      expect(errorAlert).toBeDefined();
+      expect(errorAlert?.textContent).toMatch(/allowed types: pdf, docx/i);
+      expect(handleUpload).not.toHaveBeenCalled();
     });
 
     it('should clear error message after successful upload', async () => {
