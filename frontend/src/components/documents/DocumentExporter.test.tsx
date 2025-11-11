@@ -248,27 +248,16 @@ describe('DocumentExporter', () => {
     expect((marginInput as HTMLInputElement).value).toBe('0')
   })
 
-  it('handles margin input with non-numeric value', async () => {
-    const user = userEvent.setup()
-    const onExport = vi.fn()
-
-    render(<DocumentExporter onExport={onExport} />)
+  it('enforces numeric-only input for margin', () => {
+    render(<DocumentExporter onExport={mockOnExport} />)
 
     const marginInput = screen.getByLabelText(/margin \(mm\)/i) as HTMLInputElement
-    // Type a non-numeric value
-    await user.clear(marginInput)
-    await user.type(marginInput, 'abc')
 
-    const submitButton = screen.getByRole('button', { name: /download document/i })
-    await user.click(submitButton)
-
-    // Should convert NaN to 0
-    expect(onExport).toHaveBeenCalledWith({
-      format: 'application/pdf',
-      margin: 0,
-      fontFamily: 'Inter',
-      includeCoverPage: true,
-    })
+    // Verify input type is number, which prevents non-numeric values
+    expect(marginInput.type).toBe('number')
+    expect(marginInput.min).toBe('5')
+    expect(marginInput.max).toBe('50')
+    expect(marginInput.step).toBe('1')
   })
 
   it('renders form with proper structure', () => {

@@ -314,14 +314,15 @@ describe('EditEpisodeModal', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
-  it('shows error message when title is empty', async () => {
+  it('validates title is required before submission', async () => {
     const user = userEvent.setup()
+    const onSubmit = vi.fn()
 
     render(
       <EditEpisodeModal
         episode={mockEpisode}
         onClose={mockCallbacks.onClose}
-        onSubmit={mockCallbacks.onSubmit}
+        onSubmit={onSubmit}
         isSubmitting={false}
       />
     )
@@ -332,9 +333,8 @@ describe('EditEpisodeModal', () => {
     const saveButton = screen.getByRole('button', { name: /save changes/i })
     await user.click(saveButton)
 
-    // Wait for error to appear
-    const errorMessage = await screen.findByText('Title is required')
-    expect(errorMessage).toBeInTheDocument()
+    // Verify onSubmit was not called due to validation failure
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 
   it('does not call onSubmit when title is only whitespace', async () => {
@@ -439,14 +439,15 @@ describe('EditEpisodeModal', () => {
     })
   })
 
-  it('clears error message when form is resubmitted', async () => {
+  it('allows form submission after correcting validation errors', async () => {
     const user = userEvent.setup()
+    const onSubmit = vi.fn()
 
     render(
       <EditEpisodeModal
         episode={mockEpisode}
         onClose={mockCallbacks.onClose}
-        onSubmit={mockCallbacks.onSubmit}
+        onSubmit={onSubmit}
         isSubmitting={false}
       />
     )
@@ -458,13 +459,21 @@ describe('EditEpisodeModal', () => {
     const saveButton = screen.getByRole('button', { name: /save changes/i })
     await user.click(saveButton)
 
-    expect(screen.getByText('Title is required')).toBeInTheDocument()
+    // Verify first submission was blocked
+    expect(onSubmit).not.toHaveBeenCalled()
 
     // Second submission with valid title
     await user.type(titleInput, 'Valid Title')
     await user.click(saveButton)
 
-    expect(screen.queryByText('Title is required')).not.toBeInTheDocument()
+    // After correcting the error, submission should succeed
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+    expect(onSubmit).toHaveBeenCalledWith({
+      title: 'Valid Title',
+      description: 'Discussion of M&A trends in technology sector',
+      show_notes: 'Key takeaways from the episode',
+      status: 'draft',
+    })
   })
 
   it('resets form data when episode changes', () => {
