@@ -235,6 +235,30 @@
 
 ---
 
+## Session 2025-11-12F - Governance Reset + Podcast Transcript TDD (Blocked) ⚠️
+
+**Status**: ⚠️ BLOCKED – BMAD CLI install requires interactive prompt; Vitest workers fail to start for Podcast transcript suite  
+**Duration**: ~30 min (Codex CLI)  
+**Priority**: P1 – Needed before W1 deploy evidence + Sprint 1 backlog (DEV‑016)
+
+### Actions & Findings
+- Attempted to run `npx bmad-method status` (and `npx bmad-method@alpha status`) → CLI reports *“No BMAD installation found”*.  
+- Tried `npx bmad-method@alpha install` with escalated permissions; install wizard prompts for “Installation directory” and immediately throws `ERR_USE_AFTER_CLOSE: readline was closed` because the CLI expects interactive input. Governance reset remains blocked; captured blocker details in `docs/bmad/bmm-workflow-status.md`.
+- Unskipped the transcript coverage test in `frontend/src/tests/integration/PodcastStudioRouting.test.tsx`, refactored it to mount `PodcastStudio` via a lightweight MemoryRouter + QueryClient harness, and inlined `react-router` deps in `vitest.config.ts` so vm pools can handle ESM modules.
+- Despite refactor, all Vitest pools (`threads`, `vmThreads`, `forks`) now fail before executing tests with `[vitest-pool]: Timeout starting … runner`, even when filtering to other test names. Latest command + error (from `frontend/`):
+
+  ```bash
+  npx vitest run src/tests/integration/PodcastStudioRouting.test.tsx
+  # → Error: [vitest-pool]: Timeout starting threads runner.
+  ```
+
+### Next Steps
+1. Re-run `npx bmad-method@alpha install` in an interactive environment (Claude Code or local shell) so `*workflow-init` can be executed and the governance blocker cleared.
+2. Investigate Vitest pool startup failures (enable `--reporter hanging-process`, inspect worker logs, or temporarily split the Podcast transcript assertions into a lighter unit test) so the transcript coverage can run and unblock DEV‑016.
+3. Once Vitest suite can execute, capture passing logs, then proceed with the remaining Sprint 1 backlog tasks.
+
+---
+
 ## Session 2025-11-11D - Test Infrastructure Baseline & Honest Metrics Establishment ✅
 
 **Status**: ✅ COMPLETE – Phase 1 baseline established with honest completion metrics
@@ -2418,5 +2442,4 @@ render(
 **Next Action**: Begin Phase 2B - CreateDealModal integration tests
 
 ---
-
 
