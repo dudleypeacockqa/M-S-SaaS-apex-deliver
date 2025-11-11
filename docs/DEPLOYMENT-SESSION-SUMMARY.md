@@ -2,13 +2,13 @@
 
 ## Backend (ma-saas-backend)
 - Service: `srv-d3ii9qk9c44c73aqsli0`
-- Latest deploy: `dep-d49edummcj7s73eenjng` (commit `073980c`, trigger `api`, status **live** 07:35Z)
+- Latest deploy: `dep-d49et83uibrs739agtfg` (commit `9b0577f3`, trigger `new_commit`, status **live** 08:08Z)
 - Highlights: guard added to migration `a7b2d5e0f4c1`; Alembic log shows “Already at head” on redeploy. `/health` 200.
 - Evidence: `latest-deploy.json`, Render API dump, `docs/deployments/2025-11-11-smoke-run-2.txt`
 
 ## Frontend (ma-saas-platform)
 - Service: `srv-d3ihptbipnbc73e72ne0`
-- Latest live deploy: `dep-d49eiiag0ims73e581t0` (commit `c267e936`, trigger `new_commit`, status **live** 08:02Z); manual refresh `dep-d49etc8m2f8s73dkf0v0` (commit `9b0577f3`) currently building.
+- Latest live deploy: `dep-d49etc8m2f8s73dkf0v0` (commit `9b0577f3`, status **live** 08:26Z).
 - Evidence: `latest-deploy.json`, Render log excerpt, smoke log `docs/deployments/2025-11-11-smoke-run-2.txt`
 
 # Deployment Session Summary - 2025-11-11C (07:05Z Refresh)

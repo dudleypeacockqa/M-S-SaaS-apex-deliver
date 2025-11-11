@@ -1,0 +1,6 @@
+Smoke Tests - Production
+Timestamp: 2025-11-11T08:36:07Z
+Backend GET /health -> 200
+Frontend GET / -> 200
+pytest smoke (tests/smoke_tests.py) -> 2 passed
+

@@ -1,18 +1,30 @@
 {
   "backend_deploy": {
     "id": "dep-d49et83uibrs739agtfg",
-    "service_id": "srv-d3ii9qk9c44c73aqsli0",
+    "commit": {
+      "id": "9b0577f3abfc437c334392168248d78bfdf3fdbc",
+      "message": "docs(bmad): update Week 1 summary - all core features complete",
+      "createdAt": "2025-11-11T08:06:37Z"
+    },
     "status": "live",
-    "commit": "9b0577f3abfc437c334392168248d78bfdf3fdbc",
-    "message": "docs(bmad): update Week 1 summary - all core features complete",
-    "updated_at": "2025-11-11T08:08:53Z"
+    "trigger": "new_commit",
+    "createdAt": "2025-11-11T08:06:59.577408Z",
+    "updatedAt": "2025-11-11T08:08:53.783825Z",
+    "startedAt": "2025-11-11T08:06:59.491408Z",
+    "finishedAt": "2025-11-11T08:08:19.077463Z"
   },
   "frontend_deploy": {
     "id": "dep-d49etc8m2f8s73dkf0v0",
-    "service_id": "srv-d3ihptbipnbc73e72ne0",
-    "status": "created",
-    "commit": "9b0577f3abfc437c334392168248d78bfdf3fdbc",
-    "message": "docs(bmad): update Week 1 summary - all core features complete",
-    "updated_at": "2025-11-11T08:07:14Z"
+    "commit": {
+      "id": "9b0577f3abfc437c334392168248d78bfdf3fdbc",
+      "message": "docs(bmad): update Week 1 summary - all core features complete",
+      "createdAt": "2025-11-11T08:06:37Z"
+    },
+    "status": "live",
+    "trigger": "api",
+    "createdAt": "2025-11-11T08:07:14.290599Z",
+    "updatedAt": "2025-11-11T08:27:20.089913Z",
+    "startedAt": "2025-11-11T08:16:54.683311Z",
+    "finishedAt": "2025-11-11T08:26:49.9189Z"
   }
 }

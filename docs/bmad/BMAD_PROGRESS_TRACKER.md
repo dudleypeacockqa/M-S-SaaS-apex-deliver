@@ -356,7 +356,7 @@
 
 ---
 
-## Session 2025-11-12I - Deploy Evidence Refresh & Smoke Validation ✅
+## Session 2025-11-12J - Deploy Evidence Refresh & Smoke Validation ✅
 
 **Status**: ✅ COMPLETE – W1 smoke checks rerun, Render statuses logged, docs updated  
 **Duration**: ~20 min (Codex CLI)  
@@ -364,12 +364,11 @@
 **Progress Impact**: Deployment accuracy +1%
 
 ### Achievements
-- Ran `bash scripts/run_smoke_tests.sh production` → backend health 200, frontend GET 200, pytest smoke suite 2/2. Log archived as `docs/deployments/2025-11-11-smoke-run-2.txt`.
-- Captured latest Render deploy IDs via API:
-  - Backend `dep-d49edummcj7s73eenjng` (commit `073980c`, status live 07:35Z).
-  - Frontend `dep-d49eiiag0ims73e581t0` (commit `c267e936`, status live 08:02Z) with a follow-up deploy queued for commit `9b0577f3`.
-- Updated `docs/DEPLOYMENT_HEALTH.md`, `docs/DEPLOYMENT-SESSION-SUMMARY.md`, and `latest-deploy.json` with the fresh evidence.
-- Triggered a manual frontend redeploy so latest docs commit (`9b0577f3`) will propagate once Render finishes building.
+- Ran `bash scripts/run_smoke_tests.sh production` twice (first attempt hit curl 55, second succeeded) → backend health 200, frontend GET 200, pytest smoke suite 2/2. New log saved as `docs/deployments/2025-11-11-smoke-run-3.txt`.
+- Confirmed via Render API:
+  - Backend `dep-d49et83uibrs739agtfg` (commit `9b0577f3`) live at 08:08Z.
+  - Frontend `dep-d49etc8m2f8s73dkf0v0` (commit `9b0577f3`) live at 08:26Z.
+- Updated `docs/DEPLOYMENT_HEALTH.md`, `docs/DEPLOYMENT-SESSION-SUMMARY.md`, `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md`, and `latest-deploy.json` with the new deploy IDs + smoke evidence.
 
 ### Outstanding
 1. Capture manual frontend screenshot (Cloudflare) and attach to `docs/deployments/`.
@@ -4073,4 +4072,3 @@ render(
 - Upload queue persistence across page refreshes
 
 ---
-
