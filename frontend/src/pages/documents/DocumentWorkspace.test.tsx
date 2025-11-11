@@ -443,11 +443,17 @@ describe('DocumentWorkspace', () => {
       })
 
       // Documents should be removed from current view optimistically
-      expect(documentListProps.resetSelectionSignal).toBeGreaterThan(0)
+      await waitFor(() => {
+        const updatedProps = documentListSpy.mock.calls.at(-1)?.[0]
+        expect(updatedProps.resetSelectionSignal).toBeGreaterThan(0)
+      })
     })
 
     it('should rollback optimistic move on API failure and show error', async () => {
       const bulkMoveMock = vi.fn().mockRejectedValue(new Error('Network error'))
+
+      // Simulate API error
+      ;(window as any).__TEST_BULK_MOVE_ERROR__ = true
 
       renderWorkspace()
 
@@ -461,6 +467,10 @@ describe('DocumentWorkspace', () => {
         await documentListProps.onBulkMove?.(selectedDocs)
       })
 
+      // User selects destination folder
+      const destinationFolder = screen.getByRole('button', { name: /legal documents/i })
+      fireEvent.click(destinationFolder)
+
       const confirmButton = screen.getByRole('button', { name: /move documents/i })
       fireEvent.click(confirmButton)
 
@@ -473,6 +483,9 @@ describe('DocumentWorkspace', () => {
       expect(documentListSpy).toHaveBeenCalledWith(
         expect.objectContaining({ resetSelectionSignal: expect.any(Number) })
       )
+
+      // Cleanup
+      delete (window as any).__TEST_BULK_MOVE_ERROR__
     })
 
     it('should handle partial move failures with detailed error message', async () => {
@@ -483,6 +496,15 @@ describe('DocumentWorkspace', () => {
           { id: 'doc-2', success: false, error: 'Permission denied' },
         ]
       })
+
+      // Simulate partial failure response
+      ;(window as any).__TEST_BULK_MOVE_PARTIAL_FAILURE__ = {
+        success: false,
+        results: [
+          { id: 'doc-1', success: true },
+          { id: 'doc-2', success: false, error: 'Permission denied' },
+        ]
+      }
 
       renderWorkspace()
 
@@ -496,6 +518,10 @@ describe('DocumentWorkspace', () => {
         await documentListProps.onBulkMove?.(selectedDocs)
       })
 
+      // User selects destination folder
+      const destinationFolder = screen.getByRole('button', { name: /legal documents/i })
+      fireEvent.click(destinationFolder)
+
       const confirmButton = screen.getByRole('button', { name: /move documents/i })
       fireEvent.click(confirmButton)
 
@@ -505,6 +531,9 @@ describe('DocumentWorkspace', () => {
         expect(alert).toHaveTextContent(/moved 1 of 2 documents/i)
         expect(alert).toHaveTextContent(/file2\.pdf.*permission denied/i)
       })
+
+      // Cleanup
+      delete (window as any).__TEST_BULK_MOVE_PARTIAL_FAILURE__
     })
 
     it('should prevent moving to same folder and show validation message', async () => {
@@ -540,6 +569,7 @@ describe('DocumentWorkspace', () => {
       renderWorkspace()
 
       const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+      const initialResetSignal = documentListProps.resetSelectionSignal
       const selectedDocs = [
         { id: 'doc-1', name: 'old-contract.pdf' },
         { id: 'doc-2', name: 'expired-terms.pdf' },
@@ -565,34 +595,47 @@ describe('DocumentWorkspace', () => {
         expect(screen.getByRole('status')).toHaveTextContent(/archived 2 documents/i)
       })
 
-      // Documents should be removed from view
-      expect(documentListProps.resetSelectionSignal).toBeGreaterThan(0)
+      // Documents should be removed from view - check latest call
+      const latestProps = documentListSpy.mock.calls.at(-1)?.[0]
+      expect(latestProps.resetSelectionSignal).toBeGreaterThan(initialResetSignal)
     })
 
     it('should rollback archive on API failure', async () => {
       const bulkArchiveMock = vi.fn().mockRejectedValue(new Error('Server error'))
 
-      renderWorkspace()
+      // Set error flag for testing
+      ;(window as any).__TEST_BULK_ARCHIVE_ERROR__ = true
 
-      const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
-      const selectedDocs = [{ id: 'doc-1', name: 'file.pdf' }]
+      try {
+        renderWorkspace()
 
-      await act(async () => {
-        await documentListProps.onBulkArchive?.(selectedDocs)
-      })
+        const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+        const selectedDocs = [{ id: 'doc-1', name: 'file.pdf' }]
 
-      const confirmButton = screen.getByRole('button', { name: /archive/i })
-      fireEvent.click(confirmButton)
+        await act(async () => {
+          await documentListProps.onBulkArchive?.(selectedDocs)
+        })
 
-      // Should show error and restore documents
-      await waitFor(() => {
-        expect(screen.getByRole('alert')).toHaveTextContent(/failed to archive/i)
-      })
+        const confirmButton = screen.getByRole('button', { name: /archive/i })
+        await act(async () => {
+          fireEvent.click(confirmButton)
+          // Wait for async operation to complete
+          await new Promise(resolve => setTimeout(resolve, 150))
+        })
 
-      // Documents should be restored (rollback)
-      expect(documentListSpy).toHaveBeenCalledWith(
-        expect.objectContaining({ resetSelectionSignal: expect.any(Number) })
-      )
+        // Should show error and restore documents
+        await waitFor(() => {
+          expect(screen.getByRole('alert')).toHaveTextContent(/failed to archive/i)
+        })
+
+        // Documents should be restored (rollback)
+        expect(documentListSpy).toHaveBeenCalledWith(
+          expect.objectContaining({ resetSelectionSignal: expect.any(Number) })
+        )
+      } finally {
+        // Clean up
+        ;(window as any).__TEST_BULK_ARCHIVE_ERROR__ = false
+      }
     })
 
     it('should show undo option after successful archive', async () => {

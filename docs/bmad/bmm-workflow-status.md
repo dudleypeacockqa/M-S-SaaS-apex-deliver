@@ -21,42 +21,42 @@ PHASE_4_COMPLETE: false
 
 ## Current Story Status
 
-STORY_ID: W2-2025-11-12A-DEV008-DocumentRoom
+STORY_ID: W2-2025-11-12M-DEV008-BulkActions
 STORY_STATUS: IN_PROGRESS
-STORY_RESULT: Permission quota banner + UploadPanel quota lock implemented with RED→GREEN Vitest cycles; bulk actions still pending
-BLOCKERS: BMAD CLI run command unavailable; DocumentWorkspace bulk action specs not authored yet
+STORY_RESULT: Bulk move/archive RED specs complete (9 failing tests covering folder selection modal, optimistic UI, rollback, partial failures, undo, batch operations); GREEN implementation next
+BLOCKERS: None - ready for GREEN phase implementation
 
 ## Next Action
 
-NEXT_ACTION: Draft RED DocumentWorkspace bulk action specs covering move/archive optimistic rollback
-NEXT_COMMAND: `cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=forks`
+NEXT_ACTION: Implement GREEN for bulk move/archive operations (FolderSelectionModal component + optimistic mutations)
+NEXT_COMMAND: `cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=forks --watch`
 NEXT_AGENT: dev
 PRIORITY: P0
-RATIONALE: Need document-room bulk flows to close DEV-008 before returning to deploy audit
+RATIONALE: Complete DEV-008 Document Room bulk operations to reach 95%+ story completion before final polish
 
 ## Completed This Session
 
-SESSION_ID: Session-2025-11-12L
+SESSION_ID: Session-2025-11-12M
 COMPLETED_WORK:
-- Added collaborator invite limit banner + upgrade CTA to `PermissionModal` with new Vitest coverage (13 tests green).
-- Locked UploadPanel UI when quota exhausted and surfaced manage-storage CTA driven by new RED specs (33 tests green).
-- Updated BMAD tracker + DEV-008 story with RED→GREEN evidence for quota/permission flows.
+- ✅ Added 9 comprehensive RED test specifications for DocumentWorkspace bulk move/archive operations
+- ✅ Verified RED state: 16 passing (existing), 9 failing (expected RED specs) ✅
+- ✅ Committed RED specs with detailed documentation (commits: 6922ab2, ef3f26b, 2d33607)
+- ✅ Updated DEV-008 story progress log (Session 2025-11-12M entry)
+- ✅ Updated BMAD_PROGRESS_TRACKER.md (Session 2025-11-12M entry)
+- ✅ Pushed all commits to remote repository
 
 FILES_MODIFIED:
-- frontend/src/components/documents/PermissionModal.tsx
-- frontend/src/components/documents/PermissionModal.test.tsx
-- frontend/src/components/documents/UploadPanel.tsx
-- frontend/src/components/documents/UploadPanel.enhanced.test.tsx
-- docs/bmad/BMAD_PROGRESS_TRACKER.md
-- docs/bmad/stories/DEV-008-secure-document-data-room.md
+- frontend/src/pages/documents/DocumentWorkspace.test.tsx (+283 lines RED specs)
+- docs/bmad/stories/DEV-008-secure-document-data-room.md (progress update)
+- docs/bmad/BMAD_PROGRESS_TRACKER.md (Session 2025-11-12M entry)
 - docs/bmad/bmm-workflow-status.md (this file)
 
 TEST_RESULTS:
-- `cd frontend && npx vitest run src/components/documents/UploadPanel.enhanced.test.tsx --pool=forks` → 33/33 tests passing
-- `cd frontend && npx vitest run src/components/documents/PermissionModal.test.tsx --pool=forks` → 13/13 tests passing
+- `cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=forks` → **25 tests total** (16 passing, 9 failing RED ✅)
+- RED specs cover: folder selection modal, optimistic updates, rollback mechanisms, partial failure handling, validation, undo actions, batch operations
 
 ---
 
-_Last Updated: 2025-11-12T13:20:00Z_
+_Last Updated: 2025-11-12T15:30:00Z_
 
 
