@@ -14,3 +14,6 @@
 - Deploy JSON snapshots stored in `backend-deploy.json` / `frontend-deploy.json`
 - Smoke tests pending due to sandbox network limits
 - Secret remediation scheduled after smoke evidence is archived
+
+11:07Z frontend logs confirm serve process live; 11:08Z backend logs confirm Alembic + health checks; awaiting smoke logs.
+

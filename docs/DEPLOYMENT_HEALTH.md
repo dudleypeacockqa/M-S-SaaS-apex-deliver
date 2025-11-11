@@ -13,3 +13,29 @@
 ## Open Items
 1. Run backend/frontend smoke suites from network-enabled host; attach outputs to repo (`docs/backend-health-2025-11-11.json`, screenshot bundle)
 2. After smoke evidence, scrub `fix_production_alembic.py` and rotate DB credentials per env reference
+
+Front-end deploy dep-d49d0ahr0fns73dai6a0 logs:
+- npx serve started at 06:06:59Z
+- Repeated GET / health checks returned 200
+- Service available at https://100daysandbeyond.com
+
+
+Backend build phase log snippet:
+- Exporting BuildKit cache (#15) and pushing image to registry at 05:57:44Z
+
+
+Backend deploy log snippet:
+- Docker push complete at 05:57:46Z
+- Render service restart initiated at 05:58:01Z (render backend banner)
+
+
+Backend redeploy log snippet:
+- Alembic upgrade head succeeded at 05:58:05Z
+- Head confirmed as dc2c0f69c1b1
+- Uvicorn up and responding 200 on /health
+
+
+Backend health check log snippet:
+- Service available at https://ma-saas-backend.onrender.com
+- Continuous /health polling returned 200s between 05:58:25Z and 05:59:20Z
+

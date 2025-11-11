@@ -59,8 +59,8 @@ def test_enqueue_manual_rule_run_returns_when_log_missing() -> None:
     stub = StubTaskTemplateService(log=None)
     mock_session = Mock(close=Mock())
 
-    with _patch_session(mock_session), patch.object(task_automation, "task_template_service", stub):
-        task_automation.enqueue_manual_rule_run.run("log-missing")
+        with _patch_session(mock_session), patch.object(task_automation, "task_template_service", stub):
+            task_automation.enqueue_manual_rule_run.__wrapped__("log-missing")
 
     assert stub.update_calls == []
     assert stub.execute_calls == []
@@ -72,8 +72,8 @@ def test_enqueue_manual_rule_run_marks_failed_when_rule_missing() -> None:
     stub = StubTaskTemplateService(log=log, rule=None)
     mock_session = Mock(close=Mock())
 
-    with _patch_session(mock_session), patch.object(task_automation, "task_template_service", stub):
-        task_automation.enqueue_manual_rule_run.run("log-123")
+        with _patch_session(mock_session), patch.object(task_automation, "task_template_service", stub):
+            task_automation.enqueue_manual_rule_run.__wrapped__("log-123")
 
     assert stub.execute_calls == []
     assert stub.update_calls == [
@@ -88,8 +88,8 @@ def test_enqueue_manual_rule_run_marks_failed_when_template_missing() -> None:
     stub = StubTaskTemplateService(log=log, rule=rule, template=None)
     mock_session = Mock(close=Mock())
 
-    with _patch_session(mock_session), patch.object(task_automation, "task_template_service", stub):
-        task_automation.enqueue_manual_rule_run.run("log-123")
+        with _patch_session(mock_session), patch.object(task_automation, "task_template_service", stub):
+            task_automation.enqueue_manual_rule_run.__wrapped__("log-123")
 
     assert stub.execute_calls == []
     assert stub.update_calls == [
@@ -104,8 +104,8 @@ def test_enqueue_manual_rule_run_success_flow() -> None:
     stub = StubTaskTemplateService(log=log, rule=rule, template=template)
     mock_session = Mock(close=Mock())
 
-    with _patch_session(mock_session), patch.object(task_automation, "task_template_service", stub):
-        task_automation.enqueue_manual_rule_run.run("log-123")
+        with _patch_session(mock_session), patch.object(task_automation, "task_template_service", stub):
+            task_automation.enqueue_manual_rule_run.__wrapped__("log-123")
 
     assert stub.execute_calls == [
         {"db": mock_session, "rule": rule, "template": template, "triggered_by": log.triggered_by}
@@ -132,7 +132,7 @@ def test_enqueue_manual_rule_run_logs_exception_and_reraises() -> None:
 
     with _patch_session(mock_session), patch.object(task_automation, "task_template_service", stub):
         with pytest.raises(RuntimeError, match="boom"):
-            task_automation.enqueue_manual_rule_run.run("log-123")
+            task_automation.enqueue_manual_rule_run.__wrapped__("log-123")
 
     assert stub.update_calls[-1] == {
         "db": mock_session,

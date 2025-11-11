@@ -1,4 +1,23 @@
-## Session 2025-11-11E - Frontend Deploy Confirmed (Pending Smoke) ?
+## Session 2025-11-10I - Sprint 1A Subscription Coverage ✅
+
+**Status**: [GREEN] **COMPLETE** – Route/service coverage now ≥80% (routes 94%, service 84%)  
+**Duration**: ~35 min (Codex CLI)  
+**Priority**: P0 – Coverage gate before W2 stories  
+**Progress Impact**: Backend confidence +2%
+
+### Achievements
+- Added real webhook dispatch tests to `backend/tests/test_subscription_error_paths.py`, exercising `stripe_webhook` branches for checkout/invoice/subscription events.
+- Re-ran `test_subscription_service_edge_cases` suite alongside billing/error-path tests to record service-level edge cases in coverage reports.
+- Captured new coverage baseline: `pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py tests/test_subscription_service_edge_cases.py --cov=app.api.routes.subscriptions --cov=app.services.subscription_service --cov-report=term-missing` → routes 94%, service 84%.
+
+### Testing/TDD Notes
+- Command above executed successfully (53 pass / 4 skip, 30 warnings from httpx + Pydantic). Coverage output stored in session log.
+
+### Next Steps
+1. Sprint 1B: remove unused admin API modules/tests to drop uncovered statements, rerun `pytest --cov=app`.
+2. Keep BMAD docs + deployment evidence in sync after each sprint.
+
+---## Session 2025-11-11E - Frontend Deploy Confirmed (Pending Smoke) ?
 
 **Status**: ? PARTIAL – Frontend deploy dep-d49d0ahr0fns73dai6a0 now live; smoke tests still outstanding  
 **Duration**: ~5 min (Codex CLI)  
@@ -724,7 +743,28 @@ Pushed to: origin/main ✅
 - **BMAD Compliance**: 100% ✅
 
 ---
+## Session 2025-11-12A - Governance Sync & Execution Plan Refresh
 
+**Status**: [ANALYSIS] COMPLETE - Reconciled plan/governance docs with actual deploy + test state  
+**Duration**: ~25 min (Codex CLI)  
+**Priority**: P0 - Required before restarting BMAD dev-story loops  
+**Progress Impact**: Plan clarity +1% (docs now align with evidence)
+
+### Achievements
+- Reviewed docs/100-PERCENT-COMPLETION-PLAN.md, BMAD method plan, workflow status, tracker, and deployment health to capture gaps (deploy snapshot still marked 100% green, workflow still on phase summary).
+- Updated docs/100-PERCENT-COMPLETION-PLAN.md with accurate backend/frontend test data, dirty tree mapping, and the redeploy/workflow-init blockers.
+- Confirmed 
+px bmad-method workflow-init still returns "unknown command"; captured this dependency in the immediate next actions.
+
+### Testing/TDD Notes
+- Planning-only session. Latest automated evidence remains the 26 pass / 4 skip subscription suite + Render Postgres lembic upgrade head (2025-11-10 21:45 UTC).
+
+### Next Steps
+1. Restore BMAD CLI so workflow-init can run; document output in workflow status.
+2. Trigger backend/frontend redeploys for commit 027963 (or newer) and capture ackend-deploy*.json / rontend-deploy*.json plus smoke tests.
+3. Start DEV-008 RED Vitest specs immediately after redeploy evidence is recorded.
+
+---
 ## Session 2025-11-10L - Subscription Smoke Suite & Alembic Replay
 
 **Status**: [GREEN] – Billing/subscription tests passing again; Alembic upgrade head executed locally  
@@ -2552,4 +2592,7 @@ render(
 - **Decision Made**: Proceed to P0 feature work ✅
 
 ---
+
+
+
 
