@@ -495,6 +495,29 @@ OAuth services are thin wrappers around third-party SDKs (Stripe, QuickBooks, Xe
 
 ---
 
+## Session 2025-11-12C - Blog Listing Frontend Enhancements ✅
+
+**Status**: ✅ COMPLETE – MARK-006 blog UI hardened with deterministic tests  
+**Duration**: ~35 min (Vitest + React updates)  
+**Priority**: P1 – Marketing site readiness toward 90% coverage  
+**Progress Impact**: Frontend coverage (+new jest cases), UX polish for filters/error handling
+
+### Achievements
+- Extended `Blog.test.tsx` to assert category query strings, search parameters, loading spinner visibility, error banner (`role="alert"`), and filter resets (RED → GREEN).
+- Updated `Blog.tsx` to trim search terms, expose a persistent “Clear Filters” control, and render accessible error banners.
+- Normalized button variants (removed `asChild` warning) by enhancing `Button` component to ignore the prop and aligning selected state with `primary` styling.
+
+### Verification
+- `npm run test -- Blog.test.tsx` (10/10 passing; warnings eliminated except intentional error log)
+- Manual inspection confirmed no `act` warnings; filters now clear search/category state as expected.
+
+### Next Steps
+1. Implement blog CMS admin UI per MARK-006 requirements (CRUD + seed sync).
+2. Adopt MSW mocks for marketing API calls to remove reliance on global fetch stubbing.
+3. Measure marketing coverage after CMS work to ensure ≥90%.
+
+---
+
 ## Session 2025-11-11D - Test Infrastructure Baseline & Honest Metrics Establishment ✅
 
 **Status**: ✅ COMPLETE – Phase 1 baseline established with honest completion metrics
