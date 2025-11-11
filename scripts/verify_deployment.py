@@ -4,7 +4,12 @@ Tests all Phase 1 critical endpoints to ensure deployment is healthy
 """
 import requests
 import sys
+import io
 from typing import Tuple, Optional
+
+# Fix Windows console encoding for Unicode characters
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 BACKEND_URL = "https://ma-saas-backend.onrender.com"
 FRONTEND_URL = "https://100daysandbeyond.com"
