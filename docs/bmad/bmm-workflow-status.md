@@ -21,40 +21,40 @@ PHASE_4_COMPLETE: false
 
 ## Current Story Status
 
-STORY_ID: W2-2025-11-11N-DEV008-DocumentWorkspace
-STORY_STATUS: COMPLETE
-STORY_RESULT: DocumentWorkspace now includes FolderTree search, audit logging, and bulk action orchestration
-BLOCKERS: None - DEV-008 core features complete
+STORY_ID: W2-2025-11-12A-DEV008-DocumentRoom
+STORY_STATUS: IN_PROGRESS
+STORY_RESULT: Search + file-type filters implemented with new Vitest coverage; next up permissions/upload flows
+BLOCKERS: BMAD CLI still unavailable for interactive workflow-init; remaining DEV-008 subfeatures (permissions, upload quota) pending
 
 ## Next Action
 
-NEXT_ACTION: Decide on watermarking feature fate (7 RED tests) or move to next P0 feature (DEV-011 valuation exports, DEV-016 podcast video, or marketing completion)
-NEXT_COMMAND: Review backend test suite to determine watermarking implementation priority
+NEXT_ACTION: Author RED Vitest specs for PermissionModal + UploadPanel quota/error flows
+NEXT_COMMAND: `cd frontend && npx vitest run src/components/documents/PermissionModal.test.tsx src/components/documents/UploadPanel.enhanced.test.tsx`
 NEXT_AGENT: dev
 PRIORITY: P0
-RATIONALE: Backend watermarking tests remain RED (intentional); decide implement or defer before proceeding to next feature
+RATIONALE: Need full document-room entitlement coverage before moving to DEV-016
 
 ## Completed This Session
 
-SESSION_ID: Session-2025-11-11N
+SESSION_ID: Session-2025-11-12J
 COMPLETED_WORK:
-- Extended DocumentWorkspace.test.tsx with 12 new RED specs (FolderTree search, audit logging, bulk actions)
-- Implemented FolderTree search with input + clear button + filtering logic
-- Implemented audit logging callbacks (handleAuditLog, handlePermissionChange)
-- Implemented bulk actions orchestration (handleBulkMove, handleBulkDelete, handleBulkShare)
-- All 16 DocumentWorkspace tests now GREEN (4 original + 12 new)
+- Ran `bash scripts/run_smoke_tests.sh production` (attempt #1 curl 55, #2 ✅) – log saved as `docs/deployments/2025-11-11-smoke-run-3.txt`
+- Updated `docs/DEPLOYMENT_HEALTH.md`, `docs/DEPLOYMENT-SESSION-SUMMARY.md`, `latest-deploy.json` after backend deploy `dep-d49et83uibrs739agtfg` and frontend `dep-d49etc8m2f8s73dkf0v0`
+- Added DocumentRoomPage search + file-type filters with Vitest coverage (`DocumentRoomPage.test.tsx`)
 
 FILES MODIFIED:
-- frontend/src/pages/documents/DocumentWorkspace.tsx
-- frontend/src/pages/documents/DocumentWorkspace.test.tsx
-- frontend/src/components/documents/FolderTree.tsx
+- docs/DEPLOYMENT_HEALTH.md
+- docs/DEPLOYMENT-SESSION-SUMMARY.md
 - docs/bmad/BMAD_PROGRESS_TRACKER.md
+- docs/bmad/stories/DEV-008-secure-document-data-room.md
 - docs/bmad/bmm-workflow-status.md (this file)
+- latest-deploy.json
+- docs/deployments/2025-11-11-smoke-run-3.txt
 
 TEST_RESULTS:
-- Frontend: `npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=forks` (16/16 passing)
-- FolderTree search, audit logging, and bulk actions specs all GREEN
+- `bash scripts/run_smoke_tests.sh production` → backend 200, frontend 200, pytest smoke 2/2
+- `npx vitest run src/pages/deals/DocumentRoomPage.test.tsx --maxWorkers=1 --no-file-parallelism` → 8/8 tests passing
 
 ---
 
-_Last Updated: 2025-11-11T09:05:00Z_
+_Last Updated: 2025-11-12T08:55:00Z_
