@@ -21,38 +21,36 @@ PHASE_4_COMPLETE: false
 
 ## Current Story Status
 
-STORY_ID: W2-2025-11-11K-DEV008-DocumentRoom
-STORY_STATUS: PLANNING
-STORY_RESULT: Detailed completion plan logged; DEV-008 RED cycle ready to start
-BLOCKERS: Need to author RED Vitest specs for permissions/upload flows
+STORY_ID: W2-2025-11-11L-DEV008-DocumentRoom
+STORY_STATUS: READY_FOR_RED_TESTS
+STORY_RESULT: Governance reset + roadmap refreshed; awaiting new RED specs for permissions/upload/bulk flows
+BLOCKERS: `npx bmad-method run workflow-status` fails under WSL (vsock); Render frontend deploy dep-d49etc8m2f8s73dkf0v0 stuck in `created`
 
 ## Next Action
 
-NEXT_ACTION: Kick off DEV-008 document room iteration with failing Vitest specs covering permissions, uploads, and bulk actions
-NEXT_COMMAND: "npx bmad-method run dev-story --story DEV-008-document-room" (start with DocumentWorkspace/PermissionModal RED tests)
+NEXT_ACTION: Author RED Vitest specs for DocumentWorkspace + UploadPanel (permissions, uploads, bulk actions) before implementing hooks
+NEXT_COMMAND: `cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx src/components/documents/UploadPanel.test.tsx`
 NEXT_AGENT: dev
 PRIORITY: P0
-RATIONALE: Document room gating is the top blocker for 100% completion
+RATIONALE: Document room gating remains the top blocker for 100% completion
 
 ## Completed This Session
 
 SESSION_ID: Session-2025-11-11L
 COMPLETED_WORK:
-- Verified BMAD CLI installation via `npx bmad-method status`
-- Ran `bash scripts/run_smoke_tests.sh production` (backend health 200, frontend 200, pytest smoke 2/2)
-- Captured evidence in `docs/deployments/2025-11-11-smoke-run-2.txt`
-- Updated deployment artefacts (`docs/DEPLOYMENT_HEALTH.md`, `docs/DEPLOYMENT-SESSION-SUMMARY.md`, `latest-deploy.json`)
-- Triggered/confirmed Render deploys `dep-d49edummcj7s73eenjng` (backend) and `dep-d49eiiag0ims73e581t0` (frontend) as LIVE
-- Queried Render backend/frontend services for latest deploy statuses (backend live, frontend pending)
-- Logged findings in BMAD progress tracker
+- Refreshed `plan.md` (2025-11-11 08:30 UTC) with W0–W6 workstreams, test entry points, and Render health blockers
+- Updated `docs/bmad/BMAD_METHOD_PLAN.md` with execution reset instructions and governance checklist
+- Logged blocker for `npx bmad-method run workflow-status` and documented Render frontend deploy stuck state
 
 FILES MODIFIED:
+- plan.md
+- docs/bmad/BMAD_METHOD_PLAN.md
 - docs/bmad/BMAD_PROGRESS_TRACKER.md
 - docs/bmad/bmm-workflow-status.md (this file)
 
 TEST_RESULTS:
-- Not run (governance session only)
+- Not run (planning/governance session only)
 
 ---
 
-_Last Updated: 2025-11-11T08:11:00Z_
+_Last Updated: 2025-11-11T08:30:00Z_
