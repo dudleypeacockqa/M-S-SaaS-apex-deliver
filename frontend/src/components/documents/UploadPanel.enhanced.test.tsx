@@ -340,4 +340,369 @@ describe('UploadPanel - Enhanced Features (Sprint 2 Task 1)', () => {
       expect(cancelButton).toHaveAttribute('aria-label', 'Cancel upload for document.pdf');
     });
   });
+
+  // RED SPEC: Storage Quota Validation
+  describe('Storage Quota Enforcement', () => {
+    it('should display storage quota usage before upload', () => {
+      render(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={false}
+          storageQuota={{ used: 2_500_000_000, limit: 5_000_000_000 }} // 2.5 GB / 5 GB
+        />
+      );
+
+      expect(screen.getByTestId('storage-quota-display')).toBeInTheDocument();
+      // formatGB(2_500_000_000) = (2500000000 / 1024^3).toFixed(1) = 2.3 GB
+      expect(screen.getByText(/2\.3 GB/i)).toBeInTheDocument();
+      expect(screen.getByText(/4\.7 GB/i)).toBeInTheDocument(); // formatGB(5_000_000_000) = 4.7 GB
+      expect(screen.getByText(/50% used/i)).toBeInTheDocument();
+    });
+
+    it('should show visual warning when quota is above 80%', () => {
+      render(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={false}
+          storageQuota={{ used: 4_200_000_000, limit: 5_000_000_000 }} // 4.2 GB / 5 GB = 84%
+        />
+      );
+
+      const quotaDisplay = screen.getByTestId('storage-quota-display');
+      expect(quotaDisplay).toHaveClass('border-orange-200'); // Warning color - check border class
+      expect(screen.getByText(/84% used/i)).toBeInTheDocument();
+      expect(screen.getByText(/approaching storage limit/i)).toBeInTheDocument();
+    });
+
+    it('should show critical alert when quota is above 95%', () => {
+      render(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={false}
+          storageQuota={{ used: 4_800_000_000, limit: 5_000_000_000 }} // 4.8 GB / 5 GB = 96%
+        />
+      );
+
+      const quotaDisplay = screen.getByTestId('storage-quota-display');
+      expect(quotaDisplay).toHaveClass('border-red-200'); // Critical color - check border class
+      expect(screen.getByText(/96% used/i)).toBeInTheDocument();
+      expect(screen.getByRole('alert')).toHaveTextContent(/storage almost full/i);
+    });
+
+    it('should prevent upload when file would exceed quota', async () => {
+      const user = userEvent.setup();
+      const handleUpload = vi.fn();
+
+      render(
+        <UploadPanel
+          onUpload={handleUpload}
+          isUploading={false}
+          storageQuota={{ used: 4_900_000_000, limit: 5_000_000_000 }} // 4.9 GB / 5 GB
+        />
+      );
+
+      // Try to upload a 200 MB file (would exceed 5 GB limit)
+      const fileInput = screen.getByTestId('upload-input');
+      // Create file with size property instead of large content
+      const largeFile = new File(['content'], 'large.pdf', { type: 'application/pdf' });
+      Object.defineProperty(largeFile, 'size', { value: 200_000_000 });
+
+      await user.upload(fileInput, largeFile);
+
+      // Should show quota exceeded error
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent(/storage quota exceeded/i);
+        expect(handleUpload).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should allow upload when file fits within quota', async () => {
+      const user = userEvent.setup();
+      const handleUpload = vi.fn();
+
+      render(
+        <UploadPanel
+          onUpload={handleUpload}
+          isUploading={false}
+          storageQuota={{ used: 2_000_000_000, limit: 5_000_000_000 }} // 2 GB / 5 GB
+        />
+      );
+
+      // Upload a 50 MB file (well within limit)
+      const fileInput = screen.getByTestId('upload-input');
+      const normalFile = new File(['content'], 'normal.pdf', { type: 'application/pdf' });
+      Object.defineProperty(normalFile, 'size', { value: 50_000_000 });
+
+      await user.upload(fileInput, normalFile);
+
+      await waitFor(() => {
+        expect(handleUpload).toHaveBeenCalledWith([normalFile]);
+      });
+    });
+
+    it('should show upgrade prompt when quota exceeded for paid tier', () => {
+      render(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={false}
+          storageQuota={{ used: 5_000_000_000, limit: 5_000_000_000 }} // 5 GB / 5 GB = 100%
+          userTier="professional"
+        />
+      );
+
+      expect(screen.getByRole('link', { name: /upgrade storage/i })).toBeInTheDocument();
+      expect(screen.getByText(/upgrade to enterprise/i)).toBeInTheDocument();
+    });
+
+    it('should disable dropzone and browse button when quota is fully used', () => {
+      render(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={false}
+          storageQuota={{ used: 5_000_000_000, limit: 5_000_000_000 }}
+          userTier="starter"
+        />
+      );
+
+      const dropzone = screen.getByTestId('upload-dropzone');
+      expect(dropzone).toHaveAttribute('aria-disabled', 'true');
+      expect(dropzone).toHaveClass('cursor-not-allowed');
+
+      const browseButton = screen.getByRole('button', { name: /browse files/i });
+      expect(browseButton).toBeDisabled();
+    });
+
+    it('should surface manage storage action when quota error is shown', async () => {
+      const user = userEvent.setup();
+      const handleManageStorage = vi.fn();
+
+      render(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={false}
+          storageQuota={{ used: 5_000_000_000, limit: 5_000_000_000 }}
+          userTier="professional"
+          errorMessage="Storage quota exceeded. Please delete some files or upgrade your plan."
+          onManageStorage={handleManageStorage}
+        />
+      );
+
+      const alert = screen.getByRole('alert');
+      expect(alert).toHaveTextContent(/storage quota exceeded/i);
+
+      const manageButton = screen.getByRole('button', { name: /manage storage/i });
+      expect(manageButton).toBeInTheDocument();
+
+      await user.click(manageButton);
+      expect(handleManageStorage).toHaveBeenCalled();
+    });
+  });
+
+  // RED SPEC: File Size Limits
+  describe('File Size Validation', () => {
+    it('should reject files exceeding max file size limit', async () => {
+      const user = userEvent.setup();
+      const handleUpload = vi.fn();
+
+      render(
+        <UploadPanel
+          onUpload={handleUpload}
+          isUploading={false}
+          maxFileSize={100_000_000} // 100 MB limit
+        />
+      );
+
+      const fileInput = screen.getByTestId('upload-input');
+      const oversizedFile = new File(['content'], 'huge.pdf', { type: 'application/pdf' });
+      Object.defineProperty(oversizedFile, 'size', { value: 150_000_000 });
+
+      await user.upload(fileInput, oversizedFile);
+
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent(/file size exceeds 100 MB limit/i);
+        expect(handleUpload).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should show tier-specific file size limits', () => {
+      render(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={false}
+          maxFileSize={50_000_000} // 50 MB for starter tier
+          userTier="starter"
+        />
+      );
+
+      expect(screen.getByText(/max file size: 50 MB/i)).toBeInTheDocument();
+    });
+
+    it('should allow larger files for enterprise tier', async () => {
+      const user = userEvent.setup();
+      const handleUpload = vi.fn();
+
+      render(
+        <UploadPanel
+          onUpload={handleUpload}
+          isUploading={false}
+          maxFileSize={500_000_000} // 500 MB for enterprise tier
+          userTier="enterprise"
+        />
+      );
+
+      const fileInput = screen.getByTestId('upload-input');
+      const largeFile = new File(['content'], 'large.pdf', { type: 'application/pdf' });
+      Object.defineProperty(largeFile, 'size', { value: 300_000_000 });
+
+      await user.upload(fileInput, largeFile);
+
+      await waitFor(() => {
+        expect(handleUpload).toHaveBeenCalledWith([largeFile]);
+      });
+    });
+  });
+
+  // RED SPEC: Error State Handling
+  describe('Upload Error States', () => {
+    it('should display network error with retry option', () => {
+      render(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={false}
+          errorMessage="Network connection lost. Please check your internet connection."
+        />
+      );
+
+      expect(screen.getByRole('alert')).toHaveTextContent(/network connection lost/i);
+      expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
+    });
+
+    it('should display server error with support contact', () => {
+      render(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={false}
+          errorMessage="Server error: 500 Internal Server Error"
+        />
+      );
+
+      expect(screen.getByRole('alert')).toHaveTextContent(/server error/i);
+      expect(screen.getByRole('link', { name: /contact support/i })).toBeInTheDocument();
+    });
+
+    it('should display file type validation error', async () => {
+      const user = userEvent.setup();
+      const handleUpload = vi.fn();
+
+      render(
+        <UploadPanel
+          onUpload={handleUpload}
+          isUploading={false}
+          allowedFileTypes={['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']}
+        />
+      );
+
+      const fileInput = screen.getByTestId('upload-input');
+      const invalidFile = new File(['content'], 'image.png', { type: 'image/png' });
+
+      await user.upload(fileInput, invalidFile);
+
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent(/file type not allowed/i);
+        expect(screen.getByText(/allowed types: pdf, docx/i)).toBeInTheDocument();
+      });
+    });
+
+    it('should clear error message after successful upload', async () => {
+      const { rerender } = render(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={false}
+          errorMessage="Previous upload failed"
+        />
+      );
+
+      expect(screen.getByRole('alert')).toHaveTextContent(/previous upload failed/i);
+
+      // Rerender with no error after successful upload
+      rerender(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={false}
+          errorMessage={undefined}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should show authentication error and redirect to login', () => {
+      render(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={false}
+          errorMessage="Session expired. Please log in again."
+        />
+      );
+
+      expect(screen.getByRole('alert')).toHaveTextContent(/session expired/i);
+      expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument();
+    });
+  });
+
+  // RED SPEC: Batch Upload Limits
+  describe('Batch Upload Restrictions', () => {
+    it('should enforce max files per upload for starter tier', async () => {
+      const user = userEvent.setup();
+      const handleUpload = vi.fn();
+
+      render(
+        <UploadPanel
+          onUpload={handleUpload}
+          isUploading={false}
+          maxFilesPerUpload={5} // Starter tier: 5 files max
+          userTier="starter"
+        />
+      );
+
+      const fileInput = screen.getByTestId('upload-input');
+      const files = Array.from({ length: 10 }, (_, i) =>
+        new File(['content'], `file${i}.pdf`, { type: 'application/pdf' })
+      );
+
+      await user.upload(fileInput, files);
+
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent(/max 5 files per upload/i);
+        expect(screen.getByText(/upgrade to upload more files/i)).toBeInTheDocument();
+      });
+    });
+
+    it('should allow unlimited files for enterprise tier', async () => {
+      const user = userEvent.setup();
+      const handleUpload = vi.fn();
+
+      render(
+        <UploadPanel
+          onUpload={handleUpload}
+          isUploading={false}
+          maxFilesPerUpload={-1} // Enterprise tier: unlimited
+          userTier="enterprise"
+        />
+      );
+
+      const fileInput = screen.getByTestId('upload-input');
+      const files = Array.from({ length: 50 }, (_, i) =>
+        new File(['content'], `file${i}.pdf`, { type: 'application/pdf' })
+      );
+
+      await user.upload(fileInput, files);
+
+      await waitFor(() => {
+        expect(handleUpload).toHaveBeenCalledWith(files);
+      });
+    });
+  });
 });
