@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, fireEvent, act, waitFor, cleanup, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import DocumentWorkspace from './DocumentWorkspace'
 
@@ -65,9 +65,14 @@ vi.mock('../../hooks/useDocumentUploads', () => ({
   }),
 }))
 
+let queryClient: QueryClient
+
 const renderWorkspace = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false, gcTime: 0, staleTime: 0 },
+      mutations: { retry: false }
+    },
   })
 
   return render(
@@ -88,6 +93,15 @@ describe('DocumentWorkspace', () => {
     uploadHookState.isUploading = false
     uploadHookState.uploadQueue = []
     uploadHookState.errorMessage = null
+  })
+
+  afterEach(() => {
+    cleanup()
+    if (queryClient) {
+      queryClient.clear()
+      queryClient.unmount()
+    }
+    vi.clearAllMocks()
   })
 
   it('renders folder pane, document list, and upload panel sections', () => {
@@ -377,6 +391,271 @@ describe('DocumentWorkspace', () => {
 
       // Handler should be called (share modal is future work)
       expect(documentListProps.onBulkShare).toBeDefined()
+    })
+  })
+
+  // RED SPEC: Bulk Move with Optimistic UI and Rollback
+  describe('Bulk Move Operations with Optimistic Updates', () => {
+    it('should show folder selection modal when bulk move is initiated', async () => {
+      renderWorkspace()
+
+      const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+      const selectedDocs = [
+        { id: 'doc-1', name: 'contract.pdf', folder_id: 'folder-old' },
+        { id: 'doc-2', name: 'terms.pdf', folder_id: 'folder-old' },
+      ]
+
+      await act(async () => {
+        await documentListProps.onBulkMove?.(selectedDocs)
+      })
+
+      // Should render folder selection modal
+      await waitFor(() => {
+        expect(screen.getByRole('dialog', { name: /move documents/i })).toBeInTheDocument()
+      })
+      expect(screen.getByText(/select destination folder/i)).toBeInTheDocument()
+      expect(screen.getByText(/2 documents selected/i)).toBeInTheDocument()
+    })
+
+    it('should perform optimistic move and show success toast', async () => {
+      const bulkMoveMock = vi.fn().mockResolvedValue({ success: true })
+      // Mock API would be injected here
+
+      renderWorkspace()
+
+      const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+      const selectedDocs = [{ id: 'doc-1', name: 'file.pdf', folder_id: 'old-folder' }]
+
+      await act(async () => {
+        await documentListProps.onBulkMove?.(selectedDocs)
+      })
+
+      // User selects destination folder
+      const destinationFolder = screen.getByRole('button', { name: /legal documents/i })
+      fireEvent.click(destinationFolder)
+
+      const confirmButton = screen.getByRole('button', { name: /move documents/i })
+      fireEvent.click(confirmButton)
+
+      // Should show optimistic success state immediately
+      await waitFor(() => {
+        expect(screen.getByRole('status')).toHaveTextContent(/moved 1 document/i)
+      })
+
+      // Documents should be removed from current view optimistically
+      expect(documentListProps.resetSelectionSignal).toBeGreaterThan(0)
+    })
+
+    it('should rollback optimistic move on API failure and show error', async () => {
+      const bulkMoveMock = vi.fn().mockRejectedValue(new Error('Network error'))
+
+      renderWorkspace()
+
+      const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+      const selectedDocs = [
+        { id: 'doc-1', name: 'file1.pdf', folder_id: 'old-folder' },
+        { id: 'doc-2', name: 'file2.pdf', folder_id: 'old-folder' },
+      ]
+
+      await act(async () => {
+        await documentListProps.onBulkMove?.(selectedDocs)
+      })
+
+      const confirmButton = screen.getByRole('button', { name: /move documents/i })
+      fireEvent.click(confirmButton)
+
+      // Should show error toast and restore documents to original position
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent(/failed to move documents/i)
+      })
+
+      // Documents should be restored to view (rollback)
+      expect(documentListSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ resetSelectionSignal: expect.any(Number) })
+      )
+    })
+
+    it('should handle partial move failures with detailed error message', async () => {
+      const bulkMoveMock = vi.fn().mockResolvedValue({
+        success: false,
+        results: [
+          { id: 'doc-1', success: true },
+          { id: 'doc-2', success: false, error: 'Permission denied' },
+        ]
+      })
+
+      renderWorkspace()
+
+      const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+      const selectedDocs = [
+        { id: 'doc-1', name: 'file1.pdf' },
+        { id: 'doc-2', name: 'file2.pdf' },
+      ]
+
+      await act(async () => {
+        await documentListProps.onBulkMove?.(selectedDocs)
+      })
+
+      const confirmButton = screen.getByRole('button', { name: /move documents/i })
+      fireEvent.click(confirmButton)
+
+      // Should show partial success message
+      await waitFor(() => {
+        const alert = screen.getByRole('status')
+        expect(alert).toHaveTextContent(/moved 1 of 2 documents/i)
+        expect(alert).toHaveTextContent(/file2\.pdf.*permission denied/i)
+      })
+    })
+
+    it('should prevent moving to same folder and show validation message', async () => {
+      renderWorkspace()
+
+      const folderButton = screen.getByTestId('mock-folder-tree')
+      fireEvent.click(folderButton) // Select folder-123
+
+      const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+      const selectedDocs = [
+        { id: 'doc-1', name: 'file.pdf', folder_id: 'folder-123' }, // Already in this folder
+      ]
+
+      await act(async () => {
+        await documentListProps.onBulkMove?.(selectedDocs)
+      })
+
+      // Try to select same folder as destination
+      const sameFolder = screen.getByRole('button', { name: /current folder/i })
+      fireEvent.click(sameFolder)
+
+      const confirmButton = screen.getByRole('button', { name: /move documents/i })
+      expect(confirmButton).toBeDisabled()
+      expect(screen.getByText(/documents are already in this folder/i)).toBeInTheDocument()
+    })
+  })
+
+  // RED SPEC: Bulk Archive with Optimistic UI
+  describe('Bulk Archive Operations', () => {
+    it('should archive documents with optimistic update', async () => {
+      const bulkArchiveMock = vi.fn().mockResolvedValue({ success: true })
+
+      renderWorkspace()
+
+      const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+      const selectedDocs = [
+        { id: 'doc-1', name: 'old-contract.pdf' },
+        { id: 'doc-2', name: 'expired-terms.pdf' },
+      ]
+
+      // Assume DocumentList has onBulkArchive handler
+      expect(documentListProps.onBulkArchive).toBeDefined()
+
+      await act(async () => {
+        await documentListProps.onBulkArchive?.(selectedDocs)
+      })
+
+      // Should show confirmation dialog first
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toHaveTextContent(/archive 2 documents/i)
+      })
+
+      const confirmButton = screen.getByRole('button', { name: /archive/i })
+      fireEvent.click(confirmButton)
+
+      // Should show optimistic success
+      await waitFor(() => {
+        expect(screen.getByRole('status')).toHaveTextContent(/archived 2 documents/i)
+      })
+
+      // Documents should be removed from view
+      expect(documentListProps.resetSelectionSignal).toBeGreaterThan(0)
+    })
+
+    it('should rollback archive on API failure', async () => {
+      const bulkArchiveMock = vi.fn().mockRejectedValue(new Error('Server error'))
+
+      renderWorkspace()
+
+      const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+      const selectedDocs = [{ id: 'doc-1', name: 'file.pdf' }]
+
+      await act(async () => {
+        await documentListProps.onBulkArchive?.(selectedDocs)
+      })
+
+      const confirmButton = screen.getByRole('button', { name: /archive/i })
+      fireEvent.click(confirmButton)
+
+      // Should show error and restore documents
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent(/failed to archive/i)
+      })
+
+      // Documents should be restored (rollback)
+      expect(documentListSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ resetSelectionSignal: expect.any(Number) })
+      )
+    })
+
+    it('should show undo option after successful archive', async () => {
+      const bulkArchiveMock = vi.fn().mockResolvedValue({ success: true })
+      const undoArchiveMock = vi.fn().mockResolvedValue({ success: true })
+
+      renderWorkspace()
+
+      const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+      const selectedDocs = [{ id: 'doc-1', name: 'file.pdf' }]
+
+      await act(async () => {
+        await documentListProps.onBulkArchive?.(selectedDocs)
+      })
+
+      const confirmButton = screen.getByRole('button', { name: /archive/i })
+      fireEvent.click(confirmButton)
+
+      // Should show success toast with undo button
+      await waitFor(() => {
+        const toast = screen.getByRole('status')
+        expect(toast).toHaveTextContent(/archived 1 document/i)
+        expect(within(toast).getByRole('button', { name: /undo/i })).toBeInTheDocument()
+      })
+
+      // Click undo
+      const undoButton = within(screen.getByRole('status')).getByRole('button', { name: /undo/i })
+      fireEvent.click(undoButton)
+
+      // Should restore documents
+      await waitFor(() => {
+        expect(screen.getByRole('status')).toHaveTextContent(/unarchived 1 document/i)
+      })
+    })
+
+    it('should batch archive operations for performance', async () => {
+      const bulkArchiveMock = vi.fn().mockResolvedValue({ success: true })
+
+      renderWorkspace()
+
+      const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+      const selectedDocs = Array.from({ length: 50 }, (_, i) => ({
+        id: `doc-${i}`,
+        name: `file${i}.pdf`,
+      }))
+
+      await act(async () => {
+        await documentListProps.onBulkArchive?.(selectedDocs)
+      })
+
+      const confirmButton = screen.getByRole('button', { name: /archive/i })
+      fireEvent.click(confirmButton)
+
+      // Should show batched progress
+      await waitFor(() => {
+        expect(screen.getByRole('progressbar')).toBeInTheDocument()
+        expect(screen.getByText(/archiving.*50 documents/i)).toBeInTheDocument()
+      })
+
+      // Final success message
+      await waitFor(() => {
+        expect(screen.getByRole('status')).toHaveTextContent(/archived 50 documents/i)
+      }, { timeout: 3000 })
     })
   })
 })
