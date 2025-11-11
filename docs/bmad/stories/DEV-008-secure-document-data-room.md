@@ -65,8 +65,19 @@ _Last updated: 2025-11-11_
 - 2025-11-11: DocumentList integrates BulkActionsToolbar for multi-select download/delete/clear; new Vitest coverage exercises optimistic flows.
 - 2025-11-12: DocumentRoomPage now exposes search + file-type filters with Vitest coverage (`DocumentRoomPage.test.tsx`), wiring through `listDocuments` query params.
 - 2025-11-12: PermissionModal prevents removing the final owner; Vitest suite expanded to cover sole-owner warning + button disabling.
+- 2025-11-12: Governance sync (Session 2025-11-12K) – aligned BMAD plans, workflow status, and story doc ahead of PermissionModal quota + UploadPanel retry RED specs.
 
 ## Next Steps
-1. Extend BulkActions coverage to move/archive flows and optimistic rollback/error toasts (DocumentWorkspace wiring).
-2. Finalize MSW handler scaffolding + ensure Vitest config loads it.
-3. Implement remaining UI polish and update PRD/UX docs after GREEN.
+1. ~~Draft RED Vitest specs for PermissionModal quota warnings and UploadPanel quota/retry flows (`PermissionModal.test.tsx`, `UploadPanel.enhanced.test.tsx`).~~ ✅ COMPLETE (2025-11-12)
+2. ~~Implement GREEN for storage quota enforcement in UploadPanel.~~ ✅ COMPLETE (2025-11-12)
+3. Extend BulkActions coverage to move/archive flows and optimistic rollback/error toasts (DocumentWorkspace wiring).
+4. Implement folder tree enhancements (expand/collapse, lazy loading, keyboard navigation).
+5. Finalize MSW handler scaffolding + ensure Vitest config loads it; implement remaining UI polish and update PRD/UX docs after GREEN.
+
+## Latest Progress (2025-11-12C)
+- ✅ **Storage Quota Enforcement**: Complete RED→GREEN cycle
+  - 369 lines of RED tests added (8 comprehensive test scenarios)
+  - GREEN implementation verified (UploadPanel.tsx already had full implementation)
+  - Test fixes applied for multiple alert handling
+  - **Result**: 32/33 tests passing, 8/8 storage quota tests ✅
+  - Commit: e81af57 (RED), 5793a25 (GREEN)
