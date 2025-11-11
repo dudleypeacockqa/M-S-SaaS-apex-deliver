@@ -143,6 +143,43 @@ export const DocumentRoomPage: React.FC = () => {
         {/* Breadcrumb could be added here later */}
       </div>
 
+      {/* Filters */}
+      <div className="border-b border-gray-100 bg-white px-6 py-3">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <label className="flex flex-col text-sm text-gray-700" htmlFor="document-room-search">
+            <span className="font-medium">Search</span>
+            <input
+              id="document-room-search"
+              type="search"
+              placeholder="Search documents"
+              className="mt-1 rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+            />
+          </label>
+
+          <label className="flex flex-col text-sm text-gray-700" htmlFor="file-type-filter">
+            <span className="font-medium">File type</span>
+            <select
+              id="file-type-filter"
+              className="mt-1 rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              value={fileTypeFilter ?? ''}
+              onChange={(event) => {
+                const value = event.target.value
+                setFileTypeFilter(value === '' ? null : value)
+              }}
+            >
+              <option value="">All types</option>
+              <option value="application/pdf">PDF (.pdf)</option>
+              <option value="application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                Word (.docx)
+              </option>
+              <option value="application/vnd.ms-excel">Spreadsheet (.xls)</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
       {/* Error States */}
       {hasError && (
         <div className="flex items-center gap-3 bg-red-50 px-6 py-4 text-red-800">

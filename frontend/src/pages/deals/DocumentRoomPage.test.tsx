@@ -78,6 +78,14 @@ const renderDocumentRoom = (dealId = 'deal-123') => {
 describe('DocumentRoomPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(documentApi.listFolders).mockResolvedValue([])
+    vi.mocked(documentApi.listDocuments).mockResolvedValue({
+      items: [],
+      total: 0,
+      page: 1,
+      per_page: 50,
+      pages: 1,
+    })
   })
 
   describe('Layout and Initial Rendering', () => {
@@ -121,6 +129,54 @@ describe('DocumentRoomPage', () => {
 
       await waitFor(() => {
         expect(screen.getByText('2024-Q4-Financials.pdf')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Filters', () => {
+    it('applies search query to document requests', async () => {
+      const listSpy = vi.mocked(documentApi.listDocuments)
+      listSpy.mockResolvedValue({
+        items: [],
+        total: 0,
+        page: 1,
+        per_page: 50,
+        pages: 1,
+      })
+
+      const { user } = renderDocumentRoom()
+
+      const searchInput = await screen.findByPlaceholderText(/search documents/i)
+      await user.type(searchInput, 'nda')
+
+      await waitFor(() => {
+        expect(listSpy).toHaveBeenLastCalledWith(
+          'deal-123',
+          expect.objectContaining({ search: 'nda' })
+        )
+      })
+    })
+
+    it('applies file type filter to document requests', async () => {
+      const listSpy = vi.mocked(documentApi.listDocuments)
+      listSpy.mockResolvedValue({
+        items: [],
+        total: 0,
+        page: 1,
+        per_page: 50,
+        pages: 1,
+      })
+
+      const { user } = renderDocumentRoom()
+
+      const filterSelect = await screen.findByLabelText(/file type/i)
+      await user.selectOptions(filterSelect, 'application/pdf')
+
+      await waitFor(() => {
+        expect(listSpy).toHaveBeenLastCalledWith(
+          'deal-123',
+          expect.objectContaining({ file_type: 'application/pdf' })
+        )
       })
     })
   })

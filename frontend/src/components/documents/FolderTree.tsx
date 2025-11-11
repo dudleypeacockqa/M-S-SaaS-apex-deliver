@@ -11,6 +11,7 @@ import {
 interface FolderTreeProps {
   dealId: string
   selectedFolderId: string | null
+  searchTerm?: string
   onFolderSelect: (folderId: string | null) => void
 }
 
@@ -56,7 +57,7 @@ function buildTree(folders: Folder[]): FolderNode[] {
   return sortNodes(roots)
 }
 
-export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId, onFolderSelect }) => {
+export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId, searchTerm = '', onFolderSelect }) => {
   const queryClient = useQueryClient()
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
   const [isCreating, setIsCreating] = useState(false)
@@ -71,7 +72,31 @@ export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId
     queryFn: () => listFolders(dealId),
   })
 
-  const folders = useMemo(() => (data ? buildTree(data) : []), [data])
+  const allFolders = useMemo(() => (data ? buildTree(data) : []), [data])
+
+  // Filter folders based on search term
+  const folders = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return allFolders
+    }
+
+    const term = searchTerm.toLowerCase()
+    const matchingFolders: FolderNode[] = []
+
+    const collectMatches = (nodes: FolderNode[]) => {
+      nodes.forEach((node) => {
+        if (node.name.toLowerCase().includes(term)) {
+          matchingFolders.push(node)
+        }
+        if (node.children) {
+          collectMatches(node.children)
+        }
+      })
+    }
+
+    collectMatches(allFolders)
+    return matchingFolders
+  }, [allFolders, searchTerm])
 
   const invalidateFolders = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['folders', dealId] })
