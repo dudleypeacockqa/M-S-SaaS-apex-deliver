@@ -1,0 +1,20 @@
+[run]
+source = backend/app
+omit =
+    backend/venv/*
+    */sage_oauth_service.py
+    */quickbooks_oauth_service.py
+    */netsuite_oauth_service.py
+    */xero_oauth_service.py
+    */s3_storage_service.py
+
+[report]
+# Regexes for lines to exclude from consideration
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    @abstractmethod

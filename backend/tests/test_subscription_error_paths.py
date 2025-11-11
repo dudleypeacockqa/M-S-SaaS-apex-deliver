@@ -435,3 +435,60 @@ def test_stripe_webhook_handler_exception_caught(client: TestClient, db_session:
             # Should still return success to prevent Stripe retries
             assert response.status_code == 200
             assert response.json() == {"status": "success"}
+
+@pytest.mark.parametrize(
+    "event_type,handler_name",
+    [
+        ("checkout.session.completed", "handle_checkout_completed"),
+        ("invoice.paid", "handle_invoice_paid"),
+        ("customer.subscription.updated", "handle_subscription_updated"),
+        ("customer.subscription.deleted", "handle_subscription_deleted"),
+    ],
+)
+def test_stripe_webhook_routes_events(
+    event_type: str,
+    handler_name: str,
+    client: TestClient,
+    db_session: Session,
+    monkeypatch,
+):
+    """A real webhook request should dispatch to the correct handler."""
+    from app.db.session import get_db
+    from app.main import app
+
+    def override_get_db():
+        yield db_session
+
+    app.dependency_overrides[get_db] = override_get_db
+    monkeypatch.setenv("STRIPE_WEBHOOK_SECRET", "test_secret")
+
+    called = {}
+
+    def capture(event_data, db):
+        called["event_data"] = event_data
+        called["handler"] = handler_name
+        assert db is db_session
+
+    monkeypatch.setattr(subscription_service, handler_name, capture)
+
+    def fake_construct_event(body, signature, secret):
+        assert signature == "sig_test"
+        assert secret == "test_secret"
+        return {"type": event_type, "data": {"object": {"id": "evt_123"}}}
+
+    import stripe  # pylint: disable=import-error
+
+    monkeypatch.setattr(stripe.Webhook, "construct_event", fake_construct_event)
+
+    response = client.post(
+        "/api/billing/webhooks/stripe",
+        json={"payload": True},
+        headers={"stripe-signature": "sig_test"},
+    )
+
+    app.dependency_overrides.pop(get_db, None)
+
+    assert response.status_code == 200
+    assert called["handler"] == handler_name
+    assert called["event_data"] == {"object": {"id": "evt_123"}}
+

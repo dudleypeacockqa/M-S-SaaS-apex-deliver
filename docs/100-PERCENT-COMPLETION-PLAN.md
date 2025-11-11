@@ -1,19 +1,19 @@
 # 100% Project Completion Plan
 **Project**: M&A Intelligence Platform (ApexDeliver)
-**Last Updated**: 2025-11-10 21:45 UTC
+**Last Updated**: 2025-11-12 00:10 UTC
 **Methodology**: BMAD v6-alpha + TDD (RED -> GREEN -> REFACTOR)
 
 ---
 
-## Current Delivery Snapshot (2025-11-10 20:05 UTC)
-- **Backend tests**: 681 pass / 74 skip (pytest 2025-11-10E). Subscription/billing smoke rerun with coverage; Sprint 1A will extend service coverage to ≥80%.
-- **Frontend tests**: Targeted suites (valuation 13/13, podcast 26/26) still green; full `npm run test -- --runInBand` + coverage pending DEV-008/016/018 delivery.
-- **Deployment**: ✅ Backend `srv-d3ii9qk9c44c73aqsli0` live on deploy `dep-d49430euk2gs73es0cpg` (commit `79a07c5`, API-triggered 19:48Z). ✅ Frontend `srv-d3ihptbipnbc73e72ne0` live on `dep-d4944ochg0os738k2sc0` (commit `be33237`, API-triggered 19:52Z). Health endpoints return 200; evidence stored in `latest-deploy*.json` + BMAD Session 2025-11-10H2.
-- **Git state**: `HEAD` `61edfc8 docs(readme): add prominent database recovery alert to main README`; branch ahead of origin by 3 commits with doc/migration helper edits in progress.
-- **Migrations**: ✅ Single head `9a3aba324f7f`; `alembic upgrade head` validated directly against Render Postgres (Session 2025-11-10G).
-- **BMAD artefacts**: Tracker + workflow updated through Session 2025-11-10H2; plan refreshed accordingly.
+## Current Delivery Snapshot (2025-11-12 00:10 UTC)
+- **Backend tests**: ✅ `venv/Scripts/python.exe -m pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --cov …` against Render Postgres → 26 pass / 4 skip, routes 79% cov, service 59% cov. Full suite (681 pass / 74 skip) still last confirmed 2025-11-10; coverage uplift work not started.
+- **Frontend tests**: 🔴 Only targeted suites (valuation 13/13, podcast 26/26) rerun; full `npm run test -- --runInBand --coverage` outstanding until DEV-008/016/018 implementations land.
+- **Deployment**: 🟠 Backend service `srv-d3ii9qk9c44c73aqsli0` remains on deploy `dep-d492u7ag0ims73e3mkc0` (commit `64ad4fb5`). Frontend service `srv-d3ihptbipnbc73e72ne0` deploy `dep-d492tq2g0ims73e3miig` is stuck `build_in_progress`. Latest evidence captured in `docs/DEPLOYMENT_HEALTH.md`; redeploy + log capture still required.
+- **Git state**: `HEAD` `a027963 docs(bmad): add Session 2025-11-11C - Phase 2 Complete Summary` matches `origin/main`, but >900 files remain dirty across `.bmad`, backend migrations/tests, frontend document/deal-matching UIs, and deployment docs.
+- **Migrations**: ✅ `alembic upgrade head` executed 2025-11-10 21:45 UTC directly against Render Postgres → head `dc2c0f69c1b1`. Needs rerun after next deploy push.
+- **BMAD artefacts**: Tracker updated through Session 2025-11-10K; workflow file still references phase-completion summary and does **not** reflect the current migration/deploy loop. `npx bmad-method workflow-init` remains unavailable in this shell.
 
-### Dirty Tree Mapping (2025-11-10 18:50 UTC)### Dirty Tree Mapping (2025-11-10 18:50 UTC)
+### Dirty Tree Mapping (2025-11-12 00:00 UTC)
 - `.bmad/**` manifests + docs - BMAD v6 install plus session logs still uncommitted upstream.
 - `backend/app/api/routes/podcasts.py`, `backend/tests/test_podcast_api.py`, `backend/app/services/transcription_service.py` - DEV-016 video/transcription + quota reset WIP.
 - `backend/alembic/versions/*.py` - uuid->string chain rewrite plus merge migrations awaiting Postgres verification.
@@ -56,8 +56,7 @@
   - Align Render preview assets and capture screenshots for release notes.
   - **TDD cadence**: Continue component-by-component RED->GREEN loops; archive Lighthouse + Vitest outputs per phase under `docs/marketing/`.
 
-### 5. Operations & Deployment Hardening (P0/P1)
-- **Status**: Backend/frontend redeploys verified (2025-11-10 20:05 UTC); need to keep smoke artefacts current after each sprint and rotate secrets as documented.
+- **Status**: Backend stuck on commit `64ad4fb5`, frontend deploy pending; smoke artefacts updated with latest Postgres verification but redeploy evidence missing.
 - **Actions**:
   - Refresh `.env` secrets, rerun `scripts/run_smoke_tests.sh production`, and capture outputs in `DEPLOYMENT_HEALTH.md` + `PRODUCTION_DEPLOYMENT_CHECKLIST.md`.
   - Apply outstanding migrations in staging, confirm worker configs, update monitoring alerts.
@@ -83,11 +82,11 @@
 ---
 
 ## Immediate Next Actions (Next 48 Hours)
-1. **Postgres-ready migration dry run**: Provision local/staging Postgres (local Docker or approved cloud DB), run `alembic upgrade head` + billing/subscription smoke tests, archive logs in `docs/DEPLOYMENT_HEALTH.md`.
-2. **BMAD governance sync**: Restore `npx bmad-method workflow-init` (command currently unavailable via `npx`), then update `docs/bmad/bmm-workflow-status.md`, `BMAD_PROGRESS_TRACKER.md`, and story files with the refreshed W1 (migrations) and W2 (document room) loops.
-3. **DEV-008 RED tests**: Commit failing Vitest specs for FolderTree + PermissionModal, align with new API mocks, then begin implementation once tests assert desired UX.
-4. **DEV-018 criteria builder**: Extend `MatchingWorkspace.test.tsx` with RED cases for save/pass/request intro + analytics tabs; follow with implementation + React Query cache tests.
-5. **Render readiness package**: Prepare a new Conventional Commit + PR summary (current `PR_DESCRIPTION.md` still references MARK-002 only), and document deploy blockers + required evidence for stakeholder transparency.
+1. **Restore workflow tooling (W0)**: Reinstall/repair BMAD CLI so `npx bmad-method workflow-init` runs; capture output under Analyst agent and sync `docs/bmad/bmm-workflow-status.md` + tracker.
+2. **Redeploy with evidence (W1)**: Trigger backend/frontend Render deploys for commit `a027963` (or newer), download updated `backend-deploy*.json` / `frontend-deploy*.json`, and rerun smoke tests + health checks documented in `DEPLOYMENT_HEALTH.md`.
+3. **DEV-008 RED cycle (W2)**: Author failing Vitest specs for FolderTree/PermissionModal/upload flows, scaffold MSW mocks, then implement UI once RED achieved.
+4. **DEV-016/018 sequencing (W3/W4)**: Extend backend/frontend tests (podcast video, deal-matching criteria) before implementation; maintain coverage targets (backend ≥90%, frontend ≥85%).
+5. **PR + documentation hygiene**: Update `PR_DESCRIPTION.md`, release notes, and ops checklists to reflect the active stories; ensure secret rotation + DSN updates are tracked before declaring ops complete.
 
 ---
 
