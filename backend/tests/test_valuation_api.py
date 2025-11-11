@@ -1,5 +1,6 @@
 """RED-phase API tests for valuation endpoints (DEV-011)."""
 
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from fastapi import status
@@ -252,8 +253,10 @@ class TestValuationApi:
         create_resp = _create_valuation(client, deal.id, auth_headers_growth, VALUATION_PAYLOAD)
         valuation_id = create_resp.json()["id"]
 
+        call_count = [0]
         def fake_trigger_export_task(**kwargs):
-            return {"task_id": "export-task-001", "status": "queued", **kwargs}
+            call_count[0] += 1
+            return {"task_id": f"export-task-{call_count[0]:03d}", "status": "queued", **kwargs}
 
         monkeypatch.setattr(
             "app.services.valuation_service.trigger_export_task",
@@ -358,7 +361,102 @@ class TestValuationApi:
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert response.json()["detail"]["code"] == "SCENARIO_INVALID"
-# ... to ensure log scenario id etc? need import? We'll adjust patch to include new test.
+    def test_list_exports_returns_recent_logs(
+        self,
+        client,
+        create_deal_for_org,
+        auth_headers_growth,
+        db_session,
+        monkeypatch,
+    ):
+        from app.models.valuation import ValuationExportLog
+
+        deal, _, _ = create_deal_for_org()
+        create_resp = _create_valuation(client, deal.id, auth_headers_growth, VALUATION_PAYLOAD)
+        valuation_id = create_resp.json()["id"]
+
+        def fake_trigger_export_task(**kwargs):
+            return {"task_id": "export-task-list", "status": "queued", **kwargs}
+
+        monkeypatch.setattr(
+            "app.services.valuation_service.trigger_export_task",
+            fake_trigger_export_task,
+        )
+
+        queue_resp = client.post(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/exports",
+            json={"export_type": "excel", "export_format": "summary"},
+            headers=auth_headers_growth,
+        )
+
+        assert queue_resp.status_code == status.HTTP_202_ACCEPTED
+
+        response = client.get(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/exports",
+            headers=auth_headers_growth,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert isinstance(body, list) and len(body) == 1
+        entry = body[0]
+        assert entry["task_id"] == "export-task-list"
+        assert entry["status"] == "queued"
+        assert entry["export_type"] == "excel"
+
+        log = db_session.get(ValuationExportLog, entry["id"])
+        assert log is not None
+
+    def test_get_export_status_reflects_updates(
+        self,
+        client,
+        create_deal_for_org,
+        auth_headers_growth,
+        db_session,
+        monkeypatch,
+    ):
+        from app.models.valuation import ValuationExportLog
+
+        deal, _, _ = create_deal_for_org()
+        create_resp = _create_valuation(client, deal.id, auth_headers_growth, VALUATION_PAYLOAD)
+        valuation_id = create_resp.json()["id"]
+
+        def fake_trigger_export_task(**kwargs):
+            return {"task_id": "export-task-status", "status": "queued", **kwargs}
+
+        monkeypatch.setattr(
+            "app.services.valuation_service.trigger_export_task",
+            fake_trigger_export_task,
+        )
+
+        queue_resp = client.post(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/exports",
+            json={"export_type": "pdf", "export_format": "full_model"},
+            headers=auth_headers_growth,
+        )
+
+        assert queue_resp.status_code == status.HTTP_202_ACCEPTED
+        log_id = queue_resp.json()["export_log_id"]
+
+        log_entry = db_session.get(ValuationExportLog, log_id)
+        log_entry.status = "completed"
+        log_entry.download_url = "https://files.example.com/export-task-status.pdf"
+        log_entry.file_size_bytes = 2048
+        log_entry.completed_at = datetime.now(timezone.utc)
+        db_session.add(log_entry)
+        db_session.commit()
+
+        response = client.get(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/exports/{log_entry.task_id}",
+            headers=auth_headers_growth,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert body["status"] == "completed"
+        assert body["download_url"] == "https://files.example.com/export-task-status.pdf"
+        assert body["file_size_bytes"] == 2048
+        assert body["completed_at"] is not None
 
     def test_run_monte_carlo_simulation(self, client, create_deal_for_org, auth_headers_growth):
         deal, _, _ = create_deal_for_org()
