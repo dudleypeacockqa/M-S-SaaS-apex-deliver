@@ -10,6 +10,9 @@
 - **Render Deploys Triggered (API, 07:04–07:06Z)**
   - Backend service `srv-d3ii9qk9c44c73aqsli0` → deploy `dep-d49e0qfdiees73ae691g` (commit `863f8dc`, trigger `api`, status currently `update_in_progress`).
   - Frontend service `srv-d3ihptbipnbc73e72ne0` → deploy `dep-d49e05ig0ims73e55qk0` (commit `863f8dc`, trigger `api`, status currently `created`/building).
+- **Current Render Status (07:12Z poll)**
+  - Render auto-deploy immediately spawned `dep-d49e31juibrs739abiug` (commit `13516f3`, from earlier workflow doc update) and it **failed** during `update_in_progress` at `07:12:02Z` (Render dashboard review needed for logs).
+  - API-triggered frontend deploy `dep-d49e05ig0ims73e55qk0` still `build_in_progress`; continue monitoring until Render marks it live.
 - **Evidence Updated**
   - `deployment-health-2025-11-11.json` & `deployment-smoke-test-2025-11-11.txt` (new data appended).
   - `latest-deploy.json` rewritten with the deploy IDs above.
