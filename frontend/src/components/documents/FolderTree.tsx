@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createFolder,
@@ -94,6 +94,28 @@ export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId
     onSuccess: () => invalidateFolders(),
   })
 
+  const storageKey = `folder-tree-expanded-${dealId}`
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(storageKey)
+      if (stored) {
+        const parsed: string[] = JSON.parse(stored)
+        setExpandedFolders(new Set(parsed))
+      }
+    } catch {
+      // ignore read errors (e.g., unavailable localStorage)
+    }
+  }, [storageKey])
+
+  const persistExpanded = useCallback((next: Set<string>) => {
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(Array.from(next)))
+    } catch {
+      // ignore write errors in non-browser contexts
+    }
+  }, [storageKey])
+
   const toggleExpand = useCallback((folderId: string) => {
     setExpandedFolders((prev) => {
       const next = new Set(prev)
@@ -102,9 +124,10 @@ export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId
       } else {
         next.add(folderId)
       }
+      persistExpanded(next)
       return next
     })
-  }, [])
+  }, [persistExpanded])
 
   const handleCreateSubmit = async () => {
     if (!newFolderName.trim()) {
