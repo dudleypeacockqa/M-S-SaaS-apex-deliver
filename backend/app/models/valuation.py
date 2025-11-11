@@ -212,6 +212,7 @@ class ValuationExportLog(Base):
     export_format = Column(String(50), nullable=True)  # 'summary', 'detailed', 'full_model'
     file_size_bytes = Column(Integer, nullable=True)
     document_id = Column(String(36), ForeignKey("documents.id"), nullable=True)  # Link to document room
+    scenario_id = Column(String(36), ForeignKey("valuation_scenarios.id", ondelete="SET NULL"), nullable=True)
 
     # Metadata
     exported_by = Column(String(36), ForeignKey("users.id"), nullable=False)
@@ -222,3 +223,4 @@ class ValuationExportLog(Base):
     organization = relationship("Organization")
     exported_by_user = relationship("User")
     document = relationship("Document")
+    scenario = relationship("ValuationScenario")

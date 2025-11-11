@@ -25,6 +25,7 @@ from app.schemas.valuation import (
     ValuationExportResponse,
     ValuationResponse,
     ValuationUpdate,
+    ScenarioSummaryResponse,
 )
 from app.services import valuation_service
 
@@ -357,14 +358,18 @@ def trigger_export(
     db: Session = Depends(get_db),
 ):
     valuation = _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
-    export_log = valuation_service.log_export_event(
-        db=db,
-        valuation_id=valuation.id,
-        organization_id=current_user.organization_id,
-        export_type=export_request.export_type,
-        export_format=export_request.export_format,
-        exported_by=current_user.id,
-    )
+    try:
+        export_log = valuation_service.log_export_event(
+            db=db,
+            valuation_id=valuation.id,
+            organization_id=current_user.organization_id,
+            export_type=export_request.export_type,
+            export_format=export_request.export_format,
+            exported_by=current_user.id,
+            scenario_id=export_request.scenario_id,
+        )
+    except ValueError as exc:
+        _error(status.HTTP_422_UNPROCESSABLE_ENTITY, "SCENARIO_INVALID", str(exc))
     task = valuation_service.trigger_export_task(
         valuation_id=valuation.id,
         organization_id=current_user.organization_id,
@@ -377,4 +382,20 @@ def trigger_export(
         export_type=export_request.export_type,
         export_format=export_request.export_format,
         export_log_id=export_log.id,
+        scenario_id=export_request.scenario_id,
     )
+@router.get("/{valuation_id}/scenarios/summary", response_model=ScenarioSummaryResponse)
+def get_scenario_summary(
+    deal_id: str,
+    valuation_id: str,
+    current_user: User = Depends(_require_growth_user),
+    db: Session = Depends(get_db),
+):
+    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
+    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    summary = valuation_service.calculate_scenario_summary(
+        db=db,
+        valuation_id=valuation_id,
+        organization_id=current_user.organization_id,
+    )
+    return summary

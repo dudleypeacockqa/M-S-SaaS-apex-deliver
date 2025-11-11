@@ -82,6 +82,7 @@ class ValuationResponse(BaseModel):
 class ValuationExportCreate(BaseModel):
     export_type: Literal["pdf", "excel"]
     export_format: Optional[str] = None
+    scenario_id: Optional[str] = Field(default=None)
 
 
 class ValuationExportResponse(BaseModel):
@@ -90,6 +91,7 @@ class ValuationExportResponse(BaseModel):
     export_type: Literal["pdf", "excel"]
     export_format: Optional[str] = None
     export_log_id: str
+    scenario_id: Optional[str] = None
 
 
 class MonteCarloRequest(BaseModel):
@@ -141,6 +143,18 @@ class ScenarioResponse(BaseModel):
     updated_at: Optional[datetime]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ScenarioValueRange(BaseModel):
+    min: Optional[float]
+    max: Optional[float]
+    median: Optional[float]
+
+
+class ScenarioSummaryResponse(BaseModel):
+    count: int
+    enterprise_value_range: ScenarioValueRange
+    equity_value_range: ScenarioValueRange
 
 
 # Comparable Company Schemas

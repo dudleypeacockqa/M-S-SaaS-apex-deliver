@@ -236,7 +236,7 @@ class TestValuationApi:
         assert log_entry.export_format == "summary"
         assert log_entry.exported_by == growth_user.id
 
-    def test_generate_export_returns_log_id_and_persists_entry(
+    def test_generate_export_allows_scenario_id(
         self,
         client,
         create_deal_for_org,
@@ -278,6 +278,56 @@ class TestValuationApi:
         assert log_entry.export_type == "pdf"
         assert log_entry.export_format == "summary"
         assert log_entry.exported_by == growth_user.id
+        assert log_entry.scenario_id is None
+
+        scenario_resp = client.post(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/scenarios",
+            json=SCENARIO_PAYLOAD,
+            headers=auth_headers_growth,
+        )
+        scenario_id = scenario_resp.json()["id"]
+
+        response = client.post(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/exports",
+            json={"export_type": "pdf", "export_format": "summary", "scenario_id": scenario_id},
+            headers=auth_headers_growth,
+        )
+
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        payload = response.json()
+        scenario_log = db_session.get(ValuationExportLog, payload["export_log_id"])
+        assert scenario_log is not None
+        assert scenario_log.scenario_id == scenario_id
+
+    def test_generate_export_rejects_foreign_scenario(
+        self,
+        client,
+        create_deal_for_org,
+        auth_headers_growth,
+        db_session,
+    ):
+        deal, growth_user, _ = create_deal_for_org()
+        create_resp = _create_valuation(client, deal.id, auth_headers_growth, VALUATION_PAYLOAD)
+        valuation_id = create_resp.json()["id"]
+        other_resp = _create_valuation(client, deal.id, auth_headers_growth, VALUATION_PAYLOAD)
+        other_valuation_id = other_resp.json()["id"]
+
+        scenario_resp = client.post(
+            f"/api/deals/{deal.id}/valuations/{other_valuation_id}/scenarios",
+            json=SCENARIO_PAYLOAD,
+            headers=auth_headers_growth,
+        )
+        other_scenario_id = scenario_resp.json()["id"]
+
+        response = client.post(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/exports",
+            json={"export_type": "pdf", "scenario_id": other_scenario_id},
+            headers=auth_headers_growth,
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.json()["detail"]["code"] == "SCENARIO_INVALID"
+# ... to ensure log scenario id etc? need import? We'll adjust patch to include new test.
 
     def test_run_monte_carlo_simulation(self, client, create_deal_for_org, auth_headers_growth):
         deal, _, _ = create_deal_for_org()
@@ -311,3 +361,32 @@ class TestValuationApi:
         detail = response.json()["detail"]
         if isinstance(detail, dict):
             assert detail.get("code") == "INVALID_MONTE_CARLO"
+    def test_get_scenario_summary_via_api(
+        self,
+        client,
+        create_deal_for_org,
+        auth_headers_growth,
+    ):
+        deal, _, _ = create_deal_for_org()
+        create_resp = _create_valuation(client, deal.id, auth_headers_growth, VALUATION_PAYLOAD)
+        valuation_id = create_resp.json()["id"]
+
+        client.post(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/scenarios",
+            json={
+                "name": "Upside",
+                "description": "More growth",
+                "assumptions": {"discount_rate": 0.1},
+            },
+            headers=auth_headers_growth,
+        )
+
+        response = client.get(
+            f"/api/deals/{deal.id}/valuations/{valuation_id}/scenarios/summary",
+            headers=auth_headers_growth,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        summary = response.json()
+        assert summary["count"] == 1
+        assert summary["enterprise_value_range"]["median"] is None  # no EV yet

@@ -689,6 +689,102 @@ class TestValuationServiceOperations:
                 document_id=foreign_document.id,
             )
 
+    def test_log_export_event_accepts_valid_scenario(
+        self,
+        db_session,
+        create_deal_for_org,
+    ):
+        deal, owner, _ = create_deal_for_org()
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+            created_by=owner.id,
+            forecast_years=5,
+            discount_rate=0.12,
+            terminal_growth_rate=0.03,
+            terminal_method="gordon_growth",
+            cash_flows=[500000, 650000, 800000, 950000, 1_100_000],
+            terminal_cash_flow=1_200_000,
+            net_debt=2_000_000,
+            shares_outstanding=1_000_000,
+        )
+
+        scenario = valuation_service.add_scenario(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=deal.organization_id,
+            name="Upside",
+            enterprise_value=11_000_000,
+        )
+
+        log_entry = valuation_service.log_export_event(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=deal.organization_id,
+            export_type="pdf",
+            export_format="summary",
+            exported_by=owner.id,
+            scenario_id=scenario.id,
+        )
+
+        assert log_entry.scenario_id == scenario.id
+
+    def test_log_export_event_rejects_scenario_from_other_valuation(
+        self,
+        db_session,
+        create_deal_for_org,
+    ):
+        deal, owner, _ = create_deal_for_org()
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+            created_by=owner.id,
+            forecast_years=5,
+            discount_rate=0.12,
+            terminal_growth_rate=0.03,
+            terminal_method="gordon_growth",
+            cash_flows=[500000, 650000, 800000, 950000, 1_100_000],
+            terminal_cash_flow=1_200_000,
+            net_debt=2_000_000,
+            shares_outstanding=1_000_000,
+        )
+
+        other_valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+            created_by=owner.id,
+            forecast_years=5,
+            discount_rate=0.11,
+            terminal_growth_rate=0.02,
+            terminal_method="gordon_growth",
+            cash_flows=[400000, 550000, 700000, 850000, 1_000_000],
+            terminal_cash_flow=1_050_000,
+            net_debt=1_500_000,
+            shares_outstanding=900_000,
+        )
+
+        other_scenario = valuation_service.add_scenario(
+            db=db_session,
+            valuation_id=other_valuation.id,
+            organization_id=deal.organization_id,
+            name="Other",
+            enterprise_value=8_500_000,
+        )
+
+        with pytest.raises(ValueError):
+            valuation_service.log_export_event(
+                db=db_session,
+                valuation_id=valuation.id,
+                organization_id=deal.organization_id,
+                export_type="pdf",
+                export_format="summary",
+                exported_by=owner.id,
+                scenario_id=other_scenario.id,
+            )
+
 
 class TestGoToMarketKpis:
     def test_calculate_go_to_market_kpis_matches_reference_spreadsheet(self):

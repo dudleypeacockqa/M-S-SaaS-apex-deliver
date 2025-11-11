@@ -896,6 +896,7 @@ def log_export_event(
     exported_by: str,
     file_size_bytes: Optional[int] = None,
     document_id: Optional[str] = None,
+    scenario_id: Optional[str] = None,
 ) -> ValuationExportLog:
     valuation = get_valuation(db=db, valuation_id=valuation_id, organization_id=organization_id)
     if valuation is None:
@@ -918,6 +919,14 @@ def log_export_event(
         if document.deal_id != valuation.deal_id:
             raise ValueError("Document does not belong to the valuation deal")
 
+    scenario_value = scenario_id
+    if scenario_value:
+        scenario = db.get(ValuationScenario, scenario_value)
+        if scenario is None:
+            raise ValueError("Scenario not found for valuation export")
+        if scenario.organization_id != resolved_org_id or scenario.valuation_id != valuation_id:
+            raise ValueError("Scenario does not belong to this valuation")
+
     entry = ValuationExportLog(
         id=str(uuid.uuid4()),
         valuation_id=valuation_id,
@@ -927,6 +936,7 @@ def log_export_event(
         file_size_bytes=file_size_bytes,
         exported_by=resolved_user_id,
         document_id=document_value,
+        scenario_id=scenario_value,
     )
     db.add(entry)
     db.commit()
