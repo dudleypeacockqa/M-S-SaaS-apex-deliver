@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  getDeal,
-  updateDeal,
   archiveDeal,
   Deal,
   DealStage,
@@ -10,18 +8,26 @@ import {
   getStageDisplayName,
   getStageColor,
 } from '../../services/api/deals';
+import { useDeal, useUpdateDeal } from '../../hooks/deals';
+
+type TabType = 'overview' | 'financials' | 'documents' | 'team';
 
 export const DealDetails: React.FC = () => {
   const { dealId } = useParams<{ dealId: string }>();
   const navigate = useNavigate();
 
-  const [deal, setDeal] = useState<Deal | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // React Query hooks
+  const { data: deal, isLoading: loading, error: queryError } = useDeal(dealId || '');
+  const { mutate: updateDealMutation, isPending: updating, error: updateQueryError } = useUpdateDeal();
+
+  // Local UI state
   const [isEditing, setIsEditing] = useState(false);
   const [editFormData, setEditFormData] = useState<Partial<Deal>>({});
-  const [updating, setUpdating] = useState(false);
-  const [updateError, setUpdateError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabType>('overview');
+
+  // Convert query error to string
+  const error = queryError ? queryError.message : null;
+  const updateError = updateQueryError ? updateQueryError.message : null;
 
   const stages: { value: DealStage; label: string }[] = [
     { value: 'sourcing', label: 'Sourcing' },
@@ -34,29 +40,6 @@ export const DealDetails: React.FC = () => {
   ];
 
   const currencies = ['GBP', 'USD', 'EUR'];
-
-  const fetchDeal = async () => {
-    if (!dealId) {
-      setError('Deal ID is missing');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const data = await getDeal(dealId);
-      setDeal(data);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load deal');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDeal();
-  }, [dealId]);
 
   const handleEditClick = () => {
     if (deal) {
@@ -307,7 +290,100 @@ export const DealDetails: React.FC = () => {
         </div>
       )}
 
-      {/* Deal Information */}
+      {/* Tab Navigation */}
+      <nav
+        role="tablist"
+        style={{
+          display: 'flex',
+          gap: '0.5rem',
+          borderBottom: '2px solid #e2e8f0',
+          background: 'white',
+          borderRadius: '8px 8px 0 0',
+          padding: '0 1rem',
+        }}
+      >
+        <button
+          role="tab"
+          aria-selected={activeTab === 'overview'}
+          onClick={() => setActiveTab('overview')}
+          style={{
+            padding: '1rem 1.5rem',
+            border: 'none',
+            background: 'transparent',
+            color: activeTab === 'overview' ? '#f97316' : '#64748b',
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            borderBottom: activeTab === 'overview' ? '2px solid #f97316' : '2px solid transparent',
+            marginBottom: '-2px',
+            transition: 'all 0.2s',
+          }}
+        >
+          Overview
+        </button>
+        <button
+          role="tab"
+          aria-selected={activeTab === 'financials'}
+          onClick={() => setActiveTab('financials')}
+          style={{
+            padding: '1rem 1.5rem',
+            border: 'none',
+            background: 'transparent',
+            color: activeTab === 'financials' ? '#f97316' : '#64748b',
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            borderBottom: activeTab === 'financials' ? '2px solid #f97316' : '2px solid transparent',
+            marginBottom: '-2px',
+            transition: 'all 0.2s',
+          }}
+        >
+          Financials
+        </button>
+        <button
+          role="tab"
+          aria-selected={activeTab === 'documents'}
+          onClick={() => setActiveTab('documents')}
+          style={{
+            padding: '1rem 1.5rem',
+            border: 'none',
+            background: 'transparent',
+            color: activeTab === 'documents' ? '#f97316' : '#64748b',
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            borderBottom: activeTab === 'documents' ? '2px solid #f97316' : '2px solid transparent',
+            marginBottom: '-2px',
+            transition: 'all 0.2s',
+          }}
+        >
+          Documents
+        </button>
+        <button
+          role="tab"
+          aria-selected={activeTab === 'team'}
+          onClick={() => setActiveTab('team')}
+          style={{
+            padding: '1rem 1.5rem',
+            border: 'none',
+            background: 'transparent',
+            color: activeTab === 'team' ? '#f97316' : '#64748b',
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            borderBottom: activeTab === 'team' ? '2px solid #f97316' : '2px solid transparent',
+            marginBottom: '-2px',
+            transition: 'all 0.2s',
+          }}
+        >
+          Team
+        </button>
+      </nav>
+
+      {/* Tab Content */}
+      {activeTab === 'overview' && (
+        <>
+          {/* Deal Information */}
       <article
         style={{
           background: 'white',
@@ -657,38 +733,94 @@ export const DealDetails: React.FC = () => {
         )}
       </article>
 
-      {/* Technical Details */}
-      <article
-        style={{
-          background: 'white',
-          borderRadius: '12px',
-          padding: '1.5rem',
-          boxShadow: '0 12px 24px rgba(15, 23, 42, 0.06)',
-          border: '1px solid #e2e8f0',
-        }}
-      >
-        <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>Technical Details</h3>
-        <div style={{ display: 'grid', gap: '0.5rem', fontSize: '0.875rem', fontFamily: 'monospace' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: '#64748b' }}>Deal ID:</span>
-            <span style={{ color: '#0f172a' }}>{deal.id}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: '#64748b' }}>Organization ID:</span>
-            <span style={{ color: '#0f172a' }}>{deal.organization_id}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: '#64748b' }}>Owner ID:</span>
-            <span style={{ color: '#0f172a' }}>{deal.owner_id}</span>
-          </div>
-          {deal.archived_at && (
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#dc2626' }}>Archived:</span>
-              <span style={{ color: '#dc2626' }}>{formatDate(deal.archived_at)}</span>
+          {/* Technical Details */}
+          <article
+            style={{
+              background: 'white',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              boxShadow: '0 12px 24px rgba(15, 23, 42, 0.06)',
+              border: '1px solid #e2e8f0',
+            }}
+          >
+            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>Technical Details</h3>
+            <div style={{ display: 'grid', gap: '0.5rem', fontSize: '0.875rem', fontFamily: 'monospace' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#64748b' }}>Deal ID:</span>
+                <span style={{ color: '#0f172a' }}>{deal.id}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#64748b' }}>Organization ID:</span>
+                <span style={{ color: '#0f172a' }}>{deal.organization_id}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#64748b' }}>Owner ID:</span>
+                <span style={{ color: '#0f172a' }}>{deal.owner_id}</span>
+              </div>
+              {deal.archived_at && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: '#dc2626' }}>Archived:</span>
+                  <span style={{ color: '#dc2626' }}>{formatDate(deal.archived_at)}</span>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </article>
+          </article>
+        </>
+      )}
+
+      {/* Financials Tab */}
+      {activeTab === 'financials' && (
+        <article
+          style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '2rem',
+            boxShadow: '0 12px 24px rgba(15, 23, 42, 0.06)',
+            border: '1px solid #e2e8f0',
+          }}
+        >
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem' }}>
+            Financial Overview
+          </h2>
+          <p style={{ color: '#64748b' }}>Financial intelligence dashboard coming soon...</p>
+        </article>
+      )}
+
+      {/* Documents Tab */}
+      {activeTab === 'documents' && (
+        <article
+          style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '2rem',
+            boxShadow: '0 12px 24px rgba(15, 23, 42, 0.06)',
+            border: '1px solid #e2e8f0',
+          }}
+        >
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem' }}>
+            Deal Documents
+          </h2>
+          <p style={{ color: '#64748b' }}>Document management interface coming soon...</p>
+        </article>
+      )}
+
+      {/* Team Tab */}
+      {activeTab === 'team' && (
+        <article
+          style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '2rem',
+            boxShadow: '0 12px 24px rgba(15, 23, 42, 0.06)',
+            border: '1px solid #e2e8f0',
+          }}
+        >
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem' }}>
+            Deal Team
+          </h2>
+          <p style={{ color: '#64748b' }}>Team collaboration features coming soon...</p>
+        </article>
+      )}
     </section>
   );
 };

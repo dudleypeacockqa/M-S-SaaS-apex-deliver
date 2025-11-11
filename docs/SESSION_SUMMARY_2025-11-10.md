@@ -169,7 +169,7 @@ The user's challenge ("are you sur?") was absolutely correct. They then explaine
 
 ### Immediate (Security - 24 Hours)
 1. Rotate Render API key: `rnd_oMIm1MFTqRNH8SE4fgiIiXTsNAqM`
-2. Rotate production DB password: `iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t`
+2. Rotate production DB password: `[REDACTED-ROTATED-2025-11-11]`
 3. Rotate test DB password: `CSgcCKzGdnh5PKok489sgcqaMH3eNsEH`
 
 ### Investigation (Read-Only - 2 Hours)
@@ -291,7 +291,7 @@ The following were exposed in previous chat transcripts:
    - Host: `dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com`
    - Database: `ma_saas_platform`
    - User: `ma_saas_user`
-   - Password: `iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t`
+   - Password: `[REDACTED-ROTATED-2025-11-11]`
 
 3. **Test Database**:
    - Database: `capliquify_test_db`

@@ -1,9 +1,9 @@
 # DEV-005: Role-Based Access Control (RBAC) Implementation
 
-**Status**: ✅ Completed  
+**Status**: 🚧 Reopened – Coverage expansion in progress (Updated 2025-11-12 08:10 UTC)  
 **Created**: October 24, 2025  
-**Completed**: October 24, 2025  
-**Duration**: ~3.5 hours (matched estimate)  
+**Completed (Phase 1)**: October 24, 2025  
+**Duration (Phase 1)**: ~3.5 hours (matched estimate)  
 **Sprint**: Foundation & Authentication  
 **Dependencies**: DEV-002 (Frontend Auth), DEV-004 (Backend Clerk Sync)
 
@@ -32,6 +32,15 @@ Implement comprehensive role-based access control across frontend and backend, e
 - **81 tests passing** (51 frontend + 30 backend)
 - **100% pass rate**
 - Duration: <3s combined
+
+---
+
+## Phase 2 (2025-11-12) – Claim Integrity Coverage
+
+- Added dedicated pytest module `backend/tests/test_auth_helpers.py` to exercise `_extract_claim`, `_sanitize_claims`, and `_enforce_claim_integrity` helpers.
+- Documented current behaviour for falsy values (0/False) and highlighted follow-up refactor opportunity.
+- Verified audit log entries for claim mismatches and Clerk-driven organization hydration.
+- NEXT: extend asynchronous tests for `get_current_user` and `require_feature` once entitlement service mocks are in place; raise RED tests before tightening logic.
 
 ---
 

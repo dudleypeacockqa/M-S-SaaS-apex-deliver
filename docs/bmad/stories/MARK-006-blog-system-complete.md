@@ -5,7 +5,7 @@
 **Priority**: Medium
 **Sprint**: Marketing 70% → 100% Completion
 **Estimated Effort**: 6 hours
-**Status**: Pending
+**Status**: In Progress – Blog listing fetch & search UI drafted (Updated 2025-11-12 08:10 UTC)
 **Created**: 2025-10-30
 **Assigned To**: Claude Code (AI Developer)
 
@@ -33,6 +33,15 @@ Without a working blog:
 - **Thought Leadership**: Can't establish authority in M&A space
 
 Completing this enables the content marketing pillar of the £1.4M ARR Year 1 goal.
+
+### Latest Update (2025-11-12 08:10 UTC)
+- Drafted real API-powered listing page (`frontend/src/pages/marketing/Blog.tsx`) with search, category filters, loading & error states.
+- Added co-located Vitest suite (`Blog.test.tsx`) covering initial rendering, fetch behaviour, and category controls (RED recorded for future empty/error paths).
+- Introduced shared UI primitives (`frontend/src/components/ui/Input.tsx`, `frontend/src/const.ts`) to support marketing surfaces.
+- Remaining work for this story:
+  - Implement CMS/admin CRUD and production blog content sync.
+  - Wire tests to MSW/MSR mocks for deterministic API responses.
+  - Ensure marketing coverage ≥90% once DEV-011/016 dependencies land.
 
 ### Success Metrics
 - Blog API endpoints return 200 OK

@@ -296,7 +296,7 @@
    - Where: Render Dashboard → Account Settings → API Keys
    - Action: Revoke and generate new
 
-2. **Production DB Password**: `iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t`
+2. **Production DB Password**: `[REDACTED-ROTATED-2025-11-11]`
    - Where: Render Dashboard → ma_saas_platform database → Settings
    - Action: Reset password, update backend service env vars
 

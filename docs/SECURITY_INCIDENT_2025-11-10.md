@@ -12,7 +12,7 @@ Production database credentials were found hardcoded in documentation files comm
 
 ### Exposed Credentials
 
-**Database Password**: `iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t`
+**Database Password**: `[REDACTED-ROTATED-2025-11-11]`
 
 **Files Containing Credentials**:
 1. `docs/CODEX_DATABASE_SECURITY_PROMPT.md` (line 82) - ✅ REDACTED

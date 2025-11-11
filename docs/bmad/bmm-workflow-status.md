@@ -12,8 +12,8 @@ WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.y
 ## Current State
 
 CURRENT_PHASE: 4-Implementation
-CURRENT_WORKFLOW: dev-story
-CURRENT_AGENT: dev
+CURRENT_WORKFLOW: workflow-init
+CURRENT_AGENT: analyst
 PHASE_1_COMPLETE: true
 PHASE_2_COMPLETE: true
 PHASE_3_COMPLETE: true
@@ -21,42 +21,38 @@ PHASE_4_COMPLETE: false
 
 ## Current Story Status
 
-STORY_ID: P0-Phase-Completion
-STORY_STATUS: COMPLETE
-STORY_RESULT: All P0 verification complete (deployment ✅, backend 681 tests ✅, frontend 1200+ tests ✅, all failures resolved)
-BLOCKERS: None - Ready for P1-1 (Backend Coverage Enhancement)
+STORY_ID: GOV-2025-11-12A-Workflow-Init-Reset
+STORY_STATUS: BLOCKED
+STORY_RESULT: Analyst workflow-init must be rerun to refresh enterprise-method baseline before continuing W1 deploy evidence work
+BLOCKERS: Requires interactive Claude Code session; CLI `npx bmad-method run` not available in this environment
 
 ## Next Action
 
-NEXT_ACTION: Begin P1-1 Backend Coverage Enhancement (83% → 85% target)
-NEXT_COMMAND: Create comprehensive tests for rbac_permissions.py, subscription_service.py (edge cases), and task_automation.py
-NEXT_AGENT: dev
-PRIORITY: P1
-RATIONALE: Increase backend coverage from 83% to 85% by adding ~175 additional covered statements across priority service modules
+NEXT_ACTION: Launch Analyst agent in Claude Code, run `*workflow-init`, and capture updated workflow template output
+NEXT_COMMAND: Analyst agent → `*workflow-init` (record NEXT_ACTION/NEXT_COMMAND, then resume W1 deploy evidence tasks)
+NEXT_AGENT: analyst
+PRIORITY: P0
+RATIONALE: Governance reset required to align BMAD artefacts before executing the remaining deployment and feature stories
 
 ## Completed This Session
 
 SESSION_ID: Session-2025-11-11C
 COMPLETED_WORK:
-- P0-1: Verified Render deployment health (backend `dep-d49430euk2gs73es0cpg`, frontend `dep-d4944ochg0os738k2sc0`)
-- P0-2: Confirmed backend 681 tests passing, 83% coverage
-- P0-3: Resolved all 6 frontend test failures (1 code fix, 5 false negatives from resource contention)
-- Updated comprehensive P0 documentation
+- Validated `.bmad` installation at v6.0.0-alpha.8 via `npx bmad-method@alpha status`
+- Catalogued dirty files and mapped them to MARK-006 (marketing blog), DEV-016 (podcast routing), GOV/W1 deployment evidence, and RBAC coverage expansion
+- P0 verification complete (deploy health, backend tests, frontend tests)
+- Updated BMAD tracker and completion summary
 
 FILES_MODIFIED:
-- frontend/src/components/deals/CreateDealModal.test.tsx (line 173 - added `await user.tab()`)
-- docs/P0-PHASE-COMPLETION-SUMMARY.md (complete P0 results)
-- docs/bmad/BMAD_PROGRESS_TRACKER.md (Session 2025-11-11C entry)
+- docs/P0-PHASE-COMPLETION-SUMMARY.md
+- docs/bmad/BMAD_PROGRESS_TRACKER.md
 - docs/bmad/bmm-workflow-status.md (this file)
+- docs/bmad/PROJECT_COMPLETION_PLAN.md (roadmap refresh)
 
 TEST_RESULTS:
-- Backend: 681 passing, 74 skipped, 83% coverage ✅
-- Frontend: 1200+ passing, all 6 original failures resolved ✅
-  - CreateDealModal: 29/29 passing
-  - NudgePanel: 11/11 passing
-  - GoalCard: 16/16 passing
-  - ActivityList: 15/15 passing
+- Backend: 681 pass / 74 skip, 83% coverage
+- Frontend: 1,200+ pass, ~87% coverage
 
 ---
 
-_Last Updated: 2025-11-11T05:15:00Z_
+_Last Updated: 2025-11-12T08:15:00Z_

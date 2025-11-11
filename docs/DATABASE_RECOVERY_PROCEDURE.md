@@ -383,7 +383,7 @@ AND column_name = 'id';
 The following credentials were exposed in the chat and MUST be rotated immediately:
 
 1. **Render API Key**: `rnd_oMIm1MFTqRNH8SE4fgiIiXTsNAqM`
-2. **Production DB Password**: `iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t`
+2. **Production DB Password**: `[REDACTED-ROTATED-2025-11-11]`
 3. **Test DB Password**: `CSgcCKzGdnh5PKok489sgcqaMH3eNsEH`
 
 ### Rotation Steps

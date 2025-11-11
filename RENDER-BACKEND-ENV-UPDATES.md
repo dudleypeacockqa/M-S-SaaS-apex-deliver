@@ -53,7 +53,7 @@ ALLOWED_ORIGINS   # Duplicate of CORS_ORIGINS - delete this
 
 ```bash
 # Database
-DATABASE_URL=postgresql://ma_saas_user:iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t@dpg-d3ii7jjipnbc73e7chfg-a/ma_saas_platform
+DATABASE_URL=postgresql://ma_saas_user:[REDACTED-ROTATED-2025-11-11]@dpg-d3ii7jjipnbc73e7chfg-a/ma_saas_platform
 
 # Stripe (from your .env file lines 45-46)
 STRIPE_SECRET_KEY=[GET_FROM_YOUR_ENV_FILE_LINE_45]

@@ -1,0 +1,15 @@
+HTTP/1.1 200 OK
+Date: Tue, 11 Nov 2025 05:21:27 GMT
+Content-Type: text/html; charset=utf-8
+Connection: keep-alive
+CF-RAY: 99cb589f9894ca24-LHR
+content-disposition: inline; filename="index.html"
+etag: W/"9c1c230506defbaf5795b81dd23b6fa6b2199c18"
+rndr-id: 2af48d87-7779-4ab3
+vary: Accept-Encoding
+vary: Accept-Encoding
+x-render-origin-server: Render
+cf-cache-status: DYNAMIC
+Server: cloudflare
+alt-svc: h3=":443"; ma=86400
+

@@ -1,6 +1,6 @@
 # DEV-016: Podcast Studio (Subscription Add-On)
 
-**Status**: COMPLETE - Phase 7 live streaming UI shipped; enterprise gating + streaming docs updated (Updated 2025-10-30 17:25 UTC)
+**Status**: Reopened – Subscription gating & transcript routing coverage outstanding (Updated 2025-11-12 08:10 UTC)
 **Priority**: High
 **Epic**: Phase 3 - Ecosystem & Network Effects
 **Started**: 2025-10-28
@@ -9,6 +9,12 @@
 **Methodology**: BMAD v6-alpha + TDD
 
 ---
+
+- **Latest Update (2025-11-12 08:10 UTC)** - Governance Sync Follow-Up:
+  - Added integration routing regression (`frontend/src/tests/integration/PodcastStudioRouting.test.tsx`) covering unauthenticated redirect and feature gate success flows.
+  - Documented RED test for transcript download links (currently skipped pending MSW-style mock refactor); story remains open until transcript and YouTube analytics acceptance criteria are met.
+  - Raised action to refactor hoisted `vi.mock` usage so `listEpisodes` can return transcript fixtures per test.
+  - NEXT: Finish mocking strategy, unskip transcript assertions, and push coverage ≥85% before closing DEV-016.
 
 - **Latest Update (2025-10-30 19:56 UTC)** - Phase 2.2 Sprint 4A Complete:
   - ✅ Transcription UI delivered: "Transcribe Audio" button, transcript preview, download links (TXT/SRT), "Regenerate Transcript" functionality.

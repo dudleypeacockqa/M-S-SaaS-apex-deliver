@@ -4,6 +4,12 @@
 **Checked On**: 2025-10-24 14:08 UTC  
 **Prepared By**: Codex (BMAD Ops)
 
+**Update (2025-11-12 08:05 UTC)**:
+- Recorded outstanding deployment evidence tasks in `docs/DEPLOYMENT-SESSION-SUMMARY.md` (Render frontend redeploy pending, Blog slug 404 under investigation).
+- Scrubbed plaintext DSNs from deployment docs; all commands now reference `$RENDER_PROD_DATABASE_URL`.
+- Noted requirement to rotate Render Postgres credentials and move secrets to secure storage before release.
+- Linked artefacts to W1-2025-11-11A deploy-proof story for BMAD governance loop.
+
 **Update (2025-10-28 22:00 UTC)**:
 - Pending script adjustments captured for governance reset: `scripts/run_smoke_tests.sh` (adds podcast gating checks) and `scripts/verify_migrations.sh` (documents Alembic head verification).
 - See DEV-016 story for feature context; retain ops ownership for automation follow-up in Phase 7.

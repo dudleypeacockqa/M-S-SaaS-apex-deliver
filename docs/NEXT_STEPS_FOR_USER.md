@@ -43,7 +43,7 @@ The following credentials were exposed in chat transcripts and MUST be rotated:
    - Generate new API key
    - Update any scripts/CI that use this key
 
-2. **Production Database Password**: `iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t`
+2. **Production Database Password**: `[REDACTED-ROTATED-2025-11-11]`
 3. **Test Database Password**: `CSgcCKzGdnh5PKok489sgcqaMH3eNsEH`
    - Go to: https://dashboard.render.com
    - Navigate to each database

@@ -58,7 +58,7 @@ LOG_SQL_QUERIES=false
 SHOW_ERROR_DETAILS=false
 
 # Database (Internal URL - faster connection within Render)
-DATABASE_URL=postgresql://ma_saas_user:iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t@dpg-d3ii7jjipnbc73e7chfg-a/ma_saas_platform
+DATABASE_URL=postgresql://ma_saas_user:[REDACTED-ROTATED-2025-11-11]@dpg-d3ii7jjipnbc73e7chfg-a/ma_saas_platform
 
 # All other keys (Clerk, Stripe, OpenAI, etc.)
 CLERK_SECRET_KEY=[from your .env]

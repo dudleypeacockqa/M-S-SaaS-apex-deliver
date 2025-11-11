@@ -1,0 +1,87 @@
+[
+    {
+        "deploy": {
+            "id": "dep-d49caf1r0fns73dae4m0",
+            "commit": {
+                "id": "fea5c0130e9e9090c49d3922c35e696eb7141b11",
+                "message": "docs(bmad): consolidate Phase 1 autonomous execution work-in-progress\n\nConsolidated all outstanding work from autonomous execution initiative (Phase 1: Housekeeping & Foundation).\n\n**Backend Updates:**\n- Valuation service: Enhanced DCF calculation logic\n- Tests: Comprehensive valuation service test coverage\n- Coverage: 82.9% maintained (backend/coverage.json)\n\n**Frontend Updates:**\n- NavigationMenu: Updated feature access control logic\n- Master Admin components: Enhanced ActivityList, FocusTimer, GoalCard, NudgePanel\n- Deal matching: Updated MatchCard test assertions\n- CreateDealModal: Test improvements\n- Button component: Minor UI refinements\n- Test status: 5 failures remaining (StatCard: 2, NavigationMenu: 3)\n\n**Documentation - Comprehensive Planning:**\n- docs/100-PERCENT-COMPLETION-PLAN.md (updated roadmap)\n- docs/P0-PHASE-COMPLETION-SUMMARY.md (new - phase completion summary)\n- docs/DEPLOYMENT_HEALTH.md (deployment health tracking)\n- docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md (deployment procedures)\n- docs/bmad/BMAD_PROGRESS_TRACKER.md (progress tracking)\n- docs/bmad/bmm-workflow-status.md (workflow state)\n\n**Test Artifacts:**\n- frontend-test-full-output.txt (complete test run)\n- frontend-test-results.txt (test summary)\n- frontend-test-quick.txt (quick test results)\n- p0-frontend-final-verification.txt (P0 verification)\n\n**Deployment Artifacts:**\n- latest-deploy.json (Render deployment status)\n- latest-deploy-check.json (deployment health check)\n- fix_production_alembic.py (migration fix script)\n\n**Scripts:**\n- verify_deployment.sh (deployment verification script)\n\n**Cleanup:**\n- Removed patch.diff (obsolete)\n\n**Current Status:**\n- Backend: 663 tests, 82.9% coverage \u00e2\u0153\u2026\n- Frontend: ~1,061/1,066 tests passing (99.5%) \u00e2\u0153\u2026\n- Deployments: Both LIVE and healthy \u00e2\u0153\u2026\n- Remaining work: Fix 5 frontend test failures\n\n**Next Steps** (Phase 1 completion):\n1. Fix StatCard test failures (2)\n2. Fix NavigationMenu test failures (3)\n3. Push to Render and verify deployments\n4. Document Phase 1 completion\n\nFollowing BMAD v6-alpha + TDD methodology for all remaining work.\n\n\u00f0\u0178\u00a4\u2013 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+                "createdAt": "2025-11-11T05:09:57Z"
+            },
+            "status": "live",
+            "trigger": "new_commit",
+            "createdAt": "2025-11-11T05:10:22.717277Z",
+            "updatedAt": "2025-11-11T05:12:22.43911Z",
+            "startedAt": "2025-11-11T05:10:22.577311Z",
+            "finishedAt": "2025-11-11T05:11:52.771035Z"
+        },
+        "cursor": "HmTNCBF7teRhZjFyMGZuczczZGFlNG0w"
+    },
+    {
+        "deploy": {
+            "id": "dep-d4944infte5s73ab8tcg",
+            "commit": {
+                "id": "6767f2da7032a0887cf62dc0b857983e17f235e3",
+                "message": "refactor(backend): migrate blog.py to Pydantic V2 ConfigDict\n\nReplaced deprecated class Config pattern with Pydantic V2 ConfigDict.\n\n**Changes**:\n- BlogPostResponse: class Config \u00e2\u2020\u2019 model_config = ConfigDict\n- Added ConfigDict import from pydantic\n- Maintained from_attributes=True configuration\n\n**Testing**:\n- Backend tests: 681 passed, 74 skipped \u00e2\u0153\u2026\n- Warnings reduced: 388 \u00e2\u2020\u2019 387\n- No regressions introduced\n\n**Deprecation Removed**:\n- PydanticDeprecatedSince20: Support for class-based config removed\n- Migration follows Pydantic V2 Migration Guide\n\nPart of Phase 1.4 - Pydantic V2 migration for code health maintenance.\n\n\u00f0\u0178\u00a4\u2013 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+                "createdAt": "2025-11-10T19:51:22Z"
+            },
+            "status": "deactivated",
+            "trigger": "new_commit",
+            "createdAt": "2025-11-10T19:51:42.683468Z",
+            "updatedAt": "2025-11-11T05:11:52.765134Z",
+            "startedAt": "2025-11-10T19:51:42.565962Z",
+            "finishedAt": "2025-11-10T19:52:57.797842Z"
+        },
+        "cursor": "adhqzDu0UoE0aW5mdGU1czczYWI4dGNn"
+    },
+    {
+        "deploy": {
+            "id": "dep-d49430euk2gs73es0cpg",
+            "commit": {
+                "id": "79a07c5a4f2b6457efc02679b6a8bfa31bce2781",
+                "message": "security(critical): redact exposed production database credentials + fix pytest\n\n\u00f0\u0178\u0161\u00a8 CRITICAL SECURITY FIX + Test Infrastructure Improvements\n\n**SECURITY FIX**:\n- Discovered production PostgreSQL password in docs/CODEX_DATABASE_SECURITY_PROMPT.md\n- Redacted password and added security notice\n- Created incident report: docs/SECURITY_INCIDENT_2025-11-10.md\n\n\u00e2\u0161\u00a0\u00ef\u00b8\udc8f **USER ACTION REQUIRED**: Rotate database password via Render Dashboard\nPassword exposed: iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t (MUST CHANGE)\n\n**TEST INFRASTRUCTURE FIX**:\n- pytest.ini: Added norecursedirs to ignore Windows 'nul' device\n- Fixed pytest collection blocking 755 backend tests\n- Added Windows-specific configuration documentation\n\n**Files Changed**:\n1. docs/CODEX_DATABASE_SECURITY_PROMPT.md - Password redacted (line 82)\n2. docs/SECURITY_INCIDENT_2025-11-10.md - Incident report with remediation steps\n3. pytest.ini - Fixed Windows pytest collection issue\n\nSee SECURITY_INCIDENT_2025-11-10.md for complete remediation checklist.\n\n\u00f0\u0178\u201d\u2019 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+                "createdAt": "2025-11-10T18:39:23Z"
+            },
+            "status": "deactivated",
+            "trigger": "api",
+            "createdAt": "2025-11-10T19:48:25.484867Z",
+            "updatedAt": "2025-11-10T19:52:57.789676Z",
+            "startedAt": "2025-11-10T19:48:24.069068Z",
+            "finishedAt": "2025-11-10T19:49:42.651676Z"
+        },
+        "cursor": "adhqzDu0UoEzMGV1azJnczczZXMwY3Bn"
+    },
+    {
+        "deploy": {
+            "id": "dep-d492u7ag0ims73e3mkc0",
+            "commit": {
+                "id": "64ad4fb5501aaf3289f147b986af552c642f23bb",
+                "message": "fix(migrations): correct migration order - d37ed4cd3013 must run after UUID conversion\n\nFixed critical deployment blocker causing 20+ consecutive deployment failures.\n\n**Root Cause:**\nMigrations d37ed4cd3013 (documents) and 36b3e62b4148 (deals) both had\ndown_revision='8dcb6880a52b', creating a branching migration with undefined\nexecution order.\n\nPostgreSQL would execute d37ed4cd3013 first (or in parallel), attempting to\ncreate foreign keys to users.id when users.id was still UUID type, while the\nFK columns were String(36) - causing FK type mismatch.\n\n**Error Pattern:**\n```\nforeign key constraint \"folders_created_by_fkey\" cannot be implemented\nDETAIL: Key columns \"created_by\" and \"id\" are of incompatible types:\n        character varying and uuid.\n```\n\n**Fix:**\nUpdated d37ed4cd3013 down_revision from '8dcb6880a52b' to '36b3e62b4148'\n\n**New Migration Order:**\n1. 8dcb6880a52b (users table with UUID)\n2. 36b3e62b4148 (convert users.id UUID \u00e2\u2020\u2019 String(36)) \u00e2\u0153\u2026\n3. d37ed4cd3013 (documents with FK to users.id now String(36)) \u00e2\u0153\u2026\n4. 58ea862c1242 (merge migrations)\n5. ...rest of chain...\n6. dc2c0f69c1b1 (HEAD)\n\n**Production Database State:**\n- Current: 8dcb6880a52b\n- Will now execute migrations in correct linear order\n- All FK type constraints will match \u00e2\u0153\u2026\n\n**Testing:**\n- alembic heads: Single head (dc2c0f69c1b1) \u00e2\u0153\u2026\n- Migration path verified: 18 migrations from 8dcb6880a52b \u00e2\u2020\u2019 head \u00e2\u0153\u2026\n- No circular dependencies \u00e2\u0153\u2026\n\nThis resolves the 20+ consecutive deployment failures since October 30.\n\n\u00f0\u0178\u00a4\u2013 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+                "createdAt": "2025-11-10T18:29:35Z"
+            },
+            "status": "deactivated",
+            "trigger": "new_commit",
+            "createdAt": "2025-11-10T18:29:50.316719Z",
+            "updatedAt": "2025-11-10T19:49:42.645166Z",
+            "startedAt": "2025-11-10T18:30:30.726326Z",
+            "finishedAt": "2025-11-10T18:31:52.807176Z"
+        },
+        "cursor": "YxNK5RilfBZ1N2FnMGltczczZTNta2Mw"
+    },
+    {
+        "deploy": {
+            "id": "dep-d492tpvgi27c739fltmg",
+            "commit": {
+                "id": "3d15ca6b135da8842e50edfa169b24c9cd63390d",
+                "message": "fix(migrations): resolve UUID/VARCHAR FK type mismatch in folders/documents\n\nFixed critical migration failure preventing Render deployment.\n\n**Problem:**\nMigration d37ed4cd3013 (folders/documents) was failing with:\n```\nsqlalchemy.exc.ProgrammingError: foreign key constraint\n\"folders_organization_id_fkey\" cannot be implemented\nDETAIL: Key columns \"organization_id\" and \"id\" are of\nincompatible types: character varying and uuid\n```\n\n**Root Cause:**\n1. Migration d37ed4cd3013 originally had `down_revision = '8dcb6880a52b'` (base users table)\n2. Migration 36b3e62b4148 (also from 8dcb6880a52b) converts users.id from UUID \u00e2\u2020\u2019 String(36)\n3. These were parallel branches, but d37ed4cd3013 expected:\n   - organizations.id to be String(36) (created by 36b3e62b4148)\n   - users.id to still be UUID (original type)\n4. This created incompatible FK constraints\n\n**Fix Applied:**\n1. Changed all user FK columns from `postgresql.UUID(as_uuid=True)` \u00e2\u2020\u2019 `sa.String(length=36)`:\n   - folders.created_by\n   - documents.uploaded_by\n   - document_permissions.user_id\n   - document_permissions.granted_by\n   - document_access_logs.user_id\n\n2. Updated `down_revision` from '8dcb6880a52b' \u00e2\u2020\u2019 '36b3e62b4148'\n   - Forces this migration to run AFTER users.id conversion\n   - Ensures proper dependency chain\n\n3. Removed unused `from sqlalchemy.dialects import postgresql` import\n\n**Migration Chain (Fixed):**\n```\n8dcb6880a52b (base users table with UUID)\n    \u00e2\u2020\u201c\n36b3e62b4148 (converts users \u00e2\u2020\u2019 String, creates organizations/deals)\n    \u00e2\u2020\u201c\nd37ed4cd3013 (creates folders/documents - NOW depends on 36b3e62b4148)\n    \u00e2\u2020\u201c\n58ea862c1242 (merge)\n```\n\n**Expected Outcome:**\n\u00e2\u0153\u2026 Alembic migrations will run successfully on Render\n\u00e2\u0153\u2026 All FK type constraints match (String(36) \u00e2\u2020\u201d String(36))\n\u00e2\u0153\u2026 Render deployment will complete without errors\n\nRelated: UUID conversion strategy documented in docs/migrations/UUID_CONVERSION_STRATEGY.md\n\n\u00f0\u0178\u00a4\u2013 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+                "createdAt": "2025-11-10T18:27:53Z"
+            },
+            "status": "deactivated",
+            "trigger": "new_commit",
+            "createdAt": "2025-11-10T18:28:58.811084Z",
+            "updatedAt": "2025-11-10T18:31:52.801673Z",
+            "startedAt": "2025-11-10T18:28:58.705652Z",
+            "finishedAt": "2025-11-10T18:30:19.548084Z"
+        },
+        "cursor": "YxNK5RilfBZ0cHZnaTI3YzczOWZsdG1n"
+    }
+]

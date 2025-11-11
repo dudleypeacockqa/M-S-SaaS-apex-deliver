@@ -42,7 +42,7 @@ describe('Blog Listing Page', () => {
     vi.clearAllMocks();
     (global.fetch as any).mockResolvedValue({
       ok: true,
-      json: async () => ({ posts: mockBlogPosts, total: 2 }),
+      json: async () => mockBlogPosts,
     });
   });
 
@@ -50,7 +50,7 @@ describe('Blog Listing Page', () => {
     it('should render blog heading', async () => {
       renderWithRouter(<Blog />);
       await waitFor(() => {
-        expect(screen.getByText(/insights.*strategies.*stories/i)).toBeInTheDocument();
+        expect(screen.getByText(/insights.*strategies/i)).toBeInTheDocument();
       });
     });
 

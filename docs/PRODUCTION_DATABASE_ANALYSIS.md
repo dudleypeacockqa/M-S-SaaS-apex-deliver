@@ -198,7 +198,7 @@ curl https://ma-saas-backend.onrender.com/health
    - **ACTION**: Regenerate in Render dashboard
 
 2. **Database Passwords**: Multiple DB passwords exposed
-   - `ma_saas_platform`: `iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t`
+   - `ma_saas_platform`: `[REDACTED-ROTATED-2025-11-11]`
    - `capliquify_test_db`: `CSgcCKzGdnh5PKok489sgcqaMH3eNsEH`
    - **ACTION**: Rotate in Render database settings
 

@@ -302,4 +302,127 @@ describe('DealDetails', () => {
     expect(screen.getAllByText('Target Co')[0]).toBeInTheDocument();
     expect(screen.getAllByText('Sourcing')[0]).toBeInTheDocument();
   });
+
+  // Phase 2A: Tabbed Interface Tests (TDD RED)
+  describe('Tabbed Interface', () => {
+    it('should render tab navigation with Overview, Financials, Documents, and Team tabs', async () => {
+      vi.mocked(dealsApi.getDeal).mockResolvedValue(mockDeal);
+
+      renderDealDetails();
+
+      await waitFor(() => {
+        expect(screen.getByRole('tab', { name: /overview/i })).toBeInTheDocument();
+      });
+
+      expect(screen.getByRole('tab', { name: /financials/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /documents/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /team/i })).toBeInTheDocument();
+    });
+
+    it('should show Overview tab content by default', async () => {
+      vi.mocked(dealsApi.getDeal).mockResolvedValue(mockDeal);
+
+      renderDealDetails();
+
+      await waitFor(() => {
+        expect(screen.getByRole('tab', { name: /overview/i })).toHaveAttribute('aria-selected', 'true');
+      });
+
+      // Overview content should be visible (deal information)
+      expect(screen.getByText('Deal Information')).toBeInTheDocument();
+    });
+
+    it('should switch to Financials tab when clicked', async () => {
+      const user = userEvent.setup();
+      vi.mocked(dealsApi.getDeal).mockResolvedValue(mockDeal);
+
+      renderDealDetails();
+
+      await waitFor(() => {
+        expect(screen.getByRole('tab', { name: /financials/i })).toBeInTheDocument();
+      });
+
+      const financialsTab = screen.getByRole('tab', { name: /financials/i });
+      await user.click(financialsTab);
+
+      await waitFor(() => {
+        expect(financialsTab).toHaveAttribute('aria-selected', 'true');
+      });
+
+      // Financials content should be visible
+      expect(screen.getByText(/financial overview/i)).toBeInTheDocument();
+    });
+
+    it('should switch to Documents tab when clicked', async () => {
+      const user = userEvent.setup();
+      vi.mocked(dealsApi.getDeal).mockResolvedValue(mockDeal);
+
+      renderDealDetails();
+
+      await waitFor(() => {
+        expect(screen.getByRole('tab', { name: /documents/i })).toBeInTheDocument();
+      });
+
+      const documentsTab = screen.getByRole('tab', { name: /documents/i });
+      await user.click(documentsTab);
+
+      await waitFor(() => {
+        expect(documentsTab).toHaveAttribute('aria-selected', 'true');
+      });
+
+      // Documents content should be visible
+      expect(screen.getByText(/deal documents/i)).toBeInTheDocument();
+    });
+
+    it('should switch to Team tab when clicked', async () => {
+      const user = userEvent.setup();
+      vi.mocked(dealsApi.getDeal).mockResolvedValue(mockDeal);
+
+      renderDealDetails();
+
+      await waitFor(() => {
+        expect(screen.getByRole('tab', { name: /team/i })).toBeInTheDocument();
+      });
+
+      const teamTab = screen.getByRole('tab', { name: /team/i });
+      await user.click(teamTab);
+
+      await waitFor(() => {
+        expect(teamTab).toHaveAttribute('aria-selected', 'true');
+      });
+
+      // Team content should be visible
+      expect(screen.getByText(/deal team/i)).toBeInTheDocument();
+    });
+
+    it('should persist active tab when re-rendering', async () => {
+      const user = userEvent.setup();
+      vi.mocked(dealsApi.getDeal).mockResolvedValue(mockDeal);
+
+      const { rerender } = renderDealDetails();
+
+      await waitFor(() => {
+        expect(screen.getByRole('tab', { name: /financials/i })).toBeInTheDocument();
+      });
+
+      const financialsTab = screen.getByRole('tab', { name: /financials/i });
+      await user.click(financialsTab);
+
+      await waitFor(() => {
+        expect(financialsTab).toHaveAttribute('aria-selected', 'true');
+      });
+
+      // Re-render
+      rerender(
+        <MemoryRouter initialEntries={[`/deals/deal-123`]}>
+          <Routes>
+            <Route path="/deals/:dealId" element={<DealDetails />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      // Tab should still be selected
+      expect(screen.getByRole('tab', { name: /financials/i })).toHaveAttribute('aria-selected', 'true');
+    });
+  });
 });
