@@ -53,42 +53,36 @@ export const DealDetails: React.FC = () => {
         description: deal.description || '',
       });
       setIsEditing(true);
-      setUpdateError(null);
     }
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
     setEditFormData({});
-    setUpdateError(null);
   };
 
-  const handleSaveEdit = async () => {
+  const handleSaveEdit = () => {
     if (!dealId || !deal) return;
 
-    try {
-      setUpdating(true);
-      setUpdateError(null);
+    const updates = {
+      ...(editFormData.name && { name: editFormData.name }),
+      ...(editFormData.target_company && { target_company: editFormData.target_company }),
+      ...(editFormData.industry !== undefined && { industry: editFormData.industry || undefined }),
+      ...(editFormData.deal_size !== undefined && { deal_size: editFormData.deal_size || undefined }),
+      ...(editFormData.currency && { currency: editFormData.currency }),
+      ...(editFormData.stage && { stage: editFormData.stage }),
+      ...(editFormData.description !== undefined && { description: editFormData.description || undefined }),
+    };
 
-      const updates = {
-        ...(editFormData.name && { name: editFormData.name }),
-        ...(editFormData.target_company && { target_company: editFormData.target_company }),
-        ...(editFormData.industry !== undefined && { industry: editFormData.industry || undefined }),
-        ...(editFormData.deal_size !== undefined && { deal_size: editFormData.deal_size || undefined }),
-        ...(editFormData.currency && { currency: editFormData.currency }),
-        ...(editFormData.stage && { stage: editFormData.stage }),
-        ...(editFormData.description !== undefined && { description: editFormData.description || undefined }),
-      };
-
-      const updatedDeal = await updateDeal(dealId, updates);
-      setDeal(updatedDeal);
-      setIsEditing(false);
-      setEditFormData({});
-    } catch (err) {
-      setUpdateError(err instanceof Error ? err.message : 'Failed to update deal');
-    } finally {
-      setUpdating(false);
-    }
+    updateDealMutation(
+      { dealId, updates },
+      {
+        onSuccess: () => {
+          setIsEditing(false);
+          setEditFormData({});
+        },
+      }
+    );
   };
 
   const handleArchive = async () => {

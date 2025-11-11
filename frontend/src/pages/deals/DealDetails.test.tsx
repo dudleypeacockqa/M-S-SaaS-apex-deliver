@@ -2,8 +2,10 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DealDetails } from './DealDetails';
 import * as dealsApi from '../../services/api/deals';
+import * as dealsHooks from '../../hooks/deals';
 
 // Mock the deals API
 vi.mock('../../services/api/deals', () => ({
@@ -57,12 +59,22 @@ const mockDeal = {
 };
 
 const renderDealDetails = (dealId: string = 'deal-123') => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
   return render(
-    <MemoryRouter initialEntries={[`/deals/${dealId}`]}>
-      <Routes>
-        <Route path="/deals/:dealId" element={<DealDetails />} />
-      </Routes>
-    </MemoryRouter>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[`/deals/${dealId}`]}>
+        <Routes>
+          <Route path="/deals/:dealId" element={<DealDetails />} />
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>
   );
 };
 
@@ -399,6 +411,14 @@ describe('DealDetails', () => {
       const user = userEvent.setup();
       vi.mocked(dealsApi.getDeal).mockResolvedValue(mockDeal);
 
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: false,
+          },
+        },
+      });
+
       const { rerender } = renderDealDetails();
 
       await waitFor(() => {
@@ -414,11 +434,13 @@ describe('DealDetails', () => {
 
       // Re-render
       rerender(
-        <MemoryRouter initialEntries={[`/deals/deal-123`]}>
-          <Routes>
-            <Route path="/deals/:dealId" element={<DealDetails />} />
-          </Routes>
-        </MemoryRouter>
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={[`/deals/deal-123`]}>
+            <Routes>
+              <Route path="/deals/:dealId" element={<DealDetails />} />
+            </Routes>
+          </MemoryRouter>
+        </QueryClientProvider>
       );
 
       // Tab should still be selected
