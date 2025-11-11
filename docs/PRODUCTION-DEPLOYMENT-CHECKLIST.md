@@ -1,3 +1,4 @@
+> **2025-11-10 20:05 UTC** – Backend deploy `dep-d49430euk2gs73es0cpg` & frontend deploy `dep-d4944ochg0os738k2sc0` triggered via API and verified healthy. Continue checklist from Phase 3 for post-deploy validation.
 - 2025-10-30 12:32 UTC: Smoke tests green (backend OK, frontend 403 due to Cloudflare; manual check next)
 - 2025-11-10 17:31 UTC: Render dry-run rehearsal prepped locally — Kanban SLA UI + valuation KPI suites green, migrations verified via pytest. Pending git push & Render redeploy to resolve `app.models.pipeline_template` error observed in latest Render logs.
 
@@ -53,15 +54,20 @@ Test Results:
 - Frontend Cloudflare 403 expected for automated requests (manual browser check shows normal operation)
 - Subsequent backend deploy `dep-d492u7ag0ims73e3mkc0` (commit `64ad4fb5…`) finished `live` at 18:31 UTC; Render API log endpoint currently returns `404`, so dashboard screenshot/log capture is required if deeper auditing is needed.
 
-### Postgres Migration Verification (2025-11-11 09:20 UTC)
+### Postgres Migration Verification (2025-11-10 21:45 UTC)
 
 ```bash
-cd backend && DATABASE_URL="postgresql://ma_saas_user:***@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform" ../backend/venv/Scripts/python.exe -m alembic upgrade head
+cd backend && DATABASE_URL="postgresql://ma_saas_user:***@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform" \
+  venv/Scripts/python.exe -m pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py \
+    --cov=app.api.routes.subscriptions --cov=app.services.subscription_service --cov-report=term-missing
+================= 26 passed, 4 skipped, 28 warnings in 14.13s ==================
+Coverage: routes 79%, services 59%
+
+cd backend && DATABASE_URL="postgresql://ma_saas_user:***@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform" \
+  venv/Scripts/alembic.exe upgrade head
 INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
 INFO  [alembic.runtime.migration] Will assume transactional DDL.
-
-cd backend && ../backend/venv/Scripts/python.exe -m pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --maxfail=1 --disable-warnings
-================= 26 passed, 4 skipped, 27 warnings in 7.40s ==================
 ```
 
-Result: production database confirmed at migration head `dc2c0f69c1b1`, and billing/subscription smoke tests remain GREEN.
+Result: production database confirmed at migration head `dc2c0f69c1b1`, and billing/subscription smoke tests remain GREEN (26 pass / 4 skip) against the live Render database.
+

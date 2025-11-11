@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NudgePanel } from './NudgePanel'
@@ -55,7 +55,7 @@ describe('NudgePanel', () => {
       {
         id: 2,
         user_id: 'user-1',
-        type: NudgeType.GOAL_PROGRESS,
+        type: NudgeType.CELEBRATION,
         message: "You're 80% towards your weekly discovery goal!",
         priority: NudgePriority.NORMAL,
         read: false,
@@ -66,7 +66,7 @@ describe('NudgePanel', () => {
       {
         id: 3,
         user_id: 'user-1',
-        type: NudgeType.SYSTEM,
+        type: NudgeType.ALERT,
         message: 'Urgent: Database maintenance scheduled for tonight',
         priority: NudgePriority.URGENT,
         read: false,
@@ -170,9 +170,9 @@ describe('NudgePanel', () => {
     it('should display nudge type labels', () => {
       renderNudgePanel()
 
-      expect(screen.getByText('REMINDER')).toBeInTheDocument()
-      expect(screen.getByText('GOAL_PROGRESS')).toBeInTheDocument()
-      expect(screen.getByText('SYSTEM')).toBeInTheDocument()
+      expect(screen.getByText('reminder')).toBeInTheDocument()
+      expect(screen.getByText('celebration')).toBeInTheDocument()
+      expect(screen.getByText('alert')).toBeInTheDocument()
     })
 
     it('should display action URL link when present', () => {
@@ -192,12 +192,9 @@ describe('NudgePanel', () => {
     it('should not display action URL link when not present', () => {
       renderNudgePanel()
 
-      // Second nudge has no action_url
-      const nudgeTexts = screen.getAllByText(/80% towards/)
-      const parentDiv = nudgeTexts[0].closest('div')
-
-      // Should not have "Take Action" link in this nudge
-      expect(within(parentDiv!).queryByText('Take Action')).not.toBeInTheDocument()
+      // Second nudge has no action_url - check that there are exactly 2 "Take Action" links (not 3)
+      const actionLinks = screen.queryAllByText('Take Action')
+      expect(actionLinks).toHaveLength(2) // Only first and third nudges have action URLs
     })
   })
 

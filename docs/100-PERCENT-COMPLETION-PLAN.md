@@ -5,15 +5,15 @@
 
 ---
 
-## Current Delivery Snapshot (2025-11-10 19:15 UTC)
-- **Backend tests**: ⚠️ Last recorded green run (606 pass / 38 skip) predates uuid->string migration shuffle; billing/subscription smoke (`pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py --cov …`) rerun locally 2025-11-10E but Alembic upgrade still unverified on PostgreSQL.
-- **Frontend tests**: 🔴 Full Vitest run outstanding; only targeted suites (valuation 13/13, podcast 26/26) revalidated. Need end-to-end `npm run test -- --runInBand` + coverage after DEV-008/016/018 changes.
-- **Deployment**: 🟠 Backend service `srv-d3ii9qk9c44c73aqsli0` most recently deployed `dep-d492u7ag0ims73e3mkc0` (commit `64ad4fb5`, status `live`) but newer commits (e.g., `eb78abd`) are not in production; earlier failure IDs (`dep-d48vc7qd...`, `dep-d491s6f...`) remain in history. Frontend service `srv-d3ihptbipnbc73e72ne0` latest deploy `dep-d492tq2g0ims73e3miig` is stuck `build_in_progress`. Deploy health is **not 100%**.
-- **Git state**: `HEAD` `eb78abd fix(deploy): correct Pre-Deploy Command to include backend/ directory` matches `origin/main`; worktree still extremely dirty (>900 tracked modifications spanning `.bmad`, backend migrations/podcast suites, frontend deal-matching UI, deployment scripts). No refreshed PR references this head.
-- **Migrations**: ✅ Logical order fixed (single head `9a3aba324f7f`), but `alembic upgrade head` still blocked on missing Postgres target + Render failure evidence.
-- **BMAD artefacts**: Tracker + workflow updated through Session 2025-11-10E; Completion plan/roadmap refreshed in this session.
+## Current Delivery Snapshot (2025-11-10 20:05 UTC)
+- **Backend tests**: 681 pass / 74 skip (pytest 2025-11-10E). Subscription/billing smoke rerun with coverage; Sprint 1A will extend service coverage to ≥80%.
+- **Frontend tests**: Targeted suites (valuation 13/13, podcast 26/26) still green; full `npm run test -- --runInBand` + coverage pending DEV-008/016/018 delivery.
+- **Deployment**: ✅ Backend `srv-d3ii9qk9c44c73aqsli0` live on deploy `dep-d49430euk2gs73es0cpg` (commit `79a07c5`, API-triggered 19:48Z). ✅ Frontend `srv-d3ihptbipnbc73e72ne0` live on `dep-d4944ochg0os738k2sc0` (commit `be33237`, API-triggered 19:52Z). Health endpoints return 200; evidence stored in `latest-deploy*.json` + BMAD Session 2025-11-10H2.
+- **Git state**: `HEAD` `61edfc8 docs(readme): add prominent database recovery alert to main README`; branch ahead of origin by 3 commits with doc/migration helper edits in progress.
+- **Migrations**: ✅ Single head `9a3aba324f7f`; `alembic upgrade head` validated directly against Render Postgres (Session 2025-11-10G).
+- **BMAD artefacts**: Tracker + workflow updated through Session 2025-11-10H2; plan refreshed accordingly.
 
-### Dirty Tree Mapping (2025-11-10 18:50 UTC)
+### Dirty Tree Mapping (2025-11-10 18:50 UTC)### Dirty Tree Mapping (2025-11-10 18:50 UTC)
 - `.bmad/**` manifests + docs - BMAD v6 install plus session logs still uncommitted upstream.
 - `backend/app/api/routes/podcasts.py`, `backend/tests/test_podcast_api.py`, `backend/app/services/transcription_service.py` - DEV-016 video/transcription + quota reset WIP.
 - `backend/alembic/versions/*.py` - uuid->string chain rewrite plus merge migrations awaiting Postgres verification.
@@ -57,7 +57,7 @@
   - **TDD cadence**: Continue component-by-component RED->GREEN loops; archive Lighthouse + Vitest outputs per phase under `docs/marketing/`.
 
 ### 5. Operations & Deployment Hardening (P0/P1)
-- **Status**: Render redeploy still paused pending completion of DEV-008/DEV-016 features; smoke artefacts to be updated post-implementation.
+- **Status**: Backend/frontend redeploys verified (2025-11-10 20:05 UTC); need to keep smoke artefacts current after each sprint and rotate secrets as documented.
 - **Actions**:
   - Refresh `.env` secrets, rerun `scripts/run_smoke_tests.sh production`, and capture outputs in `DEPLOYMENT_HEALTH.md` + `PRODUCTION_DEPLOYMENT_CHECKLIST.md`.
   - Apply outstanding migrations in staging, confirm worker configs, update monitoring alerts.

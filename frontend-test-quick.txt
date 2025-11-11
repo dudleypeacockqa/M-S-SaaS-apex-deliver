@@ -622,3 +622,25 @@ Not implemented: HTMLCanvasElement's getContext() method: without installing the
      [33m[2m✓[22m[39m shows a friendly outage message when the blog API fails [33m 647[2mms[22m[39m
  [32m✓[39m src/components/deal-matching/SaveMatchButton.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 114[2mms[22m[39m
  [32m✓[39m src/components/deal-matching/PassMatchButton.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 114[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Error [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: ENOENT: no such file or directory, open 'C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\frontend\coverage\.tmp\coverage-2.json'[39m
+[90m [2m❯[22m open node:internal/fs/promises:[2m641:25[22m[39m
+[90m [2m❯[22m Object.readFile node:internal/fs/promises:[2m1279:14[22m[39m
+[90m [2m❯[22m node_modules/vitest/dist/chunks/coverage.NVjCOln1.js:[2m2988:23[22m[39m
+[90m [2m❯[22m V8CoverageProvider.readCoverageFiles node_modules/vitest/dist/chunks/coverage.NVjCOln1.js:[2m2987:5[22m[39m
+[90m [2m❯[22m V8CoverageProvider.generateCoverage node_modules/@vitest/coverage-v8/dist/provider.js:[2m34:3[22m[39m
+[90m [2m❯[22m node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m11621:22[22m[39m
+[90m [2m❯[22m Vitest.runFiles node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m11634:10[22m[39m
+[90m [2m❯[22m Vitest.start node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m11523:18[22m[39m
+[90m [2m❯[22m startVitest node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m12476:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ errno: -4058, code: 'ENOENT', syscall: 'open', path: 'C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\frontend\coverage\.tmp\coverage-2.json' }[39m
+
+
+
+error during close Error: [vitest-pool-runner]: Timeout waiting for worker to respond
+    at Timeout.<anonymous> (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:6798:58)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)

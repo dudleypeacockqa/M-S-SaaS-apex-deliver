@@ -1,1 +1,19 @@
-[{"deploy":{"id":"dep-d4928f2li9vc73cf5qig","commit":{"id":"53d1e0f52657493b07bc980ff4244279da86e37e","message":"fix(migrations): remove redundant UUID conversion migrations - users.id and organizations.id already String(36)\n\nFixed deployment blocker by removing duplicate type conversion migrations.\n\n**Root Cause:**\nMigration `36b3e62b4148_add_deals_and_pipeline_stages_tables.py` (early in chain) already:\n1. Converts users.id from UUID to String(36) (lines 76-79)\n2. Creates organizations table with String(36) ID from the start (lines 23-24)\n\n**Problem:**\nNewly created migrations tried to convert these columns again:\n- `3a15202c7dc2` - Convert users.id UUID → String (REDUNDANT - already converted)\n- `0cbf1e0e3ab5` - Convert organizations.id UUID → String (REDUNDANT - never was UUID)\n\n**Deployment Failures:**\nWhen Alembic ran `upgrade head` from production state (8dcb6880a52b), it would:\n1. Run migration `36b3e62b4148` - Convert users.id to String(36) ✅\n2. Later try to run `3a15202c7dc2` - Convert users.id to String(36) again ❌\n3. PostgreSQL error: Can't convert String to String using `::text` casting\n\n**Fix:**\nRemoved redundant migrations:\n- ❌ Deleted: 3a15202c7dc2_convert_users_id_from_uuid_to_string_.py\n- ❌ Deleted: 0cbf1e0e3ab5_fix_organizations_id_type_from_uuid_to_.py\n- ❌ Deleted: 9a3aba324f7f_merge_organizations_and_pipeline_.py (obsolete merge)\n\n**Simplified Migration Chain:**\n```\nc3a7b4bbf913 (rbac audit logs)\n  ↓\ndc2c0f69c1b1 (pipeline templates) ← SINGLE HEAD ✅\n```\n\n**Why This Works:**\n- users.id is String(36) after migration `36b3e62b4148` ✅\n- organizations.id is String(36) from creation in `36b3e62b4148` ✅\n- Pipeline templates FK to users.id and organizations.id now safe ✅\n\n**Updated Migration:**\n- dc2c0f69c1b1_add_pipeline_templates.py: Parent updated from `3a15202c7dc2` to `c3a7b4bbf913`\n\n**Verification:**\n- `alembic heads` shows single head: dc2c0f69c1b1 ✅\n- `alembic history` shows clean linear chain ✅\n- No circular dependencies ✅\n- No redundant type conversions ✅\n\n**Expected Deployment:**\nWhen Render runs `alembic upgrade head` from state `8dcb6880a52b`:\n1. Migrations 36b3e62b4148 → c3a7b4bbf913 will run (including users.id conversion)\n2. Migration dc2c0f69c1b1 (pipeline templates) will run with correct FK types\n3. No type mismatch errors ✅\n\n**Additional Changes:**\n- Valuation service improvements (backend/app/services/valuation_service.py)\n- Valuation tests (backend/tests/test_valuation_service.py)\n- Documentation updates (BMAD progress tracker, completion plans)\n- Deal Kanban board enhancements (frontend)\n- Migration strategy documentation (docs/migrations/UUID_CONVERSION_STRATEGY.md)\n\nThis resolves the 4 consecutive deployment failures.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude \u003cnoreply@anthropic.com\u003e","createdAt":"2025-11-10T17:43:08Z"},"status":"build_in_progress","trigger":"new_commit","createdAt":"2025-11-10T17:43:27.187625Z","updatedAt":"2025-11-10T17:43:27.187625Z","startedAt":"2025-11-10T17:43:27.116811Z"},"cursor":"YxNK5RilfBY4ZjJsaTl2YzczY2Y1cWln"}]
+[
+  {
+    "deploy": {
+      "id": "dep-d4944ochg0os738k2sc0",
+      "commit": {
+        "id": "be3323735b1849473235a3f2f1c94c05affc7532",
+        "message": "docs(bmad): add Session 2025-11-10N - Render deployment fix complete",
+        "createdAt": "2025-11-10T19:51:42Z"
+      },
+      "status": "live",
+      "trigger": "api",
+      "createdAt": "2025-11-10T19:52:07.467147Z",
+      "updatedAt": "2025-11-10T20:02:48.886001Z",
+      "startedAt": "2025-11-10T19:52:04.401675Z",
+      "finishedAt": "2025-11-10T20:02:23.127159Z"
+    },
+    "serviceId": "srv-d3ihptbipnbc73e72ne0"
+  }
+]

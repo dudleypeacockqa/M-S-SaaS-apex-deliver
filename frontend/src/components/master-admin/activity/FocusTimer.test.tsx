@@ -76,6 +76,7 @@ describe('FocusTimer', () => {
     })
 
     it('should start 25-minute session when 25 min button is clicked', async () => {
+      vi.useRealTimers() // Temporarily use real timers for this test
       const user = userEvent.setup({ delay: null })
       const mockStartSession = vi.fn().mockResolvedValue(undefined)
 
@@ -89,15 +90,16 @@ describe('FocusTimer', () => {
       const button25 = screen.getByText('25 min').closest('button')
       await user.click(button25!)
 
-      await waitFor(() => {
-        expect(mockStartSession).toHaveBeenCalledWith({
-          start_time: expect.any(String),
-          duration_minutes: 25,
-        })
+      expect(mockStartSession).toHaveBeenCalledWith({
+        start_time: expect.any(String),
+        duration_minutes: 25,
       })
+
+      vi.useFakeTimers() // Restore fake timers
     })
 
     it('should start 50-minute session when 50 min button is clicked', async () => {
+      vi.useRealTimers() // Temporarily use real timers for this test
       const user = userEvent.setup({ delay: null })
       const mockStartSession = vi.fn().mockResolvedValue(undefined)
 
@@ -111,12 +113,12 @@ describe('FocusTimer', () => {
       const button50 = screen.getByText('50 min').closest('button')
       await user.click(button50!)
 
-      await waitFor(() => {
-        expect(mockStartSession).toHaveBeenCalledWith({
-          start_time: expect.any(String),
-          duration_minutes: 50,
-        })
+      expect(mockStartSession).toHaveBeenCalledWith({
+        start_time: expect.any(String),
+        duration_minutes: 50,
       })
+
+      vi.useFakeTimers() // Restore fake timers
     })
   })
 
@@ -233,21 +235,22 @@ describe('FocusTimer', () => {
         isPending: false,
       } as any)
 
+      vi.useRealTimers() // Temporarily use real timers for this test
       renderFocusTimer()
 
       const stopButton = screen.getByText('Stop')
       await user.click(stopButton)
 
-      await waitFor(() => {
-        expect(mockCompleteSession).toHaveBeenCalledWith({
-          sessionId: 1,
-          update: {
-            end_time: expect.any(String),
-            completed: false,
-            interrupted: true,
-          },
-        })
+      expect(mockCompleteSession).toHaveBeenCalledWith({
+        sessionId: 1,
+        update: {
+          end_time: expect.any(String),
+          completed: false,
+          interrupted: true,
+        },
       })
+
+      vi.useFakeTimers() // Restore fake timers
     })
 
     it('should display session notes when present', () => {

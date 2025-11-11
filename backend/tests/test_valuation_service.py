@@ -413,7 +413,6 @@ class TestExportLogging:
             export_format="summary",
             exported_by=valuation.created_by,
             file_size_bytes=204800,
-            document_id=str(uuid4()),
         )
 
         assert log_entry.export_type == "pdf"
@@ -595,6 +594,100 @@ class TestValuationServiceOperations:
 
         assert payload["status"] == "queued"
         assert payload["export_type"] == "pdf"
+
+    def _create_test_document(self, db_session, deal, user):
+        from app.models.document import Document
+
+        document = Document(
+            id=str(uuid4()),
+            name="valuation-export.pdf",
+            file_key=f"valuation-{deal.id}.pdf",
+            file_size=2048,
+            file_type="application/pdf",
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+            uploaded_by=user.id,
+        )
+        db_session.add(document)
+        db_session.commit()
+        db_session.refresh(document)
+        return document
+
+    def test_log_export_event_persists_document_reference(
+        self,
+        db_session,
+        create_deal_for_org,
+    ):
+        deal, owner, _ = create_deal_for_org()
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+            created_by=owner.id,
+            forecast_years=5,
+            discount_rate=0.12,
+            terminal_growth_rate=0.03,
+            terminal_method="gordon_growth",
+            cash_flows=[500000, 650000, 800000, 950000, 1_100_000],
+            terminal_cash_flow=1_200_000,
+            net_debt=2_000_000,
+            shares_outstanding=1_000_000,
+        )
+
+        document = self._create_test_document(db_session, deal, owner)
+
+        log_entry = valuation_service.log_export_event(
+            db=db_session,
+            valuation_id=valuation.id,
+            organization_id=deal.organization_id,
+            export_type="pdf",
+            export_format="summary",
+            exported_by=owner.id,
+            document_id=document.id,
+            file_size_bytes=4096,
+        )
+
+        assert log_entry.document_id == document.id
+        assert log_entry.file_size_bytes == 4096
+
+    def test_log_export_event_rejects_foreign_document(
+        self,
+        db_session,
+        create_deal_for_org,
+        create_organization,
+    ):
+        deal, owner, _ = create_deal_for_org()
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+            created_by=owner.id,
+            forecast_years=5,
+            discount_rate=0.12,
+            terminal_growth_rate=0.03,
+            terminal_method="gordon_growth",
+            cash_flows=[500000, 650000, 800000, 950000, 1_100_000],
+            terminal_cash_flow=1_200_000,
+            net_debt=2_000_000,
+            shares_outstanding=1_000_000,
+        )
+
+        other_org = create_organization()
+        foreign_document = self._create_test_document(db_session, deal, owner)
+        foreign_document.organization_id = other_org.id
+        db_session.add(foreign_document)
+        db_session.commit()
+
+        with pytest.raises(ValueError):
+            valuation_service.log_export_event(
+                db=db_session,
+                valuation_id=valuation.id,
+                organization_id=deal.organization_id,
+                export_type="pdf",
+                export_format="summary",
+                exported_by=owner.id,
+                document_id=foreign_document.id,
+            )
 
 
 class TestGoToMarketKpis:

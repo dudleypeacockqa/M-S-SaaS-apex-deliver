@@ -38,7 +38,8 @@ describe('NavigationMenu Component', () => {
 
     expect(screen.getByText(/Dashboard/i)).toBeInTheDocument()
     expect(screen.getByText(/Deals/i)).toBeInTheDocument()
-    expect(screen.queryByText(/Admin/i)).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /^Admin$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Master Admin/i })).not.toBeInTheDocument()
   })
 
   it('should show admin link for admin users', () => {
@@ -52,7 +53,8 @@ describe('NavigationMenu Component', () => {
 
     expect(screen.getByText(/Dashboard/i)).toBeInTheDocument()
     expect(screen.getByText(/Deals/i)).toBeInTheDocument()
-    expect(screen.getByText(/Admin/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /^Admin$/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Master Admin/i })).toBeInTheDocument()
   })
 
   it('should show all features for enterprise users', () => {
@@ -67,7 +69,31 @@ describe('NavigationMenu Component', () => {
     expect(screen.getByText(/Dashboard/i)).toBeInTheDocument()
     expect(screen.getByText(/Deals/i)).toBeInTheDocument()
     // Enterprise users don't see admin panel
-    expect(screen.queryByText(/Admin/i)).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /^Admin$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Master Admin/i })).not.toBeInTheDocument()
+  })
+
+  it('should show podcast studio for growth users', () => {
+    mockUser = { publicMetadata: { role: 'growth' } }
+    render(
+      <BrowserRouter>
+        <NavigationMenu />
+      </BrowserRouter>
+    )
+    expect(screen.getByText(/Podcast Studio/i)).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Master Admin/i })).not.toBeInTheDocument()
+  })
+
+  it('should show podcast studio but hide admin panels for enterprise users', () => {
+    mockUser = { publicMetadata: { role: 'enterprise' } }
+    render(
+      <BrowserRouter>
+        <NavigationMenu />
+      </BrowserRouter>
+    )
+    expect(screen.getByText(/Podcast Studio/i)).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /^Admin$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Master Admin/i })).not.toBeInTheDocument()
   })
 
   it('should highlight active route', () => {

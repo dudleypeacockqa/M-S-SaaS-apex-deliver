@@ -30,7 +30,7 @@ const navigationItems: NavigationItem[] = [
   {
     to: '/master-admin',
     label: 'Master Admin',
-    roles: ['solo', 'growth', 'enterprise', 'admin'],
+    roles: ['admin'],
   },
   {
     to: '/podcast-studio',

@@ -1,10 +1,15 @@
+> **Update 2025-11-10 21:45 UTC**  
+> - Re-ran subscription/billing smoke tests against Render Postgres: ✅ 26 pass / 4 skip with coverage (routes 79%, service 59%).  
+> - Executed `alembic upgrade head` against `postgresql://ma_saas_user@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform`: ✅ single-head confirmation (`dc2c0f69c1b1`).  
+> - Render API still reports backend service `srv-d3ii9qk9c44c73aqsli0` live on commit `64ad4fb5` (deploy `dep-d492u7ag0ims73e3mkc0`); frontend service `srv-d3ihptbipnbc73e72ne0` deploy `dep-d492tq2g0ims73e3miig` remains `build_in_progress`.  
+> - Health endpoints remain 200/OK, but **frontend deploy evidence is incomplete**; redeploy + log capture still required before claiming 100% deploy health.
 # Deployment Health Report
 
-**Last Updated**: 2025-11-10 19:45 UTC
+**Last Updated**: 2025-11-10 21:45 UTC
 **Latest Commits**:
+- `eb78abd` - fix(deploy): correct Pre-Deploy Command to include backend/ directory
 - `64ad4fb` - fix(migrations): correct migration order - d37ed4cd3013 must run after UUID conversion
-- `afc09a3` - docs(migrations): document d37ed4cd3013 FK type mismatch resolution
-**Status**: ✅ **VERIFIED HEALTHY** - Both services live and operational
+**Status**: 🟠 **PARTIAL** – Backend healthy on older commit, frontend deploy still pending (`build_in_progress`)
 
 ---
 
@@ -14,7 +19,7 @@
 - **Service ID**: `srv-d3ii9qk9c44c73aqsli0`
 - **Deploy ID**: `dep-d492u7ag0ims73e3mkc0`
 - **Commit**: `64ad4fb` (fix(migrations): correct migration order)
-- **Status**: ✅ **LIVE**
+- **Status**: ✅ **LIVE** *(needs redeploy for `eb78abd`)*
 - **Deployed At**: 2025-11-10 18:32:27 UTC
 - **Health Check**: ✅ `https://ma-saas-backend.onrender.com/health`
   - HTTP Status: 200 OK
@@ -25,16 +30,27 @@
 - **Service ID**: `srv-d3ihptbipnbc73e72ne0`
 - **Deploy ID**: `dep-d492tq2g0ims73e3miig`
 - **Commit**: `afc09a3` (docs(migrations): document FK type mismatch resolution)
-- **Status**: ✅ **LIVE**
-- **Deployed At**: 2025-11-10 18:46:49 UTC
-- **URL**: ✅ `https://ma-saas-platform.onrender.com`
-  - HTTP Status: 200 OK
-  - HTML serving correctly with meta tags, GA4, SEO optimizations
+- **Status**: ⏳ **build_in_progress** – Render API has not produced a final status/log yet
+- **Next Step**: Trigger redeploy once DEV-008/016 fixes land; capture logs + screenshots for proof
 
 ### Database
 - **Current Head**: `dc2c0f69c1b1` (add_pipeline_templates)
-- **Status**: ✅ **VERIFIED** - Single head, no conflicts
-- **Last Verification**: 2025-11-10 (production database check)
+- **Status**: ✅ **VERIFIED 2025-11-10 21:45 UTC** (see command log below)
+- **Verification Evidence**:
+  ```bash
+  cd backend && DATABASE_URL="postgresql://ma_saas_user:***@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform" \
+    venv/Scripts/alembic.exe upgrade head
+  INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+  INFO  [alembic.runtime.migration] Will assume transactional DDL.
+  ```
+
+  ```bash
+  cd backend && DATABASE_URL="postgresql://ma_saas_user:***@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform" \
+    venv/Scripts/python.exe -m pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py \
+      --cov=app.api.routes.subscriptions --cov=app.services.subscription_service --cov-report=term-missing
+  ================= 26 passed, 4 skipped, 28 warnings in 14.13s =================
+  Coverage: routes 79%, services 59%
+  ```
 
 ---
 
@@ -301,11 +317,11 @@ These events confirm the backend is healthy at commit `64ad4fb5…` with databas
 
 ### Evidence
 
-- Render API deploy log (`dep-d492u7ag0ims73e3mkc0`): status `live`, build/ deploy ended successfully at 18:31Z.
-- Render events show Pre-Deploy command corrected (`cd backend && alembic upgrade head`), eliminating the previous migration error.
+- Render API deploy `dep-d492u7ag0ims73e3mkc0` (commit `64ad4fb5…`): status `live`, ran from 18:30:30Z → 18:31:52Z (see commit message describing the migration order fix).
+- Render events show pre-deploy command remains `cd backend && alembic upgrade head`, eliminating earlier migration errors.
 - Health check `https://ma-saas-backend.onrender.com/health` recorded as **healthy** in production verification (2025-11-10 18:05 UTC).
 
-> Note: `GET /deploys/{id}/logs` currently returns `404 page not found` via the Render API for this service, so only deploy metadata is available. Screenshot/log capture from the dashboard is recommended if further evidence is required.
+> Note: `GET /deploys/{id}/logs` currently returns `404 page not found` via the Render API for this service; only metadata is available programmatically.
 
 ---
 
@@ -373,3 +389,4 @@ Outcome: production database `ma_saas_platform` is confirmed at head `dc2c0f69c1
 **Report Generated**: 2025-11-01
 **Last Verified**: Awaiting deployment completion
 **Next Review**: After deployment verification
+

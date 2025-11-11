@@ -149,8 +149,8 @@ describe('MatchCard', () => {
       />
     );
 
-    const saveButton = screen.getByRole('button', { name: /save match/i });
-    const passButton = screen.getByRole('button', { name: /pass/i });
+    const saveButton = screen.getByTestId('save-match-button');
+    const passButton = screen.getByTestId('pass-match-button');
 
     expect(saveButton).toBeDisabled();
     expect(passButton).toBeDisabled();

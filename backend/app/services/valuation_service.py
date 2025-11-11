@@ -909,8 +909,14 @@ def log_export_event(
     )
 
     document_value = document_id
-    if document_value and db.get(Document, document_value) is None:
-        document_value = None
+    if document_value:
+        document = db.get(Document, document_value)
+        if document is None:
+            raise ValueError("Document not found for valuation export")
+        if document.organization_id != resolved_org_id:
+            raise ValueError("Document does not belong to this organization")
+        if document.deal_id != valuation.deal_id:
+            raise ValueError("Document does not belong to the valuation deal")
 
     entry = ValuationExportLog(
         id=str(uuid.uuid4()),

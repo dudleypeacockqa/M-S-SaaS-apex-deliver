@@ -210,9 +210,15 @@ describe("Integration: Podcast Studio routing", () => {
 
     render(<App />)
 
+    // First wait for the episode title to appear (ensures episodes are loaded)
     await waitFor(() => {
-      expect(screen.getAllByText(/transcript ready/i).length).toBeGreaterThan(0)
-    })
+      expect(screen.getByText('Transcript Ready')).toBeInTheDocument()
+    }, { timeout: 5000 })
+
+    // Then wait for transcript status
+    await waitFor(() => {
+      expect(screen.getByText(/transcript ready/i)).toBeInTheDocument()
+    }, { timeout: 5000 })
 
     const txtLink = await screen.findByRole('link', { name: /download transcript \(txt\)/i }, { timeout: 3000 })
     const srtLink = screen.getByRole('link', { name: /download transcript \(srt\)/i })

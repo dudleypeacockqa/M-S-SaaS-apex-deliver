@@ -38,6 +38,7 @@ export const Button: React.FC<ButtonProps> = ({
     <button
       className={cn(baseStyles, variantStyles[variant], sizeStyles[btnSize], fullWidth && 'w-full', className)}
       disabled={disabled || loading}
+      aria-busy={loading ? 'true' : undefined}
       {...props}
     >
       {loading && <span className="animate-spin mr-2">⏳</span>}

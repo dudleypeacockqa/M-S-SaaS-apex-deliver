@@ -170,6 +170,7 @@ describe('CreateDealModal', () => {
 
       const dealSize = screen.getByLabelText(/deal size/i)
       await user.type(dealSize, '-1000')
+      await user.tab() // Trigger blur event to validate
 
       await waitFor(() => {
         expect(screen.getByText(/deal size must be positive/i)).toBeInTheDocument()

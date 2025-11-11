@@ -60,7 +60,7 @@ describe('GoalCard', () => {
       renderGoalCard()
 
       // Check for loading animation
-      const loadingSkeleton = screen.getByRole('generic', { hidden: true })
+      const loadingSkeleton = screen.getByTestId('goal-card-loading')
       expect(loadingSkeleton.className).toContain('animate-pulse')
     })
   })
