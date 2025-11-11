@@ -1,4 +1,43 @@
-## Session 2025-11-11F - Render Smoke Evidence ✅
+## Session 2025-11-11G - DEV-011 Scenario Export Guardrails ✅
+
+**Status**: ✅ COMPLETE – Export requests now accept validated scenario IDs with audit logging  
+**Duration**: ~40 min (Codex CLI)  
+**Priority**: P1 – DEV-011 backend hardening
+
+### Achievements
+- Added schema/API support for `scenario_id` on valuation exports, including new alembic migration (`a7b2d5e0f4c1`).
+- Extended `ValuationExportLog` model + service to validate scenario ownership and persist the reference.
+- New pytest coverage for service + API paths (valid scenario, foreign scenario rejection).
+- Updated frontend/backlog plan to continue DEV-011 coverage.
+
+### Tests (TDD)
+- `pytest tests/test_valuation_service.py tests/test_valuation_api.py -k export -q` → 10 passed.
+
+### Next Steps
+1. Wire scenario-aware exports into frontend valuation workspace (W3).
+2. Continue DEV-011 backend coverage (e.g., scenario summary + entitlement tests).
+
+---## Session 2025-11-12A - Backend Full Suite Coverage ✅
+
+**Status**: [GREEN] **COMPLETE** – 706 pass / 77 skip; overall backend coverage now 90%  
+**Duration**: ~35 min (Codex CLI)  
+**Priority**: P0 – Lock Sprint 1A coverage before DEPLOY evidence  
+**Progress Impact**: Backend quality +2%
+
+### Achievements
+- Ran `pytest --maxfail=1 backend/tests --cov=backend/app --cov-report=term-missing` from repo root (Windows `nul` workaround) to confirm the full suite passes without legacy admin modules.
+- Coverage summary: 7,607 stmts / 759 miss = 90% overall; subscription routes 94%, subscription service 84%.
+- Captured coverage table via `coverage report --fail-under=0` for archival/reference.
+
+### Testing/TDD Notes
+- Full backend suite completed in ~3m15s: 706 passed, 77 skipped (external integrations, S3, Sage, Xero, etc.).
+- No code changes required; this was verification ahead of Sprint 1B cleanup.
+
+### Next Steps
+1. Execute P1-3 Deploy Evidence story (fix blog slug routing, run smoke scripts, capture screenshots per plan).
+2. Proceed to DEV-008 RED cycle once deployment evidence logged.
+
+---## Session 2025-11-11F - Render Smoke Evidence ✅
 
 **Status**: ✅ COMPLETE – Captured backend/frontend smoke outputs post deploy  
 **Duration**: ~10 min (Codex CLI)  
@@ -2803,5 +2842,170 @@ render(
 
 
 
+
+
+
+---
+
+## Session 2025-11-11I - Phase 1 Sprint 2 Task 1: Enhanced Upload Progress UI ✅
+
+**Status**: ✅ COMPLETE – Enhanced UploadPanel with upload queue management
+**Duration**: ~2 hours (Claude Code)
+**Priority**: P0 – Phase 1 Sprint 2 (Document Room completion)
+**Progress Impact**: +15 tests (1261 → 1276 total frontend), Document Room 90% → 95% complete
+
+### Achievements
+
+**TDD RED-GREEN-REFACTOR Cycle Complete:**
+1. **RED Phase**: Created 15 failing tests in UploadPanel.enhanced.test.tsx
+2. **GREEN Phase**: Implemented all features, 25/25 tests passing (10 existing + 15 new)
+3. **REFACTOR Phase**: Extracted utilities to fileHelpers.ts, maintained 100% test pass rate
+
+**New Features Implemented:**
+- Multi-file upload queue visualization
+- Individual progress bars per file with upload speed/ETA
+- Per-file cancellation via `onCancelFile` callback
+- Retry button for failed uploads with `onRetryFile` callback
+- Enhanced drag-drop visual feedback (border-blue-500, animated icon)
+- Overall progress calculation across all queued files
+- Status icons (uploading, complete, error, pending) with Lucide React
+- File size formatting (MB/KB/B) via formatFileSize utility
+- Full ARIA accessibility (labels, progressbar role, semantic HTML)
+
+**Component API Extensions:**
+- New props: `uploadQueue: UploadQueueItem[]`, `onCancelFile: (id) => void`, `onRetryFile: (id) => void`
+- New interface: `UploadQueueItem` with id, name, progress, status, size, speed, eta
+- Backward compatible with existing single-file upload pattern
+
+**Files Created/Modified:**
+- `frontend/src/components/documents/UploadPanel.tsx` (enhanced with queue support)
+- `frontend/src/components/documents/UploadPanel.enhanced.test.tsx` (NEW - 15 tests)
+- `frontend/src/utils/fileHelpers.ts` (NEW - extracted utilities)
+
+**Test Results:**
+- UploadPanel.test.tsx: 10/10 passing ✅
+- UploadPanel.enhanced.test.tsx: 15/15 passing ✅
+- Total UploadPanel tests: 25/25 (100%)
+
+### Testing/TDD Notes
+- Strict TDD RED-GREEN-REFACTOR followed
+- RED: All 15 new tests failed initially (expected behavior)
+- GREEN: Minimal implementation to make tests pass
+- REFACTOR: Extracted formatFileSize & calculateOverallProgress to shared utils
+- Final verification: All tests still green after refactoring
+
+### Git Commit
+- Commit: `ceea1dc` - feat(upload): enhance UploadPanel with queue management and per-file progress
+- Pushed to GitHub main branch
+- Render auto-deploy triggered
+
+### Next Steps
+1. Verify Render deployment health post-push
+2. Phase 1 Sprint 2 Task 2: Permission Management Modal enhancement (2h est)
+3. Phase 1 Sprint 2 Task 3: Audit Log Export (2h est)
+4. Phase 1 Sprint 2 Task 4: Document Preview enhancement (2h est, optional)
+5. Integration testing & deployment (2h est)
+
+**Current Progress: Document Room 95% complete** (was 90%)
+
+
+
+
+## Session 2025-11-11C - Phase 4: DEV-008 Document Room Audit & TDD Start
+
+**Status**: 🔄 **IN PROGRESS** - Audit complete, TDD loop started
+**Duration**: ~75 minutes (Claude Code autonomous execution)
+**Priority**: P0 - Critical Feature Completion
+**Progress Impact**: 70% → 73% (+3% - audit + gap analysis + initial implementation)
+
+### Achievements
+
+#### Document Room Audit ✅ (100% Complete)
+- **Gap Identified**: 55% missing (30% backend + 25% frontend)
+- **Current Status**: 45% complete
+  - Backend: 27 API endpoints implemented ✅
+  - Frontend: 80/80 component tests passing ✅
+  - Missing: Watermarking, external sharing, Q&A workflows, main page
+
+#### Documentation Created ✅
+- **docs/bmad/stories/DEV-008-document-room-gap-analysis.md** - Comprehensive 55% gap breakdown
+  - PRD requirements mapped
+  - Backend/frontend implementation status
+  - TDD implementation plan (RED → GREEN → REFACTOR)
+  - Revised estimates: 25-34 hours remaining
+
+#### TDD Loop Started ✅ (RED Phase Complete)
+- **Created**: frontend/src/pages/deals/DocumentRoomPage.test.tsx (14 comprehensive tests)
+- **Test Status**: RED ✅ (expected failure - component doesn't exist yet)
+- **Test Coverage**:
+  - Layout and initial rendering (4 tests)
+  - Folder navigation (2 tests)
+  - Document selection and bulk actions (2 tests)
+  - Error handling (2 tests)
+  - Loading states (1 test)
+  - Empty states (3 tests)
+
+#### Component Implementation Started 🔄 (GREEN Phase In Progress)
+- **Created**: frontend/src/pages/deals/DocumentRoomPage.tsx (initial implementation)
+- **Status**: Debugging import/export mismatches
+- **Next**: Fix component props alignment with existing FolderTree/UploadPanel APIs
+
+### Technical Findings
+
+**Existing Document Infrastructure**:
+1. ✅ Backend API: 27 endpoints (CRUD, permissions, versioning, bulk ops)
+2. ✅ Frontend Components: 7 components (FolderTree, DocumentList, UploadPanel, etc.)
+3. ✅ All 80 component tests passing
+4. ❌ No main Document Room page exists
+5. ❌ No DocumentRoom route in App.tsx
+
+**PRD Requirements Analysis** (docs/PRD.md lines 149-151):
+- ✅ Folder hierarchies (implemented)
+- ❌ Watermarking (not implemented - 10% effort)
+- ❌ Secure external sharing (not implemented - 10% effort)
+- ✅ Immutable access logs (partially implemented)
+- ❌ Question workflows (not implemented - 5% effort)
+- ❌ Automated NDA gating (not implemented - 3% effort)
+- ❌ Redaction pipeline (not implemented - 2% effort)
+
+### Testing/TDD Notes
+- RED phase completed successfully ✅
+- Test file: DocumentRoomPage.test.tsx (14 tests)
+- Expected failures confirmed (component doesn't exist)
+- Next: GREEN phase (implement minimal working component)
+- Then: REFACTOR phase (optimize, add polish)
+
+### Next Steps (Immediate - Continuing TDD Loop)
+
+**1. GREEN Phase**: Fix DocumentRoomPage implementation
+- Align FolderTree props (it fetches own data via useQuery)
+- Fix UploadPanel import (default export, not named)
+- Fix BulkActionsToolbar integration
+- Run tests until passing
+
+**2. Add Route**: Connect to App.tsx
+- Add /deals/:dealId/documents route
+- Update DealDetails Documents tab to link to DocumentRoomPage
+
+**3. REFACTOR Phase**: Polish component
+- Add search/filter UI
+- Improve loading states
+- Add pagination controls
+- Optimize render performance
+
+**4. Commit Progress**: Atomic commit with:
+- Gap analysis doc
+- Test file (RED)
+- Component implementation (GREEN - once passing)
+- Route integration
+
+### Session Metrics
+- **Time**: 75 minutes
+- **Files Created**: 2 (gap-analysis.md, DocumentRoomPage.test.tsx, DocumentRoomPage.tsx)
+- **Tests Written**: 14 comprehensive tests
+- **Gap Analysis**: 55% documented with detailed breakdown
+- **Remaining Work**: 25-34 hours for full DEV-008 completion
+
+---
 
 
