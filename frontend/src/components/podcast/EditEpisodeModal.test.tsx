@@ -132,10 +132,11 @@ describe('EditEpisodeModal', () => {
       />
     )
 
-    expect(screen.getByText(/Season:/i)).toBeInTheDocument()
-    expect(screen.getByText('2')).toBeInTheDocument()
-    expect(screen.getByText(/Episode:/i)).toBeInTheDocument()
-    expect(screen.getByText('5')).toBeInTheDocument()
+    // Check for season and episode info using text content match
+    expect(screen.getByText((content, element) => {
+      return element?.textContent === 'Season: 2 Episode: 5'
+    })).toBeInTheDocument()
+
     expect(screen.getByText('https://example.com/audio.mp3')).toBeInTheDocument()
   })
 
@@ -331,7 +332,9 @@ describe('EditEpisodeModal', () => {
     const saveButton = screen.getByRole('button', { name: /save changes/i })
     await user.click(saveButton)
 
-    expect(screen.getByText('Title is required')).toBeInTheDocument()
+    // Wait for error to appear
+    const errorMessage = await screen.findByText('Title is required')
+    expect(errorMessage).toBeInTheDocument()
   })
 
   it('does not call onSubmit when title is only whitespace', async () => {

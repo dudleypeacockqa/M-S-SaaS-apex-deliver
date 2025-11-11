@@ -316,9 +316,8 @@ describe('FolderTree', () => {
 
   it('should persist expanded folders across remounts using localStorage', async () => {
     const storageKey = 'folder-tree-expanded-deal-1';
-    const storageProto = Object.getPrototypeOf(window.localStorage);
-    const setItemSpy = vi.spyOn(storageProto, 'setItem');
-    const getItemSpy = vi.spyOn(storageProto, 'getItem').mockReturnValue(null);
+    const setItemSpy = vi.spyOn(window.localStorage, 'setItem');
+    const getItemSpy = vi.spyOn(window.localStorage, 'getItem').mockReturnValue(null);
 
     const { listFolders } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
