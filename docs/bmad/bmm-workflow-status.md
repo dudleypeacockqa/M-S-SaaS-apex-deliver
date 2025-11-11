@@ -21,42 +21,37 @@ PHASE_4_COMPLETE: false
 
 ## Current Story Status
 
-STORY_ID: W2-2025-11-12A-DEV008-DocumentRoom
+STORY_ID: W1-2025-11-12C-Backend-Deploy-Recovery
 STORY_STATUS: IN_PROGRESS
-STORY_RESULT: Search + file-type filters implemented with new Vitest coverage; next up permissions/upload flows
-BLOCKERS: BMAD CLI still unavailable for interactive workflow-init; remaining DEV-008 subfeatures (permissions, upload quota) pending
+STORY_RESULT: W0 governance loop closed (pytest path-safety guard landed); prepping billing/subscription RED suites
+BLOCKERS: Need refreshed billing + subscription baselines prior to Alembic upgrade + Render deploy
 
 ## Next Action
 
-NEXT_ACTION: Author RED Vitest specs for PermissionModal + UploadPanel quota/error flows
-NEXT_COMMAND: `cd frontend && npx vitest run src/components/documents/PermissionModal.test.tsx src/components/documents/UploadPanel.enhanced.test.tsx`
+NEXT_ACTION: Run billing/subscription pytest suites to capture RED evidence
+NEXT_COMMAND: `backend/venv/Scripts/python.exe -m pytest backend/tests/test_billing_endpoints.py backend/tests/test_subscription_error_paths.py --maxfail=1 --cov=backend/app -vv`
 NEXT_AGENT: dev
 PRIORITY: P0
-RATIONALE: Need full document-room entitlement coverage before moving to DEV-016
+RATIONALE: E3 (Secure Data Rooms & Q&A) completion blocks 100% - this is critical path work
 
 ## Completed This Session
 
-SESSION_ID: Session-2025-11-12J
+SESSION_ID: Session-2025-11-12M
 COMPLETED_WORK:
-- Ran `bash scripts/run_smoke_tests.sh production` (attempt #1 curl 55, #2 ✅) – log saved as `docs/deployments/2025-11-11-smoke-run-3.txt`
-- Updated `docs/DEPLOYMENT_HEALTH.md`, `docs/DEPLOYMENT-SESSION-SUMMARY.md`, `latest-deploy.json` after backend deploy `dep-d49et83uibrs739agtfg` and frontend `dep-d49etc8m2f8s73dkf0v0`
-- Added DocumentRoomPage search + file-type filters with Vitest coverage (`DocumentRoomPage.test.tsx`)
-- Extended `PermissionModal` logic/tests so the final owner cannot be removed (new Vitest cases)
+- Added pytest ignore guard for reserved Windows device names in `backend/tests/conftest.py` (protects against repo-level `nul`).
+- Extended `backend/tests/test_path_safety.py` with hook regression coverage and captured run evidence in `backend-test-baseline-2025-11-12.txt`.
+- Documented session + next steps across BMAD tracker files to unblock W1 backend deploy recovery work.
 
-FILES MODIFIED:
-- docs/DEPLOYMENT_HEALTH.md
-- docs/DEPLOYMENT-SESSION-SUMMARY.md
+FILES_MODIFIED:
+- backend/tests/conftest.py
+- backend/tests/test_path_safety.py
+- backend-test-baseline-2025-11-12.txt
 - docs/bmad/BMAD_PROGRESS_TRACKER.md
-- docs/bmad/stories/DEV-008-secure-document-data-room.md
 - docs/bmad/bmm-workflow-status.md (this file)
-- latest-deploy.json
-- docs/deployments/2025-11-11-smoke-run-3.txt
 
 TEST_RESULTS:
-- `bash scripts/run_smoke_tests.sh production` → backend 200, frontend 200, pytest smoke 2/2
-- `npx vitest run src/pages/deals/DocumentRoomPage.test.tsx --maxWorkers=1 --no-file-parallelism` → 8/8 tests passing
-- `npx vitest run src/components/documents/PermissionModal.test.tsx --maxWorkers=1 --no-file-parallelism` → 11/11 tests passing
+- `backend/venv/Scripts/python.exe -m pytest backend/tests/test_path_safety.py --maxfail=1 -vv` → 4/4 tests passing in 0.38s
 
 ---
 
-_Last Updated: 2025-11-12T08:55:00Z_
+_Last Updated: 2025-11-12T12:00:00Z_

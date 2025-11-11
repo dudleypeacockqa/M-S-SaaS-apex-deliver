@@ -411,7 +411,12 @@ describe('UploadPanel - Enhanced Features (Sprint 2 Task 1)', () => {
 
       // Should show quota exceeded error
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toHaveTextContent(/storage quota exceeded/i);
+        const alerts = screen.getAllByRole('alert');
+        const errorAlert = alerts.find((alert) =>
+          alert.textContent?.match(/storage quota exceeded/i)
+        );
+        expect(errorAlert).toBeDefined();
+        expect(errorAlert).toHaveTextContent(/storage quota exceeded/i);
         expect(handleUpload).not.toHaveBeenCalled();
       });
     });
@@ -487,8 +492,12 @@ describe('UploadPanel - Enhanced Features (Sprint 2 Task 1)', () => {
         />
       );
 
-      const alert = screen.getByRole('alert');
-      expect(alert).toHaveTextContent(/storage quota exceeded/i);
+      const alerts = screen.getAllByRole('alert');
+      const quotaAlert = alerts.find((element) =>
+        element.textContent?.toLowerCase().includes('storage quota exceeded')
+      );
+      expect(quotaAlert).toBeDefined();
+      expect(quotaAlert).toHaveTextContent(/storage quota exceeded/i);
 
       const manageButton = screen.getByRole('button', { name: /manage storage/i });
       expect(manageButton).toBeInTheDocument();
