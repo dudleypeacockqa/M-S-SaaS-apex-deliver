@@ -59,25 +59,29 @@ _Last updated: 2025-11-11_
 - Coordinate with deployment plan to ensure new environment variables or storage configs are documented.
 - Keep BMAD workflow tracker updated after each significant milestone (brainstorm/design already completed, next entry under Implementation).
 
-## Progress Log
-- 2025-11-11: UploadPanel enhanced Vitest suite running GREEN (PowerShell + `--pool vmThreads` workaround) with drag/drop + queue behaviours.
-- 2025-11-11: FolderTree persistence + PermissionModal entitlement alerts implemented after RED tests; Vitest suites now pass under `--pool vmThreads`.
-- 2025-11-11: DocumentList integrates BulkActionsToolbar for multi-select download/delete/clear; new Vitest coverage exercises optimistic flows.
-- 2025-11-12: DocumentRoomPage now exposes search + file-type filters with Vitest coverage (`DocumentRoomPage.test.tsx`), wiring through `listDocuments` query params.
-- 2025-11-12: PermissionModal prevents removing the final owner; Vitest suite expanded to cover sole-owner warning + button disabling.
-- 2025-11-12: Governance sync (Session 2025-11-12K) – aligned BMAD plans, workflow status, and story doc ahead of PermissionModal quota + UploadPanel retry RED specs.
+- 2025-11-12: UploadPanel quota enforcement, file-type validation, and collaborator seat gating completed with `npx vitest run src/components/documents/UploadPanel.enhanced.test.tsx` (33/33) and `npx vitest run src/components/documents/PermissionModal.test.tsx` (13/13) passing.
+- 2025-11-12: DocumentWorkspace bulk move/archive flows validated with service mocks; `npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=forks` now GREEN (25/25).
 
 ## Next Steps
 1. ~~Draft RED Vitest specs for PermissionModal quota warnings and UploadPanel quota/retry flows (`PermissionModal.test.tsx`, `UploadPanel.enhanced.test.tsx`).~~ ✅ COMPLETE (2025-11-12)
 2. ~~Implement GREEN for storage quota enforcement in UploadPanel.~~ ✅ COMPLETE (2025-11-12)
-3. Extend BulkActions coverage to move/archive flows and optimistic rollback/error toasts (DocumentWorkspace wiring).
+3. ~~Extend BulkActions coverage to move/archive flows and optimistic rollback/error toasts (DocumentWorkspace wiring).~~ ✅ COMPLETE (2025-11-12M)
 4. Implement folder tree enhancements (expand/collapse, lazy loading, keyboard navigation).
 5. Finalize MSW handler scaffolding + ensure Vitest config loads it; implement remaining UI polish and update PRD/UX docs after GREEN.
 
-## Latest Progress (2025-11-12C)
-- ✅ **Storage Quota Enforcement**: Complete RED→GREEN cycle
-  - 369 lines of RED tests added (8 comprehensive test scenarios)
-  - GREEN implementation verified (UploadPanel.tsx already had full implementation)
-  - Test fixes applied for multiple alert handling
-  - **Result**: 32/33 tests passing, 8/8 storage quota tests ✅
-  - Commit: e81af57 (RED), 5793a25 (GREEN)
+## Latest Progress (2025-11-12L)
+- ✅ **Invite Limit + Quota Lock Enhancements**: RED→GREEN Vitest loop
+  - Added collaborator seat banner + upgrade CTA expectations (`PermissionModal.test.tsx` now 13/13)
+  - Disabled UploadPanel dropzone on quota exhaustion with manage-storage CTA (`UploadPanel.enhanced.test.tsx` now 33/33)
+  - Hardened tests against multiple alerts and drag-drop paths
+  - **Result**: PermissionModal + UploadPanel quota behaviours verified; ready to tackle BulkActions RED specs next
+
+## Latest Progress (2025-11-12M)
+- ✅ **Bulk Actions + Optimistic Workflow**: RED→GREEN Vitest loop
+  - Added `BulkMoveModal` + `BulkArchiveModal` with optimistic query invalidation, partial failure reporting, and undo hooks backed by new API helpers (`bulkMoveDocuments`, `bulkArchiveDocuments`, `restoreArchivedDocuments`).
+  - `DocumentWorkspace.test.tsx` expanded to 25 assertions covering success, failure, partial, and large-batch progress flows (all green via `npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=forks`).
+  - Toast system upgraded to handle status/alert/progress roles and optional undo buttons; docs + BMAD workflow status updated.
+  - **Result**: Bulk move/archive behaviours production-ready; next focus is FolderTree lazy loading + keyboard access RED cycle.
+
+
+

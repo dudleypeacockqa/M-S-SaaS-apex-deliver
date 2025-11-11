@@ -5,8 +5,31 @@ import { DocumentList } from '../../components/documents/DocumentList'
 import UploadPanel from '../../components/documents/UploadPanel'
 import { PermissionModal } from '../../components/documents/PermissionModal'
 import BulkMoveModal from '../../components/documents/BulkMoveModal'
+import BulkArchiveModal from '../../components/documents/BulkArchiveModal'
 import type { Document } from '../../services/api/documents'
 import { useDocumentUploads } from '../../hooks/useDocumentUploads'
+import {
+  bulkArchiveDocuments,
+  bulkMoveDocuments,
+  restoreArchivedDocuments,
+  type BulkArchiveResult,
+  type BulkMoveResult,
+} from '../../services/api/documents'
+
+type ToastType = 'status' | 'alert' | 'progress'
+
+interface ToastState {
+  type: ToastType
+  message: string
+  detail?: string
+  actionLabel?: string
+  onAction?: () => Promise<void> | void
+  progress?: {
+    value: number
+    total: number
+    label: string
+  }
+}
 
 export interface DocumentWorkspaceProps {
   dealId: string
@@ -22,29 +45,38 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
   const [bulkMoveState, setBulkMoveState] = useState<{
     isOpen: boolean
     documents: Document[]
+    isSubmitting: boolean
   }>({
     isOpen: false,
     documents: [],
+    isSubmitting: false,
   })
   const [bulkArchiveState, setBulkArchiveState] = useState<{
     isOpen: boolean
     documents: Document[]
+    isProcessing: boolean
   }>({
     isOpen: false,
     documents: [],
+    isProcessing: false,
   })
-  const [toast, setToast] = useState<{
-    message: string
-    type: 'success' | 'error' | 'status' | 'alert'
-    undoAction?: () => void
-  } | null>(null)
-  const [progress, setProgress] = useState<{
-    current: number
-    total: number
-  } | null>(null)
   const [resetSelectionSignal, setResetSelectionSignal] = useState(0)
   const queryClient = useQueryClient()
   const { uploadQueue, isUploading, errorMessage, startUpload, clearQueue } = useDocumentUploads(dealId)
+  const [activeToast, setActiveToast] = useState<ToastState | null>(null)
+
+  const scheduleToast = useCallback((nextToast: ToastState | null) => {
+    setActiveToast(nextToast)
+    if (nextToast) {
+      window.setTimeout(() => {
+        setActiveToast((current) => {
+          if (!current) return null
+          if (current.type === 'progress') return current
+          return null
+        })
+      }, 6000)
+    }
+  }, [])
 
   const handleFolderSelect = (folderId: string | null) => {
     setSelectedFolderId(folderId)
@@ -79,56 +111,52 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
 
   const handleBulkMove = useCallback(
     async (documents: Document[]) => {
-      setBulkMoveState({ isOpen: true, documents })
+      setBulkMoveState({ isOpen: true, documents, isSubmitting: false })
     },
     []
   )
 
   const handleBulkMoveConfirm = useCallback(
     async (targetFolderId: string) => {
-      const { documents } = bulkMoveState
+      const documents = bulkMoveState.documents
+
+      setBulkMoveState((current) => ({ ...current, isSubmitting: true }))
 
       try {
         // Optimistic update: Reset selection immediately
         setResetSelectionSignal((prev) => prev + 1)
 
-        // Show success toast immediately (optimistic)
-        setToast({
-          message: `Moved ${documents.length} document${documents.length !== 1 ? 's' : ''}`,
+        scheduleToast({
           type: 'status',
+          message: `Moved ${documents.length} document${documents.length !== 1 ? 's' : ''}`,
+          detail: undefined,
         })
 
-        // Close modal
-        setBulkMoveState({ isOpen: false, documents: [] })
+        let apiResult: BulkMoveResult | null = null
+        try {
+          apiResult = await bulkMoveDocuments(dealId, {
+            document_ids: documents.map((doc) => doc.id),
+            target_folder_id: targetFolderId,
+          })
+        } catch (error) {
+          apiResult = null
+          throw error
+        }
 
-        // TODO: Call actual API endpoint
-        // const result = await bulkMoveDocuments(documents.map(d => d.id), targetFolderId)
-
-        // Simulate API call for testing
-        const result: any = await new Promise((resolve, reject) => {
-          setTimeout(() => {
-            // For testing: check if we should simulate an error
-            if ((window as any).__TEST_BULK_MOVE_ERROR__) {
-              reject(new Error('Network error'))
-            } else if ((window as any).__TEST_BULK_MOVE_PARTIAL_FAILURE__) {
-              resolve((window as any).__TEST_BULK_MOVE_PARTIAL_FAILURE__)
-            } else {
-              resolve({ success: true })
-            }
-          }, 100)
-        })
-
-        // Handle partial failures
-        if (result && !result.success && result.results) {
-          const successCount = result.results.filter((r: any) => r.success).length
-          const failures = result.results.filter((r: any) => !r.success)
-
-          const failedDoc = failures[0]
-          const matchingDoc = documents.find((d) => d.id === failedDoc.id)
-
-          setToast({
-            message: `Moved ${successCount} of ${documents.length} documents. ${matchingDoc?.name}: ${failedDoc.error}`,
+        if (apiResult && apiResult.failures && apiResult.failures.length > 0) {
+          const successfulCount = apiResult.moved_ids.length
+          const failedSummaries = apiResult.failures
+            .map((failure) => `${failure.id}: ${failure.reason}`)
+            .join('\n')
+          scheduleToast({
             type: 'status',
+            message: `Moved ${successfulCount} of ${documents.length} documents`,
+            detail: failedSummaries,
+          })
+        } else {
+          scheduleToast({
+            type: 'status',
+            message: `Moved ${documents.length} document${documents.length !== 1 ? 's' : ''}`,
           })
         }
 
@@ -138,16 +166,17 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
         })
       } catch (error) {
         // Rollback: Show error and restore documents
-        setToast({
-          message: 'Failed to move documents',
+        scheduleToast({
           type: 'alert',
+          message: 'Failed to move documents',
         })
 
         // Reset selection signal to trigger re-render
         setResetSelectionSignal((prev) => prev + 1)
       }
+      setBulkMoveState({ isOpen: false, documents: [], isSubmitting: false })
     },
-    [bulkMoveState, dealId, queryClient]
+    [bulkMoveState, dealId, queryClient, scheduleToast]
   )
 
   const handleBulkDelete = useCallback(
@@ -167,108 +196,97 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
   )
 
   const handleBulkArchive = useCallback(
-    async (documents: Document[]) => {
-      setBulkArchiveState({ isOpen: true, documents })
+    (documents: Document[]) => {
+      setBulkArchiveState({ isOpen: true, documents, isProcessing: false })
     },
     []
   )
 
-  const handleBulkArchiveConfirm = useCallback(
-    async () => {
-      const { documents } = bulkArchiveState
+  const closeBulkArchiveModal = useCallback(() => {
+    setBulkArchiveState((current) => ({ ...current, isOpen: false }))
+  }, [])
 
-      try {
-        // Optimistic update: Reset selection immediately
-        setResetSelectionSignal((prev) => prev + 1)
+  const handleArchiveConfirm = useCallback(async () => {
+    const { documents } = bulkArchiveState
+    if (documents.length === 0) {
+      closeBulkArchiveModal()
+      return
+    }
 
-        // Show progress for large batches
-        if (documents.length > 10) {
-          setProgress({ current: 0, total: documents.length })
+    setBulkArchiveState((current) => ({ ...current, isProcessing: true }))
 
-          // Simulate batch progress
-          for (let i = 0; i < documents.length; i += 10) {
-            setProgress({ current: i, total: documents.length })
-            await new Promise((resolve) => setTimeout(resolve, 50))
-          }
-          setProgress({ current: documents.length, total: documents.length })
-        }
+    const isLargeBatch = documents.length >= 20
+    if (isLargeBatch) {
+      scheduleToast({
+        type: 'progress',
+        message: '',
+        progress: {
+          value: 0,
+          total: documents.length,
+          label: `Archiving ${documents.length} documents...`,
+        },
+      })
+    }
 
-        // Store documents for undo
-        const archivedDocs = [...documents]
+    try {
+      const result: BulkArchiveResult = await bulkArchiveDocuments(dealId, {
+        document_ids: documents.map((doc) => doc.id),
+      })
 
-        // Show success toast with undo
-        setToast({
-          message: `Archived ${documents.length} document${documents.length !== 1 ? 's' : ''}`,
-          type: 'status',
-          undoAction: () => handleUndoArchive(archivedDocs),
-        })
+      const succeededCount = result.archived_ids.length
+      const failedCount = documents.length - succeededCount
 
-        // Close modal and clear progress
-        setBulkArchiveState({ isOpen: false, documents: [] })
-        setProgress(null)
+      scheduleToast({
+        type: 'status',
+        message:
+          failedCount > 0
+            ? `Archived ${succeededCount} of ${documents.length} documents`
+            : `Archived ${documents.length} document${documents.length !== 1 ? 's' : ''}`,
+        detail:
+          result.failures && result.failures.length
+            ? result.failures
+                .map((failure) => `${failure.id}: ${failure.reason}`)
+                .join('\n')
+            : undefined,
+        actionLabel: succeededCount > 0 ? 'Undo' : undefined,
+        onAction:
+          succeededCount > 0
+            ? async () => {
+                try {
+                  await restoreArchivedDocuments(dealId, result.archived_ids)
+                  scheduleToast({
+                    type: 'status',
+                    message: `Unarchived ${succeededCount} document${succeededCount !== 1 ? 's' : ''}`,
+                  })
+                  queryClient.invalidateQueries({
+                    queryKey: ['deal-documents', dealId],
+                  })
+                } catch (undoError) {
+                  scheduleToast({
+                    type: 'alert',
+                    message: 'Failed to undo archive',
+                  })
+                }
+              }
+            : undefined,
+      })
 
-        // TODO: Call actual API endpoint
-        // await bulkArchiveDocuments(documents.map(d => d.id))
-
-        // Simulate API call for testing
-        await new Promise((resolve, reject) => {
-          setTimeout(() => {
-            // For testing: check if we should simulate an error
-            if ((window as any).__TEST_BULK_ARCHIVE_ERROR__) {
-              reject(new Error('Server error'))
-            } else {
-              resolve(undefined)
-            }
-          }, 100)
-        })
-
-        // Invalidate queries to refetch
-        queryClient.invalidateQueries({
-          queryKey: ['deal-documents', dealId],
-        })
-      } catch (error) {
-        // Rollback: Show error and restore documents
-        setToast({
-          message: 'Failed to archive documents',
-          type: 'alert',
-        })
-        setProgress(null)
-
-        // Reset selection signal to trigger re-render
+      if (succeededCount > 0) {
         setResetSelectionSignal((prev) => prev + 1)
       }
-    },
-    [bulkArchiveState, dealId, queryClient]
-  )
 
-  const handleUndoArchive = useCallback(
-    async (documents: Document[]) => {
-      try {
-        // TODO: Call unarchive API endpoint
-        // await bulkUnarchiveDocuments(documents.map(d => d.id))
+      queryClient.invalidateQueries({
+        queryKey: ['deal-documents', dealId, selectedFolderId],
+      })
+    } catch (error) {
+      scheduleToast({
+        type: 'alert',
+        message: 'Failed to archive documents',
+      })
+    }
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 100))
-
-        setToast({
-          message: `Unarchived ${documents.length} document${documents.length !== 1 ? 's' : ''}`,
-          type: 'status',
-        })
-
-        // Refresh documents
-        queryClient.invalidateQueries({
-          queryKey: ['deal-documents', dealId],
-        })
-        setResetSelectionSignal((prev) => prev + 1)
-      } catch (error) {
-        setToast({
-          message: 'Failed to undo archive',
-          type: 'alert',
-        })
-      }
-    },
-    [dealId, queryClient]
-  )
+    setBulkArchiveState({ isOpen: false, documents: [], isProcessing: false })
+  }, [bulkArchiveState, closeBulkArchiveModal, dealId, queryClient, scheduleToast, selectedFolderId])
 
   const handleUpload = useCallback(
     async (files: FileList | File[]) => {
@@ -359,97 +377,50 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
         isOpen={bulkMoveState.isOpen}
         documents={bulkMoveState.documents}
         currentFolderId={selectedFolderId}
-        onClose={() => setBulkMoveState({ isOpen: false, documents: [] })}
+        onClose={() => setBulkMoveState({ isOpen: false, documents: [], isSubmitting: false })}
         onConfirm={handleBulkMoveConfirm}
+        isProcessing={bulkMoveState.isSubmitting}
       />
 
-      {/* Bulk Archive Confirmation Dialog */}
-      {bulkArchiveState.isOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setBulkArchiveState({ isOpen: false, documents: [] })
-            }
-          }}
-        >
-          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Archive {bulkArchiveState.documents.length} document
-              {bulkArchiveState.documents.length !== 1 ? 's' : ''}?
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Archived documents can be restored later from the archive section.
-            </p>
-            <div className="mt-6 flex justify-end space-x-3">
-              <button
-                type="button"
-                onClick={() => setBulkArchiveState({ isOpen: false, documents: [] })}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleBulkArchiveConfirm}
-                aria-label="Archive"
-                className="rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700"
-              >
-                Archive
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Progress Bar */}
-      {progress && (
-        <div
-          role="progressbar"
-          aria-valuenow={progress.current}
-          aria-valuemin={0}
-          aria-valuemax={progress.total}
-          className="fixed bottom-20 right-4 w-80 rounded-lg bg-white p-4 shadow-lg border border-gray-200"
-        >
-          <p className="text-sm font-medium text-gray-900">
-            Archiving {progress.total} documents...
-          </p>
-          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-200">
-            <div
-              className="h-full bg-indigo-600 transition-all duration-300"
-              style={{ width: `${(progress.current / progress.total) * 100}%` }}
-            />
-          </div>
-          <p className="mt-1 text-xs text-gray-600">
-            {progress.current} of {progress.total} completed
-          </p>
-        </div>
-      )}
+      <BulkArchiveModal
+        isOpen={bulkArchiveState.isOpen}
+        documents={bulkArchiveState.documents}
+        isProcessing={bulkArchiveState.isProcessing}
+        onClose={closeBulkArchiveModal}
+        onConfirm={handleArchiveConfirm}
+      />
 
       {/* Toast notification */}
-      {toast && (
+      {activeToast && (
         <div
-          role={toast.type}
-          className={`fixed bottom-4 right-4 rounded-lg px-4 py-3 shadow-lg flex items-center justify-between space-x-4 ${
-            toast.type === 'alert'
+          role={
+            activeToast.type === 'alert'
+              ? 'alert'
+              : activeToast.type === 'progress'
+              ? 'progressbar'
+              : 'status'
+          }
+          aria-valuemin={activeToast.progress ? 0 : undefined}
+          aria-valuemax={activeToast.progress ? activeToast.progress.total : undefined}
+          aria-valuenow={activeToast.progress ? activeToast.progress.value : undefined}
+          aria-valuetext={activeToast.progress ? activeToast.progress.label : undefined}
+          className={`fixed bottom-4 right-4 max-w-sm rounded-lg px-4 py-3 shadow-lg ${
+            activeToast.type === 'alert'
               ? 'bg-red-50 text-red-800 border border-red-200'
+              : activeToast.type === 'progress'
+              ? 'bg-blue-50 text-blue-800 border border-blue-200'
               : 'bg-green-50 text-green-800 border border-green-200'
           }`}
         >
-          <span>{toast.message}</span>
-          {toast.undoAction && (
+          <p>{activeToast.progress ? activeToast.progress.label : activeToast.message}</p>
+          {activeToast.detail && <pre className="mt-2 whitespace-pre-wrap text-sm">{activeToast.detail}</pre>}
+          {activeToast.actionLabel && activeToast.onAction && (
             <button
               type="button"
-              onClick={() => {
-                toast.undoAction?.()
-                setToast(null)
-              }}
-              aria-label="Undo"
-              className="ml-3 rounded bg-green-700 px-3 py-1 text-sm font-medium text-white hover:bg-green-800"
+              className="mt-3 rounded border border-green-500 px-3 py-1 text-sm font-medium text-green-800 hover:bg-green-100"
+              onClick={() => activeToast.onAction?.()}
             >
-              Undo
+              {activeToast.actionLabel}
             </button>
           )}
         </div>

@@ -1,3 +1,49 @@
+## Session 2025-11-12R - W1 Smoke Tests
+
+**Status**: ✅ COMPLETE – Phase 1 smoke script archived for current deploy state
+**Duration**: ~10 min (Codex DevOps)
+**Priority**: P0 – finalize W1 evidence before secret rotation
+**Progress Impact**: +1%
+
+### Achievements
+- Executed ash scripts/run_smoke_tests.sh production; backend health + frontend HEAD checks succeeded, backend 	ests/smoke_tests.py 2/2 pass.
+- Stored full output under docs/deployments/2025-11-12-smoke-tests.txt and appended summary to docs/DEPLOYMENT_HEALTH.md for traceability.
+
+### Next Steps
+1. Refresh Render deploy JSON snapshots (deployment-health-2025-11-11-refresh.json, latest-deploy.json) via API.
+2. Remove plaintext Render API key usage from helper scripts before rotating Postgres credentials.
+3. Rotate DB password + redeploy services, then re-run smoke + Vitest/pytest coverage to ensure new secrets hold.
+
+---## Session 2025-11-12M - DEV-008 Bulk Actions RED Specs
+
+**Status**: ✅ COMPLETE – DocumentWorkspace bulk move/archive RED specifications committed
+**Duration**: ~45 min (Autonomous TDD)
+**Priority**: P0 – DEV-008 Document Room completion
+**Progress Impact**: +2% (bulk operations RED phase)
+
+### Achievements
+- ✅ Added 9 comprehensive RED test specifications for bulk move/archive operations
+  - 5 bulk move tests: folder selection modal, optimistic update, rollback, partial failures, validation
+  - 4 bulk archive tests: optimistic archive, rollback, undo option, batch operations (50+ docs)
+- ✅ Verified RED state: 16 passing (existing), 9 failing (expected) ✅
+- ✅ Commits: 6922ab2 (RED specs), ef3f26b (docs), 2d33607 (push)
+- ✅ Updated DEV-008 story progress log with Session 2025-11-12M entry
+
+### Testing/TDD Notes
+- Command: `cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=forks`
+- Test Results: **25 tests total** (16 passing, 9 failing RED specs)
+- Coverage patterns: optimistic UI updates, error boundaries, rollback mechanisms, toast notifications
+- Added `within` import for multi-alert scenarios
+
+### Next Steps
+1. Implement GREEN: Create FolderSelectionModal component for bulk move
+2. Add optimistic mutation logic with React Query (useMutation with onMutate/onError)
+3. Wire toast notification system for success/error/undo actions
+4. Verify 25/25 tests passing (GREEN phase)
+5. Update story file with GREEN completion evidence
+
+---
+
 ## Session 2025-11-12Q - W1 Alembic + Deploy Verification
 
 **Status**: ✅ COMPLETE – Alembic head confirmed on Render DB + Phase 1 smoke rerun
@@ -1577,8 +1623,7 @@ OAuth services are thin wrappers around third-party SDKs (Stripe, QuickBooks, Xe
 2. Resume frontend automation UI tests (`frontend-dev` todo) with Vitest RED → GREEN.
 3. Capture full backend pytest run post-coverage sprint for audit trail.
 
----
-## Session 2025-11-12A - Governance Sync & Execution Plan Refresh
+---## Session 2025-11-12A - Governance Sync & Execution Plan Refresh
 
 **Status**: [ANALYSIS] COMPLETE - Reconciled plan/governance docs with actual deploy + test state  
 **Duration**: ~25 min (Codex CLI)  
@@ -1895,8 +1940,8 @@ OAuth services are thin wrappers around third-party SDKs (Stripe, QuickBooks, Xe
 **Priority**: P1 – Needed before W1 deploy evidence + Sprint 1 backlog (DEV‑016)
 
 ### Actions & Findings
-- Attempted to run `npx bmad-method status` (and `npx bmad-method@alpha status`) → CLI reports *“No BMAD installation found”*.  
-- Tried `npx bmad-method@alpha install` with escalated permissions; install wizard prompts for “Installation directory” and immediately throws `ERR_USE_AFTER_CLOSE: readline was closed` because the CLI expects interactive input. Governance reset remains blocked; captured blocker details in `docs/bmad/bmm-workflow-status.md`.
+- Attempted to run `npx bmad-method status` (and `npx bmad-method@alpha status`) → CLI reports *"No BMAD installation found"*.  
+- Tried `npx bmad-method@alpha install` with escalated permissions; install wizard prompts for "Installation directory" and immediately throws `ERR_USE_AFTER_CLOSE: readline was closed` because the CLI expects interactive input. Governance reset remains blocked; captured blocker details in `docs/bmad/bmm-workflow-status.md`.
 - Unskipped the transcript coverage test in `frontend/src/tests/integration/PodcastStudioRouting.test.tsx`, refactored it to mount `PodcastStudio` via a lightweight MemoryRouter + QueryClient harness, and inlined `react-router` deps in `vitest.config.ts` so vm pools can handle ESM modules.
 - Despite refactor, all Vitest pools (`threads`, `vmThreads`, `forks`) now fail before executing tests with `[vitest-pool]: Timeout starting … runner`, even when filtering to other test names. Latest command + error (from `frontend/`):
 
@@ -1920,13 +1965,13 @@ OAuth services are thin wrappers around third-party SDKs (Stripe, QuickBooks, Xe
 
 ### Achievements
 - Extracted the transcript UI panel from `PodcastStudio` into a new `EpisodeTranscriptPanel` component (`frontend/src/components/podcast/EpisodeTranscriptPanel.tsx`) so transcript status, download links, and regenerate actions can be tested in isolation.
-- Replaced the heavy `PodcastStudioRouting.test.tsx` integration suite with focused tests that render `EpisodeTranscriptPanel`, covering “Transcribe audio” actions and the transcript-ready state with download links (`frontend/src/tests/integration/PodcastStudioRouting.test.tsx` now targets the new component).
+- Replaced the heavy `PodcastStudioRouting.test.tsx` integration suite with focused tests that render `EpisodeTranscriptPanel`, covering "Transcribe audio" actions and the transcript-ready state with download links (`frontend/src/tests/integration/PodcastStudioRouting.test.tsx` now targets the new component).
 - Updated `PodcastStudio.tsx` to consume the component inside the existing `FeatureGate`, preserving upgrade messaging while simplifying future maintenance.
 
 ### Testing / Blockers
 - Attempted to run the new suite: `cd frontend && npx vitest run src/tests/integration/PodcastStudioRouting.test.tsx` → **fails before test collection** with `[vitest-pool]: Timeout starting threads runner`.
 - Re-attempted with other suites (e.g., `src/components/layout/NavigationMenu.test.tsx`) and observed the same timeout, indicating the Vitest worker runner cannot start in this environment after the recent CLI session. No test results could be captured.
-- Pending action: rerun the same commands in a local dev shell (or enable the Vitest “hanging-process” reporter) to capture passing output before continuing DEV‑016.
+- Pending action: rerun the same commands in a local dev shell (or enable the Vitest "hanging-process" reporter) to capture passing output before continuing DEV‑016.
 
 ### Next Steps
 1. Re-run the Vitest commands above in an environment where workers can start; archive the output in `docs/TEST_BASELINE_2025-11-11.md` and deployment logs.
@@ -1943,7 +1988,7 @@ OAuth services are thin wrappers around third-party SDKs (Stripe, QuickBooks, Xe
 
 ### Achievements
 - Extended `Blog.test.tsx` to assert category query strings, search parameters, loading spinner visibility, error banner (`role="alert"`), and filter resets (RED → GREEN).
-- Updated `Blog.tsx` to trim search terms, expose a persistent “Clear Filters” control, and render accessible error banners.
+- Updated `Blog.tsx` to trim search terms, expose a persistent "Clear Filters" control, and render accessible error banners.
 - Normalized button variants (removed `asChild` warning) by enhancing `Button` component to ignore the prop and aligning selected state with `primary` styling.
 
 ### Verification
@@ -2141,8 +2186,8 @@ OAuth services are thin wrappers around third-party SDKs (Stripe, QuickBooks, Xe
 **Progress Impact**: Frontend robustness +1% (navigation tests upgraded)
 
 ### Achievements
-- Updated `frontend/src/components/layout/NavigationMenu.tsx` so the “Master Admin” pill is restricted to the `admin` role while other routes (Dashboard, Deals, Podcast Studio) retain their intended role coverage.
-- Extended `NavigationMenu.test.tsx` with growth/enterprise podcast checks and admin-only assertions using `getByRole`/`queryByRole`; ensures text matchers no longer collide on the substring “Admin”.
+- Updated `frontend/src/components/layout/NavigationMenu.tsx` so the "Master Admin" pill is restricted to the `admin` role while other routes (Dashboard, Deals, Podcast Studio) retain their intended role coverage.
+- Extended `NavigationMenu.test.tsx` with growth/enterprise podcast checks and admin-only assertions using `getByRole`/`queryByRole`; ensures text matchers no longer collide on the substring "Admin".
 - Ran `npx vitest run src/components/layout/NavigationMenu.test.tsx` → **8/8 tests passing**.
 
 ### Remaining Work
@@ -2421,17 +2466,16 @@ Pushed to: origin/main ✅
 **Progress Impact**: Plan clarity +1% (docs now align with evidence)
 
 ### Achievements
-- Reviewed docs/100-PERCENT-COMPLETION-PLAN.md, BMAD method plan, workflow status, tracker, and deployment health to capture gaps (deploy snapshot still marked 100% green, workflow still on phase summary).
+- Reviewed docs/100-PERCENT-COMPLETION-PLAN.md, BMAD method plan, workflow status, tracker, and deployment health to capture gaps (deploy snapshot still marked 100 percent green, workflow still on phase summary).
 - Updated docs/100-PERCENT-COMPLETION-PLAN.md with accurate backend/frontend test data, dirty tree mapping, and the redeploy/workflow-init blockers.
-- Confirmed 
-px bmad-method workflow-init still returns "unknown command"; captured this dependency in the immediate next actions.
+- Confirmed npx bmad-method workflow-init still returns "unknown command"; captured this dependency in the immediate next actions.
 
 ### Testing/TDD Notes
-- Planning-only session. Latest automated evidence remains the 26 pass / 4 skip subscription suite + Render Postgres lembic upgrade head (2025-11-10 21:45 UTC).
+- Planning-only session. Latest automated evidence remains the 26 pass / 4 skip subscription suite plus Render Postgres alembic upgrade head (2025-11-10 21:45 UTC).
 
 ### Next Steps
 1. Restore BMAD CLI so workflow-init can run; document output in workflow status.
-2. Trigger backend/frontend redeploys for commit 027963 (or newer) and capture ackend-deploy*.json / rontend-deploy*.json plus smoke tests.
+2. Trigger backend/frontend redeploys for commit a027963 (or newer) and capture backend-deploy*.json / frontend-deploy*.json plus smoke tests.
 3. Start DEV-008 RED Vitest specs immediately after redeploy evidence is recorded.
 
 ---
@@ -2484,7 +2528,7 @@ px bmad-method workflow-init still returns "unknown command"; captured this depe
 **Progress Impact**: Security +1% (no plaintext secrets in repo)
 
 ### Achievements
-- Rewrote `fix_production_alembic.py` to pull the Render prod DB URL from environment variable `RENDER_PROD_DATABASE_URL` instead of hard-coding credentials.
+- Rewritten `fix_production_alembic.py` to pull the Render prod DB URL from environment variable `RENDER_PROD_DATABASE_URL` instead of hard-coding credentials.
 - Added an incident note to `ApexDeliver Environment Variables - Master Reference.md` instructing immediate password rotation + adoption of the new env var.
 - Updated BMAD governance docs (workflow status + tracker) to reflect the ongoing workflow-init+security loop.
 
@@ -2536,8 +2580,7 @@ px bmad-method workflow-init still returns "unknown command"; captured this depe
 1. Await Render auto-deploy completion for commit `01d4814` and capture results in `backend-deploy*.json` / deployment checklist.
 2. Once deploy evidence available, move to W2 backend stories (DEV-011/012) per roadmap.
 
----
-## Session 2025-11-10J - Workflow-Init Attempt & Render Deploy Audit
+---## Session 2025-11-10J - Workflow-Init Attempt & Render Deploy Audit
 
 **Status**: [IN PROGRESS] BLOCKED - Workflow-init command missing; Render API reachable, deploys still not current  
 **Duration**: ~20 min (Codex CLI)  
@@ -2558,8 +2601,7 @@ px bmad-method workflow-init still returns "unknown command"; captured this depe
 2. Provision Postgres access to rerun `alembic upgrade head` + billing/subscription smoke suite.
 3. Trigger new Render backend/frontend deploys after migrations verified; capture new `backend-deploy*.json`/`frontend-deploy*.json` outputs.
 
----
-## Session 2025-11-10K - Subscription Smoke Suite + Alembic (Render Postgres)
+---## Session 2025-11-10K - Subscription Smoke Suite + Alembic (Render Postgres)
 
 **Status**: ✅ COMPLETE - Render Postgres confirmed at head; billing/subscription suite green with coverage  
 **Duration**: ~25 min (Codex CLI)  
@@ -2580,8 +2622,7 @@ px bmad-method workflow-init still returns "unknown command"; captured this depe
 2. Capture deploy logs + screenshots; update `latest-deploy*.json`, `DEPLOYMENT_HEALTH.md`, and `PRODUCTION_DEPLOYMENT_CHECKLIST.md` with the new evidence.
 3. Resume DEV-008 RED spec work once workflow-init tooling is restored.
 
----
-## Session 2025-11-11A - Postgres Migration Verification ✅
+---## Session 2025-11-11A - Postgres Migration Verification ✅
 
 **Status**: ✅ **COMPLETE** – Production DB migrations + subscription smoke suite revalidated  
 **Duration**: ~20 min (Codex CLI)  
@@ -2601,8 +2642,7 @@ px bmad-method workflow-init still returns "unknown command"; captured this depe
 1. Record the deploy log output once `dep-d492pa0m2f8s73dis3i0` finishes to close the deployment evidence loop.
 2. Begin DEV-008 RED tests per the completion plan now that migrations are verified.
 
----
-## Session 2025-11-10I - Governance Refresh & Execution Plan Update
+---## Session 2025-11-10I - Governance Refresh & Execution Plan Update
 
 **Status**: [ANALYSIS] COMPLETE - Re-reviewed governance docs, updated 100% plan + BMAD method plan, captured latest git/deploy status  
 **Duration**: ~30 min (Codex CLI)  
@@ -2622,8 +2662,7 @@ px bmad-method workflow-init still returns "unknown command"; captured this depe
 2. Run `npx bmad-method workflow-init` to register the upcoming dev-story, then begin DEV-008 RED specs after migration proof.
 3. Assemble Render readiness evidence (deploy logs, smoke tests) once migrations verified.
 
----
-## Session 2025-11-10H - Repo Resync & Security Risk Capture
+---## Session 2025-11-10H - Repo Resync & Security Risk Capture
 
 **Status**: [ANALYSIS] COMPLETE – Re-synced with latest `main`, refreshed completion plan, flagged leaked credentials  
 **Duration**: ~30 min (Codex CLI)  
@@ -2643,8 +2682,7 @@ px bmad-method workflow-init still returns "unknown command"; captured this depe
 2. Rotate exposed Render Postgres password, delete/replace `fix_production_alembic.py`, and capture evidence in `DEPLOYMENT-SESSION-SUMMARY.md`.
 3. Resume W1 migrations story: re-run smoke pytest + Postgres `alembic upgrade head`, then capture logs for redeploy.
 
----
-## Session 2025-11-10F - Completion Plan Refresh & Deploy Status Audit
+---## Session 2025-11-10F - Completion Plan Refresh & Deploy Status Audit
 
 **Status**: [ANALYSIS] COMPLETE - Roadmap + BMAD artefacts refreshed, deploy blockers documented  
 **Duration**: ~40 min (Codex CLI)  
@@ -2665,8 +2703,7 @@ px bmad-method workflow-init still returns "unknown command"; captured this depe
 2. Provision Postgres target and rerun Alembic upgrade + billing/subscription smoke suite (W1 deliverable).
 3. Begin DEV-008 RED test writing immediately after migrations/deploy story unblocks.
 
----
-## Session 2025-11-10E - Subscription Smoke Tests & Deploy Prep
+---## Session 2025-11-10E - Subscription Smoke Tests & Deploy Prep
 
 **Status**: [IN PROGRESS] **PENDING DEPLOY** - Subscription routes verified; awaiting DB replay + Render redeploy  
 **Duration**: ~25 min (Codex CLI)  
@@ -2742,7 +2779,9 @@ d37ed4cd3013 (create folders/documents - NOW depends on 36b3e62b4148) ← FIXED
     ↓
 58ea862c1242 (merge)
     ↓
-[...subsequent migrations to dc2c0f69c1b1 head...]
+[...subsequent migrations...
+  ↓
+dc2c0f69c1b1 (pipeline templates - HEAD) ✅
 ```
 
 ### Testing
@@ -2772,7 +2811,7 @@ d37ed4cd3013 (create folders/documents - NOW depends on 36b3e62b4148) ← FIXED
 ### Achievements
 - Reviewed `PROJECT_STATUS_REPORT.md`, `docs/bmad/BMAD_METHOD_PLAN.md`, `docs/bmad/PROJECT_COMPLETION_PLAN.md`, Render deploy logs (`latest-deploy*.json`, `backend-deploy*.json`, `frontend-deploy*.json`), and git history to capture the real current state.
 - Updated `docs/bmad/PROJECT_COMPLETION_PLAN.md` with: new HEAD vs origin (`0bc72b4` ahead of `ded9734`), explicit Render failure IDs, refreshed blockers/risks, and a five-step immediate-action list aligned with BMAD + TDD.
-- Recorded this session in the tracker to satisfy the “keep BMAD docs updated” directive and surfaced unpushed commit risk + dependency context for the next workflow loop.
+- Recorded this session in the tracker to satisfy the "keep BMAD docs updated" directive and surfaced unpushed commit risk + dependency context for the next workflow loop.
 - Defined next actionable items: run `workflow-init`, finish migration smoke tests, push/publish latest commit, and gather Render health evidence once suites pass.
 
 ### Testing/TDD Notes
@@ -4564,5 +4603,33 @@ render(
 - Upload queue persistence across page refreshes
 
 ---
+
+## Session 2025-11-12M - DocumentWorkspace Bulk Actions GREEN
+
+**Status**: ✅ COMPLETE – Bulk move/archive flows implemented with optimistic UI + rollback
+**Duration**: ~60 min (Codex autonomous TDD)
+**Priority**: P0 – DEV-008 Secure Document & Data Room
+**Progress Impact**: +4% (DocumentWorkspace operations complete)
+
+### Achievements
+- Integrated `bulkMoveDocuments`, `bulkArchiveDocuments`, and `restoreArchivedDocuments` into `DocumentWorkspace.tsx` with toast + progress UX.
+- Added undo support for archive flows and partial failure messaging for bulk move responses.
+- Confirmed DocumentList `resetSelectionSignal` increments on both optimistic success and rollback paths via spy assertions.
+- Updated story & workflow docs to reflect GREEN status for DEV-008 bulk operations.
+
+### Testing/TDD Notes
+- `cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=forks` → 25/25 ✅
+- `cd frontend && npx vitest run src/components/documents/UploadPanel.enhanced.test.tsx --pool=forks` → 33/33 ✅
+- Tests previously RED (archive optimistic/rollback cases) now GREEN after service integration.
+
+### Next Steps
+1. Confirm folder tree accessibility enhancements per DEV-008 scope (keyboard + lazy loading).
+2. Extend MSW/test harness to cover DocumentWorkspace API flows end-to-end (prepare handlers).
+3. Begin DEV-011 valuation workspace RED cycle once DEV-008 acceptance confirmed.
+
+---
+
+</rewritten_file>
+
 
 
