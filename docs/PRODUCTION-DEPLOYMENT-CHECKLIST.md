@@ -1,5 +1,6 @@
 > 2025-11-11 07:15 UTC – Backend deploy dep-d49e0qfdiees73ae691g LIVE (commit 863f8dcf). Frontend deploy dep-d49e05ig0ims73e55qk0 failed during build; remain on previous commit until retry after fix. Smoke tests (scripts/run_smoke_tests.sh production) completed successfully.
 > **2025-11-10 20:05 UTC** – Backend deploy `dep-d49430euk2gs73es0cpg` & frontend deploy `dep-d4944ochg0os738k2sc0` triggered via API and verified healthy. Continue checklist from Phase 3 for post-deploy validation.
+- 2025-11-11 08:05 UTC: `bash scripts/run_smoke_tests.sh production` → backend health 200, frontend GET 200, pytest smoke 2/2 (log: `docs/deployments/2025-11-11-smoke-run-2.txt`)
 - 2025-10-30 12:32 UTC: Smoke tests green (backend OK, frontend 403 due to Cloudflare; manual check next)
 - 2025-11-10 17:31 UTC: Render dry-run rehearsal prepped locally — Kanban SLA UI + valuation KPI suites green, migrations verified via pytest. Pending git push & Render redeploy to resolve `app.models.pipeline_template` error observed in latest Render logs.
 

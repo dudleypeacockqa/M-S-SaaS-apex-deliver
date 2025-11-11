@@ -1,3 +1,49 @@
+## Session 2025-11-11L - BMAD Status & Render Health Check
+
+**Status**: 🔍 IN PROGRESS – Governance verified, Render deployments audited
+**Duration**: ~30 min (Codex CLI)
+**Priority**: P0 – Ensure next DEV-008 loop starts from accurate deploy baseline
+**Progress Impact**: +0% (governance only, implementation pending)
+
+### Achievements
+- Ran `npx bmad-method status` to confirm BMAD v6-alpha installation and modules (core/bmb/bmm) are intact.
+- Queried Render API using provided token to capture latest deploys:
+  - Backend `srv-d3ii9qk9c44c73aqsli0` deploy `dep-d49et83uibrs739agtfg` (commit `9b0577f3abf…`) is LIVE as of 2025-11-11T08:08Z.
+  - Frontend `srv-d3ihptbipnbc73e72ne0` deploy `dep-d49etc8m2f8s73dkf0v0` (same commit) is still in `created` state (build not started), so marketing/site updates are NOT yet live.
+- Gathered git/commit state (`HEAD` `66fb61f docs(dev-012): complete task automation audit`) and reconfirmed branch parity with `origin/main`.
+
+### Testing/TDD Notes
+- No application code changed this session; next action remains writing RED Vitest specs for DocumentWorkspace permission/upload flows.
+
+### Next Steps
+1. Begin DEV-008 RED cycle by extending `frontend/src/pages/documents/DocumentWorkspace.test.tsx` for permission modal, bulk actions, and upload progress expectations.
+2. Implement DocumentWorkspace + supporting hooks to satisfy new tests, then rerun Vitest to reach GREEN.
+3. Once DEV-008 is green, move directly into DEV-016 backend/frontend RED tests per plan.
+
+---
+
+## Session 2025-11-12I - Deploy Evidence Refresh & Smoke Validation ✅
+
+**Status**: ✅ COMPLETE – W1 smoke checks rerun, Render statuses logged, docs updated  
+**Duration**: ~20 min (Codex CLI)  
+**Priority**: P1 – Required before resuming DEV-008/016 backlog  
+**Progress Impact**: Deployment accuracy +1%
+
+### Achievements
+- Ran `bash scripts/run_smoke_tests.sh production` → backend health 200, frontend GET 200, pytest smoke suite 2/2. Log archived as `docs/deployments/2025-11-11-smoke-run-2.txt`.
+- Captured latest Render deploy IDs via API:
+  - Backend `dep-d49edummcj7s73eenjng` (commit `073980c`, status live 07:35Z).
+  - Frontend `dep-d49eiiag0ims73e581t0` (commit `c267e936`, status live 08:02Z) with a follow-up deploy queued for commit `9b0577f3`.
+- Updated `docs/DEPLOYMENT_HEALTH.md`, `docs/DEPLOYMENT-SESSION-SUMMARY.md`, and `latest-deploy.json` with the fresh evidence.
+- Triggered a manual frontend redeploy so latest docs commit (`9b0577f3`) will propagate once Render finishes building.
+
+### Outstanding
+1. Capture manual frontend screenshot (Cloudflare) and attach to `docs/deployments/`.
+2. Wait for `dep-d49etc8m2f8s73dkf0v0` (frontend) to finish, then rerun smoke script if necessary.
+3. Resume DEV-008 RED work once governance artefacts are updated.
+
+---
+
 ## Session 2025-11-11K - Completion Planning & BMAD Sync
 
 **Status**: ⚙️ PLANNING – Completion roadmap refreshed, BMAD artefacts queued for next agents
@@ -3624,8 +3670,6 @@ render(
 - Upload queue persistence across page refreshes
 
 ---
-
-
 
 
 

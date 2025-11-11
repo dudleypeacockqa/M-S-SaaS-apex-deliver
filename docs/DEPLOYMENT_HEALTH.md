@@ -1,7 +1,7 @@
-> **2025-11-11 07:15 UTC**
-> - Backend deploy `dep-d49e0qfdiees73ae691g` (service `srv-d3ii9qk9c44c73aqsli0`, commit `863f8dcf`) is LIVE. Health endpoint returned 200 with `{"status":"healthy","clerk_configured":true,...}`.
-> - Frontend deploy `dep-d49e05ig0ims73e55qk0` (service `srv-d3ihptbipnbc73e72ne0`, commit `06c15cc3`) **failed during build**. Build logs pending review; deployment remains on prior commit until resolved.
-> - Smoke script `bash scripts/run_smoke_tests.sh production` passed (backend health, frontend 200, backend smoke pytest 2/2).
+> **2025-11-11 08:10 UTC**
+> - Backend deploy `dep-d49edummcj7s73eenjng` (service `srv-d3ii9qk9c44c73aqsli0`, commit `073980c`) is LIVE. Alembic re-run succeeded (“Already at head”), `/health` returns 200.
+> - Frontend deploy `dep-d49eiiag0ims73e581t0` (service `srv-d3ihptbipnbc73e72ne0`, commit `c267e936`) is LIVE; manual deploy `dep-d49etc8m2f8s73dkf0v0` (commit `9b0577f3`) queued to refresh to latest docs commit.
+> - Latest smoke test run (`bash scripts/run_smoke_tests.sh production` at 08:05 UTC) passed; log stored at `docs/deployments/2025-11-11-smoke-run-2.txt`.
 # Deployment Health Log - 2025-11-11
 
 ## ✅ P1-3 Deployment Validation (2025-11-11T07:05Z)

@@ -1,0 +1,10 @@
+Smoke Tests - Production
+Timestamp: 2025-11-11T08:06:00Z
+Backend: https://ma-saas-backend.onrender.com
+Frontend: https://100daysandbeyond.com
+
+Backend health: 200 OK
+Frontend GET /: 200 OK
+pytest smoke suite:
+- tests/smoke_tests.py::test_health_endpoint PASSED
+- tests/smoke_tests.py::test_root_redirects PASSED

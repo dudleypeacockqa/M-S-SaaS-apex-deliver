@@ -1,18 +1,18 @@
 {
   "backend_deploy": {
-    "id": "dep-d49e0qfdiees73ae691g",
+    "id": "dep-d49et83uibrs739agtfg",
     "service_id": "srv-d3ii9qk9c44c73aqsli0",
     "status": "live",
-    "commit": "863f8dcfcbe4a9345f0eedc5efbae342189ac7a6",
-    "message": "feat(deployment): P1-3 Deploy Evidence & Health Verification COMPLETE",
-    "updated_at": "2025-11-11T07:07:39Z"
+    "commit": "9b0577f3abfc437c334392168248d78bfdf3fdbc",
+    "message": "docs(bmad): update Week 1 summary - all core features complete",
+    "updated_at": "2025-11-11T08:08:53Z"
   },
   "frontend_deploy": {
-    "id": "dep-d49e05ig0ims73e55qk0",
+    "id": "dep-d49etc8m2f8s73dkf0v0",
     "service_id": "srv-d3ihptbipnbc73e72ne0",
-    "status": "build_failed",
-    "commit": "06c15cc36c846507e176b2d12932f072f7300575",
-    "message": "chore(deploy): refresh evidence and vitest coverage",
-    "updated_at": "2025-11-11T07:13:41Z"
+    "status": "created",
+    "commit": "9b0577f3abfc437c334392168248d78bfdf3fdbc",
+    "message": "docs(bmad): update Week 1 summary - all core features complete",
+    "updated_at": "2025-11-11T08:07:14Z"
   }
 }
