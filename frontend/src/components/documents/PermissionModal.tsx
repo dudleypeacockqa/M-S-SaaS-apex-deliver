@@ -43,6 +43,8 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({ documentId, is
     enabled: isOpen,
   })
 
+  const ownerCount = data?.filter((permission) => permission.role === 'owner').length ?? 0
+
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['document-permissions', documentId] })
   }
@@ -152,10 +154,16 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({ documentId, is
                         </option>
                       ))}
                     </select>
+                    {permission.role === 'owner' && ownerCount <= 1 && (
+                      <p className="text-xs font-medium text-amber-600">
+                        Add another owner before removing this one.
+                      </p>
+                    )}
                     <button
                       type="button"
-                      className="text-xs text-rose-500 hover:text-rose-600"
+                      className="text-xs text-rose-500 hover:text-rose-600 disabled:text-rose-300"
                       aria-label={`Remove ${permission.user_email}`}
+                      disabled={(permission.role === 'owner' && ownerCount <= 1) || removeMutation.isPending}
                       onClick={() => removeMutation.mutate(permission.id)}
                     >
                       Remove

@@ -460,6 +460,7 @@
   - Frontend `dep-d49etc8m2f8s73dkf0v0` (commit `9b0577f3`) live at 08:26Z.
 - Updated `docs/DEPLOYMENT_HEALTH.md`, `docs/DEPLOYMENT-SESSION-SUMMARY.md`, `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md`, and `latest-deploy.json` with the new deploy IDs + smoke evidence.
 - Kicked off DEV-008 RED➔GREEN loop: added search/file-type filters to `DocumentRoomPage` plus Vitest coverage (`DocumentRoomPage.test.tsx`).
+- Extended `PermissionModal` coverage/tests so the UI blocks removal of the final owner (Vitest suite now 11/11 green).
 
 ### Outstanding
 1. Capture manual frontend screenshot (Cloudflare) and attach to `docs/deployments/`.

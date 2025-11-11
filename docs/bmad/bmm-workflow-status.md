@@ -41,6 +41,7 @@ COMPLETED_WORK:
 - Ran `bash scripts/run_smoke_tests.sh production` (attempt #1 curl 55, #2 ✅) – log saved as `docs/deployments/2025-11-11-smoke-run-3.txt`
 - Updated `docs/DEPLOYMENT_HEALTH.md`, `docs/DEPLOYMENT-SESSION-SUMMARY.md`, `latest-deploy.json` after backend deploy `dep-d49et83uibrs739agtfg` and frontend `dep-d49etc8m2f8s73dkf0v0`
 - Added DocumentRoomPage search + file-type filters with Vitest coverage (`DocumentRoomPage.test.tsx`)
+- Extended `PermissionModal` logic/tests so the final owner cannot be removed (new Vitest cases)
 
 FILES MODIFIED:
 - docs/DEPLOYMENT_HEALTH.md
@@ -54,6 +55,7 @@ FILES MODIFIED:
 TEST_RESULTS:
 - `bash scripts/run_smoke_tests.sh production` → backend 200, frontend 200, pytest smoke 2/2
 - `npx vitest run src/pages/deals/DocumentRoomPage.test.tsx --maxWorkers=1 --no-file-parallelism` → 8/8 tests passing
+- `npx vitest run src/components/documents/PermissionModal.test.tsx --maxWorkers=1 --no-file-parallelism` → 11/11 tests passing
 
 ---
 

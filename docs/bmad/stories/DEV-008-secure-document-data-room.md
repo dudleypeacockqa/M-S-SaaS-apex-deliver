@@ -64,6 +64,7 @@ _Last updated: 2025-11-11_
 - 2025-11-11: FolderTree persistence + PermissionModal entitlement alerts implemented after RED tests; Vitest suites now pass under `--pool vmThreads`.
 - 2025-11-11: DocumentList integrates BulkActionsToolbar for multi-select download/delete/clear; new Vitest coverage exercises optimistic flows.
 - 2025-11-12: DocumentRoomPage now exposes search + file-type filters with Vitest coverage (`DocumentRoomPage.test.tsx`), wiring through `listDocuments` query params.
+- 2025-11-12: PermissionModal prevents removing the final owner; Vitest suite expanded to cover sole-owner warning + button disabling.
 
 ## Next Steps
 1. Extend BulkActions coverage to move/archive flows and optimistic rollback/error toasts (DocumentWorkspace wiring).

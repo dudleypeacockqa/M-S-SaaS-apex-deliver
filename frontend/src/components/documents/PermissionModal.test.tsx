@@ -254,4 +254,36 @@ describe('PermissionModal', () => {
       expect(screen.getByRole('alert')).toHaveTextContent('Upgrade required to share documents');
     });
   });
+
+  it('should disable removal when user is the sole owner', async () => {
+    const { listPermissions } = await import('../../services/api/documents');
+    vi.mocked(listPermissions).mockResolvedValue([
+      { id: 'perm-1', user_id: 'user-1', user_email: 'owner@example.com', role: 'owner', document_id: 'doc-1' },
+    ]);
+
+    renderWithProviders(
+      <PermissionModal documentId="doc-1" isOpen={true} onClose={vi.fn()} />
+    );
+
+    const removeButton = await screen.findByRole('button', { name: /remove owner@example\.com/i });
+    expect(removeButton).toBeDisabled();
+    expect(
+      screen.getByText(/add another owner before removing this one/i)
+    ).toBeInTheDocument();
+  });
+
+  it('should allow removal when multiple owners exist', async () => {
+    const { listPermissions } = await import('../../services/api/documents');
+    vi.mocked(listPermissions).mockResolvedValue([
+      { id: 'perm-1', user_id: 'user-1', user_email: 'owner1@example.com', role: 'owner', document_id: 'doc-1' },
+      { id: 'perm-2', user_id: 'user-2', user_email: 'owner2@example.com', role: 'owner', document_id: 'doc-1' },
+    ]);
+
+    renderWithProviders(
+      <PermissionModal documentId="doc-1" isOpen={true} onClose={vi.fn()} />
+    );
+
+    const removeButton = await screen.findByRole('button', { name: /remove owner1@example\.com/i });
+    expect(removeButton).not.toBeDisabled();
+  });
 });
