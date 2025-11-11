@@ -36,16 +36,6 @@ export const DocumentRoomPage: React.FC = () => {
     return null
   }
 
-  // Fetch folders
-  const {
-    data: folders = [],
-    isLoading: isLoadingFolders,
-    error: foldersError,
-  } = useQuery<FolderResponse[]>({
-    queryKey: ['folders', dealId],
-    queryFn: () => documentApi.listFolders(dealId),
-  })
-
   // Fetch documents with filters
   const {
     data: documentsData,
@@ -129,27 +119,8 @@ export const DocumentRoomPage: React.FC = () => {
     }
   }
 
-  // Compute breadcrumb path
-  const getBreadcrumbPath = (folderId: string | null): FolderResponse[] => {
-    if (!folderId) return []
-
-    const path: FolderResponse[] = []
-    let currentFolderId: string | null = folderId
-
-    while (currentFolderId) {
-      const folder = folders.find((f) => f.id === currentFolderId)
-      if (!folder) break
-      path.unshift(folder)
-      currentFolderId = folder.parent_folder_id
-    }
-
-    return path
-  }
-
-  const breadcrumbPath = getBreadcrumbPath(selectedFolderId)
-
-  const isLoading = isLoadingFolders || isLoadingDocuments
-  const hasError = foldersError || documentsError
+  const isLoading = isLoadingDocuments
+  const hasError = documentsError
 
   return (
     <div className="flex h-full flex-col">
@@ -169,32 +140,7 @@ export const DocumentRoomPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Breadcrumb Navigation */}
-        {breadcrumbPath.length > 0 && (
-          <nav aria-label="Breadcrumb" className="mt-3 flex items-center gap-2 text-sm">
-            <button
-              onClick={() => handleFolderSelect(null)}
-              className="text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              All Folders
-            </button>
-            {breadcrumbPath.map((folder, index) => (
-              <React.Fragment key={folder.id}>
-                <span className="text-gray-400">/</span>
-                <button
-                  onClick={() => handleFolderSelect(folder.id)}
-                  className={
-                    index === breadcrumbPath.length - 1
-                      ? 'font-medium text-gray-900'
-                      : 'text-blue-600 hover:text-blue-800 hover:underline'
-                  }
-                >
-                  {folder.name}
-                </button>
-              </React.Fragment>
-            ))}
-          </nav>
-        )}
+        {/* Breadcrumb could be added here later */}
       </div>
 
       {/* Error States */}
@@ -202,7 +148,6 @@ export const DocumentRoomPage: React.FC = () => {
         <div className="flex items-center gap-3 bg-red-50 px-6 py-4 text-red-800">
           <AlertCircle className="h-5 w-5" />
           <p>
-            {foldersError && 'Failed to load folders. '}
             {documentsError && 'Failed to load documents. '}
             Please try again later.
           </p>
@@ -224,19 +169,11 @@ export const DocumentRoomPage: React.FC = () => {
         <div className="flex flex-1 overflow-hidden">
           {/* Left Sidebar - Folder Tree */}
           <aside className="w-64 border-r border-gray-200 bg-white p-4">
-            {folders.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 py-8 text-center">
-                <FolderOpen className="h-12 w-12 text-gray-300" />
-                <p className="text-sm text-gray-500">No folders yet</p>
-              </div>
-            ) : (
-              <FolderTree
-                dealId={dealId}
-                folders={folders}
-                selectedFolderId={selectedFolderId}
-                onFolderSelect={handleFolderSelect}
-              />
-            )}
+            <FolderTree
+              dealId={dealId}
+              selectedFolderId={selectedFolderId}
+              onFolderSelect={handleFolderSelect}
+            />
           </aside>
 
           {/* Main Content Area */}

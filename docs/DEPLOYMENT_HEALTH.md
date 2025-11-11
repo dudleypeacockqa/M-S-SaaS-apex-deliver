@@ -1,5 +1,20 @@
 # Deployment Health Log - 2025-11-11
 
+## ✅ P1-3 Deployment Validation (2025-11-11T07:05Z)
+
+- **Commit**: `863f8dc` (`feat(deployment): P1-3 Deploy Evidence & Health Verification COMPLETE`)
+- **Test Commands & Results**
+  - `backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py backend/tests/test_valuation_api.py` → **49 passed / 0 failed** (7.8s).
+  - `cd frontend && npx vitest run src/components/layout/NavigationMenu.test.tsx --maxWorkers=1 --no-file-parallelism` → **7/7 tests passed**.
+  - `cd frontend && npx vitest run src/components/podcast/EpisodeTranscriptPanel.test.tsx --maxWorkers=1 --no-file-parallelism` → **2/2 tests passed** (new transcript panel coverage).
+- **Render Deploys Triggered (API, 07:04–07:06Z)**
+  - Backend service `srv-d3ii9qk9c44c73aqsli0` → deploy `dep-d49e0qfdiees73ae691g` (commit `863f8dc`, trigger `api`, status currently `update_in_progress`).
+  - Frontend service `srv-d3ihptbipnbc73e72ne0` → deploy `dep-d49e05ig0ims73e55qk0` (commit `863f8dc`, trigger `api`, status currently `created`/building).
+- **Evidence Updated**
+  - `deployment-health-2025-11-11.json` & `deployment-smoke-test-2025-11-11.txt` (new data appended).
+  - `latest-deploy.json` rewritten with the deploy IDs above.
+  - Render API snapshots archived via `render-services.json`.
+
 ## ✅ Comprehensive Smoke Test Results (2025-11-11T06:47:40Z)
 
 **Status**: ALL CRITICAL TESTS PASSED (10/10) - DEPLOYMENT HEALTHY ✓
@@ -30,6 +45,11 @@
 > - Frontend deploy `dep-d49dim6mcj7s73ee9vt0` (commit `17ce33b`) is still `build_in_progress`; monitoring required until Render marks it success/failure.
 > - Health checks from this environment: `curl https://ma-saas-backend.onrender.com/health` → 200; `curl -s -o /dev/null -w "%{http_code}" https://ma-saas-platform.onrender.com` → 200 (Cloudflare still intercepts automated requests).
 
+### Smoke Test Run (2025-11-11 06:48 UTC)
+- Command: ash scripts/run_smoke_tests.sh production
+- Backend /health: 200 with clerk/database/webhook flags true
+- Frontend HEAD https://100daysandbeyond.com: HTTP 200 (Cloudflare allowed request)
+- Backend smoke pytest: 2 passed, 0 failed (warnings: httpx Deprecation)
 ## Backend (ma-saas-backend)
 - Latest deploy: `dep-d49difngi27c73c9ok5g` (commit `17ce33b`, status **live** 06:37Z)
 - Previous live deploys: `dep-d49d0bhr0fns73dai6ig`, `dep-d49cm763jp1c73c41n10`
@@ -78,3 +98,4 @@ Smoke checks (2025-11-11 06:32Z):
 
 ## Frontend Manual Verification (2025-11-11)
 - Cloudflare 403 blocks automated check; manual browser verification is pending. Capture screenshot + note once available.
+

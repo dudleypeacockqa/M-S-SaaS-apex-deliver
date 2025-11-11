@@ -1,19 +1,29 @@
-[
-  {
-    "deploy": {
-      "id": "dep-d49430euk2gs73es0cpg",
-      "commit": {
-        "id": "79a07c5a4f2b6457efc02679b6a8bfa31bce2781",
-        "message": "security(critical): redact exposed production database credentials + fix pytest",
-        "createdAt": "2025-11-10T18:39:23Z"
-      },
-      "status": "live",
-      "trigger": "api",
-      "createdAt": "2025-11-10T19:48:25.484867Z",
-      "updatedAt": "2025-11-10T19:50:08.613019Z",
-      "startedAt": "2025-11-10T19:48:24.069068Z",
-      "finishedAt": "2025-11-10T19:49:42.651676Z"
+{
+  "backend_deploy": {
+    "id": "dep-d49e0qfdiees73ae691g",
+    "commit": {
+      "id": "863f8dcfcbe4a9345f0eedc5efbae342189ac7a6",
+      "message": "feat(deployment): P1-3 Deploy Evidence \u0026 Health Verification COMPLETE\n\n- Backend valuation + API pytest suites (49 tests) green\n- Navigation + EpisodeTranscriptPanel Vitest suites green\n- deployment-health-2025-11-11.json / deployment-smoke-test-2025-11-11.txt refreshed\n- Triggered new Render deploys for backend + frontend via API\n\nFollowing BMAD/TDD methodology; evidence recorded in DEPLOYMENT_HEALTH.md.\n",
+      "createdAt": "2025-11-11T07:03:55Z"
     },
-    "serviceId": "srv-d3ii9qk9c44c73aqsli0"
+    "status": "update_in_progress",
+    "trigger": "api",
+    "createdAt": "2025-11-11T07:06:20.585712Z",
+    "updatedAt": "2025-11-11T07:06:20.585712Z",
+    "startedAt": "2025-11-11T07:06:20.240624Z",
+    "finishedAt": null
+  },
+  "frontend_deploy": {
+    "id": "dep-d49e05ig0ims73e55qk0",
+    "commit": {
+      "id": "863f8dcfcbe4a9345f0eedc5efbae342189ac7a6",
+      "message": "feat(deployment): P1-3 Deploy Evidence \u0026 Health Verification COMPLETE\n\n- Backend valuation + API pytest suites (49 tests) green\n- Navigation + EpisodeTranscriptPanel Vitest suites green\n- deployment-health-2025-11-11.json / deployment-smoke-test-2025-11-11.txt refreshed\n- Triggered new Render deploys for backend + frontend via API\n\nFollowing BMAD/TDD methodology; evidence recorded in DEPLOYMENT_HEALTH.md.\n",
+      "createdAt": "2025-11-11T07:03:55Z"
+    },
+    "status": "build_in_progress",
+    "trigger": "api",
+    "createdAt": "2025-11-11T07:04:55.266532Z",
+    "updatedAt": "2025-11-11T07:05:58.555079Z",
+    "startedAt": null
   }
-]
+}

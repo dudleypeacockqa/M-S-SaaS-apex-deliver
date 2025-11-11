@@ -73,6 +73,7 @@ const TermsOfService = lazyNamed(() => import("./pages/marketing/legal/TermsOfSe
 const PrivacyPolicy = lazyNamed(() => import("./pages/marketing/legal/PrivacyPolicy"), "PrivacyPolicy")
 const CookiePolicy = lazyNamed(() => import("./pages/marketing/legal/CookiePolicy"), "CookiePolicy")
 const DocumentEditor = lazyNamed(() => import("./pages/documents/DocumentEditor"), "DocumentEditor")
+const DocumentRoomPage = lazyNamed(() => import("./pages/deals/DocumentRoomPage"), "DocumentRoomPage")
 const MasterAdminDashboard = lazyNamed(() => import("./pages/master-admin/MasterAdminDashboard"), "MasterAdminDashboard")
 const ActivityTracker = lazyNamed(() => import("./pages/master-admin/ActivityTracker"), "ActivityTracker")
 const ProspectPipeline = lazyNamed(() => import("./pages/master-admin/ProspectPipeline"), "ProspectPipeline")
@@ -162,9 +163,10 @@ export const AppRoutes = () => {
         <Route path="deals/new" element={<SignedIn><NewDealPage /></SignedIn>} />
         <Route path="deals/:dealId" element={<SignedIn><DealDetails /></SignedIn>} />
         <Route path="deals/:dealId/data-room" element={<SignedIn><DataRoom /></SignedIn>} />
+        <Route path="deals/:dealId/documents" element={<SignedIn><DocumentRoomPage /></SignedIn>} />
+        <Route path="deals/:dealId/documents/:documentId/editor" element={<SignedIn><DocumentEditorRoute /></SignedIn>} />
         <Route path="deals/:dealId/valuation" element={<SignedIn><ValuationSuite /></SignedIn>} />
         <Route path="deals/:dealId/financial" element={<SignedIn><FinancialDashboardRoute /></SignedIn>} />
-        <Route path="deals/:dealId/documents/:documentId/editor" element={<SignedIn><DocumentEditorRoute /></SignedIn>} />
 
         {/* Podcast Routes */}
         <Route path="podcast-studio" element={<SignedIn><PodcastStudio /></SignedIn>} />

@@ -41,6 +41,8 @@ COMPLETED_WORK:
 - Committed DEV-011 scenario summary work (commit 8f3aafe)
 - All 49 valuation tests passing (33 service + 16 API)
 - Migration a7b2d5e0f4c1 adds scenario_id to export logs
+- Re-ran valuation + frontend nav/transcript suites (commit 863f8dc) and pushed to origin
+- Triggered Render backend deploy `dep-d49e0qfdiees73ae691g` and frontend deploy `dep-d49e05ig0ims73e55qk0` via API
 
 FILES COMMITTED:
 - backend/alembic/versions/a7b2d5e0f4c1_add_scenario_id_to_export_logs.py
@@ -50,9 +52,17 @@ FILES COMMITTED:
 - backend/app/api/routes/valuation.py
 - backend/tests/test_valuation_service.py
 - backend/tests/test_valuation_api.py
+- docs/DEPLOYMENT_HEALTH.md
+- docs/DEPLOYMENT-SESSION-SUMMARY.md
+- latest-deploy.json
+- frontend/src/components/podcast/EpisodeTranscriptPanel.tsx
+- frontend/src/components/podcast/EpisodeTranscriptPanel.test.tsx
+- frontend/vitest.config.ts
 
 TEST_RESULTS:
 - pytest backend/tests/test_valuation_api.py backend/tests/test_valuation_service.py -v => 49 passed ✅
+- npx vitest run src/components/layout/NavigationMenu.test.tsx --maxWorkers=1 --no-file-parallelism => 7 passed ✅
+- npx vitest run src/components/podcast/EpisodeTranscriptPanel.test.tsx --maxWorkers=1 --no-file-parallelism => 2 passed ✅
 
 ---
 

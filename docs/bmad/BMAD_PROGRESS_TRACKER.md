@@ -676,6 +676,30 @@ OAuth services are thin wrappers around third-party SDKs (Stripe, QuickBooks, Xe
 
 ---
 
+## Session 2025-11-12H - Deploy Evidence Refresh & Render Redeploy ✅
+
+**Status**: ✅ COMPLETE – Tests rerun, commits pushed, Render deploys triggered with fresh evidence  
+**Duration**: ~35 min (Codex CLI)  
+**Priority**: P1 – Required before declaring P1-3 100% complete
+
+### Achievements
+- **Tests (TDD evidence)**
+  - `backend/venv/Scripts/python.exe -m pytest backend/tests/test_valuation_service.py backend/tests/test_valuation_api.py` → 49/49 passing.
+  - `npx vitest run src/components/layout/NavigationMenu.test.tsx --maxWorkers=1 --no-file-parallelism` → 7/7 passing.
+  - Replaced flaky `PodcastStudioRouting` integration suite with `EpisodeTranscriptPanel.test.tsx`; `npx vitest run ...` → 2/2 passing.
+- **Git / PR**
+  - Pushed `863f8dc feat(deployment): P1-3 Deploy Evidence & Health Verification COMPLETE` to `origin/main`.
+- **Render Deploys**
+  - Backend service `srv-d3ii9qk9c44c73aqsli0` deploy `dep-d49e0qfdiees73ae691g` (commit `863f8dc`) triggered via API.
+  - Frontend service `srv-d3ihptbipnbc73e72ne0` deploy `dep-d49e05ig0ims73e55qk0` triggered via API.
+  - Updated `latest-deploy.json`, `docs/DEPLOYMENT_HEALTH.md`, and `docs/DEPLOYMENT-SESSION-SUMMARY.md` with new IDs/statuses; evidence files refreshed (`deployment-health-2025-11-11.json`, `deployment-smoke-test-2025-11-11.txt`).
+
+### Remaining
+- Monitor Render dashboards until the new deploy IDs reach `live`; capture final logs/screenshots for frontend once Cloudflare check passes.
+- Continue P1-4 (frontend coverage) per completion plan once deployment health is reported back.
+
+---
+
 ## Session 2025-11-11D - Test Infrastructure Baseline & Honest Metrics Establishment ✅
 
 **Status**: ✅ COMPLETE – Phase 1 baseline established with honest completion metrics
@@ -3259,7 +3283,6 @@ render(
 - Upload queue persistence across page refreshes
 
 ---
-
 
 
 

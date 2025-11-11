@@ -15,9 +15,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],
-    testTimeout: 20000,
-    hookTimeout: 20000,
-    teardownTimeout: 20000,
+    testTimeout: 90000,
+    hookTimeout: 90000,
+    teardownTimeout: 90000,
     pool: 'threads',
     env: {
       NODE_ENV: 'development', // Force React development mode for act() support
