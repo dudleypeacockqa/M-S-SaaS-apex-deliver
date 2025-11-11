@@ -16,7 +16,7 @@ interface BulkActionsToolbarProps {
   warningMessage?: string;
 }
 
-const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
+export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
   selectedCount,
   disableDownload = false,
   disableDelete = false,
@@ -94,5 +94,3 @@ const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
     </div>
   );
 };
-
-export default BulkActionsToolbar;
