@@ -24,12 +24,12 @@ PHASE_4_COMPLETE: false
 STORY_ID: GOV-2025-11-12A-Workflow-Init-Reset
 STORY_STATUS: BLOCKED
 STORY_RESULT: Analyst workflow-init must be rerun to refresh enterprise-method baseline before continuing W1 deploy evidence work
-BLOCKERS: Requires interactive Claude Code session; CLI `npx bmad-method run` not available in this environment
+BLOCKERS: Local BMAD CLI missing. `npx bmad-method status` reports “No BMAD installation found” and `npx bmad-method@alpha install` aborts at the interactive “Installation directory” prompt (ERR_USE_AFTER_CLOSE). Need interactive session to complete install and run `*workflow-init`.
 
 ## Next Action
 
-NEXT_ACTION: Launch Analyst agent in Claude Code, run `*workflow-init`, and capture updated workflow template output
-NEXT_COMMAND: Analyst agent → `*workflow-init` (record NEXT_ACTION/NEXT_COMMAND, then resume W1 deploy evidence tasks)
+NEXT_ACTION: Launch Analyst agent in Claude Code (with interactive shell), install BMAD (`npx bmad-method@alpha install`), then run `*workflow-init` and capture workflow template output
+NEXT_COMMAND: Analyst agent → (`npx bmad-method@alpha install` → accept default dir) + `*workflow-init` (record outputs, resume W1 deploy evidence tasks)
 NEXT_AGENT: analyst
 PRIORITY: P0
 RATIONALE: Governance reset required to align BMAD artefacts before executing the remaining deployment and feature stories

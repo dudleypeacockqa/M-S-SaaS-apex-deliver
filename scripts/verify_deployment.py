@@ -43,7 +43,12 @@ def main():
         ("Backend Health", f"{BACKEND_URL}/health", 200, "healthy"),
         ("Blog Listing", f"{BACKEND_URL}/api/blog?limit=5", 200, "title"),
         ("Blog Categories", f"{BACKEND_URL}/api/blog/categories/list", 200, None),
-        ("Blog Post by Slug", f"{BACKEND_URL}/api/blog/the-complete-guide-to-m-a-deal-flow-management-in-2025", 200, "M&A"),
+        (
+            "Blog Post by Slug",
+            f"{BACKEND_URL}/api/blog/pricing-strategy-for-new-product-launches-why-95-get-it-wrong-and-how-to-be-the-5",
+            200,
+            "Pricing Strategy",
+        ),
         ("Contact Endpoint (POST only)", f"{BACKEND_URL}/api/marketing/contact", 405, None),
         ("Subscribe Endpoint (POST only)", f"{BACKEND_URL}/api/marketing/subscribe", 405, None),
         ("Frontend Home", f"{FRONTEND_URL}", 200, None),

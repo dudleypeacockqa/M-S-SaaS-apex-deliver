@@ -1,10 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
+
+import { WORKSPACE_NAV_ITEMS } from '../../const'
 import { NavigationMenu } from './NavigationMenu'
 
 // Mock Clerk state
 let mockUser = { publicMetadata: { role: 'solo' } }
+
+const renderMenu = (initialPath = '/dashboard') =>
+  render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <NavigationMenu />
+    </MemoryRouter>
+  )
 
 vi.mock('@clerk/clerk-react', () => ({
   useUser: vi.fn(() => ({ user: mockUser })),
@@ -17,105 +26,69 @@ describe('NavigationMenu Component', () => {
     vi.clearAllMocks()
   })
 
-  it('should render navigation menu', () => {
-    render(
-      <BrowserRouter>
-        <NavigationMenu />
-      </BrowserRouter>
-    )
+  it('renders navigation shell with brand and user menu', () => {
+    renderMenu()
 
-    expect(screen.getByRole('navigation')).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: /primary navigation/i })).toBeInTheDocument()
+    expect(screen.getByText(/ApexDeliver/i)).toBeInTheDocument()
+    expect(screen.getByTestId('user-button')).toBeInTheDocument()
   })
 
-  it('should show basic features for solo users', () => {
-    mockUser = { publicMetadata: { role: 'solo' } }
+  it('shows base workspace links for solo users', () => {
+    renderMenu()
 
-    render(
-      <BrowserRouter>
-        <NavigationMenu />
-      </BrowserRouter>
+    const soloVisible = WORKSPACE_NAV_ITEMS.filter((item) => item.roles.includes('solo')).map(
+      (item) => item.label
     )
 
-    expect(screen.getByText(/Dashboard/i)).toBeInTheDocument()
-    expect(screen.getByText(/Deals/i)).toBeInTheDocument()
+    soloVisible.forEach((label) => {
+      expect(screen.getByRole('link', { name: label })).toBeInTheDocument()
+    })
+
+    expect(screen.queryByRole('link', { name: /^Admin$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Master Admin/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Podcast Studio/i })).not.toBeInTheDocument()
+  })
+
+  it('exposes podcast studio for growth users but still hides admin links', () => {
+    mockUser = { publicMetadata: { role: 'growth' } }
+    renderMenu()
+
+    expect(screen.getByRole('link', { name: /Podcast Studio/i })).toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /^Admin$/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /Master Admin/i })).not.toBeInTheDocument()
   })
 
-  it('should show admin link for admin users', () => {
+  it('keeps admin controls hidden for enterprise users', () => {
+    mockUser = { publicMetadata: { role: 'enterprise' } }
+    renderMenu()
+
+    expect(screen.getByRole('link', { name: /Podcast Studio/i })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /^Admin$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Master Admin/i })).not.toBeInTheDocument()
+  })
+
+  it('renders admin + master admin pills for admin role', () => {
     mockUser = { publicMetadata: { role: 'admin' } }
+    renderMenu('/admin')
 
-    render(
-      <BrowserRouter>
-        <NavigationMenu />
-      </BrowserRouter>
-    )
-
-    expect(screen.getByText(/Dashboard/i)).toBeInTheDocument()
-    expect(screen.getByText(/Deals/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /^Admin$/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Master Admin/i })).toBeInTheDocument()
   })
 
-  it('should show all features for enterprise users', () => {
-    mockUser = { publicMetadata: { role: 'enterprise' } }
-
-    render(
-      <BrowserRouter>
-        <NavigationMenu />
-      </BrowserRouter>
-    )
-
-    expect(screen.getByText(/Dashboard/i)).toBeInTheDocument()
-    expect(screen.getByText(/Deals/i)).toBeInTheDocument()
-    // Enterprise users don't see admin panel
-    expect(screen.queryByRole('link', { name: /^Admin$/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /Master Admin/i })).not.toBeInTheDocument()
-  })
-
-  it('should show podcast studio for growth users', () => {
+  it('highlights nested deal routes as active', () => {
     mockUser = { publicMetadata: { role: 'growth' } }
-    render(
-      <BrowserRouter>
-        <NavigationMenu />
-      </BrowserRouter>
-    )
-    expect(screen.getByText(/Podcast Studio/i)).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /Master Admin/i })).not.toBeInTheDocument()
+    renderMenu('/deals/12345')
+
+    const dealsLink = screen.getByRole('link', { name: /^Deals$/i })
+    expect(dealsLink).toHaveAttribute('aria-current', 'page')
   })
 
-  it('should show podcast studio but hide admin panels for enterprise users', () => {
-    mockUser = { publicMetadata: { role: 'enterprise' } }
-    render(
-      <BrowserRouter>
-        <NavigationMenu />
-      </BrowserRouter>
-    )
-    expect(screen.getByText(/Podcast Studio/i)).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /^Admin$/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /Master Admin/i })).not.toBeInTheDocument()
-  })
+  it('points deals link to the canonical route', () => {
+    renderMenu()
 
-  it('should highlight active route', () => {
-    render(
-      <BrowserRouter>
-        <NavigationMenu />
-      </BrowserRouter>
-    )
-
-    // Check for navigation links
-    const navLinks = screen.getAllByRole('link')
-    expect(navLinks.length).toBeGreaterThan(0)
-  })
-
-  it('should include UserButton component', () => {
-    render(
-      <BrowserRouter>
-        <NavigationMenu />
-      </BrowserRouter>
-    )
-
-    expect(screen.getByTestId('user-button')).toBeInTheDocument()
+    const dealsLink = screen.getByRole('link', { name: /^Deals$/i })
+    expect(dealsLink).toHaveAttribute('href', expect.stringContaining('/deals'))
   })
 })
 

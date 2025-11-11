@@ -42,6 +42,11 @@ export default defineConfig({
         'src/components/common/ErrorBoundary.tsx',
       ],
     },
+    server: {
+      deps: {
+        inline: ['react-router', 'react-router-dom'],
+      },
+    },
   },
   poolOptions: {
     threads: {

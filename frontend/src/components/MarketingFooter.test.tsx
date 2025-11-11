@@ -17,7 +17,9 @@ describe('MarketingFooter Component', () => {
   describe('Brand Section', () => {
     it('should render app title', () => {
       render(<MarketingFooter />);
-      expect(screen.getByText(/apexdeliver/i)).toBeInTheDocument();
+      // Check for the brand title specifically, not copyright (multiple instances)
+      const brandTitle = screen.getByRole('link', { name: /apexdeliver/i });
+      expect(brandTitle).toBeInTheDocument();
     });
 
     it('should render brand description', () => {

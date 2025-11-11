@@ -1,4 +1,43 @@
-## Session 2025-11-10H - 100% Completion Plan + Phase 1 Sprint 1 Execution ✅
+## Session 2025-11-11E - Deployment Evidence Finalization
+
+**Status**: [GREEN] IN PROGRESS – Backend health captured, frontend manual check pending  
+**Duration**: ~15 min (Codex CLI)  
+**Priority**: P0 – Required before DEV-011 dev-story  
+**Progress Impact**: Deploy evidence +1% (backend health JSON + new render logs)
+
+### Achievements
+- Captured backend health response (`docs/backend-health-2025-11-11.json`) and logged deploy IDs (`dep-d49cm763jp1c73c41n10`, `dep-d49dd1hgbuqs73a5r9fg`) in `backend-deploy-check.json`, `frontend-deploy-check.json`, and `DEPLOYMENT_HEALTH.md`.
+- Re-ran smoke scripts: `python3 scripts/verify_deployment.py` (10/10 pass) and `bash scripts/run_smoke_tests.sh production` (backend pass, frontend 403/Cloudflare noted for manual verification).
+
+### Testing/TDD Notes
+- No new application code; supporting scripts re-run to confirm fixes (RED slug → GREEN slug).
+
+### Next Steps
+1. Perform manual frontend verification (browser screenshot) to close Cloudflare warning.
+2. Once frontend evidence is logged, start DEV-011 dev-story with RED tests.
+
+---## Session 2025-11-11D - Smoke Script Repair & Deploy Evidence Refresh
+
+**Status**: [GREEN] COMPLETE – Blog slug updated, deploy logs refreshed  
+**Duration**: ~30 min (Codex CLI)  
+**Priority**: P0 – Required to unblock W1 deployment evidence  
+**Progress Impact**: Platform confidence +1%
+
+### Achievements
+- Updated `scripts/verify_deployment.py` to target the live slug `pricing-strategy-for-new-product-launches-why-95-get-it-wrong-and-how-to-be-the-5`; reran script → 10/10 checks green.
+- Re-ran `scripts/run_smoke_tests.sh production` (backend health ✅, frontend still Cloudflare 403 – manual check required).
+- Pulled fresh Render deploy logs via API for backend (`srv-d3ii9qk9c44c73aqsli0`) and frontend (`srv-d3ihptbipnbc73e72ne0`) and saved them to `backend-deploy-check.json` / `frontend-deploy-check.json`.
+- Updated `docs/DEPLOYMENT-SESSION-SUMMARY.md` with the new smoke results + manual-check note.
+
+### Testing/TDD Notes
+- RED: failing slug check; GREEN: slug update verified via script run; REFACTOR: docs updated.
+
+### Next Steps
+1. Capture frontend manual verification (screenshot / browser check) to close the Cloudflare gap.
+2. Attach `/health` responses and deploy IDs to `DEPLOYMENT_HEALTH.md`.
+3. With W1 evidence complete, move into DEV-011 RED specs.
+
+---## Session 2025-11-10H - 100% Completion Plan + Phase 1 Sprint 1 Execution ✅
 
 **Status**: ✅ IN PROGRESS – Completion roadmap created, Render verified, test fixes in progress
 **Duration**: ~6 hours (autonomous execution)
@@ -122,6 +161,26 @@
 1. Analyst agent → `*workflow-init` (capture output, update workflow status)
 2. Execute W1 deploy evidence story (`deploy-proof` todo) once network access is available
 3. Proceed with backend/fronted/marketing stories under BMAD dev-story loops (DEV-011, DEV-012, DEV-016, MARK-006, MARK-002)
+
+---
+
+## Session 2025-11-12E - Workspace Navigation Alignment ✅
+
+**Status**: ✅ COMPLETE – Navigation pills now map to live routes with role-aware visibility  
+**Duration**: ~25 min (Codex CLI)  
+**Priority**: P1 – Required to unblock workspace UX tests before Sprint 1 backlog stories  
+**Progress Impact**: Frontend readiness +1% (navigation + regression coverage)
+
+### Achievements
+- Extracted workspace navigation config into `frontend/src/const.ts`, adding typed `WORKSPACE_NAV_ITEMS` (Dashboard, Deals, Billing, Podcast Studio, Admin, Master Admin) with explicit role matrices.
+- Updated `NavigationMenu.tsx` to consume the shared config, correct broken routes (`/dashboard`, `/deals`, `/dashboard/billing`, `/admin`, `/master-admin`, `/podcast-studio`), and display the canonical brand label via `APP_TITLE`.
+- Rebuilt `NavigationMenu.test.tsx` with MemoryRouter + entitlement fixtures to assert solo/growth/enterprise/admin visibility, nested route activation, and canonical hrefs; suite now provides 7 deterministic assertions.
+- Ran `npx vitest run src/components/layout/NavigationMenu.test.tsx` → **7/7 passing** (see CLI log).
+
+### Remaining Work / Follow-up
+1. Reintroduce dedicated Data Room / Valuation / Tasks nav entries once their top-level routes exist (tracked under DEV‑008/DEV‑011 stories).
+2. Fix the skipped transcript test in `src/tests/integration/PodcastStudioRouting.test.tsx` so the full Vitest matrix can run cleanly before Render redeploy.
+3. Continue W1 deployment-evidence refresh after BMAD workflow-init reset (still blocked in `bmm-workflow-status.md`).
 
 ---
 
@@ -2308,3 +2367,5 @@ render(
 **Next Action**: Begin Phase 2B - CreateDealModal integration tests
 
 ---
+
+
