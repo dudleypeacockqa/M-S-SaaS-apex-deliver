@@ -350,7 +350,8 @@ describe('FolderTree', () => {
     renderTree();
 
     await waitFor(() => {
-      expect(screen.queryByRole('button', { name: /expand playbooks/i })).not.toBeInTheDocument();
+      const toggleButton = screen.getByRole('button', { name: /expand playbooks/i });
+      expect(toggleButton).toHaveTextContent('−');
       expect(screen.getByText('Ops')).toBeInTheDocument();
     });
 
@@ -359,3 +360,4 @@ describe('FolderTree', () => {
     window.localStorage.removeItem(storageKey);
   });
 });
+
