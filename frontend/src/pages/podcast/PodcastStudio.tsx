@@ -20,6 +20,7 @@ import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal'
 import VideoUploadModal from '../../components/podcast/VideoUploadModal';
 import { YouTubePublishModal } from '../../components/podcast/YouTubePublishModal';
 import LiveStreamManager from '../../components/podcast/LiveStreamManager';
+import { EpisodeTranscriptPanel } from '../../components/podcast/EpisodeTranscriptPanel';
 import {
   getQuotaSummary,
   listEpisodes,
@@ -1039,70 +1040,19 @@ function EpisodeListItem({
               lockedDescription="Generate AI-powered transcripts when you upgrade."
               ctaLabel="Upgrade for transcripts"
             >
-              <div className="flex flex-col items-start gap-1">
-                {episode.transcript === null ? (
-                  <button
-                    type="button"
-                    onClick={handleTranscribe}
-                    disabled={transcribeMutation.isPending}
-                    className="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm leading-4 font-medium rounded-md text-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-70"
-                  >
-                    {transcribeMutation.isPending ? 'Transcribing…' : 'Transcribe audio'}
-                  </button>
-                ) : (
-                  <>
-                    <div className="flex flex-col gap-1 max-w-md">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500">Transcript ready</span>
-                        {episode.transcript_language && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                            {episode.transcript_language.toUpperCase()}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-700 line-clamp-2">
-                        {episode.transcript}
-                      </p>
-                      <div className="flex gap-2">
-                        <a
-                          href={`/api/podcasts/episodes/${episode.id}/transcript`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-indigo-600 hover:text-indigo-800 underline"
-                        >
-                          Download transcript (TXT)
-                        </a>
-                        <a
-                          href={`/api/podcasts/episodes/${episode.id}/transcript.srt`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-indigo-600 hover:text-indigo-800 underline"
-                        >
-                          Download transcript (SRT)
-                        </a>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={handleTranscribe}
-                        disabled={transcribeMutation.isPending}
-                        className="text-xs text-indigo-600 hover:text-indigo-800 underline text-left"
-                      >
-                        {transcribeMutation.isPending ? 'Regenerating…' : 'Regenerate Transcript'}
-                      </button>
-                    </div>
-                  </>
-                )}
-                {transcribeSuccessMessage && (
-                  <p className="text-xs text-emerald-600" role="status">
-                    {transcribeSuccessMessage}
-                  </p>
-                )}
-                {transcribeErrorMessage && (
-                  <p className="text-xs text-red-600" role="alert">
-                    {transcribeErrorMessage}
-                  </p>
-                )}
-              </div>
+              <EpisodeTranscriptPanel
+                episodeId={episode.id}
+                transcript={episode.transcript}
+                transcriptLanguage={episode.transcript_language}
+                isTranscribing={transcribeMutation.isPending}
+                onTranscribe={handleTranscribe}
+                successMessage={transcribeSuccessMessage ?? undefined}
+              />
+              {transcribeErrorMessage && (
+                <p className="text-xs text-red-600" role="alert">
+                  {transcribeErrorMessage}
+                </p>
+              )}
             </FeatureGate>
           {isVideoEpisode ? (
             <div className="flex flex-col items-end gap-2">

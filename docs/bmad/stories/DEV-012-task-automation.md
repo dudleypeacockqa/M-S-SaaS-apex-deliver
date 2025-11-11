@@ -6,9 +6,15 @@
 **Estimated Effort**: 18–22 hours (full-stack, TDD)
 **Actual Effort**: ~2 days
 **Methodology**: BMAD v6-alpha + Strict TDD (RED → GREEN → REFACTOR)
-**Status**: ✅ COMPLETE (2025-10-30 10:02 UTC) – All 13/13 frontend tests passing; 8/8 backend tests passing
+**Status**: 🚧 Reopened – Coverage expansion & Celery task regression in progress (Updated 2025-11-12 08:45 UTC)
 
 ---
+
+**Latest Update (2025-11-12 08:45 UTC)** – Coverage Boost & Regression Harness:
+- Added dedicated unit tests (`backend/tests/test_task_automation.py`) exercising all branches of `enqueue_manual_rule_run` including rule/template missing scenarios, success path, and exception handling.
+- Stubbed Celery `shared_task` decorator during tests to execute synchronously; coverage for `app/tasks/task_automation.py` now 100%.
+- Extended subscription edge-case suite (`backend/tests/test_subscription_service_edge_cases.py`) to cover invalid tiers, Stripe customer reuse, custom URLs, and cancellation proration—raising service coverage to 84%.
+- NEXT: add tests for subscription proration edge cases to push module over 85% and document results in BMAD tracker.
 
 **Final Completion Summary (2025-10-30 10:02 UTC)**:
 - ✅ **TaskBoard Component**: Fully implemented and tested with React Query, DnD, and polling

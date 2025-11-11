@@ -1,0 +1,39 @@
+project_name: "M&A Intelligence Platform (ApexDeliver)"
+user_description: |
+  Apex Deliver’s M&A Intelligence Platform is an enterprise SaaS workspace unifying deal sourcing,
+  diligence, valuation, collaboration, and revenue operations across the FastAPI backend (backend/app)
+  and React/Vite frontend (frontend/), with Clerk/Stripe identity-billing, PostgreSQL/Redis data
+  services, and BMAD v6 artefacts orchestrating planning and operations.
+field_type: brownfield
+project_type: software
+brainstorm_requested: false
+research_requested: false
+selected_track: enterprise
+product_brief_requested: false
+workflow_path_file: .bmad/bmm/workflows/workflow-status/paths/enterprise-brownfield.yaml
+workflow_items: |
+  # Prerequisite: Documentation
+  document-project: docs/index.md  # agent: analyst
+
+  # Phase 0: Discovery
+  brainstorm-project: optional  # agent: analyst
+  research: recommended  # agent: analyst
+  product-brief: optional  # agent: analyst
+
+  # Phase 1: Planning
+  prd: docs/PRD.md  # agent: pm
+  validate-prd: docs/planning/prd-validation.md  # agent: pm
+  create-design: docs/ux-design-specification.md  # agent: ux-designer
+  framework: optional  # agent: tea
+  ci: optional  # agent: tea
+
+  # Phase 2: Solutioning
+  create-architecture: docs/architecture.md  # agent: architect
+  create-security-architecture: optional  # agent: architect
+  create-devops-strategy: optional  # agent: architect
+  validate-architecture: optional  # agent: architect
+  solutioning-gate-check: docs/implementation-readiness-report-2025-11-10.md  # agent: architect
+
+  # Phase 3: Implementation
+  sprint-planning: docs/planning/sprint-planning-phase3.md  # agent: sm
+generated: 2025-11-11

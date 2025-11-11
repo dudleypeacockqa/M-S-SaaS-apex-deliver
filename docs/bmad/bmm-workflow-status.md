@@ -13,7 +13,7 @@ WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.y
 
 CURRENT_PHASE: 4-Implementation
 CURRENT_WORKFLOW: dev-story
-CURRENT_AGENT: devops
+CURRENT_AGENT: dev
 PHASE_1_COMPLETE: true
 PHASE_2_COMPLETE: true
 PHASE_3_COMPLETE: true
@@ -21,25 +21,25 @@ PHASE_4_COMPLETE: false
 
 ## Current Story Status
 
-STORY_ID: W1-2025-11-11A-Deploy-Evidence
-STORY_STATUS: COMPLETE
-STORY_RESULT: Backend/frontend deploy logs + smoke outputs captured; ready to scrub plaintext DB credential
+STORY_ID: W2-2025-11-11G-DEV011-Scenario-Exports
+STORY_STATUS: READY
+STORY_RESULT: N/A (story not started)
 BLOCKERS: None
 
 ## Next Action
 
-NEXT_ACTION: Remove plaintext DSN from `fix_production_alembic.py`, rotate DB credential per env reference, document rotation
-NEXT_COMMAND: Update helper script + env docs, log in deployment checklist
-NEXT_AGENT: devops
-PRIORITY: P0
-RATIONALE: Secret hygiene needed before moving to W2 DEV-011 work
+NEXT_ACTION: Begin DEV-011 backend coverage sprint focusing on valuation export/scenario logic (write RED tests in `tests/test_valuation_service.py` / `tests/test_valuation_api.py`)
+NEXT_COMMAND: Run pytest with new RED cases, then implement fixes
+NEXT_AGENT: dev
+PRIORITY: P1
+RATIONALE: Move from P1 coverage plan into DEV-011 feature completion now that deployments are verified
 
 ## Completed This Session
 
 SESSION_ID: Session-2025-11-11F
 COMPLETED_WORK:
-- Captured curl output for backend /health and frontend HEAD request
-- Logged smoke evidence in deployment docs
+- Render smoke evidence captured for backend/frontend
+- Deploy documentation updated; W1 story closed
 
 FILES MODIFIED:
 - docs/DEPLOYMENT_HEALTH.md
@@ -49,9 +49,9 @@ FILES MODIFIED:
 - docs/bmad/bmm-workflow-status.md (this file)
 
 TEST_RESULTS:
-- Backend curl /health → 200, payload recorded
-- Frontend curl -I root → 200, headers recorded
+- Backend /health: 200 (curl)
+- Frontend HEAD /: 200 (curl -I)
 
 ---
 
-_Last Updated: 2025-11-11T06:35:00Z_
+_Last Updated: 2025-11-11T06:40:00Z_

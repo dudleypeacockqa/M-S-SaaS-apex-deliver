@@ -39,3 +39,11 @@ Backend health check log snippet:
 - Service available at https://ma-saas-backend.onrender.com
 - Continuous /health polling returned 200s between 05:58:25Z and 05:59:20Z
 
+
+Smoke checks (2025-11-11 06:32Z):
+- Backend curl https://ma-saas-backend.onrender.com/health → {"status":"healthy",...}
+- Frontend curl -I https://100daysandbeyond.com → 200 OK (Cloudflare)
+
+## Frontend Manual Verification (2025-11-11)
+- Cloudflare 403 blocks automated check; manual browser verification is pending. Capture screenshot + note once available.
+

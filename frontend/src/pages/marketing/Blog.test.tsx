@@ -3,7 +3,7 @@
  * Following TDD RED → GREEN → REFACTOR methodology
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import Blog from './Blog';
 import { BrowserRouter} from 'react-router-dom';
 
@@ -76,10 +76,117 @@ describe('Blog Listing Page', () => {
       });
     });
 
-    it('should show search bar', () => {
+    it('should show search bar', async () => {
       renderWithRouter(<Blog />);
-      const searchInput = screen.getByPlaceholderText(/search.*articles/i);
+      const searchInput = await screen.findByPlaceholderText(/search.*articles/i);
       expect(searchInput).toBeInTheDocument();
+    });
+  });
+
+  describe('Interactions', () => {
+    it('should request posts for selected category', async () => {
+      (global.fetch as any)
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockBlogPosts,
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => [mockBlogPosts[1]],
+        });
+
+      renderWithRouter(<Blog />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Test Blog Post 1')).toBeInTheDocument();
+      });
+
+      const fpACategory = await screen.findByRole('button', { name: 'FP&A' });
+      fireEvent.click(fpACategory);
+
+      await waitFor(() => {
+        expect((global.fetch as any).mock.calls.length).toBe(2);
+      });
+
+      const secondCallUrl = (global.fetch as any).mock.calls[1][0];
+      expect(secondCallUrl).toContain('category=FP%26A');
+      expect(screen.getByText('FP&A Best Practices')).toBeInTheDocument();
+    });
+
+    it('should include search term in request query', async () => {
+      renderWithRouter(<Blog />);
+
+      const searchInput = await screen.findByPlaceholderText(/search.*articles/i);
+      fireEvent.change(searchInput, { target: { value: 'Best' } });
+
+      await waitFor(() => {
+        expect((global.fetch as any).mock.calls.length).toBeGreaterThanOrEqual(2);
+      });
+
+      const latestCallUrl = (global.fetch as any).mock.calls.at(-1)[0];
+      expect(latestCallUrl).toContain('search=Best');
+    });
+
+    it('should show loading indicator while fetching', async () => {
+      let resolveFetch: (value: any) => void;
+      (global.fetch as any).mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveFetch = resolve;
+        })
+      );
+
+      renderWithRouter(<Blog />);
+
+      expect(screen.getByText(/loading posts/i)).toBeInTheDocument();
+
+      resolveFetch!({
+        ok: true,
+        json: async () => mockBlogPosts,
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText('Test Blog Post 1')).toBeInTheDocument();
+      });
+    });
+
+    it('should render error banner when fetch fails', async () => {
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: false,
+        statusText: 'Internal Server Error',
+      });
+
+      renderWithRouter(<Blog />);
+
+      const alert = await screen.findByRole('alert');
+      expect(alert).toHaveTextContent(/error loading posts/i);
+      expect(alert).toHaveTextContent('Internal Server Error');
+    });
+
+    it('should clear filters and search when clicking Clear Filters', async () => {
+      renderWithRouter(<Blog />);
+
+      const searchInput = await screen.findByPlaceholderText(/search.*articles/i);
+      await act(async () => {
+        fireEvent.change(searchInput, { target: { value: 'FP&A' } });
+      });
+
+      const fpACategory = await screen.findByRole('button', { name: 'FP&A' });
+      await act(async () => {
+        fireEvent.click(fpACategory);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/clear filters/i)).toBeInTheDocument();
+      });
+
+      await act(async () => {
+        screen.getByText(/clear filters/i).click();
+      });
+
+      await waitFor(() => {
+        expect((searchInput as HTMLInputElement).value).toBe('');
+        expect(fpACategory).toHaveAttribute('aria-pressed', 'false');
+      });
     });
   });
 });

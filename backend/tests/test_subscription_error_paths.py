@@ -480,13 +480,14 @@ def test_stripe_webhook_routes_events(
 
     monkeypatch.setattr(stripe.Webhook, "construct_event", fake_construct_event)
 
-    response = client.post(
-        "/api/billing/webhooks/stripe",
-        json={"payload": True},
-        headers={"stripe-signature": "sig_test"},
-    )
-
-    app.dependency_overrides.pop(get_db, None)
+    try:
+        response = client.post(
+            "/api/billing/webhooks/stripe",
+            json={"payload": True},
+            headers={"stripe-signature": "sig_test"},
+        )
+    finally:
+        app.dependency_overrides.pop(get_db, None)
 
     assert response.status_code == 200
     assert called["handler"] == handler_name

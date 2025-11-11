@@ -5,13 +5,13 @@
 
 ---
 
-## Current Delivery Snapshot (2025-11-10 20:05 UTC)
-- **Backend tests**: 53 targeted subscription tests (pytest tests/test_billing_endpoints.py tests/test_subscription_error_paths.py tests/test_subscription_service_edge_cases.py --cov=app.api.routes.subscriptions --cov=app.services.subscription_service --cov-report=term-missing) — 49 pass / 4 skip, routes 94% coverage, service 84% coverage. Full suite (681 pass / 74 skip) last executed 2025-11-10B; rerun after Sprint 1B cleanup.
-- **Frontend tests**: Targeted valuations/podcast suites green; full `npm run test -- --runInBand --coverage` still pending until DEV-008/016/018 land.
-- **Deployment**: ✅ Backend `srv-d3ii9qk9c44c73aqsli0` live on deploy `dep-d49430euk2gs73es0cpg` (commit `79a07c5`, API-triggered 19:48Z). ✅ Frontend `srv-d3ihptbipnbc73e72ne0` live on deploy `dep-d4944ochg0os738k2sc0` (commit `be33237`, API-triggered 19:52Z). Health endpoints return 200; evidence recorded in `latest-deploy*.json` + Session 2025-11-10H2.
-- **Git state**: `HEAD` `61edfc8 docs(readme): add prominent database recovery alert to main README`; local branch ahead of origin by 3 commits with doc + migration helper edits in progress.
-- **Migrations**: ✅ `alembic upgrade head` executed directly against Render Postgres (Session 2025-11-10G) — single head `9a3aba324f7f`.
-- **BMAD artefacts**: Tracker + workflow updated through Session 2025-11-10I; completion plan refreshed in this file.
+## Current Delivery Snapshot (2025-11-12 00:10 UTC)
+- **Backend tests**: Full pytest run (681 pass / 74 skip) last executed 2025-11-10; latest targeted subscription/billing suite (26 pass / 4 skip) executed directly against Render Postgres with 79%/59% coverage.
+- **Frontend tests**: Only targeted valuation/podcast suites are green; full npm run test -- --runInBand --coverage still outstanding until DEV-008/016/018 complete.
+- **Deployment**: Backend service srv-d3ii9qk9c44c73aqsli0 remains on deploy dep-d492u7ag0ims73e3mkc0 (commit 64ad4fb5). Frontend service srv-d3ihptbipnbc73e72ne0 deploy dep-d492tq2g0ims73e3miig is stuck build_in_progress. Health endpoints return 200, but redeploy logs + smoke evidence must be refreshed.
+- **Git state**: HEAD a027963 (docs/bmad: add Session 2025-11-11C - Phase 2 Complete Summary) matches origin; worktree still very dirty (>.9k tracked files) across BMAD manifests, migrations, podcast tests, document/deal-matching UIs, and deployment notes.
+- **Migrations**: Alembic upgrade head executed 2025-11-10 21:45 UTC against Render Postgres; chain currently at dc2c0f69c1b1. Re-run required after the next deploy.
+- **BMAD artefacts**: Plan updated in this file; tracker refreshed through Session 2025-11-10K; workflow file still reflects earlier phase summary because npx bmad-method workflow-init is unavailable in this shell.
 
 ### Dirty Tree Mapping (2025-11-12 00:00 UTC)
 - `.bmad/**` manifests + docs - BMAD v6 install plus session logs still uncommitted upstream.
@@ -54,14 +54,15 @@
 - **Actions**:
   - Finish phases 3-10 with Vitest + Lighthouse evidence; update marketing docs/asset inventory.
   - Align Render preview assets and capture screenshots for release notes.
-  - **TDD cadence**: Continue component-by-component RED->GREEN loops; archive Lighthouse + Vitest outputs per phase under `docs/marketing/`.
+  - **TDD cadence**: Continue component-by-component RED->GREEN loops; archive Lighthouse + Vitest outputs per phase under docs/marketing/.
 
-- **Status**: Backend/frontend redeploys verified (deploys dep-d49430euk2gs73es0cpg & dep-d4944ochg0os738k2sc0); smoke artefacts updated 2025-11-10 20:05 UTC. Need to keep secrets + evidence current after each sprint.
+### 5. Operations & Deployment Hardening (P0/P1)
+- **Status**: Backend still on deploy dep-d492u7ag0ims73e3mkc0 (64ad4fb5) and frontend deploy dep-d492tq2g0ims73e3miig remains build_in_progress; smoke artefacts updated 2025-11-10 21:45 UTC with Postgres verification but redeploy logs still missing.
 - **Actions**:
-  - Refresh `.env` secrets, rerun `scripts/run_smoke_tests.sh production`, and capture outputs in `DEPLOYMENT_HEALTH.md` + `PRODUCTION_DEPLOYMENT_CHECKLIST.md`.
+  - Refresh `.env` secrets, rerun `scripts/run_smoke_tests.sh production`, and capture outputs in DEPLOYMENT_HEALTH.md + PRODUCTION_DEPLOYMENT_CHECKLIST.md after each deploy.
   - Apply outstanding migrations in staging, confirm worker configs, update monitoring alerts.
   - Prepare release notes/PR summary once functional work converges.
-  - **TDD cadence**: Treat smoke + migration verification scripts as test harnesses-run them RED first (expected failures) before attempting redeploy.
+  - **TDD cadence**: Treat smoke + migration verification scripts as test harnesses—run them RED first (expected failures) before attempting redeploy.
 
 ### 6. Final QA, Documentation, and Handover (P0)
 - **Status**: Blocked by DEV-008/DEV-016/DEV-018 completion.

@@ -108,7 +108,7 @@ const BlogListingPage: React.FC = () => {
           params.append('category', selectedCategory);
         }
         if (searchTerm) {
-          params.append('search', searchTerm);
+          params.append('search', searchTerm.trim());
         }
         
         const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -151,7 +151,7 @@ const BlogListingPage: React.FC = () => {
 
         {/* Search and Filter Section */}
         <section className="mb-12">
-          <div className="flex flex-col md:flex-row gap-4 mb-8 max-w-4xl mx-auto">
+          <div className="flex flex-col md:flex-row gap-4 mb-4 max-w-4xl mx-auto">
             {/* Search Bar */}
             <div className="relative flex-grow">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -165,13 +165,28 @@ const BlogListingPage: React.FC = () => {
               />
             </div>
           </div>
+          {(selectedCategory !== 'All Posts' || searchTerm.trim().length > 0) && (
+            <div className="flex justify-end max-w-4xl mx-auto mb-6">
+              <Button
+                type="button"
+                variant="ghost"
+                className="text-primary hover:bg-indigo-50"
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedCategory('All Posts');
+                }}
+              >
+                Clear Filters
+              </Button>
+            </div>
+          )}
 
           {/* Category Filters */}
           <div className="flex flex-wrap justify-center gap-2 max-w-6xl mx-auto" role="group" aria-label="Blog Categories">
             {categories.map((category) => (
               <Button
                 key={category}
-                variant={selectedCategory === category ? 'default' : 'outline'}
+                variant={selectedCategory === category ? 'primary' : 'outline'}
                 onClick={() => setSelectedCategory(category)}
                 className={`
                   font-semibold transition-all duration-200
@@ -198,7 +213,7 @@ const BlogListingPage: React.FC = () => {
           )}
 
           {error && (
-            <div className="text-center py-16 border border-red-300 rounded-lg bg-red-50">
+            <div className="text-center py-16 border border-red-300 rounded-lg bg-red-50" role="alert">
               <h2 className="text-2xl font-semibold text-red-700">Error Loading Posts</h2>
               <p className="text-red-600 mt-2">{error}</p>
               <Button

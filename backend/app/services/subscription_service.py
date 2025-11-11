@@ -325,7 +325,7 @@ def handle_subscription_updated(event_data: dict, db: Session | AsyncSession) ->
     if not subscription:
         return
 
-    subscription.status = SubscriptionStatus(subscription_data["status"].upper())
+    subscription.status = SubscriptionStatus(subscription_data["status"])
     subscription.current_period_start = datetime.fromtimestamp(
         subscription_data["current_period_start"], tz=timezone.utc
     )
