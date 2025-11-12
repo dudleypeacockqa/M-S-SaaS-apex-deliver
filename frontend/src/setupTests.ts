@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom'
-import './test/shims/polyfills'
-import { beforeAll, afterAll, beforeEach, vi, expect } from 'vitest'
+import { beforeAll, afterAll, beforeEach, vi, expect} from 'vitest'
 import { render } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React, { ReactElement } from 'react'
