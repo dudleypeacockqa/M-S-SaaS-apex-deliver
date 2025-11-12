@@ -162,12 +162,56 @@ const PipelineSummaryWidget: React.FC<PipelineWidgetProps> = ({ dealsData, deals
         )}
 
         {!isLoading && !error && pipelineData.length === 0 && (
-          <div className="text-center py-8 text-gray-600">
-            <p className="text-lg font-medium mb-2">No deals yet</p>
-            <p className="text-sm mb-4">Create your first deal to get started</p>
-            <Link to="/deals/new">
-              <Button variant="primary" btnSize="sm">Create Deal</Button>
-            </Link>
+          <div className="py-8 px-6">
+            {/* Welcome Guide for First-Time Users */}
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Welcome to M&A Intelligence Platform! 🚀</h3>
+              <p className="text-gray-600">Let's get you started with your first deal to unlock all features.</p>
+            </div>
+
+            {/* Feature Highlights */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-left">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="text-blue-600 font-semibold mb-2">💰 Valuation Suite</div>
+                <p className="text-sm text-gray-700">DCF, Comparables, Precedent Transactions & Sensitivity Analysis</p>
+              </div>
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                <div className="text-purple-600 font-semibold mb-2">📈 Financial Intelligence</div>
+                <p className="text-sm text-gray-700">47+ financial ratios with AI-generated insights (GPT-4)</p>
+              </div>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="text-green-600 font-semibold mb-2">📁 Document Room</div>
+                <p className="text-sm text-gray-700">Secure file storage with permissions & folder organization</p>
+              </div>
+            </div>
+
+            {/* Quick Start Steps */}
+            <div className="bg-gradient-to-r from-blue-50 to-teal-50 border-2 border-blue-300 rounded-lg p-6 mb-6">
+              <h4 className="font-bold text-gray-900 mb-3">Quick Start (2 minutes):</h4>
+              <ol className="space-y-2 text-sm text-gray-700 list-decimal list-inside">
+                <li><strong>Create your first deal</strong> - Click the button below to get started</li>
+                <li><strong>Access FP&A tools</strong> - Open your deal and navigate to "Valuation" or "Financial" tabs</li>
+                <li><strong>Upload documents</strong> - Use the "Documents" tab to securely store deal files</li>
+              </ol>
+              <p className="text-xs text-gray-600 mt-3 italic">
+                💡 Pro Tip: All advanced features (Valuation Suite, Financial Dashboard) are accessed through deals!
+              </p>
+            </div>
+
+            {/* CTA Button */}
+            <div className="text-center">
+              <Link to="/deals/new">
+                <Button variant="primary" btnSize="md" className="px-8 py-3">
+                  Create Your First Deal
+                </Button>
+              </Link>
+              <p className="text-xs text-gray-500 mt-3">
+                Need help? Check the{' '}
+                <a href="/docs/USER-QUICK-START.md" target="_blank" className="text-blue-600 hover:underline">
+                  Quick Start Guide
+                </a>
+              </p>
+            </div>
           </div>
         )}
 
