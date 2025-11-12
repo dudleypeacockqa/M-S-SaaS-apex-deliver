@@ -5,6 +5,8 @@
 
 set -e  # Exit on any error
 
+RUN_MIGRATIONS="${RENDER_PRESTART_RUN_MIGRATIONS:-0}"
+
 normalize_database_url() {
   if [ -z "${DATABASE_URL:-}" ]; then
     return
@@ -129,17 +131,22 @@ if [ -f .render_database_url ]; then
   rm .render_database_url
 fi
 
+echo "========================================="
+echo "Render Prestart Script"
+echo "========================================="
+echo "Current directory: $(pwd)"
+echo "Python version: $(python3 --version 2>/dev/null || python --version 2>/dev/null || echo 'python unavailable')"
+echo "Target DB Host: ${DATABASE_URL}" | sed -E 's#://[^@]*@#://***@#'
+
+if [ "$RUN_MIGRATIONS" != "1" ]; then
+  echo "[prestart] Skipping migrations (handled inside backend/entrypoint.sh)."
+  echo "[prestart] Set RENDER_PRESTART_RUN_MIGRATIONS=1 to run prestart migrations."
+  exit 0
+fi
+
 run_with_retry check_db_connection
 
 echo "========================================="
-echo "Render Prestart Script - Database Migrations"
-echo "========================================="
-echo "Current directory: $(pwd)"
-echo "Python version: $(python --version)"
-# Mask credentials if present so logs don't expose secrets
-echo "Target DB Host: ${DATABASE_URL}" | sed -E 's#://[^@]*@#://***@#'
-echo ""
-
 # Navigate to backend directory where alembic.ini is located
 echo "Navigating to backend directory..."
 cd backend
