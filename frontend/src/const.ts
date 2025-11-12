@@ -19,7 +19,8 @@ export interface WorkspaceNavigationItem {
   exact?: boolean
 }
 
-export const WORKSPACE_NAV_ITEMS: WorkspaceNavigationItem[] = [
+// Base navigation items (always visible)
+const baseNavItems: WorkspaceNavigationItem[] = [
   {
     id: 'dashboard',
     label: 'Dashboard',
@@ -52,12 +53,21 @@ export const WORKSPACE_NAV_ITEMS: WorkspaceNavigationItem[] = [
     path: '/admin',
     roles: ['admin'],
   },
-  {
-    id: 'master-admin',
-    label: 'Master Admin',
-    path: '/master-admin',
-    roles: ['admin'],
-  },
+]
+
+// Master Admin Portal (feature-flagged - backend API not yet deployed)
+const masterAdminNavItem: WorkspaceNavigationItem = {
+  id: 'master-admin',
+  label: 'Master Admin',
+  path: '/master-admin',
+  roles: ['admin'],
+}
+
+// Conditionally include Master Admin Portal based on feature flag
+export const WORKSPACE_NAV_ITEMS: WorkspaceNavigationItem[] = [
+  ...baseNavItems,
+  // Only show Master Admin Portal if backend API is deployed
+  ...(import.meta.env.VITE_ENABLE_MASTER_ADMIN === 'true' ? [masterAdminNavItem] : []),
 ]
 
 export const getLoginUrl = () => {

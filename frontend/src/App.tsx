@@ -74,6 +74,7 @@ const PrivacyPolicy = lazyNamed(() => import("./pages/marketing/legal/PrivacyPol
 const CookiePolicy = lazyNamed(() => import("./pages/marketing/legal/CookiePolicy"), "CookiePolicy")
 const DocumentEditor = lazyNamed(() => import("./pages/documents/DocumentEditor"), "DocumentEditor")
 const DocumentRoomPage = lazyNamed(() => import("./pages/deals/DocumentRoomPage"), "DocumentRoomPage")
+const FeatureNotAvailable = lazyNamed(() => import("./pages/FeatureNotAvailable"), "FeatureNotAvailable")
 const MasterAdminDashboard = lazyNamed(() => import("./pages/master-admin/MasterAdminDashboard"), "MasterAdminDashboard")
 const ActivityTracker = lazyNamed(() => import("./pages/master-admin/ActivityTracker"), "ActivityTracker")
 const ProspectPipeline = lazyNamed(() => import("./pages/master-admin/ProspectPipeline"), "ProspectPipeline")
@@ -81,6 +82,17 @@ const CampaignManager = lazyNamed(() => import("./pages/master-admin/CampaignMan
 const ContentStudio = lazyNamed(() => import("./pages/master-admin/ContentStudio"), "ContentStudio")
 const LeadCapture = lazyNamed(() => import("./pages/master-admin/LeadCapture"), "LeadCapture")
 const SalesCollateral = lazyNamed(() => import("./pages/master-admin/SalesCollateral"), "SalesCollateral")
+
+// Feature flag check for Master Admin Portal
+const isMasterAdminEnabled = import.meta.env.VITE_ENABLE_MASTER_ADMIN === 'true'
+
+// Master Admin route wrapper - shows "Not Available" if feature disabled
+const MasterAdminRoute = ({ children }: { children: React.ReactElement }) => {
+  if (!isMasterAdminEnabled) {
+    return <FeatureNotAvailable featureName="Master Admin Portal" message="The Master Admin Portal is currently not available. This feature is being deployed in a future update." />
+  }
+  return children
+}
 
 const DashboardRoute = () => {
   return (
@@ -149,14 +161,14 @@ export const AppRoutes = () => {
         <Route path="admin/organizations" element={<SignedIn><OrganizationManagement /></SignedIn>} />
         <Route path="admin/system" element={<SignedIn><SystemHealth /></SignedIn>} />
 
-        {/* Master Admin Portal Routes */}
-        <Route path="master-admin" element={<SignedIn><MasterAdminDashboard /></SignedIn>} />
-        <Route path="master-admin/activity" element={<SignedIn><ActivityTracker /></SignedIn>} />
-        <Route path="master-admin/prospects" element={<SignedIn><ProspectPipeline /></SignedIn>} />
-        <Route path="master-admin/campaigns" element={<SignedIn><CampaignManager /></SignedIn>} />
-        <Route path="master-admin/content" element={<SignedIn><ContentStudio /></SignedIn>} />
-        <Route path="master-admin/leads" element={<SignedIn><LeadCapture /></SignedIn>} />
-        <Route path="master-admin/collateral" element={<SignedIn><SalesCollateral /></SignedIn>} />
+        {/* Master Admin Portal Routes (Feature-Flagged) */}
+        <Route path="master-admin" element={<SignedIn><MasterAdminRoute><MasterAdminDashboard /></MasterAdminRoute></SignedIn>} />
+        <Route path="master-admin/activity" element={<SignedIn><MasterAdminRoute><ActivityTracker /></MasterAdminRoute></SignedIn>} />
+        <Route path="master-admin/prospects" element={<SignedIn><MasterAdminRoute><ProspectPipeline /></MasterAdminRoute></SignedIn>} />
+        <Route path="master-admin/campaigns" element={<SignedIn><MasterAdminRoute><CampaignManager /></MasterAdminRoute></SignedIn>} />
+        <Route path="master-admin/content" element={<SignedIn><MasterAdminRoute><ContentStudio /></MasterAdminRoute></SignedIn>} />
+        <Route path="master-admin/leads" element={<SignedIn><MasterAdminRoute><LeadCapture /></MasterAdminRoute></SignedIn>} />
+        <Route path="master-admin/collateral" element={<SignedIn><MasterAdminRoute><SalesCollateral /></MasterAdminRoute></SignedIn>} />
 
         {/* Deal Routes */}
         <Route path="deals" element={<SignedIn><DealPipeline /></SignedIn>} />

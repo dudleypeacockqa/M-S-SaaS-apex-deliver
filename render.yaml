@@ -38,3 +38,5 @@ services:
         value: https://ma-saas-backend.onrender.com
       - key: VITE_CLERK_PUBLISHABLE_KEY
         sync: false
+      - key: VITE_ENABLE_MASTER_ADMIN
+        value: false
