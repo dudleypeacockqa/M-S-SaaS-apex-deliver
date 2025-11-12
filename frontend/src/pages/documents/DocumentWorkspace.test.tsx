@@ -11,6 +11,7 @@ const startUploadMock = vi.fn()
 const clearQueueMock = vi.fn()
 const questionPanelSpy = vi.fn()
 const accessLogDrawerSpy = vi.fn()
+const shareLinkModalSpy = vi.fn()
 
 const uploadHookState = {
   isUploading: false,
@@ -109,6 +110,21 @@ vi.mock('../../components/documents/AccessLogDrawer', () => ({
   },
 }))
 
+vi.mock('../../components/documents/ShareLinkModal', () => ({
+  ShareLinkModal: (props: any) => {
+    shareLinkModalSpy(props)
+    if (!props.isOpen) {
+      return null
+    }
+    return (
+      <div data-testid="mock-share-modal">
+        share link modal for {props.documentId}
+        <button onClick={props.onClose}>close-share-modal</button>
+      </div>
+    )
+  },
+}))
+
 vi.mock('../../hooks/useDocumentUploads', () => ({
   useDocumentUploads: () => ({
     ...uploadHookState,
@@ -150,6 +166,7 @@ describe('DocumentWorkspace', () => {
     documentApiMocks.bulkArchiveDocuments.mockReset()
     documentApiMocks.restoreArchivedDocuments.mockReset()
     accessLogDrawerSpy.mockClear()
+    shareLinkModalSpy.mockClear()
   })
 
   afterEach(() => {
@@ -232,6 +249,26 @@ describe('DocumentWorkspace', () => {
     )
   })
 
+  it('opens share link modal when share is requested', () => {
+    renderWorkspace()
+
+    const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+    act(() => {
+      documentListProps.onShareDocument?.({ id: 'doc-share', name: 'Share.pdf' })
+    })
+
+    expect(shareLinkModalSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ isOpen: true, documentId: 'doc-share' })
+    )
+
+    const closeButton = screen.getByText('close-share-modal')
+    fireEvent.click(closeButton)
+
+    expect(shareLinkModalSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ isOpen: false })
+    )
+  })
+
   it('opens access log drawer when document activity is requested', () => {
     renderWorkspace()
 
@@ -250,6 +287,31 @@ describe('DocumentWorkspace', () => {
     expect(accessLogDrawerSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({ isOpen: false })
     )
+  })
+
+  it('opens the question panel when DocumentList requests Q&A view', async () => {
+    renderWorkspace()
+
+    const lastCall = documentListSpy.mock.calls.at(-1)?.[0]
+    expect(lastCall).toBeTruthy()
+
+    act(() => {
+      lastCall.onOpenQuestions?.({ id: 'doc-qa', name: 'Doc QA' })
+    })
+
+    expect(questionPanelSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ document: expect.objectContaining({ id: 'doc-qa' }) })
+    )
+    expect(screen.getByTestId('mock-question-panel')).toHaveTextContent('doc-qa')
+
+    const closeButton = screen.getByText('close-question-panel')
+    act(() => {
+      fireEvent.click(closeButton)
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('mock-question-panel')).not.toBeInTheDocument()
+    })
   })
 
   // RED SPEC: FolderTree Search Functionality

@@ -8,6 +8,7 @@ import BulkMoveModal from '../../components/documents/BulkMoveModal'
 import BulkArchiveModal from '../../components/documents/BulkArchiveModal'
 import { DocumentQuestionsPanel } from '../../components/documents/DocumentQuestionsPanel'
 import { AccessLogDrawer } from '../../components/documents/AccessLogDrawer'
+import { ShareLinkModal } from '../../components/documents/ShareLinkModal'
 import type { Document } from '../../services/api/documents'
 import { useDocumentUploads } from '../../hooks/useDocumentUploads'
 import {
@@ -68,6 +69,10 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
   const [resetSelectionSignal, setResetSelectionSignal] = useState(0)
   const [questionPanelDocument, setQuestionPanelDocument] = useState<Document | null>(null)
   const [accessLogState, setAccessLogState] = useState<{ document: Document | null; isOpen: boolean }>({
+    document: null,
+    isOpen: false,
+  })
+  const [shareModalState, setShareModalState] = useState<{ document: Document | null; isOpen: boolean }>({
     document: null,
     isOpen: false,
   })
@@ -211,10 +216,15 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
     []
   )
 
+  const handleShareDocument = useCallback((document: Document) => {
+    setShareModalState({ document, isOpen: true })
+  }, [])
+
   const handleBulkShare = useCallback(
     async (documents: Document[]) => {
-      // TODO: Show bulk share modal
-      console.log('[Bulk Share]', documents)
+      if (documents.length > 0) {
+        setShareModalState({ document: documents[0], isOpen: true })
+      }
     },
     []
   )
@@ -347,6 +357,10 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
     setAccessLogState({ document: null, isOpen: false })
   }, [])
 
+  const closeShareModal = useCallback(() => {
+    setShareModalState({ document: null, isOpen: false })
+  }, [])
+
   return (
     <div
       data-testid="workspace-layout"
@@ -423,6 +437,7 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
           onBulkDelete={handleBulkDelete}
           onBulkShare={handleBulkShare}
           onBulkArchive={handleBulkArchive}
+          onShareDocument={handleShareDocument}
           onOpenQuestions={handleOpenQuestions}
           onViewAccessLogs={handleViewAccessLogs}
           resetSelectionSignal={resetSelectionSignal}
@@ -472,6 +487,13 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
         documentName={accessLogState.document?.name}
         isOpen={accessLogState.isOpen}
         onClose={closeAccessLogs}
+      />
+
+      <ShareLinkModal
+        documentId={shareModalState.document?.id ?? ''}
+        documentName={shareModalState.document?.name}
+        isOpen={shareModalState.isOpen && Boolean(shareModalState.document)}
+        onClose={closeShareModal}
       />
 
       {questionPanelDocument && (

@@ -59,6 +59,60 @@ interface PermissionRecord {
   createdAt: string
 }
 
+
+interface PodcastEpisodeRecord {
+  id: string
+  title: string
+  description: string | null
+  episode_number: number
+  season_number: number
+  audio_file_url: string
+  video_file_url: string | null
+  thumbnail_url?: string | null
+  status: 'draft' | 'published' | 'archived'
+  created_by: string
+  organization_id: string
+  created_at: string
+  updated_at: string | null
+  published_at: string | null
+  show_notes: string | null
+  transcript: string | null
+  transcript_language: string | null
+  duration_seconds: number | null
+  youtube_video_id: string | null
+}
+
+interface PodcastFeatureRecord {
+  feature: string
+  tier: string
+  tier_label: string
+  has_access: boolean
+  required_tier: string
+  required_tier_label: string
+  upgrade_required: boolean
+  upgrade_message: string | null
+  upgrade_cta_url: string | null
+}
+
+interface PodcastQuotaRecord {
+  tier: string
+  tier_label: string
+  limit: number | null
+  remaining: number
+  used: number
+  is_unlimited: boolean
+  period: string
+  period_label: string | null
+  period_start: string | null
+  period_end: string | null
+  quota_state: string
+  warning_status: string | null
+  warning_message: string | null
+  upgrade_required: boolean
+  upgrade_message: string | null
+  upgrade_cta_url: string | null
+}
+
 interface BlogPostRecord {
   id: number
   title: string
@@ -808,6 +862,152 @@ export const documentHandlers = [
   bulkDeleteDocumentsHandler,
 ]
 
+
+const defaultPodcastEpisode = (): PodcastEpisodeRecord => ({
+  id: 'ep-default',
+  title: 'Investor Q&A',
+  description: 'Sample investor update',
+  episode_number: 1,
+  season_number: 1,
+  audio_file_url: 'https://cdn.example.com/audio.mp3',
+  video_file_url: null,
+  status: 'published',
+  created_by: 'user_default',
+  organization_id: 'org_default',
+  created_at: new Date('2025-11-01T12:00:00Z').toISOString(),
+  updated_at: null,
+  published_at: new Date('2025-11-02T12:00:00Z').toISOString(),
+  show_notes: 'Episode notes',
+  transcript: null,
+  transcript_language: null,
+  duration_seconds: 420,
+  youtube_video_id: null,
+})
+
+const defaultFeatureRecord = (feature: string): PodcastFeatureRecord => ({
+  feature,
+  tier: 'professional',
+  tier_label: 'Professional',
+  has_access: true,
+  required_tier: 'professional',
+  required_tier_label: 'Professional',
+  upgrade_required: false,
+  upgrade_message: null,
+  upgrade_cta_url: null,
+})
+
+const defaultQuotaRecord = (): PodcastQuotaRecord => ({
+  tier: 'professional',
+  tier_label: 'Professional',
+  limit: 10,
+  remaining: 8,
+  used: 2,
+  is_unlimited: false,
+  period: 'monthly',
+  period_label: 'Current Month',
+  period_start: new Date('2025-11-01T00:00:00Z').toISOString(),
+  period_end: new Date('2025-11-30T23:59:59Z').toISOString(),
+  quota_state: 'normal',
+  warning_status: null,
+  warning_message: null,
+  upgrade_required: false,
+  upgrade_message: null,
+  upgrade_cta_url: null,
+})
+
+let podcastEpisodes: PodcastEpisodeRecord[] = [defaultPodcastEpisode()]
+let podcastQuotaState: PodcastQuotaRecord = defaultQuotaRecord()
+const podcastFeatureStore = new Map<string, PodcastFeatureRecord>()
+
+const ensurePodcastFeature = (feature: string) => {
+  if (!podcastFeatureStore.has(feature)) {
+    podcastFeatureStore.set(feature, defaultFeatureRecord(feature))
+  }
+  return podcastFeatureStore.get(feature)!
+}
+
+export const setPodcastFeatureAccess = (feature: string, overrides: Partial<PodcastFeatureRecord>) => {
+  const current = ensurePodcastFeature(feature)
+  podcastFeatureStore.set(feature, {
+    ...current,
+    ...overrides,
+    feature,
+    tier: overrides.tier ?? current.tier,
+    tier_label: overrides.tier_label ?? overrides.tier ?? current.tier_label,
+    required_tier: overrides.required_tier ?? current.required_tier,
+    required_tier_label:
+      overrides.required_tier_label ?? overrides.required_tier ?? current.required_tier_label,
+  })
+}
+
+export const setPodcastQuota = (overrides: Partial<PodcastQuotaRecord>) => {
+  podcastQuotaState = { ...podcastQuotaState, ...overrides }
+}
+
+export const setPodcastEpisodes = (episodes: PodcastEpisodeRecord[]) => {
+  podcastEpisodes = episodes.map((episode) => ({ ...episode }))
+}
+
+export const resetPodcastFixtures = () => {
+  podcastFeatureStore.clear()
+  ;['podcast_audio', 'transcription_basic', 'youtube_integration', 'live_streaming'].forEach((feature) => {
+    const defaults = defaultFeatureRecord(feature)
+    if (feature === 'youtube_integration' || feature === 'live_streaming') {
+      defaults.has_access = false
+      defaults.upgrade_required = true
+      defaults.required_tier = feature === 'live_streaming' ? 'enterprise' : 'premium'
+      defaults.required_tier_label =
+        defaults.required_tier.charAt(0).toUpperCase() + defaults.required_tier.slice(1)
+      defaults.upgrade_message = 
+    }
+    podcastFeatureStore.set(feature, defaults)
+  })
+
+  podcastQuotaState = defaultQuotaRecord()
+  podcastEpisodes = [defaultPodcastEpisode()]
+}
+
+resetPodcastFixtures()
+
+const podcastFeatureHandler = http.get(, ({ params }) => {
+  const feature = params.feature as string
+  const record = ensurePodcastFeature(feature)
+  return HttpResponse.json(record)
+})
+
+const podcastQuotaHandler = http.get(, () => HttpResponse.json(podcastQuotaState))
+
+const podcastEpisodesHandler = http.get(, () =>
+  HttpResponse.json(podcastEpisodes)
+)
+
+const podcastTranscribeHandler = http.post(
+  ,
+  async ({ params }) => {
+    const { episodeId } = params as { episodeId: string }
+    const episode = podcastEpisodes.find((entry) => entry.id === episodeId)
+    if (!episode) {
+      return HttpResponse.json({ detail: 'Episode not found' }, { status: 404 })
+    }
+    episode.transcript = 'Auto-generated transcript'
+    episode.transcript_language = 'en'
+    return HttpResponse.json({
+      episode_id: episode.id,
+      transcript: episode.transcript,
+      transcript_language: episode.transcript_language,
+      word_count: episode.transcript.split(/\s+/).filter(Boolean).length,
+    })
+  },
+)
+
+const podcastHandlers = [
+  podcastFeatureHandler,
+  podcastQuotaHandler,
+  podcastEpisodesHandler,
+  podcastTranscribeHandler,
+]
+
+
 const blogListHandler = http.get(`${API_BASE_URL}/api/blog`, ({ request }) => {
   const url = new URL(request.url)
   const category = url.searchParams.get('category')
@@ -854,7 +1054,7 @@ const contactHandler = http.post(`${API_BASE_URL}/marketing/contact`, async ({ r
   return HttpResponse.json({ success: true, message: 'Thanks for contacting us!' })
 })
 
-export const mswHandlers = [...documentHandlers, blogListHandler, blogDetailHandler, contactHandler]
+export const mswHandlers = [...documentHandlers, ...podcastHandlers, blogListHandler, blogDetailHandler, contactHandler]
 
-export { resetDocumentRoomFixtures, collectAllFolders }
+export { resetDocumentRoomFixtures, collectAllFolders, resetPodcastFixtures, setPodcastFeatureAccess, setPodcastQuota, setPodcastEpisodes }
 

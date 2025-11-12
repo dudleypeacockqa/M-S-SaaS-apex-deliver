@@ -25,13 +25,9 @@
 
 ## Critical Unfinished Workstreams (ordered)
 
-### 1. DEV-008 Secure Document & Data Room (P0)
-- **Gap**: Engineering remains GREEN (DocumentWorkspace suite revalidated 2025-11-13) but BMAD story, PRD, UX packet, and regression artefacts still require refresh and attachment to the release packet.
-- **Plan (TDD cadence)**:
-  1. **RED** – Extend backend + frontend regression tests to capture any missed folder edge cases (write failing pytest/vitest where coverage lacking). ✅ (2025-11-13 breadcrumbs + telemetry)
-  2. **GREEN** – Implement fixes/document clarifications until new tests pass. ✅ (DocumentWorkspace Vitest 25/25)
-  3. **REFACTOR** – Capture screenshots, MSW handler docs, and update `docs/bmad/stories/DEV-008*.md` plus `WEBSITE_DEVELOPMENT_PLAN.md`.
-- **Deliverables**: Updated story docs, refreshed vitest/pytest logs under `docs/tests/`, screenshots for release notes, MSW handler reference.
+### 1. DEV-008 Secure Document & Data Room (✅ Evidence refreshed 2025-11-13)
+- **Status**: Frontend suites (UploadPanel/PermissionModal/DocumentWorkspace) and backend document/quota suites rerun with logs at `docs/tests/2025-11-13-dev008-vitest.txt` and `docs/tests/2025-11-13-dev008-pytest.txt`; story + completion plan updated accordingly.
+- **Next**: Attach updated screenshots/GIFs when final release notes are drafted.
 
 ### 2. MARK-002 Enhanced Marketing Website (P1 but required for “100% complete” claim)
 - **Gap**: Final Lighthouse + axe audits + screenshot evidence missing; hero/mobile nav polish pending sign-off.
@@ -81,7 +77,6 @@
 ---
 
 Strict adherence to BMAD + TDD remains mandatory: every functional change starts with a failing test, all documentation updates follow immediately after GREEN cycles, and deployment artefacts must be refreshed before claiming completion.
-
 
 
 

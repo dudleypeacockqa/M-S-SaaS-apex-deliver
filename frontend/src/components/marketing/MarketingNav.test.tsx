@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { MarketingNav } from './MarketingNav';
 
@@ -49,5 +50,35 @@ describe('MarketingNav', () => {
     const productButtons = screen.getAllByRole('button', { name: /Products/i });
     fireEvent.click(productButtons[productButtons.length - 1]);
     expect(screen.getByText(/Sales & Promotion Pricing/i)).toBeInTheDocument();
+  });
+
+  it('supports keyboard navigation for desktop dropdowns', async () => {
+    renderWithRouter(<MarketingNav />);
+    const productsTrigger = screen.getAllByRole('button', { name: /Products/i })[0];
+    productsTrigger.focus();
+    fireEvent.keyDown(productsTrigger, { key: 'ArrowDown' });
+
+    const firstMenuItem = await screen.findByRole('menuitem', { name: /CapLiquify FP&A/i });
+    await waitFor(() => expect(firstMenuItem).toHaveFocus());
+
+    fireEvent.keyDown(firstMenuItem, { key: 'Escape' });
+    await waitFor(() => expect(productsTrigger).toHaveFocus());
+  });
+
+  it('traps focus inside the mobile menu when open', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<MarketingNav />);
+    const toggle = screen.getByLabelText(/toggle menu/i);
+    await user.click(toggle);
+
+    const mobileProductsButton = screen.getAllByRole('button', { name: /Products/i }).pop()!;
+    await waitFor(() => expect(mobileProductsButton).toHaveFocus());
+
+    await user.keyboard('{Shift>}{Tab}{/Shift}');
+    const startTrialLink = screen.getAllByRole('link', { name: /Start Free Trial/i }).pop()!;
+    expect(startTrialLink).toHaveFocus();
+
+    await user.tab();
+    expect(mobileProductsButton).toHaveFocus();
   });
 });

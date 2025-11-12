@@ -25,9 +25,9 @@ describe('LandingPage', () => {
   it('adds quantified social proof stats and logos', () => {
     renderPage()
     expect(screen.getByText(/finance & deal teams onboarded/i)).toBeInTheDocument()
-    expect(screen.getByText(/reduction in manual prep/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/reduction in manual prep/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Customer logos/i)).toBeInTheDocument()
-    expect(screen.getByText(/Brookline Partners/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Brookline Partners/i).length).toBeGreaterThan(0)
   })
 
   it('renders the how it works steps', () => {

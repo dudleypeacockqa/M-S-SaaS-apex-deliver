@@ -88,6 +88,24 @@ Performed complete codebase audit and discovered **Master Admin Portal is 100% c
 
 ---
 
+## Session 2025-11-13Z3 - DEV-008 Evidence Refresh
+
+**Status**: ✅ COMPLETE – Document Room test artefacts + story docs refreshed  
+**Duration**: ~60 minutes  
+**Priority**: P0 – close DEV-008 documentation gap before moving to MARK/MAP tracks  
+
+### Summary
+- Installed scoped frontend dependencies (`frontend/node_modules`) and restored the Document Room test polyfills so Vitest can run under jsdom without TransformStream errors.
+- Ran `npx vitest run --pool=vmThreads src/components/documents/UploadPanel.enhanced.test.tsx src/components/documents/PermissionModal.test.tsx src/pages/documents/DocumentWorkspace.test.tsx` → 76/76 PASS (`docs/tests/2025-11-13-dev008-vitest.txt`).
+- Ran `./venv/Scripts/python -m pytest tests/test_document_endpoints.py tests/test_document_service.py tests/test_quota_service.py` → 75/75 PASS (`docs/tests/2025-11-13-dev008-pytest.txt`).
+- Updated `docs/bmad/stories/DEV-008-secure-document-data-room.md`, `docs/100-PERCENT-COMPLETION-PLAN.md`, and `docs/DEPLOYMENT_HEALTH.md` to cite the new artefacts.
+
+### Next
+1. MARK-002: homepage/mobile/SEO polish + Lighthouse/axe evidence capture.
+2. MAP-REBUILD-001: resume backend goal/activity migrations and Master Admin frontend shell via strict TDD.
+
+---
+
 ## Session 2025-11-13MKT-AuditAttempt – Production Redeploy & Audit Blockers
 
 **Status**: 🔄 IN PROGRESS – Frontend redeploy verified (10/10 checks), production audits blocked by tooling/CDN

@@ -1,0 +1,19 @@
+[
+    {
+        "deploy": {
+            "id": "dep-d4ad8lffte5s739g5gug",
+            "commit": {
+                "id": "ddbf8f1b7b2920b2f89eaca52214b2185ed78b30",
+                "message": "fix(backend): simplify entrypoint.sh to resolve Render deployment failures\n\n**Issue**: Multiple backend deploys failing with \"update_failed\" status\n**Root Cause**: Complex migration stamp checking logic in entrypoint.sh using psql commands\n**Fix**: Removed fragile migration stamp checking, rely on alembic's built-in state handling\n\n## Changes\n\n- backend/entrypoint.sh:\n  * Removed lines 109-134 (invalid migration stamp detection and psql commands)\n  * Simplified to just run alembic upgrade head with retry logic\n  * Alembic automatically handles migration state transitions\n\n## Testing\n\nLocal backend tests: 814/814 passing (100%)\nDocker build: Will verify on Render deploy\n\n## Deployment Evidence\n\nFailed deploys (all targeting commit 6936c85 or later):\n- dep-d4ad3r78qels73erv2pg: update_failed\n- dep-d4ad3l7pm1nc73cpve60: update_failed\n- dep-d4ad20npm1nc73cpukq0: update_failed\n\nLast successful: dep-d4actdofdonc73edtq70 (commit 5b85557)\n\n## Expected Outcome\n\nBackend deployment should now succeed and catch up to latest commit.\n\n\u00f0\u0178\u00a4\u2013 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+                "createdAt": "2025-11-12T18:39:03Z"
+            },
+            "status": "update_failed",
+            "trigger": "new_commit",
+            "createdAt": "2025-11-12T18:39:20.239452Z",
+            "updatedAt": "2025-11-12T18:42:22.186252Z",
+            "startedAt": "2025-11-12T18:39:20.091742Z",
+            "finishedAt": "2025-11-12T18:42:22.18513Z"
+        },
+        "cursor": "cj7sc0PAsIs4bGZmdGU1czczOWc1Z3Vn"
+    }
+]

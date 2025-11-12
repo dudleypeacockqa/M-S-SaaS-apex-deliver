@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
@@ -8,6 +8,8 @@ import {
   createShareLink,
   revokeShareLink,
 } from '../../services/api/documents'
+
+const writeTextMock = vi.fn().mockResolvedValue(undefined)
 
 vi.mock('../../services/api/documents', () => ({
   listShareLinks: vi.fn(),
@@ -42,6 +44,14 @@ describe('ShareLinkModal', () => {
       access_count: 0,
     })
     vi.mocked(revokeShareLink).mockResolvedValue()
+    Object.assign(navigator, {
+      clipboard: { writeText: writeTextMock },
+    })
+    writeTextMock.mockClear()
+  })
+
+  afterEach(() => {
+    writeTextMock.mockReset()
   })
 
   it('renders share link form when open', async () => {
@@ -58,7 +68,7 @@ describe('ShareLinkModal', () => {
     fireEvent.change(expiresInput, { target: { value: '14' } })
     const passwordToggle = screen.getByLabelText(/require password/i)
     fireEvent.click(passwordToggle)
-    const passwordInput = await screen.findByLabelText(/password/i)
+    const passwordInput = screen.getByLabelText(/password$/i, { selector: 'input[type="password"]' })
     fireEvent.change(passwordInput, { target: { value: 'StrongPass1' } })
 
     fireEvent.click(screen.getByRole('button', { name: /create share link/i }))
@@ -98,4 +108,3 @@ describe('ShareLinkModal', () => {
     })
   })
 })
-

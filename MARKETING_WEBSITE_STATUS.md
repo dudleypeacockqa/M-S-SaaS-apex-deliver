@@ -82,10 +82,10 @@
 - [x] **Pricing Teaser** – Shows £598/mo FP&A entry point plus Professional/Enterprise upgrades with setup fees.
 
 ### Remaining Homepage Tasks
-- [ ] Layer more social proof (case studies, outcome callouts) alongside hero/pricing sections
-- [ ] Finalise mobile navigation animations/focus management for dropdown menus
+- [x] Layer more social proof (stats, testimonial, customer logos) alongside the hero – shipped 2025-11-12Z, see LandingPage social-proof section.
+- [ ] Finalise mobile navigation animations/focus management for dropdown menus (desktop keyboard access shipped 2025-11-12; mobile animation polish still pending)
 - [ ] Continue blog backlog (38 posts) and add imagery to existing articles
-- [ ] Add ROI/outcome chips (450+ businesses, 66% cost reduction, 500% ROI)
+- [x] Add ROI/outcome chips (450+ businesses, 66% cost reduction, 500% ROI) via EnhancedHeroSection + new social-proof cards.
 
 ### Content Remaining
 - [ ] **38 More Blog Posts** (to complete 50-post plan)

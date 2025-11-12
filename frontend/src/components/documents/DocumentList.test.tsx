@@ -280,6 +280,32 @@ describe('DocumentList', () => {
     );
   });
 
+  it('should expose a share button when callback provided', async () => {
+    const { listDocuments } = await import('../../services/api/documents');
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-share', name: 'ShareMe.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 1,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
+
+    const onShare = vi.fn();
+
+    renderWithProviders(
+      <DocumentList dealId="deal-1" folderId={null} onShareDocument={onShare} />
+    );
+
+    const shareButton = await screen.findByRole('button', { name: /share shareme\.pdf/i });
+    fireEvent.click(shareButton);
+
+    expect(onShare).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'doc-share', name: 'ShareMe.pdf' })
+    );
+  });
+
   it('should select all documents with header checkbox', async () => {
     const { listDocuments } = await import('../../services/api/documents');
     vi.mocked(listDocuments).mockResolvedValue({

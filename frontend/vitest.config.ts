@@ -27,7 +27,12 @@ export default defineConfig({
     testTimeout: 90000,
     hookTimeout: 90000,
     teardownTimeout: 90000,
-    pool: 'threads',
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
     env: {
       NODE_ENV: 'development', // Force React development mode for act() support
       VITE_CLERK_PUBLISHABLE_KEY: 'pk_live_Y2xlcmsuMTAwZGF5c2FuZGJleW9uZC5jb20k',
@@ -60,11 +65,5 @@ export default defineConfig({
       ],
     },
   },
-  poolOptions: {
-    threads: {
-      singleThread: true,
-    },
-  },
 })
-
 

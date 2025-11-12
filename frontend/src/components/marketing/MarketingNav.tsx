@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { trackCtaClick } from '../../lib/analytics'
 
@@ -99,6 +99,9 @@ const useIsDesktop = () => {
   return isDesktop
 }
 
+const sanitizeId = (label: string) =>
+  `${label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-')}-dropdown`
+
 export const MarketingNav: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null)
@@ -107,6 +110,10 @@ export const MarketingNav: React.FC = () => {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const lastFocusedRef = useRef<HTMLElement | null>(null)
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const dropdownButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({})
+  const dropdownMenuRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const getMobileFocusableElements = () =>
+    mobileMenuRef.current?.querySelectorAll<HTMLElement>('a, button, [tabindex="0"]') ?? []
   const isDesktop = useIsDesktop()
 
   const handleMouseEnter = (label: string) => {
@@ -131,6 +138,37 @@ export const MarketingNav: React.FC = () => {
   }
 
   const handleDropdownLeave = () => setOpenDropdown(null)
+
+  const focusFirstMenuItem = useCallback((label: string) => {
+    const menu = dropdownMenuRefs.current[label]
+    const focusable = menu?.querySelector<HTMLElement>('a,button')
+    focusable?.focus()
+  }, [])
+
+  const handleTriggerKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLButtonElement>, label: string) => {
+      if (!isDesktop) return
+      if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        setOpenDropdown(label)
+        requestAnimationFrame(() => focusFirstMenuItem(label))
+      }
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        setOpenDropdown(null)
+        dropdownButtonRefs.current[label]?.focus()
+      }
+    },
+    [focusFirstMenuItem, isDesktop]
+  )
+
+  const handleMenuKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>, label: string) => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      setOpenDropdown(null)
+      dropdownButtonRefs.current[label]?.focus()
+    }
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -183,6 +221,27 @@ export const MarketingNav: React.FC = () => {
     setMobileDropdown((current) => (current === label ? null : label))
   }
 
+  const handleMobileKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!mobileMenuOpen || event.key !== 'Tab') {
+      return
+    }
+    const focusables = getMobileFocusableElements()
+    if (!focusables.length) {
+      return
+    }
+    const first = focusables[0]
+    const last = focusables[focusables.length - 1]
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last.focus()
+      return
+    }
+    if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first.focus()
+    }
+  }
+
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm" aria-label="Primary" ref={navRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -197,13 +256,15 @@ export const MarketingNav: React.FC = () => {
           </div>
 
           <div className="hidden lg:flex items-center space-x-1">
-            {navItems.map((item) => (
-              <div
-                key={item.label}
-                className="relative"
-                onMouseEnter={() => item.dropdown && handleMouseEnter(item.label)}
-                onMouseLeave={handleMouseLeave}
-              >
+            {navItems.map((item) => {
+              const dropdownId = sanitizeId(item.label)
+              return (
+                <div
+                  key={item.label}
+                  className="relative"
+                  onMouseEnter={() => item.dropdown && handleMouseEnter(item.label)}
+                  onMouseLeave={handleMouseLeave}
+                >
                 {item.href ? (
                   <Link
                     to={item.href}
@@ -216,6 +277,17 @@ export const MarketingNav: React.FC = () => {
                     className="px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     aria-expanded={openDropdown === item.label}
                     aria-haspopup="true"
+                    aria-controls={dropdownId}
+                    id={`${dropdownId}-trigger`}
+                    ref={(node) => {
+                      dropdownButtonRefs.current[item.label] = node
+                    }}
+                    onFocus={() => {
+                      if (isDesktop && item.dropdown) {
+                        setOpenDropdown(item.label)
+                      }
+                    }}
+                    onKeyDown={(event) => handleTriggerKeyDown(event, item.label)}
                     onClick={() => setOpenDropdown(openDropdown === item.label ? null : item.label)}
                   >
                     {item.label}
@@ -235,12 +307,22 @@ export const MarketingNav: React.FC = () => {
                     className="absolute left-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50"
                     onMouseEnter={handleDropdownEnter}
                     onMouseLeave={handleDropdownLeave}
+                    role="menu"
+                    aria-label={`${item.label} menu`}
+                    aria-labelledby={`${dropdownId}-trigger`}
+                    id={dropdownId}
+                    ref={(node) => {
+                      dropdownMenuRefs.current[item.label] = node
+                    }}
+                    onKeyDown={(event) => handleMenuKeyDown(event, item.label)}
                   >
                     {item.dropdown.map((dropdownItem) => (
                       <Link
                         key={`${dropdownItem.href}-${dropdownItem.label}`}
                         to={dropdownItem.href}
                         className="block px-4 py-3 hover:bg-indigo-50 transition-colors"
+                        role="menuitem"
+                        tabIndex={-1}
                       >
                         <div className="font-semibold text-gray-900 mb-1">{dropdownItem.label}</div>
                         {dropdownItem.description && (
@@ -250,8 +332,9 @@ export const MarketingNav: React.FC = () => {
                     ))}
                   </div>
                 )}
-              </div>
-            ))}
+                </div>
+              )
+            })}
           </div>
 
           <button
@@ -294,6 +377,7 @@ export const MarketingNav: React.FC = () => {
           className={`lg:hidden border-t border-gray-200 transition-all duration-300 origin-top ${
             mobileMenuOpen ? 'max-h-[1200px] opacity-100 scale-y-100 py-4' : 'max-h-0 opacity-0 scale-y-95 pointer-events-none'
           }`}
+          onKeyDown={handleMobileKeyDown}
         >
           <div className="overflow-hidden">
             {navItems.map((item) => (

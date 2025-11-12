@@ -1,16 +1,23 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import React from 'react'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { DocumentQuestionsPanel } from './DocumentQuestionsPanel'
 import type { Document } from '../../services/api/documents'
 
+const documentApiMocks = vi.hoisted(() => ({
+  list: vi.fn(),
+  create: vi.fn(),
+  resolve: vi.fn(),
+}))
+
 vi.mock('../../services/api/documents', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../services/api/documents')>()
   return {
     ...actual,
-    listDocumentQuestions: vi.fn(),
-    createDocumentQuestion: vi.fn(),
-    resolveDocumentQuestion: vi.fn(),
+    listDocumentQuestions: documentApiMocks.list,
+    createDocumentQuestion: documentApiMocks.create,
+    resolveDocumentQuestion: documentApiMocks.resolve,
   }
 })
 
@@ -29,29 +36,25 @@ const mockDocument: Document = {
   archived_at: null,
 }
 
-const renderPanel = (document: Document | null, overrides: Record<string, any> = {}) => {
+type PanelOverrides = Partial<React.ComponentProps<typeof DocumentQuestionsPanel>>
+
+const renderPanel = (document: Document | null, overrides: PanelOverrides = {}) => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   })
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <DocumentQuestionsPanel dealId="deal-1" document={document} onClose={vi.fn()} {...overrides} />
+      <DocumentQuestionsPanel dealId="deal-1" document={document} onClose={() => undefined} {...overrides} />
     </QueryClientProvider>
   )
 }
 
 describe('DocumentQuestionsPanel', () => {
-  const api = vi.hoisted(() => ({
-    list: vi.mocked(require('../../services/api/documents').listDocumentQuestions),
-    create: vi.mocked(require('../../services/api/documents').createDocumentQuestion),
-    resolve: vi.mocked(require('../../services/api/documents').resolveDocumentQuestion),
-  }))
-
   beforeEach(() => {
     vi.clearAllMocks()
-    api.list.mockResolvedValue({ total: 0, items: [] })
-    api.create.mockResolvedValue({
+    documentApiMocks.list.mockResolvedValue({ total: 0, items: [] })
+    documentApiMocks.create.mockResolvedValue({
       id: 'question-1',
       document_id: 'doc-1',
       organization_id: 'org-1',
@@ -66,7 +69,7 @@ describe('DocumentQuestionsPanel', () => {
       created_at: '2025-01-01T10:00:00Z',
       updated_at: null,
     })
-    api.resolve.mockResolvedValue({
+    documentApiMocks.resolve.mockResolvedValue({
       id: 'question-1',
       document_id: 'doc-1',
       organization_id: 'org-1',
@@ -89,7 +92,7 @@ describe('DocumentQuestionsPanel', () => {
   })
 
   it('renders questions from the API', async () => {
-    api.list.mockResolvedValueOnce({
+    documentApiMocks.list.mockResolvedValueOnce({
       total: 1,
       items: [
         {
@@ -124,14 +127,14 @@ describe('DocumentQuestionsPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: /send question/i }))
 
     await waitFor(() => {
-      expect(api.create).toHaveBeenCalledWith('deal-1', 'doc-1', {
+      expect(documentApiMocks.create).toHaveBeenCalledWith('deal-1', 'doc-1', {
         question: 'Need updated audited numbers?'
       })
     })
   })
 
   it('resolves a question with an answer', async () => {
-    api.list.mockResolvedValueOnce({
+    documentApiMocks.list.mockResolvedValueOnce({
       total: 1,
       items: [
         {
@@ -161,7 +164,7 @@ describe('DocumentQuestionsPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: /submit answer/i }))
 
     await waitFor(() => {
-      expect(api.resolve).toHaveBeenCalledWith('deal-1', 'question-99', {
+      expect(documentApiMocks.resolve).toHaveBeenCalledWith('deal-1', 'question-99', {
         answer: 'Yes, signed yesterday.'
       })
     })

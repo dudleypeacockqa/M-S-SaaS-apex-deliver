@@ -328,6 +328,16 @@ export const DocumentList: React.FC<DocumentListProps> = (props) => {
                           Manage access
                         </button>
                       )}
+                      {onShareDocument && (
+                        <button
+                          type="button"
+                          className="rounded border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                          onClick={() => onShareDocument(doc)}
+                          aria-label={`Share ${doc.name}`}
+                        >
+                          Share
+                        </button>
+                      )}
                       {onViewAccessLogs && (
                         <button
                           type="button"

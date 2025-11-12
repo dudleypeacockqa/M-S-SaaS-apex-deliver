@@ -343,7 +343,6 @@ export const CreateDealModal: React.FC<CreateDealModalProps> = ({
                 )}
                 placeholder="1000000"
                 step="1000"
-                min="0"
               />
               {errors.deal_size && touched.has('deal_size') && (
                 <p className="mt-1 text-sm text-red-600">{errors.deal_size}</p>
