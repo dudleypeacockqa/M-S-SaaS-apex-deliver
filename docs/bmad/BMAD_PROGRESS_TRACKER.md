@@ -275,6 +275,51 @@ python scripts/verify_deployment.py → 10/10 checks passing ✅
 
 ---
 
+## Session 2025-11-12R - Document Room MSW Harness
+
+**Status**: ✅ COMPLETE – Shared MSW fixtures backing Document Room suites  
+**Duration**: ~40 minutes (RED → GREEN)  
+**Priority**: P0 – DEV-008 test infrastructure  
+**Progress Impact**: +1% (deterministic API mocks; unlocks final documentation sync)
+
+### Achievements
+
+1. ✅ **Shared MSW Handlers**  
+   - Created `frontend/src/tests/msw/server.ts` covering folder CRUD, document pagination, permissions, uploads, downloads, archive/restore.
+   - Added memory-backed fixture reset to ensure deterministic seeds every test run.
+
+2. ✅ **Vitest Integration**  
+   - Wired MSW server into `frontend/src/setupTests.ts` (top-level await + localStorage shim) with automatic resetHandlers + fixture reset per test.
+   - Closed todo `msw-harness` and removed bespoke fetch mocks from downstream suites.
+
+3. ✅ **RED→GREEN Coverage**  
+   - Authored `src/tests/msw/documentsHandlers.test.ts` confirming folder include-tree + paginated document responses (2/2 tests passing).
+   - Re-validated `FolderTree.test.tsx` (13/13) and `DocumentWorkspace.test.tsx` (25/25) under MSW interceptors.
+
+### Testing / Evidence
+
+- `cd frontend && npx vitest run src/tests/msw/documentsHandlers.test.ts --pool=forks` → **2/2 GREEN** ✅  
+- `cd frontend && npx vitest run src/components/documents/FolderTree.test.tsx --pool=forks` → **13/13 GREEN** ✅  
+- `cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=forks` → **25/25 GREEN** ✅  
+- UploadPanel / PermissionModal suites remain GREEN (33/33 + 13/13) from prior sessions.
+
+### Files Modified
+
+- `frontend/src/tests/msw/server.ts`  
+- `frontend/src/tests/msw/documentsHandlers.test.ts`  
+- `frontend/src/setupTests.ts`  
+- `frontend/src/services/api/documents.ts`  
+- `docs/bmad/bmm-workflow-status.md`  
+- `docs/bmad/stories/DEV-008-secure-document-data-room.md`
+
+### Next Steps
+
+1. 🔄 Sync PRD/UX artefacts with final Document Room acceptance evidence.  
+2. 🔄 Capture regression logs (full Vitest + pytest) for production launch packet.  
+3. 🔄 Prepare release documentation updates (release notes, completion plan).
+
+---
+
 ## Session 2025-11-12Q - FolderTree Accessibility & Lazy Load
 
 **Status**: ✅ COMPLETE – Document Room navigation fully accessible with lazy-loading  
