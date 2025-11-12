@@ -21,6 +21,7 @@ interface PermissionModalProps {
   isOpen: boolean
   onClose: () => void
   inviteLimit?: InviteLimit
+  auditTrail?: Array<{ id: string; actor: string; action: string; createdAt?: string }>
 }
 
 const ROLE_OPTIONS: Array<{ value: DocumentPermission['role']; label: string }> = [
@@ -34,6 +35,7 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
   isOpen,
   onClose,
   inviteLimit,
+  auditTrail,
 }) => {
   const queryClient = useQueryClient()
   const [email, setEmail] = useState('')
@@ -126,6 +128,20 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
           {errorMessage && (
             <div role="alert" className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
               {errorMessage}
+            </div>
+          )}
+
+          {auditTrail && auditTrail.length > 0 && (
+            <div className="rounded border border-slate-200 bg-slate-50 px-3 py-2" data-testid="permission-audit-trail">
+              <p className="text-xs font-semibold text-slate-700">Recent changes</p>
+              <ul className="mt-2 space-y-1 text-xs text-slate-600">
+                {auditTrail.map((event) => (
+                  <li key={event.id}>
+                    <span className="font-medium text-slate-800">{event.actor}</span> {event.action}
+                    {event.createdAt && <span className="ml-1 text-slate-400">({event.createdAt})</span>}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 
