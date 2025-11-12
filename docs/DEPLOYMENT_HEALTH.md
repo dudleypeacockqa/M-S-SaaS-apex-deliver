@@ -19,6 +19,13 @@
 > - Render API previously surfaced psycopg2 `SSL connection closed unexpectedly` while running `alembic upgrade head` (see docs/backend-deploy-errors.txt); need container logs to confirm whether the new retry logic is misconfigured.
 > - Next action: capture failing deploy logs, patch entrypoint/prestart scripts if needed, then rerun `scripts/verify_deployment.py` + `scripts/run_smoke_tests.sh production` once a deploy succeeds.
 
+> **2025-11-12 18:18 UTC**
+> - Backend deploy `dep-d4actdofdonc73edtq70` (service `srv-d3ii9qk9c44c73aqsli0`, commit `c0758206316f87534ea5e405c85ae3cf58058838`) is **LIVE** following the prestart skip fix.
+> - Frontend deploy `dep-d4act5ngi27c73a026k0` (service `srv-d3ihptbipnbc73e72ne0`, same commit) is **LIVE**.
+> - `python scripts/verify_deployment.py` → 10/10 checks ✅ (`docs/deployments/2025-11-13-verify-deployment.txt`).
+> - `bash scripts/run_smoke_tests.sh production` → backend /health + pytest smoke ✅ (`docs/deployments/2025-11-13-smoke-tests.txt`).
+> - Prestart migrations now disabled by default; backend entrypoint remains responsible for Alembic upgrades.
+
 > **2025-11-12 16:35 UTC**
 > - Triggered Render redeploys via API:
 >   - Backend (`srv-d3ii9qk9c44c73aqsli0`): ✅ request succeeded (`docs/deployments/2025-11-12-render-backend-trigger.txt`).

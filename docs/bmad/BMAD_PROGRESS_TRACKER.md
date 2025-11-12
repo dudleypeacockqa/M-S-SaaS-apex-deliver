@@ -1,3 +1,30 @@
+## Session 2025-11-13MKT-AuditAttempt – Production Redeploy & Audit Blockers
+
+**Status**: 🔄 IN PROGRESS – Frontend redeploy verified (10/10 checks), production audits blocked by tooling/CDN
+**Duration**: ~30 minutes (deploy trigger, verification, audit attempts)
+**Priority**: P0 – Required to close MARK-002 Phase 4 evidence
+
+### Summary
+- Triggered manual frontend redeploy (`python trigger_render_deploy.py --service srv-d3ihptbipnbc73e72ne0`); Render reported success.
+- Ran `python scripts/verify_deployment.py production` → **10/10 checks passing**; archived output at `docs/deployments/2025-11-13-verify-deployment.txt`.
+- Captured verification log via `Tee-Object` for BMAD evidence (`docs/deployments/2025-11-13-verify-deployment.txt`).
+- Attempted Lighthouse CLI multiple times; runs fail with Windows Defender temp-dir cleanup (`EPERM`) or Chrome `NO_FCP` runtime errors (see `docs/marketing/lighthouse-report-2025-11-13-desktop.json`).
+- Attempted `@axe-core/cli` against production; run completes but reports legacy emerald palette violations, implying CDN cache lag or redeploy not yet propagated (`docs/marketing/axe-report.txt`).
+
+### Evidence / Attempts
+- `python trigger_render_deploy.py --service srv-d3ihptbipnbc73e72ne0`
+- `python scripts/verify_deployment.py production | Tee-Object docs/deployments/2025-11-13-verify-deployment.txt`
+- `cmd /c "... npx lighthouse ..."` (blocked by antivirus)
+- `node_modules\.bin\axe.cmd https://100daysandbeyond.com --timeout=60000 --exit 0` (returns contrast violations)
+
+### Next Steps
+1. Re-run Lighthouse and axe from a clean macOS/CI runner after purging CDN cache; update `docs/marketing/lighthouse-report.json` and `docs/marketing/axe-report.txt` with passing artefacts.
+2. Confirm Render deploy ID for redeploy and update `latest-deploy.json` once Render dashboard reflects new build.
+3. If CDN continues to serve old palette, trigger cache purge or bust via `?v=YYYYMMDD` asset query strategy.
+4. Once audits succeed, close MARK-002 story and resume DEV-008 telemetry tasks.
+
+---
+
 ## Session 2025-11-13MKT-Contrast – Palette & Case Study Enhancements
 
 **Status**: ✅ COMPLETE – Marketing palette pass + case study expansion shipped  
@@ -494,7 +521,6 @@ Health: Clerk ✅ | Database ✅ | Webhooks ✅
 - Lighthouse performance audit (2h)
 - Accessibility audit (1-2h)
 - Optional: Case study pages (1h)
-
 **Priority 2** (6-7 hours):
 - Export status polling UI (2-3h)
 - Frontend test optimization (2-3h)
@@ -989,7 +1015,6 @@ python scripts/verify_deployment.py → 10/10 checks passing ✅
 - Some user documentation to be created during UAT
 
 ### Next Steps (Post-Launch)
-
 1. ✅ Monitor production metrics daily
 2. 🔄 Schedule UAT with pilot users (Week 1-2)
 3. 🔄 Address P0 bugs immediately (<30m response)
@@ -1469,7 +1494,6 @@ Following user request for autonomous 100% completion verification, performed co
 - **16:00-16:30**: Final documentation and progress tracker update
 
 ### Commits Created
-
 1. `185c156`: feat(doc-room): mark DEV-008 COMPLETE
 2. `19b7300`: docs(bmad): finalize DEV-008 story completion documentation
 3. Pushed 3 commits to origin/main ✅
@@ -1969,7 +1993,6 @@ Following user request for autonomous 100% completion verification, performed co
 **Duration**: ~35 min (Codex TDD)  
 **Priority**: P0 – Finish entitlement coverage before FolderTree RED cycle  
 **Progress Impact**: +2% (document room resilience + UX copy)
-
 ### Achievements
 - Added RED specs for (a) blocking downgrades of the final document owner and (b) showing a quota lock overlay when storage is exhausted; implemented logic to satisfy both.
 - PermissionModal now refuses to downgrade the last owner and surfaces a global warning, preventing accidental loss of ownership.
@@ -2463,7 +2486,6 @@ Following user request for autonomous 100% completion verification, performed co
 1. ✅ **DEV-012 Task Automation Audit** - COMPLETE
    - Found: 13/13 tests passing, production-ready
    - Decision: Skip polish, save 1h for higher-priority work
-
 2. ⏭️ **Week 2: Podcast Studio** (DEV-016, 13h estimate)
 3. ⏭️ **Week 2: Deal Matching** (DEV-018, 7h estimate)
 
@@ -2958,7 +2980,6 @@ OAuth services are thin wrappers around third-party SDKs (Stripe, QuickBooks, Xe
 - Configured Celery `shared_task` to no-op during tests and reloaded `app.tasks.task_automation`; achieved 100% coverage for the module.
 - Expanded `tests/test_subscription_service_edge_cases.py` covering invalid tier inputs, existing Stripe customer reuse, annual/URL options, and cancellation proration flags (module coverage 59% → 84%).
 - Recorded coverage telemetry: `pytest ... --cov=app.services.subscription_service --cov=app.tasks.task_automation` now reports **86%** combined (subscription 84%, task_automation 100%).
-
 ### Artefacts Updated
 - `backend/tests/test_task_automation.py` (new stub-based suite)
 - `backend/tests/test_subscription_service_edge_cases.py` (expanded cases)
@@ -3325,28 +3346,6 @@ OAuth services are thin wrappers around third-party SDKs (Stripe, QuickBooks, Xe
 
 ---
 
-## Session 2025-11-12C - Blog Listing Frontend Enhancements ✅
-
-**Status**: ✅ COMPLETE – MARK-006 blog UI hardened with deterministic tests  
-**Duration**: ~35 min (Vitest + React updates)  
-**Priority**: P1 – Marketing site readiness toward 90% coverage  
-**Progress Impact**: Frontend coverage (+new jest cases), UX polish for filters/error handling
-
-### Achievements
-- Extended `Blog.test.tsx` to assert category query strings, search parameters, loading spinner visibility, error banner (`role="alert"`), and filter resets (RED → GREEN).
-- Updated `Blog.tsx` to trim search terms, expose a persistent "Clear Filters" control, and render accessible error banners.
-- Normalized button variants (removed `asChild` warning) by enhancing `Button` component to ignore the prop and aligning selected state with `primary` styling.
-### Verification
-- `npm run test -- Blog.test.tsx` (10/10 passing; warnings eliminated except intentional error log)
-- Manual inspection confirmed no `act` warnings; filters now clear search/category state as expected.
-
-### Next Steps
-1. Implement blog CMS admin UI per MARK-006 requirements (CRUD + seed sync).
-2. Adopt MSW mocks for marketing API calls to remove reliance on global fetch stubbing.
-3. Measure marketing coverage after CMS work to ensure ≥90%.
-
----
-
 ## Session 2025-11-12H - Deploy Evidence Refresh & Render Redeploy ✅
 
 **Status**: ✅ COMPLETE – Tests rerun, commits pushed, Render deploys triggered with fresh evidence  
@@ -3442,85 +3441,6 @@ OAuth services are thin wrappers around third-party SDKs (Stripe, QuickBooks, Xe
 1. ✅ Phase 1 complete (honest baseline established)
 2. ⏭️ Fix 3 failing frontend tests (before Phase 2)
 3. ⏭️ Begin Phase 2: DEV-008 Document Room UI (TDD: RED → GREEN → REFACTOR)
-
----
-
-## Session 2025-11-11C - P0 Phase Completion: Frontend Test Suite Verification ✅
-
-**Status**: ✅ COMPLETE – All 6 frontend test failures resolved; P0 phase complete
-**Duration**: ~60 min (Claude Code)
-**Priority**: P0 – Critical baseline verification before P1 feature work
-**Progress Impact**: +5% (frontend test baseline established)
-
-### Achievements
-- **P0-1** ✅: Render deployment health verified (backend `dep-d49430euk2gs73es0cpg`, frontend `dep-d4944ochg0os738k2sc0`)
-- **P0-2** ✅: Backend test suite verified (681 passing, 74 skipped, 83% coverage)
-- **P0-3** ✅: Frontend test suite verified (1200+ passing, all failures resolved)
-
-### Test Failures Resolved (TDD RED → GREEN)
-- **Fix #1** (CODE): [CreateDealModal.test.tsx:173](../../frontend/src/components/deals/CreateDealModal.test.tsx#L173) - Added `await user.tab()` to trigger blur validation
-- **Fixes #2-6** (ANALYSIS): NudgePanel, GoalCard, ActivityList tests were false negatives from resource contention - all passed when tested individually
-
-### Testing/TDD Notes
-- Only **1 code change** required out of 6 reported failures
-- Individual test file verification:
-  - CreateDealModal: 29/29 passing ✅
-  - NudgePanel: 11/11 passing ✅
-  - GoalCard: 16/16 passing ✅
-  - ActivityList: 15/15 passing ✅
-- Coverage estimated: 87%+ frontend (final report pending)
-
-### Documentation Updates
-- ✅ Updated `docs/P0-PHASE-COMPLETION-SUMMARY.md` with comprehensive results
-- ✅ Updated `docs/bmad/BMAD_PROGRESS_TRACKER.md` (this file)
-- ⏳ Pending: `docs/bmad/bmm-workflow-status.md` next action update
-
-### Next Steps
-1. Commit P0 completion artifacts with comprehensive commit message
-2. Begin P1-1: Backend coverage enhancement (83% → 85%)
-   - Priority files: `rbac_permissions.py`, `subscription_service.py`, `task_automation.py`
-3. Resume Sprint 1A subscription coverage work per original plan
-
----
-
-## Session 2025-11-10M - Postgres Alembic Replay (Existing Credential)
-
-**Status**: [GREEN] COMPLETE – Verified Render Postgres at head `dc2c0f69c1b1` using current credential (rotation deferred)
-**Duration**: ~10 min (Codex CLI)
-**Priority**: P0 – Required proof before gathering new deploy logs
-**Progress Impact**: Platform confidence +1%
-
-### Achievements
-- Ran `cd backend && RENDER_PROD_DATABASE_URL=postgresql://ma_saas_user:[REDACTED-ROTATED-2025-11-11]@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform DATABASE_URL=postgresql://ma_saas_user:[REDACTED-ROTATED-2025-11-11]@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform ../backend/venv/Scripts/alembic.exe upgrade head` (per stakeholder request, rotation deferred until project completion). Command succeeded with PostgresqlImpl context.
-- Confirmed live head via `cd backend && ../backend/venv/Scripts/alembic.exe current` → `dc2c0f69c1b1 (head)`.
-
-### Testing/TDD Notes
-- No additional pytest suites; leverages Session 2025-11-10L results. Alembic evidence now includes live Postgres output.
-
-### Next Steps
-1. Capture updated `backend-deploy*.json` / `frontend-deploy*.json` once redeploy is triggered (still blocked on Render network access from sandbox).
-2. Begin DEV-011 RED specs after deployment health evidence is archived per completion plan.
-
----
-## Session 2025-11-10M - Postgres Alembic Replay (Existing Credential)
-
-**Status**: [GREEN] COMPLETE – Verified Render Postgres at head  using current credential (rotation deferred)  
-**Duration**: ~10 min (Codex CLI)  
-**Priority**: P0 – Required proof before gathering new deploy logs  
-**Progress Impact**: Platform confidence +1%
-
-### Achievements
-- Ran  (Render sandbox policy = rotate after project). Command completed with PostgresqlImpl context.
-- Confirmed head via dc2c0f69c1b1 (head)
- → .
-
-### Testing/TDD Notes
-- No additional pytest runs (already captured in Session 2025-11-10L). Alembic proof now includes live Postgres output.
-
-### Next Steps
-1. Capture latest  /  entries once redeploy is triggered (still blocked on external network access).
-2. Begin DEV-011 RED specs after deployment evidence is archived, per completion plan.
-
 ---
 
 ## Session 2025-11-11B - Navigation Menu Role Refinement ✅
@@ -3942,7 +3862,6 @@ Pushed to: origin/main ✅
 1. Restore/configure `bmad-method` CLI so `workflow-init` can run (required for W0 governance loop).
 2. Provision Postgres access to rerun `alembic upgrade head` + billing/subscription smoke suite.
 3. Trigger new Render backend/frontend deploys after migrations verified; capture new `backend-deploy*.json`/`frontend-deploy*.json` outputs.
-
 ---## Session 2025-11-10K - Subscription Smoke Suite + Alembic (Render Postgres)
 
 **Status**: ✅ COMPLETE - Render Postgres confirmed at head; billing/subscription suite green with coverage  
@@ -4435,7 +4354,6 @@ All three sprint items (SP1-05, SP1-06, SP1-07) verified in production during Se
 - Currency formatting
 - Optional action buttons slot
 - Full accessibility (ARIA labels, keyboard navigation, focus management)
-
 **CreateDealModal Features:**
 - Dual-mode: Create new deals OR edit existing deals
 - Form validation with real-time error messages
@@ -4934,7 +4852,6 @@ Frontend Tests:
 1. **LinkedIn noscript**: Moved from `<head>` to `<body>` in `frontend/index.html`
 2. **Terser minifier**: Installed via `npm install --save-dev terser`
 3. **npm vulnerabilities**: Analyzed (30 remain in dev dependencies only, not production security risk)
-
 #### Frontend Build ✅
 - **Build Status**: SUCCESS
 - **Build Time**: 7.92 seconds
@@ -5426,7 +5343,6 @@ Fixes #[issue-number]
 - 1 test failure in `MarketingFooter.test.tsx` - "should render app title"
   - Component rendering issue, not related to upload enhancements
   - Non-blocking for Document Room functionality
-
 **Backend**:
 - 4 test failures (auth, master-admin, valuation service)
 - 4 errors (migration tests for user foreign keys)
@@ -5489,8 +5405,6 @@ Fixes #[issue-number]
 3. Begin DEV-011 valuation workspace RED cycle once DEV-008 acceptance confirmed.
 
 ---
-
-</rewritten_file>
 
 ## Session 2025-11-12N - NetSuite API wiring (DEV-010 Phase 2)
 - Added connect_netsuite, netsuite_oauth_callback, and sync_netsuite_financial_data routes so the backend exposes a full OAuth + manual sync flow for NetSuite alongside the existing Xero/QuickBooks paths.

@@ -1,0 +1,4 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --pool=threads --runInBand --pool=vmThreads src/components/documents/UploadPanel.enhanced.test.tsx src/components/documents/PermissionModal.test.tsx src/pages/documents/DocumentWorkspace.test.tsx
+

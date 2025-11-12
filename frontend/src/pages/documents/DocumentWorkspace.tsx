@@ -423,6 +423,7 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
           onBulkDelete={handleBulkDelete}
           onBulkShare={handleBulkShare}
           onBulkArchive={handleBulkArchive}
+          onOpenQuestions={handleOpenQuestions}
           onViewAccessLogs={handleViewAccessLogs}
           resetSelectionSignal={resetSelectionSignal}
         />
