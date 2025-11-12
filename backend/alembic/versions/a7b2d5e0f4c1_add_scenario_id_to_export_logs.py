@@ -15,7 +15,8 @@ import sqlalchemy as sa
 revision: str = "a7b2d5e0f4c1"
 down_revision: Union[str, None] = "dc2c0f69c1b1"
 branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+# Ensure the valuation tables revision runs first so the target table exists.
+depends_on: Union[str, Sequence[str], None] = ("658051b7d4f9",)
 
 TABLE_NAME = "valuation_export_logs"
 FK_NAME = "fk_valuation_export_logs_scenario_id"

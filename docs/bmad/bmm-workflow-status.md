@@ -1,151 +1,73 @@
-    # BMM Workflow Status (Reopened 2025-11-12T14:15Z | Updated 2025-11-13T09:05Z)
+# BMM Workflow Status (Reopened 2025-11-12T14:15Z | Updated 2025-11-12T14:55Z)
 
-    ## Project Configuration
+## Project Configuration
 
-    PROJECT_NAME: M&A Intelligence Platform
-    PROJECT_TYPE: software
-    PROJECT_TRACK: enterprise-method
-    FIELD_TYPE: greenfield
-    START_DATE: 2025-10-28
-    WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.yaml
+PROJECT_NAME: M&A Intelligence Platform
+PROJECT_TYPE: software
+PROJECT_TRACK: enterprise-method
+FIELD_TYPE: greenfield
+START_DATE: 2025-10-28
+WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.yaml
 
-    ## Current State
+## Current State
 
-    CURRENT_PHASE: 4-Implementation
-    CURRENT_WORKFLOW: dev-story
-    CURRENT_AGENT: backend
-    PHASE_1_COMPLETE: true
-    PHASE_2_COMPLETE: true
-    PHASE_3_COMPLETE: true
-    PHASE_4_COMPLETE: false
-    PHASE_5_COMPLETE: false
-    PHASE_6_COMPLETE: false
+CURRENT_PHASE: 4-Implementation
+CURRENT_WORKFLOW: dev-story
+CURRENT_AGENT: devops
+PHASE_1_COMPLETE: true
+PHASE_2_COMPLETE: true
+PHASE_3_COMPLETE: true
+PHASE_4_COMPLETE: false
+PHASE_5_COMPLETE: false
+PHASE_6_COMPLETE: false
 
-    ## Current Story Status
+## Current Story Status
 
-    STORY_ID: GOV-W0-harness-reset
-    STORY_STATUS: COMPLETE
-    STORY_RESULT: W0 governance pytest suite green; coverage warnings documented, Render blockers cleared for W1
-    BLOCKERS: None – W1 migrations may begin immediately
+STORY_ID: DEV-008-storage-quota-enforcement
+STORY_STATUS: GREEN (frontend + backend quotas complete)
+STORY_RESULT: Billing dashboard now returns real `storage_used_mb`, and UploadPanel consumes it for proactive quota UX; remaining work is redeploying to Render so production tenants see the update.
+BLOCKERS: Render backend deploy dep-d4a7jq8gjchc73fhk30g is still `update_failed` (DB host resolution), so production usage stays at 0 MB until the redeploy succeeds.
 
-    ## Next Action
+## Next Action
 
-    NEXT_ACTION: Execute W1 backend migration & deploy recovery loop (alembic parity + subscription/billing error-path tests)
-    NEXT_COMMAND: cd backend && ./venv/Scripts/python.exe -m pytest tests/test_billing_endpoints.py tests/test_subscription_service_edge_cases.py --cov=backend/app && alembic upgrade head
-    NEXT_AGENT: backend
-    PRIORITY: P0
-    RATIONALE: BMAD plan moves from governance (W0) to migrations/deploy hardening (W1) now that guardrails are verified
+NEXT_ACTION: Trigger backend redeploy on Render with the new storage metrics and capture fresh verify logs.
+NEXT_COMMAND: RENDER_SERVICE_ID=srv-d3ii9qk9c44c73aqsli0 RENDER_API_KEY=$RENDER_API_KEY python trigger_render_deploy.py && python scripts/verify_deployment.py
+NEXT_AGENT: devops
+PRIORITY: P0
+RATIONALE: Code + tests are green; need to unblock production deployment health so DEV-008 can be signed off.
 
-    ## Completed This Session
+## Completed This Session
 
-    SESSION_ID: Session-2025-11-13A-W0-Governance
-    COMPLETED_WORK:
-    - Ran ============================= test session starts =============================
-platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0
-rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
-configfile: pytest.ini
-plugins: anyio-3.7.1, asyncio-0.21.1, cov-4.1.0
-asyncio: mode=Mode.STRICT
-collected 20 items
+SESSION_ID: Session-2025-11-12U3-StorageMetrics
+COMPLETED_WORK:
+- Queried Render API for `ma-saas-backend` + `ma-saas-platform` (services `srv-d3ii9qk9c44c73aqsli0`, `srv-d3ihptbipnbc73e72ne0`) – latest backend deploy `dep-d4a7jq8gjchc73fhk30g` = `update_failed`, frontend deploy `dep-d4a7juf5r7bs73e8jak0` = `build_in_progress`.
+- Guarded Alembic migration `89a67cacf69a` with `_table_exists` and logged blockers in Session 2025-11-12U (previous run).
+- Completed RED→GREEN loop for quota wiring (stream polyfills + DocumentWorkspace `useQuery` + Vitest suites) as recorded in Session 2025-11-12U2.
+- Added backend storage usage computation in `/api/billing/billing-dashboard` plus pytest coverage so `storage_used_mb` reflects active documents only.
 
-tests	est_path_safety.py ....                                           [ 20%]
-testspi	est_blog.py ................                                  [100%]WARNING: Failed to generate report: No data to report.
+FILES_MODIFIED:
+- backend/alembic/versions/89a67cacf69a_add_export_log_task_metadata_fields.py
+- backend/app/api/routes/subscriptions.py
+- backend/tests/conftest.py
+- backend/tests/test_subscription_error_paths.py
+- docs/bmad/BMAD_PROGRESS_TRACKER.md
+- docs/bmad/stories/DEV-008-secure-document-data-room.md
+- docs/bmad/bmm-workflow-status.md (this file)
 
+TEST_RESULTS:
+- `cd backend && python -m pytest tests/test_document_endpoints.py -k folders --maxfail=1 -vv` → 2 passed / 0 failed ✅
+- `cd backend && source ../.venv/bin/activate && python -m pytest tests/test_subscription_error_paths.py --maxfail=1 -q` → 17 passed / 4 skipped ✅
+- `cd frontend && npx vitest run src/tests/msw/documentsHandlers.test.ts src/components/documents/FolderTree.test.tsx src/components/documents/PermissionModal.test.tsx src/components/documents/UploadPanel.enhanced.test.tsx --pool=forks` → 74 tests passed ✅
+- `cd frontend && npx vitest run src/components/documents/UploadPanel.enhanced.test.tsx --pool=vmThreads` → 34/34 ✅
+- `cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=vmThreads` → 31/31 ✅
 
+**Phase 6 Focus**: Deployment evidence refresh, marketing audits, and final QA packaging
 
-============================== warnings summary ===============================
-venv\Lib\site-packages\coverage\core.py:93
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\core.py:93: CoverageWarning: Couldn't import C tracer: No module named 'coverage.tracer' (no-ctracer); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-no-ctracer
-    warn(f"Couldn't import C tracer: {IMPORT_ERROR}", slug="no-ctracer", once=True)
-
-backend/tests/api/test_blog.py: 16 warnings
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
-    warnings.warn(message, DeprecationWarning)
-
-backend/tests/api/test_blog.py::test_list_blog_posts_with_category_filter
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fac7b90: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_list_blog_posts_with_search
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fae2950: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_list_blog_posts_include_unpublished
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fafd690: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_list_blog_posts_with_pagination
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fb45e50: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_list_blog_posts_empty_result
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fb682d0: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_get_blog_post_by_slug_success
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fb16890: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_get_blog_post_by_slug_not_found
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fbb0090: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_get_unpublished_post_by_slug
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fb8b710: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_list_blog_categories
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fc05250: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_list_blog_categories_empty_database
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fb88c90: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_list_blog_posts_with_invalid_limit
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fc37e10: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_list_blog_posts_with_invalid_offset
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fc76f90: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_blog_post_response_schema
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fc3e490: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_blog_search_case_insensitive
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fcb1750: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
-backend/tests/api/test_blog.py::test_blog_list_ordering
-  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliverackendenv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x2b47fcf0410: 0 data points in 0 files>> != <bound method PyTracer._trace of <PyTracer at 0x2b456a8d510: 0 data points in 0 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
-    self.warn(
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-
----------- coverage: platform win32, python 3.11.9-final-0 -----------
-
-======================= 20 passed, 32 warnings in 6.64s =======================
- (20 tests, ~16s) per W0 Build→Measure loop.
-    - Logged coverage warnings (, , ) as non-blocking governance notes.
-    - Updated BMAD progress tracker with evidence so future loops maintain audit trail.
-
-    FILES_MODIFIED:
-    - docs/bmad/BMAD_PROGRESS_TRACKER.md
-    - docs/bmad/bmm-workflow-status.md (this file)
-
-    TEST_RESULTS:
-    - W0 governance pytest suite: 20 passed / 0 failed ✅ (coverage warnings expected on repo-managed venv)
-
-    **Phase 4 Focus**: Transition to W1 – backend migration & deploy recovery
+---
 
 ## Historical Entry (Phase 6 sign-off)
 
 # BMM Workflow Status
-
-> **2025-11-12Z Planning Reset (Codex):** DEV-008 Document Room remains BLOCKED until MSW/localStorage shims are in place and vitest suites (PermissionModal/UploadPanel/DocumentWorkspace) go green under `--pool=vmThreads`. Deployment evidence from 2025-11-12 shows backend deploy `dep-d4a38l0dl3ps73f47d90` update_failed and frontend deploy `dep-d4a38l0fdonc73ec8e9g` queued (`docs/DEPLOYMENT_HEALTH.md`). Immediate loop: (1) stabilize Document Room harness/tests, (2) retrigger Render deploys + rerun smoke/verify scripts, (3) refresh MARK-002 Lighthouse/axe artefacts, (4) run full backend/frontend QA for release.
-
 
 ## Project Configuration
 

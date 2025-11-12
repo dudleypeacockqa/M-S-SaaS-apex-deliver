@@ -1,92 +1,82 @@
 # 100% Project Completion Plan
 **Project**: M&A Intelligence Platform (ApexDeliver)
-**Last Updated**: 2025-11-12 13:45 UTC
-**Methodology**: BMAD v6-alpha + TDD (RED -> GREEN -> REFACTOR)
+**Last Updated**: 2025-11-12 12:20 UTC
+**Methodology**: BMAD v6-alpha + TDD (RED ➜ GREEN ➜ REFACTOR)
 
 ---
 
-## Current Delivery Snapshot (2025-11-12 13:45 UTC)
-- **Backend tests**: Full-suite baseline `pytest --maxfail=1 backend/tests --cov=backend/app --cov-report=term-missing` remains at 706 passed / 77 skipped (90% coverage). Targeted harness runs logged 2025-11-12: `pytest backend/tests/test_path_safety.py backend/tests/api/test_blog.py --maxfail=1 -vv` (W0) and `pytest backend/tests/test_billing_endpoints.py backend/tests/test_subscription_error_paths.py --maxfail=1 --cov=backend/app -vv` (W1, 30 passed / 4 skipped). Evidence lives in `backend-test-baseline-2025-11-12.txt`; next full run follows DEV-008 quota/permission implementation.
-- **Frontend tests**: DocumentRoom suites (`DocumentRoomPage.test.tsx` 8/8, `PermissionModal.test.tsx` 11/11) plus new `DocumentWorkspace.test.tsx` bulk-move/archive harness (25/25) all green as of Session 2025-11-12M; full `npm run test -- --runInBand --coverage` still pending until DEV-008/016/018 loops complete.
-- **Deployment**: ✅ Backend `srv-d3ii9qk9c44c73aqsli0` live on deploy `dep-d49et83uibrs739agtfg` (commit `9b0577f3`). ✅ Frontend `srv-d3ihptbipnbc73e72ne0` live on deploy `dep-d49etc8m2f8s73dkf0v0` (commit `9b0577f3`). Health endpoints 200; smoke artefacts scheduled for refresh during deploy-audit workstream.
-- **Git state**: `HEAD` `6eb40f0 feat(doc-room): add filters and owner guard`; branch even with `origin/main`. Working tree dirty with BMAD documentation updates, DEV-008 Vitest scaffolding, and the new backend path-safety harness (`backend/tests/path_safety.py`, `backend/tests/test_path_safety.py`) that is now baselined (GREEN 2025-11-12 run captured).
-- **Migrations**: `alembic upgrade head` confirmed against Render Postgres (Session 2025-11-10G); revision `dc2c0f69c1b1`. Evidence to be re-captured during deploy audit.
-- **BMAD artefacts**: Tracker, workflow status, and DEV-008 story synchronized through Session 2025-11-12K; BMAD CLI `run` command still unavailable so manual updates continue.
+## Current Delivery Snapshot (2025-11-12 12:20 UTC)
+- **Git state**: `HEAD` / `origin/main` = `ff939e5 feat(dashboard): add comprehensive onboarding for first-time users`. Working tree dirty (documentation, BMAD artefacts, MSW harnesses). No outstanding pushes; latest commit already on `origin/main`.
+- **Backend tests**: Last targeted pytest (document endpoints folder slice) still green (2/0). Full-suite baseline remains 750 passed / 54 skipped (84% coverage). Next complete run scheduled once deployment/ops artefacts refreshed.
+- **Frontend tests**: Document Room vitest suites (`FolderTree`, `DocumentWorkspace`, `PermissionModal`, `UploadPanel`) remain 100% green. Global `npm run test -- --runInBand --coverage` queued for Phase 6 verification window.
+- **Render deployment**: Production backend (`srv-d3ii9qk9c44c73aqsli0`) currently serving commit `834fa20`. Production frontend (`srv-d3ihptbipnbc73e72ne0`) serving `680c7a4`. Latest repo commits (`ff939e5`) are **not yet deployed**, so a redeploy is required before calling the platform “up to date.”
+- **Deployment health**: `python3 scripts/verify_deployment.py` (2025-11-12 12:18Z) → 10/10 HTTP checks ✅. Output stored in `docs/deployments/verify-deployment-refresh-2025-11-12-latest.txt`.
+- **Migrations**: Live database confirmed at Alembic head `dc2c0f69c1b1` (Render logs 2025-11-11). Need to re-run `alembic upgrade head` as part of the redeploy, then archive new evidence.
+- **BMAD artefacts**: `docs/bmad/bmm-workflow-status.md` reopened Phase 4 (dev-story). Progress tracker entry pending for this planning session; BMAD CLI still offline so manual markdown updates continue.
 
-### Dirty Tree Mapping (2025-11-12 13:45 UTC)
-- `.bmad/**` manifests + docs – BMAD v6 install plus ongoing session logs.
-- `backend/tests/path_safety.py`, `backend/tests/test_path_safety.py`, `backend-test-baseline-2025-11-12.txt` – PATH safety regression harness GREEN as of W0 run (2025-11-12 11:45 UTC), awaiting integration into the next backend coverage sprint.
-- `frontend/src/components/documents/**`, `frontend/src/services/api/documents.ts` – DEV-008 document room UI enhancements and Vitest harness WIP (permissions, quota, bulk actions).
-- `frontend/src/pages/deals/MatchingWorkspace.tsx`, `.test.tsx`, `frontend/test-results-full.txt` – DEV-018 analytics fixtures staged for upcoming refactor.
-- Deployment artefacts (`docs/DEPLOYMENT_HEALTH.md`, `deployment-health-2025-11-11-refresh.json`, `latest-deploy.json`) – require refreshed smoke evidence during deploy-audit step.
+### Dirty Tree Mapping (2025-11-12 12:20 UTC)
+- `.bmad/**` – regenerated manifests + workflow trackers awaiting sync with this session.
+- `frontend/src/tests/msw/**`, `frontend/src/setupTests.ts` – shared MSW harness (GREEN) staged for documentation evidence.
+- `frontend/src/components/documents/**`, `frontend/src/services/api/documents.ts` – DEV-008 code complete; docs/screenshots still outstanding.
+- Deployment artefacts (`docs/DEPLOYMENT_HEALTH.md`, `latest-deploy*.json`, `docs/deployments/**`) – refreshed verification log added (2025-11-12 12:18Z) but redeploy + smoke output still pending.
+- Marketing accessibility/Lighthouse outputs (`docs/marketing/`) – previous audits stored; final Phase 6 capture yet to occur.
 
 ---
 
 ## Critical Unfinished Workstreams (ordered)
 
 ### 1. DEV-008 Secure Document & Data Room (P0)
-- **Status**: Backend endpoints verified; frontend document workspace still outstanding (no FolderTree/PermissionModal/Upload UI).
-- **Actions**:
-  - Draft RED Vitest specs for folder navigation (lazy children, keyboard access) and audit logging before implementation.
-  - Implement React components (FolderTree, DocumentList, PermissionModal, UploadPanel, BulkActionsToolbar) and integrate with `documents.ts` API (bulk move/archive now complete with optimistic + undo flows).
-  - Add regression coverage for search, previews, and audit log exports; update story + BMAD docs when green.
-  - **TDD cadence**: Continue starting with failing specs (`FolderTree.test.tsx`, `useDocumentRoom.test.ts`) before wiring remaining UI polish.
+- **Gap**: Engineering is GREEN but BMAD story, PRD, UX packet, and regression artefacts are stale.
+- **Plan (TDD cadence)**:
+  1. **RED** – Extend backend + frontend regression tests to capture any missed folder edge cases (write failing pytest/vitest where coverage lacking).
+  2. **GREEN** – Implement fixes/document clarifications until new tests pass.
+  3. **REFACTOR** – Capture screenshots, MSW handler docs, and update `docs/bmad/stories/DEV-008*.md` plus `WEBSITE_DEVELOPMENT_PLAN.md`.
+- **Deliverables**: Updated story docs, refreshed vitest/pytest logs under `docs/tests/`, screenshots for release notes, MSW handler reference.
 
-### 2. DEV-016 Podcast Studio Subscription Add-On (P0)
-- **Status**: Audio upload + quota gating live; video upload, transcription, YouTube metadata sync, and live streaming still pending.
-- **Actions**:
-  - Implement video upload modal + backend endpoint with tier enforcement and tests.
-  - Integrate Whisper transcription pipeline, monthly quota reset, and upgrade CTA telemetry.
-  - Reach >=90% backend / >=85% frontend coverage; document artefacts and ops guides.
-  - **TDD cadence**: Extend `backend/tests/test_podcast_api.py` and `frontend/src/components/podcast/VideoUploadModal.test.tsx` first (RED), then wire new services until suites pass.
+### 2. MARK-002 Enhanced Marketing Website (P1 but required for “100% complete” claim)
+- **Gap**: Final Lighthouse + axe audits + screenshot evidence missing; hero/mobile nav polish pending sign-off.
+- **Plan**:
+  1. Run `npm run build && npx lighthouse https://100daysandbeyond.com ...` (capture RED/ GREEN as needed).
+  2. Record axe DevTools report (`docs/marketing/accessibility-report-2025-11-12.json`).
+  3. Update MARK-002 story + `MARKETING_WEBSITE_STATUS.md` with metrics and attach assets.
 
-### 3. DEV-018 Intelligent Deal Matching (P0)
-- **Status**: Backend + current frontend suites green; criteria builder modal, analytics workspace, and match actions still pending.
-- **Actions**:
-  - Build criteria builder modal (form + validation) and integrate with React Query caches.
-  - Implement match action workflows (save/pass/request intro) with backend wiring and Vitest coverage.
-  - Add analytics dashboard widgets and update story/PRD artefacts upon completion.
-  - **TDD cadence**: Add failing specs in `frontend/src/pages/deals/MatchingWorkspace.test.tsx` for pending behaviors before touching implementation; keep React Query mocks centralised.
+### 3. Operations & Deployment Hardening (P0)
+- **Gap**: Render is healthy but not running latest commit; smoke/verification logs older than HEAD.
+- **Plan**:
+  1. Use Render API key (`rnd_*`) with `scripts/update_render_predeploy.py` to queue backend + frontend redeploys for commit `ff939e5`.
+  2. After redeploy, rerun `scripts/verify_deployment.py` and `scripts/run_smoke_tests.sh production`; archive outputs + update `latest-deploy*.json` + `docs/DEPLOYMENT_HEALTH.md`.
+  3. Reconfirm Alembic head via `alembic upgrade head` + log file in `docs/deployments/`.
 
-### 4. MARK-002 Enhanced Marketing Website (P1)
-- **Status**: Phase 2/10 complete; remaining SEO, Lighthouse, asset pipeline outstanding.
-- **Actions**:
-  - Finish phases 3-10 with Vitest + Lighthouse evidence; update marketing docs/asset inventory.
-  - Align Render preview assets and capture screenshots for release notes.
-  - **TDD cadence**: Continue component-by-component RED->GREEN loops; archive Lighthouse + Vitest outputs per phase under docs/marketing/.
+### 4. Master Admin / MAP-REBUILD-001 Backend Foundation (P0)
+- **Gap**: Story reopened; goal/activity models + migrations still outstanding.
+- **Plan** (strict TDD):
+  1. Extend `backend/tests/test_master_admin_models.py` with RED cases covering goal/activity metadata + constraints.
+  2. Implement SQLAlchemy models + Alembic migrations (dependencies already fixed) until tests GREEN.
+  3. Update services/routers + docs, then refactor for clarity.
 
-### 5. Operations & Deployment Hardening (P0/P1)
-- **Status**: Latest backend/frontend redeploys (dep-d49430euk2gs73es0cpg / dep-d4944ochg0os738k2sc0) verified 2025-11-10 20:05 UTC; smoke artefacts/logs need refreshing after each sprint per P1-3 checklist.
-- **Actions**:
-  - Refresh `.env` secrets, rerun `scripts/run_smoke_tests.sh production`, and capture outputs in DEPLOYMENT_HEALTH.md + PRODUCTION_DEPLOYMENT_CHECKLIST.md after each deploy.
-  - Apply outstanding migrations in staging, confirm worker configs, update monitoring alerts.
-  - Prepare release notes/PR summary once functional work converges.
-  - **TDD cadence**: Treat smoke + migration verification scripts as test harnesses—run them RED first (expected failures) before attempting redeploy.
-
-### 6. Final QA, Documentation, and Handover (P0)
-- **Status**: Blocked by DEV-008/DEV-016/DEV-018 completion.
-- **Actions**:
-  - Run full backend pytest, full Vitest with coverage, `npm run lint`, `npm run build`, `uvicorn` + `npm run preview` smoke.
-  - Update BMAD tracker, workflow status, story artefacts, release notes, ops checklists.
-  - Confirm Render deployment health 100% (evidence: smoke logs, coverage reports, screenshots).
-  - **TDD cadence**: Capture baseline RED by re-running whole-suite commands now (expect failures) to document delta before the final GREEN run.
+### 5. Final QA, Documentation, and Handover (P0)
+- **Gap**: Coverage + lint logs not refreshed post-latest commits; release packet incomplete.
+- **Plan**:
+  1. Execute full suites: `python -m pytest backend/tests`, `npm run lint`, `npm run test -- --runInBand --coverage`, `npm run build`, `npm run preview`.
+  2. Store outputs under `backend-test-final-*.txt`, `frontend-test-final-*.txt`, update coverage docs.
+  3. Update release notes, completion checklist, BMAD tracker/workflow, and craft final PR + tag instructions.
 
 ---
 
 ## BMAD Execution Roadmap
-1. **Governance Sync**: Continue reconciling documentation (progress tracker, story files, deployment health) with verified test outcomes.
-2. **BMM Phase 4 - Implementation Loops**: For each workstream above, execute `npx bmad-method run dev-story` to enforce RED -> GREEN -> REFACTOR, logging outputs in story docs.
-3. **BMM Phase 5 - Verification**: After each story reaches GREEN, rerun targeted suites and capture metrics/coverage deltas in `BMAD_PROGRESS_TRACKER.md`.
-4. **BMM Phase 6 - Release & Operations**: Execute Render deployment checklist, document smoke tests, and prepare Conventional Commit + PR package including BMAD shard/ticket references.
+1. **Governance Sync** – Update `docs/bmad/BMAD_PROGRESS_TRACKER.md`, `docs/bmad/bmm-workflow-status.md`, and relevant story files after every TDD loop (manual because CLI agents unavailable).
+2. **Phase 4 / dev-story loops** – For DEV-008 + MAP-REBUILD-001, always start with RED tests, implement GREEN, then document REFACTOR before moving forward.
+3. **Phase 5 Verification** – Capture artefacts (pytest/vitest/lighthouse/smoke outputs) immediately after GREEN to avoid stale evidence.
+4. **Phase 6 Release** – Once deployments run latest commit, finalize smoke + release docs, tag `v1.0.0`, and prepare PR package referencing BMAD shard IDs.
 
 ---
 
 ## Immediate Next Actions (Next 48 Hours)
-1. **Sprint 1B - Admin code prune**: Delete unused admin API modules/tests (`app/api/admin/*`) and rerun `cd backend && pytest --cov=app --cov-report=term-missing`. Update coverage numbers + BMAD docs.
-2. **DEV-008 RED cycle**: Shift RED specs to FolderTree lazy-load + keyboard tests (bulk move/archive flows now green), scaffold MSW mocks, then implement UI once RED achieved.
-3. **DEV-016/018 preparation**: Extend backend/frontend tests (podcast video upload, deal-matching criteria builder) before implementation; protect coverage targets (backend ≥90%, frontend ≥85%).
-4. **Ops cadence**: After each sprint, rerun smoke tests + Render deploys, refresh `latest-deploy*.json`, `DEPLOYMENT_HEALTH.md`, and ops checklists; plan credential rotation for final handoff.
-5. **Governance + PR hygiene**: Keep BMAD tracker/workflow/stories synchronized, update `PR_DESCRIPTION.md` with latest sprint summary, and capture any new incident notes immediately.
+1. **Log this planning session** – Update `docs/bmad/BMAD_PROGRESS_TRACKER.md` + `docs/bmad/bmm-workflow-status.md` with the refreshed plan + deployment verification run.
+2. **Redeploy + verify** – Queue Render redeploys for backend/frontend, run smoke + verification scripts, and update `latest-deploy*.json` + `docs/DEPLOYMENT_HEALTH.md`.
+3. **DEV-008 documentation sprint** – Capture missing artefacts (tests, screenshots, PRD/story updates) following RED ➜ GREEN ➜ REFACTOR.
+4. **MARK-002 audits** – Execute Lighthouse + axe runs on production + stage, update marketing docs with metrics.
+5. **MAP-REBUILD-001 TDD loop** – Write failing tests for master-admin goal/activity models, implement migrations/services, keep BMAD docs in sync.
 
 ---
 
