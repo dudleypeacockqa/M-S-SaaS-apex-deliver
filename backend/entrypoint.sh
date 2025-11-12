@@ -4,6 +4,42 @@
 
 set -e  # Exit on error
 
+normalize_database_url() {
+  if [ -z "${DATABASE_URL:-}" ]; then
+    return
+  fi
+
+  if printf '%s' "$DATABASE_URL" | grep -q "@dpg-" && ! printf '%s' "$DATABASE_URL" | grep -q "\.render\.com"; then
+    echo "Normalizing DATABASE_URL host for Render public endpoint..."
+    local suffix="${RENDER_DB_DOMAIN_SUFFIX:-frankfurt-postgres.render.com}"
+    DATABASE_URL=$(DB_URL_TMP="$DATABASE_URL" RENDER_DB_DOMAIN_SUFFIX="$suffix" python - <<'PY'
+import os
+from urllib.parse import urlsplit, urlunsplit
+
+url = os.environ["DB_URL_TMP"]
+suffix = os.environ["RENDER_DB_DOMAIN_SUFFIX"]
+parts = urlsplit(url)
+host = parts.hostname or ""
+if host and "." not in host:
+    host = f"{host}.{suffix}"
+if parts.port:
+    netloc = f"{host}:{parts.port}"
+else:
+    netloc = host
+if parts.username:
+    auth = parts.username
+    if parts.password:
+        auth = f"{auth}:{parts.password}"
+    netloc = f"{auth}@{netloc}"
+print(urlunsplit((parts.scheme, netloc, parts.path, parts.query, parts.fragment)), end="")
+PY
+)
+    export DATABASE_URL
+  fi
+}
+
+normalize_database_url
+
 echo "========================================="
 echo "Starting Render Backend Service"
 echo "========================================="

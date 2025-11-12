@@ -26,8 +26,8 @@ SCHEMA = "public"
 def _table_exists() -> bool:
     bind = op.get_bind()
     result = bind.exec_driver_sql(
-        "SELECT to_regclass(:table_name)",
-        {"table_name": f"{SCHEMA}.{TABLE_NAME}"},
+        "SELECT to_regclass(%s)",
+        (f"{SCHEMA}.{TABLE_NAME}",),
     ).scalar()
     return result is not None
 
