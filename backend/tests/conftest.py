@@ -11,6 +11,10 @@ from uuid import uuid4
 import pytest
 from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
+try:
+    import coverage
+except ImportError:  # pragma: no cover - fallback when coverage not installed
+    coverage = None
 from httpx import AsyncClient
 from jose import jwt
 from sqlalchemy import create_engine, inspect, text
@@ -52,6 +56,8 @@ os.environ.setdefault("CELERY_BROKER_URL", "memory://")
 os.environ.setdefault("CELERY_RESULT_BACKEND", "cache+memory://")
 os.environ.setdefault("CELERY_TASK_ALWAYS_EAGER", "true")
 os.environ.setdefault("CELERY_TASK_EAGER_PROPAGATES", "true")
+
+from tests import path_safety  # pytest namespace package (PEP 420)
 
 from app.core.config import get_settings, settings  # noqa: E402
 from app.db import session as session_module  # noqa: E402
@@ -156,6 +162,15 @@ def client(engine) -> Iterator[TestClient]:
     """Return a FastAPI TestClient with database dependency override."""
 
     SessionTesting = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+    cov_controller = None
+    cov_collector = None
+    if coverage is not None:
+        try:
+            cov_controller = coverage.Coverage.current()
+        except coverage.CoverageException:
+            cov_controller = None
+        if cov_controller is not None:
+            cov_collector = getattr(cov_controller, "_collector", None)
 
     def _get_db_override():
         db = SessionTesting()
@@ -165,9 +180,15 @@ def client(engine) -> Iterator[TestClient]:
             db.close()
 
     app.dependency_overrides[get_db] = _get_db_override
-    with TestClient(app) as test_client:
-        yield test_client
-    app.dependency_overrides.pop(get_db, None)
+    try:
+        with TestClient(app) as test_client:
+            yield test_client
+            if cov_collector is not None:
+                cov_collector.pause()
+    finally:
+        app.dependency_overrides.pop(get_db, None)
+        if cov_collector is not None:
+            cov_collector.resume()
 
 
 @pytest.fixture()
@@ -197,6 +218,12 @@ __all__ = [
     "_reset_metadata",
     "_safe_drop_schema",
 ]
+
+
+def pytest_ignore_collect(path, config):
+    """Skip collecting reserved Windows device paths (e.g., `nul`)."""
+
+    return path_safety.should_ignore_path(path)
 
 def _make_token(clerk_user_id: str) -> str:
     payload = {

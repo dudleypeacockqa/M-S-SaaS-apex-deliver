@@ -1,25 +1,24 @@
 # 100% Project Completion Plan
 **Project**: M&A Intelligence Platform (ApexDeliver)
-**Last Updated**: 2025-11-12 00:10 UTC
+**Last Updated**: 2025-11-12 13:45 UTC
 **Methodology**: BMAD v6-alpha + TDD (RED -> GREEN -> REFACTOR)
 
 ---
 
-## Current Delivery Snapshot (2025-11-12 00:20 UTC)
-- **Backend tests**: Full suite `pytest --maxfail=1 backend/tests --cov=backend/app --cov-report=term-missing` (706 passed / 77 skipped) with overall coverage 90%. Subscription routes 94%, subscription service 84%.
-- **Frontend tests**: Only targeted valuation (13/13) and podcast (26/26) suites re-run; full `npm run test -- --runInBand --coverage` still pending until DEV-008/016/018 work lands.
-- **Deployment**: ✅ Backend `srv-d3ii9qk9c44c73aqsli0` live on deploy `dep-d49430euk2gs73es0cpg` (commit `79a07c5`). ✅ Frontend `srv-d3ihptbipnbc73e72ne0` live on deploy `dep-d4944ochg0os738k2sc0` (commit `be33237`). Health endpoints 200; smoke evidence to be refreshed per P1-3 checklist.
-- **Git state**: `HEAD` `b32bac0 refactor(tests): simplify PodcastStudioRouting integration test`; branch matches `origin/main` but worktree contains ongoing story edits (BMAD docs, DEV-008 stubs, valuation tests).
-- **Migrations**: `alembic upgrade head` executed directly against Render Postgres (Session 2025-11-10G); chain at `dc2c0f69c1b1`. Re-run after next deploy for evidence.
-- **BMAD artefacts**: Tracker + workflow updated through Session 2025-11-12A (coverage baseline); npx workflow tooling still unavailable in this shell.
+## Current Delivery Snapshot (2025-11-12 13:45 UTC)
+- **Backend tests**: Full-suite baseline `pytest --maxfail=1 backend/tests --cov=backend/app --cov-report=term-missing` remains at 706 passed / 77 skipped (90% coverage). Targeted harness runs logged 2025-11-12: `pytest backend/tests/test_path_safety.py backend/tests/api/test_blog.py --maxfail=1 -vv` (W0) and `pytest backend/tests/test_billing_endpoints.py backend/tests/test_subscription_error_paths.py --maxfail=1 --cov=backend/app -vv` (W1, 30 passed / 4 skipped). Evidence lives in `backend-test-baseline-2025-11-12.txt`; next full run follows DEV-008 quota/permission implementation.
+- **Frontend tests**: DocumentRoom suites (`DocumentRoomPage.test.tsx` 8/8, `PermissionModal.test.tsx` 11/11) plus new `DocumentWorkspace.test.tsx` bulk-move/archive harness (25/25) all green as of Session 2025-11-12M; full `npm run test -- --runInBand --coverage` still pending until DEV-008/016/018 loops complete.
+- **Deployment**: ✅ Backend `srv-d3ii9qk9c44c73aqsli0` live on deploy `dep-d49et83uibrs739agtfg` (commit `9b0577f3`). ✅ Frontend `srv-d3ihptbipnbc73e72ne0` live on deploy `dep-d49etc8m2f8s73dkf0v0` (commit `9b0577f3`). Health endpoints 200; smoke artefacts scheduled for refresh during deploy-audit workstream.
+- **Git state**: `HEAD` `6eb40f0 feat(doc-room): add filters and owner guard`; branch even with `origin/main`. Working tree dirty with BMAD documentation updates, DEV-008 Vitest scaffolding, and the new backend path-safety harness (`backend/tests/path_safety.py`, `backend/tests/test_path_safety.py`) that is now baselined (GREEN 2025-11-12 run captured).
+- **Migrations**: `alembic upgrade head` confirmed against Render Postgres (Session 2025-11-10G); revision `dc2c0f69c1b1`. Evidence to be re-captured during deploy audit.
+- **BMAD artefacts**: Tracker, workflow status, and DEV-008 story synchronized through Session 2025-11-12K; BMAD CLI `run` command still unavailable so manual updates continue.
 
-### Dirty Tree Mapping (2025-11-12 00:20 UTC)
-- `.bmad/**` manifests + docs - BMAD v6 install plus session logs still uncommitted upstream.
-- `backend/app/api/routes/podcasts.py`, `backend/tests/test_podcast_api.py`, `backend/app/services/transcription_service.py` - DEV-016 video/transcription + quota reset WIP.
-- `backend/alembic/versions/*.py` - uuid->string chain rewrite plus merge migrations awaiting Postgres verification.
-- `frontend/src/components/documents/**`, `frontend/src/services/api/documents.ts` - DEV-008 document room UI + API binding stubs.
-- `frontend/src/pages/deals/MatchingWorkspace.tsx`, `.test.tsx`, `frontend/src/services/dealMatchingService.ts` - DEV-018 criteria builder + analytics in progress, currently failing Vitest.
-- Deployment artifacts (`scripts/verify_deployment*.py`, `docs/DEPLOYMENT_HEALTH.md`, `latest-deploy*.json`) - need refreshed evidence post redeploy.
+### Dirty Tree Mapping (2025-11-12 13:45 UTC)
+- `.bmad/**` manifests + docs – BMAD v6 install plus ongoing session logs.
+- `backend/tests/path_safety.py`, `backend/tests/test_path_safety.py`, `backend-test-baseline-2025-11-12.txt` – PATH safety regression harness GREEN as of W0 run (2025-11-12 11:45 UTC), awaiting integration into the next backend coverage sprint.
+- `frontend/src/components/documents/**`, `frontend/src/services/api/documents.ts` – DEV-008 document room UI enhancements and Vitest harness WIP (permissions, quota, bulk actions).
+- `frontend/src/pages/deals/MatchingWorkspace.tsx`, `.test.tsx`, `frontend/test-results-full.txt` – DEV-018 analytics fixtures staged for upcoming refactor.
+- Deployment artefacts (`docs/DEPLOYMENT_HEALTH.md`, `deployment-health-2025-11-11-refresh.json`, `latest-deploy.json`) – require refreshed smoke evidence during deploy-audit step.
 
 ---
 
@@ -28,10 +27,10 @@
 ### 1. DEV-008 Secure Document & Data Room (P0)
 - **Status**: Backend endpoints verified; frontend document workspace still outstanding (no FolderTree/PermissionModal/Upload UI).
 - **Actions**:
-  - Draft RED Vitest specs for folder navigation, permission management, upload progress, and bulk actions.
-  - Implement React components (FolderTree, DocumentList, PermissionModal, UploadPanel, BulkActionsToolbar) and integrate with `documents.ts` API.
+  - Draft RED Vitest specs for folder navigation (lazy children, keyboard access) and audit logging before implementation.
+  - Implement React components (FolderTree, DocumentList, PermissionModal, UploadPanel, BulkActionsToolbar) and integrate with `documents.ts` API (bulk move/archive now complete with optimistic + undo flows).
   - Add regression coverage for search, previews, and audit log exports; update story + BMAD docs when green.
-  - **TDD cadence**: Begin with failing specs in `frontend/src/components/documents/*.test.tsx`, drive UI through GREEN, then refactor shared hooks (`useDocumentRoom`) for reuse.
+  - **TDD cadence**: Continue starting with failing specs (`FolderTree.test.tsx`, `useDocumentRoom.test.ts`) before wiring remaining UI polish.
 
 ### 2. DEV-016 Podcast Studio Subscription Add-On (P0)
 - **Status**: Audio upload + quota gating live; video upload, transcription, YouTube metadata sync, and live streaming still pending.
@@ -84,7 +83,7 @@
 
 ## Immediate Next Actions (Next 48 Hours)
 1. **Sprint 1B - Admin code prune**: Delete unused admin API modules/tests (`app/api/admin/*`) and rerun `cd backend && pytest --cov=app --cov-report=term-missing`. Update coverage numbers + BMAD docs.
-2. **DEV-008 RED cycle**: Author failing Vitest specs for FolderTree/PermissionModal/upload flows, scaffold MSW mocks, then implement UI once RED achieved.
+2. **DEV-008 RED cycle**: Shift RED specs to FolderTree lazy-load + keyboard tests (bulk move/archive flows now green), scaffold MSW mocks, then implement UI once RED achieved.
 3. **DEV-016/018 preparation**: Extend backend/frontend tests (podcast video upload, deal-matching criteria builder) before implementation; protect coverage targets (backend ≥90%, frontend ≥85%).
 4. **Ops cadence**: After each sprint, rerun smoke tests + Render deploys, refresh `latest-deploy*.json`, `DEPLOYMENT_HEALTH.md`, and ops checklists; plan credential rotation for final handoff.
 5. **Governance + PR hygiene**: Keep BMAD tracker/workflow/stories synchronized, update `PR_DESCRIPTION.md` with latest sprint summary, and capture any new incident notes immediately.
@@ -92,3 +91,10 @@
 ---
 
 Strict adherence to BMAD + TDD remains mandatory: every functional change starts with a failing test, all documentation updates follow immediately after GREEN cycles, and deployment artefacts must be refreshed before claiming completion.
+
+
+
+
+
+
+

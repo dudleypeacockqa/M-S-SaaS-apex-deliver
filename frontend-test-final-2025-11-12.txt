@@ -1,0 +1,624 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+ [32m✓[39m src/components/documents/UploadPanel.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 944[2mms[22m[39m
+     [33m[2m✓[22m[39m opens file picker when upload button clicked [33m 647[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DocumentRoomPage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1582[2mms[22m[39m
+       [33m[2m✓[22m[39m should render the main document room layout [33m 677[2mms[22m[39m
+       [33m[2m✓[22m[39m applies search query to document requests [33m 343[2mms[22m[39m
+ [32m✓[39m src/components/podcast/LiveStreamManager.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 3418[2mms[22m[39m
+     [33m[2m✓[22m[39m should render create stream button and invoke API on click [33m 970[2mms[22m[39m
+     [33m[2m✓[22m[39m should render recording toggle and retention selector [33m 439[2mms[22m[39m
+     [33m[2m✓[22m[39m should show language selector with multiple options for enterprise tier [33m 342[2mms[22m[39m
+ [32m✓[39m src/pages/deals/TaskBoard.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 3665[2mms[22m[39m
+     [33m[2m✓[22m[39m opens create task modal when "Add Task" button is clicked [33m 758[2mms[22m[39m
+     [33m[2m✓[22m[39m creates a new task when form is submitted [33m 1686[2mms[22m[39m
+     [33m[2m✓[22m[39m updates task status when moved to different column [33m 623[2mms[22m[39m
+Not implemented: navigation to another Document
+[90mstderr[2m | src/App.test.tsx[2m > [22m[2mAppRoutes[2m > [22m[2mshows dashboard content when the user is authenticated
+[22m[39mClerk not loaded yet
+
+ [32m✓[39m src/components/documents/DocumentExporter.test.tsx [2m([22m[2m23 tests[22m[2m)[22m[33m 3150[2mms[22m[39m
+     [33m[2m✓[22m[39m renders section header and description [33m 495[2mms[22m[39m
+     [33m[2m✓[22m[39m renders export format select with all format options [33m 480[2mms[22m[39m
+     [33m[2m✓[22m[39m calls onExport with customized options [33m 645[2mms[22m[39m
+ [32m✓[39m src/App.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 6338[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the home route with sign-in actions for visitors [33m 4807[2mms[22m[39m
+     [33m[2m✓[22m[39m shows dashboard content when the user is authenticated [33m 521[2mms[22m[39m
+     [33m[2m✓[22m[39m updates the header to show the user menu for authenticated users [33m 604[2mms[22m[39m
+ [32m✓[39m src/pages/deals/NewDealPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 6464[2mms[22m[39m
+     [33m[2m✓[22m[39m shows validation errors when required fields missing [33m 1262[2mms[22m[39m
+     [33m[2m✓[22m[39m submits payload and navigates to deal details on success [33m 4059[2mms[22m[39m
+     [33m[2m✓[22m[39m displays backend error when createDeal rejects [33m 1140[2mms[22m[39m
+ [32m✓[39m src/components/documents/AISuggestionPanel.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[33m 1735[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 6741[2mms[22m[39m
+     [33m[2m✓[22m[39m should display deal details after loading [33m 666[2mms[22m[39m
+     [33m[2m✓[22m[39m should enter edit mode when Edit button is clicked [33m 654[2mms[22m[39m
+     [33m[2m✓[22m[39m should call updateDeal API when saving changes [33m 797[2mms[22m[39m
+       [33m[2m✓[22m[39m should render tab navigation with Overview, Financials, Documents, and Team tabs [33m 523[2mms[22m[39m
+       [33m[2m✓[22m[39m should switch to Financials tab when clicked [33m 604[2mms[22m[39m
+       [33m[2m✓[22m[39m should switch to Documents tab when clicked [33m 423[2mms[22m[39m
+       [33m[2m✓[22m[39m should switch to Team tab when clicked [33m 497[2mms[22m[39m
+       [33m[2m✓[22m[39m should persist active tab when re-rendering [33m 732[2mms[22m[39m
+[90mstderr[2m | src/pages/marketing/Blog.test.tsx[2m > [22m[2mBlog Listing Page[2m > [22m[2mInteractions[2m > [22m[2mshould render error banner when fetch fails
+[22m[39mError fetching blog posts: Error: Failed to fetch blog posts: Internal Server Error
+    at fetchPosts (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/Blog.tsx:119:17)
+
+ [32m✓[39m src/pages/marketing/Blog.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1579[2mms[22m[39m
+       [33m[2m✓[22m[39m should request posts for selected category [33m 466[2mms[22m[39m
+       [33m[2m✓[22m[39m should clear filters and search when clicking Clear Filters [33m 344[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentEditor.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 7023[2mms[22m[39m
+     [33m[2m✓[22m[39m loads the document and supports rich text editing with autosave [33m 1653[2mms[22m[39m
+     [33m[2m✓[22m[39m applies a selected template and updates the editor content [33m 730[2mms[22m[39m
+     [33m[2m✓[22m[39m surfaces AI suggestions and handles accept, reject, and regenerate flows [33m 1167[2mms[22m[39m
+     [33m[2m✓[22m[39m exports the document in the selected format with configured options [33m 553[2mms[22m[39m
+     [33m[2m✓[22m[39m lists version history and restores a selected version into the editor [33m 379[2mms[22m[39m
+     [33m[2m✓[22m[39m handles save errors gracefully and displays retry messaging [33m 469[2mms[22m[39m
+     [33m[2m✓[22m[39m updates context for AI suggestions when the user provides additional details [33m 1704[2mms[22m[39m
+[90mstderr[2m | src/pages/marketing/ContactPage.test.tsx[2m > [22m[2mContactPage[2m > [22m[2mshows error state when submission fails
+[22m[39mError submitting contact form: Error: Network error
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/ContactPage.test.tsx:64:51
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:157:11
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:753:26
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1602:10[90m)[39m
+    at runTest [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1309:12[90m)[39m
+    at runSuite [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1468:8[90m)[39m
+    at runSuite [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1468:8[90m)[39m
+    at runFiles [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1526:3[90m)[39m
+
+ [32m✓[39m src/pages/marketing/ContactPage.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 6563[2mms[22m[39m
+     [33m[2m✓[22m[39m renders header, contact form, and information sections [33m 448[2mms[22m[39m
+     [33m[2m✓[22m[39m validates required fields before submission [33m 362[2mms[22m[39m
+     [33m[2m✓[22m[39m submits form and shows confirmation message [33m 3427[2mms[22m[39m
+     [33m[2m✓[22m[39m shows error state when submission fails [33m 2267[2mms[22m[39m
+[90mstderr[2m | src/pages/tasks/TaskBoard.test.tsx[2m > [22m[2mTaskBoard[2m > [22m[2mrefreshes tasks on polling interval
+[22m[39mAn update to TaskBoard inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TaskBoard inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TaskBoard inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TaskBoard inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | src/pages/tasks/TaskBoard.test.tsx[2m > [22m[2mTaskBoard[2m > [22m[2mrefreshes tasks on polling interval
+[22m[39mAn update to TaskBoard inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TaskBoard inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TaskBoard inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | src/pages/tasks/TaskBoard.test.tsx[2m > [22m[2mTaskBoard[2m > [22m[2mrefreshes tasks on polling interval
+[22m[39mAn update to TaskBoard inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 8832[2mms[22m[39m
+     [33m[2m✓[22m[39m renders task board with required columns and tasks [33m 863[2mms[22m[39m
+     [33m[2m✓[22m[39m persists filters when modified [33m 437[2mms[22m[39m
+     [33m[2m✓[22m[39m filters tasks by assignee, status, priority, and due date [33m 1613[2mms[22m[39m
+     [33m[2m✓[22m[39m sorts tasks by due date and priority [33m 888[2mms[22m[39m
+     [33m[2m✓[22m[39m opens task creation modal and validates required fields [33m 1679[2mms[22m[39m
+     [33m[2m✓[22m[39m opens task detail modal on card click and loads task detail data [33m 398[2mms[22m[39m
+     [33m[2m✓[22m[39m updates task details from detail modal [33m 1607[2mms[22m[39m
+     [33m[2m✓[22m[39m assigns a task from the detail modal [33m 382[2mms[22m[39m
+     [33m[2m✓[22m[39m deletes a task from the detail modal [33m 452[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx [2m([22m[2m29 tests[22m[2m)[22m[33m 9703[2mms[22m[39m
+       [33m[2m✓[22m[39m should render modal when isOpen is true [33m 433[2mms[22m[39m
+       [33m[2m✓[22m[39m should show error for empty target company [33m 912[2mms[22m[39m
+       [33m[2m✓[22m[39m should show error for negative deal size [33m 401[2mms[22m[39m
+       [33m[2m✓[22m[39m should not show errors when all required fields are filled [33m 1071[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onCreate when form is submitted with valid data [33m 1463[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onSuccess after successful creation [33m 679[2mms[22m[39m
+       [33m[2m✓[22m[39m should close modal after successful creation [33m 859[2mms[22m[39m
+       [33m[2m✓[22m[39m should disable submit button while submitting [33m 850[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onUpdate when editing existing deal [33m 503[2mms[22m[39m
+       [33m[2m✓[22m[39m should trap focus within modal [33m 780[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/EnhancedLandingPage.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 2231[2mms[22m[39m
+     [33m[2m✓[22m[39m renders How It Works section [33m 632[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 9542[2mms[22m[39m
+     [33m[2m✓[22m[39m shows loading indicator while valuations fetch [33m 546[2mms[22m[39m
+     [33m[2m✓[22m[39m submits new valuation when form completed [33m 1093[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding comparable company to selected valuation [33m 1323[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding precedent transaction to selected valuation [33m 1682[2mms[22m[39m
+     [33m[2m✓[22m[39m allows creating a new scenario with JSON assumptions [33m 1654[2mms[22m[39m
+     [33m[2m✓[22m[39m shows validation error when scenario assumptions JSON is invalid [33m 972[2mms[22m[39m
+     [33m[2m✓[22m[39m shows detailed confirmation after queuing an export [33m 415[2mms[22m[39m
+     [33m[2m✓[22m[39m runs Monte Carlo simulation and displays percentile summary [33m 791[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 3993[2mms[22m[39m
+       [33m[2m✓[22m[39m should show edit button when not editing [33m 304[2mms[22m[39m
+       [33m[2m✓[22m[39m should enter edit mode when edit button is clicked [33m 375[2mms[22m[39m
+       [33m[2m✓[22m[39m should update input values when changed [33m 366[2mms[22m[39m
+       [33m[2m✓[22m[39m should call updateGoal mutation when saving existing goal [33m 739[2mms[22m[39m
+       [33m[2m✓[22m[39m should call createGoal mutation when saving new goal [33m 1162[2mms[22m[39m
+[90mstderr[2m | src/features/auth/Auth.test.tsx[2m > [22m[2mClerk authentication routing[2m > [22m[2mshows dashboard content when the user is authenticated
+[22m[39mClerk not loaded yet
+
+ [32m✓[39m src/components/podcast/YouTubePublisher.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 11659[2mms[22m[39m
+     [33m[2m✓[22m[39m shows connect call-to-action when YouTube is not connected and triggers OAuth flow [33m 839[2mms[22m[39m
+     [33m[2m✓[22m[39m prefills metadata form with episode details and enforces title length [33m 5557[2mms[22m[39m
+     [33m[2m✓[22m[39m submits publish payload with metadata and schedule [33m 3489[2mms[22m[39m
+     [33m[2m✓[22m[39m allows disconnecting the connected channel [33m 428[2mms[22m[39m
+Not implemented: navigation to another Document
+ [32m✓[39m src/components/marketing/Footer.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1579[2mms[22m[39m
+       [33m[2m✓[22m[39m should render Product section with links [33m 578[2mms[22m[39m
+ [32m✓[39m src/features/auth/Auth.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1909[2mms[22m[39m
+     [33m[2m✓[22m[39m redirects unauthenticated users from /dashboard to /sign-in [33m 504[2mms[22m[39m
+     [33m[2m✓[22m[39m shows dashboard content when the user is authenticated [33m 327[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the appropriate header action depending on auth state [33m 1069[2mms[22m[39m
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 2241[2mms[22m[39m
+       [33m[2m✓[22m[39m renders workspace with title and tabs [33m 467[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 3328[2mms[22m[39m
+     [33m[2m✓[22m[39m should sort documents by name [33m 791[2mms[22m[39m
+     [33m[2m✓[22m[39m should sort documents by date [33m 414[2mms[22m[39m
+     [33m[2m✓[22m[39m shows bulk actions toolbar when documents are selected [33m 355[2mms[22m[39m
+     [33m[2m✓[22m[39m bulk delete calls delete API for each selected document when confirmed [33m 356[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx [2m([22m[2m29 tests[22m[2m)[22m[33m 11755[2mms[22m[39m
+       [33m[2m✓[22m[39m should show upgrade prompt when user lacks podcast_audio access [33m 865[2mms[22m[39m
+       [33m[2m✓[22m[39m should show critical quota banner when usage reaches critical threshold [33m 372[2mms[22m[39m
+       [33m[2m✓[22m[39m should call API and show success message when transcription completes [33m 375[2mms[22m[39m
+       [33m[2m✓[22m[39m allows editing metadata before publishing to YouTube when integration access granted [33m 2646[2mms[22m[39m
+       [33m[2m✓[22m[39m initiates OAuth connect flow when YouTube account is not connected [33m 504[2mms[22m[39m
+       [33m[2m✓[22m[39m should create episode when form submitted with valid data [33m 2471[2mms[22m[39m
+       [33m[2m✓[22m[39m should open Edit modal when Edit button clicked on episode [33m 317[2mms[22m[39m
+       [33m[2m✓[22m[39m should update episode when edit form submitted [33m 811[2mms[22m[39m
+       [33m[2m✓[22m[39m should delete episode when deletion confirmed [33m 440[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 1851[2mms[22m[39m
+     [33m[2m✓[22m[39m should render modal when isOpen is true [33m 391[2mms[22m[39m
+ [32m✓[39m src/components/marketing/ComparisonTable.test.tsx [2m([22m[2m40 tests[22m[2m)[22m[33m 1057[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealPipeline.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1684[2mms[22m[39m
+     [33m[2m✓[22m[39m should display deals grouped by stage after loading [33m 349[2mms[22m[39m
+[90mstderr[2m | src/components/master-admin/activity/ActivityForm.test.tsx[2m > [22m[2mActivityForm[2m > [22m[2mForm Submission[2m > [22m[2mshould not reset form if submission fails
+[22m[39mFailed to create activity: Error: Failed to create
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/components/master-admin/activity/ActivityForm.test.tsx:302:60
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:157:11
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:753:26
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1602:10[90m)[39m
+    at runTest [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1309:12[90m)[39m
+    at runSuite [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1468:8[90m)[39m
+    at runSuite [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1468:8[90m)[39m
+    at runSuite [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1468:8[90m)[39m
+
+ [32m✓[39m src/components/master-admin/activity/ActivityForm.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 4126[2mms[22m[39m
+       [33m[2m✓[22m[39m should render the form with all required fields [33m 579[2mms[22m[39m
+       [33m[2m✓[22m[39m should submit form with all field values [33m 1321[2mms[22m[39m
+       [33m[2m✓[22m[39m should reset form after successful submission [33m 545[2mms[22m[39m
+       [33m[2m✓[22m[39m should not reset form if submission fails [33m 380[2mms[22m[39m
+ [32m✓[39m src/components/deals/DealFilters.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[33m 4358[2mms[22m[39m
+       [33m[2m✓[22m[39m should render clear filters button [33m 630[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onSearchChange when typing in search input [33m 597[2mms[22m[39m
+       [33m[2m✓[22m[39m should debounce search input (not call on every keystroke) [33m 509[2mms[22m[39m
+       [33m[2m✓[22m[39m should clear search when clear button is clicked [33m 491[2mms[22m[39m
+       [33m[2m✓[22m[39m should handle both search and stage filter simultaneously [33m 673[2mms[22m[39m
+       [33m[2m✓[22m[39m should clear both filters when clear button is clicked [33m 476[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx [2m([22m[2m26 tests[22m[2m)[22m[33m 5161[2mms[22m[39m
+     [33m[2m✓[22m[39m renders modal with dialog role and aria-modal [33m 456[2mms[22m[39m
+     [33m[2m✓[22m[39m renders all status options [33m 380[2mms[22m[39m
+     [33m[2m✓[22m[39m updates title field when user types [33m 697[2mms[22m[39m
+     [33m[2m✓[22m[39m updates description field when user types [33m 337[2mms[22m[39m
+     [33m[2m✓[22m[39m updates show notes field when user types [33m 398[2mms[22m[39m
+     [33m[2m✓[22m[39m calls onSubmit with updated data when form submitted [33m 614[2mms[22m[39m
+     [33m[2m✓[22m[39m does not call onSubmit when title is only whitespace [33m 345[2mms[22m[39m
+     [33m[2m✓[22m[39m allows form submission after correcting validation errors [33m 619[2mms[22m[39m
+ [32m✓[39m src/components/marketing/FAQSection.test.tsx [2m([22m[2m41 tests[22m[2m)[22m[33m 1218[2mms[22m[39m
+     [33m[2m✓[22m[39m first FAQ is open by default [33m 326[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.featureGates.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 1775[2mms[22m[39m
+     [33m[2m✓[22m[39m shows audio controls but locks video uploads for Professional tier [33m 545[2mms[22m[39m
+     [33m[2m✓[22m[39m opens the upgrade modal with pricing when CTA is clicked [33m 310[2mms[22m[39m
+ [32m✓[39m src/components/billing/ChangeTierModal.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 1679[2mms[22m[39m
+     [33m[2m✓[22m[39m should display loading state while changing tier [33m 986[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/ActivityList.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1864[2mms[22m[39m
+       [33m[2m✓[22m[39m should display loading skeleton when data is loading [33m 395[2mms[22m[39m
+       [33m[2m✓[22m[39m should filter activities by date range [33m 664[2mms[22m[39m
+ [32m✓[39m src/components/marketing/ROICalculator.test.tsx [2m([22m[2m33 tests[22m[2m)[22m[33m 1545[2mms[22m[39m
+     [33m[2m✓[22m[39m updates deal count when slider changes [33m 433[2mms[22m[39m
+Not implemented: navigation to another Document
+ [32m✓[39m src/tests/integration/routing.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1746[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the landing page for visitors [33m 1283[2mms[22m[39m
+     [33m[2m✓[22m[39m directs visitors to the sign-in page when accessing the dashboard [33m 396[2mms[22m[39m
+ [32m✓[39m src/components/documents/BulkActions.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1187[2mms[22m[39m
+       [33m[2m✓[22m[39m should display bulk download button [33m 351[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDocuments.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1129[2mms[22m[39m
+     [33m[2m✓[22m[39m renders document rows with formatted size, version badge, and action buttons [33m 830[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 1816[2mms[22m[39m
+       [33m[2m✓[22m[39m should disable upload button when no file selected [33m 451[2mms[22m[39m
+       [33m[2m✓[22m[39m should show success message after upload [33m 402[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/SecurityPage.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[33m 1765[2mms[22m[39m
+       [33m[2m✓[22m[39m should render "Segregated Multi-Tenant Architecture" feature [33m 320[2mms[22m[39m
+[90mstderr[2m | src/pages/marketing/BlogPostPage.test.tsx[2m > [22m[2mBlogPostPage[2m > [22m[2mError Handling[2m > [22m[2mshould display error message when post not found
+[22m[39mError fetching blog post: Error: Post not found
+    at fetchPost (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/BlogPostPage.tsx:42:17)
+
+ [32m✓[39m src/pages/marketing/FeaturesPage.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 1123[2mms[22m[39m
+     [33m[2m✓[22m[39m renders main heading [33m 686[2mms[22m[39m
+[90mstderr[2m | src/pages/marketing/BlogPostPage.test.tsx[2m > [22m[2mBlogPostPage[2m > [22m[2mError Handling[2m > [22m[2mshould show "Back to Blog" link when post not found
+[22m[39mError fetching blog post: Error: Post not found
+    at fetchPost (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/BlogPostPage.tsx:42:17)
+
+ [32m✓[39m src/pages/marketing/BlogPostPage.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 2574[2mms[22m[39m
+       [33m[2m✓[22m[39m should render featured image with alt text [33m 1080[2mms[22m[39m
+       [33m[2m✓[22m[39m should display breadcrumb navigation with "Back to Blog" link [33m 413[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/legal/__tests__/LegalPages.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1378[2mms[22m[39m
+     [33m[2m✓[22m[39m renders Terms of Service with last updated date and sections [33m 946[2mms[22m[39m
+ [32m✓[39m src/components/layout/NavigationMenu.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 2147[2mms[22m[39m
+     [33m[2m✓[22m[39m renders navigation shell with brand and user menu [33m 695[2mms[22m[39m
+     [33m[2m✓[22m[39m shows base workspace links for solo users [33m 435[2mms[22m[39m
+     [33m[2m✓[22m[39m renders admin + master admin pills for admin role [33m 365[2mms[22m[39m
+ [32m✓[39m src/components/documents/VersionHistory.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 1648[2mms[22m[39m
+     [33m[2m✓[22m[39m renders section header and description [33m 751[2mms[22m[39m
+ [32m✓[39m src/components/podcast/VideoUploadModal.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 2611[2mms[22m[39m
+       [33m[2m✓[22m[39m should display file size [33m 698[2mms[22m[39m
+       [33m[2m✓[22m[39m should disable upload button when no file selected [33m 617[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/FAQPage.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 914[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/PricingPage.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 2537[2mms[22m[39m
+     [33m[2m✓[22m[39m renders all 4 pricing tiers with correct headings and prices [33m 527[2mms[22m[39m
+     [33m[2m✓[22m[39m redirects unauthenticated users to sign-in when clicking Get Started [33m 515[2mms[22m[39m
+     [33m[2m✓[22m[39m calls redirectToCheckout for authenticated users selecting Starter [33m 519[2mms[22m[39m
+     [33m[2m✓[22m[39m shows loading state while redirect promise pending [33m 380[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/IntroductionRequestModal.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 859[2mms[22m[39m
+     [33m[2m✓[22m[39m should render modal with form when isOpen is true [33m 308[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/AboutPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 711[2mms[22m[39m
+     [33m[2m✓[22m[39m sets the document title and renders the hero heading [33m 350[2mms[22m[39m
+     [33m[2m✓[22m[39m includes value statements and call to action [33m 310[2mms[22m[39m
+ [32m✓[39m src/components/marketing/TrustBadges.test.tsx [2m([22m[2m47 tests[22m[2m)[22m[33m 996[2mms[22m[39m
+ [32m✓[39m src/components/marketing/EnhancedHeroSection.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 899[2mms[22m[39m
+ [32m✓[39m src/pages/checkout/CheckoutCancel.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 352[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/CapLiquifyFPAPage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 435[2mms[22m[39m
+ [32m✓[39m src/components/marketing/MarketingLayout.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 363[2mms[22m[39m
+ [32m✓[39m src/components/deals/DealKanbanBoard.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 872[2mms[22m[39m
+       [33m[2m✓[22m[39m should have accessible column headings [33m 347[2mms[22m[39m
+ [32m✓[39m src/components/financial/FinancialOverview.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 662[2mms[22m[39m
+     [33m[2m✓[22m[39m should render connection status card when not connected [33m 301[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 1359[2mms[22m[39m
+     [33m[2m✓[22m[39m should render nested folder hierarchy [33m 445[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx [2m([22m[2m33 tests[22m[2m)[22m[33m 2374[2mms[22m[39m
+       [33m[2m✓[22m[39m should display cancel button for each uploading file [33m 336[2mms[22m[39m
+ [32m✓[39m src/components/podcast/DeleteEpisodeModal.test.tsx [2m([22m[2m22 tests[22m[2m)[22m[33m 1123[2mms[22m[39m
+     [33m[2m✓[22m[39m renders modal with dialog role and aria-modal [33m 303[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/MatchDetailModal.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 922[2mms[22m[39m
+     [33m[2m✓[22m[39m should render modal when isOpen is true [33m 453[2mms[22m[39m
+[90mstderr[2m | src/components/marketing/OptInPopup.test.tsx[2m > [22m[2mOptInPopup[2m > [22m[2mshows an error message when subscription fails
+[22m[39mFailed to subscribe: Error: network
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/components/marketing/OptInPopup.test.tsx:49:43
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:157:11
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:753:26
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1602:10[90m)[39m
+    at runTest [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1309:12[90m)[39m
+    at runSuite [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1468:8[90m)[39m
+    at runSuite [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1468:8[90m)[39m
+    at runFiles [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1526:3[90m)[39m
+
+ [32m✓[39m src/components/marketing/OptInPopup.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 1894[2mms[22m[39m
+     [33m[2m✓[22m[39m becomes visible after the delay and submits successfully [33m 1220[2mms[22m[39m
+     [33m[2m✓[22m[39m shows an error message when subscription fails [33m 668[2mms[22m[39m
+ [32m✓[39m src/components/documents/BulkActionsToolbar.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 804[2mms[22m[39m
+     [33m[2m✓[22m[39m disables download button when disableDownload true [33m 341[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/NudgePanel.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 755[2mms[22m[39m
+ [32m✓[39m src/pages/checkout/CheckoutSuccess.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 331[2mms[22m[39m
+ [32m✓[39m src/components/documents/TemplateSelector.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 893[2mms[22m[39m
+     [33m[2m✓[22m[39m renders loading state with skeleton loaders [33m 359[2mms[22m[39m
+ [32m✓[39m src/pages/dashboard/BillingDashboard.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1105[2mms[22m[39m
+     [33m[2m✓[22m[39m opens customer portal and shows loading state [33m 635[2mms[22m[39m
+ [32m✓[39m src/components/marketing/MarketingNav.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 737[2mms[22m[39m
+     [33m[2m✓[22m[39m displays navigation links [33m 552[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/PodcastPage.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 419[2mms[22m[39m
+ [32m✓[39m src/components/marketing/EnhancedTestimonials.test.tsx [2m([22m[2m36 tests[22m[2m)[22m[33m 1003[2mms[22m[39m
+ [32m✓[39m src/components/MarketingFooter.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 597[2mms[22m[39m
+       [33m[2m✓[22m[39m should render app title [33m 496[2mms[22m[39m
+ [32m✓[39m src/components/podcast/YouTubePublishButton.test.tsx [2m([22m[2m22 tests[22m[2m)[22m[33m 1435[2mms[22m[39m
+     [33m[2m✓[22m[39m renders button with default text [33m 361[2mms[22m[39m
+     [33m[2m✓[22m[39m can be clicked multiple times when not disabled or loading [33m 400[2mms[22m[39m
+ [32m✓[39m src/components/billing/CancelSubscriptionModal.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 1788[2mms[22m[39m
+     [33m[2m✓[22m[39m should render modal when isOpen is true [33m 555[2mms[22m[39m
+     [33m[2m✓[22m[39m should allow immediate cancellation when checkbox is selected [33m 455[2mms[22m[39m
+     [33m[2m✓[22m[39m should display loading state while canceling [33m 349[2mms[22m[39m
+ [32m✓[39m src/components/layout/Breadcrumbs.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 675[2mms[22m[39m
+     [33m[2m✓[22m[39m renders breadcrumb trail for top-level route [33m 451[2mms[22m[39m
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document permission changes with affected user IDs
+[22m[39m[Audit] Permission changed: { documentId: [32m'doc-1'[39m, userId: [32m'user-abc'[39m, permission: [32m'edit'[39m }
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document deletion events
+[22m[39m[Audit] {
+  action: [32m'DOCUMENT_DELETED'[39m,
+  resource_type: [32m'document'[39m,
+  resource_id: [32m'doc-to-delete'[39m,
+  metadata: { fileName: [32m'contract.pdf'[39m }
+}
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs bulk actions with affected document IDs
+[22m[39m[Audit] {
+  action: [32m'BULK_DELETE'[39m,
+  resource_type: [32m'document'[39m,
+  resource_id: [32m'bulk-operation'[39m,
+  metadata: { documentIds: [ [32m'doc-1'[39m, [32m'doc-2'[39m, [32m'doc-3'[39m ], count: [33m3[39m }
+}
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mBulk Actions[2m > [22m[2mcalls bulk delete handler when requested
+[22m[39m[Bulk Delete] [
+  { id: [32m'doc-1'[39m, name: [32m'file1.pdf'[39m },
+  { id: [32m'doc-2'[39m, name: [32m'file2.pdf'[39m }
+]
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mBulk Actions[2m > [22m[2mcalls bulk share handler when requested
+[22m[39m[Bulk Share] [
+  { id: [32m'doc-1'[39m, name: [32m'file1.pdf'[39m },
+  { id: [32m'doc-2'[39m, name: [32m'file2.pdf'[39m }
+]
+
+ [32m✓[39m src/pages/marketing/LandingPage.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 1126[2mms[22m[39m
+     [33m[2m✓[22m[39m renders hero section [33m 719[2mms[22m[39m
+ [32m✓[39m src/pages/deals/FinancialDashboard.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1069[2mms[22m[39m
+     [33m[2m✓[22m[39m should display financial ratios grouped by category [33m 713[2mms[22m[39m
+ [32m✓[39m src/components/documents/PermissionModal.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 1480[2mms[22m[39m
+     [33m[2m✓[22m[39m should render modal with permissions list when isOpen is true [33m 414[2mms[22m[39m
+[90mstderr[2m | src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx[2m > [22m[2mBlogListingPage contract[2m > [22m[2mshows a friendly outage message when the blog API fails
+[22m[39mFailed to load blog posts Error: network down
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx:22:39
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:157:11
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:753:26
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1602:10[90m)[39m
+    at runTest [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1309:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at runSuite [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1468:8[90m)[39m
+    at runSuite [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1468:8[90m)[39m
+
+ [32m✓[39m src/pages/marketing/BookTrial.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 774[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 688[2mms[22m[39m
+     [33m[2m✓[22m[39m shows a friendly outage message when the blog API fails [33m 685[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/FourStageCyclePage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 925[2mms[22m[39m
+       [33m[2m✓[22m[39m should render page without errors [33m 356[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx [2m([22m[2m25 tests[22m[2m)[22m[33m 2403[2mms[22m[39m
+       [33m[2m✓[22m[39m should batch archive operations for performance [33m 324[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EpisodeTranscriptPanel.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 675[2mms[22m[39m
+     [33m[2m✓[22m[39m renders transcribe button when no transcript exists [33m 386[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/TeamPage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 460[2mms[22m[39m
+ [32m✓[39m src/components/financial/FinancialRatiosDashboard.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 629[2mms[22m[39m
+     [33m[2m✓[22m[39m should display ratio descriptions on hover or click [33m 474[2mms[22m[39m
+ [32m✓[39m src/components/auth/AuthErrorBoundary.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 535[2mms[22m[39m
+     [33m[2m✓[22m[39m should provide a way to recover from error [33m 353[2mms[22m[39m
+ [32m✓[39m src/components/podcast/QuotaWarning.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 623[2mms[22m[39m
+     [33m[2m✓[22m[39m shows warning when usage crosses threshold [33m 464[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/MatchCard.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 542[2mms[22m[39m
+     [33m[2m✓[22m[39m shows truncated explanation with View More button [33m 317[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/CaseStudiesPage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 514[2mms[22m[39m
+ [32m✓[39m src/components/podcast/FeatureGate.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 625[2mms[22m[39m
+       [33m[2m✓[22m[39m should display required tier in upgrade CTA [33m 425[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/FocusTimer.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1031[2mms[22m[39m
+       [33m[2m✓[22m[39m should start 25-minute session when 25 min button is clicked [33m 389[2mms[22m[39m
+ [32m✓[39m src/components/marketing/HeroSection.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 641[2mms[22m[39m
+     [33m[2m✓[22m[39m renders main headline [33m 472[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/SalesPromotionPricingPage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 811[2mms[22m[39m
+       [33m[2m✓[22m[39m should render "Dynamic Pricing Engine" feature [33m 346[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/BlogPost.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 612[2mms[22m[39m
+     [33m[2m✓[22m[39m links related articles using their slug [33m 610[2mms[22m[39m
+ [32m✓[39m src/components/podcast/VideoPlayer.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[32m 266[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/NotFound.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 488[2mms[22m[39m
+     [33m[2m✓[22m[39m should render "Go Home" button [33m 368[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/__tests__/ContactPage.form.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 156[2mms[22m[39m
+ [32m✓[39m src/components/financial/FinancialNarrativeDisplay.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 546[2mms[22m[39m
+     [33m[2m✓[22m[39m should call onRegenerate when regenerate button is clicked [33m 336[2mms[22m[39m
+ [32m✓[39m src/components/marketing/DashboardMockup.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 232[2mms[22m[39m
+ [32m✓[39m src/components/marketing/PricingCard.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 532[2mms[22m[39m
+     [33m[2m✓[22m[39m renders CTA button [33m 333[2mms[22m[39m
+ [32m✓[39m src/components/marketing/AnalyticsProvider.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 132[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/SaveMatchButton.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/legal/LegalMeta.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 174[2mms[22m[39m
+ [32m✓[39m src/components/marketing/ExitIntentPopup.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 461[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/LandingPage.meta.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 236[2mms[22m[39m
+ [32m✓[39m src/components/auth/ProtectedRoute.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 283[2mms[22m[39m
+ [32m✓[39m src/components/layout/PageSection.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 431[2mms[22m[39m
+ [32m✓[39m src/components/marketing/CTASection.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 306[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/analytics/MatchSuccessRate.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 87[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/EnhancedLandingPage.meta.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 157[2mms[22m[39m
+ [32m✓[39m src/hooks/useUploadProgress.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 228[2mms[22m[39m
+ [32m✓[39m src/hooks/useFeatureAccess.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 251[2mms[22m[39m
+ [32m✓[39m src/components/financial/DealReadinessScore.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 235[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/shared/StatCard.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 380[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/AboutPage.meta.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 279[2mms[22m[39m
+[90mstderr[2m | src/pages/marketing/BlogListingPage.test.tsx[2m > [22m[2mBlogListingPage[2m > [22m[2mshows a friendly error message when the API call fails
+[22m[39mFailed to load blog posts Error: Network error
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/BlogListingPage.test.tsx:54:48
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:157:11
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:753:26
+    at [90mfile:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1602:10[90m)[39m
+    at runTest [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1309:12[90m)[39m
+    at runSuite [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1468:8[90m)[39m
+    at runSuite [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1468:8[90m)[39m
+    at runFiles [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:1526:3[90m)[39m
+
+ [32m✓[39m src/pages/marketing/BlogListingPage.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 330[2mms[22m[39m
+ [32m✓[39m src/components/common/OptimizedImage.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[32m 116[2mms[22m[39m
+ [32m✓[39m src/components/common/Breadcrumbs.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 150[2mms[22m[39m
+ [32m✓[39m src/components/common/SEO.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 113[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/PassMatchButton.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m src/components/marketing/StickyCTABar.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 177[2mms[22m[39m
+ [32m✓[39m src/components/podcast/YouTubeStatusBadge.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[32m 126[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/analytics/RecentMatches.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+ [32m✓[39m src/components/ui/Spinner.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+ [32m✓[39m src/hooks/useDealMatches.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 133[2mms[22m[39m
+ [32m✓[39m src/components/layout/ContentContainer.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 109[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/MatchScoreBadge.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+ [32m✓[39m src/components/marketing/FeatureCard.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 90[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/analytics/MatchingActivity.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 91[2mms[22m[39m
+ [32m✓[39m src/components/ui/Button.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+ [32m✓[39m src/components/podcast/CreateEpisodeModal.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 86[2mms[22m[39m
+ [32m✓[39m src/components/marketing/MarketingLayout.domain.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 69[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/RequestIntroButton.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/analytics/MatchScoreDistribution.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+ [32m✓[39m src/services/api/masterAdmin.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/services/api.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/services/billingService.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/services/api/documents.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+[2m14:25:14[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [33mwarning: Module "node:fs" has been externalized for browser compatibility, imported by "C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/tests/domainConfig.test.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+  Plugin: [35mvite:resolve[39m
+[2m14:25:14[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [33mwarning: Module "node:path" has been externalized for browser compatibility, imported by "C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/tests/domainConfig.test.ts". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+  Plugin: [35mvite:resolve[39m
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ [32m✓[39m src/utils/schemas/offerSchema.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/utils/imageUtils.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/utils/schemas/organizationSchema.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/utils/schemas/breadcrumbSchema.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/utils/schemas/blogPostSchema.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/utils/schemas/personSchema.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/services/api/financial.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+
+<--- Last few GCs --->
+
+[34032:00000214FA493000]  2111594 ms: Scavenge (during sweeping) 4090.9 (4095.4) -> 4089.0 (4095.4) MB, pooled: 0.0 MB, 15.70 / 0.00 ms (average mu = 0.395, current mu = 0.396) allocation failure; 
+[34032:00000214FA493000]  2113258 ms: Mark-Compact (reduce) 4093.7 (4098.1) -> 4089.3 (4092.9) MB, pooled: 0.0 MB, 1102.35 / 0.00 ms (+ 377.1 ms in 74 steps since start of marking, biggest step 10.0 ms, walltime since start of marking 1664 ms) (average mu
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FF6EF7F8B26 node::OnFatalError+1318
+ 2: 00007FF6F03953D7 v8::Function::NewInstance+423
+ 3: 00007FF6F01A3837 EVP_PKEY_asn1_set_get_priv_key+463031
+ 4: 00007FF6F01A7747 EVP_PKEY_asn1_set_get_priv_key+479175
+ 5: 00007FF6F01B9338 v8::internal::StrongRootAllocatorBase::deallocate_impl+19160
+ 6: 00007FF6F01B8B6B v8::internal::StrongRootAllocatorBase::deallocate_impl+17163
+ 7: 00007FF6F177AB6D v8::base::DiyFp::Multiply+10628957
+ 8: 00007FF6F01A1168 EVP_PKEY_asn1_set_get_priv_key+453096
+ 9: 00007FF6F01BED60 X509_STORE_set_cleanup+5616
+10: 00007FF6F01BDA5E X509_STORE_set_cleanup+750
+11: 00007FF6F01CAF5E SSL_CTX_set_cookie_generate_cb+19214
+12: 00007FF6F01E2C9E SSL_CTX_set_cookie_generate_cb+116814
+13: 00007FF6F01E2C35 SSL_CTX_set_cookie_generate_cb+116709
+14: 00007FF6EFEE59BB v8::RegExp::GetFlags+17307
+15: 00007FF6EFEE523D v8::RegExp::GetFlags+15389
+16: 00007FF6EFEE6441 v8::RegExp::GetFlags+20001
+17: 00007FF6EFDD5D27 v8::String::Utf8Value::~Utf8Value+195927
+18: 00000214B7E7B4FA 
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/tests/domainConfig.test.ts[2m [ src/tests/domainConfig.test.ts ][22m
+[31m[1mError[22m: No such built-in module: node:[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/deals/DealCard.test.tsx[2m [ src/components/deals/DealCard.test.tsx ][22m
+[31m[1mError[22m: Failed to resolve import "date-fns" from "src/components/deals/DealCard.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/components/deals/DealCard.tsx[39m:13:23
+[33m  3  |  import { cn } from "@/styles/design-tokens";
+  4  |  import { Calendar, Building2, TrendingUp, Archive } from "lucide-react";
+  5  |  import { format } from "date-fns";
+     |                          ^
+  6  |  const STAGE_COLORS = {
+  7  |    sourcing: "bg-gray-100 text-gray-800",[39m
+[90m [2m❯[22m TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/config.js:[2m29618:43[22m[39m
+[90m [2m❯[22m TransformPluginContext.error node_modules/vite/dist/node/chunks/config.js:[2m29615:14[22m[39m
+[90m [2m❯[22m normalizeUrl node_modules/vite/dist/node/chunks/config.js:[2m27738:18[22m[39m
+[90m [2m❯[22m node_modules/vite/dist/node/chunks/config.js:[2m27796:32[22m[39m
+[90m [2m❯[22m TransformPluginContext.transform node_modules/vite/dist/node/chunks/config.js:[2m27764:4[22m[39m
+[90m [2m❯[22m EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/config.js:[2m29416:14[22m[39m
+[90m [2m❯[22m loadAndTransform node_modules/vite/dist/node/chunks/config.js:[2m23287:26[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Errors [49m[22m[31m⎯⎯⎯⎯⎯⎯[39m
+[31m[1m
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Error [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: [vitest-pool]: Worker forks emitted error.[39m
+[90m [2m❯[22m EventEmitter.<anonymous> node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m7233:22[22m[39m
+[90m [2m❯[22m EventEmitter.emit node:events:[2m508:28[22m[39m
+[90m [2m❯[22m ChildProcess.emitUnexpectedExit node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m6782:22[22m[39m
+[90m [2m❯[22m ChildProcess.emit node:events:[2m508:28[22m[39m
+[90m [2m❯[22m Process.ChildProcess._handle.onexit node:internal/child_process:[2m293:12[22m[39m
+
+[31m[1mCaused by: Error[22m: Worker exited unexpectedly[39m
+[90m [2m❯[22m ChildProcess.emitUnexpectedExit node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m6781:33[22m[39m
+[90m [2m❯[22m ChildProcess.emit node:events:[2m508:28[22m[39m
+[90m [2m❯[22m Process.ChildProcess._handle.onexit node:internal/child_process:[2m293:12[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m143 passed[39m[22m[90m (146)[39m
+[2m      Tests [22m [1m[32m1514 passed[39m[22m[90m (1526)[39m
+[2m     Errors [22m [1m[31m1 error[39m[22m
+[2m   Start at [22m 14:24:20
+[2m   Duration [22m 2165.03s[2m (transform 45.15s, setup 93.76s, collect 66.93s, tests 213.42s, environment 309.82s, prepare 9.73s)[22m
+
+error during close Error: [vitest-pool-runner]: Timeout waiting for worker to respond
+    at Timeout.<anonymous> (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:6798:58)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)

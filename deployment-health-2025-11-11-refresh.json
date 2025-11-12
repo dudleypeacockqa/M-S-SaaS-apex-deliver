@@ -1,0 +1,8 @@
+{
+  "timestamp": "2025-11-12T13:45:00Z",
+  "backend": "dep-d49et83uibrs739agtfg",
+  "frontend": "dep-d49etc8m2f8s73dkf0v0",
+  "verify_log": "docs/deployments/2025-11-12-verify-deployment.txt",
+  "smoke_log": "docs/deployments/2025-11-12-smoke-tests.txt"
+}
+

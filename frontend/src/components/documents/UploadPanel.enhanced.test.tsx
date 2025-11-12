@@ -611,10 +611,22 @@ describe('UploadPanel - Enhanced Features (Sprint 2 Task 1)', () => {
         />
       );
 
-      const fileInput = screen.getByTestId('upload-input');
       const invalidFile = new File(['content'], 'image.png', { type: 'image/png' });
+      const dropzone = screen.getByTestId('upload-dropzone');
 
-      await user.upload(fileInput, invalidFile);
+      const dataTransfer = {
+        files: [invalidFile],
+        items: [
+          {
+            kind: 'file',
+            type: invalidFile.type,
+            getAsFile: () => invalidFile,
+          },
+        ],
+        types: ['Files'],
+      };
+
+      fireEvent.drop(dropzone, { dataTransfer });
 
       const alerts = await screen.findAllByRole('alert');
       const errorAlert = alerts.find((element) =>

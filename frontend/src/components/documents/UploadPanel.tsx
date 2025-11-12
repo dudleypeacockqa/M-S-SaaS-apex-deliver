@@ -1,35 +1,45 @@
 /**
  * UploadPanel Component
- * Drag-and-drop file upload with progress tracking and upload queue management
+ * Drag-and-drop file upload with progress tracking and entitlement awareness.
  * Sprint 1.1 - DEV-008 Secure Document & Data Room
- * Sprint 2 Task 1 - Enhanced upload queue with per-file progress and cancellation
  */
 
-import React, { useRef, useState } from 'react';
-import { CheckCircle, XCircle, Loader2, X, UploadCloud } from 'lucide-react';
-import { formatFileSize, calculateOverallProgress } from '@/utils/fileHelpers';
+import React, { useRef, useState } from 'react'
+import { CheckCircle, XCircle, Loader2, X, UploadCloud } from 'lucide-react'
+import { formatFileSize, calculateOverallProgress } from '@/utils/fileHelpers'
 
 export interface UploadQueueItem {
-  id: string;
-  name: string;
-  progress: number;
-  status: 'pending' | 'uploading' | 'complete' | 'error';
-  error?: string;
-  size?: number;
-  speed?: string;
-  eta?: string;
+  id: string
+  name: string
+  progress: number
+  status: 'pending' | 'uploading' | 'complete' | 'error'
+  error?: string
+  size?: number
+  speed?: string
+  eta?: string
+}
+
+export interface StorageQuota {
+  used: number
+  limit: number
 }
 
 export interface UploadPanelProps {
-  onUpload: (files: FileList | File[]) => void;
-  isUploading: boolean;
-  progress?: number;
-  errorMessage?: string;
-  onRemove?: () => void;
-  accept?: string;
-  uploadQueue?: UploadQueueItem[];
-  onCancelFile?: (fileId: string) => void;
-  onRetryFile?: (fileId: string) => void;
+  onUpload: (files: FileList | File[]) => void
+  isUploading: boolean
+  progress?: number
+  errorMessage?: string
+  onRemove?: () => void
+  accept?: string
+  uploadQueue?: UploadQueueItem[]
+  onCancelFile?: (fileId: string) => void
+  onRetryFile?: (fileId: string) => void
+  storageQuota?: StorageQuota
+  maxFileSize?: number
+  userTier?: 'starter' | 'professional' | 'enterprise' | 'community'
+  allowedFileTypes?: string[]
+  maxFilesPerUpload?: number
+  onManageStorage?: () => void
 }
 
 const UploadPanel: React.FC<UploadPanelProps> = ({
@@ -42,66 +52,302 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
   uploadQueue = [],
   onCancelFile,
   onRetryFile,
+  storageQuota,
+  maxFileSize,
+  userTier,
+  allowedFileTypes,
+  maxFilesPerUpload,
+  onManageStorage,
 }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [localError, setLocalError] = useState<string | null>(null)
 
-  const displayError = errorMessage || localError;
-  const hasUploadQueue = uploadQueue.length > 0;
+  const displayError = errorMessage || localError
+  const hasUploadQueue = uploadQueue.length > 0
+  const overallProgress = hasUploadQueue ? calculateOverallProgress(uploadQueue) : progress
 
-  // Calculate overall progress from queue
-  const overallProgress = hasUploadQueue
-    ? calculateOverallProgress(uploadQueue)
-    : progress;
+  const quotaPercentage = storageQuota
+    ? Math.round((storageQuota.used / storageQuota.limit) * 100)
+    : 0
+  const quotaWarningLevel =
+    quotaPercentage >= 95 ? 'critical' : quotaPercentage >= 80 ? 'warning' : 'normal'
+  const quotaLocked = storageQuota ? storageQuota.used >= storageQuota.limit : false
+
+  const formatGB = (bytes: number): string => (bytes / (1024 * 1024 * 1024)).toFixed(1)
+  const formatMB = (bytes: number): string => Math.round(bytes / 1_000_000).toString()
+
+  const typeToLabel = (value: string): string => {
+    const normalized = value.trim().toLowerCase()
+    if (normalized.startsWith('.')) {
+      return normalized.slice(1)
+    }
+    if (normalized === 'application/pdf') return 'pdf'
+    if (normalized === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return 'docx'
+    if (normalized === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') return 'xlsx'
+    if (!normalized.includes('/')) {
+      return normalized
+    }
+    return normalized
+  }
+
+  const isFileTypeAllowed = (file: File): boolean => {
+    if (!allowedFileTypes || allowedFileTypes.length === 0) {
+      return true
+    }
+    const mime = file.type?.toLowerCase() ?? ''
+    const extension = file.name.includes('.')
+      ? file.name.split('.').pop()?.toLowerCase() ?? ''
+      : ''
+
+    return allowedFileTypes.some((type) => {
+      const normalized = type.trim().toLowerCase()
+      if (!normalized) return false
+      if (normalized.startsWith('.')) {
+        return extension === normalized.slice(1)
+      }
+      if (!normalized.includes('/')) {
+        return extension === normalized
+      }
+      return mime === normalized
+    })
+  }
+
+  const validateFiles = (files: FileList | File[]): { valid: boolean; error?: string } => {
+    const fileArray = Array.isArray(files) ? files : Array.from(files)
+
+    if (maxFilesPerUpload && maxFilesPerUpload > 0 && fileArray.length > maxFilesPerUpload) {
+      return {
+        valid: false,
+        error: `Max ${maxFilesPerUpload} files per upload. Upgrade to upload more files at once.`,
+      }
+    }
+
+    if (allowedFileTypes && allowedFileTypes.length > 0) {
+      const invalidFiles = fileArray.filter((file) => !isFileTypeAllowed(file))
+      if (invalidFiles.length > 0) {
+        const allowedNames = allowedFileTypes.map(typeToLabel).join(', ')
+        return {
+          valid: false,
+          error: `File type not allowed. Allowed types: ${allowedNames}`,
+        }
+      }
+    }
+
+    if (maxFileSize) {
+      const oversizedFiles = fileArray.filter((file) => file.size > maxFileSize)
+      if (oversizedFiles.length > 0) {
+        return {
+          valid: false,
+          error: `File size exceeds ${formatMB(maxFileSize)} MB limit`,
+        }
+      }
+    }
+
+    if (storageQuota) {
+      const totalSize = fileArray.reduce((sum, file) => sum + file.size, 0)
+      if (storageQuota.used + totalSize > storageQuota.limit) {
+        return {
+          valid: false,
+          error: 'Storage quota exceeded. Please delete some files or upgrade your plan.',
+        }
+      }
+    }
+
+    return { valid: true }
+  }
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (!isUploading) {
-      setIsDragging(true);
+    e.preventDefault()
+    if (!isUploading && !quotaLocked) {
+      setIsDragging(true)
     }
-  };
+  }
 
   const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
+    e.preventDefault()
+    setIsDragging(false)
+  }
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
+    e.preventDefault()
+    setIsDragging(false)
 
-    if (isUploading) return;
+    if (isUploading || quotaLocked) return
 
-    const files = e.dataTransfer.files;
+    const files = e.dataTransfer.files
     if (files.length > 0) {
-      setLocalError(null);
-      onUpload(files);
+      const validation = validateFiles(files)
+      if (!validation.valid) {
+        setLocalError(validation.error || 'Upload validation failed')
+        return
+      }
+      setLocalError(null)
+      onUpload(Array.from(files))
     }
-  };
+  }
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setLocalError(null);
-      onUpload(e.target.files);
+      if (quotaLocked) return
+      const validation = validateFiles(e.target.files)
+      if (!validation.valid) {
+        setLocalError(validation.error || 'Upload validation failed')
+        return
+      }
+      setLocalError(null)
+      onUpload(Array.from(e.target.files))
     }
-  };
+  }
 
   const handleBrowseClick = () => {
-    fileInputRef.current?.click();
-  };
+    if (quotaLocked) return
+    fileInputRef.current?.click()
+  }
+
+  const renderErrorAction = () => {
+    if (!displayError) return null
+    const lower = displayError.toLowerCase()
+
+    if (lower.includes('network')) {
+      return (
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          aria-label="Retry"
+          className="mt-2 px-3 py-1 text-sm font-medium text-blue-600 hover:text-blue-700 border border-blue-300 rounded hover:bg-blue-50 transition-colors"
+        >
+          Retry
+        </button>
+      )
+    }
+
+    if (lower.includes('server error')) {
+      return (
+        <a
+          href="/contact"
+          role="link"
+          aria-label="Contact support"
+          className="mt-2 inline-block px-3 py-1 text-sm font-medium text-blue-600 hover:text-blue-700 border border-blue-300 rounded hover:bg-blue-50 transition-colors"
+        >
+          Contact Support
+        </a>
+      )
+    }
+
+    if (lower.includes('session expired')) {
+      return (
+        <button
+          type="button"
+          onClick={() => (window.location.href = '/login')}
+          aria-label="Log in"
+          className="mt-2 px-3 py-1 text-sm font-medium text-blue-600 hover:text-blue-700 border border-blue-300 rounded hover:bg-blue-50 transition-colors"
+        >
+          Log In
+        </button>
+      )
+    }
+
+    if (lower.includes('storage quota') && onManageStorage) {
+      return (
+        <button
+          type="button"
+          onClick={onManageStorage}
+          aria-label="Manage storage"
+          className="mt-2 px-3 py-1 text-sm font-medium text-blue-600 hover:text-blue-700 border border-blue-300 rounded hover:bg-blue-50 transition-colors"
+        >
+          Manage Storage
+        </button>
+      )
+    }
+
+    return null
+  }
 
   return (
     <div className="w-full space-y-4">
-      {/* Drop zone */}
+      {storageQuota && (
+        <div
+          data-testid="storage-quota-display"
+          className={`rounded-lg border p-3 ${
+            quotaWarningLevel === 'critical'
+              ? 'border-red-200 bg-red-50'
+              : quotaWarningLevel === 'warning'
+              ? 'border-orange-200 bg-orange-50'
+              : 'border-gray-200 bg-gray-50'
+          }`}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-gray-700">Storage Usage</span>
+            <span
+              className={`text-sm font-semibold ${
+                quotaWarningLevel === 'critical'
+                  ? 'text-red-600'
+                  : quotaWarningLevel === 'warning'
+                  ? 'text-orange-600'
+                  : 'text-gray-600'
+              }`}
+            >
+              {quotaPercentage}% used
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+            <span>{formatGB(storageQuota.used)} GB</span>
+            <span>{formatGB(storageQuota.limit)} GB</span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+            <div
+              className={`h-full transition-all duration-300 ${
+                quotaWarningLevel === 'critical'
+                  ? 'bg-red-600'
+                  : quotaWarningLevel === 'warning'
+                  ? 'bg-orange-600'
+                  : 'bg-blue-600'
+              }`}
+              style={{ width: `${quotaPercentage}%` }}
+            />
+          </div>
+          {quotaWarningLevel === 'warning' && (
+            <p className="mt-2 text-xs text-orange-700">Approaching storage limit</p>
+          )}
+          {quotaWarningLevel === 'critical' && (
+            <p role="alert" className="mt-2 text-xs text-red-700 font-medium">
+              Storage almost full! Delete files or upgrade your plan.
+            </p>
+          )}
+          {quotaPercentage >= 100 && userTier && userTier !== 'enterprise' && (
+            <div className="mt-2">
+              <a
+                href="/pricing"
+                role="link"
+                aria-label="Upgrade storage"
+                className="text-xs font-medium text-blue-600 hover:text-blue-700 underline"
+              >
+                Upgrade to Enterprise
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+
+      {maxFileSize && (
+        <div className="text-xs text-gray-600">
+          <span>Max file size: {formatMB(maxFileSize)} MB</span>
+          {userTier === 'starter' && (
+            <span className="ml-2 text-blue-600">(Upgrade for larger files)</span>
+          )}
+        </div>
+      )}
+
       <div
         data-testid="upload-dropzone"
-        aria-disabled={isUploading}
+        aria-disabled={isUploading || quotaLocked}
+        aria-label="Upload files"
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`relative rounded-lg border-2 border-dashed p-8 text-center transition-all duration-200 ${
-          isUploading
+          isUploading || quotaLocked
             ? 'cursor-not-allowed border-gray-300 bg-gray-50'
             : isDragging
             ? 'border-blue-500 bg-blue-50 scale-102'
@@ -133,14 +379,12 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
           </div>
         ) : null}
 
-        {/* Enhanced drag-active icon */}
         {isDragging && (
           <div data-testid="drag-active-icon" className="animate-bounce">
             <UploadCloud className="mx-auto h-16 w-16 text-blue-500" />
           </div>
         )}
 
-        {/* Idle state */}
         {!isUploading && !isDragging && (
           <div className="space-y-3">
             <div className="text-gray-500">
@@ -165,7 +409,8 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
             <button
               type="button"
               onClick={handleBrowseClick}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
+              disabled={isUploading || quotaLocked}
+              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors disabled:cursor-not-allowed disabled:opacity-70"
               aria-label="Browse files"
             >
               Browse Files
@@ -176,7 +421,6 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
           </div>
         )}
 
-        {/* Hidden file input */}
         <input
           ref={fileInputRef}
           data-testid="upload-input"
@@ -188,22 +432,18 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
         />
       </div>
 
-      {/* Upload Queue */}
       {hasUploadQueue && (
         <div data-testid="upload-queue" className="space-y-3">
-          {/* Overall Progress */}
           <div data-testid="overall-progress" className="text-sm font-medium text-gray-700">
             Overall: {overallProgress}%
           </div>
 
-          {/* File List */}
           <div className="space-y-2">
             {uploadQueue.map((file) => (
               <div
                 key={file.id}
                 className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3"
               >
-                {/* Status Icon */}
                 {file.status === 'uploading' && (
                   <Loader2
                     data-testid={`upload-status-uploading-${file.id}`}
@@ -226,7 +466,6 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
                   <div className="h-5 w-5 rounded-full border-2 border-gray-300 flex-shrink-0" />
                 )}
 
-                {/* File Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
@@ -235,7 +474,6 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
                     )}
                   </div>
 
-                  {/* Progress Bar */}
                   {(file.status === 'uploading' || file.status === 'pending') && (
                     <div>
                       <div
@@ -260,15 +498,12 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
                     </div>
                   )}
 
-                  {/* Error Message */}
                   {file.status === 'error' && file.error && (
                     <p className="text-xs text-red-600 mt-1">{file.error}</p>
                   )}
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  {/* Cancel Button */}
                   {file.status === 'uploading' && onCancelFile && (
                     <button
                       type="button"
@@ -280,7 +515,6 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
                     </button>
                   )}
 
-                  {/* Retry Button */}
                   {file.status === 'error' && onRetryFile && (
                     <button
                       type="button"
@@ -298,14 +532,14 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
         </div>
       )}
 
-      {/* Error message */}
       {displayError && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-          {displayError}
+        <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3">
+          <p className="text-sm text-red-600">{displayError}</p>
+          {renderErrorAction()}
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default UploadPanel;
+export default UploadPanel

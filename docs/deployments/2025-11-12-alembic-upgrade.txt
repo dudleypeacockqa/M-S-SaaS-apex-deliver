@@ -1,0 +1,13 @@
+Command: backend/venv/Scripts/alembic.exe upgrade head
+Timestamp: 2025-11-12T13:12:00Z
+
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade dc2c0f69c1b1 -> a7b2d5e0f4c1, add scenario reference to valuation export logs
+INFO  [alembic.runtime.migration] Running upgrade a7b2d5e0f4c1 -> 89a67cacf69a, add export log task metadata fields
+===============================================================================
+Alembic upgrade head run - 2025-11-11T12:14:13Z
+-------------------------------------------------------------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+===============================================================================

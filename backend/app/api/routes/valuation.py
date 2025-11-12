@@ -20,12 +20,13 @@ from app.schemas.valuation import (
     PrecedentTransactionResponse,
     ScenarioCreate,
     ScenarioResponse,
+    ScenarioSummaryResponse,
     ValuationCreate,
     ValuationExportCreate,
+    ValuationExportLogEntry,
     ValuationExportResponse,
     ValuationResponse,
     ValuationUpdate,
-    ScenarioSummaryResponse,
 )
 from app.services import valuation_service
 
@@ -376,14 +377,59 @@ def trigger_export(
         export_type=export_request.export_type,
         export_format=export_request.export_format,
     )
+    if task.get("task_id"):
+        export_log = valuation_service.attach_task_metadata_to_export(
+            db=db,
+            export_log_id=export_log.id,
+            task_id=task["task_id"],
+            status=task.get("status", "queued"),
+        )
     return ValuationExportResponse(
-        status="queued",
-        task_id=task["task_id"],
+        status=export_log.status,
+        task_id=export_log.task_id or task["task_id"],
         export_type=export_request.export_type,
         export_format=export_request.export_format,
         export_log_id=export_log.id,
         scenario_id=export_request.scenario_id,
     )
+
+
+@router.get("/{valuation_id}/exports", response_model=List[ValuationExportLogEntry])
+def list_exports(
+    deal_id: str,
+    valuation_id: str,
+    current_user: User = Depends(_require_growth_user),
+    db: Session = Depends(get_db),
+):
+    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
+    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    logs = valuation_service.list_export_logs(
+        db=db,
+        valuation_id=valuation_id,
+        organization_id=current_user.organization_id,
+    )
+    return logs
+
+
+@router.get("/{valuation_id}/exports/{task_id}", response_model=ValuationExportLogEntry)
+def get_export_status(
+    deal_id: str,
+    valuation_id: str,
+    task_id: str,
+    current_user: User = Depends(_require_growth_user),
+    db: Session = Depends(get_db),
+):
+    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
+    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    log_entry = valuation_service.get_export_log_by_task(
+        db=db,
+        valuation_id=valuation_id,
+        organization_id=current_user.organization_id,
+        task_id=task_id,
+    )
+    if log_entry is None:
+        _error(status.HTTP_404_NOT_FOUND, "EXPORT_NOT_FOUND", "Export task not found")
+    return log_entry
 @router.get("/{valuation_id}/scenarios/summary", response_model=ScenarioSummaryResponse)
 def get_scenario_summary(
     deal_id: str,

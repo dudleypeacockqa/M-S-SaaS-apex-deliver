@@ -94,6 +94,24 @@ class ValuationExportResponse(BaseModel):
     scenario_id: Optional[str] = None
 
 
+class ValuationExportLogEntry(BaseModel):
+    id: str
+    valuation_id: str
+    organization_id: str
+    export_type: Literal["pdf", "excel"]
+    export_format: Optional[str] = None
+    status: str
+    task_id: Optional[str] = None
+    scenario_id: Optional[str] = None
+    download_url: Optional[str] = None
+    file_size_bytes: Optional[int] = None
+    exported_by: str
+    exported_at: datetime
+    completed_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class MonteCarloRequest(BaseModel):
     """Request payload for Monte Carlo valuation simulation."""
 

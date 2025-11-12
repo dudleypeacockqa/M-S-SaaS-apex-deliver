@@ -1,3 +1,16 @@
+# Deployment Session Summary - 2025-11-12A (13:25Z)
+
+## Backend (ma-saas-backend)
+- Service: `srv-d3ii9qk9c44c73aqsli0`
+- Latest deploy: `dep-d49k2bfdiees73ahiqn0` (commit `834fa20`, trigger `api`, status **live** 14:00Z)
+- Alembic transcript: `docs/deployments/2025-11-12-alembic-upgrade.txt` (dc2c0f69c1b1 → a7b2d5e0f4c1 → 89a67cacf69a)
+- Evidence: `latest-deploy.json`, `deployment-health-2025-11-12.json`, `docs/deployments/2025-11-12-verify-deployment.txt`, `docs/deployments/2025-11-12-smoke-tests.txt`
+
+## Frontend (ma-saas-platform)
+- Service: `srv-d3ihptbipnbc73e72ne0`
+- Latest deploy: `dep-d49k2fu3jp1c73d4njn0` (commit `834fa20`, trigger `api`, status **live** 14:09Z)
+- Evidence: `latest-deploy.json`, `latest-deploy-check.json`, `docs/deployments/2025-11-12-verify-deployment.txt`, `docs/deployments/2025-11-12-smoke-tests.txt`
+
 # Deployment Session Summary - 2025-11-11D (08:10Z)
 
 ## Backend (ma-saas-backend)

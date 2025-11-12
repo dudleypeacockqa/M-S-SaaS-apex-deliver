@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PermissionModal } from './PermissionModal';
 
@@ -285,5 +285,62 @@ describe('PermissionModal', () => {
 
     const removeButton = await screen.findByRole('button', { name: /remove owner1@example\.com/i });
     expect(removeButton).not.toBeDisabled();
+  });
+
+  it('should disable adding users and show upgrade CTA when collaborator limit reached', async () => {
+    const { listPermissions } = await import('../../services/api/documents');
+    vi.mocked(listPermissions).mockResolvedValue([]);
+
+    renderWithProviders(
+      <PermissionModal
+        documentId="doc-1"
+        isOpen={true}
+        onClose={vi.fn()}
+        inviteLimit={{
+          total: 5,
+          remaining: 0,
+          resetDate: '2025-12-01',
+          upgradeUrl: '/billing/upgrade',
+          tierName: 'Starter',
+        }}
+      />
+    );
+
+    const banner = await screen.findByTestId('collaborator-limit-banner');
+    expect(
+      within(banner).getByText(/0 of 5 collaborator seats remaining/i)
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /add user/i })).toBeDisabled();
+    expect(screen.getByRole('link', { name: /view upgrade options/i })).toHaveAttribute('href', '/billing/upgrade');
+    const resetText = within(banner).getByText(/seats reset on/i);
+    expect(resetText.textContent).toMatch(/2025/);
+  });
+
+  it('should keep add button enabled when collaborator seats remain', async () => {
+    const { listPermissions } = await import('../../services/api/documents');
+    vi.mocked(listPermissions).mockResolvedValue([]);
+
+    renderWithProviders(
+      <PermissionModal
+        documentId="doc-1"
+        isOpen={true}
+        onClose={vi.fn()}
+        inviteLimit={{
+          total: 10,
+          remaining: 4,
+          tierName: 'Professional',
+        }}
+      />
+    );
+
+    const banner = await screen.findByTestId('collaborator-limit-banner');
+    expect(
+      within(banner).getByText(/4 of 10 collaborator seats remaining/i)
+    ).toBeInTheDocument();
+
+    const emailInput = screen.getByPlaceholderText(/enter email/i);
+    fireEvent.change(emailInput, { target: { value: 'collab@example.com' } });
+
+    expect(screen.getByRole('button', { name: /add user/i })).not.toBeDisabled();
   });
 });

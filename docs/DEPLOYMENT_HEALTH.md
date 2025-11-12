@@ -1,3 +1,7 @@
+> **2025-11-12 13:45 UTC**
+> - Ran ash scripts/run_smoke_tests.sh production – backend health + frontend HEAD checks succeeded; backend smoke pytest 	ests/smoke_tests.py 2/2 pass. Log: docs/deployments/2025-11-12-smoke-tests.txt.
+> **2025-11-12 13:25 UTC**
+> - Ran python scripts/verify_deployment.py (Phase 1 critical endpoints) – 10/10 checks passed (backend + frontend HTTP 200/405 as expected). Output archived at docs/deployments/2025-11-12-verify-deployment.txt.
 > **2025-11-11 08:10 UTC**
 > - Backend deploy `dep-d49edummcj7s73eenjng` (service `srv-d3ii9qk9c44c73aqsli0`, commit `073980c`) is LIVE. Alembic re-run succeeded (“Already at head”), `/health` returns 200.
 > - Frontend deploy `dep-d49eiiag0ims73e581t0` (service `srv-d3ihptbipnbc73e72ne0`, commit `c267e936`) is LIVE; manual deploy `dep-d49etc8m2f8s73dkf0v0` (commit `9b0577f3`) queued to refresh to latest docs commit.
@@ -104,3 +108,10 @@ Smoke checks (2025-11-11 06:32Z):
 - Cloudflare 403 blocks automated check; manual browser verification is pending. Capture screenshot + note once available.
 
 
+
+
+
+> **2025-11-12 13:25 UTC**
+> - Backend deploy `dep-d49k2bfdiees73ahiqn0` (service `srv-d3ii9qk9c44c73aqsli0`, commit `834fa20`) is LIVE (API trigger). Alembic upgrade head confirmed via `docs/deployments/2025-11-12-alembic-upgrade.txt`.
+> - Frontend deploy `dep-d49k2fu3jp1c73d4njn0` (service `srv-d3ihptbipnbc73e72ne0`, commit `834fa20`) is LIVE (API trigger) after 14:09Z completion.
+> - Verification evidence: `docs/deployments/2025-11-12-verify-deployment.txt` (10/10 HTTP checks) and `docs/deployments/2025-11-12-smoke-tests.txt` (backend smoke pytest 2/2, frontend HTTP 200).

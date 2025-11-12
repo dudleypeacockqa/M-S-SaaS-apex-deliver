@@ -897,6 +897,11 @@ def log_export_event(
     file_size_bytes: Optional[int] = None,
     document_id: Optional[str] = None,
     scenario_id: Optional[str] = None,
+    status: str = "queued",
+    task_id: Optional[str] = None,
+    download_url: Optional[str] = None,
+    error_message: Optional[str] = None,
+    completed_at: Optional[datetime] = None,
 ) -> ValuationExportLog:
     valuation = get_valuation(db=db, valuation_id=valuation_id, organization_id=organization_id)
     if valuation is None:
@@ -937,6 +942,11 @@ def log_export_event(
         exported_by=resolved_user_id,
         document_id=document_value,
         scenario_id=scenario_value,
+        status=status,
+        task_id=task_id,
+        download_url=download_url,
+        error_message=error_message,
+        completed_at=completed_at,
     )
     db.add(entry)
     db.commit()
@@ -960,6 +970,63 @@ def trigger_export_task(
         "valuation_id": valuation_id,
         "organization_id": organization_id,
     }
+
+
+def attach_task_metadata_to_export(
+    *,
+    db,
+    export_log_id: str,
+    task_id: str,
+    status: str = "queued",
+) -> ValuationExportLog:
+    log_entry = db.get(ValuationExportLog, export_log_id)
+    if log_entry is None:
+        raise ValueError("Export log not found")
+    log_entry.task_id = task_id
+    log_entry.status = status or log_entry.status
+    db.add(log_entry)
+    db.commit()
+    db.refresh(log_entry)
+    return log_entry
+
+
+def list_export_logs(
+    *,
+    db,
+    valuation_id: str,
+    organization_id: str,
+    limit: int = 20,
+) -> List[ValuationExportLog]:
+    return (
+        db.query(ValuationExportLog)
+        .filter(
+            ValuationExportLog.valuation_id == valuation_id,
+            ValuationExportLog.organization_id == organization_id,
+        )
+        .order_by(ValuationExportLog.exported_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+
+def get_export_log_by_task(
+    *,
+    db,
+    valuation_id: str,
+    organization_id: str,
+    task_id: str,
+) -> Optional[ValuationExportLog]:
+    if not task_id:
+        return None
+    return (
+        db.query(ValuationExportLog)
+        .filter(
+            ValuationExportLog.valuation_id == valuation_id,
+            ValuationExportLog.organization_id == organization_id,
+            ValuationExportLog.task_id == task_id,
+        )
+        .one_or_none()
+    )
 
 
 __all__ = [
@@ -986,6 +1053,9 @@ __all__ = [
     "run_monte_carlo_simulation",
     "log_export_event",
     "trigger_export_task",
+    "attach_task_metadata_to_export",
+    "list_export_logs",
+    "get_export_log_by_task",
 ]
 
 

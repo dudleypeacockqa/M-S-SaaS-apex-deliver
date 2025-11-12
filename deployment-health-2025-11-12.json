@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-11-12T13:25:00Z",
+  "backend_service": "srv-d3ii9qk9c44c73aqsli0",
+  "backend_deploy": "dep-d49k2bfdiees73ahiqn0",
+  "frontend_service": "srv-d3ihptbipnbc73e72ne0",
+  "frontend_deploy": "dep-d49k2fu3jp1c73d4njn0",
+  "alembic_log": "docs/deployments/2025-11-12-alembic-upgrade.txt",
+  "verify_log": "docs/deployments/2025-11-12-verify-deployment.txt",
+  "smoke_log": "docs/deployments/2025-11-12-smoke-tests.txt"
+}

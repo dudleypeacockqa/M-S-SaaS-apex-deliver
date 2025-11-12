@@ -8,10 +8,19 @@ import {
   type DocumentPermission,
 } from '../../services/api/documents'
 
+type InviteLimit = {
+  total: number
+  remaining: number
+  resetDate?: string
+  upgradeUrl?: string
+  tierName?: string
+}
+
 interface PermissionModalProps {
   documentId: string
   isOpen: boolean
   onClose: () => void
+  inviteLimit?: InviteLimit
 }
 
 const ROLE_OPTIONS: Array<{ value: DocumentPermission['role']; label: string }> = [
@@ -20,10 +29,28 @@ const ROLE_OPTIONS: Array<{ value: DocumentPermission['role']; label: string }> 
   { value: 'owner', label: 'Owner' },
 ]
 
-export const PermissionModal: React.FC<PermissionModalProps> = ({ documentId, isOpen, onClose }) => {
+export const PermissionModal: React.FC<PermissionModalProps> = ({
+  documentId,
+  isOpen,
+  onClose,
+  inviteLimit,
+}) => {
   const queryClient = useQueryClient()
   const [email, setEmail] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const formatResetDate = (dateString?: string) => {
+    if (!dateString) return null
+    const date = new Date(dateString)
+    if (Number.isNaN(date.getTime())) return null
+    return new Intl.DateTimeFormat('en-GB', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    }).format(date)
+  }
+
+  const limitReached = inviteLimit ? inviteLimit.remaining <= 0 : false
 
   const handleError = (error: unknown) => {
     if (error && typeof error === 'object' && 'response' in error) {
@@ -102,6 +129,35 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({ documentId, is
             </div>
           )}
 
+          {inviteLimit && (
+            <div className="rounded border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600" data-testid="collaborator-limit-banner">
+              <p className="font-medium text-slate-700">
+                {inviteLimit.remaining} of {inviteLimit.total} collaborator seats remaining
+              </p>
+              {inviteLimit.tierName && (
+                <p>
+                  Included in the {inviteLimit.tierName} plan
+                  {limitReached ? ' — upgrade for additional seats.' : '.'}
+                </p>
+              )}
+              {limitReached && inviteLimit.upgradeUrl && (
+                <a
+                  href={inviteLimit.upgradeUrl}
+                  className="mt-1 inline-flex text-blue-600 hover:text-blue-700 font-medium"
+                  role="link"
+                >
+                  View upgrade options
+                </a>
+              )}
+              {!limitReached && inviteLimit.resetDate && (
+                <p>Seats reset on {formatResetDate(inviteLimit.resetDate)}</p>
+              )}
+              {limitReached && inviteLimit.resetDate && (
+                <p>Seats reset on {formatResetDate(inviteLimit.resetDate)}</p>
+              )}
+            </div>
+          )}
+
           <div className="flex gap-2">
             <input
               type="email"
@@ -114,7 +170,7 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({ documentId, is
               type="button"
               className="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-60"
               onClick={() => email.trim() && addMutation.mutate({ user_email: email.trim() })}
-              disabled={!email.trim() || addMutation.isPending}
+              disabled={!email.trim() || addMutation.isPending || limitReached}
             >
               Add user
             </button>

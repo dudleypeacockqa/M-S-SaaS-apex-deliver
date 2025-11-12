@@ -213,6 +213,11 @@ class ValuationExportLog(Base):
     file_size_bytes = Column(Integer, nullable=True)
     document_id = Column(String(36), ForeignKey("documents.id"), nullable=True)  # Link to document room
     scenario_id = Column(String(36), ForeignKey("valuation_scenarios.id", ondelete="SET NULL"), nullable=True)
+    task_id = Column(String(64), nullable=True, unique=True)
+    status = Column(String(20), nullable=False, server_default="queued")
+    download_url = Column(String(500), nullable=True)
+    error_message = Column(Text, nullable=True)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
 
     # Metadata
     exported_by = Column(String(36), ForeignKey("users.id"), nullable=False)

@@ -17,6 +17,16 @@ interface DocumentListProps {
   onDocumentsLoaded?: (documents: Document[]) => void
   resetSelectionSignal?: number
   onManagePermissions?: (document: Document) => void
+  onBulkMove?: (documents: Document[]) => void
+  onBulkDelete?: (documents: Document[]) => void
+  onBulkShare?: (documents: Document[]) => void
+  onBulkArchive?: (documents: Document[]) => void
+  onAuditLog?: (event: {
+    action: string
+    resource_type: string
+    resource_id: string
+    metadata?: Record<string, unknown>
+  }) => void
 }
 
 type SortKey = 'name' | 'date'
@@ -30,15 +40,17 @@ function formatDate(value: string): string {
   }).format(date)
 }
 
-export const DocumentList: React.FC<DocumentListProps> = ({
-  dealId,
-  folderId,
-  onSelectionChange,
-  onError,
-  onDocumentsLoaded,
-  resetSelectionSignal,
-  onManagePermissions,
-}) => {
+export const DocumentList: React.FC<DocumentListProps> = (props) => {
+  const {
+    dealId,
+    folderId,
+    onSelectionChange,
+    onError,
+    onDocumentsLoaded,
+    resetSelectionSignal,
+    onManagePermissions,
+  } = props
+
   const queryClient = useQueryClient()
   const [searchTerm, setSearchTerm] = useState('')
   const [sortKey, setSortKey] = useState<SortKey>('date')

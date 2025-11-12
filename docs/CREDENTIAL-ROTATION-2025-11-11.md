@@ -61,6 +61,10 @@ Replacement Pattern: [REDACTED-ROTATED-2025-11-11] → [REDACTED-ROTATED-2025-11
 
 **Status**: PENDING - Manual action required
 
+### 2025-11-12 Status Update
+- Alembic + smoke verification finished at 13:45 UTC; backend/frontend still running with pre-rotation password. Target 18:00 UTC for password rotation + redeploy.
+- Follow-up: regenerate the Render Postgres password, update .env + service env vars, refresh the master environment reference, then rerun verify/smoke scripts after redeploy.
+
 ### Required Steps
 
 1. **Access Render Dashboard**
@@ -200,3 +204,6 @@ Replacement Pattern: [REDACTED-ROTATED-2025-11-11] → [REDACTED-ROTATED-2025-11
 - `ApexDeliver Environment Variables - Master Reference.md` (gitignored) now records the rotated placeholder `[REDACTED-ROTATED-2025-11-11]` for `DATABASE_URL` and the new helper-only `RENDER_PROD_DATABASE_URL`.
 - Added post-rotation instruction block reminding operators to update both env vars immediately after Render issues the new password.
 - Cross-referenced the sanitized `fix_production_alembic.py`, which now reads exclusively from `RENDER_PROD_DATABASE_URL` and masks credentials in console output to avoid future leakage.
+
+
+

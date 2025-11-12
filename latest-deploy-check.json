@@ -1,4 +1,5 @@
 {
+  "checked_at": "2025-11-12T13:25:00Z",
   "health_checks": {
     "backend_health": "https://ma-saas-backend.onrender.com/health",
     "backend_status": "200 healthy",
@@ -7,7 +8,13 @@
     "smoke_tests": {
       "script": "scripts/run_smoke_tests.sh production",
       "result": "pass",
+      "log": "docs/deployments/2025-11-12-smoke-tests.txt",
       "details": "Backend health OK, frontend 200, backend smoke pytest 2/2"
+    },
+    "verify_script": {
+      "script": "scripts/verify_deployment.py production",
+      "result": "pass",
+      "log": "docs/deployments/2025-11-12-verify-deployment.txt"
     }
   }
 }

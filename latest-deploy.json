@@ -3,8 +3,8 @@
     "id": "dep-d49et83uibrs739agtfg",
     "commit": {
       "id": "9b0577f3abfc437c334392168248d78bfdf3fdbc",
-      "message": "docs(bmad): update Week 1 summary - all core features complete",
-      "createdAt": "2025-11-11T08:06:37Z"
+      "createdAt": "2025-11-11T08:06:37Z",
+      "message": "docs(bmad): update Week 1 summary - all core features complete"
     },
     "status": "live",
     "trigger": "new_commit",
@@ -13,12 +13,18 @@
     "startedAt": "2025-11-11T08:06:59.491408Z",
     "finishedAt": "2025-11-11T08:08:19.077463Z"
   },
+  "last_verified_at": "2025-11-12T07:13:58Z",
+  "verification_logs": [
+    "docs/deployments/2025-11-12-verify-deployment.txt",
+    "docs/deployments/2025-11-12-smoke-tests.txt",
+    "docs/deployments/2025-11-12-alembic-upgrade.txt"
+  ],
   "frontend_deploy": {
     "id": "dep-d49etc8m2f8s73dkf0v0",
     "commit": {
       "id": "9b0577f3abfc437c334392168248d78bfdf3fdbc",
-      "message": "docs(bmad): update Week 1 summary - all core features complete",
-      "createdAt": "2025-11-11T08:06:37Z"
+      "createdAt": "2025-11-11T08:06:37Z",
+      "message": "docs(bmad): update Week 1 summary - all core features complete"
     },
     "status": "live",
     "trigger": "api",

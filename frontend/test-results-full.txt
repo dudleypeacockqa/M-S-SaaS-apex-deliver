@@ -1,0 +1,87 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+ [32m✓[39m src/services/billingService.test.ts[2m > [22mbillingService[2m > [22mfetches billing dashboard[32m 4[2mms[22m[39m
+ [32m✓[39m src/services/billingService.test.ts[2m > [22mbillingService[2m > [22mchanges subscription tier[32m 2[2mms[22m[39m
+ [32m✓[39m src/services/billingService.test.ts[2m > [22mbillingService[2m > [22mcancels subscription with request payload[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/billingService.test.ts[2m > [22mbillingService[2m > [22mretrieves customer portal url[32m 1[2mms[22m[39m
+ [32m✓[39m src/services/billingService.test.ts[2m > [22mbillingService[2m > [22mcreates checkout session when redirecting to checkout[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/marketing/Footer.test.tsx[2m > [22mFooter[2m > [22mLayout & Structure[2m > [22mshould render footer with brand name[32m 64[2mms[22m[39m
+ [32m✓[39m src/components/marketing/Footer.test.tsx[2m > [22mFooter[2m > [22mLayout & Structure[2m > [22mshould render footer description[32m 12[2mms[22m[39m
+ [32m✓[39m src/components/marketing/Footer.test.tsx[2m > [22mFooter[2m > [22mLayout & Structure[2m > [22mshould display current year in copyright[32m 9[2mms[22m[39m
+ [32m✓[39m src/components/marketing/AnalyticsProvider.test.tsx[2m > [22mAnalyticsProvider[2m > [22mGoogle Analytics 4[2m > [22mshould inject GA4 script when measurement ID is provided[32m 82[2mms[22m[39m
+ [32m✓[39m src/components/marketing/Footer.test.tsx[2m > [22mFooter[2m > [22mNavigation Sections[2m > [22mshould render Product section with links[33m 420[2mms[22m[39m
+ [32m✓[39m src/components/marketing/AnalyticsProvider.test.tsx[2m > [22mAnalyticsProvider[2m > [22mGoogle Analytics 4[2m > [22mshould not inject GA4 script when measurement ID is missing[32m 29[2mms[22m[39m
+ [32m✓[39m src/components/marketing/AnalyticsProvider.test.tsx[2m > [22mAnalyticsProvider[2m > [22mGoogle Analytics 4[2m > [22mshould initialize gtag dataLayer[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/marketing/AnalyticsProvider.test.tsx[2m > [22mAnalyticsProvider[2m > [22mHotjar[2m > [22mshould inject Hotjar script when site ID is provided[32m 21[2mms[22m[39m
+ [32m✓[39m src/components/marketing/AnalyticsProvider.test.tsx[2m > [22mAnalyticsProvider[2m > [22mHotjar[2m > [22mshould not inject Hotjar when site ID is missing[32m 4[2mms[22m[39m
+ [32m✓[39m src/components/marketing/AnalyticsProvider.test.tsx[2m > [22mAnalyticsProvider[2m > [22mLinkedIn Pixel[2m > [22mshould inject LinkedIn Insight Tag when partner ID is provided[32m 12[2mms[22m[39m
+ [32m✓[39m src/components/marketing/AnalyticsProvider.test.tsx[2m > [22mAnalyticsProvider[2m > [22mLinkedIn Pixel[2m > [22mshould not inject LinkedIn Insight Tag when partner ID is missing[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/marketing/AnalyticsProvider.test.tsx[2m > [22mAnalyticsProvider[2m > [22mLinkedIn Pixel[2m > [22mshould inject LinkedIn noscript image tag[32m 52[2mms[22m[39m
+ [32m✓[39m src/components/marketing/AnalyticsProvider.test.tsx[2m > [22mAnalyticsProvider[2m > [22mChildren Rendering[2m > [22mshould render children components[32m 16[2mms[22m[39m
+ [32m✓[39m src/components/marketing/AnalyticsProvider.test.tsx[2m > [22mAnalyticsProvider[2m > [22mMultiple Analytics Integration[2m > [22mshould initialize all analytics when all IDs are provided[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/marketing/Footer.test.tsx[2m > [22mFooter[2m > [22mNavigation Sections[2m > [22mshould render Company section with links[32m 159[2mms[22m[39m
+ [32m✓[39m src/components/marketing/Footer.test.tsx[2m > [22mFooter[2m > [22mNavigation Sections[2m > [22mshould render Legal section with links[32m 151[2mms[22m[39m
+ [32m✓[39m src/components/marketing/Footer.test.tsx[2m > [22mFooter[2m > [22mLink Navigation[2m > [22mshould have correct href for Features link[32m 73[2mms[22m[39m
+ [32m✓[39m src/components/marketing/MarketingLayout.domain.test.tsx[2m > [22mMarketingLayout domain configuration[2m > [22mexposes organization structured data for 100daysandbeyond.com[32m 77[2mms[22m[39m
+ [32m✓[39m src/components/marketing/Footer.test.tsx[2m > [22mFooter[2m > [22mLink Navigation[2m > [22mshould have correct href for Privacy Policy link[32m 90[2mms[22m[39m
+ [32m✓[39m src/components/marketing/Footer.test.tsx[2m > [22mFooter[2m > [22mLink Navigation[2m > [22mshould have correct href for Terms of Service link[32m 87[2mms[22m[39m
+ [32m✓[39m src/components/marketing/Footer.test.tsx[2m > [22mFooter[2m > [22mLink Navigation[2m > [22mshould have correct href for Cookie Policy link[32m 93[2mms[22m[39m
+ [32m✓[39m src/components/marketing/FeatureCard.test.tsx[2m > [22mFeatureCard[2m > [22mrenders feature title[32m 130[2mms[22m[39m
+ [32m✓[39m src/components/marketing/FeatureCard.test.tsx[2m > [22mFeatureCard[2m > [22mrenders feature description[32m 13[2mms[22m[39m
+ [32m✓[39m src/components/marketing/FeatureCard.test.tsx[2m > [22mFeatureCard[2m > [22mrenders feature icon with accessible alt text[32m 83[2mms[22m[39m
+ [32m✓[39m src/components/marketing/FeatureCard.test.tsx[2m > [22mFeatureCard[2m > [22mrenders article element for semantic HTML[32m 9[2mms[22m[39m
+ [32m✓[39m src/components/marketing/HeroSection.test.tsx[2m > [22mHeroSection[2m > [22mrenders main headline[32m 249[2mms[22m[39m
+ [32m✓[39m src/components/marketing/HeroSection.test.tsx[2m > [22mHeroSection[2m > [22mdisplays value proposition subheadline[32m 13[2mms[22m[39m
+ [32m✓[39m src/components/marketing/HeroSection.test.tsx[2m > [22mHeroSection[2m > [22mshows primary CTA button[32m 56[2mms[22m[39m
+ [32m✓[39m src/components/marketing/HeroSection.test.tsx[2m > [22mHeroSection[2m > [22mshows secondary CTA button[32m 43[2mms[22m[39m
+ [32m✓[39m src/components/marketing/HeroSection.test.tsx[2m > [22mHeroSection[2m > [22mrenders as section element for semantic HTML[32m 15[2mms[22m[39m
+ [32m✓[39m src/components/marketing/CTASection.test.tsx[2m > [22mCTASection Component[2m > [22mHeading and Copy[2m > [22mshould render main CTA heading[32m 249[2mms[22m[39m
+ [32m✓[39m src/components/marketing/CTASection.test.tsx[2m > [22mCTASection Component[2m > [22mHeading and Copy[2m > [22mshould render descriptive copy[32m 126[2mms[22m[39m
+ [32m✓[39m src/components/marketing/CTASection.test.tsx[2m > [22mCTASection Component[2m > [22mCTA Buttons[2m > [22mshould render "Start Your Free Trial" button[32m 16[2mms[22m[39m
+ [32m✓[39m src/components/marketing/CTASection.test.tsx[2m > [22mCTASection Component[2m > [22mCTA Buttons[2m > [22mshould render "Schedule a Demo" button[32m 11[2mms[22m[39m
+ [32m✓[39m src/components/marketing/CTASection.test.tsx[2m > [22mCTASection Component[2m > [22mCTA Buttons[2m > [22mshould link trial button to /sign-up[33m 304[2mms[22m[39m
+ [32m✓[39m src/components/marketing/CTASection.test.tsx[2m > [22mCTASection Component[2m > [22mCTA Buttons[2m > [22mshould link demo button to /contact[32m 156[2mms[22m[39m
+ [32m✓[39m src/components/marketing/CTASection.test.tsx[2m > [22mCTASection Component[2m > [22mAnalytics Tracking[2m > [22mshould track analytics when trial button is clicked[32m 104[2mms[22m[39m
+ [32m✓[39m src/components/marketing/CTASection.test.tsx[2m > [22mCTASection Component[2m > [22mAnalytics Tracking[2m > [22mshould track analytics when demo button is clicked[32m 12[2mms[22m[39m
+ [32m✓[39m src/components/marketing/CTASection.test.tsx[2m > [22mCTASection Component[2m > [22mTrust Indicators[2m > [22mshould render "Bank-Grade Security" badge[32m 96[2mms[22m[39m
+ [32m✓[39m src/components/marketing/CTASection.test.tsx[2m > [22mCTASection Component[2m > [22mTrust Indicators[2m > [22mshould render "GDPR Compliant" badge[32m 83[2mms[22m[39m
+ [32m✓[39m src/components/marketing/CTASection.test.tsx[2m > [22mCTASection Component[2m > [22mTrust Indicators[2m > [22mshould render "No Credit Card Required" badge[32m 37[2mms[22m[39m
+ [32m✓[39m src/components/layout/Breadcrumbs.test.tsx[2m > [22mBreadcrumbs[2m > [22mrenders nothing on the root route[32m 61[2mms[22m[39m
+ [32m✓[39m src/components/layout/Breadcrumbs.test.tsx[2m > [22mBreadcrumbs[2m > [22mrenders breadcrumb trail for top-level route[33m 337[2mms[22m[39m
+ [32m✓[39m src/components/layout/Breadcrumbs.test.tsx[2m > [22mBreadcrumbs[2m > [22mrenders nested breadcrumb trail[32m 62[2mms[22m[39m
+ [32m✓[39m src/components/layout/Breadcrumbs.test.tsx[2m > [22mBreadcrumbs[2m > [22mprovides links for intermediate segments[32m 148[2mms[22m[39m
+ [32m✓[39m src/components/layout/NavigationMenu.test.tsx[2m > [22mNavigationMenu Component[2m > [22mrenders navigation shell with brand and user menu[33m 325[2mms[22m[39m
+ [32m✓[39m src/components/layout/NavigationMenu.test.tsx[2m > [22mNavigationMenu Component[2m > [22mshows base workspace links for solo users[32m 286[2mms[22m[39m
+ [32m✓[39m src/components/layout/NavigationMenu.test.tsx[2m > [22mNavigationMenu Component[2m > [22mexposes podcast studio for growth users but still hides admin links[32m 189[2mms[22m[39m
+ [32m✓[39m src/components/marketing/MarketingNav.test.tsx[2m > [22mMarketingNav[2m > [22mrenders logo and brand name[32m 223[2mms[22m[39m
+ [32m✓[39m src/components/marketing/MarketingNav.test.tsx[2m > [22mMarketingNav[2m > [22mdisplays navigation links[33m 1658[2mms[22m[39m
+ [32m✓[39m src/components/marketing/MarketingNav.test.tsx[2m > [22mMarketingNav[2m > [22mshows Sign In and Sign Up CTAs[32m 118[2mms[22m[39m
+ [32m✓[39m src/components/marketing/MarketingNav.test.tsx[2m > [22mMarketingNav[2m > [22mrenders navigation as nav element for accessibility[32m 60[2mms[22m[39m
+ [32m✓[39m src/components/layout/NavigationMenu.test.tsx[2m > [22mNavigationMenu Component[2m > [22mkeeps admin controls hidden for enterprise users[32m 185[2mms[22m[39m
+ [32m✓[39m src/components/layout/NavigationMenu.test.tsx[2m > [22mNavigationMenu Component[2m > [22mrenders admin + master admin pills for admin role[32m 294[2mms[22m[39m
+ [32m✓[39m src/components/marketing/StickyCTABar.test.tsx[2m > [22mStickyCTABar[2m > [22mshould not render if dismissed in session[32m 132[2mms[22m[39m
+ [32m✓[39m src/components/marketing/StickyCTABar.test.tsx[2m > [22mStickyCTABar[2m > [22mshould be hidden initially (before scrolling)[32m 27[2mms[22m[39m
+ [32m✓[39m src/components/marketing/StickyCTABar.test.tsx[2m > [22mStickyCTABar[2m > [22mshould show after scrolling past 80%[32m 48[2mms[22m[39m
+ [32m✓[39m src/components/layout/NavigationMenu.test.tsx[2m > [22mNavigationMenu Component[2m > [22mhighlights nested deal routes as active[32m 118[2mms[22m[39m
+ [32m✓[39m src/components/layout/NavigationMenu.test.tsx[2m > [22mNavigationMenu Component[2m > [22mpoints deals link to the canonical route[32m 160[2mms[22m[39m
+ [32m✓[39m src/components/marketing/StickyCTABar.test.tsx[2m > [22mStickyCTABar[2m > [22mshould hide when scrolling back to top[32m 31[2mms[22m[39m
+ [32m✓[39m src/components/marketing/StickyCTABar.test.tsx[2m > [22mStickyCTABar[2m > [22mshould render all required elements[32m 33[2mms[22m[39m
+ [32m✓[39m src/components/marketing/StickyCTABar.test.tsx[2m > [22mStickyCTABar[2m > [22mshould have Get Started button linking to /sign-up[32m 17[2mms[22m[39m
+ [32m✓[39m src/components/marketing/StickyCTABar.test.tsx[2m > [22mStickyCTABar[2m > [22mshould dismiss and set sessionStorage when close button clicked[32m 54[2mms[22m[39m
+ [32m✓[39m src/components/marketing/StickyCTABar.test.tsx[2m > [22mStickyCTABar[2m > [22mshould not re-render after dismissal[32m 28[2mms[22m[39m
+ [32m✓[39m src/components/marketing/StickyCTABar.test.tsx[2m > [22mStickyCTABar[2m > [22mshould have responsive design (icon should exist)[32m 19[2mms[22m[39m
+ [32m✓[39m src/components/marketing/PricingCard.test.tsx[2m > [22mPricingCard[2m > [22mrenders tier name[32m 197[2mms[22m[39m
+ [32m✓[39m src/components/marketing/PricingCard.test.tsx[2m > [22mPricingCard[2m > [22mdisplays correct price with currency[32m 9[2mms[22m[39m
+ [32m✓[39m src/components/marketing/PricingCard.test.tsx[2m > [22mPricingCard[2m > [22mshows tier description[32m 128[2mms[22m[39m
+ [32m✓[39m src/tests/integration/routing.test.tsx[2m > [22mIntegration: routing[2m > [22mrenders the landing page for visitors[33m 2080[2mms[22m[39m
+ [32m✓[39m src/components/marketing/PricingCard.test.tsx[2m > [22mPricingCard[2m > [22mlists all features[32m 107[2mms[22m[39m
+ [32m✓[39m src/components/marketing/PricingCard.test.tsx[2m > [22mPricingCard[2m > [22mrenders CTA button[33m 838[2mms[22m[39m
+ [32m✓[39m src/components/marketing/PricingCard.test.tsx[2m > [22mPricingCard[2m > [22mhighlights the most popular tier[32m 77[2mms[22m[39m
+ [32m✓[39m src/tests/integration/routing.test.tsx[2m > [22mIntegration: routing[2m > [22mdirects visitors to the sign-in page when accessing the dashboard[33m 619[2mms[22m[39m
+ [32m✓[39m src/tests/integration/routing.test.tsx[2m > [22mIntegration: routing[2m > [22mdisplays the dashboard when the user is authenticated[32m 43[2mms[22m[39m
+ [32m✓[39m src/App.test.tsx[2m > [22mAppRoutes[2m > [22mrenders the home route with sign-in actions for visitors[33m 3755[2mms[22m[39m
+ [32m✓[39m src/App.test.tsx[2m > [22mAppRoutes[2m > [22mredirects visitors from the dashboard to the sign-in page[32m 287[2mms[22m[39m
+ [32m✓[39m src/App.test.tsx[2m > [22mAppRoutes[2m > [22mshows dashboard content when the user is authenticated[33m 1215[2mms[22m[39m
+ [32m✓[39m src/App.test.tsx[2m > [22mAppRoutes[2m > [22mupdates the header to show the user menu for authenticated users[33m 396[2mms[22m[39m
+ [32m✓[39m src/App.test.tsx[2m > [22mAppRoutes[2m > [22mroutes to financial dashboard for authenticated users[33m 667[2mms[22m[39m

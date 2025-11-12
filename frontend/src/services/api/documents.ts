@@ -291,120 +291,234 @@ export async function restoreDocument(dealId: string, documentId: string): Promi
   })
 }
 
-export async function listPermissions(documentId: string): Promise<DocumentPermission[]> {
-  const headers = await getAuthHeaders("json")
-
-  const response = await request<DocumentPermissionResponse[]>(
-    API_BASE_URL + "/api/documents/" + documentId + "/permissions",
-    {
-      method: "GET",
-      headers,
-    }
-  )
-
-  return response.map(normalisePermission)
-}
-
-export async function addPermission(
-  documentId: string,
-  payload: { user_email: string; role: PermissionLevel }
-): Promise<DocumentPermission> {
-  const headers = await getAuthHeaders("json")
-
-  const response = await request<DocumentPermissionResponse>(
-    API_BASE_URL + "/api/documents/" + documentId + "/permissions",
-    {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        user_email: payload.user_email,
-        permission_level: payload.role,
-      }),
-    }
-  )
-
-  return normalisePermission(response)
-}
-
-export async function updatePermission(
-  permissionId: string,
-  payload: { role: PermissionLevel }
-): Promise<DocumentPermission> {
-  const headers = await getAuthHeaders("json")
-
-  const response = await request<DocumentPermissionResponse>(
-    API_BASE_URL + "/api/permissions/" + permissionId,
-    {
-      method: "PATCH",
-      headers,
-      body: JSON.stringify({ permission_level: payload.role }),
-    }
-  )
-
-  return normalisePermission(response)
-}
-
-export async function removePermission(permissionId: string): Promise<void> {
-  const headers = await getAuthHeaders("json")
-
-  await request<void>(API_BASE_URL + "/api/permissions/" + permissionId, {
-    method: "DELETE",
-    headers,
-  })
-}
-
-export async function listDocumentPermissions(
-  dealId: string,
-  documentId: string
-): Promise<DocumentPermissionResponse[]> {
-  const headers = await getAuthHeaders("json")
-
-  return request<DocumentPermissionResponse[]>(
-    buildDealUrl(dealId, "/documents/" + documentId + "/permissions"),
-    {
-      method: "GET",
-      headers,
-    }
-  )
-}
-
-export async function addDocumentPermission(
-  dealId: string,
-  documentId: string,
-  payload: { user_id: string; permission_level: PermissionLevel }
-): Promise<DocumentPermissionResponse> {
-  const headers = await getAuthHeaders("json")
-
-  return request<DocumentPermissionResponse>(
-    buildDealUrl(dealId, "/documents/" + documentId + "/permissions"),
-    {
-      method: "POST",
-      headers,
-      body: JSON.stringify(payload),
-    }
-  )
-}
-
-export async function updateDocumentPermission(
-  permissionId: string,
-  payload: { permission_level: PermissionLevel }
-): Promise<DocumentPermissionResponse> {
-  const headers = await getAuthHeaders("json")
-
-  return request<DocumentPermissionResponse>(
-    API_BASE_URL + "/api/permissions/" + permissionId,
-    {
-      method: "PATCH",
-      headers,
-      body: JSON.stringify(payload),
-    }
-  )
-}
-
-export async function removeDocumentPermission(permissionId: string): Promise<void> {
-  await removePermission(permissionId)
-}
-
+export async function listPermissions(documentId: string): Promise<DocumentPermission[]> {
+
+  const headers = await getAuthHeaders("json")
+
+
+
+  const response = await request<DocumentPermissionResponse[]>(
+
+    API_BASE_URL + "/api/documents/" + documentId + "/permissions",
+
+    {
+
+      method: "GET",
+
+      headers,
+
+    }
+
+  )
+
+
+
+  return response.map(normalisePermission)
+
+}
+
+
+
+export async function addPermission(
+
+  documentId: string,
+
+  payload: { user_email: string; role: PermissionLevel }
+
+): Promise<DocumentPermission> {
+
+  const headers = await getAuthHeaders("json")
+
+
+
+  const response = await request<DocumentPermissionResponse>(
+
+    API_BASE_URL + "/api/documents/" + documentId + "/permissions",
+
+    {
+
+      method: "POST",
+
+      headers,
+
+      body: JSON.stringify({
+
+        user_email: payload.user_email,
+
+        permission_level: payload.role,
+
+      }),
+
+    }
+
+  )
+
+
+
+  return normalisePermission(response)
+
+}
+
+
+
+export async function updatePermission(
+
+  permissionId: string,
+
+  payload: { role: PermissionLevel }
+
+): Promise<DocumentPermission> {
+
+  const headers = await getAuthHeaders("json")
+
+
+
+  const response = await request<DocumentPermissionResponse>(
+
+    API_BASE_URL + "/api/permissions/" + permissionId,
+
+    {
+
+      method: "PATCH",
+
+      headers,
+
+      body: JSON.stringify({ permission_level: payload.role }),
+
+    }
+
+  )
+
+
+
+  return normalisePermission(response)
+
+}
+
+
+
+export async function removePermission(permissionId: string): Promise<void> {
+
+  const headers = await getAuthHeaders("json")
+
+
+
+  await request<void>(API_BASE_URL + "/api/permissions/" + permissionId, {
+
+    method: "DELETE",
+
+    headers,
+
+  })
+
+}
+
+
+
+export async function listDocumentPermissions(
+
+  dealId: string,
+
+  documentId: string
+
+): Promise<DocumentPermissionResponse[]> {
+
+  const headers = await getAuthHeaders("json")
+
+
+
+  return request<DocumentPermissionResponse[]>(
+
+    buildDealUrl(dealId, "/documents/" + documentId + "/permissions"),
+
+    {
+
+      method: "GET",
+
+      headers,
+
+    }
+
+  )
+
+}
+
+
+
+export async function addDocumentPermission(
+
+  dealId: string,
+
+  documentId: string,
+
+  payload: { user_id: string; permission_level: PermissionLevel }
+
+): Promise<DocumentPermissionResponse> {
+
+  const headers = await getAuthHeaders("json")
+
+
+
+  return request<DocumentPermissionResponse>(
+
+    buildDealUrl(dealId, "/documents/" + documentId + "/permissions"),
+
+    {
+
+      method: "POST",
+
+      headers,
+
+      body: JSON.stringify(payload),
+
+    }
+
+  )
+
+}
+
+
+
+export async function updateDocumentPermission(
+
+  permissionId: string,
+
+  payload: { permission_level: PermissionLevel }
+
+): Promise<DocumentPermissionResponse> {
+
+  const headers = await getAuthHeaders("json")
+
+
+
+  return request<DocumentPermissionResponse>(
+
+    API_BASE_URL + "/api/permissions/" + permissionId,
+
+    {
+
+      method: "PATCH",
+
+      headers,
+
+      body: JSON.stringify(payload),
+
+    }
+
+  )
+
+}
+
+
+
+export async function removeDocumentPermission(permissionId: string): Promise<void> {
+
+  await removePermission(permissionId)
+
+}
+
+
+
 export const ALLOWED_FILE_TYPES = [
   "application/pdf",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -480,6 +594,68 @@ export async function bulkDownloadDocuments(dealId: string, documentIds: string[
 export async function bulkDeleteDocuments(dealId: string, documentIds: string[]): Promise<BulkDeleteResponse> {
   const headers = await getAuthHeaders()
   return request<BulkDeleteResponse>(buildDealUrl(dealId, "/documents/bulk-delete"), {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ document_ids: documentIds }),
+  })
+}
+
+export interface BulkOperationFailure {
+  id: string
+  reason: string
+}
+
+export interface BulkMovePayload {
+  document_ids: string[]
+  target_folder_id: string
+}
+
+export interface BulkMoveResult {
+  success: boolean
+  moved_ids: string[]
+  failures?: BulkOperationFailure[]
+}
+
+export async function bulkMoveDocuments(
+  dealId: string,
+  payload: BulkMovePayload
+): Promise<BulkMoveResult> {
+  const headers = await getAuthHeaders()
+  return request<BulkMoveResult>(buildDealUrl(dealId, "/documents/bulk-move"), {
+    method: "POST",
+    headers,
+    body: JSON.stringify(payload),
+  })
+}
+
+export interface BulkArchivePayload {
+  document_ids: string[]
+}
+
+export interface BulkArchiveResult {
+  success: boolean
+  archived_ids: string[]
+  failures?: BulkOperationFailure[]
+}
+
+export async function bulkArchiveDocuments(
+  dealId: string,
+  payload: BulkArchivePayload
+): Promise<BulkArchiveResult> {
+  const headers = await getAuthHeaders()
+  return request<BulkArchiveResult>(buildDealUrl(dealId, "/documents/bulk-archive"), {
+    method: "POST",
+    headers,
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function restoreArchivedDocuments(
+  dealId: string,
+  documentIds: string[]
+): Promise<{ restored_ids: string[] }> {
+  const headers = await getAuthHeaders()
+  return request<{ restored_ids: string[] }>(buildDealUrl(dealId, "/documents/bulk-restore"), {
     method: "POST",
     headers,
     body: JSON.stringify({ document_ids: documentIds }),

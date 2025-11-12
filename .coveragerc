@@ -1,5 +1,9 @@
 [run]
 source = backend/app
+parallel = True
+concurrency = thread
+plugins =
+    coverage_pytracer_patch
 omit =
     backend/venv/*
     */sage_oauth_service.py
