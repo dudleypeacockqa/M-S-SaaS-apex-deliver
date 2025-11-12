@@ -1,4 +1,4 @@
-# BMM Workflow Status (Reopened 2025-11-12T14:15Z | Updated 2025-11-13T17:45Z)
+# BMM Workflow Status (Reopened 2025-11-12T14:15Z | Updated 2025-11-13T10:30Z)
 
 ## Project Configuration
 
@@ -25,16 +25,16 @@ PHASE_6_COMPLETE: false (95-98% complete, in progress)
 
 STORY_ID: MARK-002-enhanced-website-phases-3-10
 STORY_STATUS: IN_PROGRESS
-STORY_RESULT: Emerald palette contrast sweep complete; landing case studies and pricing schema updates shipped. Production Lighthouse/axe evidence pending before marking story complete.
-BLOCKERS: Production Lighthouse run still blocked by Chrome temp-dir permissions on sandbox; rerun after redeploy or via CI.
+STORY_RESULT: Frontend redeploy triggered + verified (10/10 checks). Production Lighthouse/axe evidence still outstanding; CDN appears to serve pre-contrast palette and Windows Defender blocks local Lighthouse runs.
+BLOCKERS: (1) Windows Defender/Chrome headless temp-dir cleanup prevents Lighthouse CLI (`EPERM`, `NO_FCP`). (2) Axe CLI hits production but reports legacy palette contrast, implying CDN cache lag or redeploy not yet propagated. Need remote runner or CDN purge.
 
 ## Next Action
 
-NEXT_ACTION: Regenerate marketing audits (axe + Lighthouse) against production to close MARK-002 evidence
-NEXT_COMMAND: npx axe https://ma-saas-platform.onrender.com --tags wcag2a,wcag2aa --save docs/marketing/accessibility-report-prod.json && npx lighthouse https://ma-saas-platform.onrender.com --preset=desktop --output=json --output-path=docs/marketing/lighthouse-report-prod.json
+NEXT_ACTION: Run production Lighthouse + axe from clean environment (macOS/CI) after confirming CDN flush, then archive artefacts and close MARK-002.
+NEXT_COMMAND: scripts/run_lighthouse_audits.sh production
 NEXT_AGENT: marketing-qa
 PRIORITY: P1
-RATIONALE: Palette + content updates landed; need production evidence before shifting to DEV-008 backend quota telemetry.
+RATIONALE: Palette + redeploy complete; only external audit artefacts blocking story closure.
 
 ## Completed This Session
 

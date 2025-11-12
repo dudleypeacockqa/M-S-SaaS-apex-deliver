@@ -22,6 +22,14 @@ describe('LandingPage', () => {
     expect(screen.getByText(/13-week rolling cash forecast/i)).toBeInTheDocument()
   })
 
+  it('adds quantified social proof stats and logos', () => {
+    renderPage()
+    expect(screen.getByText(/finance & deal teams onboarded/i)).toBeInTheDocument()
+    expect(screen.getByText(/reduction in manual prep/i)).toBeInTheDocument()
+    expect(screen.getByText(/Customer logos/i)).toBeInTheDocument()
+    expect(screen.getByText(/Brookline Partners/i)).toBeInTheDocument()
+  })
+
   it('renders the how it works steps', () => {
     renderPage()
     expect(screen.getByText(/Connect your ledgers/i)).toBeInTheDocument()

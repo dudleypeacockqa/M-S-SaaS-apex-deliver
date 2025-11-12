@@ -155,6 +155,43 @@ export const LandingPage: React.FC = () => {
       <main>
         <EnhancedHeroSection />
         <TrustBadges />
+        <section className="py-16 bg-white border-b border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <p className="text-sm font-semibold text-emerald-700 uppercase tracking-wide mb-3">Proof in the portfolio</p>
+                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Finance leaders trust CapLiquify before scaling into ApexDeliver</h2>
+                <p className="text-lg text-gray-600 mb-8">Land with cash forecasting and working-capital wins, then invite deal, legal, and master admin teams once the foundation is in place.</p>
+                <div className="grid sm:grid-cols-3 gap-4">
+                  {socialProofStats.map((stat) => (
+                    <div key={stat.label} className="bg-gray-50 rounded-2xl border border-gray-200 p-4">
+                      <div className="text-3xl font-extrabold text-indigo-900">{stat.value}</div>
+                      <div className="text-sm font-semibold text-gray-800 mt-1">{stat.label}</div>
+                      <div className="text-xs text-gray-500 mt-1">{stat.detail}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-6">
+                <p className="text-indigo-900 text-lg font-semibold mb-4">“{marqueeTestimonial.quote}”</p>
+                <div className="text-sm text-gray-700">
+                  <div className="font-bold">{marqueeTestimonial.name}</div>
+                  <div>{marqueeTestimonial.role}</div>
+                </div>
+                <div className="mt-6">
+                  <p className="text-xs uppercase text-gray-500 tracking-widest mb-3">Customer logos</p>
+                  <div className="flex flex-wrap gap-3 text-gray-600 text-sm">
+                    {customerLogos.map((logo) => (
+                      <span key={logo} className="px-3 py-1 bg-white rounded-full border border-gray-200">
+                        {logo}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* CapLiquify value prop */}
         <section className="py-20 bg-white">

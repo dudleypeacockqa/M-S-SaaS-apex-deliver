@@ -29,7 +29,7 @@ export const EpisodeTranscriptPanel: React.FC<EpisodeTranscriptPanelProps> = ({
           {isTranscribing ? 'Transcribing…' : 'Transcribe audio'}
         </button>
         {successMessage ? (
-          <p className="text-xs text-emerald-600" role="status">
+          <p className="text-xs text-emerald-700" role="status">
             {successMessage}
           </p>
         ) : null}
@@ -75,7 +75,7 @@ export const EpisodeTranscriptPanel: React.FC<EpisodeTranscriptPanelProps> = ({
         {isTranscribing ? 'Regenerating…' : 'Regenerate Transcript'}
       </button>
       {successMessage ? (
-        <p className="text-xs text-emerald-600" role="status">
+        <p className="text-xs text-emerald-700" role="status">
           {successMessage}
         </p>
       ) : null}

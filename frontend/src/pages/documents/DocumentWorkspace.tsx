@@ -66,6 +66,7 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
     isProcessing: false,
   })
   const [resetSelectionSignal, setResetSelectionSignal] = useState(0)
+  const [questionPanelDocument, setQuestionPanelDocument] = useState<Document | null>(null)
   const [accessLogState, setAccessLogState] = useState<{ document: Document | null; isOpen: boolean }>({
     document: null,
     isOpen: false,
@@ -134,6 +135,10 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
     },
     []
   )
+
+  const handleOpenQuestions = useCallback((document: Document) => {
+    setQuestionPanelDocument(document)
+  }, [])
 
   const handleBulkMoveConfirm = useCallback(
     async (targetFolderId: string) => {

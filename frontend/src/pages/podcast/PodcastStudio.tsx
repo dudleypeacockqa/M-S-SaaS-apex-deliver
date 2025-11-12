@@ -1122,7 +1122,7 @@ function EpisodeListItem({
                 </p>
               ) : null}
               {showPublishSuccess ? (
-                <p className="text-xs text-emerald-600" role="status">
+                <p className="text-xs text-emerald-700" role="status">
                   Published to YouTube
                 </p>
               ) : null}
