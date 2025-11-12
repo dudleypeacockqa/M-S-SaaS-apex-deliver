@@ -10,6 +10,12 @@ normalize_database_url() {
     return
   fi
 
+  case "$DATABASE_URL" in
+    DATABASE_URL=*)
+      DATABASE_URL="${DATABASE_URL#DATABASE_URL=}"
+      ;;
+  esac
+
   DATABASE_URL=$(DB_URL_TMP="$DATABASE_URL" RENDER_DB_DOMAIN_SUFFIX="${RENDER_DB_DOMAIN_SUFFIX:-frankfurt-postgres.render.com}" python3 - <<'PY'
 import os
 from urllib.parse import urlsplit, urlunsplit, parse_qs, urlencode
