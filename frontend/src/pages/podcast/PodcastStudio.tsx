@@ -100,6 +100,7 @@ function PodcastStudioContent() {
   const [editingEpisode, setEditingEpisode] = React.useState<PodcastEpisode | null>(null);
   const [deleteTarget, setDeleteTarget] = React.useState<PodcastEpisode | null>(null);
   const [videoUploadEpisode, setVideoUploadEpisode] = React.useState<PodcastEpisode | null>(null);
+  const [videoPlayerEpisode, setVideoPlayerEpisode] = React.useState<PodcastEpisode | null>(null);
   const [notification, setNotification] = React.useState<NotificationState | null>(null);
   const [episodeToPublish, setEpisodeToPublish] = React.useState<PodcastEpisode | null>(null);
   const [publishError, setPublishError] = React.useState<string | null>(null);
@@ -126,6 +127,7 @@ function PodcastStudioContent() {
   }, []);
 
   const closeVideoUploadModal = React.useCallback(() => setVideoUploadEpisode(null), []);
+  const closeVideoPlayerModal = React.useCallback(() => setVideoPlayerEpisode(null), []);
 
   const {
     data: quota,
@@ -769,6 +771,7 @@ function EpisodesList({
   onDelete,
   onNotify,
   onVideoUpload,
+  onWatchVideo,
 }: {
   episodes: PodcastEpisode[];
   youtubeAccess: FeatureAccessState;
@@ -786,6 +789,7 @@ function EpisodesList({
   onDelete: (episode: PodcastEpisode) => void;
   onNotify: (type: NotificationState['type'], message: string) => void;
   onVideoUpload: (episode: PodcastEpisode) => void;
+  onWatchVideo: (episode: PodcastEpisode) => void;
 }) {
   if (episodes.length === 0) {
     return (
@@ -857,6 +861,7 @@ function EpisodeListItem({
   onDelete,
   onNotify,
   onVideoUpload,
+  onWatchVideo,
 }: {
   episode: PodcastEpisode;
   youtubeAccess: FeatureAccessState;
@@ -874,6 +879,7 @@ function EpisodeListItem({
   onDelete: (episode: PodcastEpisode) => void;
   onNotify: (type: NotificationState['type'], message: string) => void;
   onVideoUpload: (episode: PodcastEpisode) => void;
+  onWatchVideo: (episode: PodcastEpisode) => void;
 }) {
   const statusColors = {
     draft: 'bg-yellow-100 text-yellow-800',
@@ -1128,3 +1134,10 @@ function EpisodeListItem({
     </li>
   );
 }
+
+
+
+
+
+
+

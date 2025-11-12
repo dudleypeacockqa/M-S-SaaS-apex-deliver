@@ -59,6 +59,22 @@ interface PermissionRecord {
   createdAt: string
 }
 
+interface BlogPostRecord {
+  id: number
+  title: string
+  slug: string
+  excerpt: string
+  content: string
+  author: string
+  category: string
+  featured_image_url?: string | null
+  read_time_minutes: number
+  meta_description: string
+  primary_keyword: string
+  created_at: string
+  updated_at: string | null
+}
+
 interface DealStore {
   folders: Map<string, FolderRecord>
   documents: Map<string, DocumentRecord>
@@ -66,6 +82,53 @@ interface DealStore {
 }
 
 const deals = new Map<string, DealStore>()
+const blogPosts: BlogPostRecord[] = [
+  {
+    id: 1,
+    title: 'How to Accelerate M&A Execution in 2025',
+    slug: 'accelerate-ma-execution',
+    excerpt: 'Five practical levers elite deal teams use to compress diligence cycles without sacrificing quality.',
+    content: '# Accelerate M&A Execution in 2025\n\nUse workflow automation, data rooms, and AI briefings to keep every workstream moving.',
+    author: 'Darren Parsons',
+    category: 'M&A Strategy',
+    featured_image_url: null,
+    read_time_minutes: 6,
+    meta_description: 'Five tactics for faster, safer deals.',
+    primary_keyword: 'ma execution playbook',
+    created_at: '2025-10-01T00:00:00Z',
+    updated_at: null,
+  },
+  {
+    id: 2,
+    title: 'FP&A Playbook for Post-Merger Integration',
+    slug: 'fpa-post-merger-playbook',
+    excerpt: 'Standardize cash reporting, integrate source systems, and align the exec dashboard in 30 days.',
+    content: '# FP&A Playbook\n\nThis playbook highlights the first 30, 60, and 90 day FP&A checkpoints for PMI.',
+    author: 'Cynthia Shaw',
+    category: 'FP&A',
+    featured_image_url: null,
+    read_time_minutes: 8,
+    meta_description: 'FP&A steps for confident PMI.',
+    primary_keyword: 'fp&a integration checklist',
+    created_at: '2025-09-20T00:00:00Z',
+    updated_at: null,
+  },
+  {
+    id: 3,
+    title: 'Three Pricing Plays to Protect Margins During PMI',
+    slug: 'pricing-plays-pmi',
+    excerpt: 'Combine good-better-best packaging with win-back offers to keep revenue velocity.',
+    content: '# Pricing Plays\n\nProtect pricing power while legal and finance focus on close activities.',
+    author: 'Ariana Flores',
+    category: 'Pricing Strategy',
+    featured_image_url: null,
+    read_time_minutes: 5,
+    meta_description: 'Pricing tactics during post-merger integration.',
+    primary_keyword: 'pricing strategy pmi',
+    created_at: '2025-08-30T00:00:00Z',
+    updated_at: null,
+  },
+]
 
 const DEFAULT_DEAL_ID = 'deal-msw'
 const DEFAULT_ORG_ID = 'org-msw'
@@ -744,6 +807,54 @@ export const documentHandlers = [
   bulkRestoreDocumentsHandler,
   bulkDeleteDocumentsHandler,
 ]
+
+const blogListHandler = http.get(`${API_BASE_URL}/api/blog`, ({ request }) => {
+  const url = new URL(request.url)
+  const category = url.searchParams.get('category')
+  const search = url.searchParams.get('search')
+  const limitParam = url.searchParams.get('limit')
+  let results = blogPosts
+
+  if (category && category !== 'All Posts') {
+    results = results.filter((post) => post.category === category)
+  }
+
+  if (search) {
+    const lowered = search.toLowerCase()
+    results = results.filter((post) =>
+      post.title.toLowerCase().includes(lowered) || post.excerpt.toLowerCase().includes(lowered)
+    )
+  }
+
+  if (limitParam) {
+    const limit = Number(limitParam)
+    if (!Number.isNaN(limit) && limit > 0) {
+      results = results.slice(0, limit)
+    }
+  }
+
+  return HttpResponse.json(results)
+})
+
+const blogDetailHandler = http.get(`${API_BASE_URL}/api/blog/:slug`, ({ params }) => {
+  const slug = params.slug as string
+  const post = blogPosts.find((entry) => entry.slug === slug)
+  if (!post) {
+    return HttpResponse.json({ detail: 'Not found' }, { status: 404 })
+  }
+  return HttpResponse.json(post)
+})
+
+const contactHandler = http.post(`${API_BASE_URL}/marketing/contact`, async ({ request }) => {
+  try {
+    await request.json()
+  } catch {
+    // ignore parse errors in tests
+  }
+  return HttpResponse.json({ success: true, message: 'Thanks for contacting us!' })
+})
+
+export const mswHandlers = [...documentHandlers, blogListHandler, blogDetailHandler, contactHandler]
 
 export { resetDocumentRoomFixtures, collectAllFolders }
 

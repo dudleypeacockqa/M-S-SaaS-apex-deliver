@@ -1,0 +1,258 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-4.1.0
+asyncio: mode=Mode.STRICT
+collected 36 items
+
+tests\test_billing_endpoints.py ................                         [ 44%]
+tests\test_subscription_error_paths.py ............ssss....              [100%]
+
+============================== warnings summary ===============================
+venv\Lib\site-packages\coverage\core.py:93
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\core.py:93: CoverageWarning: Couldn't import C tracer: No module named 'coverage.tracer' (no-ctracer); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-no-ctracer
+    warn(f"Couldn't import C tracer: {IMPORT_ERROR}", slug="no-ctracer", once=True)
+
+backend/tests/test_billing_endpoints.py: 16 warnings
+backend/tests/test_subscription_error_paths.py: 16 warnings
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+backend/tests/test_billing_endpoints.py::test_create_checkout_session_invalid_tier
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb718d0550: 5551 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5551 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_create_checkout_session_requires_auth
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb718c0f10: 5553 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5553 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_create_checkout_session_existing_subscription
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb7198e4d0: 5560 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5560 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_create_checkout_session_with_trial
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb719ebed0: 5560 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5560 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_get_customer_portal_success
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb719ef310: 5566 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5566 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_get_customer_portal_handles_value_errors
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71a8e750: 5568 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5568 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_get_subscription_success
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71a29710: 5578 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5578 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_get_subscription_not_found
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71adf250: 5579 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5579 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_get_subscription_requires_auth
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71999b50: 5579 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5579 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_update_subscription_tier_upgrade
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71b53990: 5602 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5602 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_update_subscription_tier_downgrade
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71b62ad0: 5602 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5602 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_cancel_subscription_at_period_end
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71bc7150: 5619 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5619 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_cancel_subscription_immediately
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71bd16d0: 5622 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5622 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_cancel_subscription_requires_active_subscription
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71a81310: 5625 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5625 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_billing_endpoints.py::test_customer_portal_redirect
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71908990: 5625 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5625 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_create_checkout_session_value_error
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb719b9fd0: 5627 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5627 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_create_checkout_session_general_exception
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71925a10: 5629 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5629 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_get_my_subscription_not_found
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71c0a850: 5629 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5629 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_billing_dashboard_no_subscription
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb718d2c90: 5633 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5633 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_billing_dashboard_with_subscription
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71c48690: 5676 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5676 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_billing_dashboard_zero_counts
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71c8de10: 5676 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5676 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_change_tier_value_error
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71cce150: 5678 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5678 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_change_tier_general_exception
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71ced250: 5680 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5680 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_cancel_subscription_value_error
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71d27790: 5680 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5680 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_cancel_subscription_general_exception
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71d57a10: 5682 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5682 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_get_all_tiers_success
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71d479d0: 5695 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5695 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_stripe_webhook_missing_secret
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71d91e90: 5699 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5699 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_stripe_webhook_routes_events[checkout.session.completed-handle_checkout_completed]
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71dbe8d0: 5708 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5708 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_stripe_webhook_routes_events[invoice.paid-handle_invoice_paid]
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71dce1d0: 5710 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5710 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_stripe_webhook_routes_events[customer.subscription.updated-handle_subscription_updated]
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71d939d0: 5712 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5712 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+backend/tests/test_subscription_error_paths.py::test_stripe_webhook_routes_events[customer.subscription.deleted-handle_subscription_deleted]
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py:353: CoverageWarning: Trace function changed, data is likely wrong: <bound method PyTracer._trace of <PyTracer at 0x1cb71e03890: 5714 data points in 91 files>> != <bound method PyTracer._trace of <PyTracer at 0x1cb4af0a350: 5714 data points in 91 files>> (trace-changed); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-trace-changed
+    self.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+---------- coverage: platform win32, python 3.11.9-final-0 -----------
+Name                                          Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------
+app\__init__.py                                   1      0   100%
+app\api\__init__.py                              21      0   100%
+app\api\dependencies\__init__.py                  0      0   100%
+app\api\dependencies\auth.py                    101     73    28%   28-32, 36-37, 41-86, 98-112, 130-135, 155-168, 192-203, 240-283
+app\api\dependencies\rbac.py                      2      2     0%   7-13
+app\api\document_sharing.py                     121     92    24%   31, 36, 41, 61-95, 119-166, 186-230, 249-278, 291-310, 326-338
+app\api\routes\__init__.py                        2      0   100%
+app\api\routes\auth.py                            9      1    89%   17
+app\api\routes\blog.py                           55     23    58%   55-85, 118-125, 148-151
+app\api\routes\dashboard.py                      25      7    72%   37-44, 81, 100, 119
+app\api\routes\deal_matching.py                  77     50    35%   32-34, 44-62, 71-77, 81, 105-164, 174-188, 192, 218-247
+app\api\routes\deals.py                          64     39    39%   31-32, 51-62, 81-87, 104-120, 131-146, 162-176, 191-211
+app\api\routes\documents.py                     174    110    37%   63-72, 97-105, 120-131, 147-164, 179-197, 212-219, 233, 249, 277-287, 307-324, 346-358, 374-402, 418-443, 458-477, 497-538, 553-572, 587-605, 627-651, 666-686, 697, 725-746, 761-766, 782-789, 811-822, 845-864
+app\api\routes\financial.py                     151    109    28%   82-121, 164-181, 221-242, 285-301, 345-362, 404-429, 474-506, 533-547, 571-599, 619-633, 653-684, 709-725, 765-793
+app\api\routes\marketing.py                      69     36    48%   51-101, 119-152, 165-201
+app\api\routes\master_admin.py                  379    241    36%   99-100, 120-130, 143-149, 163-169, 185-193, 213-214, 232-242, 259-265, 280-288, 302-309, 326-333, 346-347, 359-365, 380-381, 399-400, 413-419, 435-449, 467-468, 481-482, 494-502, 521-522, 536-539, 557-558, 575-584, 601-607, 622-630, 642-649, 667-668, 684-692, 709-715, 730-738, 755-756, 771-780, 797-803, 816-824, 836-844, 856-864, 880-896, 910-919, 935-954, 969-982, 998-999, 1013-1021, 1038-1044, 1057-1065, 1077-1085, 1097-1098, 1113-1122, 1139-1145, 1158-1166, 1178-1186, 1202-1203, 1219-1229, 1246-1252, 1265-1273, 1285-1293, 1305-1313, 1329-1330, 1345-1354, 1371-1377, 1390-1398, 1410-1418, 1431-1445
+app\api\routes\pipeline_templates.py             34     14    59%   25-26, 35-41, 45-48, 57, 67-68, 77-79
+app\api\routes\podcasts.py                      306    255    17%   51-135, 160-189, 203-226, 242, 261-290, 304-319, 325-329, 351-357, 371-410, 436-515, 544-641, 669-763, 784-803, 827-870, 900-951, 968-978, 993-1009, 1024-1034
+app\api\routes\subscriptions.py                 108      8    93%   80-81, 241-244, 259-260
+app\api\routes\tasks.py                          69     39    43%   38-45, 58-63, 78-88, 102-112, 127-133, 154-158, 184-199, 212-217, 232-273, 286-291
+app\api\routes\valuation.py                     145     90    38%   37, 41-44, 48-49, 58-64, 74-82, 86-91, 101-103, 114-122, 132-134, 148-150, 165-173, 183-185, 200-208, 218-220, 235-245, 255-257, 273-275, 292-294, 309-324, 338-350, 361-387, 404-411, 422-432, 440-447
+app\api\webhooks\__init__.py                      0      0   100%
+app\api\webhooks\clerk.py                        52     39    25%   19-24, 29-72
+app\core\__init__.py                              0      0   100%
+app\core\config.py                               44      0   100%
+app\core\database.py                             30     18    40%   23-27, 32-41, 46-47, 52-53
+app\core\security.py                             23     12    48%   18, 24-30, 36-41
+app\core\subscription.py                         52     33    37%   28-37, 78-121, 140-146
+app\db\__init__.py                                0      0   100%
+app\db\base.py                                    3      0   100%
+app\db\session.py                                 3      0   100%
+app\db\types.py                                  11      1    91%   22
+app\main.py                                      27      4    85%   26, 29, 61, 71
+app\models\__init__.py                           20      0   100%
+app\models\blog_post.py                          25      1    96%   32
+app\models\contact_message.py                    16      1    94%   23
+app\models\deal.py                               56      0   100%
+app\models\deal_match.py                         71     12    83%   51-53, 56, 60-62, 100, 104-106, 133
+app\models\document.py                          107      5    95%   60, 123, 164, 199, 237
+app\models\enums.py                              65      0   100%
+app\models\financial_connection.py               27      1    96%   52
+app\models\financial_narrative.py                34      0   100%
+app\models\financial_ratio.py                    67      0   100%
+app\models\financial_statement.py                80      1    99%   134
+app\models\master_admin.py                      272     15    94%   59, 88, 115, 141, 167, 194, 235, 266, 303, 332, 373, 400, 437, 470, 494
+app\models\newsletter_subscription.py            12      1    92%   21
+app\models\organization.py                       18      0   100%
+app\models\pipeline_template.py                  30      0   100%
+app\models\podcast.py                            49      0   100%
+app\models\podcast_usage.py                      15      1    93%   36
+app\models\rbac_audit_log.py                     25      0   100%
+app\models\subscription.py                       54      0   100%
+app\models\task.py                               68      0   100%
+app\models\user.py                               43      2    95%   34-40
+app\models\valuation.py                         120      0   100%
+app\schemas\__init__.py                           3      0   100%
+app\schemas\deal.py                              40      0   100%
+app\schemas\deal_match.py                        68      0   100%
+app\schemas\document.py                         185     17    91%   18-20, 32-34, 152-155, 247-253
+app\schemas\financial.py                         79      0   100%
+app\schemas\master_admin.py                     420      0   100%
+app\schemas\pipeline_template.py                 53     14    74%   26-42, 79-81
+app\schemas\podcast.py                           52      0   100%
+app\schemas\subscription.py                      91      0   100%
+app\schemas\task.py                              88      0   100%
+app\schemas\user.py                              33      1    97%   40
+app\schemas\valuation.py                        258     10    96%   30-32, 37-40, 204-206
+app\services\__init__.py                          6      0   100%
+app\services\audio_chunking_service.py          102    102     0%   7-283
+app\services\deal_matching_service.py           161    126    22%   66, 76-90, 98-119, 126-142, 145-165, 172-184, 188-192, 206-256, 263-270, 274-277, 281-295, 299-313
+app\services\deal_service.py                     81     66    19%   27-41, 56, 88-138, 156-167, 178-186, 201-209, 224-234
+app\services\document_service.py                537    482    10%   52-61, 65-67, 71-73, 86-110, 121-159, 170-184, 194-196, 210, 226, 229-232, 238-280, 286-291, 301, 323-357, 368-485, 512-558, 569-631, 643-726, 744-755, 766-801, 811-838, 847-850, 864-890, 898-900, 910-945, 954-966, 976-1016, 1035-1045, 1069-1099, 1109-1121, 1144-1202, 1222-1239, 1263-1302, 1314-1325, 1346-1358, 1373-1392, 1435-1508, 1547-1628, 1649-1690
+app\services\entitlement_service.py              47     31    34%   79, 83, 109-128, 150-158, 183-202, 225-247
+app\services\financial_narrative_service.py     231    231     0%   6-528
+app\services\financial_ratios.py                240    190    21%   43-45, 63-65, 82-84, 101-103, 127-130, 152-154, 171-173, 190-192, 209-211, 228-230, 247-249, 266-268, 285-287, 309-311, 328-330, 347-349, 366-368, 385-387, 404-406, 436-681, 691-693, 698-700, 705-707, 712-714, 719-721, 726-728, 733-735, 745-747, 752-754, 759-761, 766-768, 773-775, 785-787, 792-794, 799-801, 806-808, 813-815, 820-822, 827-829, 834-836, 846-848, 853, 858-860, 865-867, 872-874, 879-882, 887-889, 894-896
+app\services\invite_service.py                   31     31     0%   2-78
+app\services\master_admin_service.py            435    363    17%   81-92, 107, 126-129, 144-156, 171-187, 214-231, 246-266, 277-284, 299, 318-320, 335-342, 355-405, 420-429, 443, 465-473, 488-499, 513-520, 534-537, 552-564, 579-584, 603-620, 635, 665-687, 702-709, 720-721, 736-750, 773-786, 801-808, 826-877, 903-915, 930, 960-975, 990-997, 1008-1009, 1023-1029, 1035-1061, 1071-1090, 1100-1109, 1120, 1139-1154, 1164-1168, 1187-1198, 1213, 1241-1254, 1269-1276, 1287-1288, 1294-1312, 1327, 1357-1372, 1387-1394, 1405-1406, 1416-1434, 1449, 1481-1498, 1504-1510, 1521-1522, 1528-1534, 1553-1566, 1581, 1611-1632, 1647-1654, 1665-1666, 1682-1690
+app\services\netsuite_oauth_service.py          138    138     0%   9-547
+app\services\organization_service.py             64     50    22%   16-17, 23-37, 43-51, 57-61, 67-93, 99-106
+app\services\pipeline_template_service.py        39     27    31%   13-16, 20, 29-31, 43, 56-69, 78-87, 91-92
+app\services\podcast_service.py                 115     92    20%   16-18, 28, 45-60, 72-81, 92-98, 116-140, 151, 168-219, 230-247, 263-299, 310-316
+app\services\quickbooks_oauth_service.py        233    192    18%   24-28, 40-234, 252, 263, 273, 284, 298, 308-314, 320, 338-350, 381-441, 459-487, 504-557, 572-607, 622-686, 697-707, 721-735
+app\services\quota_service.py                   165    132    20%   52-53, 57-59, 63, 72-99, 109-121, 127-161, 167-172, 176-187, 191-201, 210-248, 258-316
+app\services\rbac_audit_service.py               20     11    45%   23-38, 50-51, 70-72, 90
+app\services\s3_storage_service.py               95     95     0%   2-323
+app\services\sage_oauth_service.py              192    192     0%   9-646
+app\services\storage_service.py                  65     40    38%   79-81, 102-103, 107-109, 131-142, 162-165, 182-186, 203-204, 224-227, 247-255
+app\services\subscription_service.py            142     62    56%   131, 135, 211-222, 248, 250, 254, 281, 298-317, 321-341, 345-364, 368-379
+app\services\task_service.py                     35     23    34%   15-16, 27-37, 46-55, 64-67, 76-83, 91-92
+app\services\task_template_service.py            61     43    30%   22-33, 41-42, 51-54, 65-79, 88-92, 101-104, 112, 125-137, 146-151, 161-166, 176-195
+app\services\thumbnail_service.py                93     93     0%   7-311
+app\services\user_service.py                     75     60    20%   13-17, 21, 25-34, 38, 48-70, 74-94, 98-102, 106, 110, 114-120
+app\services\valuation_service.py               334    282    16%   54, 71-79, 89-94, 110, 123-151, 163-185, 191-193, 197-215, 236-250, 266-297, 336-355, 364, 373-374, 380, 395-410, 416-435, 449-460, 474-487, 496, 505-512, 521-539, 555-566, 579-591, 600, 616-683, 699-784, 796, 810-828, 839-877, 906-954, 964-965, 982-990, 1000, 1019-1021
+app\services\xero_oauth_service.py              206    165    20%   29-38, 54-68, 75-79, 91-99, 116-123, 143-148, 171-187, 196, 205, 216, 224, 229-235, 239, 259-282, 311-371, 389-417, 434-477, 492-554, 565-575, 589-603
+app\services\youtube_service.py                  57     34    40%   12, 53-91, 95-96, 113-114, 120-122, 128-131, 146-162
+app\tasks\__init__.py                             2      0   100%
+app\tasks\task_automation.py                     25     16    36%   28-52
+app\utils\__init__.py                             0      0   100%
+app\utils\datetime.py                             4      1    75%   10
+---------------------------------------------------------------------------
+TOTAL                                          8833   4748    46%
+
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_subscription_error_paths.py:311: Stripe module imported inside function - mocking complex, error handling already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:335: Stripe module imported inside function - mocking complex, error handling already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:363: Stripe module imported inside function - mocking complex, event routing already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:406: Stripe module imported inside function - mocking complex, exception handling already verified in code
+================= 32 passed, 4 skipped, 64 warnings in 14.02s =================

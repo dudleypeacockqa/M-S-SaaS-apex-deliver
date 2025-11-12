@@ -63,11 +63,11 @@ const masterAdminNavItem: WorkspaceNavigationItem = {
   roles: ['admin'],
 }
 
-// Conditionally include Master Admin Portal based on feature flag
+const enableMasterAdmin = import.meta.env.VITE_ENABLE_MASTER_ADMIN !== 'false'
+
 export const WORKSPACE_NAV_ITEMS: WorkspaceNavigationItem[] = [
   ...baseNavItems,
-  // Only show Master Admin Portal if backend API is deployed
-  ...(import.meta.env.VITE_ENABLE_MASTER_ADMIN === 'true' ? [masterAdminNavItem] : []),
+  ...(enableMasterAdmin ? [masterAdminNavItem] : []),
 ]
 
 export const getLoginUrl = () => {

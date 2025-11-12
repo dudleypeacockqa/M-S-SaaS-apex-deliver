@@ -25,6 +25,7 @@ from app.schemas.subscription import (
     BillingDashboardResponse,
     CancelSubscriptionRequest,
     CheckoutSessionResponse,
+    CustomerPortalResponse,
     InvoiceResponse,
     SubscriptionCreate,
     SubscriptionResponse,
@@ -59,6 +60,25 @@ def create_checkout_session(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create checkout session: {str(e)}")
+
+
+@router.get("/customer-portal", response_model=CustomerPortalResponse)
+def create_customer_portal_session(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Create a Stripe Billing Portal session so customers can manage payment methods."""
+    try:
+        session = subscription_service.create_billing_portal_session(
+            organization_id=current_user.organization_id,
+            return_url=f"{os.getenv('FRONTEND_URL', 'http://localhost:5173')}/dashboard/billing",
+            db=db,
+        )
+        return CustomerPortalResponse(**session)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create billing portal session: {str(e)}")
 
 
 @router.get("/me", response_model=SubscriptionResponse)

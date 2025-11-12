@@ -272,6 +272,29 @@ describe('PermissionModal', () => {
     ).toBeInTheDocument();
   });
 
+  it('should block downgrading the final owner role and show warning', async () => {
+    const { listPermissions, updatePermission } = await import('../../services/api/documents');
+    vi.mocked(listPermissions).mockResolvedValue([
+      { id: 'perm-1', user_id: 'user-1', user_email: 'owner@example.com', role: 'owner', document_id: 'doc-1' },
+    ]);
+
+    renderWithProviders(
+      <PermissionModal documentId="doc-1" isOpen={true} onClose={vi.fn()} />
+    );
+
+    const roleSelect = await screen.findByRole('combobox', { name: /role for owner@example\.com/i });
+    fireEvent.change(roleSelect, { target: { value: 'editor' } });
+
+    await waitFor(() => {
+      expect(updatePermission).not.toHaveBeenCalled();
+      expect(
+        screen.getByText(/at least one owner must remain on this document/i)
+      ).toBeInTheDocument();
+    });
+
+    expect(roleSelect).toHaveValue('owner');
+  });
+
   it('should allow removal when multiple owners exist', async () => {
     const { listPermissions } = await import('../../services/api/documents');
     vi.mocked(listPermissions).mockResolvedValue([

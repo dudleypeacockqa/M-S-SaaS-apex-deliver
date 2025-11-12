@@ -38,6 +38,12 @@ class CheckoutSessionResponse(BaseModel):
     session_id: str = Field(..., description="Stripe Session ID")
 
 
+class CustomerPortalResponse(BaseModel):
+    """Response schema for Stripe billing portal session."""
+
+    url: str = Field(..., description="Stripe Billing Portal URL")
+
+
 class SubscriptionResponse(BaseModel):
     """Response schema for subscription details."""
 

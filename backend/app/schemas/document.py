@@ -47,6 +47,7 @@ class FolderResponse(BaseModel):
     updated_at: Optional[datetime]
     children: List['FolderResponse'] = Field(default_factory=list)
     document_count: int = 0
+    has_children: bool = False
 
     model_config = {"from_attributes": True}
 
@@ -307,6 +308,10 @@ class ShareLinkRevokeResponse(BaseModel):
     message: str
     revoked_at: datetime
 
+
+
+# Resolve forward refs for recursive folder response
+FolderResponse.model_rebuild()
 
 
 

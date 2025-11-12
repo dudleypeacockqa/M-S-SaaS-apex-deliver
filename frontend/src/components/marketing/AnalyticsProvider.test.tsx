@@ -11,9 +11,11 @@ describe('AnalyticsProvider', () => {
   beforeEach(() => {
     // Clear any existing scripts
     document.head.innerHTML = '';
-    delete (window as any).gtag;
-    delete (window as any).hj;
-    delete (window as any)._linkedin_data_partner_ids;
+    (window as any).gtag = undefined;
+    (window as any).dataLayer = undefined;
+    (window as any).hj = undefined;
+    (window as any)._hjSettings = undefined;
+    (window as any)._linkedin_data_partner_ids = undefined;
   });
 
   afterEach(() => {

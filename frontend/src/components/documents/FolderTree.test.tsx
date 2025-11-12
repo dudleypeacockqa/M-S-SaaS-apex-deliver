@@ -5,11 +5,10 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FolderTree } from './FolderTree';
 
-// Mock folder API
 vi.mock('../../services/api/documents', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../services/api/documents')>();
   return {
@@ -30,9 +29,7 @@ const renderWithProviders = (ui: React.ReactElement) => {
   });
 
   return render(
-    <QueryClientProvider client={queryClient}>
-      {ui}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
   );
 };
 
@@ -41,19 +38,15 @@ describe('FolderTree', () => {
     vi.clearAllMocks();
   });
 
-  it('should render root folder structure', async () => {
+  it('renders root folder structure', async () => {
     const { listFolders } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Contracts', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0 },
-      { id: 'folder-2', name: 'Financial Reports', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-02', document_count: 2 },
+      { id: 'folder-1', name: 'Contracts', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0, has_children: false },
+      { id: 'folder-2', name: 'Financial Reports', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-02', document_count: 2, has_children: false },
     ]);
 
     renderWithProviders(
-      <FolderTree
-        dealId="deal-1"
-        selectedFolderId={null}
-        onFolderSelect={vi.fn()}
-      />
+      <FolderTree dealId="deal-1" selectedFolderId={null} onFolderSelect={vi.fn()} />
     );
 
     await waitFor(() => {
@@ -62,100 +55,70 @@ describe('FolderTree', () => {
     });
   });
 
-  it('should render nested folder hierarchy', async () => {
+  it('lazy loads child folders when expanded', async () => {
     const { listFolders } = await import('../../services/api/documents');
-    vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Legal', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 1 },
-      { id: 'folder-2', name: 'NDAs', parent_id: 'folder-1', deal_id: 'deal-1', created_at: '2025-01-02', document_count: 0 },
-      { id: 'folder-3', name: 'Signed', parent_id: 'folder-2', deal_id: 'deal-1', created_at: '2025-01-03', document_count: 0 },
-    ]);
+    vi.mocked(listFolders).mockImplementation(async (_dealId, options) => {
+      if (!options || options.parentFolderId === undefined) {
+        return [
+          { id: 'folder-1', name: 'Legal', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0, has_children: true },
+        ];
+      }
 
-    renderWithProviders(
-      <FolderTree
-        dealId="deal-1"
-        selectedFolderId={null}
-        onFolderSelect={vi.fn()}
-      />
-    );
+      if (options.parentFolderId === 'folder-1') {
+        return [
+          { id: 'folder-2', name: 'NDAs', parent_id: 'folder-1', deal_id: 'deal-1', created_at: '2025-01-02', document_count: 0, has_children: false },
+        ];
+      }
 
-    await waitFor(() => {
-      expect(screen.getByText('Legal')).toBeInTheDocument();
+      return [];
     });
 
-    // Expand parent folder
-    const expandButton = screen.getByRole('button', { name: /expand legal/i });
+    renderWithProviders(
+      <FolderTree dealId="deal-1" selectedFolderId={null} onFolderSelect={vi.fn()} />
+    );
+
+    const expandButton = await screen.findByRole('button', { name: /expand legal/i });
     fireEvent.click(expandButton);
 
     await waitFor(() => {
-      expect(screen.getByText('NDAs')).toBeInTheDocument();
+      expect(listFolders).toHaveBeenCalledWith('deal-1', expect.objectContaining({ parentFolderId: 'folder-1' }));
+      expect(screen.getByRole('treeitem', { name: /NDAs/i })).toBeInTheDocument();
     });
   });
 
-  it('should highlight selected folder', async () => {
+  it('marks selected folder via aria-selected', async () => {
     const { listFolders } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Documents', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 2 },
+      { id: 'folder-1', name: 'Documents', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 2, has_children: false },
     ]);
 
     renderWithProviders(
-      <FolderTree
-        dealId="deal-1"
-        selectedFolderId="folder-1"
-        onFolderSelect={vi.fn()}
-      />
+      <FolderTree dealId="deal-1" selectedFolderId="folder-1" onFolderSelect={vi.fn()} />
     );
 
-    await waitFor(() => {
-      const folderButton = screen.getByRole('button', { name: /select documents/i });
-      const folderContainer = folderButton.closest('div.flex.items-center.justify-between');
-      expect(folderContainer).toHaveClass('bg-indigo-50');
-    });
+    const treeitem = await screen.findByRole('treeitem', { name: /Documents/i });
+    expect(treeitem).toHaveAttribute('aria-selected', 'true');
   });
 
-  it('should call onFolderSelect when folder is clicked', async () => {
+  it('invokes onFolderSelect when a folder is activated', async () => {
     const { listFolders } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Assets', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0 },
+      { id: 'folder-1', name: 'Assets', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0, has_children: false },
     ]);
 
     const onFolderSelect = vi.fn();
 
     renderWithProviders(
-      <FolderTree
-        dealId="deal-1"
-        selectedFolderId={null}
-        onFolderSelect={onFolderSelect}
-      />
+      <FolderTree dealId="deal-1" selectedFolderId={null} onFolderSelect={onFolderSelect} />
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Assets')).toBeInTheDocument();
-    });
-
-    const folderButton = screen.getByRole('button', { name: /select assets/i });
+    const folderButton = await screen.findByRole('treeitem', { name: /Assets/i });
     fireEvent.click(folderButton);
 
     expect(onFolderSelect).toHaveBeenCalledWith('folder-1');
   });
 
-  it('should show create folder button', async () => {
-    const { listFolders } = await import('../../services/api/documents');
-    vi.mocked(listFolders).mockResolvedValue([]);
-
-    renderWithProviders(
-      <FolderTree
-        dealId="deal-1"
-        selectedFolderId={null}
-        onFolderSelect={vi.fn()}
-      />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /new folder/i })).toBeInTheDocument();
-    });
-  });
-
-  it('should create new folder with inline input', async () => {
+  it('creates a new folder through inline form', async () => {
     const { listFolders, createFolder } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([]);
     vi.mocked(createFolder).mockResolvedValue({
@@ -167,17 +130,12 @@ describe('FolderTree', () => {
     });
 
     renderWithProviders(
-      <FolderTree
-        dealId="deal-1"
-        selectedFolderId={null}
-        onFolderSelect={vi.fn()}
-      />
+      <FolderTree dealId="deal-1" selectedFolderId={null} onFolderSelect={vi.fn()} />
     );
 
     const createButton = await screen.findByRole('button', { name: /new folder/i });
     fireEvent.click(createButton);
 
-    // Expect inline input to appear
     const input = await screen.findByPlaceholderText(/folder name/i);
     fireEvent.change(input, { target: { value: 'New Folder' } });
     fireEvent.keyDown(input, { key: 'Enter' });
@@ -190,25 +148,17 @@ describe('FolderTree', () => {
     });
   });
 
-  it('should show context menu on right-click', async () => {
+  it('opens context menu on right-click', async () => {
     const { listFolders } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Reports', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0 },
+      { id: 'folder-1', name: 'Reports', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0, has_children: false },
     ]);
 
     renderWithProviders(
-      <FolderTree
-        dealId="deal-1"
-        selectedFolderId={null}
-        onFolderSelect={vi.fn()}
-      />
+      <FolderTree dealId="deal-1" selectedFolderId={null} onFolderSelect={vi.fn()} />
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Reports')).toBeInTheDocument();
-    });
-
-    const folderElement = screen.getByText('Reports');
+    const folderElement = await screen.findByText('Reports');
     fireEvent.contextMenu(folderElement);
 
     await waitFor(() => {
@@ -217,10 +167,10 @@ describe('FolderTree', () => {
     });
   });
 
-  it('should rename folder via context menu', async () => {
+  it('renames folder through context menu', async () => {
     const { listFolders, updateFolder } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Old Name', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0 },
+      { id: 'folder-1', name: 'Old Name', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0, has_children: false },
     ]);
     vi.mocked(updateFolder).mockResolvedValue({
       id: 'folder-1',
@@ -231,26 +181,15 @@ describe('FolderTree', () => {
     });
 
     renderWithProviders(
-      <FolderTree
-        dealId="deal-1"
-        selectedFolderId={null}
-        onFolderSelect={vi.fn()}
-      />
+      <FolderTree dealId="deal-1" selectedFolderId={null} onFolderSelect={vi.fn()} />
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Old Name')).toBeInTheDocument();
-    });
-
-    // Right-click to open context menu
-    const folderElement = screen.getByText('Old Name');
+    const folderElement = await screen.findByText('Old Name');
     fireEvent.contextMenu(folderElement);
 
-    // Click rename
     const renameButton = await screen.findByText(/rename/i);
     fireEvent.click(renameButton);
 
-    // Enter new name
     const input = await screen.findByDisplayValue('Old Name');
     fireEvent.change(input, { target: { value: 'New Name' } });
     fireEvent.keyDown(input, { key: 'Enter' });
@@ -260,36 +199,24 @@ describe('FolderTree', () => {
     });
   });
 
-  it('should delete folder with confirmation', async () => {
+  it('deletes folder with confirmation dialog', async () => {
     const { listFolders, deleteFolder } = await import('../../services/api/documents');
     vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'To Delete', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0 },
+      { id: 'folder-1', name: 'To Delete', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0, has_children: false },
     ]);
     vi.mocked(deleteFolder).mockResolvedValue(undefined);
 
-    // Mock window.confirm
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
 
     renderWithProviders(
-      <FolderTree
-        dealId="deal-1"
-        selectedFolderId={null}
-        onFolderSelect={vi.fn()}
-      />
+      <FolderTree dealId="deal-1" selectedFolderId={null} onFolderSelect={vi.fn()} />
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('To Delete')).toBeInTheDocument();
-    });
-
-    // Right-click to open context menu
-    const folderElement = screen.getByText('To Delete');
+    const folderElement = await screen.findByText('To Delete');
     fireEvent.contextMenu(folderElement);
 
-    // Click delete button from context menu (not the folder name)
-    const deleteButtons = await screen.findAllByText(/delete/i);
-    const deleteButton = deleteButtons.find(btn => btn.tagName === 'BUTTON' && btn.textContent === 'Delete');
-    fireEvent.click(deleteButton!);
+    const deleteButton = await screen.findByRole('button', { name: /^delete$/i });
+    fireEvent.click(deleteButton);
 
     await waitFor(() => {
       expect(confirmSpy).toHaveBeenCalled();
@@ -299,39 +226,41 @@ describe('FolderTree', () => {
     confirmSpy.mockRestore();
   });
 
-  it('should show loading state while fetching folders', async () => {
+  it('shows loading state while the root request is in-flight', async () => {
     const { listFolders } = await import('../../services/api/documents');
-    vi.mocked(listFolders).mockImplementation(() => new Promise(() => {})); // Never resolves
+    vi.mocked(listFolders).mockImplementation(() => new Promise(() => {}));
 
     renderWithProviders(
-      <FolderTree
-        dealId="deal-1"
-        selectedFolderId={null}
-        onFolderSelect={vi.fn()}
-      />
+      <FolderTree dealId="deal-1" selectedFolderId={null} onFolderSelect={vi.fn()} />
     );
 
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    expect(screen.getByText(/loading folders/i)).toBeInTheDocument();
   });
 
-  it('should persist expanded folders across remounts using localStorage', async () => {
+  it('persists expanded folders between remounts', async () => {
     const storageKey = 'folder-tree-expanded-deal-1';
     const setItemSpy = vi.spyOn(window.localStorage, 'setItem');
     const getItemSpy = vi.spyOn(window.localStorage, 'getItem').mockReturnValue(null);
 
     const { listFolders } = await import('../../services/api/documents');
-    vi.mocked(listFolders).mockResolvedValue([
-      { id: 'folder-1', name: 'Playbooks', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0 },
-      { id: 'folder-2', name: 'Ops', parent_id: 'folder-1', deal_id: 'deal-1', created_at: '2025-01-02', document_count: 0 },
-    ]);
+    vi.mocked(listFolders).mockImplementation(async (_dealId, options) => {
+      if (!options || options.parentFolderId === undefined) {
+        return [
+          { id: 'folder-1', name: 'Playbooks', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0, has_children: true },
+        ];
+      }
+
+      if (options.parentFolderId === 'folder-1') {
+        return [
+          { id: 'folder-2', name: 'Ops', parent_id: 'folder-1', deal_id: 'deal-1', created_at: '2025-01-02', document_count: 0, has_children: false },
+        ];
+      }
+      return [];
+    });
 
     const renderTree = () =>
       renderWithProviders(
-        <FolderTree
-          dealId="deal-1"
-          selectedFolderId={null}
-          onFolderSelect={vi.fn()}
-        />
+        <FolderTree dealId="deal-1" selectedFolderId={null} onFolderSelect={vi.fn()} />
       );
 
     const { unmount } = renderTree();
@@ -343,21 +272,114 @@ describe('FolderTree', () => {
       expect(setItemSpy).toHaveBeenCalledWith(storageKey, JSON.stringify(['folder-1']));
     });
 
-    // Simulate reload with stored expansion state
     getItemSpy.mockReturnValue(JSON.stringify(['folder-1']));
 
     unmount();
     renderTree();
 
     await waitFor(() => {
-      const toggleButton = screen.getByRole('button', { name: /expand playbooks/i });
-      expect(toggleButton).toHaveTextContent('−');
-      expect(screen.getByText('Ops')).toBeInTheDocument();
+      const toggleButton = screen.getByRole('button', { name: /collapse playbooks/i });
+      expect(toggleButton).toBeInTheDocument();
+      expect(screen.getByRole('treeitem', { name: /Ops/i })).toBeInTheDocument();
     });
 
     setItemSpy.mockRestore();
     getItemSpy.mockRestore();
     window.localStorage.removeItem(storageKey);
+  });
+
+  it('supports keyboard navigation and selection', async () => {
+    const { listFolders } = await import('../../services/api/documents');
+    vi.mocked(listFolders).mockResolvedValue([
+      { id: 'folder-1', name: 'Contracts', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0, has_children: false },
+      { id: 'folder-2', name: 'Financials', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-02', document_count: 0, has_children: false },
+    ]);
+
+    const onFolderSelect = vi.fn();
+
+    renderWithProviders(
+      <FolderTree dealId="deal-1" selectedFolderId={null} onFolderSelect={onFolderSelect} />
+    );
+
+    const tree = await screen.findByRole('tree');
+    await act(async () => {
+      tree.focus();
+      fireEvent.focus(tree);
+    });
+
+    const firstItem = await screen.findByRole('treeitem', { name: /Contracts/i });
+    expect(firstItem).toHaveFocus();
+
+    await act(async () => {
+      fireEvent.keyDown(tree, { key: 'ArrowDown' });
+    });
+    const secondItem = await screen.findByRole('treeitem', { name: /Financials/i });
+    expect(secondItem).toHaveFocus();
+
+    await act(async () => {
+      fireEvent.keyDown(tree, { key: 'Enter' });
+    });
+    expect(onFolderSelect).toHaveBeenCalledWith('folder-2');
+  });
+
+  it('does not re-fetch child folders after initial load', async () => {
+    const { listFolders } = await import('../../services/api/documents');
+    const listMock = vi.mocked(listFolders);
+
+    listMock.mockImplementation(async (_dealId, options) => {
+      if (!options || options.parentFolderId === undefined) {
+        return [
+          { id: 'root-1', name: 'Root Folder', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0, has_children: true },
+        ];
+      }
+
+      if (options.parentFolderId === 'root-1') {
+        return [
+          { id: 'child-1', name: 'Child Folder', parent_id: 'root-1', deal_id: 'deal-1', created_at: '2025-01-02', document_count: 0, has_children: false },
+        ];
+      }
+
+      return [];
+    });
+
+    renderWithProviders(
+      <FolderTree dealId="deal-1" selectedFolderId={null} onFolderSelect={vi.fn()} />
+    );
+
+    const toggle = await screen.findByRole('button', { name: /expand root folder/i });
+    fireEvent.click(toggle);
+
+    await waitFor(() => {
+      expect(screen.getByRole('treeitem', { name: /Child Folder/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(toggle); // collapse
+    const collapseButton = await screen.findByRole('button', { name: /expand root folder/i });
+    fireEvent.click(collapseButton); // expand again
+
+    expect(listMock).toHaveBeenCalledTimes(2); // root + first child fetch only
+  });
+
+  it('fetches search results from the API when searchTerm provided', async () => {
+    const { listFolders } = await import('../../services/api/documents');
+    vi.mocked(listFolders).mockImplementation(async (_dealId, options) => {
+      if (options?.search) {
+        return [
+          { id: 'folder-search', name: 'Legal Team', parent_id: null, deal_id: 'deal-1', created_at: '2025-01-01', document_count: 0, has_children: false },
+        ];
+      }
+
+      return [];
+    });
+
+    renderWithProviders(
+      <FolderTree dealId="deal-1" selectedFolderId={null} searchTerm="Legal" onFolderSelect={vi.fn()} />
+    );
+
+    await waitFor(() => {
+      expect(listFolders).toHaveBeenCalledWith('deal-1', expect.objectContaining({ search: 'Legal' }));
+      expect(screen.getByRole('treeitem', { name: /Legal Team/i })).toBeInTheDocument();
+    });
   });
 });
 

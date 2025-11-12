@@ -675,8 +675,8 @@ Established comprehensive baseline for Session 2025-11-12C by analyzing workflow
 
 ### Hotfix: Alembic Guard for Missing Valuation Tables
 
-- ✅ Updated `backend/alembic/versions/89a67cacf69a_add_export_log_task_metadata_fields.py` to use Postgres `to_regclass` so we accurately detect whether `valuation_export_logs` exists before altering it.
-- ✅ The migration now no-ops when tenants/DBs never ran the valuation table bootstrap (older Render databases). Verified locally via `alembic upgrade head`.
+- ✅ Updated `backend/alembic/versions/89a67cacf69a_add_export_log_task_metadata_fields.py` to use Postgres `to_regclass` and schema-qualified batch operations so we accurately detect/alter `valuation_export_logs`, even when the `search_path` excludes `public`.
+- ✅ The migration now no-ops when tenants/DBs never ran the valuation table bootstrap (older Render databases) and safely manipulates the table when it does exist. Verified locally via `alembic upgrade head`.
 - ⚠️ Render deploys continue to fail because the remote `main` branch (commit `aee188d…`) does **not** include this hotfix yet; once this change lands on GitHub, rerunning the deploy should succeed.
 **Session 2025-11-11N Review**: 78% weighted completion, ~700h remaining across P1/P2/P3
 

@@ -100,4 +100,12 @@ Command: `npx playwright test --config playwright.dev.config.ts`
 
 ---
 
+## 8. Latest Execution Log
+
+### 2025-11-13 – W0 Governance Harness Reset
+
+- **Build/Measure:** `cd backend && ./venv/Scripts/python.exe -m pytest tests/test_path_safety.py tests/api/test_blog.py --maxfail=1 --cov=backend/app` (20 tests green, ~16s) reran the guardrail loop referenced in `docs/bmad/BMAD_METHOD_PLAN.md` (W0).
+- **Analyze:** Coverage warnings (`no-ctracer`, `module-not-imported`, `httpx app shortcut`) captured as non-blocking risks; Blog API contract plus DOS-path fixtures remain stable.
+- **Decide:** `docs/bmad/BMAD_PROGRESS_TRACKER.md` + `docs/bmad/bmm-workflow-status.md` now reflect W0 completion so the roadmap can advance to W1 backend migrations/deploy recovery.
+
 **Next Review:** During the WS-04 Decide checkpoint or sooner if regressions appear.

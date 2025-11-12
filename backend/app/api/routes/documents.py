@@ -75,6 +75,17 @@ def create_folder(
 @router.get("/folders", response_model=List[FolderResponse])
 def list_folders(
     deal_id: str,
+    parent_id: Optional[str] = Query(None, description="Parent folder id for lazy loading"),
+    search: Optional[str] = Query(
+        None,
+        min_length=1,
+        max_length=255,
+        description="Case-insensitive folder name search",
+    ),
+    include_tree: bool = Query(
+        False,
+        description="Return the full folder tree (legacy behavior)",
+    ),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -86,6 +97,9 @@ def list_folders(
     folders = document_service.list_folders(
         deal_id=deal_id,
         organization_id=current_user.organization_id,
+        parent_id=parent_id or None,
+        search=search or None,
+        include_tree=include_tree,
         db=db
     )
     return folders

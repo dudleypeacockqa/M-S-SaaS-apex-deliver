@@ -197,6 +197,31 @@ def create_checkout_session(
     return {"checkout_url": session.url, "session_id": session.id}
 
 
+def create_billing_portal_session(
+    organization_id: str,
+    return_url: str | None = None,
+    db: Session | None = None,
+) -> dict:
+    """
+    Create a Stripe Billing Portal session so customers can manage payment methods.
+    """
+    if db is None:  # pragma: no cover - defensive guard
+        raise ValueError("Database session is required")
+
+    subscription = get_organization_subscription(organization_id, db)
+    if not subscription:
+        raise ValueError("No active subscription found")
+    if not subscription.stripe_customer_id:
+        raise ValueError("Subscription does not have a Stripe customer ID")
+
+    portal_session = stripe.billing_portal.Session.create(
+        customer=subscription.stripe_customer_id,
+        return_url=return_url or f"{os.getenv('FRONTEND_URL', 'http://localhost:5173')}/dashboard/billing",
+    )
+
+    return {"url": portal_session.url}
+
+
 def get_organization_subscription(
     organization_id: str,
     db: Session | AsyncSession,

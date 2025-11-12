@@ -17,6 +17,20 @@
 
 ---
 
+### 2025-11-12T Audit Note (added during Codex execution)
+
+- New evidence gathered 2025-11-12T shows Render backend deploy `dep-d4a38l0dl3ps73f47d90` in `update_failed` and frontend deploy `dep-d4a38l0fdonc73ec8e9g` still queued (`deployment-health-2025-11-12.json`), so the “deployment health 100%” statements below are outdated.
+- DEV-008 verification now shows only **73/81** document-room tests passing; Vitest crashes inside MSW because `localStorage` is undefined and `DocumentRoomPage.test.tsx` fails to import `react-router/dom`.
+- Workflow governance (`docs/bmad/bmm-workflow-status.yaml`) continues to list Phase 3 Implementation, so the Phase 6 completion claims need reconciliation once the above blockers are cleared.
+
+### 2025-11-12Z Planning Reset (Codex)
+
+- Reconciled BMAD docs (`BMAD_METHOD_PLAN`, `PROJECT_COMPLETION_PLAN`, trackers) with git HEAD `e16b4c1`; confirmed DEV-008 Document Room + deployment evidence remain blockers.
+- Re-state priority ladder: **1)** Stabilize MSW/localStorage shims + rerun PermissionModal/UploadPanel/DocumentWorkspace under `--pool=vmThreads`, **2)** Refresh Render deploy + smoke/verify evidence once tests are green, **3)** Re-run MARK-002 Lighthouse/axe audits, **4)** Execute full backend/ frontend QA + release packaging.
+- Updated `docs/bmad/bmm-workflow-status.md` and `docs/bmad/BMAD_PROGRESS_TRACKER.md` with this plan; next TDD command = `npm --prefix frontend run test -- src/components/documents/UploadPanel.enhanced.test.tsx --runInBand --pool=vmThreads`.
+
+---
+
 ## Key Findings
 
 ### Test Health ✅

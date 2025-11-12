@@ -2,7 +2,7 @@
 
 **Story ID**: MAP-REBUILD-001  
 **Epic**: Master Admin Portal Rebuild  
-**Status**: In Progress  
+**Status**: In Progress – Monitoring endpoints wired (Updated 2025-11-12 12:10 UTC)  
 **Started**: October 31, 2025  
 **Methodology**: BMAD v6-alpha with Strict TDD  
 **Test Coverage Target**: 100% backend
@@ -19,6 +19,9 @@ Establish the backend foundation for the Master Admin Portal using Python/FastAP
 - FastAPI endpoints for Activity Tracker CRUD operations
 - Business logic services (scoring, focus sessions, nudges)
 - 100% test coverage with Pytest
+
+### Latest Update (2025-11-12)
+- Added observability coverage for the existing dashboard endpoint via `scripts/monitoring/collect_health_snapshot.py`; every run now records `/api/master-admin/dashboard` responses (expected 401) in `docs/monitoring/health-snapshot-*.json` so backend rebuild progress is traceable in BMAD evidence.
 
 ---
 

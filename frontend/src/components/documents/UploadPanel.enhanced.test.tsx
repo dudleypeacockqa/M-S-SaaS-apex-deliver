@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import UploadPanel from './UploadPanel';
 
@@ -477,6 +477,42 @@ describe('UploadPanel - Enhanced Features (Sprint 2 Task 1)', () => {
       expect(browseButton).toBeDisabled();
     });
 
+    it('should show quota lock message and block drag-and-drop uploads when locked', () => {
+      const handleUpload = vi.fn();
+      render(
+        <UploadPanel
+          onUpload={handleUpload}
+          isUploading={false}
+          storageQuota={{ used: 5_000_000_000, limit: 5_000_000_000 }}
+          userTier="professional"
+          quotaLockMessage="Storage quota reached. Delete files or upgrade."
+          onManageStorage={vi.fn()}
+        />
+      );
+
+      const dropzone = screen.getByTestId('upload-dropzone');
+      expect(dropzone).toHaveAttribute('aria-disabled', 'true');
+
+      const overlay = screen.getByTestId('quota-lock-overlay');
+      expect(overlay).toHaveTextContent(/storage quota reached/i);
+      expect(within(overlay).getByRole('button', { name: /manage storage/i })).toBeInTheDocument();
+
+      const files = [new File(['content'], 'locked.pdf', { type: 'application/pdf' })];
+      fireEvent.drop(dropzone, {
+        dataTransfer: {
+          files,
+          items: files.map((file) => ({
+            kind: 'file',
+            type: file.type,
+            getAsFile: () => file,
+          })),
+          types: ['Files'],
+        },
+      });
+
+      expect(handleUpload).not.toHaveBeenCalled();
+    });
+
     it('should surface manage storage action when quota error is shown', async () => {
       const user = userEvent.setup();
       const handleManageStorage = vi.fn();
@@ -499,10 +535,10 @@ describe('UploadPanel - Enhanced Features (Sprint 2 Task 1)', () => {
       expect(quotaAlert).toBeDefined();
       expect(quotaAlert).toHaveTextContent(/storage quota exceeded/i);
 
-      const manageButton = screen.getByRole('button', { name: /manage storage/i });
-      expect(manageButton).toBeInTheDocument();
+      const manageButtons = screen.getAllByRole('button', { name: /manage storage/i });
+      expect(manageButtons.length).toBeGreaterThan(0);
 
-      await user.click(manageButton);
+      await user.click(manageButtons[0]);
       expect(handleManageStorage).toHaveBeenCalled();
     });
   });

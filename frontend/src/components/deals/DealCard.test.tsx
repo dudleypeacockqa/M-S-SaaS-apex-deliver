@@ -223,8 +223,9 @@ describe('DealCard', () => {
       const handleClick = vi.fn()
       render(<DealCard deal={mockDeal} onClick={handleClick} />)
 
-      const card = screen.getByText('Acme Corp Acquisition').closest('div')
-      expect(card).toHaveAttribute('role', 'button')
+      const heading = screen.getByRole('heading', { name: 'Acme Corp Acquisition' })
+      const card = heading.closest('[role="button"]')
+      expect(card).not.toBeNull()
       expect(card).toHaveAttribute('tabIndex', '0')
     })
 

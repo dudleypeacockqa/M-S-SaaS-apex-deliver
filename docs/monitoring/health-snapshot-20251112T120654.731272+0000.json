@@ -1,0 +1,55 @@
+{
+  "backend_url": "https://ma-saas-backend.onrender.com",
+  "collected_at": "2025-11-12T12:06:54.731272+00:00",
+  "frontend_url": "https://100daysandbeyond.com",
+  "results": [
+    {
+      "elapsed_ms": 628.854,
+      "error": null,
+      "name": "backend_health",
+      "ok": true,
+      "status_code": 200,
+      "url": "https://ma-saas-backend.onrender.com/health"
+    },
+    {
+      "elapsed_ms": 658.063,
+      "error": null,
+      "name": "backend_billing_tiers",
+      "ok": true,
+      "status_code": 200,
+      "url": "https://ma-saas-backend.onrender.com/api/billing/tiers"
+    },
+    {
+      "elapsed_ms": 858.546,
+      "error": null,
+      "name": "backend_blog_listing",
+      "ok": true,
+      "status_code": 200,
+      "url": "https://ma-saas-backend.onrender.com/api/blog?limit=5"
+    },
+    {
+      "elapsed_ms": 840.801,
+      "error": null,
+      "name": "frontend_root",
+      "ok": true,
+      "status_code": 200,
+      "url": "https://100daysandbeyond.com/"
+    },
+    {
+      "elapsed_ms": 964.29,
+      "error": null,
+      "name": "frontend_case_studies",
+      "ok": true,
+      "status_code": 200,
+      "url": "https://100daysandbeyond.com/case-studies"
+    },
+    {
+      "elapsed_ms": 888.5079999999999,
+      "error": null,
+      "name": "master_admin_dashboard",
+      "ok": true,
+      "status_code": 401,
+      "url": "https://ma-saas-backend.onrender.com/api/master-admin/dashboard"
+    }
+  ]
+}

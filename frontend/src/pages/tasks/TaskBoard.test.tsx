@@ -556,31 +556,32 @@ const renderTaskBoard = () => {
     });
   });
 
-  it('refreshes tasks on polling interval', { timeout: 10000 }, async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
+  it('refreshes tasks on polling interval', async () => {
+    const setIntervalSpy = vi.spyOn(window, 'setInterval');
+    const clearIntervalSpy = vi.spyOn(window, 'clearInterval');
+    const { unmount } = renderTaskBoard();
 
-    renderTaskBoard();
+    try {
+      // Wait for initial load
+      await waitFor(() => {
+        expect(taskService.fetchTaskBoardData).toHaveBeenCalledTimes(1);
+      });
 
-    // Wait for initial load
-    await waitFor(() => {
-      expect(taskService.fetchTaskBoardData).toHaveBeenCalledTimes(1);
-    });
+      expect(setIntervalSpy).toHaveBeenCalledWith(expect.any(Function), 45_000);
 
-    const initialCallCount = vi.mocked(taskService.fetchTaskBoardData).mock.calls.length;
+      const intervalCallback = setIntervalSpy.mock.calls[0][0] as () => void;
 
-    // Advance timers by 45 seconds (polling interval) and run pending timers
-    await vi.advanceTimersByTimeAsync(45000);
-    await vi.advanceTimersToNextTimerAsync();
+      await act(async () => {
+        intervalCallback();
+      });
 
-    // Wait for the second fetch
-    await waitFor(
-      () => {
-        const currentCallCount = vi.mocked(taskService.fetchTaskBoardData).mock.calls.length;
-        expect(currentCallCount).toBeGreaterThan(initialCallCount);
-      },
-      { timeout: 1000 },
-    );
-
-    vi.useRealTimers();
+      await waitFor(() => {
+        expect(taskService.fetchTaskBoardData).toHaveBeenCalledTimes(2);
+      });
+    } finally {
+      unmount();
+      setIntervalSpy.mockRestore();
+      clearIntervalSpy.mockRestore();
+    }
   });
 });

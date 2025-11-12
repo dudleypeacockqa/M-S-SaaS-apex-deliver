@@ -84,6 +84,7 @@ export interface Folder {
   updated_at: string | null
   document_count: number
   children?: Folder[]
+  has_children?: boolean
 }
 
 export interface DocumentListParams {
@@ -154,10 +155,35 @@ export async function createFolder(
   })
 }
 
-export async function listFolders(dealId: string): Promise<Folder[]> {
-  const headers = await getAuthHeaders("json")
+export interface ListFoldersOptions {
+  parentFolderId?: string | null
+  search?: string
+  includeTree?: boolean
+}
 
-  return request<Folder[]>(buildDealUrl(dealId, "/folders"), {
+export async function listFolders(dealId: string, options: ListFoldersOptions = {}): Promise<Folder[]> {
+  const headers = await getAuthHeaders("json")
+  const query = new URLSearchParams()
+
+  if (options.parentFolderId !== undefined) {
+    if (options.parentFolderId) {
+      query.set("parent_id", options.parentFolderId)
+    } else {
+      query.set("parent_id", "")
+    }
+  }
+
+  if (options.search) {
+    query.set("search", options.search)
+  }
+
+  if (options.includeTree) {
+    query.set("include_tree", "true")
+  }
+
+  const url = `${buildDealUrl(dealId, "/folders")}${query.toString() ? `?${query.toString()}` : ""}`
+
+  return request<Folder[]>(url, {
     method: "GET",
     headers,
   })

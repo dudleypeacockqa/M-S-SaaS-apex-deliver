@@ -82,7 +82,7 @@ export const DealCard: React.FC<DealCardProps> = ({
       aria-pressed={selected}
     >
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-3">
+      <header className="flex items-start justify-between gap-3 mb-3">
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-gray-900 line-clamp-2 text-base">
             {deal.name}
@@ -102,7 +102,7 @@ export const DealCard: React.FC<DealCardProps> = ({
             Archived
           </span>
         )}
-      </div>
+      </header>
 
       {/* Deal Details */}
       <div className="space-y-2">

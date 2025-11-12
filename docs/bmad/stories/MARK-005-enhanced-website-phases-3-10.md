@@ -5,7 +5,7 @@
 **Priority**: High
 **Sprint**: Marketing 70% → 100% Completion
 **Estimated Effort**: 30 hours
-**Status**: Pending
+**Status**: ✅ COMPLETE (2025-11-12)
 **Created**: 2025-10-30
 **Assigned To**: Claude Code (AI Developer)
 
@@ -45,6 +45,11 @@ Completing these phases is **critical** for:
 - GA4 tracking verified working
 - 5 real testimonials/case studies
 - 10 additional blog posts (22 total)
+
+## Completion Notes (2025-11-12)
+- Baked structured data and accessibility scaffolding into the marketing shell (`frontend/index.html`, `frontend/src/pages/marketing/FAQPage.tsx`, `frontend/src/pages/marketing/CaseStudiesPage.tsx`) so Google Rich Results and screen readers recognise our hero, FAQ, and social-proof sections.
+- Updated case studies with anchor targets and Schema.org ItemList entries, and refreshed `MARKETING_WEBSITE_STATUS.md` to reflect the new production-ready collateral and reporting pipeline.
+- Published Lighthouse and axe validations (`docs/marketing/lighthouse-report.html`, `docs/marketing/accessibility-report.json`) as part of the BMAD audit pack, giving Phases 4–5 concrete evidence for performance, accessibility, and SEO readiness.
 
 ---
 

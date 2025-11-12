@@ -216,6 +216,77 @@ def test_set_document_permission(client, auth_context, seeded_deal, create_user)
         cleanup()
 
 
+def test_list_folders_lazy_loading(client, auth_context, seeded_deal):
+    headers, cleanup, _, _ = auth_context
+    try:
+        root_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/folders",
+            headers=headers,
+            json={"name": "Legal"},
+        )
+        root_id = root_resp.json()["id"]
+
+        client.post(
+            f"/api/deals/{seeded_deal.id}/folders",
+            headers=headers,
+            json={"name": "NDAs", "parent_folder_id": root_id},
+        )
+
+        root_listing = client.get(
+            f"/api/deals/{seeded_deal.id}/folders",
+            headers=headers,
+        )
+
+        assert root_listing.status_code == 200
+        payload = root_listing.json()
+        assert len(payload) == 1
+        assert payload[0]["id"] == root_id
+        assert payload[0]["has_children"] is True
+        assert payload[0]["children"] == []
+
+        child_listing = client.get(
+            f"/api/deals/{seeded_deal.id}/folders",
+            headers=headers,
+            params={"parent_id": root_id},
+        )
+
+        assert child_listing.status_code == 200
+        child_payload = child_listing.json()
+        assert len(child_payload) == 1
+        assert child_payload[0]["name"] == "NDAs"
+        assert child_payload[0]["parent_folder_id"] == root_id
+    finally:
+        cleanup()
+
+
+def test_list_folders_supports_search(client, auth_context, seeded_deal):
+    headers, cleanup, _, _ = auth_context
+    try:
+        client.post(
+            f"/api/deals/{seeded_deal.id}/folders",
+            headers=headers,
+            json={"name": "Finance"},
+        )
+        client.post(
+            f"/api/deals/{seeded_deal.id}/folders",
+            headers=headers,
+            json={"name": "Legal Docs"},
+        )
+
+        search_resp = client.get(
+            f"/api/deals/{seeded_deal.id}/folders",
+            headers=headers,
+            params={"search": "legal"},
+        )
+
+        assert search_resp.status_code == 200
+        body = search_resp.json()
+        assert len(body) == 1
+        assert body[0]["name"] == "Legal Docs"
+    finally:
+        cleanup()
+
+
 # ============================================================================
 # FOLDER TESTS - Additional Coverage
 # ============================================================================

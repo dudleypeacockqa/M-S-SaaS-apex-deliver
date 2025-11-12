@@ -3,7 +3,9 @@ from __future__ import annotations
 
 import pytest
 from fastapi import HTTPException
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
+from unittest.mock import AsyncMock, patch
 
 from app.api.dependencies.auth import (
     _extract_claim,
@@ -14,6 +16,7 @@ from app.api.dependencies.auth import (
 )
 from app.models.user import User, UserRole
 from app.models.organization import Organization
+from app.models.subscription import SubscriptionTier
 
 
 # Tests for _extract_claim helper
@@ -342,24 +345,91 @@ def test_enforce_claim_integrity_allows_missing_role_claim(db_session: Session):
 # Tests for get_current_user (integration test)
 @pytest.mark.asyncio
 async def test_get_current_user_enforces_claim_integrity(db_session: Session):
-    """Test get_current_user calls _enforce_claim_integrity."""
-    # This is an integration test that would require mocking Clerk JWT decode
-    # Covered by existing auth tests, but noted here for completeness
-    pass
+    """Test get_current_user decodes JWT and enforces claim integrity."""
+    user = User(
+        clerk_user_id="user_get_current",
+        email="current@example.com",
+        role=UserRole.growth,
+        organization_id="org_get_current",
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+
+    credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials="token")
+
+    with patch("app.api.dependencies.auth.decode_clerk_jwt") as mock_decode, \
+         patch("app.api.dependencies.auth.get_user_by_clerk_id") as mock_get_user, \
+         patch("app.api.dependencies.auth._enforce_claim_integrity") as mock_enforce:
+
+        mock_decode.return_value = {"sub": user.clerk_user_id}
+        mock_get_user.return_value = user
+
+        result = get_current_user(credentials=credentials, db=db_session)
+
+        assert result.id == user.id
+        mock_decode.assert_called_once_with("token")
+        mock_get_user.assert_called_once_with(db_session, user.clerk_user_id)
+        mock_enforce.assert_called_once_with(user, {"sub": user.clerk_user_id}, db_session)
+
+
+def test_get_current_user_requires_credentials(db_session: Session):
+    """Test get_current_user raises 401 when credentials are missing."""
+    with pytest.raises(HTTPException) as exc_info:
+        get_current_user(credentials=None, db=db_session)
+
+    assert exc_info.value.status_code == 401
 
 
 # Tests for require_feature (subscription tier feature access)
 @pytest.mark.asyncio
 async def test_require_feature_allows_access_with_sufficient_tier():
-    """Test require_feature allows access when user's tier has feature."""
-    # Note: This requires mocking check_feature_access from entitlement_service
-    # Will be covered in dedicated entitlement_service tests
-    pass
+    """Test require_feature allows access when entitlement service grants access."""
+    user = User(
+        clerk_user_id="user_feature_access",
+        email="feature@example.com",
+        role=UserRole.growth,
+        organization_id="org_feature",
+    )
+
+    dependency = require_feature("podcast_audio")
+
+    with patch("app.api.dependencies.auth.check_feature_access", new_callable=AsyncMock) as mock_access:
+        mock_access.return_value = True
+        result = await dependency(current_user=user)
+
+    assert result is user
+    mock_access.assert_awaited_once_with("org_feature", "podcast_audio")
 
 
 @pytest.mark.asyncio
 async def test_require_feature_blocks_access_with_insufficient_tier():
-    """Test require_feature blocks access with 403 when tier lacks feature."""
-    # Note: This requires mocking check_feature_access from entitlement_service
-    # Will be covered in dedicated entitlement_service tests
-    pass
+    """Test require_feature returns 403 with upgrade guidance when tier lacks access."""
+    user = User(
+        clerk_user_id="user_feature_block",
+        email="block@example.com",
+        role=UserRole.growth,
+        organization_id="org_block",
+    )
+    user.subscription_tier = "starter"
+
+    dependency = require_feature("youtube_integration")
+
+    with patch("app.api.dependencies.auth.check_feature_access", new_callable=AsyncMock) as mock_access, \
+         patch("app.api.dependencies.auth.get_required_tier") as mock_required_tier, \
+         patch("app.api.dependencies.auth.get_feature_upgrade_message") as mock_upgrade_message:
+
+        mock_access.return_value = False
+        mock_required_tier.return_value = SubscriptionTier.PROFESSIONAL
+        mock_upgrade_message.return_value = "Upgrade to Professional to unlock YouTube publishing."
+
+        with pytest.raises(HTTPException) as exc_info:
+            await dependency(current_user=user)
+
+    error = exc_info.value
+    assert error.status_code == 403
+    assert error.detail == "Upgrade to Professional to unlock YouTube publishing."
+    assert error.headers["X-Required-Tier"] == SubscriptionTier.PROFESSIONAL.value
+    assert error.headers["X-Upgrade-URL"] == "/pricing"
+    assert error.headers["X-Feature-Locked"] == "youtube_integration"
+    mock_access.assert_awaited_once_with("org_block", "youtube_integration")

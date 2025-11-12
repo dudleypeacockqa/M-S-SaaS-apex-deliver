@@ -130,10 +130,6 @@ describe('ExitIntentPopup', () => {
   })
 
   it('should show success state after form submission', () => {
-    // Mock window.location.href
-    delete (window as any).location
-    window.location = { href: '' } as any
-
     render(<ExitIntentPopup />)
 
     act(() => {

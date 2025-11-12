@@ -173,6 +173,61 @@ def test_create_checkout_session_with_trial(client: TestClient, db_session, crea
     assert call_kwargs["subscription_data"]["trial_period_days"] == 14
 
 
+def test_get_customer_portal_success(client: TestClient, create_user, create_organization):
+    """Test retrieving Stripe billing portal URL."""
+    from app.api.dependencies.auth import get_current_user
+    from app.main import app
+
+    org = create_organization(name="Portal Org")
+    user = create_user(email="portal@example.com", organization_id=str(org.id))
+
+    def override_get_current_user():
+        return user
+
+    app.dependency_overrides[get_current_user] = override_get_current_user
+
+    with patch('app.services.subscription_service.create_billing_portal_session') as mock_portal:
+        mock_portal.return_value = {"url": "https://billing.stripe.com/session/test"}
+
+        response = client.get(
+            "/api/billing/customer-portal",
+            headers={"Authorization": "Bearer test_token"},
+        )
+
+    app.dependency_overrides.pop(get_current_user, None)
+
+    assert response.status_code == 200
+    assert response.json() == {"url": "https://billing.stripe.com/session/test"}
+    mock_portal.assert_called_once()
+
+
+def test_get_customer_portal_handles_value_errors(client: TestClient, create_user, create_organization):
+    """Test billing portal endpoint returns 400 when service raises ValueError."""
+    from app.api.dependencies.auth import get_current_user
+    from app.main import app
+
+    org = create_organization(name="Portal Error Org")
+    user = create_user(email="portal-error@example.com", organization_id=str(org.id))
+
+    def override_get_current_user():
+        return user
+
+    app.dependency_overrides[get_current_user] = override_get_current_user
+
+    with patch('app.services.subscription_service.create_billing_portal_session') as mock_portal:
+        mock_portal.side_effect = ValueError("No active subscription found")
+
+        response = client.get(
+            "/api/billing/customer-portal",
+            headers={"Authorization": "Bearer test_token"},
+        )
+
+    app.dependency_overrides.pop(get_current_user, None)
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "No active subscription found"
+
+
 def test_get_subscription_success(client: TestClient, db_session, create_user, create_organization):
     """Test retrieving current subscription."""
     from app.api.dependencies.auth import get_current_user
@@ -461,11 +516,13 @@ def test_customer_portal_redirect(client: TestClient, auth_headers_solo: dict, d
     db_session.add(subscription)
     db_session.commit()
 
-    # Customer portal endpoint may not exist yet - check if it's implemented
-    response = client.get(
-        "/api/billing/customer-portal",
-        headers=auth_headers_solo
-    )
+    with patch('app.services.subscription_service.create_billing_portal_session') as mock_portal:
+        mock_portal.return_value = {"url": "https://billing.stripe.com/session/test"}
 
-    # Accept either 200 (implemented) or 404/405 (not implemented yet)
-    assert response.status_code in [200, 404, 405]
+        response = client.get(
+            "/api/billing/customer-portal",
+            headers=auth_headers_solo
+        )
+
+    assert response.status_code == 200
+    assert response.json()["url"] == "https://billing.stripe.com/session/test"

@@ -4,7 +4,7 @@
 **Sprint**: Sprint 3
 **Priority**: HIGH (Phase 1 - Revenue Engine)
 **Estimated Effort**: 12-17 hours
-**Status**: 🔄 IN PROGRESS
+**Status**: ✅ COMPLETE (2025-11-12)
 **Started**: October 24, 2025
 
 ---
@@ -124,6 +124,13 @@ This is the **revenue engine** for the entire platform. Without subscriptions:
 **And** all frontend tests should pass (100%)
 **And** all webhook events should be tested
 **And** all API endpoints should be tested
+
+---
+
+## Completion Notes (2025-11-12)
+- Implemented customer-portal support end-to-end (`create_billing_portal_session`, `/api/billing/customer-portal`, `CustomerPortalResponse` schema) so users can launch Stripe’s billing portal from the dashboard.
+- Extended regression coverage with new pytest modules: portal happy/negative paths, proration defaults, and service guards are now asserted in `test_subscription_service_edge_cases.py`, `test_billing_endpoints.py`, and `test_auth_helpers.py`.
+- Captured billing telemetry inside the new `scripts/monitoring/collect_health_snapshot.py` workflow—`/api/billing/tiers` is exercised during every health run and archived under `docs/monitoring/`.
 
 ---
 

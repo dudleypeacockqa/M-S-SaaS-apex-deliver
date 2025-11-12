@@ -1,8 +1,10 @@
 # Failing Frontend Tests Analysis
 
-**Session**: 2025-11-11C
-**Status**: 5 tests failing out of ~1,200+ total tests
-**Overall Pass Rate**: 99.6%
+**Session**: 2025-11-11C (updated 2025-11-12 by Codex)
+**Status**: Historical log – targeted reruns now pass when Vitest uses `--pool=vmThreads`. Full suite still needs confirmation.
+**Overall Pass Rate**: 99.6% (previous run)
+
+> ✅ 2025-11-12: Updated `npm test`/`npm run lint` scripts to force `--pool=vmThreads`, eliminating the Vitest threads-runner timeout observed on Windows. Individual files (`StatCard`, `MatchCard`, `ContactPage.form`) now pass locally. Re-run the full suite to refresh this report.
 
 ## Failing Tests Summary
 

@@ -40,6 +40,12 @@ export interface UploadPanelProps {
   allowedFileTypes?: string[]
   maxFilesPerUpload?: number
   onManageStorage?: () => void
+  quotaLockMessage?: string
+  analyticsContext?: {
+    dealId: string
+    folderId: string | null
+  }
+  onUploadTelemetry?: (payload: Record<string, any>) => void
 }
 
 const UploadPanel: React.FC<UploadPanelProps> = ({
@@ -58,6 +64,9 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
   allowedFileTypes,
   maxFilesPerUpload,
   onManageStorage,
+  quotaLockMessage,
+  analyticsContext,
+  onUploadTelemetry,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -73,6 +82,7 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
   const quotaWarningLevel =
     quotaPercentage >= 95 ? 'critical' : quotaPercentage >= 80 ? 'warning' : 'normal'
   const quotaLocked = storageQuota ? storageQuota.used >= storageQuota.limit : false
+  const quotaLockNotice = quotaLockMessage ?? 'Storage quota reached. Delete files or upgrade your plan.'
 
   const formatGB = (bytes: number): string => (bytes / (1024 * 1024 * 1024)).toFixed(1)
   const formatMB = (bytes: number): string => Math.round(bytes / 1_000_000).toString()
@@ -157,6 +167,18 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
     return { valid: true }
   }
 
+  const emitTelemetry = (eventType: string, files: FileList | File[]) => {
+    if (!onUploadTelemetry) return
+    const array = Array.isArray(files) ? files : Array.from(files)
+    const totalBytes = array.reduce((sum, file) => sum + (file.size ?? 0), 0)
+    onUploadTelemetry({
+      event: eventType,
+      fileCount: array.length,
+      totalBytes,
+      context: analyticsContext ?? null,
+    })
+  }
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
     if (!isUploading && !quotaLocked) {
@@ -173,7 +195,12 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
     e.preventDefault()
     setIsDragging(false)
 
-    if (isUploading || quotaLocked) return
+    if (isUploading || quotaLocked) {
+      if (quotaLocked) {
+        setLocalError(quotaLockNotice)
+      }
+      return
+    }
 
     const files = e.dataTransfer.files
     if (files.length > 0) {
@@ -183,25 +210,33 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
         return
       }
       setLocalError(null)
+      emitTelemetry('drop', files)
       onUpload(Array.from(files))
     }
   }
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      if (quotaLocked) return
+      if (quotaLocked) {
+        setLocalError(quotaLockNotice)
+        return
+      }
       const validation = validateFiles(e.target.files)
       if (!validation.valid) {
         setLocalError(validation.error || 'Upload validation failed')
         return
       }
       setLocalError(null)
+      emitTelemetry('browse', e.target.files)
       onUpload(Array.from(e.target.files))
     }
   }
 
   const handleBrowseClick = () => {
-    if (quotaLocked) return
+    if (quotaLocked) {
+      setLocalError(quotaLockNotice)
+      return
+    }
     fileInputRef.current?.click()
   }
 
@@ -354,6 +389,25 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
             : 'border-gray-300 hover:border-indigo-400'
         }`}
       >
+        {quotaLocked && (
+          <div
+            data-testid="quota-lock-overlay"
+            role="alert"
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-lg bg-white/85 px-6 py-4 text-center backdrop-blur-sm"
+          >
+            <p className="text-sm font-semibold text-slate-700">{quotaLockNotice}</p>
+            {onManageStorage && (
+              <button
+                type="button"
+                onClick={onManageStorage}
+                className="mt-3 rounded-md border border-blue-200 px-4 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50"
+              >
+                Manage Storage
+              </button>
+            )}
+          </div>
+        )}
+
         {isUploading && !hasUploadQueue ? (
           <div className="space-y-3">
             <div className="text-lg font-medium text-gray-700">Uploading...</div>

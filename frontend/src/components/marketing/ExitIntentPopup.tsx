@@ -53,7 +53,7 @@ export const ExitIntentPopup: React.FC = () => {
 
     // Auto-redirect to sign-up after 2 seconds
     setTimeout(() => {
-      window.location.href = '/sign-up'
+      window.location.assign('/sign-up')
     }, 2000)
   }
 

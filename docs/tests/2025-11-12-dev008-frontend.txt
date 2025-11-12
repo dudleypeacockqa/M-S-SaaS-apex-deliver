@@ -1,0 +1,83 @@
+
+ RUN  v4.0.8 C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend
+
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Basic handlers > returns mock root folders with child metadata 28ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Basic handlers > returns paginated document results 5ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Bulk operations > bulkMoveDocuments > moves multiple documents to target folder 6ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Bulk operations > bulkMoveDocuments > handles partial failures when document not found 7ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Bulk operations > bulkMoveDocuments > prevents moving archived documents 5ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Bulk operations > bulkArchiveDocuments > archives multiple documents 7ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Bulk operations > bulkArchiveDocuments > handles partial failures when document not found 4ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Bulk operations > bulkArchiveDocuments > prevents archiving already archived documents 4ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Bulk operations > restoreArchivedDocuments > restores archived documents 13ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Bulk operations > restoreArchivedDocuments > handles nonexistent documents gracefully 3ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Bulk operations > restoreArchivedDocuments > only restores actually archived documents 2ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Bulk operations > bulkDeleteDocuments > deletes multiple documents 9ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts > MSW document handlers > Bulk operations > bulkDeleteDocuments > handles partial failures when document not found 7ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should not render when isOpen is false 27ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Multi-File Upload Queue > should display upload queue with multiple files 57ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > renders root folder structure 68ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should render modal with permissions list when isOpen is true 359ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should display user roles (viewer/editor/owner) 49ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > lazy loads child folders when expanded 468ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should show add user input field 65ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should add new user with default viewer role 63ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Multi-File Upload Queue > should display individual progress bars for each file in queue 171ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Multi-File Upload Queue > should show file upload status icons (uploading, complete, error) 24ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > marks selected folder via aria-selected 42ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > invokes onFolderSelect when a folder is activated 48ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > creates a new folder through inline form 36ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should change user role via dropdown 73ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should remove user permission 85ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Per-File Cancellation > should display cancel button for each uploading file 254ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > opens context menu on right-click 17ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > renames folder through context menu 51ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > deletes folder with confirmation dialog 40ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > shows loading state while the root request is in-flight 4ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should close modal when close button clicked 24ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should show entitlement error when add user request is rejected 53ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Per-File Cancellation > should call onCancelFile with correct file id when cancel clicked 124ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should disable removal when user is the sole owner 67ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should block downgrading the final owner role and show warning 63ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Per-File Cancellation > should remove file from queue after cancellation 101ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Enhanced Drag-Drop Visual Feedback > should add border-blue-500 class on dragover 8ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Enhanced Drag-Drop Visual Feedback > should remove enhanced styling on drag leave 5ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Enhanced Drag-Drop Visual Feedback > should show animated upload icon on drag over 8ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Upload Queue Management > should display total upload progress across all files 5ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Upload Queue Management > should show upload speed and estimated time remaining 4ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Upload Queue Management > should display file size for each file in queue 7ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > persists expanded folders between remounts 148ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > supports keyboard navigation and selection 74ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should allow removal when multiple owners exist 42ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should disable adding users and show upgrade CTA when collaborator limit reached 65ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx > PermissionModal > should keep add button enabled when collaborator seats remain 33ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > does not re-fetch child folders after initial load 104ms
+ Γ£ô src/components/documents/FolderTree.test.tsx > FolderTree > fetches search results from the API when searchTerm provided 23ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Upload Queue Management > should show retry button for failed uploads 63ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Accessibility > should announce upload progress to screen readers 5ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Accessibility > should have proper ARIA labels for cancel buttons 22ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Storage Quota Enforcement > should display storage quota usage before upload 9ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Storage Quota Enforcement > should show visual warning when quota is above 80% 4ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Storage Quota Enforcement > should show critical alert when quota is above 95% 19ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Storage Quota Enforcement > should prevent upload when file would exceed quota 70ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Storage Quota Enforcement > should allow upload when file fits within quota 83ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Storage Quota Enforcement > should show upgrade prompt when quota exceeded for paid tier 27ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Storage Quota Enforcement > should disable dropzone and browse button when quota is fully used 16ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Storage Quota Enforcement > should show quota lock message and block drag-and-drop uploads when locked 24ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Storage Quota Enforcement > should surface manage storage action when quota error is shown 70ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > File Size Validation > should reject files exceeding max file size limit 76ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > File Size Validation > should show tier-specific file size limits 3ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > File Size Validation > should allow larger files for enterprise tier 71ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Upload Error States > should display network error with retry option 24ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Upload Error States > should display server error with support contact 21ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Upload Error States > should display file type validation error 21ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Upload Error States > should clear error message after successful upload 27ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Upload Error States > should show authentication error and redirect to login 31ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Batch Upload Restrictions > should enforce max files per upload for starter tier 57ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx > UploadPanel - Enhanced Features (Sprint 2 Task 1) > Batch Upload Restrictions > should allow unlimited files for enterprise tier 66ms
+
+ Test Files  4 passed (4)
+      Tests  74 passed (74)
+   Start at  11:27:21
+   Duration  4.47s (transform 751ms, setup 1.81s, collect 1.13s, tests 3.89s, environment 4.42s, prepare 139ms)
+

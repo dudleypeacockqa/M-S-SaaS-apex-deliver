@@ -291,7 +291,13 @@ def _ensure_folder_access(
     return folder
 
 
-def _folder_to_response(folder: Folder, *, document_count: int, children: Optional[list[FolderResponse]] = None) -> FolderResponse:
+def _folder_to_response(
+    folder: Folder,
+    *,
+    document_count: int,
+    children: Optional[list[FolderResponse]] = None,
+    has_children: bool | None = None,
+) -> FolderResponse:
     return FolderResponse(
         id=UUID(folder.id),
         name=folder.name,
@@ -303,6 +309,7 @@ def _folder_to_response(folder: Folder, *, document_count: int, children: Option
         updated_at=folder.updated_at,
         children=children or [],
         document_count=document_count,
+        has_children=has_children if has_children is not None else bool(children),
     )
 
 
@@ -629,41 +636,102 @@ def list_folders(
     *,
     deal_id: str,
     organization_id: str,
+    parent_id: str | None = None,
+    search: str | None = None,
+    include_tree: bool = False,
 ) -> list[FolderResponse]:
-    folders = (
-        db.query(Folder)
-        .filter(Folder.deal_id == deal_id, Folder.organization_id == organization_id)
-        .all()
+    base_query = db.query(Folder).filter(
+        Folder.deal_id == deal_id,
+        Folder.organization_id == organization_id,
     )
 
-    documents_per_folder: dict[str, int] = defaultdict(int)
-    for folder_id, doc_count in (
-        db.query(Document.folder_id, func.count(Document.id))
-        .filter(Document.deal_id == deal_id, Document.organization_id == organization_id)
-        .group_by(Document.folder_id)
-        .all()
-    ):
-        if folder_id:
-            documents_per_folder[str(folder_id)] = doc_count
+    # Full tree mode (legacy behavior for admin scripts)
+    if include_tree and not parent_id and not search:
+        folders = base_query.all()
+        documents_per_folder: dict[str, int] = defaultdict(int)
+        for folder_id, doc_count in (
+            db.query(Document.folder_id, func.count(Document.id))
+            .filter(Document.deal_id == deal_id, Document.organization_id == organization_id)
+            .group_by(Document.folder_id)
+            .all()
+        ):
+            if folder_id:
+                documents_per_folder[str(folder_id)] = doc_count
 
-    children_map: dict[Optional[str], list[Folder]] = defaultdict(list)
-    for folder in folders:
-        children_map[folder.parent_folder_id].append(folder)
+        children_map: dict[Optional[str], list[Folder]] = defaultdict(list)
+        for folder in folders:
+            children_map[folder.parent_folder_id].append(folder)
 
-    def build_tree(parent_id: Optional[str]) -> list[FolderResponse]:
-        responses: list[FolderResponse] = []
-        for folder in children_map.get(parent_id, []):
-            child_responses = build_tree(folder.id)
-            responses.append(
-                _folder_to_response(
-                    folder,
-                    document_count=documents_per_folder.get(folder.id, 0),
-                    children=child_responses,
+        def build_tree(parent: Optional[str]) -> list[FolderResponse]:
+            responses: list[FolderResponse] = []
+            for node in children_map.get(parent, []):
+                child_responses = build_tree(node.id)
+                responses.append(
+                    _folder_to_response(
+                        node,
+                        document_count=documents_per_folder.get(node.id, 0),
+                        children=child_responses,
+                        has_children=bool(child_responses),
+                    )
                 )
-            )
-        return responses
+            return responses
 
-    return build_tree(None)
+        return build_tree(None)
+
+    # Lazy mode – return direct children (optionally filtered by search)
+    query = base_query
+    normalized_search = search.strip() if search else None
+    if normalized_search:
+        like_term = f"%{normalized_search.lower()}%"
+        query = query.filter(func.lower(Folder.name).like(like_term))
+    else:
+        if parent_id:
+            query = query.filter(Folder.parent_folder_id == parent_id)
+        else:
+            query = query.filter(Folder.parent_folder_id.is_(None))
+
+    folder_rows = query.order_by(Folder.name).all()
+    folder_ids = [folder.id for folder in folder_rows]
+
+    documents_per_folder: dict[str, int] = defaultdict(int)
+    if folder_ids:
+        for folder_id, doc_count in (
+            db.query(Document.folder_id, func.count(Document.id))
+            .filter(
+                Document.deal_id == deal_id,
+                Document.organization_id == organization_id,
+                Document.folder_id.in_(folder_ids),
+            )
+            .group_by(Document.folder_id)
+            .all()
+        ):
+            if folder_id:
+                documents_per_folder[str(folder_id)] = doc_count
+
+    child_counts: dict[str, int] = {}
+    if folder_ids:
+        for parent_folder_id, child_count in (
+            db.query(Folder.parent_folder_id, func.count(Folder.id))
+            .filter(
+                Folder.deal_id == deal_id,
+                Folder.organization_id == organization_id,
+                Folder.parent_folder_id.in_(folder_ids),
+            )
+            .group_by(Folder.parent_folder_id)
+            .all()
+        ):
+            if parent_folder_id:
+                child_counts[str(parent_folder_id)] = child_count
+
+    return [
+        _folder_to_response(
+            folder,
+            document_count=documents_per_folder.get(folder.id, 0),
+            children=[],
+            has_children=bool(child_counts.get(folder.id)),
+        )
+        for folder in folder_rows
+    ]
 
 
 def get_folder_by_id(

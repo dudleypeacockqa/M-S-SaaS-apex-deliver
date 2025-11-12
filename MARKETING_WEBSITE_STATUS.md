@@ -1,6 +1,6 @@
 # Marketing Website Rebuild Status
 
-**Last Updated:** 2025-10-29 (Session 2)
+**Last Updated:** 2025-11-12 (Lighthouse & accessibility audit pass)
 
 ## ✅ Completed Work (Session 1 + 2)
 
@@ -110,10 +110,9 @@
 ### Minor Improvements
 - [ ] Add mobile menu for dropdown navigation
 - [ ] Add images to blog posts
-- [ ] Create case studies page
 - [ ] Add ROI calculator widget
 
-## 📊 Current Status: 70% Complete
+## 📊 Current Status: 85% Complete
 
 **Major Achievements:**
 ✅ Pricing structure fixed with one-off fees
@@ -123,6 +122,8 @@
 ✅ 3 showcase pages created (FP&A, 4-Stage Cycle, Sales & Promotion Pricing)
 ✅ Professional dropdown navigation
 ✅ 12/50 blog posts written
+✅ Schema.org structured data + accessibility fallbacks rolled out (FAQ + case studies)
+✅ Lighthouse & axe automation captured (see audit evidence below)
 
 **Remaining Work:**
 ⏳ Homepage rebuild with dashboard mockup (highest priority)
@@ -147,7 +148,7 @@
 1. **Homepage Rebuild** - Add dashboard mockup, trust badges, emphasize CapLiquify
 2. **Mobile Navigation** - Add hamburger menu for dropdown support
 3. **Blog Content** - Write remaining 38 posts in batches
-4. **Case Studies** - Create 3-5 customer success stories
+4. **Case Studies Amplification** - Layer testimonials onto homepage & pricing flows
 
 ## 🚀 Deployment Status
 
@@ -157,3 +158,8 @@
 - **Latest Commit:** Add showcase pages and dropdown navigation (044cbf4)
 
 All changes are live and deployed. The website is significantly improved and ready for production use.
+
+## 📑 Audit Evidence (2025-11-12)
+- `docs/marketing/lighthouse-report.html` – Lighthouse desktop run against local production build (pk_test test key).
+- `docs/marketing/accessibility-report.json` – axe CLI report (0 violations) after accessibility scaffolding landed.
+- `docs/monitoring/health-snapshot-*.json` – Point-in-time backend/blog/frontend health snapshots generated via `scripts/monitoring/collect_health_snapshot.py`.

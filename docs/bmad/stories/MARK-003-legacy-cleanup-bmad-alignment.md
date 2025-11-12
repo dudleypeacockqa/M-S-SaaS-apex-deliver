@@ -5,7 +5,7 @@
 **Priority**: Critical
 **Sprint**: Marketing 70% → 100% Completion
 **Estimated Effort**: 4 hours
-**Status**: In Progress
+**Status**: ✅ COMPLETE (2025-11-12)
 **Created**: 2025-10-30
 **Assigned To**: Claude Code (AI Developer)
 
@@ -39,6 +39,11 @@ Cleaning this up is **critical** before adding new features.
 - BMAD workflow status accurately reflects marketing work
 - BMAD_PROGRESS_TRACKER.md shows correct completion percentages
 - No broken imports or test failures after cleanup
+
+## Completion Notes (2025-11-12)
+- Synced BMAD trackers (`docs/bmad/BMAD_PROGRESS_TRACKER.md`, `docs/bmad/bmm-workflow-status.md`) and `MARKETING_WEBSITE_STATUS.md` with the final marketing audit deliverables so legacy vs canonical routes are unambiguous.
+- Archived Lighthouse (`docs/marketing/lighthouse-report.html`) and axe (`docs/marketing/accessibility-report.json`) evidence, and added structured data fallbacks plus accessibility scaffolding (`frontend/index.html`) to prevent regressions when legacy assets resurface.
+- Introduced `scripts/monitoring/collect_health_snapshot.py` to log backend/blog/frontend health snapshots into `docs/monitoring/`, keeping post-cleanup drift detectable within BMAD ceremony logs.
 
 ---
 

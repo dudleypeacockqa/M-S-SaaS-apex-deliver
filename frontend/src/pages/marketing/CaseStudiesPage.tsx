@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { trackCtaClick } from '../../lib/analytics';
+import { StructuredData } from '../../components/common/StructuredData';
 
 interface CaseStudy {
   company: string;
@@ -168,6 +169,21 @@ export const CaseStudiesPage: React.FC = () => {
     },
   ];
 
+  const caseStudiesSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: caseStudies.map((study, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'CreativeWork',
+        name: `${study.company} Case Study`,
+        description: `${study.industry}: ${study.challenge}`,
+        url: `https://100daysandbeyond.com/case-studies#case-study-${index + 1}`,
+      },
+    })),
+  };
+
   return (
     <MarketingLayout>
       <SEO
@@ -175,6 +191,7 @@ export const CaseStudiesPage: React.FC = () => {
         description="See how private equity firms, dealmakers, and finance leaders use ApexDeliver and CapLiquify to accelerate M&A, optimize cash flow, and drive portfolio value."
         keywords="M&A case studies, private equity success stories, cash flow optimization, PMI case studies, buy and build"
       />
+      <StructuredData json={caseStudiesSchema} id="case-studies-schema" />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-900 text-white py-20">
@@ -212,6 +229,7 @@ export const CaseStudiesPage: React.FC = () => {
               <div
                 key={index}
                 className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200"
+                id={`case-study-${index + 1}`}
               >
                 {/* Header */}
                 <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">

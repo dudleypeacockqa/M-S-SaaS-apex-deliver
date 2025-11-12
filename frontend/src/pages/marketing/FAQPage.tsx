@@ -2,6 +2,7 @@ import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { StructuredData } from '../../components/common/StructuredData';
 
 export const FAQPage: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -114,6 +115,21 @@ export const FAQPage: React.FC = () => {
     },
   ];
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.flatMap((category) =>
+      category.questions.map((faq) => ({
+        '@type': 'Question',
+        name: faq.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.a,
+        },
+      })),
+    ),
+  };
+
   return (
     <MarketingLayout>
       <SEO
@@ -121,6 +137,7 @@ export const FAQPage: React.FC = () => {
         description="Get answers to common questions about CapLiquify and ApexDeliver: features, pricing, security, integrations, and ROI."
         keywords="CapLiquify FAQ, ApexDeliver questions, M&A software FAQ, cash flow forecasting FAQ"
       />
+      <StructuredData json={faqSchema} id="faq-schema" />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">

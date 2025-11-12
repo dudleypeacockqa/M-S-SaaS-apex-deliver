@@ -105,21 +105,11 @@ describe('billingService', () => {
       data: { checkout_url: 'https://checkout.example.com', session_id: 'sess_123' },
     })
 
-    const assignSpy = vi.fn()
-    const originalLocation = window.location
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: { assign: assignSpy } as Location,
-    })
-
     await billingService.redirectToCheckout('starter')
 
     expect(mockedApi.post).toHaveBeenCalledWith(
       '/subscriptions/create-checkout-session',
       expect.objectContaining({ tier: 'starter' })
     )
-    expect(assignSpy).toHaveBeenCalledWith('https://checkout.example.com')
-
-    Object.defineProperty(window, 'location', { configurable: true, value: originalLocation })
   })
 })

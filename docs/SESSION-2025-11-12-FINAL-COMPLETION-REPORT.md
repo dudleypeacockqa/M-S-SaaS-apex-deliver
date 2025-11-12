@@ -85,17 +85,14 @@ Duration: 2165 seconds (36 minutes)
 ### 5. Deployment Status ✅
 
 **Backend** (`srv-d3ii9qk9c44c73aqsli0`):
-- Status: **LIVE** ✅
-- Commit: 834fa20
-- Deploy: dep-d49et83uibrs739agtfg
-- Health: 100% (`/health` → 200 OK)
+- Live Deploy: `dep-d49k2bfdiees73ahiqn0` (commit 834fa20) – `/health` 200 verified 2025-11-12 14:18 UTC.
+- Latest Attempt: `dep-d4a38l0dl3ps73f47d90` (**update_failed**) – remediation planned alongside next deploy.
 - Services: Clerk ✅, Database ✅, Webhooks ✅
 - URL: https://ma-saas-backend.onrender.com
 
 **Frontend** (`srv-d3ihptbipnbc73e72ne0`):
-- Status: **Queued** (auto-deploy triggered)
-- Commit: 9b40178 (latest)
-- Deploy: Triggered by Phase 4 completion commit
+- Live Deploy: `dep-d49k2fu3jp1c73d4njn0` – smoke tests (HEAD) returned HTTP 200 at 2025-11-12 14:18 UTC.
+- Latest Attempt: `dep-d4a38l0fdonc73ec8e9g` (**queued**) – awaiting Render build completion.
 - URL: https://ma-saas-platform.onrender.com
 
 **Database**:

@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import {
   createFolder,
   deleteFolder,
   listFolders,
   updateFolder,
+  type ListFoldersOptions,
   type Folder,
 } from '../../services/api/documents'
 
@@ -21,44 +22,21 @@ interface FolderNode extends Folder {
   children?: FolderNode[]
 }
 
-function buildTree(folders: Folder[]): FolderNode[] {
-  const nodes = new Map<string, FolderNode>()
-  const roots: FolderNode[] = []
+const parentKey = (parentId: string | null) => parentId ?? '__ROOT__'
 
-  // Convert Folder to FolderNode, handling both parent_folder_id (API) and parent_id (test mocks)
-  folders.forEach((folder) => {
-    const parentId = (folder as any).parent_id ?? folder.parent_folder_id
-    nodes.set(folder.id, { ...folder, parent_id: parentId, children: [] })
-  })
+type FolderCache = Record<string, FolderNode[]>
+type FlagMap = Record<string, boolean>
 
-  // Build parent-child relationships
-  nodes.forEach((node) => {
-    if (node.parent_id) {
-      const parent = nodes.get(node.parent_id)
-      if (parent) {
-        parent.children?.push(node)
-      } else {
-        roots.push(node)
-      }
-    } else {
-      roots.push(node)
-    }
-  })
-
-  const sortNodes = (list: FolderNode[]): FolderNode[] =>
-    list
-      .slice()
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map((node) => ({
-        ...node,
-        children: node.children ? sortNodes(node.children) : [],
-      }))
-
-  return sortNodes(roots)
+interface VisibleNode {
+  id: string
+  name: string
+  depth: number
+  hasChildren: boolean
+  isExpanded: boolean
+  parentId: string | null
 }
 
 export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId, searchTerm = '', onFolderSelect }) => {
-  const queryClient = useQueryClient()
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
   const [isCreating, setIsCreating] = useState(false)
   const [newFolderName, setNewFolderName] = useState('')
@@ -66,41 +44,149 @@ export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId
   const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(null)
   const [renamingFolderId, setRenamingFolderId] = useState<string | null>(null)
   const [renameValue, setRenameValue] = useState('')
+  const [folderCache, setFolderCache] = useState<FolderCache>({})
+  const [loadedParents, setLoadedParents] = useState<FlagMap>({})
+  const [loadingParents, setLoadingParents] = useState<FlagMap>({})
+  const [focusedFolderId, setFocusedFolderId] = useState<string | null>(null)
+  const treeContainerRef = useRef<HTMLDivElement | null>(null)
+  const treeitemRefs = useRef<Record<string, HTMLButtonElement | null>>({})
+  const renameInputRef = useRef<HTMLInputElement | null>(null)
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['folders', dealId],
-    queryFn: () => listFolders(dealId),
-  })
+  const markLoading = useCallback((parentId: string | null, value: boolean) => {
+    setLoadingParents((prev) => ({
+      ...prev,
+      [parentKey(parentId)]: value,
+    }))
+  }, [])
 
-  const allFolders = useMemo(() => (data ? buildTree(data) : []), [data])
+  const markLoaded = useCallback((parentId: string | null) => {
+    setLoadedParents((prev) => ({
+      ...prev,
+      [parentKey(parentId)]: true,
+    }))
+  }, [])
 
-  // Filter folders based on search term
-  const folders = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return allFolders
+  const isLoaded = useCallback(
+    (parentId: string | null) => !!loadedParents[parentKey(parentId)],
+    [loadedParents]
+  )
+
+  const isLoadingParent = useCallback(
+    (parentId: string | null) => !!loadingParents[parentKey(parentId)],
+    [loadingParents]
+  )
+
+  const folderChildren = useCallback(
+    (parentId: string | null) => folderCache[parentKey(parentId)] ?? [],
+    [folderCache]
+  )
+
+  const fetchFolders = useCallback(
+    async (parentId: string | null, opts: Partial<ListFoldersOptions> = {}) => {
+      const cacheKey = parentKey(parentId)
+      if (isLoaded(parentId) || isLoadingParent(parentId)) {
+        return
+      }
+
+      markLoading(parentId, true)
+
+      try {
+        const response = await listFolders(dealId, {
+          parentFolderId: parentId ?? undefined,
+          ...opts,
+        })
+
+        const normalized = response.map((folder) => ({
+          ...folder,
+          parent_id:
+            (folder as any).parent_id ?? (folder as any).parent_folder_id ?? parentId ?? null,
+          children: [],
+        }))
+
+        setFolderCache((prev) => ({
+          ...prev,
+          [cacheKey]: normalized,
+        }))
+
+        markLoaded(parentId)
+      } finally {
+        markLoading(parentId, false)
+      }
+    },
+    [dealId, isLoaded, isLoadingParent, markLoaded, markLoading]
+  )
+
+  useEffect(() => {
+    void fetchFolders(null)
+  }, [fetchFolders])
+
+  const [searchResults, setSearchResults] = useState<FolderNode[] | null>(null)
+  const [isSearching, setIsSearching] = useState(false)
+
+  useEffect(() => {
+    const term = searchTerm.trim()
+    if (!term) {
+      setSearchResults(null)
+      setIsSearching(false)
+      return
     }
 
-    const term = searchTerm.toLowerCase()
-    const matchingFolders: FolderNode[] = []
+    let cancelled = false
+    setIsSearching(true)
 
-    const collectMatches = (nodes: FolderNode[]) => {
-      nodes.forEach((node) => {
-        if (node.name.toLowerCase().includes(term)) {
-          matchingFolders.push(node)
+    void (async () => {
+      try {
+        const results = await listFolders(dealId, { search: term })
+        if (cancelled) return
+        setSearchResults(
+          results.map((folder) => ({
+            ...folder,
+            parent_id: (folder as any).parent_id ?? folder.parent_folder_id ?? null,
+            children: [],
+          }))
+        )
+      } finally {
+        if (!cancelled) {
+          setIsSearching(false)
         }
-        if (node.children) {
-          collectMatches(node.children)
-        }
-      })
+      }
+    })()
+
+    return () => {
+      cancelled = true
     }
+  }, [dealId, searchTerm])
 
-    collectMatches(allFolders)
-    return matchingFolders
-  }, [allFolders, searchTerm])
+  const filteredFolders = useMemo(() => {
+    if (searchTerm.trim()) {
+      return searchResults ?? []
+    }
+    return folderChildren(null)
+  }, [folderChildren, searchResults, searchTerm])
+
+  useEffect(() => {
+    if (!focusedFolderId) {
+      const firstVisible = filteredFolders[0]
+      if (firstVisible) {
+        setFocusedFolderId(firstVisible.id)
+      }
+    }
+  }, [filteredFolders, focusedFolderId])
+
+  useEffect(() => {
+    if (focusedFolderId && treeitemRefs.current[focusedFolderId]) {
+      treeitemRefs.current[focusedFolderId]?.focus()
+    }
+  }, [focusedFolderId])
 
   const invalidateFolders = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['folders', dealId] })
-  }, [dealId, queryClient])
+    setFolderCache({})
+    setLoadedParents({})
+    setLoadingParents({})
+    setExpandedFolders(new Set())
+    setFocusedFolderId(null)
+    void fetchFolders(null)
+  }, [fetchFolders])
 
   const createMutation = useMutation({
     mutationFn: (payload: { name: string; parent_folder_id: string | null }) =>
@@ -141,18 +227,28 @@ export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId
     }
   }, [storageKey])
 
-  const toggleExpand = useCallback((folderId: string) => {
+  const ensureChildrenLoaded = useCallback(
+    (folder: FolderNode) => {
+      if ((folder.has_children || folderChildren(folder.id).length === 0) && !isLoaded(folder.id)) {
+        void fetchFolders(folder.id)
+      }
+    },
+    [fetchFolders, folderChildren, isLoaded]
+  )
+
+  const toggleExpand = useCallback((folder: FolderNode) => {
     setExpandedFolders((prev) => {
       const next = new Set(prev)
-      if (next.has(folderId)) {
-        next.delete(folderId)
+      if (next.has(folder.id)) {
+        next.delete(folder.id)
       } else {
-        next.add(folderId)
+        next.add(folder.id)
+        ensureChildrenLoaded(folder)
       }
       persistExpanded(next)
       return next
     })
-  }, [persistExpanded])
+  }, [ensureChildrenLoaded, persistExpanded])
 
   const handleCreateSubmit = async () => {
     if (!newFolderName.trim()) {
@@ -179,75 +275,250 @@ export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId
     setRenameValue('')
   }
 
-  const renderFolder = (folder: FolderNode, depth = 0): React.ReactNode => {
-    const isExpanded = expandedFolders.has(folder.id)
+  const visibleNodes: VisibleNode[] = useMemo(() => {
+    const nodes: VisibleNode[] = []
+
+    const traverse = (items: FolderNode[], depth: number, parentId: string | null) => {
+      items
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .forEach((folder) => {
+          const children = folderChildren(folder.id)
+          const hasChildren = (children && children.length > 0) || !!folder.has_children
+          const isExpanded = expandedFolders.has(folder.id)
+
+          const effectiveHasChildren = searchTerm.trim() ? false : hasChildren
+
+          nodes.push({
+            id: folder.id,
+            name: folder.name,
+            depth,
+            hasChildren: effectiveHasChildren,
+            isExpanded,
+            parentId,
+          })
+
+          if (!searchTerm.trim() && hasChildren && isExpanded) {
+            traverse(children, depth + 1, folder.id)
+          }
+        })
+    }
+
+    traverse(filteredFolders, 1, null)
+    return nodes
+  }, [expandedFolders, filteredFolders, folderChildren])
+
+  const focusNodeByIndex = useCallback(
+    (index: number) => {
+      if (index >= 0 && index < visibleNodes.length) {
+        setFocusedFolderId(visibleNodes[index].id)
+      }
+    },
+    [visibleNodes]
+  )
+
+  const focusNodeById = useCallback(
+    (id: string | null) => {
+      if (!id) return
+      const index = visibleNodes.findIndex((node) => node.id === id)
+      if (index !== -1) {
+        setFocusedFolderId(visibleNodes[index].id)
+      }
+    },
+    [visibleNodes]
+  )
+
+  const flattenedFolders = useMemo(() => {
+    const build = (parentId: string | null): FolderNode[] => {
+      const items = folderChildren(parentId)
+      return items.flatMap((node) => [node, ...build(node.id)])
+    }
+    return build(null)
+  }, [folderChildren])
+
+  const findFolderById = useCallback(
+    (id: string) => flattenedFolders.find((folder) => folder.id === id) ?? null,
+    [flattenedFolders]
+  )
+
+  const handleTreeKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (!visibleNodes.length) return
+
+      const currentIndex = visibleNodes.findIndex((node) => node.id === focusedFolderId)
+      const currentNode = currentIndex >= 0 ? visibleNodes[currentIndex] : visibleNodes[0]
+
+      switch (event.key) {
+        case 'ArrowDown': {
+          event.preventDefault()
+          const nextIndex = currentIndex >= 0 ? currentIndex + 1 : 0
+          focusNodeByIndex(Math.min(nextIndex, visibleNodes.length - 1))
+          break
+        }
+        case 'ArrowUp': {
+          event.preventDefault()
+          const prevIndex = currentIndex >= 0 ? currentIndex - 1 : visibleNodes.length - 1
+          focusNodeByIndex(Math.max(prevIndex, 0))
+          break
+        }
+        case 'ArrowRight': {
+          event.preventDefault()
+          if (currentNode) {
+            if (currentNode.hasChildren && !currentNode.isExpanded) {
+              const folder = findFolderById(currentNode.id)
+              if (folder) {
+                toggleExpand(folder)
+              }
+            } else {
+              focusNodeByIndex(Math.min(currentIndex + 1, visibleNodes.length - 1))
+            }
+          }
+          break
+        }
+        case 'ArrowLeft': {
+          event.preventDefault()
+          if (currentNode) {
+            if (currentNode.isExpanded) {
+              const folder = findFolderById(currentNode.id)
+              if (folder) {
+                toggleExpand(folder)
+              }
+            } else if (currentNode.parentId) {
+              focusNodeById(currentNode.parentId)
+            }
+          }
+          break
+        }
+        case 'Home': {
+          event.preventDefault()
+          focusNodeByIndex(0)
+          break
+        }
+        case 'End': {
+          event.preventDefault()
+          focusNodeByIndex(visibleNodes.length - 1)
+          break
+        }
+        case 'Enter':
+        case ' ': {
+          event.preventDefault()
+          if (currentNode) {
+            onFolderSelect(currentNode.id)
+            setFocusedFolderId(currentNode.id)
+          }
+          break
+        }
+        default:
+          break
+      }
+    },
+    [findFolderById, focusNodeById, focusNodeByIndex, focusedFolderId, onFolderSelect, toggleExpand, visibleNodes]
+  )
+
+  useEffect(() => {
+    if (renamingFolderId && renameInputRef.current) {
+      renameInputRef.current.focus()
+      renameInputRef.current.select()
+    }
+  }, [renamingFolderId])
+
+  const cancelRename = useCallback(() => {
+    setRenamingFolderId(null)
+    setRenameValue('')
+  }, [])
+
+  const isSearchMode = Boolean(searchTerm.trim())
+
+  const renderFolder = (folder: FolderNode, depth = 1): React.ReactNode => {
+    const children = folderChildren(folder.id)
+    const hasChildren = (!isSearchMode && ((children && children.length > 0) || !!folder.has_children))
+    const isExpanded = hasChildren && expandedFolders.has(folder.id)
     const isSelected = folder.id === selectedFolderId
-    const hasChildren = folder.children && folder.children.length > 0
+    const isFocused = folder.id === focusedFolderId
+    const isLoading = isLoadingParent(folder.id)
+
+    const toggleLabel = `${isExpanded ? 'Collapse' : 'Expand'} ${folder.name}`
+    const containerClasses = `flex items-center justify-between rounded-md px-1 py-1 transition-colors ${
+      isSelected ? 'bg-indigo-50 text-indigo-700' : 'hover:bg-slate-100'
+    }`
 
     return (
-      <div key={folder.id} className={depth === 0 ? 'mt-2' : 'mt-1 ml-4'}>
-        <div
-          className={`flex items-center justify-between rounded-md px-2 py-1 text-sm ${
-            isSelected ? 'bg-indigo-50 text-indigo-700' : 'hover:bg-slate-100'
-          }`}
-          onContextMenu={(event) => {
-            event.preventDefault()
-            setContextFolderId(folder.id)
-            setContextMenuPosition({ x: event.clientX, y: event.clientY })
-          }}
-        >
-          <div className="flex items-center gap-2">
+      <li
+        key={folder.id}
+        role="none"
+        className="mt-1"
+        onContextMenu={(event) => {
+          event.preventDefault()
+          setContextFolderId(folder.id)
+          setContextMenuPosition({ x: event.clientX, y: event.clientY })
+        }}
+      >
+        <div className={containerClasses}>
+          <div className="flex items-center gap-2 flex-1">
             {hasChildren && (
               <button
                 type="button"
-                onClick={() => toggleExpand(folder.id)}
-                className="text-xs font-medium text-slate-500"
-                aria-label={`Expand ${folder.name}`}
+                aria-label={toggleLabel}
+                className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 text-xs font-semibold text-slate-600"
+                onClick={() => toggleExpand(folder)}
               >
                 {isExpanded ? '−' : '+'}
               </button>
             )}
+
             {renamingFolderId === folder.id ? (
               <input
-                autoFocus
-                className="rounded border border-slate-300 px-2 py-1 text-sm"
+                id={`rename-${folder.id}`}
+                ref={renameInputRef}
+                className="flex-1 rounded border border-slate-300 px-2 py-1 text-sm"
                 value={renameValue}
                 onChange={(event) => setRenameValue(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') {
-                    handleRenameSubmit()
+                    void handleRenameSubmit()
                   }
                   if (event.key === 'Escape') {
-                    setRenamingFolderId(null)
-                    setRenameValue('')
+                    cancelRename()
                   }
                 }}
                 onBlur={() => {
-                  setRenamingFolderId(null)
-                  setRenameValue('')
+                  void handleRenameSubmit()
                 }}
+                aria-label={`Rename ${folder.name}`}
               />
             ) : (
               <button
                 type="button"
-                onClick={() => onFolderSelect(folder.id)}
-                className="text-left"
+                className="flex-1 justify-start rounded-md px-2 py-1 text-left text-sm focus:outline-none"
                 aria-label={`Select ${folder.name}`}
+                data-folder-id={folder.id}
+                ref={(element) => {
+                  treeitemRefs.current[folder.id] = element
+                }}
+                role="treeitem"
+                tabIndex={isFocused ? 0 : -1}
+                aria-selected={isSelected}
+                aria-expanded={hasChildren ? isExpanded : undefined}
+                aria-level={depth}
+                onFocus={() => setFocusedFolderId(folder.id)}
+                onClick={() => {
+                  setFocusedFolderId(folder.id)
+                  onFolderSelect(folder.id)
+                }}
               >
-                {folder.name}
+                <span>{folder.name}</span>
+                {isLoading && <span className="ml-2 text-xs text-slate-400">(loading…)</span>}
               </button>
             )}
           </div>
         </div>
         {hasChildren && isExpanded && (
-          <div>{folder.children!.map((child) => renderFolder(child, depth + 1))}</div>
+          <ul role="group" className="ml-4 border-l border-slate-100 pl-4">
+            {children.map((child) => renderFolder(child, depth + 1))}
+          </ul>
         )}
-      </div>
+      </li>
     )
-  }
-
-  if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading folders...</p>
   }
 
   return (
@@ -292,10 +563,58 @@ export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId
       )}
 
       <div className="mt-3">
-        {folders.length === 0 ? (
+        {isSearchMode ? (
+          isSearching ? (
+            <p className="text-sm text-slate-500">Searching folders...</p>
+          ) : filteredFolders.length === 0 ? (
+            <p className="text-sm text-slate-500">No folders match that search.</p>
+          ) : (
+            <div
+              ref={treeContainerRef}
+              role="tree"
+              tabIndex={0}
+              aria-label="Folders"
+              className="focus:outline-none"
+              onKeyDown={handleTreeKeyDown}
+              onFocus={() => {
+                if (!focusedFolderId && filteredFolders.length > 0) {
+                  setFocusedFolderId(filteredFolders[0].id)
+                }
+              }}
+            >
+              <ul role="presentation">
+                {filteredFolders.map((folder) => renderFolder(folder, 1))}
+              </ul>
+            </div>
+          )
+        ) : isLoadingParent(null) && !isLoaded(null) && filteredFolders.length === 0 ? (
+          <p className="text-sm text-slate-500">Loading folders...</p>
+        ) : filteredFolders.length === 0 ? (
           <p className="text-sm text-slate-500">No folders yet. Create one to organise your files.</p>
         ) : (
-          folders.map((folder) => renderFolder(folder))
+          <div
+            ref={treeContainerRef}
+            role="tree"
+            tabIndex={0}
+            aria-label="Folders"
+            className="focus:outline-none"
+            onKeyDown={handleTreeKeyDown}
+            onFocus={() => {
+              if (!focusedFolderId && filteredFolders.length > 0) {
+                setFocusedFolderId(filteredFolders[0].id)
+              }
+            }}
+          >
+            <ul role="presentation">
+              {filteredFolders.map((folder) => {
+                const hasChildren = (folderChildren(folder.id)?.length ?? 0) > 0 || !!folder.has_children
+                if (hasChildren && expandedFolders.has(folder.id)) {
+                  ensureChildrenLoaded(folder)
+                }
+                return renderFolder(folder, 1)
+              })}
+            </ul>
+          </div>
         )}
       </div>
 
@@ -319,7 +638,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({ dealId, selectedFolderId
             <button
               type="button"
               onClick={() => {
-                const folder = folders.flatMap((f) => [f, ...(f.children || [])]).find((f) => f.id === contextFolderId)
+                const folder = flattenedFolders.find((f) => f.id === contextFolderId)
                 if (folder) {
                   setRenamingFolderId(folder.id)
                   setRenameValue(folder.name)

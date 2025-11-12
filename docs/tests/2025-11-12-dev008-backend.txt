@@ -1,0 +1,20 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\User\AppData\Local\Programs\Python\Python311\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 41 items / 39 deselected / 2 selected
+
+tests\test_document_endpoints.py::test_list_folders_lazy_loading PASSED  [ 50%]
+tests\test_document_endpoints.py::test_list_folders_supports_search PASSED [100%]
+
+============================== warnings summary ===============================
+backend/tests/test_document_endpoints.py::test_list_folders_lazy_loading
+backend/tests/test_document_endpoints.py::test_list_folders_supports_search
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================ 2 passed, 39 deselected, 2 warnings in 0.63s =================
