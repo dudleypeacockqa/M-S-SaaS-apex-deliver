@@ -1,0 +1,4 @@
+[*] Fetching logs for deploy dep-d4abgeqli9vc73ff04r0...
+[ERROR] Failed to fetch logs: 404
+Response: 404 page not found
+

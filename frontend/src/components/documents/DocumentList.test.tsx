@@ -154,6 +154,49 @@ describe('DocumentList', () => {
     });
   });
 
+  it('exposes a Q&A action when handler provided', async () => {
+    const { listDocuments } = await import('../../services/api/documents');
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        {
+          id: 'doc-questions',
+          name: 'Acquisition_NDA.pdf',
+          file_size: 2048,
+          file_type: 'application/pdf',
+          version: 2,
+          created_at: '2025-02-02T10:00:00Z',
+          folder_id: null,
+          deal_id: 'deal-1',
+          organization_id: 'org-1',
+          uploaded_by: 'user-1',
+          updated_at: null,
+          archived_at: null,
+          question_count: 3,
+        },
+      ],
+      total: 1,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
+
+    const onOpenQuestions = vi.fn();
+
+    renderWithProviders(
+      <DocumentList dealId="deal-1" folderId={null} onOpenQuestions={onOpenQuestions} />
+    );
+
+    const questionButton = await screen.findByRole('button', { name: /q&a/i });
+    expect(questionButton).toBeInTheDocument();
+    expect(questionButton).toHaveTextContent('3');
+
+    fireEvent.click(questionButton);
+
+    expect(onOpenQuestions).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'doc-questions' })
+    );
+  });
+
   it('should filter documents by search query', async () => {
     const { listDocuments } = await import('../../services/api/documents');
     vi.mocked(listDocuments).mockResolvedValue({
@@ -209,6 +252,32 @@ describe('DocumentList', () => {
     }>
     expect(selectedDocs).toHaveLength(1)
     expect(selectedDocs[0].id).toBe('doc-1')
+  });
+
+  it('should expose a view activity button when callback provided', async () => {
+    const { listDocuments } = await import('../../services/api/documents');
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-activity', name: 'Audit.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 1,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
+
+    const onViewLogs = vi.fn();
+
+    renderWithProviders(
+      <DocumentList dealId="deal-1" folderId={null} onViewAccessLogs={onViewLogs} />
+    );
+
+    const button = await screen.findByRole('button', { name: /view activity/i });
+    fireEvent.click(button);
+
+    expect(onViewLogs).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'doc-activity', name: 'Audit.pdf' })
+    );
   });
 
   it('should select all documents with header checkbox', async () => {

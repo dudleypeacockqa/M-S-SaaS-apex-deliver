@@ -27,6 +27,8 @@ interface DocumentListProps {
     resource_id: string
     metadata?: Record<string, unknown>
   }) => void
+  onViewAccessLogs?: (document: Document) => void
+  onOpenQuestions?: (document: Document) => void
 }
 
 type SortKey = 'name' | 'date'
@@ -49,6 +51,8 @@ export const DocumentList: React.FC<DocumentListProps> = (props) => {
     onDocumentsLoaded,
     resetSelectionSignal,
     onManagePermissions,
+    onViewAccessLogs,
+    onOpenQuestions,
   } = props
 
   const queryClient = useQueryClient()
@@ -320,6 +324,30 @@ export const DocumentList: React.FC<DocumentListProps> = (props) => {
                           aria-label={`Manage permissions for ${doc.name}`}
                         >
                           Manage access
+                        </button>
+                      )}
+                      {onViewAccessLogs && (
+                        <button
+                          type="button"
+                          className="rounded border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                          onClick={() => onViewAccessLogs(doc)}
+                          aria-label={`View activity for ${doc.name}`}
+                        >
+                          View activity
+                        </button>
+                      )}
+                      {onOpenQuestions && (
+                        <button
+                          type="button"
+                          className="rounded border border-indigo-200 px-3 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50"
+                          onClick={() => onOpenQuestions(doc)}
+                        >
+                          Q&A
+                          {typeof doc.question_count === 'number' && (
+                            <span className="ml-1 rounded-full bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-700">
+                              {doc.question_count}
+                            </span>
+                          )}
                         </button>
                       )}
                     </div>

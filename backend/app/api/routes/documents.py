@@ -36,6 +36,10 @@ from app.schemas.document import (
     PermissionCreate,
     PermissionResponse,
     DocumentAccessLogEntry,
+    DocumentQuestionCreate,
+    DocumentQuestionListResponse,
+    DocumentQuestionResolve,
+    DocumentQuestionResponse,
 )
 from app.services import document_service
 from app.services.storage_service import get_storage_service
@@ -867,3 +871,73 @@ def bulk_delete_documents(
         failed_ids=failed_ids,
         failed_reasons=failed_reasons,
     )
+
+
+# ============================================================================
+# Document Q&A Endpoints
+# ============================================================================
+
+
+@router.post(
+    "/documents/{document_id}/questions",
+    response_model=DocumentQuestionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_document_question_endpoint(
+    deal_id: str,
+    document_id: str,
+    payload: DocumentQuestionCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Capture a new question associated with a specific document."""
+    question = document_service.create_document_question(
+        db=db,
+        document_id=document_id,
+        organization_id=str(current_user.organization_id),
+        current_user=current_user,
+        payload=payload,
+    )
+    return question
+
+
+@router.get(
+    "/documents/{document_id}/questions",
+    response_model=DocumentQuestionListResponse,
+)
+def list_document_questions_endpoint(
+    deal_id: str,
+    document_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """List all questions for a document (oldest first)."""
+    return document_service.list_document_questions(
+        db=db,
+        document_id=document_id,
+        organization_id=str(current_user.organization_id),
+        current_user=current_user,
+    )
+
+
+@router.put(
+    "/documents/questions/{question_id}/resolve",
+    response_model=DocumentQuestionResponse,
+)
+def resolve_document_question_endpoint(
+    deal_id: str,
+    question_id: str,
+    payload: DocumentQuestionResolve,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Resolve a question by providing an answer and marking it complete."""
+    return document_service.resolve_document_question(
+        db=db,
+        question_id=question_id,
+        deal_id=deal_id,
+        organization_id=str(current_user.organization_id),
+        current_user=current_user,
+        payload=payload,
+    )
+

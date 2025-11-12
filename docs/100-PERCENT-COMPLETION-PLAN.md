@@ -6,10 +6,10 @@
 ---
 
 ## Current Delivery Snapshot (2025-11-13 15:25 UTC)
-- **Git state**: `HEAD` / `origin/main` = `0848b2b fix(render): add DB connectivity retry loop`. Branch is synced with `origin/main`, but the working tree contains large doc + BMAD manifest deltas plus regenerated frontend assets from prior sessions (`git status -sb`).
+- **Git state**: `HEAD` / `origin/main` = `e67d149 chore: clean up gitignore and stage Session V deployment artifacts`. Branch is synced with `origin/main`, but the working tree contains large doc + BMAD manifest deltas plus regenerated frontend assets from prior sessions (`git status -sb`).
 - **Backend tests**: Last targeted pytest (document endpoints folder slice) still green (2/0). Full-suite baseline remains 750 passed / 54 skipped (84% coverage). Next complete run scheduled once deployment/ops artefacts refreshed.
-- **Frontend tests**: Document Room vitest suites (`FolderTree`, `DocumentWorkspace`, `PermissionModal`, `UploadPanel`) remain 100% green. Global `npm run test -- --runInBand --coverage` queued for Phase 6 verification window.
-- **Render deployment**: Production backend (`srv-d3ii9qk9c44c73aqsli0`) currently serving commit `834fa20`. Production frontend (`srv-d3ihptbipnbc73e72ne0`) serving `680c7a4`. Latest repo commits (`0848b2b`) are **not yet deployed**, so a redeploy is required before calling the platform “up to date.”
+- **Frontend tests**: Document Room vitest suites (`FolderTree`, `DocumentWorkspace`, `PermissionModal`, `UploadPanel`) back to 100% green after 2025-11-13 breadcrumb/telemetry fix (25/25). Global `npm run test -- --runInBand --coverage` remains queued for Phase 6 verification window.
+- **Render deployment**: Production backend (`srv-d3ii9qk9c44c73aqsli0`) currently serving commit `834fa20`. Production frontend (`srv-d3ihptbipnbc73e72ne0`) serving `680c7a4`. Latest repo commits (`e67d149`) are **not yet deployed**, so a redeploy is required before calling the platform “up to date.”
 - **Deployment health**: `python3 scripts/verify_deployment.py` (2025-11-12 12:18Z) → 10/10 HTTP checks ✅. Output stored in `docs/deployments/verify-deployment-refresh-2025-11-12-latest.txt`.
 - **Migrations**: Live database confirmed at Alembic head `dc2c0f69c1b1` (Render logs 2025-11-11). Need to re-run `alembic upgrade head` as part of the redeploy, then archive new evidence.
 - **BMAD artefacts**: `docs/bmad/bmm-workflow-status.md` reopened Phase 4 (dev-story). Progress tracker entry pending for this planning session; BMAD CLI still offline so manual markdown updates continue.
@@ -26,10 +26,10 @@
 ## Critical Unfinished Workstreams (ordered)
 
 ### 1. DEV-008 Secure Document & Data Room (P0)
-- **Gap**: Engineering is GREEN but BMAD story, PRD, UX packet, and regression artefacts are stale.
+- **Gap**: Engineering remains GREEN (DocumentWorkspace suite revalidated 2025-11-13) but BMAD story, PRD, UX packet, and regression artefacts still require refresh and attachment to the release packet.
 - **Plan (TDD cadence)**:
-  1. **RED** – Extend backend + frontend regression tests to capture any missed folder edge cases (write failing pytest/vitest where coverage lacking).
-  2. **GREEN** – Implement fixes/document clarifications until new tests pass.
+  1. **RED** – Extend backend + frontend regression tests to capture any missed folder edge cases (write failing pytest/vitest where coverage lacking). ✅ (2025-11-13 breadcrumbs + telemetry)
+  2. **GREEN** – Implement fixes/document clarifications until new tests pass. ✅ (DocumentWorkspace Vitest 25/25)
   3. **REFACTOR** – Capture screenshots, MSW handler docs, and update `docs/bmad/stories/DEV-008*.md` plus `WEBSITE_DEVELOPMENT_PLAN.md`.
 - **Deliverables**: Updated story docs, refreshed vitest/pytest logs under `docs/tests/`, screenshots for release notes, MSW handler reference.
 

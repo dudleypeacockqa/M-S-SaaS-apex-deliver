@@ -121,3 +121,22 @@ AGENTS.md
 .bmad-core/
 .bmad-*/
 bmad-bak/
+
+# Ignore large package files
+*.tgz
+*.tar.gz
+openai-codex-*.tgz
+
+# Ignore temporary directories and files
+frontend/cd
+frontend/npm
+frontend/npx
+-
+patch.diff
+tmp_patch.diff
+
+# Ignore .codex-cli (installed via npm)
+.codex-cli/
+
+# Ignore large test output files
+frontend-test-*.txt

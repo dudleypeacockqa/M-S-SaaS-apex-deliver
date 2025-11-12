@@ -365,3 +365,13 @@ The marketing website has achieved **85-90% completion** with excellent technica
 - `docs/marketing/asset-inventory.md`
 - `docs/bmad/stories/MARK-002-enhanced-website-completion.md`
 - `docs/bmad/stories/MARK-005-enhanced-website-phases-3-10.md`
+
+---
+
+## 2025-11-13 Production Audit Attempt
+- Triggered frontend redeploy for `srv-d3ihptbipnbc73e72ne0` via `python trigger_render_deploy.py --service srv-d3ihptbipnbc73e72ne0`; Render returned success.
+- Ran `python scripts/verify_deployment.py production` immediately after redeploy (10/10 checks ✅). Evidence archived at `docs/deployments/2025-11-13-verify-deployment.txt`.
+- Attempted to capture Lighthouse/axe evidence from this Windows environment. Lighthouse CLI continues to fail with `EPERM` temp-dir cleanup and `NO_FCP` headless Chrome errors (see `docs/marketing/lighthouse-report-2025-11-13-desktop.json`). Axe CLI reaches Chrome but reports legacy palette contrast violations, indicating CDN has not yet served the darker emerald tokens (`docs/marketing/axe-report.txt`).
+- Next step: rerun Lighthouse + axe from a clean macOS/CI runner after confirming CDN purge, then replace placeholder reports with passing artefacts (`docs/marketing/lighthouse-report.json`, `docs/marketing/axe-report.txt`).
+
+---

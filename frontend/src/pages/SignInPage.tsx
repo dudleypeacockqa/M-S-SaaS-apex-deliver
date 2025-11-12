@@ -22,15 +22,15 @@ export const SignInPage: React.FC = () => {
             </div>
             <ul className="space-y-3 text-slate-700">
               <li className="flex items-start gap-3">
-                <span aria-hidden="true" className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                <span aria-hidden="true" className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-600" />
                 Enterprise-grade security with per-file audit logs
               </li>
               <li className="flex items-start gap-3">
-                <span aria-hidden="true" className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                <span aria-hidden="true" className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-600" />
                 Billing dashboard with live storage & usage metrics
               </li>
               <li className="flex items-start gap-3">
-                <span aria-hidden="true" className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                <span aria-hidden="true" className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-600" />
                 Embedded FP&A, document automation, and podcast studio
               </li>
             </ul>

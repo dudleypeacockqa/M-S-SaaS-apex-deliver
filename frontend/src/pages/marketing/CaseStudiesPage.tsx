@@ -285,7 +285,7 @@ export const CaseStudiesPage: React.FC = () => {
                             {result.metric}
                           </div>
                           <div className="text-emerald-700 font-semibold mb-2">{result.value}</div>
-                          <div className="text-sm text-emerald-600">{result.description}</div>
+                    <div className="text-sm text-emerald-700">{result.description}</div>
                         </div>
                       ))}
                     </div>
@@ -325,7 +325,7 @@ export const CaseStudiesPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/sign-up"
-              className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-xl"
+              className="bg-emerald-700 hover:bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-xl"
               onClick={() => trackCtaClick('start-trial', 'case-studies-cta')}
             >
               Start Your Free 14-Day Trial

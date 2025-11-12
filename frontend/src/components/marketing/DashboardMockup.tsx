@@ -43,7 +43,7 @@ export const DashboardMockup: React.FC = () => {
           <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 p-4 rounded-lg border border-emerald-200">
             <div className="text-emerald-700 text-sm font-semibold mb-1">Current Cash</div>
             <div className="text-2xl font-bold text-emerald-900">£2.4M</div>
-            <div className="text-emerald-600 text-xs mt-1">↑ 12% vs last week</div>
+            <div className="text-emerald-700 text-xs mt-1">↑ 12% vs last week</div>
           </div>
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
             <div className="text-blue-700 text-sm font-semibold mb-1">Week 13 Cash</div>

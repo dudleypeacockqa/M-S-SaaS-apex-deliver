@@ -1,0 +1,67 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+(node:225172) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:225172) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:225172) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:225172) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document permission changes with affected user IDs
+[22m[39m[Audit] Permission changed: { documentId: [32m'doc-1'[39m, userId: [32m'user-abc'[39m, permission: [32m'edit'[39m }
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document deletion events
+[22m[39m[Audit] {
+  action: [32m'DOCUMENT_DELETED'[39m,
+  resource_type: [32m'document'[39m,
+  resource_id: [32m'doc-to-delete'[39m,
+  metadata: { fileName: [32m'contract.pdf'[39m }
+}
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs bulk actions with affected document IDs
+[22m[39m[Audit] {
+  action: [32m'BULK_DELETE'[39m,
+  resource_type: [32m'document'[39m,
+  resource_id: [32m'bulk-operation'[39m,
+  metadata: { documentIds: [ [32m'doc-1'[39m, [32m'doc-2'[39m, [32m'doc-3'[39m ], count: [33m3[39m }
+}
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mBulk Actions[2m > [22m[2mcalls bulk delete handler when requested
+[22m[39m[Bulk Delete] [
+  { id: [32m'doc-1'[39m, name: [32m'file1.pdf'[39m },
+  { id: [32m'doc-2'[39m, name: [32m'file2.pdf'[39m }
+]
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mBulk Actions[2m > [22m[2mcalls bulk share handler when requested
+[22m[39m[Bulk Share] [
+  { id: [32m'doc-1'[39m, name: [32m'file1.pdf'[39m },
+  { id: [32m'doc-2'[39m, name: [32m'file2.pdf'[39m }
+]
+
+ [32m✓[39m src/components/documents/PermissionModal.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 1685[2mms[22m[39m
+     [33m[2m✓[22m[39m should render modal with permissions list when isOpen is true [33m 329[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx [2m([22m[2m26 tests[22m[2m)[22m[33m 1758[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 5921[2mms[22m[39m
+     [33m[2m✓[22m[39m renders root folder structure [33m 351[2mms[22m[39m
+     [33m[2m✓[22m[39m lazy loads child folders when expanded [33m 1783[2mms[22m[39m
+     [33m[2m✓[22m[39m renames folder through context menu [33m 316[2mms[22m[39m
+     [33m[2m✓[22m[39m persists expanded folders between remounts [33m 1008[2mms[22m[39m
+     [33m[2m✓[22m[39m supports keyboard navigation and selection [33m 448[2mms[22m[39m
+     [33m[2m✓[22m[39m does not re-fetch child folders after initial load [33m 677[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx [2m([22m[2m34 tests[22m[2m)[22m[33m 6802[2mms[22m[39m
+       [33m[2m✓[22m[39m should display cancel button for each uploading file [33m 937[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onCancelFile with correct file id when cancel clicked [33m 530[2mms[22m[39m
+       [33m[2m✓[22m[39m should remove file from queue after cancellation [33m 438[2mms[22m[39m
+       [33m[2m✓[22m[39m should prevent upload when file would exceed quota [33m 515[2mms[22m[39m
+       [33m[2m✓[22m[39m should allow upload when file fits within quota [33m 416[2mms[22m[39m
+       [33m[2m✓[22m[39m should surface manage storage action when quota error is shown [33m 434[2mms[22m[39m
+       [33m[2m✓[22m[39m should reject files exceeding max file size limit [33m 315[2mms[22m[39m
+       [33m[2m✓[22m[39m should allow larger files for enterprise tier [33m 349[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[32m87 passed[39m[22m[90m (87)[39m
+[2m   Start at [22m 18:10:11
+[2m   Duration [22m 22.90s[2m (transform 30.34s, setup 18.95s, collect 19.41s, tests 16.17s, environment 8.89s, prepare 221ms)[22m
+

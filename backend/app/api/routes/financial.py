@@ -6,7 +6,7 @@ Endpoints for financial analysis, ratio calculations, and AI narratives
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Dict, Any
-from datetime import datetime
+from datetime import datetime, date
 
 from app.db.session import get_db
 from app.models.user import User
@@ -29,6 +29,16 @@ from app.services.quickbooks_oauth_service import (
     fetch_quickbooks_statements,
     disconnect_quickbooks,
     get_quickbooks_connection_status,
+)
+from app.services.netsuite_oauth_service import (
+    initiate_netsuite_oauth,
+    handle_netsuite_callback,
+    import_netsuite_financial_data,
+)
+from app.services.sage_oauth_service import (
+    initiate_sage_oauth,
+    handle_sage_callback,
+    fetch_sage_statements,
 )
 from app.api.dependencies.auth import get_current_user
 from app.models.financial_connection import FinancialConnection
@@ -723,6 +733,304 @@ def disconnect_quickbooks_connection(
     disconnect_quickbooks(deal_id, db)
 
     return {"success": True}
+
+
+@router.post(
+    "/deals/{deal_id}/financial/connect/netsuite",
+    summary="Initiate NetSuite OAuth 2.0 flow",
+    description="""
+    Start the OAuth 2.0 authorization flow to connect a NetSuite account.
+
+    Returns an authorization URL that the frontend should redirect the user to.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def connect_netsuite(
+    deal_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Initiate NetSuite OAuth flow for a deal."""
+
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    return initiate_netsuite_oauth(deal_id, db)
+
+
+@router.get(
+    "/deals/{deal_id}/financial/connect/netsuite/callback",
+    response_model=FinancialConnectionResponse,
+    summary="Handle NetSuite OAuth callback",
+    description="""
+    Handle the OAuth 2.0 callback from NetSuite after user authorization.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def netsuite_oauth_callback(
+    deal_id: str,
+    code: str,
+    state: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Handle NetSuite OAuth callback."""
+
+    if not code or not state:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing required query parameters: code, state",
+        )
+
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    connection = handle_netsuite_callback(
+        code=code,
+        state=state,
+        deal_id=deal_id,
+        db=db,
+    )
+
+    return FinancialConnectionResponse.model_validate(connection)
+
+
+@router.post(
+    "/deals/{deal_id}/financial/sync/netsuite",
+    summary="Sync financial data from NetSuite",
+    description="""
+    Trigger a manual sync of financial data from NetSuite.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def sync_netsuite_financial_data(
+    deal_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Manually sync financial data from NetSuite for a connected deal."""
+
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    connection = (
+        db.query(FinancialConnection)
+        .filter(
+            FinancialConnection.deal_id == deal_id,
+            FinancialConnection.platform == "netsuite",
+        )
+        .first()
+    )
+
+    if not connection:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No NetSuite connection found for this deal. Please connect NetSuite first.",
+        )
+
+    statement = import_netsuite_financial_data(connection.id, db)
+
+    def _iso(value):
+        if isinstance(value, (datetime, date)):
+            return value.isoformat()
+        return None
+
+    generated_at = (
+        _iso(getattr(statement, 'imported_at', None))
+        or _iso(getattr(statement, 'statement_date', None))
+        or _iso(getattr(statement, 'generated_at', None))
+    )
+
+    return {
+        "success": True,
+        "platform": connection.platform,
+        "statement_id": str(getattr(statement, 'id', '')),
+        "generated_at": generated_at,
+        "period_end": _iso(getattr(statement, 'period_end', None)),
+        "currency": getattr(statement, "currency", None),
+    }
+
+
+@router.post(
+    "/deals/{deal_id}/financial/connect/sage",
+    summary="Initiate Sage OAuth 2.0 flow",
+    description="""
+    Start the OAuth 2.0 authorization flow to connect a Sage Accounting account.
+
+    Returns an authorization URL that the frontend should redirect the user to.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def connect_sage(
+    deal_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Initiate Sage OAuth flow for a deal."""
+
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    return initiate_sage_oauth(deal_id, db)
+
+
+@router.get(
+    "/deals/{deal_id}/financial/connect/sage/callback",
+    response_model=FinancialConnectionResponse,
+    summary="Handle Sage OAuth callback",
+    description="""
+    Handle the OAuth 2.0 callback from Sage after user authorization.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def sage_oauth_callback(
+    deal_id: str,
+    code: str,
+    state: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Handle Sage OAuth callback."""
+
+    if not code or not state:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing required query parameters: code, state",
+        )
+
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    connection = handle_sage_callback(
+        deal_id=deal_id,
+        code=code,
+        state=state,
+        db=db,
+    )
+
+    return FinancialConnectionResponse.model_validate(connection)
+
+
+@router.post(
+    "/deals/{deal_id}/financial/sync/sage",
+    summary="Sync financial data from Sage",
+    description="""
+    Trigger a manual sync of financial data from Sage Accounting.
+
+    **Authentication**: Required
+    **Authorization**: User must have access to the deal's organization
+    """,
+)
+def sync_sage_financial_data(
+    deal_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Manually sync financial data from Sage for a connected deal."""
+
+    deal = db.query(Deal).filter(Deal.id == deal_id).first()
+
+    if not deal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Deal with ID {deal_id} not found"
+        )
+
+    if deal.organization_id != current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this deal's organization"
+        )
+
+    connection = (
+        db.query(FinancialConnection)
+        .filter(
+            FinancialConnection.deal_id == deal_id,
+            FinancialConnection.platform == "sage",
+        )
+        .first()
+    )
+
+    if not connection:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No Sage connection found for this deal. Please connect Sage first.",
+        )
+
+    statements = fetch_sage_statements(connection.id, db)
+
+    return {
+        "success": True,
+        "platform": connection.platform,
+        "statements_synced": len(statements),
+        "statement_ids": [str(getattr(stmt, 'id', '')) for stmt in statements],
+        "last_sync_at": connection.last_sync_at.isoformat() if connection.last_sync_at else None,
+    }
 
 
 @router.get(

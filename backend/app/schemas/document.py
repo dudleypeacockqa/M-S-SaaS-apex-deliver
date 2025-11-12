@@ -1,6 +1,6 @@
 """Document and folder Pydantic schemas."""
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
@@ -69,6 +69,7 @@ class DocumentMetadata(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime]
     uploader_name: Optional[str] = None
+    question_count: int = 0
 
     model_config = {"from_attributes": True}
 
@@ -314,4 +315,57 @@ class ShareLinkRevokeResponse(BaseModel):
 FolderResponse.model_rebuild()
 
 
+class DocumentQuestionCreate(BaseModel):
+    """Schema for creating a document question."""
+
+    question: str = Field(..., min_length=3, max_length=2000)
+
+    @field_validator('question')
+    @classmethod
+    def strip_question(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError('Question cannot be blank')
+        return cleaned
+
+
+class DocumentQuestionResolve(BaseModel):
+    """Schema for resolving/answering a document question."""
+
+    answer: str = Field(..., min_length=3, max_length=4000)
+
+    @field_validator('answer')
+    @classmethod
+    def strip_answer(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError('Answer cannot be blank')
+        return cleaned
+
+
+class DocumentQuestionResponse(BaseModel):
+    """Schema for a document question entry."""
+
+    id: UUID
+    document_id: UUID
+    organization_id: UUID
+    question: str
+    status: Literal['open', 'resolved']
+    asked_by: UUID
+    asked_by_name: Optional[str] = None
+    answer: Optional[str]
+    answered_by: Optional[UUID]
+    answered_by_name: Optional[str] = None
+    answered_at: Optional[datetime]
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    model_config = {"from_attributes": True}
+
+
+class DocumentQuestionListResponse(BaseModel):
+    """Paginated response for document question threads."""
+
+    total: int
+    items: List[DocumentQuestionResponse]
 

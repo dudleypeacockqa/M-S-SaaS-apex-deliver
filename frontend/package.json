@@ -54,6 +54,7 @@
     "typescript-eslint": "^8.45.0",
     "vite": "^7.2.2",
     "vite-plugin-imagemin": "^0.1.0",
-    "vitest": "^4.0.2"
+    "vitest": "^4.0.2",
+    "web-streams-polyfill": "^3.3.3"
   }
 }

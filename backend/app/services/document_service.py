@@ -17,7 +17,10 @@ from app.models.document import (
     Document,
     DocumentAccessLog,
     DocumentPermission,
+    DocumentQuestion,
     Folder,
+    QUESTION_STATUS_OPEN,
+    QUESTION_STATUS_RESOLVED,
 )
 from app.models.user import User
 from app.schemas.document import (
@@ -28,6 +31,9 @@ from app.schemas.document import (
     DocumentListParams,
     DocumentMetadata,
     DocumentUploadResponse,
+    DocumentQuestionCreate,
+    DocumentQuestionListResponse,
+    DocumentQuestionResolve,
     FolderCreate,
     FolderResponse,
     FolderUpdate,
@@ -59,6 +65,15 @@ def _user_display_name(user: Optional[User]) -> Optional[str]:
 
     # Fall back to email if available
     return getattr(user, "email", None)
+
+
+
+def _annotate_question(question):
+    """Attach human-readable display names for question participants."""
+
+    question.asked_by_name = _user_display_name(getattr(question, 'asked_by_user', None))
+    question.answered_by_name = _user_display_name(getattr(question, 'answered_by_user', None))
+    return question
 
 
 def _normalize_level(level: Optional[str]) -> str:
@@ -608,6 +623,17 @@ def list_documents(
     end_index = start_index + params.per_page
     page_documents = accessible_documents[start_index:end_index]
 
+    question_counts: dict[str, int] = {}
+    if page_documents:
+        doc_ids = [doc.id for doc in page_documents]
+        counts = (
+            db.query(DocumentQuestion.document_id, func.count(DocumentQuestion.id))
+            .filter(DocumentQuestion.document_id.in_(doc_ids))
+            .group_by(DocumentQuestion.document_id)
+            .all()
+        )
+        question_counts = {doc_id: count for doc_id, count in counts}
+
     metadata_items = [
         DocumentMetadata(
             id=UUID(item.id),
@@ -624,6 +650,7 @@ def list_documents(
             created_at=item.created_at,
             updated_at=item.updated_at,
             uploader_name=None,
+            question_count=question_counts.get(item.id, 0),
         )
         for item in page_documents
     ]
@@ -1688,3 +1715,124 @@ def bulk_delete_documents(
             failed_reasons[doc_id] = str(e)
 
     return deleted_ids, failed_ids, failed_reasons
+
+
+def create_document_question(
+    db: Session,
+    *,
+    document_id: str,
+    organization_id: str,
+    current_user: User,
+    payload: DocumentQuestionCreate,
+) -> DocumentQuestion:
+    document = get_document_by_id(
+        db,
+        document_id=document_id,
+        organization_id=organization_id,
+    )
+    if document is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    ensure_document_permission(
+        db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.VIEWER,
+        allow_editor_for_own=True,
+    )
+
+    question = DocumentQuestion(
+        document_id=document.id,
+        organization_id=document.organization_id,
+        asked_by=str(current_user.id),
+        question=payload.question.strip(),
+        status=QUESTION_STATUS_OPEN,
+    )
+    db.add(question)
+    db.commit()
+    db.refresh(question)
+    return _annotate_question(question)
+
+
+def list_document_questions(
+    db: Session,
+    *,
+    document_id: str,
+    organization_id: str,
+    current_user: User,
+) -> DocumentQuestionListResponse:
+    document = get_document_by_id(
+        db,
+        document_id=document_id,
+        organization_id=organization_id,
+    )
+    if document is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    ensure_document_permission(
+        db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.VIEWER,
+        allow_editor_for_own=True,
+    )
+
+    questions = (
+        db.query(DocumentQuestion)
+        .options(
+            joinedload(DocumentQuestion.asked_by_user),
+            joinedload(DocumentQuestion.answered_by_user),
+        )
+        .filter(DocumentQuestion.document_id == document.id)
+        .order_by(DocumentQuestion.created_at.asc())
+        .all()
+    )
+
+    items = [_annotate_question(q) for q in questions]
+    return DocumentQuestionListResponse(total=len(items), items=items)
+
+
+def resolve_document_question(
+    db: Session,
+    *,
+    question_id: str,
+    deal_id: str,
+    organization_id: str,
+    current_user: User,
+    payload: DocumentQuestionResolve,
+) -> DocumentQuestion:
+    question = (
+        db.query(DocumentQuestion)
+        .options(
+            joinedload(DocumentQuestion.document),
+            joinedload(DocumentQuestion.asked_by_user),
+            joinedload(DocumentQuestion.answered_by_user),
+        )
+        .filter(
+            DocumentQuestion.id == question_id,
+            DocumentQuestion.organization_id == organization_id,
+        )
+        .one_or_none()
+    )
+    if question is None or question.document is None or question.document.deal_id != deal_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Question not found")
+
+    document = question.document
+    ensure_document_permission(
+        db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.EDITOR,
+        allow_editor_for_own=True,
+    )
+
+    question.answer = payload.answer.strip()
+    question.status = QUESTION_STATUS_RESOLVED
+    question.answered_by = str(current_user.id)
+    question.answered_at = datetime.now(timezone.utc)
+    question.updated_at = datetime.now(timezone.utc)
+    db.add(question)
+    db.commit()
+    db.refresh(question)
+    return _annotate_question(question)
+

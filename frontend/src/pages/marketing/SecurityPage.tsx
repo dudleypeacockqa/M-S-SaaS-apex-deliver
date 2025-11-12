@@ -187,7 +187,7 @@ export const SecurityPage: React.FC = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {certifications.map((cert, index) => (
-              <div key={index} className="bg-white p-6 rounded-lg shadow-md text-center border-2 border-emerald-500">
+              <div key={index} className="bg-white p-6 rounded-lg shadow-md text-center border-2 border-emerald-600">
                 <div className="text-3xl mb-3">✓</div>
                 <p className="font-semibold text-gray-900">{cert}</p>
               </div>
@@ -215,7 +215,7 @@ export const SecurityPage: React.FC = () => {
                 <ul className="space-y-3">
                   {section.items.map((item, itemIndex) => (
                     <li key={itemIndex} className="flex items-start">
-                      <span className="text-emerald-500 mr-3 flex-shrink-0">✓</span>
+                      <span className="text-emerald-700 mr-3 flex-shrink-0">✓</span>
                       <span className="text-gray-700">{item}</span>
                     </li>
                   ))}

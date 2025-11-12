@@ -20,7 +20,7 @@ export function StreamConfigPanel({ stream, onCopyServerUrl, onCopyStreamKey }: 
             Connect OBS, Streamlabs, or your encoder using the credentials below.
           </p>
         </div>
-        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600">
+        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
           Secure
         </span>
       </div>

@@ -267,7 +267,7 @@ const SummaryView = ({ dealId, valuationId }: { dealId: string; valuationId: str
           </p>
         )}
         {formMessage && (
-          <p className="md:col-span-2 text-sm text-emerald-600" role="status" aria-live="polite">
+          <p className="md:col-span-2 text-sm text-emerald-700" role="status" aria-live="polite">
             {formMessage}
           </p>
         )}

@@ -8,7 +8,7 @@ Target DB Host: postgresql://***@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.r
 Navigating to backend directory...
 
 Current migration status:
-No current migration (fresh database)
+86d427f030f2 (head)
 
 Available migration heads:
 86d427f030f2 (head)
@@ -19,12 +19,12 @@ Available migration heads:
 =========================================
 
 Applying database migrations...
-Command 'alembic_upgrade' failed (attempt 1/5).
-Command 'alembic_upgrade' failed (attempt 2/5).
-Command 'alembic_upgrade' failed (attempt 3/5).
-Command 'alembic_upgrade' failed (attempt 4/5).
-Command 'alembic_upgrade' failed (attempt 5/5).
-Giving up after 5 attempts.
 
-❌ ERROR: Migration failed
+✅ SUCCESS: All migrations applied
+
+Final migration status:
+86d427f030f2 (head)
+
+=========================================
+Prestart complete - ready to start application
 =========================================

@@ -1,0 +1,397 @@
+{
+  "timestamp": "Wed Nov 12 16:40:22 2025 +0000",
+  "current_commit": "ef41b23",
+  "branch": "main",
+  "bmad_stories": {
+    "stories": [
+      {
+        "file": "DEV-002-COMPLETION-SUMMARY.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "DEV-003-PROGRESS-SUMMARY.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-003-protected-routing.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "DEV-004-backend-clerk-sync.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "DEV-004-COMPLETION-SUMMARY.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-005-rbac-implementation.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-006-BACKEND-COMPLETION.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-006-COMPLETION-SUMMARY.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-006-master-admin-portal.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "DEV-007-COMPLETION-SUMMARY.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-007-deal-pipeline-crud.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "DEV-008-COMPLETION-SUMMARY.md",
+        "status": "UNKNOWN",
+        "completion": "25%"
+      },
+      {
+        "file": "DEV-008-document-room-gap-analysis.md",
+        "status": "UNKNOWN",
+        "completion": "45%"
+      },
+      {
+        "file": "DEV-008-secure-document-data-room.md",
+        "status": "COMPLETE",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-009-subscription-billing.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-010-financial-intelligence-engine.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-011-subscription-billing.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "DEV-011-valuation-suite-gap-analysis.md",
+        "status": "UNKNOWN",
+        "completion": "95%"
+      },
+      {
+        "file": "DEV-011-valuation-suite.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-012-task-automation-audit.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-012-task-automation.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "DEV-014-document-generation.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "DEV-016-podcast-studio-audit.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-016-podcast-studio-subscription.md",
+        "status": "UNKNOWN",
+        "completion": "80%"
+      },
+      {
+        "file": "DEV-018-deal-matching-audit.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "DEV-018-intelligent-deal-matching.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "DEV-019-blog-api-500-fix.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "MARK-001-marketing-website.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "MARK-002-enhanced-website-completion.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "MARK-002-marketing-audit-2025-11-12.md",
+        "status": "UNKNOWN",
+        "completion": "9598%"
+      },
+      {
+        "file": "MARK-003-legacy-cleanup-bmad-alignment.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "MARK-004-test-coverage-critical.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "MARK-005-enhanced-website-phases-3-10.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      },
+      {
+        "file": "MARK-006-blog-system-complete.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "MARK-007-case-studies-social-proof.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "MARK-008-promotional-pages-polish.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "OPS-004-platform-status-check.md",
+        "status": "UNKNOWN",
+        "completion": "0%"
+      },
+      {
+        "file": "OPS-005-platform-status-audit.md",
+        "status": "UNKNOWN",
+        "completion": "100%"
+      }
+    ],
+    "total": 38
+  },
+  "features": {
+    "F-001: User & Organization Management": {
+      "backend": [
+        "models/user.py",
+        "api/routes/users.py",
+        "services/user_service.py"
+      ],
+      "frontend": [
+        "pages/admin/UserManagement.tsx",
+        "components/users/"
+      ],
+      "status": "IN PROGRESS",
+      "completion": "60%",
+      "files_found": "3/5"
+    },
+    "F-002: Deal Flow & Pipeline Management": {
+      "backend": [
+        "models/deal.py",
+        "api/routes/deals.py",
+        "services/deal_service.py"
+      ],
+      "frontend": [
+        "pages/deals/DealPipeline.tsx",
+        "components/deals/"
+      ],
+      "status": "COMPLETE",
+      "completion": "100%",
+      "files_found": "5/5"
+    },
+    "F-003: Secure Document & Data Room (DEV-008)": {
+      "backend": [
+        "models/document.py",
+        "api/routes/documents.py",
+        "services/document_service.py"
+      ],
+      "frontend": [
+        "pages/documents/DocumentWorkspace.tsx",
+        "components/documents/"
+      ],
+      "status": "COMPLETE",
+      "completion": "100%",
+      "files_found": "5/5"
+    },
+    "F-004: Task Management & Workflow Automation": {
+      "backend": [
+        "models/task.py",
+        "api/routes/tasks.py",
+        "services/task_service.py"
+      ],
+      "frontend": [
+        "pages/tasks/TaskManager.tsx",
+        "components/tasks/"
+      ],
+      "status": "IN PROGRESS",
+      "completion": "80%",
+      "files_found": "4/5"
+    },
+    "F-005: Subscription & Billing": {
+      "backend": [
+        "models/subscription.py",
+        "api/routes/billing.py",
+        "services/billing_service.py"
+      ],
+      "frontend": [
+        "pages/billing/BillingPage.tsx",
+        "components/billing/"
+      ],
+      "status": "IN PROGRESS",
+      "completion": "40%",
+      "files_found": "2/5"
+    },
+    "F-006: Financial Intelligence Engine": {
+      "backend": [
+        "models/financial_report.py",
+        "api/routes/financial.py",
+        "services/financial_service.py"
+      ],
+      "frontend": [
+        "pages/financial/FinancialDashboard.tsx",
+        "components/financial/"
+      ],
+      "status": "IN PROGRESS",
+      "completion": "40%",
+      "files_found": "2/5"
+    },
+    "F-007: Multi-Method Valuation Suite": {
+      "backend": [
+        "models/valuation.py",
+        "api/routes/valuation.py",
+        "services/valuation_service.py"
+      ],
+      "frontend": [
+        "pages/valuation/ValuationWorkspace.tsx",
+        "components/valuation/"
+      ],
+      "status": "IN PROGRESS",
+      "completion": "80%",
+      "files_found": "4/5"
+    },
+    "F-008: Intelligent Deal Matching": {
+      "backend": [
+        "models/deal_match.py",
+        "api/routes/deal_matching.py",
+        "services/deal_matching_service.py"
+      ],
+      "frontend": [
+        "pages/deals/DealMatching.tsx",
+        "components/deal-matching/"
+      ],
+      "status": "IN PROGRESS",
+      "completion": "80%",
+      "files_found": "4/5"
+    },
+    "F-009: Automated Document Generation": {
+      "backend": [
+        "models/document_template.py",
+        "api/routes/document_generation.py"
+      ],
+      "frontend": [
+        "pages/documents/DocumentGenerator.tsx"
+      ],
+      "status": "NOT STARTED",
+      "completion": "0%",
+      "files_found": "0/3"
+    },
+    "F-010: Content Creation & Lead Generation Hub": {
+      "backend": [
+        "models/blog_post.py",
+        "api/routes/blog.py",
+        "services/blog_service.py"
+      ],
+      "frontend": [
+        "pages/blog/BlogEditor.tsx",
+        "components/blog/"
+      ],
+      "status": "IN PROGRESS",
+      "completion": "40%",
+      "files_found": "2/5"
+    },
+    "F-011: Podcast & Video Production Studio": {
+      "backend": [
+        "models/podcast.py",
+        "api/routes/podcast.py",
+        "services/podcast_service.py"
+      ],
+      "frontend": [
+        "pages/podcast/PodcastStudio.tsx",
+        "components/podcast/"
+      ],
+      "status": "IN PROGRESS",
+      "completion": "80%",
+      "files_found": "4/5"
+    },
+    "F-012: Event Management Hub": {
+      "backend": [
+        "models/event.py",
+        "api/routes/events.py",
+        "services/event_service.py"
+      ],
+      "frontend": [
+        "pages/events/EventManager.tsx",
+        "components/events/"
+      ],
+      "status": "NOT STARTED",
+      "completion": "0%",
+      "files_found": "0/5"
+    },
+    "F-013: Professional Community Platform": {
+      "backend": [
+        "models/community.py",
+        "api/routes/community.py"
+      ],
+      "frontend": [
+        "pages/community/CommunityHub.tsx"
+      ],
+      "status": "NOT STARTED",
+      "completion": "0%",
+      "files_found": "0/3"
+    }
+  },
+  "marketing": {
+    "pages": {
+      "Home": "EXISTS",
+      "Pricing": "MISSING",
+      "About": "MISSING",
+      "Contact": "MISSING",
+      "Blog": "MISSING",
+      "Features": "MISSING",
+      "Case Studies": "MISSING",
+      "Resources": "MISSING"
+    },
+    "marketing_components_exist": true,
+    "component_count": 37,
+    "status": "INCOMPLETE"
+  },
+  "backend_tests": "Results available (see file)",
+  "frontend_tests": "Results available (see file)"
+}

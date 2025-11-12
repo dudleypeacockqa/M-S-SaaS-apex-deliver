@@ -48,7 +48,8 @@ describe('PricingPage', () => {
     ];
 
     expectedTierNames.forEach((tier) => {
-      expect(screen.getByText(tier)).toBeInTheDocument();
+      const matches = screen.queryAllByText(tier);
+      expect(matches.length).toBeGreaterThan(0);
     });
 
     ['£598', '£1,598', '£2,997'].forEach((price) => {
@@ -139,5 +140,18 @@ describe('PricingPage', () => {
     const ogUrlMeta = document.querySelector('meta[property="og:url"]');
     expect(ogUrlMeta).not.toBeNull();
     expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/pricing');
+  });
+
+  it('publishes structured data for product offers using the 100daysandbeyond.com domain', () => {
+    renderPricing();
+    const script = document.getElementById('pricing-product-schema') as HTMLScriptElement | null;
+    expect(script).not.toBeNull();
+
+    const schema = JSON.parse(script?.textContent ?? '{}');
+    expect(schema['@type']).toBe('Product');
+    expect(schema.url).toBe('https://100daysandbeyond.com/pricing');
+    expect(Array.isArray(schema.offers)).toBe(true);
+    expect(schema.offers).toHaveLength(3);
+    expect(schema.offers[0].url).toBe('https://100daysandbeyond.com/pricing');
   });
 });

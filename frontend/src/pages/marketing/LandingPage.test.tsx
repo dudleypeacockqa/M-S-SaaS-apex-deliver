@@ -1,39 +1,47 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { LandingPage } from './LandingPage';
+import { describe, it, expect } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
+import { LandingPage } from './LandingPage'
 
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>);
-};
+const renderPage = () => render(<BrowserRouter><LandingPage /></BrowserRouter>)
 
 describe('LandingPage', () => {
-  it('renders hero section', () => {
-    renderWithRouter(<LandingPage />);
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-  });
+  it('renders the enhanced hero section headline', () => {
+    renderPage()
+    expect(screen.getByText(/13-Week Cash Forecasting/i)).toBeInTheDocument()
+  })
 
-  it('displays feature highlights section', () => {
-    renderWithRouter(<LandingPage />);
-    // Check for at least one feature card
-    const highlights = screen.getAllByText(/deal pipeline|financial intelligence/i);
-    expect(highlights.length).toBeGreaterThan(0);
-  });
+  it('includes trust badge section', () => {
+    renderPage()
+    expect(screen.getByText(/Enterprise-Grade Security & Compliance/i)).toBeInTheDocument()
+  })
 
-  it('contains CTA buttons', () => {
-    renderWithRouter(<LandingPage />);
-    const ctaButtons = screen.getAllByRole('link', { name: /get started|start free trial|view pricing/i });
-    expect(ctaButtons.length).toBeGreaterThan(0);
-  });
+  it('highlights CapLiquify FP&A messaging', () => {
+    renderPage()
+    expect(screen.getByText(/CapLiquify FP&A in action/i)).toBeInTheDocument()
+    expect(screen.getByText(/13-week rolling cash forecast/i)).toBeInTheDocument()
+  })
 
-  it('renders main element for semantic HTML', () => {
-    const { container } = renderWithRouter(<LandingPage />);
-    expect(container.querySelector('main')).toBeInTheDocument();
-  });
+  it('renders the how it works steps', () => {
+    renderPage()
+    expect(screen.getByText(/Connect your ledgers/i)).toBeInTheDocument()
+    expect(screen.getByText(/Execute inside ApexDeliver/i)).toBeInTheDocument()
+  })
 
-  it('has multiple sections for better content structure', () => {
-    const { container } = renderWithRouter(<LandingPage />);
-    const sections = container.querySelectorAll('section');
-    expect(sections.length).toBeGreaterThanOrEqual(3); // Hero, Features, CTA at minimum
-  });
-});
+  it('shows pricing teaser information', () => {
+    renderPage()
+    expect(screen.getAllByText(/CapLiquify FP&A/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/£598\/mo \+ £2,500 setup/i).length).toBeGreaterThan(0)
+  })
+
+  it('maintains CTA section at the end', () => {
+    renderPage()
+    expect(screen.getAllByRole('link', { name: /Start Free/i }).length).toBeGreaterThan(0)
+  })
+
+  it('renders case study callouts', () => {
+    renderPage()
+    expect(screen.getByText(/Proof from active portfolios/i)).toBeInTheDocument()
+    expect(screen.getByText(/Unlocked £4\.2M/i)).toBeInTheDocument()
+  })
+})

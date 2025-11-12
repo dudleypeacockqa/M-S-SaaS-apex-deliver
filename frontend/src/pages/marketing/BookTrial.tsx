@@ -29,7 +29,7 @@ export const BookTrial: React.FC = () => {
         <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="mb-6">
-              <span className="inline-flex items-center px-4 py-2 rounded-full bg-emerald-500 text-white font-semibold text-sm">
+              <span className="inline-flex items-center px-4 py-2 rounded-full bg-emerald-700 text-white font-semibold text-sm">
                 ✓ Account Created Successfully
               </span>
             </div>
@@ -54,7 +54,7 @@ export const BookTrial: React.FC = () => {
                   <ul className="space-y-4">
                     <li className="flex items-start">
                       <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center mr-3 mt-0.5">
-                        <span className="text-emerald-600 font-bold text-sm">1</span>
+                        <span className="text-emerald-700 font-bold text-sm">1</span>
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">Requirements Discovery</h3>
@@ -65,7 +65,7 @@ export const BookTrial: React.FC = () => {
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center mr-3 mt-0.5">
-                        <span className="text-emerald-600 font-bold text-sm">2</span>
+                        <span className="text-emerald-700 font-bold text-sm">2</span>
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">Platform Walkthrough</h3>
@@ -76,7 +76,7 @@ export const BookTrial: React.FC = () => {
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center mr-3 mt-0.5">
-                        <span className="text-emerald-600 font-bold text-sm">3</span>
+                        <span className="text-emerald-700 font-bold text-sm">3</span>
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">MVP Trial Setup</h3>
@@ -87,7 +87,7 @@ export const BookTrial: React.FC = () => {
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center mr-3 mt-0.5">
-                        <span className="text-emerald-600 font-bold text-sm">4</span>
+                        <span className="text-emerald-700 font-bold text-sm">4</span>
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">Hands-On Training</h3>
@@ -101,7 +101,7 @@ export const BookTrial: React.FC = () => {
 
                 <div className="bg-gradient-to-br from-emerald-50 to-blue-50 rounded-xl p-6 border-2 border-emerald-200">
                   <h3 className="font-bold text-gray-900 mb-2 flex items-center">
-                    <svg className="w-5 h-5 text-emerald-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 text-emerald-700 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     14-Day Free Trial Included

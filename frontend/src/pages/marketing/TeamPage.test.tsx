@@ -3,7 +3,7 @@
  * Following TDD RED → GREEN → REFACTOR methodology
  */
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { TeamPage } from './TeamPage';
 
@@ -66,6 +66,21 @@ describe('TeamPage', () => {
     it('should mention team experience and track record', () => {
       renderWithRouter(<TeamPage />);
       expect(screen.getByText(/over 20 years of combined experience/i)).toBeInTheDocument();
+    });
+  });
+
+  describe('Structured Data', () => {
+    it('publishes organization schema with team members', async () => {
+      renderWithRouter(<TeamPage />);
+
+      await waitFor(() => {
+        const script = document.getElementById('team-schema') as HTMLScriptElement | null;
+        expect(script).not.toBeNull();
+        const schema = JSON.parse(script?.textContent ?? '{}');
+        expect(schema.url).toBe('https://100daysandbeyond.com/team');
+        expect(Array.isArray(schema.employee)).toBe(true);
+        expect(schema.employee[0].name).toBe('Dudley Peacock');
+      });
     });
   });
 });

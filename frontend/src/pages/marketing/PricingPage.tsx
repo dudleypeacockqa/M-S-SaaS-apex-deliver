@@ -6,6 +6,7 @@ import { useAuth } from '@clerk/clerk-react';
 import { useState } from 'react';
 import { billingService, type SubscriptionTier } from '../../services/billingService';
 import { createProductWithOffersSchema } from '../../utils/schemas/offerSchema';
+import { StructuredData } from '../../components/common/StructuredData';
 
 export const PricingPage: React.FC = () => {
   const { isSignedIn } = useAuth();
@@ -141,7 +142,7 @@ export const PricingPage: React.FC = () => {
       name: 'ApexDeliver + CapLiquify',
       description: 'End-to-end M&A intelligence platform for deal flow management, financial analysis, and secure collaboration',
       brand: 'ApexDeliver',
-      url: 'https://apexdeliver.com/pricing',
+      url: 'https://100daysandbeyond.com/pricing',
     },
     pricingTiers
       .filter((tier) => typeof tier.price === 'number')
@@ -151,7 +152,7 @@ export const PricingPage: React.FC = () => {
         currency: 'GBP',
         billingPeriod: 'MONTH' as const,
         description: tier.description,
-        url: 'https://apexdeliver.com/pricing',
+        url: 'https://100daysandbeyond.com/pricing',
       }))
   );
 
@@ -170,11 +171,7 @@ export const PricingPage: React.FC = () => {
         twitterImage="https://100daysandbeyond.com/assets/financial-analysis-visual.png"
         canonical="https://100daysandbeyond.com/pricing"
       />
-      {/* Product + Offer Schema for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingSchema) }}
-      />
+      <StructuredData json={pricingSchema} id="pricing-product-schema" />
       {/* Header Section */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -348,7 +345,7 @@ export const PricingPage: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {/* Customer Portal Module */}
-            <div className="bg-white rounded-xl shadow-lg p-8 border-2 border-emerald-500">
+            <div className="bg-white rounded-xl shadow-lg p-8 border-2 border-emerald-600">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-2xl font-bold text-gray-900">Customer Portal Module</h3>
                 <span className="bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full">B2B2C</span>
@@ -365,37 +362,37 @@ export const PricingPage: React.FC = () => {
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start">
-                  <svg className="h-5 w-5 text-emerald-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="h-5 w-5 text-emerald-700 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   <span className="text-gray-700">Customer order placement & tracking</span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="h-5 w-5 text-emerald-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="h-5 w-5 text-emerald-700 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   <span className="text-gray-700">Invoice viewing & payment</span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="h-5 w-5 text-emerald-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="h-5 w-5 text-emerald-700 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   <span className="text-gray-700">Real-time account statements</span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="h-5 w-5 text-emerald-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="h-5 w-5 text-emerald-700 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   <span className="text-gray-700">Custom branding & white-label</span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="h-5 w-5 text-emerald-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="h-5 w-5 text-emerald-700 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   <span className="text-gray-700">Direct ERP integration</span>
                 </li>
               </ul>
-              <button className="w-full bg-emerald-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-emerald-700 transition-colors">
+              <button className="w-full bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg hover:bg-emerald-800 transition-colors">
                 Add to Plan
               </button>
             </div>

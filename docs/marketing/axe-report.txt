@@ -1,0 +1,30 @@
+Running axe-core 4.11.0 in chrome-headless
+
+Testing https://100daysandbeyond.com ... please wait, this may take a minute.
+
+  Violation of "color-contrast" with 3 occurrences!
+    Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds. Correct invalid elements at:
+     - .space-x-2 > .text-emerald-600
+     - .bg-gray-700
+     - .gap-2.flex > .py-2:nth-child(1)
+    For details, see: https://dequeuniversity.com/rules/axe/4.11/color-contrast
+
+  Violation of "heading-order" with 2 occurrences!
+    Ensure the order of headings is semantically correct. Correct invalid elements at:
+     - .md\:text-xl
+     - .mb-6.justify-between.flex > div:nth-child(1) > .text-2xl
+    For details, see: https://dequeuniversity.com/rules/axe/4.11/heading-order
+
+  Violation of "landmark-main-is-top-level" with 1 occurrences!
+    Ensure the main landmark is at top level. Correct invalid elements at:
+     - #main-content
+    For details, see: https://dequeuniversity.com/rules/axe/4.11/landmark-main-is-top-level
+
+  Violation of "landmark-no-duplicate-main" with 1 occurrences!
+    Ensure the document has at most one main landmark. Correct invalid elements at:
+     - #app-root
+    For details, see: https://dequeuniversity.com/rules/axe/4.11/landmark-no-duplicate-main
+
+7 Accessibility issues detected.
+
+Testing http://0 ... please wait, this may take a minute.

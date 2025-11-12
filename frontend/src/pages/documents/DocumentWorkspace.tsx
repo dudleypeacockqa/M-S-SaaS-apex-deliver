@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { FolderTree } from '../../components/documents/FolderTree'
 import { DocumentList } from '../../components/documents/DocumentList'
@@ -6,6 +6,8 @@ import UploadPanel from '../../components/documents/UploadPanel'
 import { PermissionModal } from '../../components/documents/PermissionModal'
 import BulkMoveModal from '../../components/documents/BulkMoveModal'
 import BulkArchiveModal from '../../components/documents/BulkArchiveModal'
+import { DocumentQuestionsPanel } from '../../components/documents/DocumentQuestionsPanel'
+import { AccessLogDrawer } from '../../components/documents/AccessLogDrawer'
 import type { Document } from '../../services/api/documents'
 import { useDocumentUploads } from '../../hooks/useDocumentUploads'
 import {
@@ -42,6 +44,9 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
     id: '',
     isOpen: false,
   })
+  const [permissionAuditTrail, setPermissionAuditTrail] = useState<
+    Array<{ id: string; actor: string; action: string; createdAt?: string }>
+  >([])
   const [bulkMoveState, setBulkMoveState] = useState<{
     isOpen: boolean
     documents: Document[]
@@ -61,6 +66,10 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
     isProcessing: false,
   })
   const [resetSelectionSignal, setResetSelectionSignal] = useState(0)
+  const [accessLogState, setAccessLogState] = useState<{ document: Document | null; isOpen: boolean }>({
+    document: null,
+    isOpen: false,
+  })
   const queryClient = useQueryClient()
   const { uploadQueue, isUploading, errorMessage, startUpload, clearQueue } = useDocumentUploads(dealId)
   const [activeToast, setActiveToast] = useState<ToastState | null>(null)
@@ -82,8 +91,13 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
     setSelectedFolderId(folderId)
   }
 
-  const handleManagePermissions = (document: Document) => {
+  const handleManagePermissions = (
+    document: Document & {
+      auditTrail?: Array<{ id: string; actor: string; action: string; createdAt?: string }>
+    }
+  ) => {
     setPermissionState({ id: document.id, isOpen: true })
+    setPermissionAuditTrail(document.auditTrail ?? [])
   }
 
   const closePermissionModal = useCallback(() => {
@@ -107,6 +121,11 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
   }) => {
     // TODO: Send audit log to backend
     console.log('[Audit]', event)
+  }, [])
+
+  const handleRootBreadcrumb = useCallback(() => {
+    setSelectedFolderId(null)
+    setResetSelectionSignal((prev) => prev + 1)
   }, [])
 
   const handleBulkMove = useCallback(
@@ -303,6 +322,26 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
     [dealId, queryClient, selectedFolderId, startUpload]
   )
 
+  const uploadAnalyticsContext = useMemo(
+    () => ({ dealId, folderId: selectedFolderId }),
+    [dealId, selectedFolderId]
+  )
+
+  const handleUploadTelemetry = useCallback(
+    (payload: Record<string, any>) => {
+      console.log('[Audit] Upload telemetry event', payload)
+    },
+    []
+  )
+
+  const handleViewAccessLogs = useCallback((document: Document) => {
+    setAccessLogState({ document, isOpen: true })
+  }, [])
+
+  const closeAccessLogs = useCallback(() => {
+    setAccessLogState({ document: null, isOpen: false })
+  }, [])
+
   return (
     <div
       data-testid="workspace-layout"
@@ -343,6 +382,33 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
       </aside>
 
       <section data-testid="document-pane" className="flex flex-col border rounded-lg bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
+          <nav aria-label="Document breadcrumbs" className="flex items-center gap-2 text-sm text-slate-600">
+            <button
+              type="button"
+              role="link"
+              onClick={handleRootBreadcrumb}
+              className="rounded px-2 py-1 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              aria-current={!selectedFolderId ? 'page' : undefined}
+            >
+              All Documents
+            </button>
+            {selectedFolderId && (
+              <>
+                <span aria-hidden="true" className="text-slate-400">
+                  /
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleFolderSelect(selectedFolderId)}
+                  className="rounded px-2 py-1 text-slate-700 font-medium"
+                >
+                  {selectedFolderId}
+                </button>
+              </>
+            )}
+          </nav>
+        </div>
         <DocumentList
           dealId={dealId}
           folderId={selectedFolderId}
@@ -352,6 +418,7 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
           onBulkDelete={handleBulkDelete}
           onBulkShare={handleBulkShare}
           onBulkArchive={handleBulkArchive}
+          onViewAccessLogs={handleViewAccessLogs}
           resetSelectionSignal={resetSelectionSignal}
         />
       </section>
@@ -363,6 +430,8 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
           uploadQueue={uploadQueue}
           errorMessage={errorMessage ?? undefined}
           onRemove={clearQueue}
+          analyticsContext={uploadAnalyticsContext}
+          onUploadTelemetry={handleUploadTelemetry}
         />
       </div>
 
@@ -371,6 +440,7 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
         isOpen={permissionState.isOpen}
         onClose={closePermissionModal}
         onPermissionChange={handlePermissionChange}
+        auditTrail={permissionAuditTrail}
       />
 
       <BulkMoveModal
@@ -388,6 +458,14 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
         isProcessing={bulkArchiveState.isProcessing}
         onClose={closeBulkArchiveModal}
         onConfirm={handleArchiveConfirm}
+      />
+
+      <AccessLogDrawer
+        dealId={dealId}
+        documentId={accessLogState.document?.id ?? null}
+        documentName={accessLogState.document?.name}
+        isOpen={accessLogState.isOpen}
+        onClose={closeAccessLogs}
       />
 
       {/* Toast notification */}

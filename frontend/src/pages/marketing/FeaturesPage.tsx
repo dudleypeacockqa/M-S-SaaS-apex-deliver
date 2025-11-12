@@ -3,9 +3,11 @@ import { CTASection } from '../../components/marketing/CTASection';
 import { SEO } from '../../components/common/SEO';
 import { marketingIllustrations } from '../../assets/marketing';
 import { createOrganizationSchema } from '../../utils/schemas/organizationSchema';
+import { StructuredData } from '../../components/common/StructuredData';
 
 export const FeaturesPage: React.FC = () => {
   // Generate SoftwareApplication schema for SEO
+  const { ['@context']: _omit, ...provider } = createOrganizationSchema();
   const softwareSchema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -19,8 +21,8 @@ export const FeaturesPage: React.FC = () => {
       availability: 'https://schema.org/InStock',
     },
     description: 'End-to-end M&A intelligence platform with deal pipeline management, financial analysis, valuation tools, and secure data rooms',
-    url: 'https://apexdeliver.com/features',
-    provider: createOrganizationSchema(),
+    url: 'https://100daysandbeyond.com/features',
+    provider,
     featureList: [
       'Deal Pipeline & Flow Management',
       'Financial Intelligence Engine (47+ ratios)',
@@ -45,15 +47,11 @@ export const FeaturesPage: React.FC = () => {
         ogDescription="Explore deal pipeline automation, AI analytics, valuation workflows, secure data rooms, and professional community features."
         ogImage="https://100daysandbeyond.com/assets/pmi-integration-graphic.png"
         twitterTitle="100 Days & Beyond Feature Tour"
-        twitterDescription="From AI-assisted valuations to secure data rooms, see everything the 100 Days & Beyond platform covers."
-        twitterImage="https://100daysandbeyond.com/assets/pmi-integration-graphic.png"
-        canonical="https://100daysandbeyond.com/features"
-      />
-      {/* SoftwareApplication Schema for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
-      />
+      twitterDescription="From AI-assisted valuations to secure data rooms, see everything the 100 Days & Beyond platform covers."
+      twitterImage="https://100daysandbeyond.com/assets/pmi-integration-graphic.png"
+      canonical="https://100daysandbeyond.com/features"
+    />
+      <StructuredData json={softwareSchema} id="features-software-schema" />
       {/* Header */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

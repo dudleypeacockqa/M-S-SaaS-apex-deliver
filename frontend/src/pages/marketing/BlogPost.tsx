@@ -26,7 +26,7 @@ const mockPost = {
     <p class="mb-6 leading-relaxed">
       Studies consistently show that up to 70% of M&A deals fail to achieve their projected synergy targets. This "synergy gap" is typically a result of poor communication, cultural clashes, and, most critically, a lack of a clear, actionable integration roadmap. Our approach emphasizes a data-driven PMI process, turning theoretical cost and revenue synergies into measurable, realized value.
     </p>
-    <blockquote class="border-l-4 border-emerald-500 pl-4 italic text-gray-600 my-6">
+    <blockquote class="border-l-4 border-emerald-600 pl-4 italic text-gray-600 my-6">
       "Synergy is not a promise; it's a project. It requires the same level of discipline and financial scrutiny as the initial valuation."
     </blockquote>
     <h3 class="text-xl font-semibold mt-6 mb-3 text-gray-800">Three Pillars of Successful PMI</h3>
@@ -78,7 +78,7 @@ interface RelatedPostCardProps {
 const RelatedPostCard: React.FC<RelatedPostCardProps> = ({ post }) => (
   <Card className="flex flex-col h-full hover:shadow-lg transition-shadow duration-300">
     <CardHeader>
-      <CardTitle className="text-lg font-semibold text-navy-800 hover:text-emerald-600 transition-colors">
+      <CardTitle className="text-lg font-semibold text-navy-800 hover:text-emerald-700 transition-colors">
         <a href={`/blog/${post.slug}`}>{post.title}</a>
       </CardTitle>
     </CardHeader>
@@ -99,11 +99,11 @@ const AuthorInfo: React.FC<typeof mockPost["author"]> = ({ name, title, avatarUr
     <img
       src={avatarUrl}
       alt={name}
-      className="w-16 h-16 rounded-full object-cover border-2 border-emerald-500"
+      className="w-16 h-16 rounded-full object-cover border-2 border-emerald-600"
     />
     <div>
       <h4 className="text-xl font-bold text-navy-800">{name}</h4>
-      <p className="text-emerald-600 font-medium">{title}</p>
+      <p className="text-emerald-700 font-medium">{title}</p>
       <p className="text-sm text-gray-600 mt-1">{bio}</p>
     </div>
   </div>
@@ -120,7 +120,7 @@ const CallToAction: React.FC = () => (
     <Button
       variant="default"
       size="lg"
-      className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg px-8 py-6 transition-all duration-300 group"
+      className="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-lg px-8 py-6 transition-all duration-300 group"
     >
       Schedule a Consultation
       <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -134,7 +134,7 @@ const BlogPost: React.FC = () => {
   // Define custom colors for the M&A/Finance branding
   // Assuming these colors are defined in a global CSS or Tailwind config
   // Navy Blue: navy-800
-  // Emerald Green: emerald-500
+  // Emerald Green: emerald-700
   // Bright Blue: bright-500
 
   return (
@@ -150,12 +150,12 @@ const BlogPost: React.FC = () => {
             </h1>
             <div className="flex justify-center space-x-4 text-gray-500 text-sm md:text-base">
               <div className="flex items-center space-x-1">
-                <User className="w-4 h-4 text-emerald-500" />
+                <User className="w-4 h-4 text-emerald-700" />
                 <span className="font-medium text-gray-700">{mockPost.author.name}</span>
               </div>
               <Separator orientation="vertical" className="h-5 bg-gray-300" />
               <div className="flex items-center space-x-1">
-                <Calendar className="w-4 h-4 text-emerald-500" />
+                <Calendar className="w-4 h-4 text-emerald-700" />
                 <span>{mockPost.publishDate}</span>
               </div>
               <Separator orientation="vertical" className="h-5 bg-gray-300" />
@@ -184,7 +184,7 @@ const BlogPost: React.FC = () => {
             
             {/* Sidebar/Author Bio - Placeholder for a sticky sidebar on larger screens */}
             <aside className="lg:col-span-1">
-              <Card className="sticky top-8 shadow-lg border-t-4 border-emerald-500">
+              <Card className="sticky top-8 shadow-lg border-t-4 border-emerald-600">
                 <CardHeader>
                   <CardTitle className="text-xl text-navy-800">About the Author</CardTitle>
                 </CardHeader>
@@ -196,7 +196,7 @@ const BlogPost: React.FC = () => {
                       className="w-24 h-24 rounded-full object-cover mb-4 border-4 border-bright-500"
                     />
                     <h4 className="text-xl font-bold text-navy-800">{mockPost.author.name}</h4>
-                    <p className="text-emerald-600 font-medium text-sm mb-3">{mockPost.author.title}</p>
+                    <p className="text-emerald-700 font-medium text-sm mb-3">{mockPost.author.title}</p>
                     <p className="text-sm text-gray-600">{mockPost.author.bio}</p>
                     <Button variant="link" className="mt-2 text-bright-500 hover:text-bright-600">
                       View all posts
@@ -215,7 +215,7 @@ const BlogPost: React.FC = () => {
 
           {/* Related Posts Section */}
           <section className="mt-16">
-            <h2 className="text-3xl font-bold text-navy-800 mb-8 border-b-2 border-emerald-500 pb-2">
+            <h2 className="text-3xl font-bold text-navy-800 mb-8 border-b-2 border-emerald-600 pb-2">
               Related Insights & Analysis
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

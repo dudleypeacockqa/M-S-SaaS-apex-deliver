@@ -12,11 +12,35 @@ type FetchOptions = {
   body?: BodyInit | null
 }
 
+async function getClerkToken(): Promise<string | null> {
+  if (typeof window === "undefined" || !window.Clerk) {
+    return null
+  }
+
+  try {
+    const session = await window.Clerk.session
+    if (!session) {
+      return null
+    }
+    return await session.getToken()
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn("Failed to retrieve Clerk token for document request", error)
+    }
+    return null
+  }
+}
+
 async function getAuthHeaders(contentType: "json" | "form" = "json"): Promise<JsonHeaders> {
   const headers: JsonHeaders = {}
 
   if (contentType === "json") {
     headers["Content-Type"] = "application/json"
+  }
+
+  const token = await getClerkToken()
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`
   }
 
   return headers
@@ -61,6 +85,47 @@ export interface Document {
   created_at: string
   updated_at: string | null
   archived_at: string | null
+  question_count?: number
+}
+
+export interface DocumentQuestion {
+  id: string
+  document_id: string
+  organization_id: string
+  question: string
+  status: 'open' | 'resolved'
+  asked_by: string
+  asked_by_name?: string | null
+  answer?: string | null
+  answered_by?: string | null
+  answered_by_name?: string | null
+  answered_at?: string | null
+  created_at: string
+  updated_at?: string | null
+}
+
+export interface DocumentQuestionListResponse {
+  total: number
+  items: DocumentQuestion[]
+}
+
+export interface DocumentQuestionCreatePayload {
+  question: string
+}
+
+export interface DocumentQuestionResolvePayload {
+  answer: string
+}
+
+export interface DocumentAccessLogEntry {
+  id: string
+  document_id: string
+  user_id: string
+  user_name?: string | null
+  action: string
+  ip_address?: string | null
+  user_agent?: string | null
+  created_at: string
 }
 
 export interface DocumentUploadResponse {
@@ -313,6 +378,31 @@ export async function restoreDocument(dealId: string, documentId: string): Promi
 
   return request<Document>(buildDealUrl(dealId, `/documents/${documentId}/restore`), {
     method: "POST",
+    headers,
+  })
+}
+
+export interface ListAccessLogOptions {
+  limit?: number
+}
+
+export async function listDocumentAccessLogs(
+  dealId: string,
+  documentId: string,
+  options: ListAccessLogOptions = {}
+): Promise<DocumentAccessLogEntry[]> {
+  const headers = await getAuthHeaders("json")
+  const query = new URLSearchParams()
+  if (options.limit) {
+    query.set("limit", String(options.limit))
+  }
+
+  const url = `${buildDealUrl(dealId, `/documents/${documentId}/access-logs`)}${
+    query.size ? `?${query.toString()}` : ""
+  }`
+
+  return request<DocumentAccessLogEntry[]>(url, {
+    method: "GET",
     headers,
   })
 }
@@ -688,3 +778,36 @@ export async function restoreArchivedDocuments(
   })
 }
 
+export async function listDocumentQuestions(dealId: string, documentId: string): Promise<DocumentQuestionListResponse> {
+  const headers = await getAuthHeaders('json')
+  return request<DocumentQuestionListResponse>(buildDealUrl(dealId, `/documents/${documentId}/questions`), {
+    method: 'GET',
+    headers,
+  })
+}
+
+export async function createDocumentQuestion(
+  dealId: string,
+  documentId: string,
+  payload: DocumentQuestionCreatePayload
+): Promise<DocumentQuestion> {
+  const headers = await getAuthHeaders('json')
+  return request<DocumentQuestion>(buildDealUrl(dealId, `/documents/${documentId}/questions`), {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function resolveDocumentQuestion(
+  dealId: string,
+  questionId: string,
+  payload: DocumentQuestionResolvePayload
+): Promise<DocumentQuestion> {
+  const headers = await getAuthHeaders('json')
+  return request<DocumentQuestion>(buildDealUrl(dealId, `/documents/questions/${questionId}/resolve`), {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify(payload),
+  })
+}

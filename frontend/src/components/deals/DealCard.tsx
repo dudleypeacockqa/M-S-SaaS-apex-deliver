@@ -10,7 +10,7 @@ import type { Deal } from '@/services/api/deals'
 import { getStageDisplayName, formatCurrency } from '@/services/api/deals'
 import { cn } from '@/styles/design-tokens'
 import { Calendar, Building2, TrendingUp, Archive } from 'lucide-react'
-import { format } from 'date-fns'
+import { formatDate } from '@/utils/dateFormat'
 
 export interface DealCardProps {
   deal: Deal
@@ -148,13 +148,13 @@ export const DealCard: React.FC<DealCardProps> = ({
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>
-                Created {format(new Date(deal.created_at), 'MMM d, yyyy')}
+                Created {formatDate(deal.created_at)}
               </span>
             </div>
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>
-                Updated {format(new Date(deal.updated_at), 'MMM d, yyyy')}
+                Updated {formatDate(deal.updated_at)}
               </span>
             </div>
           </div>

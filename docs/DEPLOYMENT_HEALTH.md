@@ -1,8 +1,23 @@
+> **2025-11-13 10:22 UTC**
+> - Frontend service `srv-d3ihptbipnbc73e72ne0` manually redeployed via `python trigger_render_deploy.py --service srv-d3ihptbipnbc73e72ne0`; Render API responded `deployment triggered`.
+> - Immediately executed `python scripts/verify_deployment.py production` → 10/10 checks GREEN. Log archived at `docs/deployments/2025-11-13-verify-deployment.txt`.
+> - Saved verification output under `docs/deployments/2025-11-13-verify-deployment.txt` for BMAD session evidence.
+> - Lighthouse CLI blocked locally by Windows Defender + Chrome temp-dir cleanup (`EPERM`, `NO_FCP`). Axe CLI reached production but reported legacy palette colours (CDN cache lag). Production audit artefacts remain pending.
+> - Next step: rerun Lighthouse + axe from a clean runner once CDN serves new palette; update `docs/marketing/lighthouse-report.json` & `docs/marketing/axe-report.txt` accordingly.
+>
+> **2025-11-12 17:50 UTC**
+> - Backend deploy `dep-d4acgo8gjchc73fke8i0` (service `srv-d3ii9qk9c44c73aqsli0`, commit `979c8dc`) reached **live** at 17:49Z; frontend deploy `dep-d4acgc8fdonc73edrb40` (service `srv-d3ihptbipnbc73e72ne0`, same commit) finished at 17:50Z.
+> - Ran `python3 scripts/verify_deployment.py` immediately after redeploy – 10/10 checks ✅. Evidence: `docs/deployments/2025-11-12T17-50-35Z-verify-deployment.txt`.
+> - Ran `bash scripts/run_smoke_tests.sh production` (logged via wrapper) – backend /health 200, frontend 200, backend smoke pytest 2/2. Evidence: `docs/deployments/2025-11-12T17-53-21Z-smoke-tests.txt`.
+> - Latest deploy metadata mirrored in `latest-deploy.json` and `docs/bmad/BMAD_PROGRESS_TRACKER.md` Session 2025-11-12-VERIFY-REFRESH.
+
+> **2025-11-12 16:33 UTC**
+> - Ran `python3 scripts/verify_deployment.py` again to confirm the currently live deploys remain healthy while Render rebuilds queue for the newest commit. Evidence: docs/deployments/2025-11-13-verify-deployment.txt.
 > **2025-11-12 15:48 UTC**
-> - Triggered backend + frontend redeploys via  (see docs/deployments/2025-11-13-render-backend-trigger.txt and ...-frontend-...).
-> - Backend deploys  and  failed with  while subsequent attempt  remains queued; frontend deploy presently queued as well.
-> - Render API currently returning  for commit  and prior attempts hit psycopg2  (tracked in docs/backend-deploy-errors.txt).
-> - Next action: capture failing deploy logs, patch entrypoint/prestart scripts if needed, then rerun  + smoke tests once deploy succeeds.
+> - Triggered backend + frontend redeploys via `trigger_render_deploy.py` (logs: docs/deployments/2025-11-13-render-backend-trigger.txt and docs/deployments/2025-11-13-render-frontend-trigger.txt).
+> - Backend deploys `dep-d4aam4v8qels73erfa8g` and `dep-d4aao5n8qels73erfma0` failed with `update_failed`, next attempt `dep-d4aaoi0fdonc73edg780` still queued, and Render just queued build `dep-d4ab6b78qels73erinpg` for commit `e67d149`; frontend service now shows `dep-d4ab6bd6ubrc7382purg` `update_in_progress` for the same commit.
+> - Render API previously surfaced psycopg2 `SSL connection closed unexpectedly` while running `alembic upgrade head` (see docs/backend-deploy-errors.txt); need container logs to confirm whether the new retry logic is misconfigured.
+> - Next action: capture failing deploy logs, patch entrypoint/prestart scripts if needed, then rerun `scripts/verify_deployment.py` + `scripts/run_smoke_tests.sh production` once a deploy succeeds.
 
 > **2025-11-12 16:35 UTC**
 > - Triggered Render redeploys via API:

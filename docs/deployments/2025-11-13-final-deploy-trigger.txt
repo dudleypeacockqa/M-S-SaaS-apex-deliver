@@ -1,0 +1,12 @@
+================================================================================
+Render Deployment Monitor & Frontend Deployer
+================================================================================
+
+[INFO] Monitoring backend deployment: dep-d4abgeqli9vc73ff04r0
+
+[*] Waiting for backend deployment dep-d4abgeqli9vc73ff04r0...
+[0m 0s] Status: update_failed
+[ERROR] backend deployment failed with status: update_failed
+
+[ERROR] Backend deployment failed or timed out
+[INFO] Check Render dashboard and container logs for details

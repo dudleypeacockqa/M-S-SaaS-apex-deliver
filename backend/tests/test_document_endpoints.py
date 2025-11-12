@@ -1542,3 +1542,76 @@ def test_bulk_delete_partial_failure(client, auth_context, seeded_deal, db_sessi
 
     finally:
         cleanup()
+
+
+def test_document_question_workflow(client, auth_context, seeded_deal):
+    """Ensure users can submit and resolve document Q&A threads."""
+    headers, cleanup, user, _ = auth_context
+    try:
+        upload_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/documents",
+            headers=headers,
+            files={
+                "file": (
+                    "key-contract.pdf",
+                    io.BytesIO(b"contract"),
+                    "application/pdf",
+                )
+            },
+        )
+        assert upload_resp.status_code == status.HTTP_201_CREATED
+        document_id = upload_resp.json()["id"]
+
+        question_payload = {"question": "Has legal approved this contract?"}
+        create_question = client.post(
+            f"/api/deals/{seeded_deal.id}/documents/{document_id}/questions",
+            headers=headers,
+            json=question_payload,
+        )
+
+        assert create_question.status_code == status.HTTP_201_CREATED
+        question = create_question.json()
+        assert question["question"] == question_payload["question"]
+        assert question["status"] == "open"
+        assert question["asked_by"] == str(user.id)
+
+        list_resp = client.get(
+            f"/api/deals/{seeded_deal.id}/documents/{document_id}/questions",
+            headers=headers,
+        )
+        assert list_resp.status_code == status.HTTP_200_OK
+        listed = list_resp.json()
+        assert listed["total"] == 1
+        assert listed["items"][0]["id"] == question["id"]
+
+        answer_payload = {"answer": "Yes, signed off yesterday."}
+        answer_resp = client.put(
+            f"/api/deals/{seeded_deal.id}/documents/questions/{question['id']}/resolve",
+            headers=headers,
+            json=answer_payload,
+        )
+        assert answer_resp.status_code == status.HTTP_200_OK
+        resolved = answer_resp.json()
+        assert resolved["status"] == "resolved"
+        assert resolved["answer"] == answer_payload["answer"]
+        assert resolved["answered_by"] == str(user.id)
+
+        resolved_list = client.get(
+            f"/api/deals/{seeded_deal.id}/documents/{document_id}/questions",
+            headers=headers,
+        )
+        assert resolved_list.status_code == status.HTTP_200_OK
+        body = resolved_list.json()
+        assert body["items"][0]["status"] == "resolved"
+        assert body["items"][0]["answer"] == answer_payload["answer"]
+
+        documents_resp = client.get(
+            f"/api/deals/{seeded_deal.id}/documents",
+            headers=headers,
+        )
+        assert documents_resp.status_code == status.HTTP_200_OK
+        documents_body = documents_resp.json()
+        assert documents_body["items"][0]["question_count"] == 1
+    finally:
+        cleanup()
+

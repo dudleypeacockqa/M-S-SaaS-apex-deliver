@@ -547,6 +547,259 @@ def test_disconnect_quickbooks_connection(client, test_deal, db_session, solo_us
         app.dependency_overrides.pop(get_current_user, None)
 
 
+
+def test_connect_netsuite_initiates_oauth_flow(client, test_deal, solo_user):
+    """NetSuite connection should return an authorization URL."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        with patch('app.api.routes.financial.initiate_netsuite_oauth') as mock_initiate:
+            mock_initiate.return_value = {
+                "authorization_url": "https://system.netsuite.com/oauth2/v1/authorize?client_id=real",
+                "state": "netsuite-state-token",
+            }
+
+            response = client.post(
+                f"/api/deals/{test_deal.id}/financial/connect/netsuite",
+            )
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["authorization_url"].startswith("https://system.netsuite.com")
+            assert data["state"] == "netsuite-state-token"
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_connect_netsuite_with_invalid_deal(client, solo_user):
+    """NetSuite connection for unknown deal returns 404."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.post(
+            "/api/deals/invalid-id/financial/connect/netsuite",
+        )
+
+        assert response.status_code == 404
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_netsuite_oauth_callback_success(client, test_deal, solo_user):
+    """NetSuite callback should return a financial connection response."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    mock_connection = Mock()
+    mock_connection.id = "conn-ns-1"
+    mock_connection.deal_id = test_deal.id
+    mock_connection.organization_id = test_deal.organization_id
+    mock_connection.platform = "netsuite"
+    mock_connection.connection_status = "active"
+    mock_connection.platform_organization_name = "NetSuite Demo"
+    mock_connection.last_sync_at = None
+    mock_connection.last_sync_status = None
+    mock_connection.created_at = datetime.utcnow()
+
+    try:
+        with patch('app.api.routes.financial.handle_netsuite_callback') as mock_callback:
+            mock_callback.return_value = mock_connection
+
+            response = client.get(
+                f"/api/deals/{test_deal.id}/financial/connect/netsuite/callback",
+                params={
+                    "code": "netsuite-code",
+                    "state": "netsuite-state",
+                },
+            )
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["platform"] == "netsuite"
+            assert data["connection_status"] == "active"
+            assert data["platform_organization_name"] == "NetSuite Demo"
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_sync_netsuite_financial_data_success(client, test_deal, db_session, solo_user):
+    """NetSuite sync endpoint should import statements and report success."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    connection = FinancialConnection(
+        id="conn-ns-sync",
+        deal_id=test_deal.id,
+        organization_id=test_deal.organization_id,
+        platform="netsuite",
+        access_token="token",
+        refresh_token="refresh",
+        token_expires_at=datetime.utcnow() + timedelta(hours=1),
+        connection_status="active",
+    )
+    db_session.add(connection)
+    db_session.commit()
+
+    try:
+        with patch('app.api.routes.financial.import_netsuite_financial_data') as mock_import:
+            mock_statement = Mock()
+            mock_statement.id = "stmt-ns-1"
+            mock_statement.generated_at = datetime.utcnow()
+            mock_statement.currency = "USD"
+            mock_import.return_value = mock_statement
+
+            response = client.post(
+                f"/api/deals/{test_deal.id}/financial/sync/netsuite",
+            )
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["success"] is True
+            assert data["platform"] == "netsuite"
+            assert data["statement_id"] == "stmt-ns-1"
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_sync_netsuite_financial_data_no_connection(client, test_deal, solo_user):
+    """NetSuite sync without a connection returns 404."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.post(
+            f"/api/deals/{test_deal.id}/financial/sync/netsuite",
+        )
+
+        assert response.status_code == 404
+        assert "netsuite" in response.json()["detail"].lower()
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_connect_sage_initiates_oauth_flow(client, test_deal, solo_user):
+    """Sage connection should return an authorization URL."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        with patch('app.api.routes.financial.initiate_sage_oauth') as mock_initiate:
+            mock_initiate.return_value = {
+                "authorization_url": "https://www.sageone.com/oauth2/auth/central?client_id=real",
+                "state": "sage-state-token",
+            }
+
+            response = client.post(
+                f"/api/deals/{test_deal.id}/financial/connect/sage",
+            )
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["authorization_url"].startswith("https://www.sageone.com")
+            assert data["state"] == "sage-state-token"
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_connect_sage_with_invalid_deal(client, solo_user):
+    """Sage connection for unknown deal returns 404."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.post(
+            "/api/deals/invalid-id/financial/connect/sage",
+        )
+
+        assert response.status_code == 404
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_sage_oauth_callback_success(client, test_deal, solo_user):
+    """Sage callback should return a financial connection response."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    mock_connection = Mock()
+    mock_connection.id = "conn-sage-1"
+    mock_connection.deal_id = test_deal.id
+    mock_connection.organization_id = test_deal.organization_id
+    mock_connection.platform = "sage"
+    mock_connection.connection_status = "active"
+    mock_connection.platform_organization_name = "Sage Demo"
+    mock_connection.last_sync_at = None
+    mock_connection.last_sync_status = None
+    mock_connection.created_at = datetime.utcnow()
+
+    try:
+        with patch('app.api.routes.financial.handle_sage_callback') as mock_callback:
+            mock_callback.return_value = mock_connection
+
+            response = client.get(
+                f"/api/deals/{test_deal.id}/financial/connect/sage/callback",
+                params={
+                    "code": "sage-code",
+                    "state": "sage-state",
+                },
+            )
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["platform"] == "sage"
+            assert data["connection_status"] == "active"
+            assert data["platform_organization_name"] == "Sage Demo"
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_sync_sage_financial_data_success(client, test_deal, db_session, solo_user):
+    """Sage sync endpoint should import statements and report success."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    connection = FinancialConnection(
+        id="conn-sage-sync",
+        deal_id=test_deal.id,
+        organization_id=test_deal.organization_id,
+        platform="sage",
+        access_token="token",
+        refresh_token="refresh",
+        token_expires_at=datetime.utcnow() + timedelta(hours=1),
+        connection_status="active",
+    )
+    db_session.add(connection)
+    db_session.commit()
+
+    try:
+        with patch('app.api.routes.financial.fetch_sage_statements') as mock_fetch:
+            mock_statement = Mock()
+            mock_statement.id = "stmt-sage-1"
+            mock_statement.period_end = datetime.utcnow().date()
+            mock_statement.currency = "GBP"
+            mock_fetch.return_value = [mock_statement]
+
+            response = client.post(
+                f"/api/deals/{test_deal.id}/financial/sync/sage",
+            )
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["success"] is True
+            assert data["platform"] == "sage"
+            assert data["statements_synced"] == 1
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_sync_sage_financial_data_no_connection(client, test_deal, solo_user):
+    """Sage sync without a connection returns 404."""
+    app.dependency_overrides[get_current_user] = lambda: solo_user
+
+    try:
+        response = client.post(
+            f"/api/deals/{test_deal.id}/financial/sync/sage",
+        )
+
+        assert response.status_code == 404
+        assert "sage" in response.json()["detail"].lower()
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
 # Test GET /deals/{deal_id}/financial/readiness-score
 def test_get_readiness_score_success(client, test_deal, db_session, solo_user):
     """Test retrieving Deal Readiness Score."""

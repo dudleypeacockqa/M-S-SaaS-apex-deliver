@@ -188,4 +188,32 @@ describe("documents API client", () => {
     )
     expect(result).toEqual(mockResponse)
   })
+
+  it("fetches document access logs with optional limit", async () => {
+    const mockLogs = [
+      {
+        id: "log-1",
+        document_id: "doc-1",
+        user_id: "user-1",
+        user_name: "Alex",
+        action: "view",
+        ip_address: "127.0.0.1",
+        user_agent: "Vitest",
+        created_at: "2025-11-12T10:00:00Z",
+      },
+    ]
+
+    ;(fetch as unknown as vi.Mock).mockResolvedValueOnce(
+      new Response(JSON.stringify(mockLogs), { status: 200 })
+    )
+
+    const { listDocumentAccessLogs } = await import("./documents")
+    const result = await listDocumentAccessLogs("deal-1", "doc-1", { limit: 25 })
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringMatching(/\/api\/deals\/deal-1\/documents\/doc-1\/access-logs\?limit=25$/),
+      expect.objectContaining({ method: "GET" })
+    )
+    expect(result).toEqual(mockLogs)
+  })
 })

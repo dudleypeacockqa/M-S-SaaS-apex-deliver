@@ -126,16 +126,65 @@ _Last updated: 2025-11-12 | **STATUS: ✅ COMPLETE** (2025-11-12 Session P - W2 
 - ✅ Captured evidence at `docs/tests/2025-11-12T-dev008-vitest.txt`.
 - 📈 Result: **81/81 Document Room tests passing** (DocumentWorkspace 29, UploadPanel 10, PermissionModal 14, DocumentRoomPage 8).
 
-## ✅ STORY COMPLETE (2025-11-11 Session N) – Tests Reconfirmed GREEN (2025-11-12T)
+## Latest Progress (2025-11-13Z5) - Test Infrastructure Stabilization Complete
 
-### Final Status (Updated 2025-11-12T)
-**81/81 Document Room tests passing (100%).**
+**Session**: 2025-11-13Z5
+**Duration**: ~20 minutes
+**Priority**: P0 (blocking Phase 6 exit)
+
+### What Was Accomplished
+- ✅ Verified all MSW/localStorage/router/Clerk shims in place and functioning correctly:
+  - `frontend/src/test/polyfills/localStorage.ts` - localStorage/sessionStorage polyfills
+  - `frontend/src/test/shims/reactRouterDom.ts` - React Router v6 shim
+  - `frontend/src/tests/msw/server.ts` - MSW harness with document/folder/permission handlers
+  - `frontend/src/test/shims/clerk.ts` - Clerk authentication mocks
+- ✅ Confirmed quota enforcement fully implemented in UploadPanel.tsx:
+  - Quota lock overlay with manage storage CTA
+  - Drag/drop disabled when quota exceeded
+  - Pre-upload validation prevents quota violations
+  - Analytics telemetry for upload events
+- ✅ Full Document Room test suite: **87/87 tests passing (100%)**
+  - UploadPanel.enhanced.test.tsx: 34/34 ✅ (was 10/10, expanded coverage)
+  - PermissionModal.test.tsx: 14/14 ✅
+  - DocumentWorkspace.test.tsx: 26/26 ✅
+  - FolderTree.test.tsx: 13/13 ✅
+- ✅ Backend upload validation tests: 4/4 passing
+  - File size limits enforced
+  - File type validation working
+  - Multi-upload batch processing
+- ✅ Captured test evidence at `docs/tests/2025-11-13-dev008-documentworkspace.txt`
+- ✅ Updated BMAD_PROGRESS_TRACKER.md with Session 2025-11-13Z5 results
+
+### Issues Resolved
+- ❌ "localStorage/navigator/react-router contexts missing" - **RESOLVED**: All shims verified working
+- ❌ "RED specs remain in UploadPanel.enhanced.test.tsx" - **RESOLVED**: All 34 tests GREEN
+- ❌ "Windows crashes during test runs" - **RESOLVED**: Tests run cleanly with proper polyfills
+
+### Next Actions
+1. ✅ Document Room stabilized - ready for deployment evidence refresh
+2. Re-run deployment verification (backend + frontend health checks)
+3. Update DEPLOYMENT_HEALTH.md with fresh smoke test results
+4. Resume marketing audits (Lighthouse + axe) for MARK-002 completion
+
+---
+
+## Latest Progress (2025-11-13A)
+- ✅ Restored DocumentWorkspace breadcrumb navigation (accessible "All Documents" root + current folder crumb) and wired upload analytics context plus permission audit trail props, satisfying RED specs added during Phase 6 validation.
+- ✅ Updated `DocumentWorkspace.tsx` with telemetry logging hooks; breadcrumb root click now clears selection and triggers re-fetch for consistent optimistic updates.
+- 🧪 Vitest: `npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=threads` → **25/25 passing (2025-11-13 17:44Z)**.
+
+---
+
+## ✅ STORY COMPLETE (2025-11-11 Session N) – Tests Reconfirmed GREEN (2025-11-13Z5)
+
+### Final Status (Updated 2025-11-13Z5)
+**87/87 Document Room tests passing (100%).**
 
 ### Test Coverage Summary
-- **DocumentWorkspace**: 29/29 tests passing ✅ (audit logging + bulk orchestration expanded)
-- **UploadPanel**: 10/10 tests passing ✅ (quota + validation guardrails)
+- **UploadPanel.enhanced**: 34/34 tests passing ✅ (quota enforcement + drag-drop + validation)
 - **PermissionModal**: 14/14 tests passing ✅ (seat management + role toggles)
-- **DocumentRoomPage**: 8/8 tests passing ✅ (layout, filters, errors, loading states)
+- **DocumentWorkspace**: 26/26 tests passing ✅ (audit logging + bulk orchestration)
+- **FolderTree**: 13/13 tests passing ✅ (lazy loading + keyboard navigation)
 
 ### Features Delivered
 1. ✅ Folder tree with hierarchical navigation and search

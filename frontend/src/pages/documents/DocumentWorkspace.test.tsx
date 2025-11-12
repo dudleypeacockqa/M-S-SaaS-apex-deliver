@@ -9,6 +9,7 @@ const uploadPanelSpy = vi.fn()
 const permissionModalSpy = vi.fn()
 const startUploadMock = vi.fn()
 const clearQueueMock = vi.fn()
+const accessLogDrawerSpy = vi.fn()
 
 const uploadHookState = {
   isUploading: false,
@@ -76,6 +77,21 @@ vi.mock('../../components/documents/PermissionModal', () => ({
   },
 }))
 
+vi.mock('../../components/documents/AccessLogDrawer', () => ({
+  AccessLogDrawer: (props: any) => {
+    accessLogDrawerSpy(props)
+    if (!props.isOpen) {
+      return null
+    }
+    return (
+      <div data-testid="mock-access-log-drawer">
+        access log drawer for {props.documentId}
+        <button onClick={props.onClose}>close-access-log</button>
+      </div>
+    )
+  },
+}))
+
 vi.mock('../../hooks/useDocumentUploads', () => ({
   useDocumentUploads: () => ({
     ...uploadHookState,
@@ -115,6 +131,7 @@ describe('DocumentWorkspace', () => {
     documentApiMocks.bulkMoveDocuments.mockReset()
     documentApiMocks.bulkArchiveDocuments.mockReset()
     documentApiMocks.restoreArchivedDocuments.mockReset()
+    accessLogDrawerSpy.mockClear()
   })
 
   afterEach(() => {
@@ -193,6 +210,26 @@ describe('DocumentWorkspace', () => {
     fireEvent.click(closeButton)
 
     expect(permissionModalSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ isOpen: false })
+    )
+  })
+
+  it('opens access log drawer when document activity is requested', () => {
+    renderWorkspace()
+
+    const documentListProps = documentListSpy.mock.calls.at(-1)?.[0]
+    act(() => {
+      documentListProps.onViewAccessLogs?.({ id: 'doc-activity', name: 'Equity.pdf' })
+    })
+
+    expect(accessLogDrawerSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ isOpen: true, documentId: 'doc-activity', documentName: 'Equity.pdf' })
+    )
+
+    const closeButton = screen.getByText('close-access-log')
+    fireEvent.click(closeButton)
+
+    expect(accessLogDrawerSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({ isOpen: false })
     )
   })

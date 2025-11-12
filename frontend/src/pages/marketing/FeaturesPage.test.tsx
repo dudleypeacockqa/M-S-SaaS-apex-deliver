@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { FeaturesPage } from './FeaturesPage';
 
@@ -54,5 +54,17 @@ describe('FeaturesPage', () => {
     const ogUrlMeta = document.querySelector('meta[property="og:url"]');
     expect(ogUrlMeta).not.toBeNull();
     expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/features');
+  });
+
+  it('injects software application structured data referencing 100daysandbeyond.com', async () => {
+    renderWithRouter(<FeaturesPage />);
+
+    await waitFor(() => {
+      const script = document.getElementById('features-software-schema') as HTMLScriptElement | null;
+      expect(script).not.toBeNull();
+      const schema = JSON.parse(script?.textContent ?? '{}');
+      expect(schema.url).toBe('https://100daysandbeyond.com/features');
+      expect(schema.featureList).toContain('Deal Pipeline & Flow Management');
+    });
   });
 });

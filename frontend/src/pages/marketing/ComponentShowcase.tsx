@@ -158,8 +158,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTheme } from "@/contexts/ThemeContext";
-import { format } from "date-fns";
-import { zhCN } from "date-fns/locale";
+import { formatDate } from "@/utils/dateFormat";
 import {
   AlertCircle,
   CalendarIcon,
@@ -482,7 +481,11 @@ export default function ComponentsShowcase() {
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {datePickerDate ? (
-                          format(datePickerDate, "PPP HH:mm", { locale: zhCN })
+                          formatDate(
+                            datePickerDate,
+                            { dateStyle: "long", timeStyle: "short" },
+                            "zh-CN"
+                          )
                         ) : (
                           <span>Select date and time</span>
                         )}
@@ -505,7 +508,11 @@ export default function ComponentsShowcase() {
                               type="time"
                               value={
                                 datePickerDate
-                                  ? format(datePickerDate, "HH:mm")
+                                  ? formatDate(datePickerDate, {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                      hour12: false,
+                                    })
                                   : "00:00"
                               }
                               onChange={e => {
@@ -527,9 +534,18 @@ export default function ComponentsShowcase() {
                   {datePickerDate && (
                     <p className="text-sm text-muted-foreground">
                       Selected:{" "}
-                      {format(datePickerDate, "yyyy/MM/dd  HH:mm", {
-                        locale: zhCN,
-                      })}
+                      {formatDate(
+                        datePickerDate,
+                        {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        },
+                        "zh-CN"
+                      )}
                     </p>
                   )}
                 </div>

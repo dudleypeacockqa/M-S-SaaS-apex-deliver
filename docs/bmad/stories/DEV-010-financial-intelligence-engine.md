@@ -44,7 +44,9 @@
 - Added REST endpoints for QuickBooks OAuth initiate, callback, sync, status, and disconnect with multi-tenant guards.
 - Expanded financial API tests to cover QuickBooks flows (24 backend assertions now GREEN).
 - `GET /financial/connections` now returns both QuickBooks and Xero records from the database.
-- Next: complete P&L import + Sage/NetSuite adapters and refresh `FINANCIAL_INTEGRATIONS.md`.
+- NetSuite OAuth + manual sync endpoints wired into `app/api/routes/financial.py` (2025-11-12) with dedicated pytest coverage for initiate/callback/sync flows.
+- Sage Accounting OAuth + sync routes added to  (2025-11-12) with new API tests guarding connect/callback/sync flows.
+- Next: complete P&L import + Sage adapter hardening and refresh `FINANCIAL_INTEGRATIONS.md` (NetSuite wiring complete).
 - **Status**: Production-ready (requires Xero app credentials)
 
 **Deferred to Future**:

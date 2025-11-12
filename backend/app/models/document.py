@@ -10,11 +10,16 @@ from sqlalchemy import (
     Integer,
     Index,
     CheckConstraint,
+    Text,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.db.base import Base
+
+
+QUESTION_STATUS_OPEN = "open"
+QUESTION_STATUS_RESOLVED = "resolved"
 
 
 class Folder(Base):
@@ -108,6 +113,12 @@ class Document(Base):
     )
     access_logs = relationship(
         "DocumentAccessLog", back_populates="document", cascade="all, delete-orphan"
+    )
+
+    questions = relationship(
+        "DocumentQuestion",
+        back_populates="document",
+        cascade="all, delete-orphan",
     )
 
     __table_args__ = (
@@ -238,4 +249,36 @@ class DocumentShareLink(Base):
             f"<DocumentShareLink(id={self.id}, document_id={self.document_id}, "
             f"expires_at={self.expires_at})>"
         )
+
+
+class DocumentQuestion(Base):
+    """Persistent Q&A threads for secure document collaboration."""
+
+    __tablename__ = "document_questions"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    document_id = Column(String(36), ForeignKey("documents.id", ondelete="CASCADE"), nullable=False)
+    organization_id = Column(String(36), ForeignKey("organizations.id"), nullable=False)
+    asked_by = Column(String(36), ForeignKey("users.id"), nullable=False)
+    question = Column(Text, nullable=False)
+    status = Column(String(20), nullable=False, default=QUESTION_STATUS_OPEN)
+    answer = Column(Text, nullable=True)
+    answered_by = Column(String(36), ForeignKey("users.id"), nullable=True)
+    answered_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    document = relationship("Document", back_populates="questions")
+    organization = relationship("Organization")
+    asked_by_user = relationship("User", foreign_keys=[asked_by])
+    answered_by_user = relationship("User", foreign_keys=[answered_by])
+
+    __table_args__ = (
+        Index("ix_document_questions_document_id", "document_id"),
+        Index("ix_document_questions_org_id", "organization_id"),
+        Index("ix_document_questions_status", "status"),
+    )
+
+    def __repr__(self):
+        return f"<DocumentQuestion(id={self.id}, document_id={self.document_id}, status={self.status})>"
 

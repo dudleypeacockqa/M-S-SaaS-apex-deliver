@@ -302,6 +302,7 @@ export const SalesPromotionPricingPage: React.FC = () => {
               >
                 <div className="flex items-start gap-6">
                   <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-full flex items-center justify-center shadow-lg">
+
                     <span className="text-white text-2xl">
                       {index === 0 && '🏭'}
                       {index === 1 && '📦'}

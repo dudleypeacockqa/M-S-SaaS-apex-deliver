@@ -1,4 +1,4 @@
-# BMM Workflow Status (Reopened 2025-11-12T14:15Z | Updated 2025-11-12T15:20Z)
+# BMM Workflow Status (Reopened 2025-11-12T14:15Z | Updated 2025-11-13T17:45Z)
 
 ## Project Configuration
 
@@ -23,48 +23,43 @@ PHASE_6_COMPLETE: false (95-98% complete, in progress)
 
 ## Current Story Status
 
-STORY_ID: MAP-REBUILD-001-backend-foundation
-STORY_STATUS: COMPLETE ✅ (79/79 tests passing, 100% pass rate)
-STORY_RESULT: Completed Master Admin Portal Backend Foundation with comprehensive TDD coverage. Created 28 model tests + 38 schema tests, verified 13 API integration tests, confirmed service layer operational (1690 lines). All 4 TDD loops complete (models, schemas, APIs, services). 97% model coverage. Session documented at docs/bmad/sessions/SESSION-2025-11-13-MAP-REBUILD-001-COMPLETE.md.
-BLOCKERS: None
+STORY_ID: MARK-002-enhanced-website-phases-3-10
+STORY_STATUS: IN_PROGRESS
+STORY_RESULT: Emerald palette contrast sweep complete; landing case studies and pricing schema updates shipped. Production Lighthouse/axe evidence pending before marking story complete.
+BLOCKERS: Production Lighthouse run still blocked by Chrome temp-dir permissions on sandbox; rerun after redeploy or via CI.
 
 ## Next Action
 
-NEXT_ACTION: Capture DEV-008 evidence pack (screenshots, docs) then execute MARK-002 Lighthouse/axe audits
-NEXT_COMMAND: npm --prefix frontend run build
+NEXT_ACTION: Regenerate marketing audits (axe + Lighthouse) against production to close MARK-002 evidence
+NEXT_COMMAND: npx axe https://ma-saas-platform.onrender.com --tags wcag2a,wcag2aa --save docs/marketing/accessibility-report-prod.json && npx lighthouse https://ma-saas-platform.onrender.com --preset=desktop --output=json --output-path=docs/marketing/lighthouse-report-prod.json
 NEXT_AGENT: marketing-qa
 PRIORITY: P1
-RATIONALE: MAP-REBUILD-001 backend complete. Move to final marketing validation and QA before v1.0.0 release.
+RATIONALE: Palette + content updates landed; need production evidence before shifting to DEV-008 backend quota telemetry.
 
 ## Completed This Session
 
-SESSION_ID: Session-2025-11-12V-MarketingContrast
+SESSION_ID: Session-2025-11-13MKT-Contrast
 COMPLETED_WORK:
-- Darkened marketing emerald palette (`emerald-600/700/800`) and aligned supporting UI (LandingPage, Pricing, Case Studies, Sales Promotion, CapLiquify FP&A, Blog, MarketingNav).
-- Updated shared product surfaces (BulkActions, DocumentWorkspace status, Match analytics, Podcast Studio components) for consistent WCAG contrast.
-- Rebuilt frontend (`npm run build`) and ran local axe audit against preview (`npx axe http://127.0.0.1:4173`) – 0 violations; archived as `docs/marketing/accessibility-report-local.json`.
-- Attempted local Lighthouse via static `dist` server (`npx lighthouse http://127.0.0.1:4174`) – blocked by Chrome NO_FCP/EPERM (documented for follow-up).
-- Updated `docs/marketing/MARKETING-COMPLETION-STATUS-2025-11-11.md`, `docs/bmad/BMAD_PROGRESS_TRACKER.md`, and this workflow with remediation plan.
-- Restored jsdom streaming polyfills (`src/test/shims/polyfills.ts`, `src/setupTests.ts`) so Vitest vmThreads runs no longer crash (`TransformStream is not defined`); verified `StatCard`, `MatchCard`, and Contact form suites now pass.
+- Standardised emerald palette (`emerald-700/600`) across navigation, landing hero, pricing, sales promotion, security, CapLiquify FP&A, and blog CTAs for WCAG AA contrast.
+- Added landing page case studies grid with supporting testimonials/metrics; refreshed CTA hierarchy.
+- Swapped pricing JSON-LD script tags for the shared `StructuredData` helper and corrected canonical URLs to 100daysandbeyond.com.
+- Documented work in BMAD progress tracker (`Session 2025-11-13MKT-Contrast`) and prepped next steps for production audits.
 
 FILES_MODIFIED:
-- frontend/src/pages/marketing/**/*.tsx
-- frontend/src/components/marketing/{DashboardMockup.tsx,MarketingNav.tsx}
-- frontend/src/components/documents/BulkActions.tsx
-- frontend/src/components/deal-matching/analytics/MatchSuccessRate.tsx
-- frontend/src/pages/deals/valuation/ValuationSuite.tsx
-- frontend/src/pages/podcast/PodcastStudio.tsx
-- frontend/src/components/podcast/{EpisodeTranscriptPanel.tsx,StreamConfigPanel.tsx}
-- docs/marketing/{MARKETING-COMPLETION-STATUS-2025-11-11.md,accessibility-report-local.json}
+- frontend/src/components/marketing/MarketingNav.tsx
+- frontend/src/pages/marketing/{EnhancedLandingPage.tsx,PricingPage.tsx,SalesPromotionPricingPage.tsx,FourStageCyclePage.tsx,CapLiquifyFPAPage.tsx,CaseStudiesPage.tsx,SecurityPage.tsx,BookTrial.tsx,BlogPost.tsx}
+- frontend/src/components/marketing/EnhancedHeroSection.tsx
 - docs/bmad/BMAD_PROGRESS_TRACKER.md
 - docs/bmad/bmm-workflow-status.md (this file)
 
 TEST_RESULTS:
-- `npm run build` → ✅
-- `npx axe http://127.0.0.1:4173 --tags wcag2a,wcag2aa --save docs/marketing/accessibility-report-local.json` → 0 violations
-- `npx lighthouse http://127.0.0.1:4174 --preset=desktop ...` → ⚠️ NO_FCP / EPERM (Chrome temp dir); rerun after redeploy
+- `npx vitest run --pool=vmThreads src/components/master-admin/shared/StatCard.test.tsx` → ✅
+- `npx vitest run --pool=vmThreads src/components/deal-matching/MatchCard.test.tsx` → ✅
+- `npm run test -- src/pages/marketing/__tests__/ContactPage.form.test.tsx` → ✅
+- `npx vitest run --pool=vmThreads src/tests/domainConfig.test.ts` → ✅
+- `npm run test -- src/tests/integration/routing.test.tsx` → ✅ (threads pool)
 
-**Phase 6 Focus**: Deploy contrast fixes, capture production audits, then proceed to final QA packaging
+**Phase 6 Focus**: Capture production marketing audits, then advance DEV-008 backend telemetry and final QA packaging
 
 ---
 

@@ -1,7 +1,6 @@
-======================================================================
-RENDER MANUAL DEPLOYMENT TRIGGER
-======================================================================
-Service ID: srv-d3ihptbipnbc73e72ne0
-
-[INFO] Triggering manual deployment...
-[SUCCESS] Deployment triggered!
+2025-11-13T18:09Z UTC | Render frontend redeploy triggered via API.
+Service: srv-d3ihptbipnbc73e72ne0 (ma-saas-platform)
+Request: POST https://api.render.com/v1/services/srv-d3ihptbipnbc73e72ne0/deploys
+Payload: {"clearCache":"do_not_clear"}
+Result: HTTP 201 Created | deploy id dep-d4acqkhe2q1c73e50240 (commit c0758206316f87534ea5e405c85ae3cf58058838)
+Frontend stabilize deploy dep-d4acrr0fdonc73edthcg reached live at 2025-11-12T18:13:48Z; latest follow-up dep-d4act5ngi27c73a026k0 live at 2025-11-12T18:16:38Z.

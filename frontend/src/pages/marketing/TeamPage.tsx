@@ -2,6 +2,8 @@ import React from 'react';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { CTASection } from '../../components/marketing/CTASection';
+import { StructuredData } from '../../components/common/StructuredData';
+import { createTeamMembersSchema } from '../../utils/schemas/personSchema';
 
 export const TeamPage: React.FC = () => {
   const teamMembers = [
@@ -43,6 +45,21 @@ export const TeamPage: React.FC = () => {
     },
   ];
 
+  const teamStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'ApexDeliver',
+    url: 'https://100daysandbeyond.com/team',
+    employee: createTeamMembersSchema(
+      teamMembers.map((member) => ({
+        name: member.name,
+        role: member.title,
+        company: 'ApexDeliver',
+        image: member.image ? `https://100daysandbeyond.com${member.image}` : undefined,
+      }))
+    ),
+  };
+
   return (
     <MarketingLayout>
       <SEO
@@ -50,6 +67,7 @@ export const TeamPage: React.FC = () => {
         description="Meet the experts behind ApexDeliver + CapLiquify. Our world-class team combines decades of ERP expertise with cutting-edge AI innovation to deliver transformational results."
         keywords="ApexDeliver team, M&A experts, ERP specialists, finance technology team"
       />
+      <StructuredData json={teamStructuredData} id="team-schema" />
 
       {/* Header */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">

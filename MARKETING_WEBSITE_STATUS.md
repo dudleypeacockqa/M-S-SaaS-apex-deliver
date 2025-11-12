@@ -70,34 +70,22 @@
   - 2 Pricing Strategy posts
 - [x] **Blog Infrastructure** - Database model, listing page, post page
 - [x] **All Routes Added** - App.tsx updated with all new pages
+- [x] **CapLiquify-first landing experience** - Enhanced hero, trust badges, how-it-works, feature highlights, and pricing teaser now ship with matching Vitest coverage.
 
 ## 🚧 Remaining Work (Priority Order)
 
 ### Homepage Improvements (High Priority)
-- [ ] **Hero Section Rebuild**
-  - Add live dashboard mockup (like FinanceFlo.ai)
-  - Show 13-week cash forecast visualization
-  - Emphasize CapLiquify FP&A as hero product
-  - Position M&A as natural upsell
-  
-- [ ] **Trust Badges Section**
-  - Add statistics (450+ businesses, 66% cost reduction, 500% ROI)
-  - Client logos and testimonials
-  - Social proof elements
-  
-- [ ] **How It Works Section**
-  - Simplify to 3 steps focused on CapLiquify
-  - Add visual icons/illustrations
-  
-- [ ] **Features Highlight**
-  - Lead with CapLiquify FP&A
-  - Show Sales & Promotion Pricing
-  - Mention M&A as enterprise add-on
-  
-- [ ] **Pricing Teaser**
-  - Start from £598/mo (CapLiquify FP&A)
-  - Show upgrade path to Professional/Enterprise
-  - Include one-off setup fees
+- [x] **Hero Section Rebuild** – EnhancedHeroSection now carries CapLiquify-first messaging and a live dashboard mockup.
+- [x] **Trust Badges Section** – Dedicated security + integrations block with statistics and partner logos shipped.
+- [x] **How It Works Section** – Three-step flow focused on connecting data, generating forecasts, and executing inside ApexDeliver.
+- [x] **Features Highlight** – Landing page leads with CapLiquify FP&A, Sales & Promotion Pricing, secure data rooms, and AI copilots.
+- [x] **Pricing Teaser** – Shows £598/mo FP&A entry point plus Professional/Enterprise upgrades with setup fees.
+
+### Remaining Homepage Tasks
+- [ ] Layer more social proof (case studies, outcome callouts) alongside hero/pricing sections
+- [ ] Finalise mobile navigation animations/focus management for dropdown menus
+- [ ] Continue blog backlog (38 posts) and add imagery to existing articles
+- [ ] Add ROI/outcome chips (450+ businesses, 66% cost reduction, 500% ROI)
 
 ### Content Remaining
 - [ ] **38 More Blog Posts** (to complete 50-post plan)
@@ -112,7 +100,7 @@
 - [ ] Add images to blog posts
 - [ ] Add ROI calculator widget
 
-## 📊 Current Status: 85% Complete
+## 📊 Current Status: 90% Complete
 
 **Major Achievements:**
 ✅ Pricing structure fixed with one-off fees
@@ -126,10 +114,9 @@
 ✅ Lighthouse & axe automation captured (see audit evidence below)
 
 **Remaining Work:**
-⏳ Homepage rebuild with dashboard mockup (highest priority)
-⏳ 38 more blog posts
-⏳ Mobile navigation
-⏳ Case studies
+⏳ Complete 38 additional blog posts + imagery
+⏳ Mobile navigation polish & animations
+⏳ Case studies content and inline social proof
 
 ## 🎯 Success Metrics
 
@@ -145,17 +132,17 @@
 
 ## 📝 Next Session Priorities
 
-1. **Homepage Rebuild** - Add dashboard mockup, trust badges, emphasize CapLiquify
-2. **Mobile Navigation** - Add hamburger menu for dropdown support
-3. **Blog Content** - Write remaining 38 posts in batches
-4. **Case Studies Amplification** - Layer testimonials onto homepage & pricing flows
+1. **Mobile Navigation Polish** - Add motion + focus states for dropdown menus
+2. **Blog Content** - Write remaining 38 posts in batches
+3. **Case Studies Amplification** - Layer testimonials/metrics onto homepage & pricing flows
+4. **Hero ROI Enhancements** - Add ROI/result chips and additional customer logos
 
 ## 🚀 Deployment Status
 
 - **Live Site:** https://100daysandbeyond.com
 - **GitHub:** https://github.com/dudleypeacockqa/M-S-SaaS-apex-deliver
 - **Hosting:** Render (auto-deploys from main branch)
-- **Latest Commit:** Add showcase pages and dropdown navigation (044cbf4)
+- **Latest Commit:** CapLiquify-first landing hero + nav polish (e67d149)
 
 All changes are live and deployed. The website is significantly improved and ready for production use.
 
