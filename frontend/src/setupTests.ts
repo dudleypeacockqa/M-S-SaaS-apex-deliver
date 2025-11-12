@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React, { ReactElement } from 'react'
 import { installClerkMock } from './test/shims/clerk'
 import { setupServer } from 'msw/node'
-import { mswHandlers, resetDocumentRoomFixtures } from './tests/msw/server'
+import { mswHandlers, resetDocumentRoomFixtures, resetPodcastFixtures } from './tests/msw/server'
 
 
 const server = setupServer(...mswHandlers)
@@ -48,6 +48,7 @@ beforeEach(() => {
   })
   installClerkMock()
   resetDocumentRoomFixtures()
+  resetPodcastFixtures()
 })
 
 afterAll(() => {
