@@ -107,7 +107,7 @@ export const FourStageCyclePage: React.FC = () => {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-block bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-semibold mb-6">
+          <div className="inline-block bg-emerald-700 text-white px-4 py-2 rounded-full text-sm font-semibold mb-6">
             The 4-Stage M&A Cycle
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-6 leading-tight">
@@ -124,7 +124,7 @@ export const FourStageCyclePage: React.FC = () => {
               {stages.map((stage, index) => (
                 <div key={index} className="relative">
                   <div className="bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-lg p-6 hover:bg-white/20 transition">
-                    <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-2xl font-bold mb-3 mx-auto">
+                    <div className="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center text-2xl font-bold mb-3 mx-auto">
                       {stage.number}
                     </div>
                     <h3 className="text-lg font-bold mb-1">{stage.title}</h3>
@@ -158,7 +158,7 @@ export const FourStageCyclePage: React.FC = () => {
                 {/* Left: Stage Info */}
                 <div className={index % 2 === 1 ? 'lg:order-2' : ''}>
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-lg">
+                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                       {stage.number}
                     </div>
                     <div>
@@ -180,7 +180,7 @@ export const FourStageCyclePage: React.FC = () => {
                     <ul className="space-y-2">
                       {stage.capabilities.map((capability, capIndex) => (
                         <li key={capIndex} className="flex items-start">
-                          <span className="text-emerald-600 mr-3 flex-shrink-0 mt-1">✓</span>
+                          <span className="text-emerald-700 mr-3 flex-shrink-0 mt-1">✓</span>
                           <span className="text-gray-700">{capability}</span>
                         </li>
                       ))}
@@ -201,7 +201,7 @@ export const FourStageCyclePage: React.FC = () => {
 
                   <Link
                     to={stage.ctaLink}
-                    className="inline-flex items-center px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition"
+                    className="inline-flex items-center px-6 py-3 bg-emerald-700 text-white font-semibold rounded-lg hover:bg-emerald-600 transition"
                     onClick={() => trackCtaClick(`stage-${stage.number}-cta`, '4-stage-cycle')}
                   >
                     {stage.cta}
@@ -248,7 +248,7 @@ export const FourStageCyclePage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/sign-up"
-              className="inline-flex items-center justify-center px-8 py-4 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-400 transition text-lg"
+              className="inline-flex items-center justify-center px-8 py-4 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-600 transition text-lg"
               onClick={() => trackCtaClick('start-trial', '4-stage-bottom-cta')}
             >
               Start Free Trial

@@ -72,7 +72,7 @@ export const CapLiquifyFPAPage: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Value Prop */}
             <div>
-              <div className="inline-block bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-semibold mb-6">
+              <div className="inline-block bg-emerald-700 text-white px-4 py-2 rounded-full text-sm font-semibold mb-6">
                 CapLiquify FP&A
               </div>
               <h1 className="text-4xl sm:text-5xl font-extrabold mb-6 leading-tight">
@@ -103,7 +103,7 @@ export const CapLiquifyFPAPage: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/sign-up"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-400 transition text-lg"
+                className="inline-flex items-center justify-center px-8 py-4 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-600 transition text-lg"
                   onClick={() => trackCtaClick('start-trial', 'capliquify-hero')}
                 >
                   Start 14-Day Free Trial
@@ -128,7 +128,7 @@ export const CapLiquifyFPAPage: React.FC = () => {
                 {/* Mockup Header */}
                 <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
                   <h3 className="text-lg font-bold text-gray-900">13-Week Cash Forecast</h3>
-                  <span className="text-sm text-emerald-600 font-semibold">Updated 2 min ago</span>
+                  <span className="text-sm text-emerald-700 font-semibold">Updated 2 min ago</span>
                 </div>
 
                 {/* Mockup Chart */}
@@ -168,12 +168,12 @@ export const CapLiquifyFPAPage: React.FC = () => {
                     <div className="bg-blue-50 p-3 rounded-lg">
                       <div className="text-xs text-gray-600 mb-1">DSO</div>
                       <div className="text-lg font-bold text-gray-900">42 days</div>
-                      <div className="text-xs text-emerald-600">↓ 3 days</div>
+                      <div className="text-xs text-emerald-700">↓ 3 days</div>
                     </div>
                     <div className="bg-purple-50 p-3 rounded-lg">
                       <div className="text-xs text-gray-600 mb-1">DPO</div>
                       <div className="text-lg font-bold text-gray-900">35 days</div>
-                      <div className="text-xs text-emerald-600">↑ 2 days</div>
+                      <div className="text-xs text-emerald-700">↑ 2 days</div>
                     </div>
                     <div className="bg-orange-50 p-3 rounded-lg">
                       <div className="text-xs text-gray-600 mb-1">DIO</div>
@@ -184,7 +184,7 @@ export const CapLiquifyFPAPage: React.FC = () => {
 
                   {/* Scenario Toggle */}
                   <div className="flex gap-2">
-                    <button className="px-3 py-1 bg-emerald-500 text-white text-xs font-semibold rounded">
+                    <button className="px-3 py-1 bg-emerald-700 text-white text-xs font-semibold rounded">
                       Base Case
                     </button>
                     <button className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded hover:bg-gray-200">
@@ -222,7 +222,7 @@ export const CapLiquifyFPAPage: React.FC = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border-2 border-gray-200 hover:border-emerald-500 hover:shadow-lg transition-all"
+                className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border-2 border-gray-200 hover:border-emerald-600 hover:shadow-lg transition-all"
               >
                 <div className="text-4xl mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
@@ -252,8 +252,8 @@ export const CapLiquifyFPAPage: React.FC = () => {
                 className="bg-white p-8 rounded-xl shadow-md border border-gray-200 hover:shadow-xl transition-shadow"
               >
                 <div className="flex items-start gap-6">
-                  <div className="flex-shrink-0 w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
-                    <span className="text-2xl font-bold text-emerald-600">{index + 1}</span>
+                  <div className="flex-shrink-0 w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center">
+                    <span className="text-2xl font-bold text-emerald-700">{index + 1}</span>
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-gray-900 mb-2">{useCase.role}</h3>
@@ -267,7 +267,7 @@ export const CapLiquifyFPAPage: React.FC = () => {
                         <p className="text-gray-700">{useCase.solution}</p>
                       </div>
                       <div>
-                        <div className="text-sm font-semibold text-emerald-600 mb-1">Result</div>
+                        <div className="text-sm font-semibold text-emerald-700 mb-1">Result</div>
                         <p className="text-gray-900 font-semibold">{useCase.result}</p>
                       </div>
                     </div>
@@ -291,7 +291,7 @@ export const CapLiquifyFPAPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/sign-up"
-              className="inline-flex items-center justify-center px-8 py-4 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-400 transition text-lg"
+              className="inline-flex items-center justify-center px-8 py-4 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-600 transition text-lg"
               onClick={() => trackCtaClick('start-trial', 'capliquify-bottom-cta')}
             >
               Start Free Trial

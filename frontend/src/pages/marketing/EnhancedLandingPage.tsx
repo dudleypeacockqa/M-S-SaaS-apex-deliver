@@ -97,7 +97,7 @@ export const EnhancedLandingPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
               <Link
                 to="/sign-up"
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="bg-emerald-700 hover:bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 onClick={() => trackCtaClick('start-trial', 'hero')}
               >
                 Start Your Free 14-Day Trial
@@ -135,7 +135,7 @@ export const EnhancedLandingPage: React.FC = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Step 1 */}
             <div className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow">
-              <div className="flex items-center justify-center w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full text-2xl font-bold mb-6 mx-auto">
+              <div className="flex items-center justify-center w-16 h-16 bg-emerald-50 text-emerald-700 rounded-full text-2xl font-bold mb-6 mx-auto">
                 1
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">
@@ -148,7 +148,7 @@ export const EnhancedLandingPage: React.FC = () => {
 
             {/* Step 2 */}
             <div className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow">
-              <div className="flex items-center justify-center w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full text-2xl font-bold mb-6 mx-auto">
+              <div className="flex items-center justify-center w-16 h-16 bg-indigo-50 text-indigo-700 rounded-full text-2xl font-bold mb-6 mx-auto">
                 2
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">
@@ -161,7 +161,7 @@ export const EnhancedLandingPage: React.FC = () => {
 
             {/* Step 3 */}
             <div className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow">
-              <div className="flex items-center justify-center w-16 h-16 bg-blue-100 text-blue-600 rounded-full text-2xl font-bold mb-6 mx-auto">
+              <div className="flex items-center justify-center w-16 h-16 bg-blue-50 text-blue-700 rounded-full text-2xl font-bold mb-6 mx-auto">
                 3
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">

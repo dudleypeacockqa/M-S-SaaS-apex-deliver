@@ -114,7 +114,7 @@ export const SalesPromotionPricingPage: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Value Prop */}
             <div>
-              <div className="inline-block bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-semibold mb-6">
+              <div className="inline-block bg-emerald-700 text-white px-4 py-2 rounded-full text-sm font-semibold mb-6">
                 Sales and Promotion Pricing
               </div>
               <h1 className="text-4xl sm:text-5xl font-extrabold mb-6 leading-tight">
@@ -145,7 +145,7 @@ export const SalesPromotionPricingPage: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/contact"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-400 transition text-lg"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-600 transition text-lg"
                   onClick={() => trackCtaClick('request-demo', 'sales-pricing-hero')}
                 >
                   Request Pricing Demo
@@ -185,12 +185,12 @@ export const SalesPromotionPricingPage: React.FC = () => {
                         <div>
                           <div className="text-xs text-gray-600">Product A</div>
                           <div className="text-lg font-bold text-gray-900">£45.00</div>
-                          <div className="text-xs text-emerald-600">15% off list</div>
+                          <div className="text-xs text-emerald-700">15% off list</div>
                         </div>
                         <div>
                           <div className="text-xs text-gray-600">Product B</div>
                           <div className="text-lg font-bold text-gray-900">£32.50</div>
-                          <div className="text-xs text-emerald-600">20% off list</div>
+                          <div className="text-xs text-emerald-700">20% off list</div>
                         </div>
                       </div>
                     </div>
@@ -227,7 +227,7 @@ export const SalesPromotionPricingPage: React.FC = () => {
                     <div className="grid grid-cols-2 gap-3 text-center">
                       <div>
                         <div className="text-xs text-gray-600">Credit Available</div>
-                        <div className="text-sm font-bold text-emerald-600">£15,000</div>
+                        <div className="text-sm font-bold text-emerald-700">£15,000</div>
                       </div>
                       <div>
                         <div className="text-xs text-gray-600">YTD Spend</div>
@@ -263,7 +263,7 @@ export const SalesPromotionPricingPage: React.FC = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border-2 border-gray-200 hover:border-emerald-500 hover:shadow-lg transition-all"
+                className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border-2 border-gray-200 hover:border-emerald-600 hover:shadow-lg transition-all"
               >
                 <div className="text-4xl mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
@@ -271,7 +271,7 @@ export const SalesPromotionPricingPage: React.FC = () => {
                 <ul className="space-y-2">
                   {feature.capabilities.map((capability, capIndex) => (
                     <li key={capIndex} className="flex items-start text-sm">
-                      <span className="text-emerald-600 mr-2 flex-shrink-0">✓</span>
+                      <span className="text-emerald-700 mr-2 flex-shrink-0">✓</span>
                       <span className="text-gray-700">{capability}</span>
                     </li>
                   ))}
@@ -301,7 +301,7 @@ export const SalesPromotionPricingPage: React.FC = () => {
                 className="bg-white p-8 rounded-xl shadow-md border border-gray-200 hover:shadow-xl transition-shadow"
               >
                 <div className="flex items-start gap-6">
-                  <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-white text-2xl">
                       {index === 0 && '🏭'}
                       {index === 1 && '📦'}
@@ -320,7 +320,7 @@ export const SalesPromotionPricingPage: React.FC = () => {
                         <p className="text-gray-700">{useCase.solution}</p>
                       </div>
                       <div>
-                        <div className="text-sm font-semibold text-emerald-600 mb-1">Result</div>
+                        <div className="text-sm font-semibold text-emerald-700 mb-1">Result</div>
                         <p className="text-gray-900 font-semibold">{useCase.result}</p>
                       </div>
                     </div>
@@ -378,7 +378,7 @@ export const SalesPromotionPricingPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/contact"
-              className="inline-flex items-center justify-center px-8 py-4 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-400 transition text-lg"
+              className="inline-flex items-center justify-center px-8 py-4 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-600 transition text-lg"
               onClick={() => trackCtaClick('request-demo', 'sales-pricing-bottom-cta')}
             >
               Request Demo
