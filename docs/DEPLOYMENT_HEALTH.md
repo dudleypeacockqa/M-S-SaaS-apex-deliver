@@ -5,6 +5,11 @@
 > - Lighthouse CLI blocked locally by Windows Defender + Chrome temp-dir cleanup (`EPERM`, `NO_FCP`). Axe CLI reached production but reported legacy palette colours (CDN cache lag). Production audit artefacts remain pending.
 > - Next step: rerun Lighthouse + axe from a clean runner once CDN serves new palette; update `docs/marketing/lighthouse-report.json` & `docs/marketing/axe-report.txt` accordingly.
 >
+> **2025-11-13 18:31 UTC**
+> - Re-triggered frontend redeploy (`srv-d3ihptbipnbc73e72ne0`) via `trigger_render_deploy.py`; Render API returned HTTP 202 with empty body (documented via curl headers).
+> - `python scripts/verify_deployment.py production` re-run post-deploy → 10/10 checks ✅ (`docs/deployments/2025-11-13-verify-deployment-02.txt`).
+> - Production audits still blocked locally (Lighthouse `NO_FCP`/`EPERM`, axe `net::ERR_ADDRESS_INVALID`). Pending rerun from CI/macOS once CDN cache invalidated.
+>
 > **2025-11-12 17:50 UTC**
 > - Backend deploy `dep-d4acgo8gjchc73fke8i0` (service `srv-d3ii9qk9c44c73aqsli0`, commit `979c8dc`) reached **live** at 17:49Z; frontend deploy `dep-d4acgc8fdonc73edrb40` (service `srv-d3ihptbipnbc73e72ne0`, same commit) finished at 17:50Z.
 > - Ran `python3 scripts/verify_deployment.py` immediately after redeploy – 10/10 checks ✅. Evidence: `docs/deployments/2025-11-12T17-50-35Z-verify-deployment.txt`.

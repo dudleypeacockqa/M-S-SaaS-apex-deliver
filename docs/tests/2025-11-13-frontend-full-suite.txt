@@ -1,6 +1,361 @@
 
 > ma-saas-frontend@2.0.0 test
-> vitest run --pool=threads --run --coverage
+> node ./node_modules/vitest/vitest.mjs run --run --reporter=verbose
 
-'vitest' is not recognized as an internal or external command,
-operable program or batch file.
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+(node:206404) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:167604) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:230352) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:203040) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:229136) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:217612) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:70532) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:228980) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:220876) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:230588) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:203572) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:217300) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:178732) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:226900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:206920) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mreturns null when episode is null[32m 20[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mrenders modal with dialog role and aria-modal[33m 629[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mrenders modal heading[32m 161[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mpre-populates form with episode data[32m 84[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mMulti-File Upload Queue[2m > [22mshould display upload queue with multiple files[32m 51[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mComponent Rendering[2m > [22mshould render modal when open[32m 87[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mComponent Rendering[2m > [22mshould not render modal when closed[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mComponent Rendering[2m > [22mshould display file format requirements[32m 86[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mFile Selection[2m > [22mshould display file input for selection[32m 94[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mrenders title input as required[32m 17[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mrenders all status options[33m 430[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mdisplays episode info in read-only section[32m 146[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mdisplays video URL when available[32m 18[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould render loading state initially[32m 232[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mdoes not display video URL when not available[33m 305[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mMulti-File Upload Queue[2m > [22mshould display individual progress bars for each file in queue[32m 173[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mMulti-File Upload Queue[2m > [22mshould show file upload status icons (uploading, complete, error)[32m 14[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mrenders folder pane, document list, and upload panel sections[32m 50[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould render document list with file details[33m 488[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mPer-File Cancellation[2m > [22mshould display cancel button for each uploading file[33m 1292[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mRendering - Create Mode[2m > [22mshould render modal when isOpen is true[33m 1133[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mRendering - Create Mode[2m > [22mshould not render modal when isOpen is false[32m 5[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould display deal details after loading[33m 592[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mupdates DocumentList filter when FolderTree selection changes[32m 79[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould display "Edit" button when not in edit mode[33m 624[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mRendering - Create Mode[2m > [22mshould render correct title for create mode[33m 350[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mroutes uploads through the hook with selected folder context and refreshes document list[32m 118[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mopens and closes PermissionModal when manage permissions is requested[32m 13[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mopens share link modal when share is requested[32m 10[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mPer-File Cancellation[2m > [22mshould call onCancelFile with correct file id when cancel clicked[32m 222[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22mshould not render when isOpen is false[32m 34[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mLoading State[2m > [22mshould display loading skeleton when data is loading[32m 38[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mFile Selection[2m > [22mshould show selected file name[32m 73[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mFile Selection[2m > [22mshould display file size[32m 61[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mFile Validation[2m > [22mshould reject invalid file formats[32m 13[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mFile Validation[2m > [22mshould reject files larger than 500MB[32m 18[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mopens access log drawer when document activity is requested[32m 91[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould display "Archive" button for non-archived deals[32m 141[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould display "Unarchive" button for archived deals[32m 64[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mPer-File Cancellation[2m > [22mshould remove file from queue after cancellation[32m 197[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mEnhanced Drag-Drop Visual Feedback[2m > [22mshould add border-blue-500 class on dragover[32m 8[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mEnhanced Drag-Drop Visual Feedback[2m > [22mshould remove enhanced styling on drag leave[32m 10[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mEnhanced Drag-Drop Visual Feedback[2m > [22mshould show animated upload icon on drag over[32m 6[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mUpload Queue Management[2m > [22mshould display total upload progress across all files[32m 10[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mUpload Queue Management[2m > [22mshould show upload speed and estimated time remaining[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22mrenders root folder structure[33m 302[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mDisplay Mode - No Goal[2m > [22mshould show "no goals" message when no goal exists[32m 170[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mUpload Queue Management[2m > [22mshould display file size for each file in queue[32m 74[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22mshould render modal when isOpen is true[33m 1050[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mDisplay Mode - No Goal[2m > [22mshould display header with title and icon[32m 175[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mRendering - Create Mode[2m > [22mshould render all form fields[32m 170[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mUpload Queue Management[2m > [22mshould show retry button for failed uploads[33m 329[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mAccessibility[2m > [22mshould announce upload progress to screen readers[32m 12[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mFile Validation[2m > [22mshould disable upload button when no file selected[33m 1364[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mDisplay Mode - No Goal[2m > [22mshould show all goal categories with zero values[32m 297[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22mshould display all required form fields[33m 324[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mAccessibility[2m > [22mshould have proper ARIA labels for cancel buttons[32m 180[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mStorage Quota Enforcement[2m > [22mshould display storage quota usage before upload[32m 127[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mStorage Quota Enforcement[2m > [22mshould show visual warning when quota is above 80%[32m 15[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mRendering - Create Mode[2m > [22mshould render action buttons[33m 592[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mRendering - Edit Mode[2m > [22mshould render correct title for edit mode[32m 42[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mRendering - Edit Mode[2m > [22mshould pre-fill form fields with existing deal data[32m 17[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould show empty state when no documents[32m 204[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mStorage Quota Enforcement[2m > [22mshould show critical alert when quota is above 95%[32m 128[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mFile Validation[2m > [22mshould enable upload button when valid file selected[33m 582[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22mlazy loads child folders when expanded[33m 1708[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mRendering - Edit Mode[2m > [22mshould render update button instead of create[33m 375[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mUpload Progress[2m > [22mshould show progress bar during upload[33m 518[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22mmarks selected folder via aria-selected[32m 126[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22minvokes onFolderSelect when a folder is activated[32m 38[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22mvalidates required fields before submission[33m 514[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mrenders valuation layout shell[32m 176[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mupdates title field when user types[33m 2110[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22mcreates a new folder through inline form[32m 214[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22mopens context menu on right-click[32m 33[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mUpload Progress[2m > [22mshould show success message after upload[32m 160[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mopens the question panel when DocumentList requests Q&A view[32m 111[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mStorage Quota Enforcement[2m > [22mshould prevent upload when file would exceed quota[33m 405[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22mrenames folder through context menu[32m 55[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mForm Validation[2m > [22mshould show error for empty deal name[33m 407[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mStorage Quota Enforcement[2m > [22mshould allow upload when file fits within quota[32m 203[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mStorage Quota Enforcement[2m > [22mshould show upgrade prompt when quota exceeded for paid tier[32m 31[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mUpload Progress[2m > [22mshould show error message on upload failure[32m 159[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mFolderTree Search[2m > [22mrenders search input above folder tree[33m 1402[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mModal Actions[2m > [22mshould call onClose when cancel button clicked[32m 130[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22mdeletes folder with confirmation dialog[32m 148[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22mshows loading state while the root request is in-flight[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mStorage Quota Enforcement[2m > [22mshould disable dropzone and browse button when quota is fully used[32m 71[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mStorage Quota Enforcement[2m > [22mshould show quota lock message and block drag-and-drop uploads when locked[32m 30[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mshows loading indicator while valuations fetch[33m 920[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22mvalidates deal size boundaries[33m 649[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mDisplay Mode - With Goal[2m > [22mshould display goal values when goal exists[32m 176[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mFeature Access Gating[2m > [22mshould show upgrade prompt when user lacks podcast_audio access[33m 1318[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mModal Actions[2m > [22mshould call onSuccess after successful upload[32m 125[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mComponent Rendering[2m > [22mrenders workspace with title and tabs[33m 1573[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mComponent Rendering[2m > [22mshows loading state during initial fetch[32m 6[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mComponent Rendering[2m > [22mrenders error message when fetch fails[32m 10[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mCriteria Management[2m > [22mlists saved criteria presets[32m 25[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx[2m > [22mAudioUploadModal[2m > [22mModal Actions[2m > [22mshould reset state when modal reopened[32m 196[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mDisplay Mode - With Goal[2m > [22mshould show edit button when not editing[33m 1159[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mDisplay Mode - With Goal[2m > [22mshould not show "no goals" message when goal exists[32m 90[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.featureGates.test.tsx[2m > [22mPodcastStudio feature gates[2m > [22mshows audio controls but locks video uploads for Professional tier[33m 1455[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mStorage Quota Enforcement[2m > [22mshould surface manage storage action when quota error is shown[33m 310[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mCriteria Management[2m > [22mshows new criteria button[32m 117[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould sort documents by name[33m 2281[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mFolderTree Search[2m > [22mfilters folder tree based on search term[32m 219[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould enter edit mode when Edit button is clicked[33m 2080[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22mallows adding industries dynamically[33m 437[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.featureGates.test.tsx[2m > [22mPodcastStudio feature gates[2m > [22mdisplays quota warnings alongside upgrade messaging when nearing limits[32m 205[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mFile Size Validation[2m > [22mshould reject files exceeding max file size limit[32m 172[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mFile Size Validation[2m > [22mshould show tier-specific file size limits[32m 4[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mFile Size Validation[2m > [22mshould allow larger files for enterprise tier[32m 66[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22mrenders task board with required columns and tasks[33m 2220[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mFeature Access Gating[2m > [22mshould render episode list when user has access[33m 443[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mshows upgrade messaging when valuations endpoint rejects with entitlement error[33m 670[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mFolderTree Search[2m > [22mclears search when clear button is clicked[33m 511[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22mallows selecting multiple geographies and includes them in submission[33m 366[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22mpreloads existing criteria values when provided[32m 37[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.featureGates.test.tsx[2m > [22mPodcastStudio feature gates[2m > [22mshows clear messaging when video feature is unavailable[32m 184[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mUpload Error States[2m > [22mshould display network error with retry option[32m 66[2mms[22m[39m
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document permission changes with affected user IDs
+[22m[39m[Audit] Permission changed: { documentId: [32m'doc-1'[39m, userId: [32m'user-abc'[39m, permission: [32m'edit'[39m }
+
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mFolderTree Search[2m > [22mshows "no results" message when search yields no matches[32m 122[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mAudit Logging[2m > [22mlogs document upload events with user and timestamp[32m 80[2mms[22m[39m
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document deletion events
+[22m[39m[Audit] {
+  action: [32m'DOCUMENT_DELETED'[39m,
+  resource_type: [32m'document'[39m,
+  resource_id: [32m'doc-to-delete'[39m,
+  metadata: { fileName: [32m'contract.pdf'[39m }
+}
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs bulk actions with affected document IDs
+[22m[39m[Audit] {
+  action: [32m'BULK_DELETE'[39m,
+  resource_type: [32m'document'[39m,
+  resource_id: [32m'bulk-operation'[39m,
+  metadata: { documentIds: [ [32m'doc-1'[39m, [32m'doc-2'[39m, [32m'doc-3'[39m ], count: [33m3[39m }
+}
+
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mUpload Error States[2m > [22mshould display server error with support contact[32m 126[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mUpload Error States[2m > [22mshould display file type validation error[32m 18[2mms[22m[39m
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mBulk Actions[2m > [22m[2mcalls bulk delete handler when requested
+[22m[39m[Bulk Delete] [
+  { id: [32m'doc-1'[39m, name: [32m'file1.pdf'[39m },
+  { id: [32m'doc-2'[39m, name: [32m'file2.pdf'[39m }
+]
+
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mAudit Logging[2m > [22mlogs document permission changes with affected user IDs[32m 56[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mAudit Logging[2m > [22mlogs document deletion events[32m 8[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mAudit Logging[2m > [22mlogs bulk actions with affected document IDs[32m 5[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Actions[2m > [22mpasses bulk action callbacks to DocumentList[32m 4[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Actions[2m > [22mcalls bulk move handler when requested[32m 77[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mQuota Display[2m > [22mshould display quota usage for Professional tier[32m 108[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould sort documents by date[33m 448[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22mpersists expanded folders between remounts[33m 783[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22msupports adding and removing custom fields[32m 94[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mForm Validation[2m > [22mshould show error for empty target company[33m 1036[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mCriteria Management[2m > [22mdisplays criteria details including custom filters[32m 183[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mQuota Display[2m > [22mshould show approaching quota banner when usage reaches warning threshold[32m 290[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mUpload Error States[2m > [22mshould clear error message after successful upload[32m 91[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mexposes a Q&A action when handler provided[32m 125[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould filter documents by search query[32m 38[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mMatch Discovery[2m > [22mrenders match results with scores[33m 576[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mMatch Discovery[2m > [22mshows confidence badges[32m 40[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mMatch Discovery[2m > [22mshows empty state when no matches[32m 26[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Actions[2m > [22mcalls bulk delete handler when requested[32m 5[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Actions[2m > [22mcalls bulk share handler when requested[32m 6[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22msubmits create payload with dynamic fields[32m 256[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mUpload Error States[2m > [22mshould show authentication error and redirect to login[32m 285[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22msupports keyboard navigation and selection[33m 307[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22mpersists filters when modified[33m 613[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mBatch Upload Restrictions[2m > [22mshould enforce max files per upload for starter tier[32m 201[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx[2m > [22mUploadPanel - Enhanced Features (Sprint 2 Task 1)[2m > [22mBatch Upload Restrictions[2m > [22mshould allow unlimited files for enterprise tier[32m 62[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Move Operations with Optimistic Updates[2m > [22mshould show folder selection modal when bulk move is initiated[33m 311[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mEdit Mode[2m > [22mshould enter edit mode when edit button is clicked[33m 951[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould select single document with checkbox[33m 352[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22msubmits update payload when editing an existing preset[32m 296[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mupdates description field when user types[33m 1802[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Move Operations with Optimistic Updates[2m > [22mshould perform optimistic move and show success toast[32m 230[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22mshows loading state during submission[32m 221[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22mcalls onClose when close button is clicked[32m 52[2mms[22m[39m
+ [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx[2m > [22mCriteriaBuilderModal[2m > [22mcloses modal on backdrop click[32m 56[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mQuota Display[2m > [22mshould show critical quota banner when usage reaches critical threshold[33m 460[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mQuota Display[2m > [22mshould display billing cycle with reset range when provided[32m 41[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mForm Validation[2m > [22mshould show error for negative deal size[33m 760[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mMatch Discovery[2m > [22mallows switching between tabs[32m 221[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mEdit Mode[2m > [22mshould populate inputs with current goal values in edit mode[32m 200[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould expose a view activity button when callback provided[32m 131[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Move Operations with Optimistic Updates[2m > [22mshould rollback optimistic move on API failure and show error[32m 186[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mQuota Display[2m > [22mshould disable new episode creation and show upgrade CTA when quota requires upgrade[32m 283[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould expose a share button when callback provided[33m 313[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.featureGates.test.tsx[2m > [22mPodcastStudio feature gates[2m > [22mopens the upgrade modal with pricing when CTA is clicked[33m 1130[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22mdoes not re-fetch child folders after initial load[33m 731[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould select all documents with header checkbox[32m 119[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx[2m > [22mFolderTree[2m > [22mfetches search results from the API when searchTerm provided[32m 249[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Move Operations with Optimistic Updates[2m > [22mshould handle partial move failures with detailed error message[32m 209[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mQuota Display[2m > [22mshould display "Unlimited" for Premium tier[32m 135[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mMatch Discovery[2m > [22mtriggers find matches using selected preset[33m 397[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Move Operations with Optimistic Updates[2m > [22mshould prevent moving to same folder and show validation message[32m 166[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould show download button for each document[32m 103[2mms[22m[39m
+Not implemented: navigation to another Document
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould call download API when download button clicked[32m 238[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Archive Operations[2m > [22mshould archive documents with optimistic update[32m 119[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Archive Operations[2m > [22mshould rollback archive on API failure[32m 71[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mMatch Actions Workflow[2m > [22mrecords view action and opens detail modal[33m 516[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mupdates show notes field when user types[33m 856[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mEdit Mode[2m > [22mshould update input values when changed[33m 716[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould call updateDeal API when saving changes[33m 1751[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould show delete button for each document[32m 111[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mQuota Display[2m > [22mshould surface upgrade CTA when quota requires upgrade[33m 580[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould call archiveDeal API when Archive button is clicked[32m 286[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.featureGates.test.tsx[2m > [22mPodcastStudio feature gates[2m > [22mrenders upload video button for Premium users and opens modal[33m 768[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Archive Operations[2m > [22mshould show undo option after successful archive[33m 369[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould render manage access button when provided[32m 188[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mupdates status field when user selects different option[32m 292[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould not show action buttons for archived deals[32m 229[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould show error state when API call fails[32m 39[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx[2m > [22mDocumentWorkspace[2m > [22mBulk Archive Operations[2m > [22mshould batch archive operations for performance[32m 203[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mEdit Mode[2m > [22mshould exit edit mode when cancel is clicked[33m 570[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould confirm before deleting document[32m 293[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22msubmits new valuation when form completed[33m 2405[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshould show loading state while fetching documents[32m 89[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mcalls onClose when Cancel button clicked[33m 364[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mMatch Actions Workflow[2m > [22mrecords save and pass actions from match cards[33m 334[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mTranscription[2m > [22mshould show transcribe button when transcript missing[33m 492[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.featureGates.test.tsx[2m > [22mPodcastStudio feature gates[2m > [22mblocks video upload for Professional tier with upgrade messaging[33m 347[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould navigate back to pipeline when Back button is clicked[32m 262[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mForm Validation[2m > [22mshould not show errors when all required fields are filled[33m 1832[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22mfilters tasks by assignee, status, priority, and due date[33m 2420[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.featureGates.test.tsx[2m > [22mPodcastStudio feature gates[2m > [22mshows transcription upgrade messaging when transcription feature is locked[33m 535[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould display deal timestamps[33m 558[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mMatch Actions Workflow[2m > [22mopens introduction request modal from detail view[33m 1136[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mTranscription[2m > [22mshould call API and show success message when transcription completes[33m 933[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mshows bulk actions toolbar when documents are selected[33m 914[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mMatch Analytics[2m > [22mdisplays analytics widgets summarising matches[32m 173[2mms[22m[39m
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mUpdate Goal Flow[2m > [22mshould call updateGoal mutation when saving existing goal[33m 1251[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.featureGates.test.tsx[2m > [22mPodcastStudio feature gates[2m > [22mshows live streaming upgrade call-to-action when feature is locked[33m 660[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.featureGates.test.tsx[2m > [22mPodcastStudio feature gates[2m > [22mrenders quota HUD and warning when approaching limit[32m 75[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mTier Gating[2m > [22mshows upgrade prompt for starter tier[32m 152[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx[2m > [22mMatchingWorkspace[2m > [22mTier Gating[2m > [22mallows access for professional tier[32m 144[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mshould handle deals with minimal information[33m 358[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mbulk download triggers download for each selected document[33m 318[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mTranscription[2m > [22mshould indicate when transcript is ready[33m 419[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mUpdate Goal Flow[2m > [22mshould show loading state on Save button while updating[33m 312[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx[2m > [22mDocumentList[2m > [22mbulk delete calls delete API for each selected document when confirmed[33m 379[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mcalls onSubmit with updated data when form submitted[33m 1531[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mTranscription[2m > [22mshould provide transcript download links when transcript ready[33m 336[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mEpisode List[2m > [22mshould display "No episodes" when list is empty[32m 59[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22msorts tasks by due date and priority[33m 1051[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mdoes not call onSubmit when title is empty[32m 207[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mallows adding comparable company to selected valuation[33m 1878[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mEpisode List[2m > [22mshould display list of episodes with titles[32m 128[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mvalidates title is required before submission[32m 121[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mEpisode List[2m > [22mshould show episode status badges[32m 42[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mTabbed Interface[2m > [22mshould render tab navigation with Overview, Financials, Documents, and Team tabs[33m 771[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mVideo thumbnails[2m > [22mshows thumbnail when thumbnail_url present[32m 251[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mdoes not call onSubmit when title is only whitespace[33m 376[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mTabbed Interface[2m > [22mshould show Overview tab content by default[33m 397[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mdisables buttons when isSubmitting is true[32m 121[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mshows "Saving..." text when isSubmitting is true[32m 49[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mhandles episode with null description and show_notes[32m 15[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mCreate Goal Flow[2m > [22mshould call createGoal mutation when saving new goal[33m 1167[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mAccessibility[2m > [22mshould have proper aria-label on edit button[32m 74[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mVideo thumbnails[2m > [22mrenders placeholder when thumbnail missing[32m 133[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mconverts empty description and show_notes to undefined in onSubmit[32m 201[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx[2m > [22mGoalCard[2m > [22mAccessibility[2m > [22mshould have accessible number inputs with min value[32m 170[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mTabbed Interface[2m > [22mshould switch to Financials tab when clicked[33m 569[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mForm Submission - Create[2m > [22mshould call onCreate when form is submitted with valid data[33m 2732[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mallows form submission after correcting validation errors[33m 621[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mresets form data when episode changes[32m 35[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mrenders audio URL as a link[32m 105[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx[2m > [22mEditEpisodeModal[2m > [22mrenders video URL as a link when available[32m 52[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mTabbed Interface[2m > [22mshould switch to Documents tab when clicked[33m 541[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22mopens task creation modal and validates required fields[33m 2962[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mTabbed Interface[2m > [22mshould switch to Team tab when clicked[33m 1090[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22msupports keyboard shortcut for opening the new task modal[32m 213[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mForm Submission - Create[2m > [22mshould call onSuccess after successful creation[33m 1572[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mallows adding precedent transaction to selected valuation[33m 3089[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx[2m > [22mDealDetails[2m > [22mTabbed Interface[2m > [22mshould persist active tab when re-rendering[33m 787[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22mopens task detail modal on card click and loads task detail data[33m 355[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mdisplays scenario summary insights with analytics metrics[32m 249[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mapplies responsive layout classes to analytics metrics grid[32m 243[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mForm Submission - Create[2m > [22mshould close modal after successful creation[33m 1508[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mYouTube Integration[2m > [22mallows editing metadata before publishing to YouTube when integration access granted[33m 4390[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mForm Submission - Create[2m > [22mshould disable submit button while submitting[33m 1093[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mYouTube Integration[2m > [22minitiates OAuth connect flow when YouTube account is not connected[33m 711[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mYouTube Integration[2m > [22mshould show upgrade button when youtube integration access denied[32m 252[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22mupdates task details from detail modal[33m 2484[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mallows creating a new scenario with JSON assumptions[33m 2330[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mCreate Episode Button[2m > [22mshould render "New Episode" button[32m 116[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mCreate Episode Button[2m > [22mshould disable "New Episode" button when quota exceeded[32m 195[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mForm Submission - Edit[2m > [22mshould call onUpdate when editing existing deal[33m 755[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mModal Actions[2m > [22mshould call onClose when cancel button is clicked[32m 134[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mCRUD Operations (TDD)[2m > [22mshould open Create Episode modal when New Episode button clicked[32m 268[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22massigns a task from the detail modal[33m 653[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mModal Actions[2m > [22mshould call onClose when clicking outside modal[32m 104[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mModal Actions[2m > [22mshould call onClose when pressing Escape key[32m 67[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mModal Actions[2m > [22mshould reset form when closing and reopening[32m 161[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mStage Selection[2m > [22mshould render all pipeline stages in dropdown[32m 20[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mStage Selection[2m > [22mshould default to sourcing stage for new deals[32m 22[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mCurrency Selection[2m > [22mshould render currency options[32m 19[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mCurrency Selection[2m > [22mshould default to GBP currency[32m 14[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mAccessibility[2m > [22mshould have proper ARIA labels for all inputs[32m 20[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mshows validation error when scenario assumptions JSON is invalid[33m 1030[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22mdeletes a task from the detail modal[33m 422[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mAccessibility[2m > [22mshould set focus on first input when modal opens[32m 92[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22mhandles drag and drop between columns and calls updateTaskStatus[32m 133[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22mshows loading and error states[32m 83[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mfetches scenario list when scenarios tab opened[32m 184[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx[2m > [22mTaskBoard[2m > [22mrefreshes tasks on polling interval[32m 70[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mAccessibility[2m > [22mshould trap focus within modal[33m 586[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mAccessibility[2m > [22mshould have proper heading hierarchy[32m 29[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mshows detailed confirmation after queuing an export[33m 330[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mguards valuation workspace for growth-tier access with upgrade messaging[32m 156[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mCRUD Operations (TDD)[2m > [22mshould create episode when form submitted with valid data[33m 1547[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mruns Monte Carlo simulation and displays percentile summary[33m 552[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mCRUD Operations (TDD)[2m > [22mshould open Edit modal when Edit button clicked on episode[32m 259[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mCRUD Operations (TDD)[2m > [22mshould update episode when edit form submitted[33m 791[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mCRUD Operations (TDD)[2m > [22mshould show delete confirmation when delete button clicked[33m 400[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx[2m > [22mPodcastStudio[2m > [22mCRUD Operations (TDD)[2m > [22mshould delete episode when deletion confirmed[33m 460[2mms[22m[39m

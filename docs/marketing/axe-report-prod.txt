@@ -1,12 +1,12 @@
 Running axe-core 4.11.0 in chrome-headless
 
 Testing https://100daysandbeyond.com ... please wait, this may take a minute.
+Waiting for 3000 milliseconds after page loads...
 
-  Violation of "color-contrast" with 3 occurrences!
+  Violation of "color-contrast" with 2 occurrences!
     Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds. Correct invalid elements at:
-     - .space-x-2 > .text-emerald-600
      - .bg-gray-700
-     - .gap-2.flex > .py-2:nth-child(1)
+     - .bg-emerald-500.rounded-md
     For details, see: https://dequeuniversity.com/rules/axe/4.11/color-contrast
 
   Violation of "heading-order" with 2 occurrences!
@@ -25,13 +25,6 @@ Testing https://100daysandbeyond.com ... please wait, this may take a minute.
      - #app-root
     For details, see: https://dequeuniversity.com/rules/axe/4.11/landmark-no-duplicate-main
 
-7 Accessibility issues detected.
+6 Accessibility issues detected.
 
 Testing http://0 ... please wait, this may take a minute.
-
----
-
-2025-11-13T18:34Z - Attempted `node_modules/.bin/axe.cmd https://100daysandbeyond.com --timeout=60000 --exit 0 --load-delay 3000`
-- Result: ❌ failed
-- Error: `WebDriverError: unknown error: net::ERR_ADDRESS_INVALID` (Chrome 141.0.7390.123)
-- Notes: Occurs even after successful frontend redeploy; likely due to Chrome headless restrictions in this Windows environment. Re-run required from CI/macOS runner once CDN cache is purged.

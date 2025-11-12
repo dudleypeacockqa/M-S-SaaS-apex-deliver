@@ -1,7 +1,21 @@
 {
   "status": "blocked",
-  "attemptedAt": "2025-11-13T10:20:00Z",
   "targetUrl": "https://ma-saas-platform.onrender.com",
-  "reason": "Local Lighthouse CLI blocked by Windows Defender temp directory permissions (EPERM) and Chrome NO_FCP headless failure. See docs/marketing/lighthouse-report-2025-11-13-desktop.json for full error capture.",
+  "attempts": [
+    {
+      "attemptedAt": "2025-11-13T10:20:00Z",
+      "environment": "Windows 11 (PowerShell)",
+      "command": "npx lighthouse https://ma-saas-platform.onrender.com --view=false --quiet --chrome-flags=\"--headless --no-sandbox --disable-dev-shm-usage --disable-gpu --user-data-dir=tmp\"",
+      "result": "failed",
+      "reason": "Windows Defender blocked npx launcher (flagged as malicious)."
+    },
+    {
+      "attemptedAt": "2025-11-13T18:32:00Z",
+      "environment": "Windows 11 (PowerShell)",
+      "command": "node node_modules/lighthouse/cli/index.js https://ma-saas-platform.onrender.com --chrome-flags=\"--headless --no-sandbox --disable-dev-shm-usage --disable-gpu --user-data-dir=tmp\"",
+      "result": "failed",
+      "reason": "Chrome headless returned NO_FCP after redeploy; temp directory cleanup continues to raise EPERM."
+    }
+  ],
   "nextStep": "Re-run Lighthouse from clean macOS/CI environment after CDN purge to capture passing audit."
 }
