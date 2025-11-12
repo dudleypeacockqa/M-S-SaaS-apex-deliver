@@ -1,6 +1,23 @@
 [
     {
         "deploy": {
+            "id": "dep-d49k7l7fte5s73aepid0",
+            "commit": {
+                "id": "0e1611d0072694bab6fcc05706574969c05139a0",
+                "message": "docs(bmad): update workflow status - bulk actions GREEN complete (25/25 tests)",
+                "createdAt": "2025-11-11T14:10:22Z"
+            },
+            "status": "live",
+            "trigger": "new_commit",
+            "createdAt": "2025-11-11T14:10:30.227623Z",
+            "updatedAt": "2025-11-11T14:21:26.122172Z",
+            "startedAt": "2025-11-11T14:10:30.151258Z",
+            "finishedAt": "2025-11-11T14:20:58.065906Z"
+        },
+        "cursor": "_4yEQQyxqm43bDdmdGU1czczYWVwaWQw"
+    },
+    {
+        "deploy": {
             "id": "dep-d49cd42g0ims73e504o0",
             "commit": {
                 "id": "6da3b0e5f73beeda1189b8654cb327ebde5e8b48",

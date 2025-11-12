@@ -1,6 +1,23 @@
 [
     {
         "deploy": {
+            "id": "dep-d49k2bfdiees73ahiqn0",
+            "commit": {
+                "id": "834fa20f562e8e0c81bbdd2ac412aa6b8112c298",
+                "message": "docs(bmad): Session 2025-11-12 autonomous execution - honest assessment",
+                "createdAt": "2025-11-11T13:58:40Z"
+            },
+            "status": "live",
+            "trigger": "api",
+            "createdAt": "2025-11-11T13:59:13.396235Z",
+            "updatedAt": "2025-11-11T14:01:01.500712Z",
+            "startedAt": "2025-11-11T13:59:13.123032Z",
+            "finishedAt": "2025-11-11T14:00:31.502649Z"
+        },
+        "cursor": "_4yEQQyxqm4yYmZkaWVlczczYWhpcW4w"
+    },
+    {
+        "deploy": {
             "id": "dep-d49caf1r0fns73dae4m0",
             "commit": {
                 "id": "fea5c0130e9e9090c49d3922c35e696eb7141b11",
