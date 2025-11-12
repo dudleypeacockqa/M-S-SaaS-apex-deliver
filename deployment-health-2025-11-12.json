@@ -1,10 +1,23 @@
 {
-  "timestamp": "2025-11-12T13:25:00Z",
-  "backend_service": "srv-d3ii9qk9c44c73aqsli0",
-  "backend_deploy": "dep-d49k2bfdiees73ahiqn0",
-  "frontend_service": "srv-d3ihptbipnbc73e72ne0",
-  "frontend_deploy": "dep-d49k2fu3jp1c73d4njn0",
-  "alembic_log": "docs/deployments/2025-11-12-alembic-upgrade.txt",
-  "verify_log": "docs/deployments/2025-11-12-verify-deployment.txt",
-  "smoke_log": "docs/deployments/2025-11-12-smoke-tests.txt"
+  "timestamp": "2025-11-12T12:18:41.496070Z",
+  "backend": {
+    "service_id": "srv-d3ii9qk9c44c73aqsli0",
+    "service_name": "ma-saas-backend",
+    "current_deploy_id": "dep-d4a7jq8gjchc73fhk30g",
+    "current_status": "update_failed",
+    "current_commit": "e16b4c1792e576bff5e361c9370b5a07b28014e0",
+    "updated_at": "2025-11-12T12:14:58.521759Z"
+  },
+  "frontend": {
+    "service_id": "srv-d3ihptbipnbc73e72ne0",
+    "service_name": "ma-saas-platform",
+    "current_deploy_id": "dep-d4a7juf5r7bs73e8jak0",
+    "current_status": "build_in_progress",
+    "current_commit": "e16b4c1792e576bff5e361c9370b5a07b28014e0",
+    "updated_at": "2025-11-12T12:13:49.444504Z"
+  },
+  "verify_log": "deployment-health-verify-2025-11-12T.txt",
+  "document_test_log": "docs/tests/2025-11-12T-dev008-vitest.txt",
+  "backend_test_log": "docs/tests/2025-11-12T-backend-billing.txt",
+  "alembic_log": "docs/tests/2025-11-12T-alembic.txt"
 }

@@ -6,10 +6,10 @@ Target Backend:  https://ma-saas-backend.onrender.com
 Target Frontend: https://100daysandbeyond.com
 
 1. Checking backend health endpoint...
-   ✅ Backend health check passed
+   Γ£à Backend health check passed
 
 2. Verifying frontend availability...
-   ✅ Frontend responded with HTTP 200
+   Γ£à Frontend responded with HTTP 200
 
 3. Running backend smoke pytest suite...
 ============================= test session starts =============================
@@ -31,8 +31,8 @@ backend/tests/smoke_tests.py::test_root_redirects
     warnings.warn(message, DeprecationWarning)
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-======================== 2 passed, 2 warnings in 0.29s ========================
+======================== 2 passed, 2 warnings in 0.37s ========================
 
 =========================================
-✅ Smoke tests completed successfully
+Γ£à Smoke tests completed successfully
 =========================================

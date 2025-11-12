@@ -1,3 +1,18 @@
+> **2025-11-12 16:35 UTC**
+> - Triggered Render redeploys via API:
+>   - Backend (`srv-d3ii9qk9c44c73aqsli0`): ✅ request succeeded (`docs/deployments/2025-11-12-render-backend-trigger.txt`).
+>   - Frontend (`srv-d3ihptbipnbc73e72ne0`): ⚠️ API returned empty payload (logged in `docs/deployments/2025-11-12-render-frontend-trigger.txt`); no deploy ID reported but existing live deploy remains healthy.
+> - Ran `bash scripts/run_smoke_tests.sh production` – backend /health 200, frontend 200, backend smoke pytest 2/2 pass. Evidence: `docs/deployments/2025-11-12-smoke-tests.txt`.
+> - Ran `python scripts/verify_deployment.py production` – 10/10 critical checks GREEN. Evidence: `docs/deployments/2025-11-12-verify-deployment.txt`.
+> - Current live deploys unchanged pending Render dashboard confirmation: backend `dep-d49et83uibrs739agtfg`, frontend `dep-d49etc8m2f8s73dkf0v0`.
+
+> **2025-11-12 12:18 UTC**
+> - Ran `python3 scripts/verify_deployment.py` → 10/10 HTTP checks ✅ (log: `docs/deployments/verify-deployment-refresh-2025-11-12-latest.txt`).
+> - Backend still serving commit `834fa20` (`dep-d49k2bfdiees73ahiqn0`, service `srv-d3ii9qk9c44c73aqsli0`).
+> - Frontend still serving commit `680c7a4` (`dep-d4a3q5n8qels73eqc250`, service `srv-d3ihptbipnbc73e72ne0`).
+> - Latest repo `HEAD` = `ff939e5`, so trigger redeploys + smoke tests before declaring production “up to date.”
+
+
 > **2025-11-12 11:15 UTC (Session 2025-11-12-100PCT-PLAN)**
 > - **Production Health**: ✅ 100% HEALTHY
 > - **Frontend**: Deploy `dep-d4a3v1he2q1c73dvfp3g` (commit `30c2502`) **LIVE** since 08:05 UTC

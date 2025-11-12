@@ -1,0 +1,6 @@
+Invoke-WebRequest: C:\Users\User\AppData\Local\Temp\ps-script-c9c50330-3cf8-475b-857d-1299faded4a2.ps1:128
+Line |
+ 128 |    $resp = Invoke-WebRequest -Uri 'https://api.render.com/v1/static-si …
+     |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | 404 page not found 
+

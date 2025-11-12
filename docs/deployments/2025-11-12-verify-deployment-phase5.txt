@@ -4,18 +4,18 @@
   Frontend: https://100daysandbeyond.com
 ============================================================
 
-[0;32m✓[0m Backend Health                           ... HTTP 200
-[0;32m✓[0m Blog Listing                             ... HTTP 200
-[0;32m✓[0m Blog Categories                          ... HTTP 200
-[0;32m✓[0m Blog Post by Slug                        ... HTTP 200
-[0;32m✓[0m Contact Endpoint (POST only)             ... HTTP 405
-[0;32m✓[0m Subscribe Endpoint (POST only)           ... HTTP 405
-[0;32m✓[0m Frontend Home                            ... HTTP 200
-[0;32m✓[0m Contact Page                             ... HTTP 200
-[0;32m✓[0m Blog Page                                ... HTTP 200
-[0;32m✓[0m Pricing Page                             ... HTTP 200
+✓ Backend Health                           ... HTTP 200
+✓ Blog Listing                             ... HTTP 200
+✓ Blog Categories                          ... HTTP 200
+✓ Blog Post by Slug                        ... HTTP 200
+✓ Contact Endpoint (POST only)             ... HTTP 405
+✓ Subscribe Endpoint (POST only)           ... HTTP 405
+✓ Frontend Home                            ... HTTP 200
+✓ Contact Page                             ... HTTP 200
+✓ Blog Page                                ... HTTP 200
+✓ Pricing Page                             ... HTTP 200
 
 ============================================================
   Results: 10 passed, 0 failed
 ============================================================
-[0;32m✓ ALL CRITICAL TESTS PASSED[0m
+✓ ALL CRITICAL TESTS PASSED
