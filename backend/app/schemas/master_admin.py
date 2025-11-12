@@ -7,7 +7,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict, EmailStr, AliasChoices
 
-from app.models.master_admin import (
+from app.models.enums import (
     ActivityType,
     ActivityStatus,
     NudgeType,
