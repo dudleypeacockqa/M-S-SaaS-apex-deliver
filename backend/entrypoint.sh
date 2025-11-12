@@ -106,33 +106,8 @@ echo "========================================="
 echo "Starting Render Backend Service"
 echo "========================================="
 
-# Check if database has an invalid migration stamp (like '001')
-CURRENT=$(alembic current 2>&1 || echo "none")
-
-if echo "$CURRENT" | grep -q "Can't locate revision identified by '001'"; then
-    echo "❌ Found invalid migration stamp '001' in database"
-    echo "🔧 Clearing alembic_version table and re-stamping..."
-
-    # Clear the alembic_version table using psql
-    echo "DELETE FROM alembic_version;" | psql "$DATABASE_URL"
-
-    echo "✅ Cleared alembic_version table"
-    echo "📌 Stamping with base migration (users table)..."
-
-    # Stamp with the first migration (users table - 8dcb6880a52b)
-    alembic stamp 8dcb6880a52b
-
-    echo "✅ Database stamped with base migration"
-fi
-
-# Check current status again
-CURRENT=$(alembic current 2>&1 || echo "none")
-
-if echo "$CURRENT" | grep -q "Can't locate revision\|No current revision"; then
-    echo "No current migration found - stamping with base"
-    alembic stamp 8dcb6880a52b 2>&1 || echo "Could not stamp"
-fi
-
+# Run migrations (alembic will handle the state automatically)
+echo "Running database migrations..."
 run_with_retry alembic_upgrade
 
 echo "✅ Migrations applied successfully"
