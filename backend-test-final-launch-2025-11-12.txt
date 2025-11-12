@@ -1,0 +1,1174 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\User\AppData\Local\Programs\Python\Python311\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 804 items
+
+tests\test_additional_ratios.py::test_asset_turnover PASSED              [  0%]
+tests\test_additional_ratios.py::test_inventory_turnover PASSED          [  0%]
+tests\test_additional_ratios.py::test_receivables_turnover PASSED        [  0%]
+tests\test_additional_ratios.py::test_days_sales_outstanding PASSED      [  0%]
+tests\test_additional_ratios.py::test_cash_conversion_cycle PASSED       [  0%]
+tests\test_additional_ratios.py::test_price_to_earnings PASSED           [  0%]
+tests\test_additional_ratios.py::test_ev_to_ebitda PASSED                [  0%]
+tests\test_additional_ratios.py::test_dividend_yield PASSED              [  0%]
+tests\test_additional_ratios.py::test_revenue_growth_yoy PASSED          [  1%]
+tests\test_additional_ratios.py::test_ebitda_growth_yoy PASSED           [  1%]
+tests\test_additional_ratios.py::test_cagr PASSED                        [  1%]
+tests\test_additional_ratios.py::test_operating_cf_margin PASSED         [  1%]
+tests\test_additional_ratios.py::test_free_cash_flow PASSED              [  1%]
+tests\test_additional_ratios.py::test_cf_to_debt PASSED                  [  1%]
+tests\test_additional_ratios.py::test_cash_conversion_rate PASSED        [  1%]
+tests\test_api_middleware.py::TestRequireFeatureProfessionalTier::test_professional_tier_allowed_podcast_audio_access PASSED [  1%]
+tests\test_api_middleware.py::TestRequireFeatureProfessionalTier::test_starter_tier_blocked_from_podcast_audio PASSED [  2%]
+tests\test_api_middleware.py::TestRequireFeatureProfessionalTier::test_403_response_includes_upgrade_message PASSED [  2%]
+tests\test_api_middleware.py::TestRequireFeatureProfessionalTier::test_403_includes_required_tier_header PASSED [  2%]
+tests\test_api_middleware.py::TestRequireFeatureProfessionalTier::test_403_includes_upgrade_url_header PASSED [  2%]
+tests\test_api_middleware.py::TestRequireFeatureVideoAccess::test_premium_tier_allowed_video_access PASSED [  2%]
+tests\test_api_middleware.py::TestRequireFeatureVideoAccess::test_professional_tier_blocked_from_video PASSED [  2%]
+tests\test_api_middleware.py::TestRequireFeatureYouTubeAccess::test_premium_tier_allowed_youtube_access PASSED [  2%]
+tests\test_api_middleware.py::TestRequireFeatureYouTubeAccess::test_professional_tier_blocked_from_youtube PASSED [  2%]
+tests\test_api_middleware.py::TestRequireFeatureLiveStreaming::test_enterprise_tier_allowed_live_streaming PASSED [  3%]
+tests\test_api_middleware.py::TestRequireFeatureLiveStreaming::test_premium_tier_blocked_from_live_streaming PASSED [  3%]
+tests\test_api_middleware.py::TestRequireFeatureEdgeCases::test_middleware_works_with_multiple_features PASSED [  3%]
+tests\test_api_middleware.py::TestRequireFeatureEdgeCases::test_middleware_integrates_with_get_current_user PASSED [  3%]
+tests\test_api_middleware.py::TestRequireFeatureEdgeCases::test_middleware_logs_blocked_requests PASSED [  3%]
+tests\test_api_middleware.py::TestRequireFeatureEdgeCases::test_invalid_feature_raises_feature_not_found_error PASSED [  3%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceInitialization::test_service_initializes_with_default_settings PASSED [  3%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceInitialization::test_service_initializes_with_custom_settings PASSED [  3%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceFileValidation::test_needs_chunking_returns_false_for_small_file PASSED [  4%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceFileValidation::test_needs_chunking_returns_true_for_large_file PASSED [  4%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceFileValidation::test_needs_chunking_returns_false_at_exact_limit PASSED [  4%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceChunking::test_chunk_audio_file_creates_multiple_chunks PASSED [  4%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceChunking::test_chunk_audio_file_handles_mp3_format PASSED [  4%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceChunking::test_chunk_audio_file_handles_wav_format PASSED [  4%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceChunking::test_chunk_audio_file_applies_overlap PASSED [  4%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceChunking::test_chunk_audio_file_raises_error_for_missing_file PASSED [  4%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceTranscription::test_transcribe_chunks_combines_all_transcripts PASSED [  5%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceTranscription::test_transcribe_chunks_handles_empty_chunk_list PASSED [  5%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceTranscription::test_transcribe_chunks_raises_error_on_api_failure PASSED [  5%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceTranscription::test_transcribe_chunks_supports_custom_language PASSED [  5%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceCleanup::test_cleanup_chunks_deletes_all_files PASSED [  5%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceCleanup::test_cleanup_chunks_handles_missing_files PASSED [  5%]
+tests\test_audio_chunking_service.py::TestAudioChunkingServiceCleanup::test_cleanup_chunks_handles_deletion_errors PASSED [  5%]
+tests\test_auth_helpers.py::test_extract_claim_with_single_key PASSED    [  5%]
+tests\test_auth_helpers.py::test_extract_claim_with_multiple_keys_returns_first_found PASSED [  6%]
+tests\test_auth_helpers.py::test_extract_claim_returns_none_when_not_found PASSED [  6%]
+tests\test_auth_helpers.py::test_extract_claim_skips_empty_values PASSED [  6%]
+tests\test_auth_helpers.py::test_extract_claim_handles_falsy_but_valid_values PASSED [  6%]
+tests\test_auth_helpers.py::test_sanitize_claims_filters_allowed_keys PASSED [  6%]
+tests\test_auth_helpers.py::test_sanitize_claims_handles_missing_allowed_keys PASSED [  6%]
+tests\test_auth_helpers.py::test_sanitize_claims_returns_empty_dict_for_no_allowed_keys PASSED [  6%]
+tests\test_auth_helpers.py::test_enforce_claim_integrity_validates_org_match PASSED [  6%]
+tests\test_auth_helpers.py::test_enforce_claim_integrity_rejects_org_mismatch PASSED [  7%]
+tests\test_auth_helpers.py::test_enforce_claim_integrity_rejects_missing_org_claim_when_user_has_org PASSED [  7%]
+tests\test_auth_helpers.py::test_enforce_claim_integrity_creates_missing_org_from_clerk PASSED [  7%]
+tests\test_auth_helpers.py::test_enforce_claim_integrity_validates_role_match PASSED [  7%]
+tests\test_auth_helpers.py::test_enforce_claim_integrity_rejects_role_mismatch PASSED [  7%]
+tests\test_auth_helpers.py::test_enforce_claim_integrity_rejects_unknown_role_claim PASSED [  7%]
+tests\test_auth_helpers.py::test_enforce_claim_integrity_logs_claim_mismatches PASSED [  7%]
+tests\test_auth_helpers.py::test_enforce_claim_integrity_allows_missing_role_claim PASSED [  7%]
+tests\test_auth_helpers.py::test_get_current_user_enforces_claim_integrity PASSED [  8%]
+tests\test_auth_helpers.py::test_require_feature_allows_access_with_sufficient_tier PASSED [  8%]
+tests\test_auth_helpers.py::test_require_feature_blocks_access_with_insufficient_tier PASSED [  8%]
+tests\test_billing_endpoints.py::test_create_checkout_session_success PASSED [  8%]
+tests\test_billing_endpoints.py::test_create_checkout_session_invalid_tier PASSED [  8%]
+tests\test_billing_endpoints.py::test_create_checkout_session_requires_auth PASSED [  8%]
+tests\test_billing_endpoints.py::test_create_checkout_session_existing_subscription PASSED [  8%]
+tests\test_billing_endpoints.py::test_create_checkout_session_with_trial PASSED [  8%]
+tests\test_billing_endpoints.py::test_get_subscription_success PASSED    [  9%]
+tests\test_billing_endpoints.py::test_get_subscription_not_found PASSED  [  9%]
+tests\test_billing_endpoints.py::test_get_subscription_requires_auth PASSED [  9%]
+tests\test_billing_endpoints.py::test_update_subscription_tier_upgrade PASSED [  9%]
+tests\test_billing_endpoints.py::test_update_subscription_tier_downgrade PASSED [  9%]
+tests\test_billing_endpoints.py::test_cancel_subscription_at_period_end PASSED [  9%]
+tests\test_billing_endpoints.py::test_cancel_subscription_immediately PASSED [  9%]
+tests\test_billing_endpoints.py::test_cancel_subscription_requires_active_subscription PASSED [  9%]
+tests\test_billing_endpoints.py::test_customer_portal_redirect PASSED    [ 10%]
+tests\test_billing_simple.py::test_create_checkout_session_endpoint_exists PASSED [ 10%]
+tests\test_billing_simple.py::test_get_subscription_endpoint_exists PASSED [ 10%]
+tests\test_billing_simple.py::test_cancel_subscription_endpoint_exists PASSED [ 10%]
+tests\test_clerk_auth_complete.py::test_webhook_creates_user PASSED      [ 10%]
+tests\test_clerk_auth_complete.py::test_webhook_rejects_invalid_signature PASSED [ 10%]
+tests\test_clerk_auth_complete.py::test_webhook_rejects_missing_signature PASSED [ 10%]
+tests\test_clerk_auth_complete.py::test_webhook_updates_existing_user PASSED [ 10%]
+tests\test_clerk_auth_complete.py::test_webhook_update_creates_if_not_exists PASSED [ 11%]
+tests\test_clerk_auth_complete.py::test_webhook_soft_deletes_user PASSED [ 11%]
+tests\test_clerk_auth_complete.py::test_webhook_updates_last_login_on_session_created PASSED [ 11%]
+tests\test_clerk_auth_complete.py::test_webhook_handles_session_ended PASSED [ 11%]
+tests\test_clerk_auth_complete.py::test_webhook_handles_missing_email_addresses PASSED [ 11%]
+tests\test_clerk_auth_complete.py::test_webhook_upserts_organization_metadata PASSED [ 11%]
+tests\test_clerk_auth_complete.py::test_webhook_creates_organization_when_missing PASSED [ 11%]
+tests\test_clerk_auth_complete.py::test_webhook_deactivates_organization_on_delete PASSED [ 11%]
+tests\test_clerk_auth_complete.py::test_webhook_handles_invalid_role_gracefully PASSED [ 12%]
+tests\test_clerk_auth_complete.py::test_auth_me_returns_current_user PASSED [ 12%]
+tests\test_clerk_auth_complete.py::test_auth_me_requires_token PASSED    [ 12%]
+tests\test_clerk_auth_complete.py::test_auth_me_rejects_invalid_token PASSED [ 12%]
+tests\test_clerk_auth_complete.py::test_auth_me_rejects_token_for_nonexistent_user PASSED [ 12%]
+tests\test_clerk_auth_complete.py::test_auth_me_rejects_token_without_sub PASSED [ 12%]
+tests\test_clerk_auth_complete.py::test_auth_me_rejects_org_claim_mismatch PASSED [ 12%]
+tests\test_clerk_auth_complete.py::test_auth_me_rejects_role_claim_mismatch PASSED [ 12%]
+tests\test_clerk_auth_complete.py::test_auth_me_populates_missing_org_from_claim PASSED [ 13%]
+tests\test_clerk_auth_complete.py::test_webhook_handles_empty_data_gracefully PASSED [ 13%]
+tests\test_clerk_auth_complete.py::test_webhook_ignores_unknown_event_types PASSED [ 13%]
+tests\test_clerk_auth_complete.py::test_user_creation_with_all_roles PASSED [ 13%]
+tests\test_clerk_auth_complete.py::test_webhook_handles_invalid_timestamp_format PASSED [ 13%]
+tests\test_clerk_auth_complete.py::test_full_user_lifecycle PASSED       [ 13%]
+tests\test_database_reset.py::test_reset_metadata_restores_dropped_tables PASSED [ 13%]
+tests\test_database_reset.py::test_safe_drop_schema_handles_drop_all_errors PASSED [ 13%]
+tests\test_deal_endpoints.py::test_create_deal_success PASSED            [ 14%]
+tests\test_deal_endpoints.py::test_create_deal_validation_errors PASSED  [ 14%]
+tests\test_deal_endpoints.py::test_create_deal_sets_owner_and_org PASSED [ 14%]
+tests\test_deal_endpoints.py::test_create_deal_requires_auth PASSED      [ 14%]
+tests\test_deal_endpoints.py::test_create_deal_default_stage PASSED      [ 14%]
+tests\test_deal_endpoints.py::test_list_deals_returns_org_deals_only PASSED [ 14%]
+tests\test_deal_endpoints.py::test_list_deals_pagination_works PASSED    [ 14%]
+tests\test_deal_endpoints.py::test_list_deals_filter_by_stage PASSED     [ 14%]
+tests\test_deal_endpoints.py::test_list_deals_search_by_name PASSED      [ 15%]
+tests\test_deal_endpoints.py::test_list_deals_sort_by_created_at PASSED  [ 15%]
+tests\test_deal_endpoints.py::test_list_deals_excludes_archived PASSED   [ 15%]
+tests\test_deal_endpoints.py::test_list_deals_requires_auth PASSED       [ 15%]
+tests\test_deal_endpoints.py::test_get_deal_success PASSED               [ 15%]
+tests\test_deal_endpoints.py::test_get_deal_not_found PASSED             [ 15%]
+tests\test_deal_endpoints.py::test_get_deal_forbidden_other_org PASSED   [ 15%]
+tests\test_deal_endpoints.py::test_get_deal_requires_auth PASSED         [ 15%]
+tests\test_deal_endpoints.py::test_update_deal_success PASSED            [ 16%]
+tests\test_deal_endpoints.py::test_update_deal_stage_change PASSED       [ 16%]
+tests\test_deal_endpoints.py::test_update_deal_partial_update PASSED     [ 16%]
+tests\test_deal_endpoints.py::test_update_deal_forbidden_other_org PASSED [ 16%]
+tests\test_deal_endpoints.py::test_update_deal_validation_errors PASSED  [ 16%]
+tests\test_deal_endpoints.py::test_archive_deal_success PASSED           [ 16%]
+tests\test_deal_endpoints.py::test_archive_deal_forbidden_other_org PASSED [ 16%]
+tests\test_deal_endpoints.py::test_unarchive_deal_success PASSED         [ 16%]
+tests\test_deal_endpoints.py::test_unarchive_deal_forbidden_other_org PASSED [ 17%]
+tests\test_deal_matching_api.py::TestDealMatchingCriteriaAPI::test_create_criteria_success PASSED [ 17%]
+tests\test_deal_matching_api.py::TestDealMatchingCriteriaAPI::test_create_criteria_requires_auth PASSED [ 17%]
+tests\test_deal_matching_api.py::TestDealMatchingCriteriaAPI::test_list_criteria PASSED [ 17%]
+tests\test_deal_matching_api.py::TestDealMatchingAPI::test_find_matches_for_deal PASSED [ 17%]
+tests\test_deal_matching_api.py::TestDealMatchingAPI::test_find_matches_requires_auth PASSED [ 17%]
+tests\test_deal_matching_api.py::TestDealMatchingAPI::test_list_matches_for_deal PASSED [ 17%]
+tests\test_deal_matching_api.py::TestDealMatchingAPI::test_list_matches_requires_auth PASSED [ 17%]
+tests\test_deal_matching_api.py::TestDealMatchingAPI::test_list_matches_deal_not_found PASSED [ 18%]
+tests\test_deal_matching_api.py::TestDealMatchingAPI::test_find_matches_deal_not_found PASSED [ 18%]
+tests\test_deal_matching_api.py::TestDealMatchActionsAPI::test_record_match_action_view PASSED [ 18%]
+tests\test_deal_matching_api.py::TestDealMatchActionsAPI::test_record_match_action_save PASSED [ 18%]
+tests\test_deal_matching_api.py::TestDealMatchActionsAPI::test_record_match_action_pass PASSED [ 18%]
+tests\test_deal_matching_api.py::TestDealMatchActionsAPI::test_record_match_action_request_intro PASSED [ 18%]
+tests\test_deal_matching_api.py::TestDealMatchActionsAPI::test_record_match_action_requires_auth PASSED [ 18%]
+tests\test_deal_matching_api.py::TestDealMatchActionsAPI::test_record_match_action_match_not_found PASSED [ 18%]
+tests\test_deal_matching_api.py::TestDealMatchingIntegration::test_create_criteria_and_find_matches_workflow PASSED [ 19%]
+tests\test_deal_matching_models.py::TestDealMatchCriteriaModel::test_create_deal_match_criteria_with_required_fields PASSED [ 19%]
+tests\test_deal_matching_models.py::TestDealMatchCriteriaModel::test_create_criteria_with_optional_fields PASSED [ 19%]
+tests\test_deal_matching_models.py::TestDealMatchCriteriaModel::test_criteria_enforces_organization_isolation PASSED [ 19%]
+tests\test_deal_matching_models.py::TestDealMatchModel::test_create_deal_match PASSED [ 19%]
+tests\test_deal_matching_models.py::TestDealMatchModel::test_match_score_validation PASSED [ 19%]
+tests\test_deal_matching_models.py::TestDealMatchModel::test_match_status_tracking PASSED [ 19%]
+tests\test_deal_matching_models.py::TestDealMatchActionModel::test_create_match_action PASSED [ 19%]
+tests\test_deal_matching_models.py::TestDealMatchActionModel::test_track_multiple_actions_on_match PASSED [ 20%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_calculate_industry_match_exact PASSED [ 20%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_calculate_industry_match_partial PASSED [ 20%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_calculate_industry_match_none PASSED [ 20%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_calculate_size_match_within_range PASSED [ 20%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_calculate_size_match_outside_range PASSED [ 20%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_calculate_geography_match_exact PASSED [ 20%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_calculate_geography_match_none PASSED [ 20%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_calculate_semantic_similarity PASSED [ 21%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_calculate_weighted_score PASSED [ 21%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_determine_confidence_level_high PASSED [ 21%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_determine_confidence_level_medium PASSED [ 21%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_determine_confidence_level_low PASSED [ 21%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_find_matches_returns_ranked_results PASSED [ 21%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_find_matches_filters_low_scores PASSED [ 21%]
+tests\test_deal_matching_service.py::TestDealMatchingService::test_match_result_contains_explanation PASSED [ 21%]
+tests\test_document_endpoints.py::test_create_folder_success PASSED      [ 22%]
+tests\test_document_endpoints.py::test_upload_document_success PASSED    [ 22%]
+tests\test_document_endpoints.py::test_upload_document_rejects_large_files PASSED [ 22%]
+tests\test_document_endpoints.py::test_list_documents_filters_by_folder PASSED [ 22%]
+tests\test_document_endpoints.py::test_download_document_records_access_log PASSED [ 22%]
+tests\test_document_endpoints.py::test_set_document_permission PASSED    [ 22%]
+tests\test_document_endpoints.py::test_create_nested_folder PASSED       [ 22%]
+tests\test_document_endpoints.py::test_rename_folder PASSED              [ 22%]
+tests\test_document_endpoints.py::test_delete_empty_folder PASSED        [ 23%]
+tests\test_document_endpoints.py::test_delete_non_empty_folder_fails PASSED [ 23%]
+tests\test_document_endpoints.py::test_folder_requires_authentication PASSED [ 23%]
+tests\test_document_endpoints.py::test_folder_organization_isolation PASSED [ 23%]
+tests\test_document_endpoints.py::test_upload_multiple_documents PASSED  [ 23%]
+tests\test_document_endpoints.py::test_upload_unsupported_file_type PASSED [ 23%]
+tests\test_document_endpoints.py::test_upload_creates_audit_log PASSED   [ 23%]
+tests\test_document_endpoints.py::test_search_documents_by_filename PASSED [ 23%]
+tests\test_document_endpoints.py::test_filter_documents_by_file_type PASSED [ 24%]
+tests\test_document_endpoints.py::test_upload_same_name_creates_new_version PASSED [ 24%]
+tests\test_document_endpoints.py::test_list_document_versions PASSED     [ 24%]
+tests\test_document_endpoints.py::test_download_specific_version PASSED  [ 24%]
+tests\test_document_endpoints.py::test_restore_previous_version PASSED   [ 24%]
+tests\test_document_endpoints.py::test_max_versions_enforced PASSED      [ 24%]
+tests\test_document_endpoints.py::test_delete_document_archives_all_versions PASSED [ 24%]
+tests\test_document_endpoints.py::test_viewer_cannot_delete_document PASSED [ 24%]
+tests\test_document_endpoints.py::test_viewer_can_download_document PASSED [ 25%]
+tests\test_document_endpoints.py::test_editor_can_upload_with_folder_permission PASSED [ 25%]
+tests\test_document_endpoints.py::test_granting_folder_permission_creates_audit_log PASSED [ 25%]
+tests\test_document_endpoints.py::test_revoking_folder_permission_creates_audit_log PASSED [ 25%]
+tests\test_document_endpoints.py::test_revoking_document_permission_creates_audit_log PASSED [ 25%]
+tests\test_document_endpoints.py::test_editor_cannot_delete_others_document PASSED [ 25%]
+tests\test_document_endpoints.py::test_editor_can_delete_own_document PASSED [ 25%]
+tests\test_document_endpoints.py::test_delete_document_requires_editor_permission PASSED [ 25%]
+tests\test_document_endpoints.py::test_delete_document_records_audit_log PASSED [ 25%]
+tests\test_document_endpoints.py::test_access_logs_include_user_name PASSED [ 26%]
+tests\test_document_endpoints.py::test_bulk_download_documents PASSED    [ 26%]
+tests\test_document_endpoints.py::test_bulk_download_requires_permission PASSED [ 26%]
+tests\test_document_endpoints.py::test_bulk_delete_documents PASSED      [ 26%]
+tests\test_document_endpoints.py::test_bulk_delete_requires_owner_permission PASSED [ 26%]
+tests\test_document_endpoints.py::test_bulk_delete_partial_failure PASSED [ 26%]
+tests\test_document_service.py::test_trim_document_versions_keeps_latest_twenty PASSED [ 26%]
+tests\test_document_service.py::test_trim_document_versions_noop_when_within_limit PASSED [ 26%]
+tests\test_document_service.py::test_bulk_download_documents_logs_access PASSED [ 27%]
+tests\test_document_service.py::test_bulk_download_documents_requires_viewer_permission PASSED [ 27%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_professional_has_audio_podcast_access PASSED [ 27%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_starter_no_audio_podcast_access PASSED [ 27%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_professional_no_video_podcast_access PASSED [ 27%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_premium_has_video_podcast_access PASSED [ 27%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_premium_has_youtube_integration PASSED [ 27%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_professional_no_youtube_integration PASSED [ 27%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_enterprise_has_live_streaming PASSED [ 28%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_premium_no_live_streaming PASSED [ 28%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_enterprise_has_multi_language_transcription PASSED [ 28%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_professional_has_basic_transcription PASSED [ 28%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_professional_no_ai_enhanced_transcription PASSED [ 28%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_raises_feature_not_found_for_invalid_feature PASSED [ 28%]
+tests\test_entitlement.py::TestCheckFeatureAccess::test_all_tiers_have_core_features PASSED [ 28%]
+tests\test_entitlement.py::TestGetFeaturesForTier::test_starter_tier_features PASSED [ 28%]
+tests\test_entitlement.py::TestGetFeaturesForTier::test_professional_tier_features PASSED [ 29%]
+tests\test_entitlement.py::TestGetFeaturesForTier::test_premium_tier_features PASSED [ 29%]
+tests\test_entitlement.py::TestGetFeaturesForTier::test_enterprise_tier_features PASSED [ 29%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[starter-podcast_audio-False] PASSED [ 29%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[starter-podcast_video-False] PASSED [ 29%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[starter-youtube_integration-False] PASSED [ 29%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[starter-live_streaming-False] PASSED [ 29%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[starter-deal_management-True] PASSED [ 29%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[professional-podcast_audio-True] PASSED [ 30%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[professional-podcast_video-False] PASSED [ 30%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[professional-youtube_integration-False] PASSED [ 30%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[professional-live_streaming-False] PASSED [ 30%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[professional-transcription_basic-True] PASSED [ 30%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[professional-transcription_ai_enhanced-False] PASSED [ 30%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[premium-podcast_audio-True] PASSED [ 30%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[premium-podcast_video-True] PASSED [ 30%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[premium-youtube_integration-True] PASSED [ 31%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[premium-live_streaming-False] PASSED [ 31%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[premium-transcription_basic-True] PASSED [ 31%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[premium-transcription_ai_enhanced-True] PASSED [ 31%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[premium-transcription_multi_language-False] PASSED [ 31%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[enterprise-podcast_audio-True] PASSED [ 31%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[enterprise-podcast_video-True] PASSED [ 31%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[enterprise-youtube_integration-True] PASSED [ 31%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[enterprise-live_streaming-True] PASSED [ 32%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[enterprise-transcription_basic-True] PASSED [ 32%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[enterprise-transcription_ai_enhanced-True] PASSED [ 32%]
+tests\test_entitlement.py::TestFeatureEntitlementMatrix::test_feature_entitlement_matrix[enterprise-transcription_multi_language-True] PASSED [ 32%]
+tests\test_entitlement.py::TestFeatureNotFoundError::test_feature_not_found_error_message PASSED [ 32%]
+tests\test_financial_api.py::test_calculate_financial_ratios_endpoint PASSED [ 32%]
+tests\test_financial_api.py::test_calculate_ratios_requires_authentication PASSED [ 32%]
+tests\test_financial_api.py::test_calculate_ratios_deal_not_found PASSED [ 32%]
+tests\test_financial_api.py::test_calculate_ratios_with_partial_data PASSED [ 33%]
+tests\test_financial_api.py::test_get_financial_connections_endpoint_returns_empty_list_when_no_connections PASSED [ 33%]
+tests\test_financial_api.py::test_get_financial_connections_endpoint_returns_connections PASSED [ 33%]
+tests\test_financial_api.py::test_get_financial_ratios_not_found PASSED  [ 33%]
+tests\test_financial_api.py::test_get_financial_narrative_not_found PASSED [ 33%]
+tests\test_financial_api.py::test_connect_xero_initiates_oauth_flow PASSED [ 33%]
+tests\test_financial_api.py::test_connect_xero_with_invalid_deal PASSED  [ 33%]
+tests\test_financial_api.py::test_xero_oauth_callback_success PASSED     [ 33%]
+tests\test_financial_api.py::test_xero_oauth_callback_missing_code PASSED [ 34%]
+tests\test_financial_api.py::test_sync_financial_data_success PASSED     [ 34%]
+tests\test_financial_api.py::test_sync_financial_data_no_connection PASSED [ 34%]
+tests\test_financial_api.py::test_connect_quickbooks_initiates_oauth_flow PASSED [ 34%]
+tests\test_financial_api.py::test_connect_quickbooks_with_invalid_deal PASSED [ 34%]
+tests\test_financial_api.py::test_quickbooks_oauth_callback_success PASSED [ 34%]
+tests\test_financial_api.py::test_quickbooks_oauth_callback_missing_params PASSED [ 34%]
+tests\test_financial_api.py::test_sync_quickbooks_financial_data_success PASSED [ 34%]
+tests\test_financial_api.py::test_sync_quickbooks_financial_data_no_connection PASSED [ 35%]
+tests\test_financial_api.py::test_quickbooks_connection_status PASSED    [ 35%]
+tests\test_financial_api.py::test_disconnect_quickbooks_connection PASSED [ 35%]
+tests\test_financial_api.py::test_get_readiness_score_success PASSED     [ 35%]
+tests\test_financial_api.py::test_get_readiness_score_no_narrative PASSED [ 35%]
+tests\test_financial_models_sync.py::test_create_financial_connection PASSED [ 35%]
+tests\test_financial_models_sync.py::test_financial_connection_cascade_delete PASSED [ 35%]
+tests\test_financial_models_sync.py::test_create_financial_statement_balance_sheet PASSED [ 35%]
+tests\test_financial_models_sync.py::test_financial_statement_with_json_fields PASSED [ 36%]
+tests\test_financial_models_sync.py::test_create_financial_ratios PASSED [ 36%]
+tests\test_financial_models_sync.py::test_financial_ratio_nullable_fields PASSED [ 36%]
+tests\test_financial_models_sync.py::test_create_financial_narrative PASSED [ 36%]
+tests\test_financial_models_sync.py::test_financial_narrative_version_control PASSED [ 36%]
+tests\test_financial_models_sync.py::test_complete_financial_data_chain PASSED [ 36%]
+tests\test_financial_models_sync.py::test_cascade_delete_all_financial_data PASSED [ 36%]
+tests\test_financial_narrative_service.py::test_build_narrative_prompt_with_complete_data PASSED [ 36%]
+tests\test_financial_narrative_service.py::test_build_narrative_prompt_with_minimal_data PASSED [ 37%]
+tests\test_financial_narrative_service.py::test_parse_narrative_response_with_complete_response PASSED [ 37%]
+tests\test_financial_narrative_service.py::test_parse_narrative_response_with_red_flags PASSED [ 37%]
+tests\test_financial_narrative_service.py::test_calculate_readiness_score_high_quality_deal PASSED [ 37%]
+tests\test_financial_narrative_service.py::test_calculate_readiness_score_low_quality_deal PASSED [ 37%]
+tests\test_financial_narrative_service.py::test_calculate_readiness_score_moderate_deal PASSED [ 37%]
+tests\test_financial_narrative_service.py::test_generate_financial_narrative_success PASSED [ 37%]
+tests\test_financial_narrative_service.py::test_generate_financial_narrative_returns_existing_by_default PASSED [ 37%]
+tests\test_financial_narrative_service.py::test_generate_financial_narrative_raises_error_when_no_data PASSED [ 38%]
+tests\test_financial_narrative_service.py::test_generate_financial_narrative_raises_error_when_deal_not_found PASSED [ 38%]
+tests\test_financial_ratios.py::test_current_ratio_calculation PASSED    [ 38%]
+tests\test_financial_ratios.py::test_current_ratio_with_zero_liabilities PASSED [ 38%]
+tests\test_financial_ratios.py::test_quick_ratio_calculation PASSED      [ 38%]
+tests\test_financial_ratios.py::test_quick_ratio_with_zero_liabilities PASSED [ 38%]
+tests\test_financial_ratios.py::test_cash_ratio_calculation PASSED       [ 38%]
+tests\test_financial_ratios.py::test_operating_cash_flow_ratio_calculation PASSED [ 38%]
+tests\test_financial_ratios.py::test_defensive_interval_ratio_calculation PASSED [ 39%]
+tests\test_financial_ratios.py::test_gross_profit_margin_calculation PASSED [ 39%]
+tests\test_financial_ratios.py::test_gross_profit_margin_with_zero_revenue PASSED [ 39%]
+tests\test_financial_ratios.py::test_operating_profit_margin_calculation PASSED [ 39%]
+tests\test_financial_ratios.py::test_net_profit_margin_calculation PASSED [ 39%]
+tests\test_financial_ratios.py::test_return_on_assets_calculation PASSED [ 39%]
+tests\test_financial_ratios.py::test_return_on_equity_calculation PASSED [ 39%]
+tests\test_financial_ratios.py::test_return_on_invested_capital_calculation PASSED [ 39%]
+tests\test_financial_ratios.py::test_ebitda_margin_calculation PASSED    [ 40%]
+tests\test_financial_ratios.py::test_ebit_margin_calculation PASSED      [ 40%]
+tests\test_financial_ratios.py::test_debt_to_equity_calculation PASSED   [ 40%]
+tests\test_financial_ratios.py::test_debt_to_equity_with_zero_equity PASSED [ 40%]
+tests\test_financial_ratios.py::test_debt_to_assets_calculation PASSED   [ 40%]
+tests\test_financial_ratios.py::test_equity_multiplier_calculation PASSED [ 40%]
+tests\test_financial_ratios.py::test_interest_coverage_calculation PASSED [ 40%]
+tests\test_financial_ratios.py::test_interest_coverage_with_zero_interest PASSED [ 40%]
+tests\test_financial_ratios.py::test_debt_service_coverage_calculation PASSED [ 41%]
+tests\test_financial_ratios.py::test_financial_leverage_calculation PASSED [ 41%]
+tests\test_financial_ratios.py::test_calculate_all_ratios_comprehensive PASSED [ 41%]
+tests\test_financial_ratios.py::test_calculate_all_ratios_with_missing_data PASSED [ 41%]
+tests\test_financial_ratios.py::test_calculate_all_ratios_with_empty_data PASSED [ 41%]
+tests\test_financial_xero_integration.py::test_placeholder_ratio_engine SKIPPED [ 41%]
+tests\test_master_admin_api.py::test_master_admin_requires_auth PASSED   [ 41%]
+tests\test_master_admin_api.py::test_goal_crud_flow PASSED               [ 41%]
+tests\test_master_admin_api.py::test_activity_crud_and_listing PASSED    [ 42%]
+tests\test_master_admin_api.py::test_scores_and_dashboard_stats PASSED   [ 42%]
+tests\test_master_admin_api.py::test_focus_session_flow PASSED           [ 42%]
+tests\test_master_admin_api.py::test_nudge_management PASSED             [ 42%]
+tests\test_master_admin_api.py::test_meeting_template_management PASSED  [ 42%]
+tests\test_master_admin_api.py::test_prospect_crud_flow PASSED           [ 42%]
+tests\test_master_admin_api.py::test_deal_pipeline_flow PASSED           [ 42%]
+tests\test_master_admin_api.py::test_campaign_and_recipient_management PASSED [ 42%]
+tests\test_master_admin_api.py::test_content_script_and_piece_flow PASSED [ 43%]
+tests\test_master_admin_api.py::test_lead_capture_flow PASSED            [ 43%]
+tests\test_master_admin_api.py::test_collateral_library_flow PASSED      [ 43%]
+tests\test_master_admin_models.py::TestAdminGoalModel::test_create_admin_goal PASSED [ 43%]
+tests\test_master_admin_models.py::TestAdminGoalModel::test_admin_goal_unique_constraint PASSED [ 43%]
+tests\test_master_admin_models.py::TestAdminGoalModel::test_admin_goal_defaults PASSED [ 43%]
+tests\test_master_admin_models.py::TestAdminGoalModel::test_admin_goal_repr PASSED [ 43%]
+tests\test_master_admin_models.py::TestAdminActivityModel::test_create_admin_activity PASSED [ 43%]
+tests\test_master_admin_models.py::TestAdminActivityModel::test_admin_activity_type_constraint SKIPPED [ 44%]
+tests\test_master_admin_models.py::TestAdminActivityModel::test_admin_activity_status_constraint SKIPPED [ 44%]
+tests\test_master_admin_models.py::TestAdminActivityModel::test_admin_activity_default_amount PASSED [ 44%]
+tests\test_master_admin_models.py::TestAdminActivityModel::test_admin_activity_with_prospect PASSED [ 44%]
+tests\test_master_admin_models.py::TestAdminScoreModel::test_create_admin_score PASSED [ 44%]
+tests\test_master_admin_models.py::TestAdminScoreModel::test_admin_score_range_constraint PASSED [ 44%]
+tests\test_master_admin_models.py::TestAdminScoreModel::test_admin_score_unique_constraint PASSED [ 44%]
+tests\test_master_admin_models.py::TestAdminScoreModel::test_admin_score_defaults PASSED [ 44%]
+tests\test_master_admin_models.py::TestAdminFocusSessionModel::test_create_focus_session PASSED [ 45%]
+tests\test_master_admin_models.py::TestAdminFocusSessionModel::test_complete_focus_session PASSED [ 45%]
+tests\test_master_admin_models.py::TestAdminFocusSessionModel::test_interrupted_focus_session PASSED [ 45%]
+tests\test_master_admin_models.py::TestAdminNudgeModel::test_create_nudge PASSED [ 45%]
+tests\test_master_admin_models.py::TestAdminNudgeModel::test_nudge_type_constraint SKIPPED [ 45%]
+tests\test_master_admin_models.py::TestAdminNudgeModel::test_nudge_priority_constraint SKIPPED [ 45%]
+tests\test_master_admin_models.py::TestAdminNudgeModel::test_mark_nudge_as_read PASSED [ 45%]
+tests\test_master_admin_models.py::TestAdminMeetingModel::test_create_meeting_template PASSED [ 45%]
+tests\test_master_admin_models.py::TestAdminMeetingModel::test_meeting_type_constraint SKIPPED [ 46%]
+tests\test_master_admin_models.py::TestAdminMeetingModel::test_meeting_default_duration PASSED [ 46%]
+tests\test_models_financial_connection.py::test_create_financial_connection PASSED [ 46%]
+tests\test_models_financial_connection.py::test_financial_connection_with_optional_fields PASSED [ 46%]
+tests\test_models_financial_connection.py::test_financial_connection_cascade_delete_with_deal PASSED [ 46%]
+tests\test_models_financial_connection.py::test_financial_connection_relationship_to_deal PASSED [ 46%]
+tests\test_models_financial_connection.py::test_financial_connection_soft_delete PASSED [ 46%]
+tests\test_models_financial_connection.py::test_financial_connection_status_values PASSED [ 46%]
+tests\test_netsuite_integration.py::test_netsuite_rest_api_client_can_be_imported SKIPPED [ 47%]
+tests\test_netsuite_integration.py::test_real_netsuite_client_class_exists SKIPPED [ 47%]
+tests\test_netsuite_integration.py::test_netsuite_oauth_url_uses_real_credentials SKIPPED [ 47%]
+tests\test_netsuite_integration.py::test_netsuite_client_has_real_configuration SKIPPED [ 47%]
+tests\test_netsuite_integration.py::test_token_exchange_structure_matches_netsuite_api SKIPPED [ 47%]
+tests\test_netsuite_integration.py::test_get_connections_returns_real_company_structure SKIPPED [ 47%]
+tests\test_netsuite_integration.py::test_balance_sheet_import_uses_real_netsuite_api_format SKIPPED [ 47%]
+tests\test_netsuite_integration.py::test_netsuite_rest_api_error_handling SKIPPED [ 47%]
+tests\test_netsuite_integration.py::test_netsuite_account_id_configuration SKIPPED [ 48%]
+tests\test_netsuite_integration.py::test_full_netsuite_oauth_flow_with_real_api SKIPPED [ 48%]
+tests\test_organization_service.py::TestOrganizationService::test_upsert_from_clerk_creates_with_defaults PASSED [ 48%]
+tests\test_organization_service.py::TestOrganizationService::test_upsert_from_clerk_normalizes_subscription_tier PASSED [ 48%]
+tests\test_organization_service.py::TestOrganizationService::test_upsert_from_clerk_falls_back_to_starter_on_invalid_tier PASSED [ 48%]
+tests\test_organization_service.py::TestOrganizationService::test_upsert_from_clerk_generates_unique_slug PASSED [ 48%]
+tests\test_organization_service.py::TestOrganizationService::test_deactivate_organization_marks_inactive PASSED [ 48%]
+tests\test_path_safety.py::test_pytest_ignore_collect_delegates_to_path_safety PASSED [ 48%]
+tests\test_path_safety.py::test_reserved_name_detection_handles_strings PASSED [ 49%]
+tests\test_path_safety.py::test_reserved_name_detection_handles_py_path_like_objects PASSED [ 49%]
+tests\test_path_safety.py::test_should_ignore_path_only_on_windows PASSED [ 49%]
+tests\test_pipeline_template_api.py::test_create_and_list_pipeline_templates PASSED [ 49%]
+tests\test_pipeline_template_api.py::test_update_pipeline_template PASSED [ 49%]
+tests\test_pipeline_template_api.py::test_delete_pipeline_template PASSED [ 49%]
+tests\test_pipeline_template_schemas.py::test_stage_color_normalizes_to_uppercase_hex PASSED [ 49%]
+tests\test_pipeline_template_schemas.py::test_stage_color_without_hash_gets_hash_prefix PASSED [ 49%]
+tests\test_pipeline_template_schemas.py::test_stage_color_with_hash_preserves_hash_and_uppercases PASSED [ 50%]
+tests\test_pipeline_template_schemas.py::test_template_requires_at_least_one_stage PASSED [ 50%]
+tests\test_podcast_api.py::TestPodcastEpisodeCreation::test_starter_user_blocked_from_creating_episode PASSED [ 50%]
+tests\test_podcast_api.py::TestPodcastEpisodeCreation::test_quota_service_passes_db_session PASSED [ 50%]
+tests\test_podcast_api.py::TestPodcastEpisodeCreation::test_professional_user_can_create_episode PASSED [ 50%]
+tests\test_podcast_api.py::TestPodcastEpisodeCreation::test_professional_user_quota_exceeded_returns_429 PASSED [ 50%]
+tests\test_podcast_api.py::TestPodcastEpisodeCreation::test_professional_user_blocked_from_video_episode PASSED [ 50%]
+tests\test_podcast_api.py::TestPodcastEpisodeCreation::test_premium_user_can_create_video_episode PASSED [ 50%]
+tests\test_podcast_api.py::TestPodcastUsageEndpoint::test_usage_endpoint_returns_quota_summary_for_professional PASSED [ 50%]
+tests\test_podcast_api.py::TestPodcastUsageEndpoint::test_usage_endpoint_reports_unlimited_for_premium PASSED [ 51%]
+tests\test_podcast_api.py::TestPodcastUsageEndpoint::test_usage_endpoint_blocks_starter_tier PASSED [ 51%]
+tests\test_podcast_api.py::TestPodcastUsageEndpoint::test_usage_endpoint_sets_warning_headers_when_near_limit PASSED [ 51%]
+tests\test_podcast_api.py::TestPodcastUsageEndpoint::test_usage_endpoint_sets_upgrade_headers_when_quota_exceeded PASSED [ 51%]
+tests\test_podcast_api.py::TestPodcastFeatureAccessEndpoint::test_feature_access_returns_true_for_authorized_tier PASSED [ 51%]
+tests\test_podcast_api.py::TestPodcastFeatureAccessEndpoint::test_feature_access_returns_false_for_insufficient_tier PASSED [ 51%]
+tests\test_podcast_api.py::TestPodcastFeatureAccessEndpoint::test_feature_access_returns_404_for_unknown_feature PASSED [ 51%]
+tests\test_podcast_api.py::TestPodcastListEndpoint::test_list_episodes_returns_organizations_episodes PASSED [ 51%]
+tests\test_podcast_api.py::TestPodcastListEndpoint::test_list_episodes_filters_by_status PASSED [ 52%]
+tests\test_podcast_api.py::TestPodcastGetSingleEndpoint::test_get_single_episode_returns_episode PASSED [ 52%]
+tests\test_podcast_api.py::TestPodcastGetSingleEndpoint::test_get_single_episode_returns_404_when_not_found PASSED [ 52%]
+tests\test_podcast_api.py::TestPodcastUpdateEndpoint::test_update_episode_modifies_fields PASSED [ 52%]
+tests\test_podcast_api.py::TestPodcastDeleteEndpoint::test_delete_episode_removes_episode PASSED [ 52%]
+tests\test_podcast_api.py::TestPodcastDeleteEndpoint::test_delete_episode_returns_404_when_not_found PASSED [ 52%]
+tests\test_podcast_api.py::TestPodcastYouTubeUpload::test_premium_user_can_publish_video_to_youtube PASSED [ 52%]
+tests\test_podcast_api.py::TestPodcastYouTubeUpload::test_podcast_youtube_upload_requires_video_asset PASSED [ 52%]
+tests\test_podcast_api.py::TestPodcastYouTubeUpload::test_youtube_upload_permission_error_returns_403 PASSED [ 53%]
+tests\test_podcast_api.py::TestFeatureAccessEndpoint::test_feature_access_includes_labels_when_access_granted PASSED [ 53%]
+tests\test_podcast_api.py::TestFeatureAccessEndpoint::test_feature_access_includes_upgrade_message_when_denied PASSED [ 53%]
+tests\test_podcast_api.py::TestFeatureAccessEndpoint::test_feature_access_returns_404_for_unknown_feature PASSED [ 53%]
+tests\test_podcast_api.py::TestAudioUpload::test_upload_audio_professional_success PASSED [ 53%]
+tests\test_podcast_api.py::TestAudioUpload::test_upload_audio_starter_blocked PASSED [ 53%]
+tests\test_podcast_api.py::TestAudioUpload::test_upload_audio_validates_file_format PASSED [ 53%]
+tests\test_podcast_api.py::TestAudioUpload::test_upload_audio_validates_file_size PASSED [ 53%]
+tests\test_podcast_api.py::TestAudioUpload::test_upload_audio_updates_episode_audio_url PASSED [ 54%]
+tests\test_podcast_api.py::TestVideoUpload::test_upload_video_premium_success PASSED [ 54%]
+tests\test_podcast_api.py::TestVideoUpload::test_upload_video_professional_blocked PASSED [ 54%]
+tests\test_podcast_api.py::TestVideoUpload::test_upload_video_validates_file_format PASSED [ 54%]
+tests\test_podcast_api.py::TestVideoUpload::test_upload_video_validates_file_size PASSED [ 54%]
+tests\test_podcast_api.py::TestVideoUpload::test_upload_video_generates_thumbnail PASSED [ 54%]
+tests\test_podcast_api.py::TestVideoUpload::test_upload_video_accepts_mov_format PASSED [ 54%]
+tests\test_podcast_api.py::TestVideoUpload::test_upload_video_updates_episode_video_url PASSED [ 54%]
+tests\test_podcast_api.py::TestTranscription::test_transcribe_audio_professional_success PASSED [ 55%]
+tests\test_podcast_api.py::TestTranscription::test_transcribe_starter_blocked PASSED [ 55%]
+tests\test_podcast_api.py::TestTranscription::test_transcribe_requires_audio_file PASSED [ 55%]
+tests\test_podcast_api.py::TestTranscription::test_transcribe_updates_episode_transcript PASSED [ 55%]
+tests\test_podcast_api.py::TestTranscription::test_transcribe_handles_whisper_api_error PASSED [ 55%]
+tests\test_podcast_api.py::TestTranscription::test_transcribe_multi_language_requires_enterprise PASSED [ 55%]
+tests\test_podcast_api.py::TestTranscription::test_transcribe_multi_language_enterprise_success PASSED [ 55%]
+tests\test_podcast_api.py::TestTranscription::test_transcribe_response_includes_metadata PASSED [ 55%]
+tests\test_podcast_api.py::TestTranscriptDownload::test_download_transcript_txt_success PASSED [ 56%]
+tests\test_podcast_api.py::TestTranscriptDownload::test_download_transcript_srt_success PASSED [ 56%]
+tests\test_podcast_api.py::TestTranscriptDownload::test_download_transcript_requires_transcript PASSED [ 56%]
+tests\test_podcast_api.py::TestTranscriptDownload::test_download_transcript_starter_blocked PASSED [ 56%]
+tests\test_podcast_api.py::TestThumbnailGeneration::test_generate_thumbnail_premium_success PASSED [ 56%]
+tests\test_podcast_api.py::TestThumbnailGeneration::test_generate_thumbnail_requires_video PASSED [ 56%]
+tests\test_podcast_api.py::TestThumbnailGeneration::test_generate_thumbnail_professional_blocked PASSED [ 56%]
+tests\test_podcast_service.py::TestPodcastService::test_create_episode PASSED [ 56%]
+tests\test_podcast_service.py::TestPodcastService::test_get_episodes_filters_by_status PASSED [ 57%]
+tests\test_podcast_service.py::TestPodcastService::test_publish_episode_sets_timestamp PASSED [ 57%]
+tests\test_podcast_service.py::TestPodcastService::test_transcribe_episode_uses_whisper PASSED [ 57%]
+tests\test_podcast_service.py::TestPodcastService::test_transcribe_episode_requires_entitlement PASSED [ 57%]
+tests\test_podcast_service.py::TestPodcastService::test_get_episode_analytics_aggregates_platform_totals PASSED [ 57%]
+tests\test_podcast_service.py::TestPodcastService::test_generate_rss_feed_includes_published_episodes PASSED [ 57%]
+tests\test_podcast_service.py::TestPodcastService::test_multi_tenant_isolation PASSED [ 57%]
+tests\test_podcast_service.py::TestPodcastService::test_update_episode_mutates_fields PASSED [ 57%]
+tests\test_podcast_service.py::TestPodcastService::test_delete_episode_removes_record PASSED [ 58%]
+tests\test_podcast_service.py::TestPodcastService::test_transcribe_episode_missing_episode_raises PASSED [ 58%]
+tests\test_quickbooks_integration.py::test_quickbooks_python_sdk_can_be_imported SKIPPED [ 58%]
+tests\test_quickbooks_integration.py::test_real_quickbooks_client_class_exists SKIPPED [ 58%]
+tests\test_quickbooks_integration.py::test_quickbooks_oauth_url_uses_real_credentials SKIPPED [ 58%]
+tests\test_quickbooks_integration.py::test_quickbooks_client_has_real_configuration SKIPPED [ 58%]
+tests\test_quickbooks_integration.py::test_token_exchange_structure_matches_quickbooks_api SKIPPED [ 58%]
+tests\test_quickbooks_integration.py::test_get_connections_returns_real_company_structure SKIPPED [ 58%]
+tests\test_quickbooks_integration.py::test_balance_sheet_import_uses_real_quickbooks_api_format SKIPPED [ 59%]
+tests\test_quickbooks_integration.py::test_quickbooks_sdk_error_handling SKIPPED [ 59%]
+tests\test_quickbooks_integration.py::test_full_quickbooks_oauth_flow_with_real_api SKIPPED [ 59%]
+tests\test_quota_service.py::TestCheckEpisodeQuota::test_professional_tier_allows_creation_within_quota PASSED [ 59%]
+tests\test_quota_service.py::TestCheckEpisodeQuota::test_professional_tier_blocks_creation_at_quota_limit PASSED [ 59%]
+tests\test_quota_service.py::TestCheckEpisodeQuota::test_premium_tier_unlimited_never_blocks PASSED [ 59%]
+tests\test_quota_service.py::TestCheckEpisodeQuota::test_enterprise_tier_unlimited_never_blocks PASSED [ 59%]
+tests\test_quota_service.py::TestCheckEpisodeQuota::test_starter_tier_blocks_all_podcast_creation PASSED [ 59%]
+tests\test_quota_service.py::TestGetRemainingQuota::test_professional_tier_returns_correct_remaining PASSED [ 60%]
+tests\test_quota_service.py::TestGetRemainingQuota::test_premium_tier_returns_unlimited_indicator PASSED [ 60%]
+tests\test_quota_service.py::TestGetRemainingQuota::test_returns_zero_when_quota_exhausted PASSED [ 60%]
+tests\test_quota_service.py::TestIncrementEpisodeCount::test_increments_usage_count_in_database PASSED [ 60%]
+tests\test_quota_service.py::TestIncrementEpisodeCount::test_sync_session_increments_usage PASSED [ 60%]
+tests\test_quota_service.py::TestIncrementEpisodeCount::test_creates_new_usage_record_for_first_episode PASSED [ 60%]
+tests\test_quota_service.py::TestGetMonthlyUsage::test_returns_current_month_usage_count PASSED [ 60%]
+tests\test_quota_service.py::TestGetMonthlyUsage::test_sync_session_returns_usage PASSED [ 60%]
+tests\test_quota_service.py::TestGetMonthlyUsage::test_returns_zero_when_no_usage_records PASSED [ 61%]
+tests\test_quota_service.py::TestQuotaExceededError::test_quota_exceeded_error_has_clear_message PASSED [ 61%]
+tests\test_quota_service.py::TestQuotaExceededError::test_quota_exceeded_error_includes_upgrade_guidance PASSED [ 61%]
+tests\test_quota_service.py::TestGetQuotaSummary::test_returns_professional_summary PASSED [ 61%]
+tests\test_quota_service.py::TestGetQuotaSummary::test_returns_unlimited_summary PASSED [ 61%]
+tests\test_quota_service.py::TestGetQuotaSummary::test_sets_warning_status_when_usage_exceeds_eighty_percent PASSED [ 61%]
+tests\test_quota_service.py::TestGetQuotaSummary::test_sets_critical_status_when_usage_exceeds_ninety_percent PASSED [ 61%]
+tests\test_quota_service.py::TestGetQuotaSummary::test_includes_period_bounds_for_monthly_reset PASSED [ 61%]
+tests\test_quota_service.py::TestGetQuotaSummary::test_usage_resets_when_new_month_starts PASSED [ 62%]
+tests\test_quota_service.py::TestGetQuotaSummary::test_marks_quota_exceeded_as_upgrade_required PASSED [ 62%]
+tests\test_quota_service.py::TestResetMonthlyUsage::test_reset_monthly_usage_helper_is_defined PASSED [ 62%]
+tests\test_quota_service.py::TestResetMonthlyUsage::test_reset_monthly_usage_creates_zero_record PASSED [ 62%]
+tests\test_quota_service.py::TestResetMonthlyUsage::test_reset_monthly_usage_is_idempotent PASSED [ 62%]
+tests\test_quota_service.py::TestMonthlyQuotaReset::test_quota_resets_when_new_billing_cycle_starts PASSED [ 62%]
+tests\test_quota_service.py::TestMonthlyQuotaReset::test_usage_count_returns_zero_in_new_month PASSED [ 62%]
+tests\test_quota_service.py::TestMonthlyQuotaReset::test_remaining_quota_resets_after_month_boundary PASSED [ 62%]
+tests\test_rbac.py::test_get_current_admin_user_with_admin PASSED        [ 63%]
+tests\test_rbac.py::test_get_current_admin_user_with_non_admin PASSED    [ 63%]
+tests\test_rbac.py::test_require_role_exact_match PASSED                 [ 63%]
+tests\test_rbac.py::test_require_role_no_match PASSED                    [ 63%]
+tests\test_rbac.py::test_require_role_admin_override PASSED              [ 63%]
+tests\test_rbac.py::test_require_min_role_exact_match PASSED             [ 63%]
+tests\test_rbac.py::test_require_min_role_higher_role PASSED             [ 63%]
+tests\test_rbac.py::test_require_min_role_lower_role PASSED              [ 63%]
+tests\test_rbac.py::test_require_min_role_admin_override PASSED          [ 64%]
+tests\test_rbac.py::test_role_hierarchy PASSED                           [ 64%]
+tests\test_s3_storage_service.py::TestS3StorageServiceInitialization::test_initialization_with_valid_credentials SKIPPED [ 64%]
+tests\test_s3_storage_service.py::TestS3StorageServiceInitialization::test_initialization_fails_without_credentials SKIPPED [ 64%]
+tests\test_s3_storage_service.py::TestS3StorageServiceInitialization::test_initialization_fails_with_partial_credentials SKIPPED [ 64%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileKey::test_generate_file_key_creates_unique_hash SKIPPED [ 64%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileKey::test_generate_file_key_is_unique SKIPPED [ 64%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileOperations::test_save_file_uploads_successfully SKIPPED [ 64%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileOperations::test_save_file_includes_metadata SKIPPED [ 65%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileOperations::test_save_file_handles_client_error SKIPPED [ 65%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileOperations::test_get_file_path_returns_presigned_url SKIPPED [ 65%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileOperations::test_get_file_path_raises_error_for_missing_file SKIPPED [ 65%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileOperations::test_delete_file_removes_from_storage SKIPPED [ 65%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileOperations::test_delete_file_returns_false_for_missing_file SKIPPED [ 65%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileOperations::test_file_exists_returns_true_for_existing_file SKIPPED [ 65%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileOperations::test_file_exists_returns_false_for_missing_file SKIPPED [ 65%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileOperations::test_get_file_size_returns_content_length SKIPPED [ 66%]
+tests\test_s3_storage_service.py::TestS3StorageServiceFileOperations::test_get_file_size_raises_error_for_missing_file SKIPPED [ 66%]
+tests\test_s3_storage_service.py::TestS3StorageServicePresignedURLs::test_get_presigned_url_generates_valid_url SKIPPED [ 66%]
+tests\test_s3_storage_service.py::TestS3StorageServicePresignedURLs::test_get_presigned_url_default_expiration SKIPPED [ 66%]
+tests\test_s3_storage_service.py::TestS3StorageServiceContentTypes::test_guess_content_type_pdf SKIPPED [ 66%]
+tests\test_s3_storage_service.py::TestS3StorageServiceContentTypes::test_guess_content_type_mp4 SKIPPED [ 66%]
+tests\test_s3_storage_service.py::TestS3StorageServiceContentTypes::test_guess_content_type_unknown SKIPPED [ 66%]
+tests\test_sage_integration.py::test_sage_rest_api_client_can_be_imported SKIPPED [ 66%]
+tests\test_sage_integration.py::test_real_sage_client_class_exists SKIPPED [ 67%]
+tests\test_sage_integration.py::test_sage_oauth_url_uses_real_credentials SKIPPED [ 67%]
+tests\test_sage_integration.py::test_sage_client_has_real_configuration SKIPPED [ 67%]
+tests\test_sage_integration.py::test_token_exchange_structure_matches_sage_api SKIPPED [ 67%]
+tests\test_sage_integration.py::test_get_connections_returns_real_business_structure SKIPPED [ 67%]
+tests\test_sage_integration.py::test_balance_sheet_import_uses_real_sage_api_format SKIPPED [ 67%]
+tests\test_sage_integration.py::test_sage_rest_api_error_handling SKIPPED [ 67%]
+tests\test_sage_integration.py::test_full_sage_oauth_flow_with_real_api SKIPPED [ 67%]
+tests\test_storage_factory.py::TestStorageServiceFactory::test_factory_returns_local_storage_by_default PASSED [ 68%]
+tests\test_storage_factory.py::TestStorageServiceFactory::test_factory_returns_s3_storage_when_enabled SKIPPED [ 68%]
+tests\test_storage_factory.py::TestStorageServiceFactory::test_factory_returns_singleton PASSED [ 68%]
+tests\test_storage_factory.py::TestStorageServiceFactory::test_local_storage_implements_protocol PASSED [ 68%]
+tests\test_storage_factory.py::TestStorageServiceFactory::test_s3_storage_implements_protocol SKIPPED [ 68%]
+tests\test_subscription.py::TestGetOrganizationTier::test_returns_professional_tier_when_set_in_metadata PASSED [ 68%]
+tests\test_subscription.py::TestGetOrganizationTier::test_returns_premium_tier_when_set_in_metadata PASSED [ 68%]
+tests\test_subscription.py::TestGetOrganizationTier::test_returns_enterprise_tier_when_set_in_metadata PASSED [ 68%]
+tests\test_subscription.py::TestGetOrganizationTier::test_defaults_to_starter_when_metadata_missing PASSED [ 69%]
+tests\test_subscription.py::TestGetOrganizationTier::test_defaults_to_starter_when_metadata_is_none PASSED [ 69%]
+tests\test_subscription.py::TestGetOrganizationTier::test_defaults_to_starter_when_tier_value_invalid PASSED [ 69%]
+tests\test_subscription.py::TestGetOrganizationTier::test_raises_clerk_api_error_when_org_not_found PASSED [ 69%]
+tests\test_subscription.py::TestGetOrganizationTier::test_raises_clerk_api_error_when_network_fails PASSED [ 69%]
+tests\test_subscription.py::TestGetOrganizationTier::test_caches_tier_data_for_performance PASSED [ 69%]
+tests\test_subscription.py::TestGetOrganizationTier::test_cache_respects_ttl PASSED [ 69%]
+tests\test_subscription.py::TestSubscriptionTierEnum::test_starter_tier_exists PASSED [ 69%]
+tests\test_subscription.py::TestSubscriptionTierEnum::test_professional_tier_exists PASSED [ 70%]
+tests\test_subscription.py::TestSubscriptionTierEnum::test_premium_tier_exists PASSED [ 70%]
+tests\test_subscription.py::TestSubscriptionTierEnum::test_enterprise_tier_exists PASSED [ 70%]
+tests\test_subscription.py::TestSubscriptionTierEnum::test_tier_comparison PASSED [ 70%]
+tests\test_subscription.py::TestClerkAPIError::test_clerk_api_error_message PASSED [ 70%]
+tests\test_subscription.py::TestClerkAPIError::test_clerk_api_error_with_original_exception PASSED [ 70%]
+tests\test_subscription_error_paths.py::test_create_checkout_session_value_error PASSED [ 70%]
+tests\test_subscription_error_paths.py::test_create_checkout_session_general_exception PASSED [ 70%]
+tests\test_subscription_error_paths.py::test_get_my_subscription_not_found PASSED [ 71%]
+tests\test_subscription_error_paths.py::test_billing_dashboard_no_subscription PASSED [ 71%]
+tests\test_subscription_error_paths.py::test_billing_dashboard_with_subscription PASSED [ 71%]
+tests\test_subscription_error_paths.py::test_billing_dashboard_zero_counts PASSED [ 71%]
+tests\test_subscription_error_paths.py::test_change_tier_value_error PASSED [ 71%]
+tests\test_subscription_error_paths.py::test_change_tier_general_exception PASSED [ 71%]
+tests\test_subscription_error_paths.py::test_cancel_subscription_value_error PASSED [ 71%]
+tests\test_subscription_error_paths.py::test_cancel_subscription_general_exception PASSED [ 71%]
+tests\test_subscription_error_paths.py::test_get_all_tiers_success PASSED [ 72%]
+tests\test_subscription_error_paths.py::test_stripe_webhook_missing_secret PASSED [ 72%]
+tests\test_subscription_error_paths.py::test_stripe_webhook_invalid_payload SKIPPED [ 72%]
+tests\test_subscription_error_paths.py::test_stripe_webhook_invalid_signature SKIPPED [ 72%]
+tests\test_subscription_error_paths.py::test_stripe_webhook_successful_events SKIPPED [ 72%]
+tests\test_subscription_error_paths.py::test_stripe_webhook_handler_exception_caught SKIPPED [ 72%]
+tests\test_subscription_error_paths.py::test_stripe_webhook_routes_events[checkout.session.completed-handle_checkout_completed] PASSED [ 72%]
+tests\test_subscription_error_paths.py::test_stripe_webhook_routes_events[invoice.paid-handle_invoice_paid] PASSED [ 72%]
+tests\test_subscription_error_paths.py::test_stripe_webhook_routes_events[customer.subscription.updated-handle_subscription_updated] PASSED [ 73%]
+tests\test_subscription_error_paths.py::test_stripe_webhook_routes_events[customer.subscription.deleted-handle_subscription_deleted] PASSED [ 73%]
+tests\test_subscription_model.py::test_create_subscription PASSED        [ 73%]
+tests\test_subscription_model.py::test_subscription_defaults PASSED      [ 73%]
+tests\test_subscription_model.py::test_subscription_tier_enum_values PASSED [ 73%]
+tests\test_subscription_model.py::test_subscription_status_transitions PASSED [ 73%]
+tests\test_subscription_model.py::test_subscription_cancellation_scheduling PASSED [ 73%]
+tests\test_subscription_model.py::test_subscription_trial_period PASSED  [ 73%]
+tests\test_subscription_model.py::test_subscription_unique_per_organization PASSED [ 74%]
+tests\test_subscription_model.py::test_subscription_relationship_to_organization PASSED [ 74%]
+tests\test_subscription_model.py::test_create_invoice PASSED             [ 74%]
+tests\test_subscription_model.py::test_invoice_statuses PASSED           [ 74%]
+tests\test_subscription_model.py::test_invoice_relationship_to_subscription PASSED [ 74%]
+tests\test_subscription_model.py::test_invoice_pdf_url_storage PASSED    [ 74%]
+tests\test_subscription_model.py::test_subscription_cascade_delete_invoices PASSED [ 74%]
+tests\test_subscription_service_edge_cases.py::test_create_checkout_session_with_invalid_tier PASSED [ 74%]
+tests\test_subscription_service_edge_cases.py::test_create_checkout_session_with_missing_organization PASSED [ 75%]
+tests\test_subscription_service_edge_cases.py::test_create_checkout_session_with_none_db PASSED [ 75%]
+tests\test_subscription_service_edge_cases.py::test_create_checkout_session_with_annual_billing PASSED [ 75%]
+tests\test_subscription_service_edge_cases.py::test_create_checkout_session_reuses_existing_customer_id PASSED [ 75%]
+tests\test_subscription_service_edge_cases.py::test_create_checkout_session_with_custom_urls PASSED [ 75%]
+tests\test_subscription_service_edge_cases.py::test_update_subscription_tier_with_none_db PASSED [ 75%]
+tests\test_subscription_service_edge_cases.py::test_update_subscription_tier_with_no_subscription PASSED [ 75%]
+tests\test_subscription_service_edge_cases.py::test_update_subscription_tier_with_no_stripe_subscription_id PASSED [ 75%]
+tests\test_subscription_service_edge_cases.py::test_update_subscription_tier_with_invalid_tier PASSED [ 75%]
+tests\test_subscription_service_edge_cases.py::test_update_subscription_tier_without_proration PASSED [ 76%]
+tests\test_subscription_service_edge_cases.py::test_cancel_subscription_with_none_db PASSED [ 76%]
+tests\test_subscription_service_edge_cases.py::test_cancel_subscription_with_no_subscription PASSED [ 76%]
+tests\test_subscription_service_edge_cases.py::test_cancel_subscription_with_no_stripe_subscription_id PASSED [ 76%]
+tests\test_subscription_service_edge_cases.py::test_cancel_subscription_immediately PASSED [ 76%]
+tests\test_subscription_service_edge_cases.py::test_cancel_subscription_at_period_end PASSED [ 76%]
+tests\test_subscription_service_edge_cases.py::test_handle_checkout_completed_with_no_existing_subscription PASSED [ 76%]
+tests\test_subscription_service_edge_cases.py::test_handle_invoice_paid_with_no_subscription PASSED [ 76%]
+tests\test_subscription_service_edge_cases.py::test_handle_subscription_updated_with_no_subscription PASSED [ 77%]
+tests\test_subscription_service_edge_cases.py::test_handle_subscription_deleted_with_no_subscription PASSED [ 77%]
+tests\test_subscription_service_edge_cases.py::test_get_organization_subscription_returns_none_for_nonexistent_org PASSED [ 77%]
+tests\test_subscription_service_edge_cases.py::test_tier_config_has_all_required_tiers PASSED [ 77%]
+tests\test_subscription_service_edge_cases.py::test_tier_config_all_tiers_have_required_keys PASSED [ 77%]
+tests\test_task_automation.py::test_enqueue_manual_rule_run_returns_when_log_missing PASSED [ 77%]
+tests\test_task_automation.py::test_enqueue_manual_rule_run_marks_failed_when_rule_missing PASSED [ 77%]
+tests\test_task_automation.py::test_enqueue_manual_rule_run_marks_failed_when_template_missing PASSED [ 77%]
+tests\test_task_automation.py::test_enqueue_manual_rule_run_success_flow PASSED [ 78%]
+tests\test_task_automation.py::test_enqueue_manual_rule_run_logs_exception_and_reraises PASSED [ 78%]
+tests\test_task_crud.py::test_create_task_returns_201 PASSED             [ 78%]
+tests\test_task_crud.py::test_list_tasks_scopes_to_deal PASSED           [ 78%]
+tests\test_task_crud.py::test_update_task_allows_status_and_due_date_change PASSED [ 78%]
+tests\test_task_crud.py::test_delete_task_returns_204 PASSED             [ 78%]
+tests\test_task_crud.py::test_starter_tier_cannot_create_tasks PASSED    [ 78%]
+tests\test_task_crud.py::test_cannot_access_tasks_from_other_org PASSED  [ 78%]
+tests\test_thumbnail_service.py::TestThumbnailServiceInitialization::test_service_initializes_with_default_settings PASSED [ 79%]
+tests\test_thumbnail_service.py::TestThumbnailServiceInitialization::test_service_initializes_with_custom_settings PASSED [ 79%]
+tests\test_thumbnail_service.py::TestThumbnailServiceFrameExtraction::test_extract_frame_from_video_success PASSED [ 79%]
+tests\test_thumbnail_service.py::TestThumbnailServiceFrameExtraction::test_extract_frame_at_custom_timestamp PASSED [ 79%]
+tests\test_thumbnail_service.py::TestThumbnailServiceFrameExtraction::test_extract_frame_raises_error_for_missing_file PASSED [ 79%]
+tests\test_thumbnail_service.py::TestThumbnailServiceFrameExtraction::test_extract_frame_handles_ffmpeg_failure PASSED [ 79%]
+tests\test_thumbnail_service.py::TestThumbnailServiceFrameExtraction::test_extract_frame_handles_ffmpeg_not_found PASSED [ 79%]
+tests\test_thumbnail_service.py::TestThumbnailServiceImageProcessing::test_resize_and_compress_thumbnail PASSED [ 79%]
+tests\test_thumbnail_service.py::TestThumbnailServiceImageProcessing::test_resize_maintains_aspect_ratio PASSED [ 80%]
+tests\test_thumbnail_service.py::TestThumbnailServiceImageProcessing::test_compress_with_custom_quality PASSED [ 80%]
+tests\test_thumbnail_service.py::TestThumbnailServiceStorageIntegration::test_save_thumbnail_to_storage PASSED [ 80%]
+tests\test_thumbnail_service.py::TestThumbnailServiceStorageIntegration::test_save_thumbnail_generates_unique_key PASSED [ 80%]
+tests\test_thumbnail_service.py::TestThumbnailServiceStorageIntegration::test_save_thumbnail_handles_storage_error PASSED [ 80%]
+tests\test_thumbnail_service.py::TestThumbnailServiceEndToEnd::test_generate_thumbnail_complete_workflow PASSED [ 80%]
+tests\test_thumbnail_service.py::TestThumbnailServiceEndToEnd::test_generate_thumbnail_with_custom_size PASSED [ 80%]
+tests\test_thumbnail_service.py::TestThumbnailServiceEndToEnd::test_generate_thumbnail_cleans_up_temp_files PASSED [ 80%]
+tests\test_valuation_api.py::TestValuationApi::test_growth_user_can_create_valuation PASSED [ 81%]
+tests\test_valuation_api.py::TestValuationApi::test_solo_user_gets_forbidden PASSED [ 81%]
+tests\test_valuation_api.py::TestValuationApi::test_get_valuation_returns_data PASSED [ 81%]
+tests\test_valuation_api.py::TestValuationApi::test_update_valuation PASSED [ 81%]
+tests\test_valuation_api.py::TestValuationApi::test_delete_valuation PASSED [ 81%]
+tests\test_valuation_api.py::TestValuationApi::test_cannot_access_other_org_valuation PASSED [ 81%]
+tests\test_valuation_api.py::TestValuationApi::test_add_comparable_via_api PASSED [ 81%]
+tests\test_valuation_api.py::TestValuationApi::test_add_precedent_via_api PASSED [ 81%]
+tests\test_valuation_api.py::TestValuationApi::test_create_scenario_via_api PASSED [ 82%]
+tests\test_valuation_api.py::TestValuationApi::test_generate_export_creates_log PASSED [ 82%]
+tests\test_valuation_api.py::TestValuationApi::test_generate_export_returns_log_id_and_persists_entry PASSED [ 82%]
+tests\test_valuation_api.py::TestValuationApi::test_generate_export_allows_scenario_id PASSED [ 82%]
+tests\test_valuation_api.py::TestValuationApi::test_generate_export_forbidden_for_solo PASSED [ 82%]
+tests\test_valuation_api.py::TestValuationApi::test_generate_export_rejects_foreign_scenario PASSED [ 82%]
+tests\test_valuation_api.py::TestValuationApi::test_list_exports_returns_recent_logs PASSED [ 82%]
+tests\test_valuation_api.py::TestValuationApi::test_get_export_status_reflects_updates PASSED [ 82%]
+tests\test_valuation_api.py::TestValuationApi::test_run_monte_carlo_simulation PASSED [ 83%]
+tests\test_valuation_api.py::TestValuationApi::test_run_monte_carlo_validation PASSED [ 83%]
+tests\test_valuation_api.py::TestValuationApi::test_get_scenario_summary_via_api PASSED [ 83%]
+tests\test_valuation_api.py::TestValuationApi::test_get_scenario_summary_forbidden_for_solo_tier PASSED [ 83%]
+tests\test_valuation_crud.py::TestValuationCrudApi::test_create_valuation_creates_record PASSED [ 83%]
+tests\test_valuation_crud.py::TestValuationCrudApi::test_create_valuation_requires_growth_tier PASSED [ 83%]
+tests\test_valuation_crud.py::TestValuationCrudApi::test_update_valuation_modifies_record PASSED [ 83%]
+tests\test_valuation_crud.py::TestValuationCrudApi::test_delete_valuation_returns_204 PASSED [ 83%]
+tests\test_valuation_crud.py::TestValuationCrudApi::test_add_comparable_company PASSED [ 84%]
+tests\test_valuation_crud.py::TestValuationCrudApi::test_add_precedent_transaction PASSED [ 84%]
+tests\test_valuation_crud.py::TestValuationCrudApi::test_create_scenario_requires_growth_tier PASSED [ 84%]
+tests\test_valuation_crud.py::TestValuationAccessControl::test_cannot_access_other_org_deal PASSED [ 84%]
+tests\test_valuation_crud.py::TestValuationServiceOps::test_create_valuation_calculates_metrics PASSED [ 84%]
+tests\test_valuation_crud.py::TestValuationServiceOps::test_update_valuation_recalculates PASSED [ 84%]
+tests\test_valuation_crud.py::TestValuationServiceOps::test_add_comparable_records PASSED [ 84%]
+tests\test_valuation_crud.py::TestValuationServiceOps::test_add_precedent_records PASSED [ 84%]
+tests\test_valuation_crud.py::TestValuationServiceOps::test_create_scenario_persists PASSED [ 85%]
+tests\test_valuation_crud.py::TestValuationServiceOps::test_generate_export_log_entry PASSED [ 85%]
+tests\test_valuation_crud.py::TestValuationServiceOps::test_delete_valuation_cascades PASSED [ 85%]
+tests\test_valuation_crud.py::TestValuationServiceOps::test_calculate_comparable_multiples PASSED [ 85%]
+tests\test_valuation_crud.py::TestValuationServiceOps::test_calculate_precedent_multiples PASSED [ 85%]
+tests\test_valuation_service.py::TestDiscountedCashFlowCalculations::test_calculate_present_value_of_cash_flows PASSED [ 85%]
+tests\test_valuation_service.py::TestTerminalValue::test_gordon_growth_terminal_value PASSED [ 85%]
+tests\test_valuation_service.py::TestSensitivityMatrix::test_generate_sensitivity_matrix_dimensions_and_monotonicity PASSED [ 85%]
+tests\test_valuation_service.py::TestExitMultipleTerminalValue::test_calculate_terminal_value_exit_multiple PASSED [ 86%]
+tests\test_valuation_service.py::TestFullDCFValuation::test_complete_dcf_enterprise_value PASSED [ 86%]
+tests\test_valuation_service.py::TestFullDCFValuation::test_dcf_with_zero_cash_flows PASSED [ 86%]
+tests\test_valuation_service.py::TestFullDCFValuation::test_dcf_with_negative_cash_flows PASSED [ 86%]
+tests\test_valuation_service.py::TestEdgeCasesAndValidation::test_discount_rate_must_be_positive PASSED [ 86%]
+tests\test_valuation_service.py::TestEdgeCasesAndValidation::test_discount_rate_must_exceed_growth_rate PASSED [ 86%]
+tests\test_valuation_service.py::TestEdgeCasesAndValidation::test_equal_discount_and_growth_rates_invalid PASSED [ 86%]
+tests\test_valuation_service.py::TestMultiplesAndScenarioAnalytics::test_comparable_analysis_excludes_outliers_and_weighs_results PASSED [ 86%]
+tests\test_valuation_service.py::TestMultiplesAndScenarioAnalytics::test_precedent_analysis_flags_stale_transactions PASSED [ 87%]
+tests\test_valuation_service.py::TestMultiplesAndScenarioAnalytics::test_generate_tornado_chart_orders_by_impact PASSED [ 87%]
+tests\test_valuation_service.py::TestMultiplesAndScenarioAnalytics::test_run_monte_carlo_simulation_returns_deterministic_summary PASSED [ 87%]
+tests\test_valuation_service.py::TestScenarioAnalytics::test_calculate_scenario_summary_returns_expected_stats PASSED [ 87%]
+tests\test_valuation_service.py::TestScenarioAnalytics::test_generate_tornado_chart_orders_by_impact PASSED [ 87%]
+tests\test_valuation_service.py::TestScenarioAnalytics::test_run_monte_carlo_simulation_returns_deterministic_summary PASSED [ 87%]
+tests\test_valuation_service.py::TestExportLogging::test_log_export_creates_audit_record PASSED [ 87%]
+tests\test_valuation_service.py::TestValuationServiceOperations::test_calculate_enterprise_value_exit_multiple_path PASSED [ 87%]
+tests\test_valuation_service.py::TestValuationServiceOperations::test_calculate_enterprise_value_exit_multiple_requires_multiple PASSED [ 88%]
+tests\test_valuation_service.py::TestValuationServiceOperations::test_update_valuation_recalculates_metrics PASSED [ 88%]
+tests\test_valuation_service.py::TestValuationServiceOperations::test_delete_valuation_removes_related_records PASSED [ 88%]
+tests\test_valuation_service.py::TestValuationServiceOperations::test_calculate_precedent_multiples_handles_no_records PASSED [ 88%]
+tests\test_valuation_service.py::TestValuationServiceOperations::test_list_helpers_return_entries PASSED [ 88%]
+tests\test_valuation_service.py::TestValuationServiceOperations::test_trigger_export_task_returns_payload PASSED [ 88%]
+tests\test_valuation_service.py::TestValuationServiceOperations::test_log_export_event_persists_document_reference PASSED [ 88%]
+tests\test_valuation_service.py::TestValuationServiceOperations::test_log_export_event_rejects_foreign_document PASSED [ 88%]
+tests\test_valuation_service.py::TestValuationServiceOperations::test_log_export_event_accepts_valid_scenario PASSED [ 89%]
+tests\test_valuation_service.py::TestValuationServiceOperations::test_log_export_event_rejects_scenario_from_other_valuation PASSED [ 89%]
+tests\test_valuation_service.py::TestGoToMarketKpis::test_calculate_go_to_market_kpis_matches_reference_spreadsheet PASSED [ 89%]
+tests\test_valuation_service.py::TestGoToMarketKpis::test_calculate_go_to_market_kpis_handles_zero_inputs PASSED [ 89%]
+tests\test_valuation_service.py::TestGoToMarketKpis::test_ensure_test_reference_entities_noop_when_not_test PASSED [ 89%]
+tests\test_valuation_service.py::TestGoToMarketKpis::test_ensure_test_reference_entities_creates_placeholders PASSED [ 89%]
+tests\test_xero_integration.py::test_xero_python_sdk_can_be_imported SKIPPED [ 89%]
+tests\test_xero_integration.py::test_real_xero_client_class_exists SKIPPED [ 89%]
+tests\test_xero_integration.py::test_xero_oauth_url_uses_real_credentials SKIPPED [ 90%]
+tests\test_xero_integration.py::test_full_xero_oauth_flow_with_real_api SKIPPED [ 90%]
+tests\test_xero_integration.py::test_xero_client_has_real_configuration SKIPPED [ 90%]
+tests\test_xero_integration.py::test_token_exchange_structure_matches_xero_api SKIPPED [ 90%]
+tests\test_xero_integration.py::test_get_connections_returns_real_tenant_structure SKIPPED [ 90%]
+tests\test_xero_integration.py::test_balance_sheet_import_uses_real_xero_api_format SKIPPED [ 90%]
+tests\test_xero_integration.py::test_xero_sdk_error_handling SKIPPED     [ 90%]
+tests\test_xero_oauth_service.py::test_initiate_xero_oauth_generates_authorization_url PASSED [ 90%]
+tests\test_xero_oauth_service.py::test_initiate_xero_oauth_with_invalid_deal PASSED [ 91%]
+tests\test_xero_oauth_service.py::test_handle_xero_callback_success PASSED [ 91%]
+tests\test_xero_oauth_service.py::test_handle_xero_callback_token_exchange_failure PASSED [ 91%]
+tests\test_xero_oauth_service.py::test_refresh_xero_token_success PASSED [ 91%]
+tests\test_xero_oauth_service.py::test_refresh_xero_token_when_refresh_fails PASSED [ 91%]
+tests\test_xero_oauth_service.py::test_fetch_xero_statements_imports_balance_sheet PASSED [ 91%]
+tests\test_xero_oauth_service.py::test_fetch_xero_statements_with_expired_token PASSED [ 91%]
+tests\test_xero_oauth_service.py::test_disconnect_xero_removes_connection PASSED [ 91%]
+tests\test_xero_oauth_service.py::test_get_xero_connection_status_active PASSED [ 92%]
+tests\test_xero_oauth_service.py::test_get_xero_connection_status_not_connected PASSED [ 92%]
+tests\test_youtube_service.py::test_upload_video_allowed_for_premium PASSED [ 92%]
+tests\test_youtube_service.py::test_upload_video_rejected_for_professional PASSED [ 92%]
+tests\test_youtube_service.py::test_upload_video_requires_file_path PASSED [ 92%]
+tests\api\test_blog.py::test_list_blog_posts_default PASSED              [ 92%]
+tests\api\test_blog.py::test_list_blog_posts_with_category_filter PASSED [ 92%]
+tests\api\test_blog.py::test_list_blog_posts_with_search PASSED          [ 92%]
+tests\api\test_blog.py::test_list_blog_posts_include_unpublished PASSED  [ 93%]
+tests\api\test_blog.py::test_list_blog_posts_with_pagination PASSED      [ 93%]
+tests\api\test_blog.py::test_list_blog_posts_empty_result PASSED         [ 93%]
+tests\api\test_blog.py::test_get_blog_post_by_slug_success PASSED        [ 93%]
+tests\api\test_blog.py::test_get_blog_post_by_slug_not_found PASSED      [ 93%]
+tests\api\test_blog.py::test_get_unpublished_post_by_slug PASSED         [ 93%]
+tests\api\test_blog.py::test_list_blog_categories PASSED                 [ 93%]
+tests\api\test_blog.py::test_list_blog_categories_empty_database PASSED  [ 93%]
+tests\api\test_blog.py::test_list_blog_posts_with_invalid_limit PASSED   [ 94%]
+tests\api\test_blog.py::test_list_blog_posts_with_invalid_offset PASSED  [ 94%]
+tests\api\test_blog.py::test_blog_post_response_schema PASSED            [ 94%]
+tests\api\test_blog.py::test_blog_search_case_insensitive PASSED         [ 94%]
+tests\api\test_blog.py::test_blog_list_ordering PASSED                   [ 94%]
+tests\api\test_blog_api.py::test_list_blog_posts_returns_200 PASSED      [ 94%]
+tests\api\test_blog_api.py::test_list_blog_posts_with_data PASSED        [ 94%]
+tests\api\test_blog_api.py::test_list_blog_posts_category_filter PASSED  [ 94%]
+tests\api\test_blog_api.py::test_list_blog_posts_search PASSED           [ 95%]
+tests\api\test_blog_api.py::test_list_blog_posts_pagination PASSED       [ 95%]
+tests\api\test_blog_api.py::test_list_blog_posts_published_only PASSED   [ 95%]
+tests\api\test_document_sharing.py::test_create_share_link_for_document PASSED [ 95%]
+tests\api\test_document_sharing.py::test_create_share_link_with_password PASSED [ 95%]
+tests\api\test_document_sharing.py::test_access_shared_document_valid_link PASSED [ 95%]
+tests\api\test_document_sharing.py::test_access_shared_document_expired_link PASSED [ 95%]
+tests\api\test_document_sharing.py::test_access_shared_document_with_password PASSED [ 95%]
+tests\api\test_document_sharing.py::test_list_active_share_links_for_document PASSED [ 96%]
+tests\api\test_document_sharing.py::test_revoke_share_link PASSED        [ 96%]
+tests\api\test_document_sharing.py::test_track_share_link_access_count PASSED [ 96%]
+tests\api\test_marketing.py::test_submit_contact_form_success PASSED     [ 96%]
+tests\api\test_marketing.py::test_submit_contact_form_validation_error PASSED [ 96%]
+tests\api\test_marketing.py::test_subscribe_newsletter_success PASSED    [ 96%]
+tests\api\test_marketing.py::test_subscribe_newsletter_is_idempotent PASSED [ 96%]
+tests\services\test_rbac_permissions.py::TestRBACAuditServiceLogging::test_log_role_change_creates_audit_entry PASSED [ 96%]
+tests\services\test_rbac_permissions.py::TestRBACAuditServiceLogging::test_log_role_change_captures_before_after_values PASSED [ 97%]
+tests\services\test_rbac_permissions.py::TestRBACAuditServiceLogging::test_log_user_status_change_user_deleted PASSED [ 97%]
+tests\services\test_rbac_permissions.py::TestRBACAuditServiceLogging::test_log_user_status_change_user_restored PASSED [ 97%]
+tests\services\test_rbac_permissions.py::TestRBACAuditServiceLogging::test_log_user_status_change_rejects_invalid_action PASSED [ 97%]
+tests\services\test_rbac_permissions.py::TestRBACAuditServiceLogging::test_log_claim_mismatch_sanitizes_claims PASSED [ 97%]
+tests\services\test_rbac_permissions.py::TestRBACAuditServiceLogging::test_log_claim_mismatch_logs_org_and_user_ids PASSED [ 97%]
+tests\services\test_rbac_permissions.py::TestAuthDependencyEnforcement::test_require_min_role_admin_always_passes PASSED [ 97%]
+tests\services\test_rbac_permissions.py::TestAuthDependencyEnforcement::test_require_min_role_hierarchy_validation PASSED [ 97%]
+tests\services\test_rbac_permissions.py::TestAuthDependencyEnforcement::test_enforce_claim_integrity_creates_missing_org SKIPPED [ 98%]
+tests\services\test_rbac_permissions.py::TestAuthDependencyEnforcement::test_enforce_claim_integrity_logs_mismatch SKIPPED [ 98%]
+tests\services\test_rbac_permissions.py::TestAuthDependencyEnforcement::test_get_current_user_rejects_missing_clerk_id SKIPPED [ 98%]
+tests\services\test_rbac_permissions.py::TestPermissionHierarchy::test_role_level_function_returns_correct_values PASSED [ 98%]
+tests\services\test_rbac_permissions.py::TestPermissionHierarchy::test_admin_override_bypasses_exact_role_requirement PASSED [ 98%]
+tests\services\test_rbac_permissions.py::TestPermissionHierarchy::test_feature_access_respects_subscription_tier SKIPPED [ 98%]
+tests\test_migrations\test_user_foreign_keys.py::TestUserForeignKeyTypes::test_users_id_column_is_string_type PASSED [ 98%]
+tests\test_migrations\test_user_foreign_keys.py::TestUserForeignKeyTypes::test_all_user_foreign_key_columns_match_users_id_type PASSED [ 98%]
+tests\test_migrations\test_user_foreign_keys.py::TestUserForeignKeyTypes::test_foreign_key_constraints_exist PASSED [ 99%]
+tests\test_migrations\test_user_foreign_keys.py::TestForeignKeyIntegrity::test_folder_rejects_invalid_created_by SKIPPED [ 99%]
+tests\test_migrations\test_user_foreign_keys.py::TestForeignKeyIntegrity::test_document_rejects_invalid_uploaded_by SKIPPED [ 99%]
+tests\test_migrations\test_user_foreign_keys.py::TestForeignKeyIntegrity::test_document_permission_rejects_invalid_user_id SKIPPED [ 99%]
+tests\test_migrations\test_user_foreign_keys.py::TestForeignKeyIntegrity::test_valid_user_references_succeed PASSED [ 99%]
+tests\test_migrations\test_user_foreign_keys.py::TestModelSchemAlignment::test_folder_model_matches_database_schema PASSED [ 99%]
+tests\test_migrations\test_user_foreign_keys.py::TestModelSchemAlignment::test_document_model_matches_database_schema PASSED [ 99%]
+tests\test_migrations\test_user_foreign_keys.py::TestModelSchemAlignment::test_all_user_fk_columns_are_nullable_correct PASSED [ 99%]
+tests\test_migrations\test_user_foreign_keys.py::TestMigrationRollback::test_downgrade_path_exists PASSED [100%]
+
+============================== warnings summary ===============================
+tests\test_netsuite_integration.py:30
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:30: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:42
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:42: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:59
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:59: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:97
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:97: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:114
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:114: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:132
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:132: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:153
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:153: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:209
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:209: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:229
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:229: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:249
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:249: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:29
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:29: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:49
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:49: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:66
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:66: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:104
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:104: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:121
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:121: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:143
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:143: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:164
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:164: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:219
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:219: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:238
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:238: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:28
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:28: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:40
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:40: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:57
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:57: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:95
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:95: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:112
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:112: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:130
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:130: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:151
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:151: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:206
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:206: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:226
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:226: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:30
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:30: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:47
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:47: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:63
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:63: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:104
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:104: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:136
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:136: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:153
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:153: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:175
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:175: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:196
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:196: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:284
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:284: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+backend/tests/test_billing_endpoints.py: 14 warnings
+backend/tests/test_billing_simple.py: 3 warnings
+backend/tests/test_clerk_auth_complete.py: 26 warnings
+backend/tests/test_deal_endpoints.py: 25 warnings
+backend/tests/test_deal_matching_api.py: 16 warnings
+backend/tests/test_document_endpoints.py: 39 warnings
+backend/tests/test_financial_api.py: 24 warnings
+backend/tests/test_master_admin_api.py: 13 warnings
+backend/tests/test_pipeline_template_api.py: 3 warnings
+backend/tests/test_podcast_api.py: 54 warnings
+backend/tests/test_subscription_error_paths.py: 16 warnings
+backend/tests/test_task_crud.py: 6 warnings
+backend/tests/test_valuation_api.py: 20 warnings
+backend/tests/test_valuation_crud.py: 8 warnings
+backend/tests/api/test_blog.py: 16 warnings
+backend/tests/api/test_blog_api.py: 6 warnings
+backend/tests/api/test_document_sharing.py: 8 warnings
+backend/tests/api/test_marketing.py: 4 warnings
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+backend/tests/test_clerk_auth_complete.py: 24 warnings
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\httpx\_content.py:202: DeprecationWarning: Use 'content=<...>' to upload raw bytes/text content.
+    warnings.warn(message, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.11.9-final-0 _______________
+
+Name                                          Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------
+app\__init__.py                                   1      0   100%
+app\api\__init__.py                              21      0   100%
+app\api\dependencies\__init__.py                  0      0   100%
+app\api\dependencies\auth.py                    101      0   100%
+app\api\dependencies\rbac.py                      2      2     0%   7-13
+app\api\document_sharing.py                     121     10    92%   63, 124, 158, 191, 199, 203, 222, 251, 301, 336
+app\api\routes\__init__.py                        2      0   100%
+app\api\routes\auth.py                            9      0   100%
+app\api\routes\blog.py                           55      0   100%
+app\api\routes\dashboard.py                      25      7    72%   37-44, 81, 100, 119
+app\api\routes\deal_matching.py                  77      5    94%   33, 138-139, 150-160
+app\api\routes\deals.py                          64     10    84%   113, 131-146, 171, 204
+app\api\routes\documents.py                     174     47    73%   71-72, 86-91, 117, 139, 171, 235, 273, 360-388, 404-429, 450, 489, 508-509, 539-558, 573-591, 619, 652-672, 717, 797-808
+app\api\routes\financial.py                     151     26    83%   92, 108, 167, 174, 224, 230, 288, 294, 354, 405, 414, 420, 477, 483, 542, 572, 580, 586, 622, 628, 656, 662, 712, 718, 768, 774
+app\api\routes\marketing.py                      69     11    84%   52-56, 99, 149-152, 198-201
+app\api\routes\master_admin.py                  379     37    90%   145, 187, 282, 304, 329, 437, 624, 644, 711, 732, 818, 838, 858, 882, 885, 893-894, 912, 937, 946, 971, 980, 1040, 1059, 1079, 1139-1145, 1160, 1180, 1267, 1287, 1307, 1392, 1412, 1433
+app\api\routes\pipeline_templates.py             34      0   100%
+app\api\routes\podcasts.py                      306     80    74%   51-135, 178-179, 184-189, 242, 327-329, 377, 449, 468, 509-515, 550, 557, 576, 635-641, 675, 699, 790, 833, 840, 906, 945-951, 1003-1004
+app\api\routes\subscriptions.py                  99      6    94%   221-224, 239-240
+app\api\routes\tasks.py                          69     26    62%   109, 127-133, 154-158, 184-199, 212-217, 232-273, 286-291
+app\api\routes\valuation.py                     145     29    80%   58-64, 88, 90, 148-150, 183-185, 218-220, 273-275, 292-294, 309-324, 431, 440-447
+app\api\webhooks\__init__.py                      0      0   100%
+app\api\webhooks\clerk.py                        52      4    92%   20, 54-55, 61
+app\core\__init__.py                              0      0   100%
+app\core\config.py                               44      0   100%
+app\core\database.py                             30     18    40%   23-27, 32-41, 46-47, 52-53
+app\core\security.py                             23      1    96%   38
+app\core\subscription.py                         52      7    87%   29, 140-146
+app\db\__init__.py                                0      0   100%
+app\db\base.py                                    3      0   100%
+app\db\session.py                                 3      0   100%
+app\db\types.py                                  11      1    91%   22
+app\main.py                                      27      4    85%   26, 29, 61, 71
+app\models\__init__.py                           20      0   100%
+app\models\blog_post.py                          25      1    96%   32
+app\models\contact_message.py                    16      1    94%   23
+app\models\deal.py                               56      0   100%
+app\models\deal_match.py                         71      5    93%   56, 61, 100, 105, 133
+app\models\document.py                          107      5    95%   60, 123, 164, 199, 237
+app\models\enums.py                              65      0   100%
+app\models\financial_connection.py               27      1    96%   52
+app\models\financial_narrative.py                34      0   100%
+app\models\financial_ratio.py                    67      0   100%
+app\models\financial_statement.py                80      1    99%   134
+app\models\master_admin.py                      272     14    95%   88, 115, 141, 167, 194, 235, 266, 303, 332, 373, 400, 437, 470, 494
+app\models\newsletter_subscription.py            12      1    92%   21
+app\models\organization.py                       18      0   100%
+app\models\pipeline_template.py                  30      0   100%
+app\models\podcast.py                            49      0   100%
+app\models\podcast_usage.py                      15      1    93%   36
+app\models\rbac_audit_log.py                     25      0   100%
+app\models\subscription.py                       54      0   100%
+app\models\task.py                               68      0   100%
+app\models\user.py                               43      0   100%
+app\models\valuation.py                         120      0   100%
+app\schemas\__init__.py                           3      0   100%
+app\schemas\deal.py                              40      0   100%
+app\schemas\deal_match.py                        68      0   100%
+app\schemas\document.py                         185     41    78%   19, 33, 50-52, 71-73, 92-94, 109, 119, 130-132, 141, 147, 153, 155, 169-171, 184-186, 192, 198-221, 230, 241, 245, 249, 251, 253, 265-267, 273, 283-285, 291, 300-302, 309-314
+app\schemas\financial.py                         79      0   100%
+app\schemas\master_admin.py                     420      0   100%
+app\schemas\pipeline_template.py                 53      2    96%   34, 40
+app\schemas\podcast.py                           52      0   100%
+app\schemas\subscription.py                      89      0   100%
+app\schemas\task.py                              88      0   100%
+app\schemas\user.py                              33      0   100%
+app\schemas\valuation.py                        258      5    98%   31, 39, 204-206
+app\services\__init__.py                          6      0   100%
+app\services\audio_chunking_service.py          102     21    79%   130-133, 140-150, 182, 186-188, 268-269, 281-283
+app\services\deal_matching_service.py           161     14    91%   106, 116, 139, 141, 162, 178, 210, 266, 269, 276, 283, 288, 294, 309
+app\services\deal_service.py                     81     15    81%   99-100, 120-121, 158, 178-186, 203, 228
+app\services\document_service.py                514    188    63%   53, 66, 106, 122, 149-157, 177, 196, 226, 231, 241-280, 290, 333-334, 354-357, 378-379, 397-398, 406, 423, 426, 431-432, 436, 462, 472, 522, 530, 534-535, 543, 547, 552-558, 583, 593, 595-599, 631-663, 671-673, 694, 705, 707-719, 732, 740, 750, 752, 774-777, 786-788, 806, 826-829, 837-878, 881-896, 905, 968-974, 1014, 1033, 1036-1038, 1085-1086, 1119, 1130, 1154-1168, 1222, 1233, 1241, 1295-1297, 1321, 1352, 1380, 1398, 1432, 1470-1486, 1490, 1496, 1517-1519, 1523-1524, 1529-1540, 1543, 1548-1549, 1556-1558, 1564-1570, 1593, 1603, 1608-1609, 1614-1629
+app\services\entitlement_service.py              47      4    91%   184, 202, 246-247
+app\services\financial_narrative_service.py     231     20    91%   40, 53-61, 227-228, 300-313, 328, 342, 352, 372, 381, 385
+app\services\financial_ratios.py                240     10    96%   248, 714, 728, 754, 801, 808, 815, 822, 829, 882
+app\services\invite_service.py                   31     31     0%   2-78
+app\services\master_admin_service.py            435     26    94%   145, 147, 149, 217, 219, 247, 249, 251, 257, 384, 668, 670-671, 963, 965, 1078, 1143, 1244, 1360, 1362, 1484, 1486, 1488, 1614, 1616-1617
+app\services\netsuite_oauth_service.py          138    138     0%   9-547
+app\services\organization_service.py             64      3    95%   35, 44, 69
+app\services\pipeline_template_service.py        39      0   100%
+app\services\podcast_service.py                 115     11    90%   16-18, 118, 131, 133, 135, 181, 197, 232, 312
+app\services\quickbooks_oauth_service.py        233    183    21%   24-28, 40-234, 252, 263, 273, 284, 298, 308-314, 320, 338-350, 381-441, 459-487, 504-557, 572-607, 622-686, 730
+app\services\quota_service.py                   165     13    92%   115, 128, 141, 168, 171, 176-187, 211, 259
+app\services\rbac_audit_service.py               20      0   100%
+app\services\s3_storage_service.py               95     95     0%   2-323
+app\services\sage_oauth_service.py              192    192     0%   9-646
+app\services\storage_service.py                  65     14    78%   138-142, 164, 186, 203-204, 224-227, 251-252
+app\services\subscription_service.py            134     22    84%   282-292, 305-316, 328-339, 351-354
+app\services\task_service.py                     35      2    94%   15-16
+app\services\task_template_service.py            61     43    30%   22-33, 41-42, 51-54, 65-79, 88-92, 101-104, 112, 125-137, 146-151, 161-166, 176-195
+app\services\thumbnail_service.py                93     14    85%   108, 119-120, 147, 158, 174-176, 200, 229-231, 298-299
+app\services\user_service.py                     75      7    91%   50, 54, 86, 90, 100, 110, 116
+app\services\valuation_service.py               334     21    94%   192, 215, 364, 373-374, 399, 420, 506, 511, 701, 717, 815, 840, 861, 867, 908, 921, 925, 931, 984, 1020
+app\services\xero_oauth_service.py              206     71    66%   24-28, 42-187, 196, 205, 216, 224, 229-235, 241, 315, 324, 342-351, 395, 440, 470-471, 518-519, 552-554
+app\services\youtube_service.py                  57     15    74%   12, 85, 113-114, 121, 131, 146-162
+app\tasks\__init__.py                             2      0   100%
+app\tasks\task_automation.py                     25      0   100%
+app\utils\__init__.py                             0      0   100%
+app\utils\datetime.py                             4      0   100%
+---------------------------------------------------------------------------
+TOTAL                                          8791   1582    82%
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_financial_xero_integration.py:9: To be implemented in ratio engine phase
+SKIPPED [1] tests\test_master_admin_models.py:134: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:148: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:335: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:348: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:405: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_netsuite_integration.py:30: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:42: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:59: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:97: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:114: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:132: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:153: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:209: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:229: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:249: Requires real NetSuite sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_quickbooks_integration.py:29: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:49: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:66: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:104: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:121: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:143: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:164: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:219: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:238: Requires real QuickBooks sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_s3_storage_service.py:32: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:54: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:68: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:86: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:109: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:136: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:164: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:194: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:219: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:249: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:273: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:304: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:330: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:355: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:381: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:406: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:433: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:465: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:497: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:516: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:535: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_sage_integration.py:28: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:40: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:57: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:95: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:112: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:130: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:151: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:206: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:226: Requires real Sage sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_storage_factory.py:48: boto3 not installed - S3 storage optional
+SKIPPED [1] tests\test_storage_factory.py:116: boto3 not installed - S3 storage optional
+SKIPPED [1] tests\test_subscription_error_paths.py:311: Stripe module imported inside function - mocking complex, error handling already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:335: Stripe module imported inside function - mocking complex, error handling already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:363: Stripe module imported inside function - mocking complex, event routing already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:406: Stripe module imported inside function - mocking complex, exception handling already verified in code
+SKIPPED [1] tests\test_xero_integration.py:30: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:47: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:63: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:104: Requires real Xero sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_xero_integration.py:136: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:153: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:175: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:196: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:284: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\services\test_rbac_permissions.py:223: Auth dependency integration test - requires auth.py mocking
+SKIPPED [1] tests\services\test_rbac_permissions.py:234: Auth dependency integration test - requires auth.py mocking
+SKIPPED [1] tests\services\test_rbac_permissions.py:238: Auth dependency integration test - requires FastAPI request context
+SKIPPED [1] tests\services\test_rbac_permissions.py:269: Entitlement service test - covered in test_entitlement.py
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:150: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:167: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:189: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+========== 727 passed, 77 skipped, 362 warnings in 201.76s (0:03:21) ==========

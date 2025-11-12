@@ -66,7 +66,7 @@ _Last updated: 2025-11-12 | **STATUS: ✅ COMPLETE** (2025-11-12 Session P - W2 
 1. ~~Draft RED Vitest specs for PermissionModal quota warnings and UploadPanel quota/retry flows (`PermissionModal.test.tsx`, `UploadPanel.enhanced.test.tsx`).~~ ✅ COMPLETE (2025-11-12)
 2. ~~Implement GREEN for storage quota enforcement in UploadPanel.~~ ✅ COMPLETE (2025-11-12)
 3. ~~Extend BulkActions coverage to move/archive flows and optimistic rollback/error toasts (DocumentWorkspace wiring).~~ ✅ COMPLETE (2025-11-12M)
-4. Implement folder tree enhancements (expand/collapse, lazy loading, keyboard navigation).
+4. ~~Implement folder tree enhancements (expand/collapse, lazy loading, keyboard navigation).~~ ✅ COMPLETE (2025-11-12Q)
 5. Finalize MSW handler scaffolding + ensure Vitest config loads it; implement remaining UI polish and update PRD/UX docs after GREEN.
 
 ## Latest Progress (2025-11-12L)
@@ -83,26 +83,46 @@ _Last updated: 2025-11-12 | **STATUS: ✅ COMPLETE** (2025-11-12 Session P - W2 
   - Toast system upgraded to handle status/alert/progress roles and optional undo buttons; docs + BMAD workflow status updated.
   - **Result**: Bulk move/archive behaviours production-ready; next focus is FolderTree lazy loading + keyboard access RED cycle.
 
-## ✅ STORY COMPLETE (2025-11-11 Session N)
+## Latest Progress (2025-11-12Q)
+- ✅ **FolderTree Accessibility + Lazy Loading**: RED→GREEN Vitest loop  
+  - Refactored `FolderTree` to request child folders on demand via `listFolders(dealId, { parentFolderId })`, caching per parent and persisting expansion state.
+  - Implemented ARIA-compliant tree semantics with keyboard navigation (Arrow keys, Home/End, Enter/Space) and focus management.
+  - Added quota lock messaging override + CTA wiring in `UploadPanel`, ensuring locked state surfaces actionable copy for manage-storage flows.
+  - **Tests**: `npx vitest run src/components/documents/FolderTree.test.tsx --pool=forks` (12/12) and `npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=forks` (25/25) confirmed GREEN post-refactor.
+  - **Next**: Introduce MSW document handlers so Vitest suites can rely on shared API mocks instead of inline stubs.
 
-### Final Status
-**All acceptance criteria met. DEV-008 is PRODUCTION READY.**
+## Latest Progress (2025-11-12C - Session Verification)
+- ⚠️ **Test Verification Run**: Identified DocumentRoomPage import issue
+  - Ran targeted test suite: `npx vitest run src/pages/documents/DocumentWorkspace.test.tsx src/components/documents/UploadPanel.enhanced.test.tsx src/components/documents/PermissionModal.test.tsx src/pages/deals/DocumentRoomPage.test.tsx --no-file-parallelism`
+  - **Results**: 73/81 tests passing (90%)
+    - ✅ DocumentWorkspace: 25/25 (verified, matches claim)
+    - ✅ UploadPanel: 34/34 (was 33, now 34 - test added)
+    - ✅ PermissionModal: 14/14 (was 13, now 14 - test added)
+    - ❌ DocumentRoomPage: 0/8 (FAILED - import error: "react-router/dom" not found)
+  - **Duration**: 12.90s total
+  - **Evidence**: Background Bash 2bc0be, exit code 1
+  - **Next**: Fix react-router dependency and re-validate full 81-test suite
+
+## ✅ STORY COMPLETE (2025-11-11 Session N) - ⚠️ IMPORT ISSUE (2025-11-12C)
+
+### Final Status (Updated 2025-11-12C)
+**73/81 tests verified (90%). DocumentRoomPage blocked by dependency error.**
 
 ### Test Coverage Summary
-- **DocumentWorkspace**: 25/25 tests passing ✅
+- **DocumentWorkspace**: 25/25 tests passing ✅ (verified 2025-11-12C)
   - Folder tree search: 4/4 tests ✅
   - Audit logging: 4/4 tests ✅
   - Bulk actions orchestration: 4/4 tests ✅
   - Bulk move with optimistic UI: 5/5 tests ✅
   - Bulk archive with optimistic UI: 4/4 tests ✅
-- **UploadPanel**: 33/33 tests passing ✅
+- **UploadPanel**: 34/34 tests passing ✅ (was 33, verified 2025-11-12C)
   - Storage quota enforcement: 8/8 tests ✅
   - File type validation: Tests included ✅
   - Drag & drop: Tests included ✅
-- **PermissionModal**: 13/13 tests passing ✅
+- **PermissionModal**: 14/14 tests passing ✅ (was 13, verified 2025-11-12C)
   - Collaborator invite limits: Tests included ✅
   - Role toggles: Tests included ✅
-- **DocumentRoomPage**: 8/8 search and filter tests passing ✅
+- **DocumentRoomPage**: ❌ 0/8 FAILED (import error "react-router/dom", needs fix)
 
 ### Features Delivered
 1. ✅ Folder tree with hierarchical navigation and search
@@ -198,6 +218,14 @@ Future enhancements (post-MVP):
 - Extracted `useBulkActions` hook (280 lines)
 - JSDoc documentation for all exported functions
 - Tests remain 25/25 GREEN throughout refactor ✅
+
+### Session 2025-11-12Q - Entitlement Guard Enhancements
+
+**Status**: ✅ COMPLETE – additional RED→GREEN coverage for collaboration + storage limits
+
+- Added Vitest coverage preventing the final document owner from being downgraded; PermissionModal now blocks the change and shows "At least one owner must remain on this document" warning.
+- Introduced a quota-locked overlay in UploadPanel with CTA + `onManageStorage` hook and surfaced friendly messaging when drag/drop is attempted while storage is exhausted.
+- Command: `cd frontend && npx vitest run src/components/documents/PermissionModal.test.tsx src/components/documents/UploadPanel.enhanced.test.tsx --pool=forks` → 48/48 tests passing.
 - Code reusability for future bulk operations
 
 ### Final Test Evidence
