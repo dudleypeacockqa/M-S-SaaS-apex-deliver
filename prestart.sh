@@ -52,6 +52,44 @@ PY
   export DATABASE_URL
 }
 
+check_db_connection() {
+  python3 - <<'PY'
+import os, sys
+import psycopg2
+
+dsn = os.environ.get("DATABASE_URL")
+if not dsn:
+    sys.exit(0)
+
+try:
+    with psycopg2.connect(dsn) as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT 1")
+except psycopg2.OperationalError as exc:
+    sys.stderr.write(f"Database connection failed: {exc}\n")
+    sys.exit(1)
+PY
+}
+
+run_with_retry() {
+  attempts="${RENDER_DB_RETRY_MAX:-5}"
+  delay="${RENDER_DB_RETRY_DELAY:-5}"
+  attempt=1
+  while [ $attempt -le $attempts ]; do
+    if "$@"; then
+      return 0
+    fi
+    echo "Command '$*' failed (attempt $attempt/$attempts)."
+    if [ $attempt -eq $attempts ]; then
+      echo "Giving up after $attempts attempts."
+      return 1
+    fi
+    sleep $delay
+    delay=$((delay * 2))
+    attempt=$((attempt + 1))
+  done
+}
+
 normalize_database_url
 
 # Ensure Render DATABASE_URL host includes region FQDN (Render sometimes omits .frankfurt-postgres.render.com)
@@ -86,7 +124,8 @@ echo "Render Prestart Script - Database Migrations"
 echo "========================================="
 echo "Current directory: $(pwd)"
 echo "Python version: $(python --version)"
-echo "Target DB Host: ${DATABASE_URL}" | sed 's/:.*@/://'
+# Mask credentials if present so logs don't expose secrets
+echo "Target DB Host: ${DATABASE_URL}" | sed -E 's#://[^@]*@#://***@#'
 echo ""
 
 # Navigate to backend directory where alembic.ini is located
