@@ -200,9 +200,17 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
                       aria-label={`Role for ${permission.user_email}`}
                       className="rounded border border-slate-300 px-2 py-1 text-xs"
                       value={permission.role}
-                      onChange={(event) =>
-                        updateMutation.mutate({ permissionId: permission.id, role: event.target.value as DocumentPermission['role'] })
-                      }
+                      onChange={(event) => {
+                        const newRole = event.target.value as DocumentPermission['role']
+
+                        // Block downgrading the final owner
+                        if (permission.role === 'owner' && newRole !== 'owner' && ownerCount <= 1) {
+                          setErrorMessage('At least one owner must remain on this document')
+                          return
+                        }
+
+                        updateMutation.mutate({ permissionId: permission.id, role: newRole })
+                      }}
                     >
                       {ROLE_OPTIONS.map((option) => (
                         <option key={option.value} value={option.value}>

@@ -119,13 +119,13 @@ def test_activity_crud_and_listing(client, auth_headers_admin):
 def test_scores_and_dashboard_stats(client, auth_headers_admin):
     headers = auth_headers_admin
     today = date.today()
-    # Use today and 2 days ago to ensure both fall within current week
-    # (yesterday might be in previous week if today is Monday)
+    # Use today and yesterday to ensure we have data for the /scores/today endpoint
+    # and to test week aggregation
     week_start = _current_monday()
-    date1 = week_start  # Monday (always in current week)
-    date2 = week_start + timedelta(days=1)  # Tuesday (always in current week)
+    yesterday = today - timedelta(days=1)
 
-    for activity_date in (date1, date2):
+    # Create activities for today and yesterday
+    for activity_date in (today, yesterday):
         create_payload = {
             "type": "discovery",
             "status": "done",
