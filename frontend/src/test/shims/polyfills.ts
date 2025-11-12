@@ -1,15 +1,18 @@
-import { ReadableStream, TransformStream, WritableStream } from 'stream/web'
+import { ReadableStream, WritableStream, TransformStream } from 'node:stream/web'
 
-const globals = globalThis as Record<string, unknown>
+const globalTarget = globalThis as Record<string, unknown>
 
-if (!('TransformStream' in globals)) {
-  ;(globals as any).TransformStream = TransformStream
+if (typeof globalTarget.ReadableStream === 'undefined') {
+  globalTarget.ReadableStream = ReadableStream
 }
 
-if (!('ReadableStream' in globals)) {
-  ;(globals as any).ReadableStream = ReadableStream
+if (typeof globalTarget.WritableStream === 'undefined') {
+  globalTarget.WritableStream = WritableStream
 }
 
-if (!('WritableStream' in globals)) {
-  ;(globals as any).WritableStream = WritableStream
+if (typeof globalTarget.TransformStream === 'undefined') {
+  globalTarget.TransformStream = TransformStream
 }
+
+export {}
+
