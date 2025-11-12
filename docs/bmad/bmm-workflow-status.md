@@ -1,4 +1,4 @@
-# BMM Workflow Status (Reopened 2025-11-12T14:15Z | Updated 2025-11-12T14:40Z)
+# BMM Workflow Status (Reopened 2025-11-12T14:15Z | Updated 2025-11-12T15:20Z)
 
 ## Project Configuration
 
@@ -30,45 +30,40 @@ BLOCKERS: None - deployment healthy
 
 ## Next Action
 
-NEXT_ACTION: Resume DEV-008 testing - verify storage quota UX in production and complete story sign-off
-NEXT_COMMAND: cd frontend && npx vitest run src/components/documents/UploadPanel.enhanced.test.tsx --pool=vmThreads
+NEXT_ACTION: Redeploy marketing frontend with contrast fixes, then rerun Lighthouse/axe on production
+NEXT_COMMAND: python trigger_render_deploy.py --service srv-d3ihptbipnbc73e72ne0 && npx lighthouse https://ma-saas-platform.onrender.com --view=false --quiet --output=json --output-path=docs/marketing/lighthouse-report.json && npx axe https://ma-saas-platform.onrender.com --tags wcag2a,wcag2aa --save docs/marketing/accessibility-report.json
 NEXT_AGENT: frontend
-PRIORITY: P0
-RATIONALE: Production deployment resolved (migration syntax fixed), ready to complete DEV-008 story testing
+PRIORITY: P1
+RATIONALE: Local palette fixes validated (axe 0 violations); production evidence still pending to close MARK-002 Phase 10.
 
 ## Completed This Session
 
-SESSION_ID: Session-2025-11-12-MigrationHotfix
+SESSION_ID: Session-2025-11-12V-MarketingContrast
 COMPLETED_WORK:
-- ✅ Identified migration syntax error blocking production deployment (14:28Z error logs)
-- ✅ Verified user fix (commit 59cd87d at 14:32Z) corrected parameter binding syntax
-- ✅ Confirmed deployment success: Backend health check passing at 14:35Z (HTTP 200)
-- ✅ Confirmed frontend health check passing (HTTP 200, 5KB content)
-- ✅ Updated workflow status to reflect successful deployment resolution
-
-ERROR_RESOLVED:
-- **Issue**: `sqlalchemy.exc.ProgrammingError: syntax error at or near ":"`
-- **Location**: backend/alembic/versions/89a67cacf69a_add_export_log_task_metadata_fields.py line 28
-- **Root Cause**: Used `:table_name` dict syntax instead of `%s` tuple syntax for psycopg2
-- **Fix**: Commit 59cd87d changed to `"SELECT to_regclass(%s)"` with tuple parameter
-- **Status**: ✅ RESOLVED - Production services healthy
+- Darkened marketing emerald palette (`emerald-600/700/800`) and aligned supporting UI (LandingPage, Pricing, Case Studies, Sales Promotion, CapLiquify FP&A, Blog, MarketingNav).
+- Updated shared product surfaces (BulkActions, DocumentWorkspace status, Match analytics, Podcast Studio components) for consistent WCAG contrast.
+- Rebuilt frontend (`npm run build`) and ran local axe audit against preview (`npx axe http://127.0.0.1:4173`) – 0 violations; archived as `docs/marketing/accessibility-report-local.json`.
+- Attempted local Lighthouse via static `dist` server (`npx lighthouse http://127.0.0.1:4174`) – blocked by Chrome NO_FCP/EPERM (documented for follow-up).
+- Updated `docs/marketing/MARKETING-COMPLETION-STATUS-2025-11-11.md`, `docs/bmad/BMAD_PROGRESS_TRACKER.md`, and this workflow with remediation plan.
 
 FILES_MODIFIED:
-- docs/bmad/bmm-workflow-status.md (this file - updated status to GREEN)
-- backend/tests/conftest.py
-- backend/tests/test_subscription_error_paths.py
+- frontend/src/pages/marketing/**/*.tsx
+- frontend/src/components/marketing/{DashboardMockup.tsx,MarketingNav.tsx}
+- frontend/src/components/documents/BulkActions.tsx
+- frontend/src/components/deal-matching/analytics/MatchSuccessRate.tsx
+- frontend/src/pages/deals/valuation/ValuationSuite.tsx
+- frontend/src/pages/podcast/PodcastStudio.tsx
+- frontend/src/components/podcast/{EpisodeTranscriptPanel.tsx,StreamConfigPanel.tsx}
+- docs/marketing/{MARKETING-COMPLETION-STATUS-2025-11-11.md,accessibility-report-local.json}
 - docs/bmad/BMAD_PROGRESS_TRACKER.md
-- docs/bmad/stories/DEV-008-secure-document-data-room.md
 - docs/bmad/bmm-workflow-status.md (this file)
 
 TEST_RESULTS:
-- `cd backend && python -m pytest tests/test_document_endpoints.py -k folders --maxfail=1 -vv` → 2 passed / 0 failed ✅
-- `cd backend && source ../.venv/bin/activate && python -m pytest tests/test_subscription_error_paths.py --maxfail=1 -q` → 17 passed / 4 skipped ✅
-- `cd frontend && npx vitest run src/tests/msw/documentsHandlers.test.ts src/components/documents/FolderTree.test.tsx src/components/documents/PermissionModal.test.tsx src/components/documents/UploadPanel.enhanced.test.tsx --pool=forks` → 74 tests passed ✅
-- `cd frontend && npx vitest run src/components/documents/UploadPanel.enhanced.test.tsx --pool=vmThreads` → 34/34 ✅
-- `cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --pool=vmThreads` → 31/31 ✅
+- `npm run build` → ✅
+- `npx axe http://127.0.0.1:4173 --tags wcag2a,wcag2aa --save docs/marketing/accessibility-report-local.json` → 0 violations
+- `npx lighthouse http://127.0.0.1:4174 --preset=desktop ...` → ⚠️ NO_FCP / EPERM (Chrome temp dir); rerun after redeploy
 
-**Phase 6 Focus**: Deployment evidence refresh, marketing audits, and final QA packaging
+**Phase 6 Focus**: Deploy contrast fixes, capture production audits, then proceed to final QA packaging
 
 ---
 
