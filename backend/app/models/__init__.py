@@ -29,6 +29,12 @@ from .rbac_audit_log import RBACAuditLog, RBACAuditAction
 from .deal_match import DealMatchCriteria, DealMatch, DealMatchAction
 from .blog_post import BlogPost
 from .newsletter_subscription import NewsletterSubscription
+from .document_generation import (
+    DocumentTemplate,
+    GeneratedDocument,
+    TemplateStatus,
+    DocumentStatus,
+)
 
 # Master Admin Portal models
 from .master_admin import (
@@ -101,6 +107,10 @@ __all__ = [
     "DealMatchAction",
     "BlogPost",
     "NewsletterSubscription",
+    "DocumentTemplate",
+    "GeneratedDocument",
+    "TemplateStatus",
+    "DocumentStatus",
     # Master Admin Portal
     "AdminGoal",
     "AdminActivity",
