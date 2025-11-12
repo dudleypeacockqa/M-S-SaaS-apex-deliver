@@ -90,6 +90,10 @@ run_with_retry() {
   done
 }
 
+alembic_upgrade() {
+  alembic upgrade head
+}
+
 normalize_database_url
 
 # Ensure Render DATABASE_URL host includes region FQDN (Render sometimes omits .frankfurt-postgres.render.com)
@@ -118,6 +122,8 @@ if [ -f .render_database_url ]; then
   export DATABASE_URL="$(cat .render_database_url)"
   rm .render_database_url
 fi
+
+run_with_retry check_db_connection
 
 echo "========================================="
 echo "Render Prestart Script - Database Migrations"
@@ -218,9 +224,7 @@ echo "========================================="
 # Apply all pending migrations
 echo ""
 echo "Applying database migrations..."
-alembic upgrade head
-
-if [ $? -eq 0 ]; then
+if run_with_retry alembic_upgrade; then
     echo ""
     echo "✅ SUCCESS: All migrations applied"
     echo ""

@@ -51,7 +51,47 @@ PY
   export DATABASE_URL
 }
 
+check_db_connection() {
+  python3 - <<'PY'
+import os, sys
+import psycopg2
+
+dsn = os.environ["DATABASE_URL"]
+try:
+    with psycopg2.connect(dsn) as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT 1")
+except psycopg2.OperationalError as exc:
+    sys.stderr.write(f"Database connection failed: {exc}\n")
+    sys.exit(1)
+PY
+}
+
+run_with_retry() {
+  attempts="${RENDER_DB_RETRY_MAX:-5}"
+  delay="${RENDER_DB_RETRY_DELAY:-5}"
+  attempt=1
+  while [ $attempt -le $attempts ]; do
+    if "$@"; then
+      return 0
+    fi
+    echo "Command '$*' failed (attempt $attempt/$attempts)."
+    if [ $attempt -eq $attempts ]; then
+      echo "Giving up after $attempts attempts."
+      return 1
+    fi
+    sleep $delay
+    delay=$((delay * 2))
+    attempt=$((attempt + 1))
+  done
+}
+
+alembic_upgrade() {
+  alembic upgrade head
+}
+
 normalize_database_url
+run_with_retry check_db_connection
 
 echo "========================================="
 echo "Starting Render Backend Service"
@@ -84,17 +124,10 @@ if echo "$CURRENT" | grep -q "Can't locate revision\|No current revision"; then
     alembic stamp 8dcb6880a52b 2>&1 || echo "Could not stamp"
 fi
 
-# Now try to upgrade
-echo "Running alembic upgrade head..."
-alembic upgrade head
+run_with_retry alembic_upgrade
 
-if [ $? -eq 0 ]; then
-    echo "✅ Migrations applied successfully"
-    alembic current
-else
-    echo "❌ Migration failed - exiting"
-    exit 1
-fi
+echo "✅ Migrations applied successfully"
+alembic current
 
 echo "========================================="
 echo "Starting uvicorn server..."
