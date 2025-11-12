@@ -278,6 +278,41 @@ def test_update_subscription_tier_without_proration(db_session: Session):
         assert call_kwargs["proration_behavior"] == "none"
 
 
+def test_update_subscription_tier_prorates_by_default(db_session: Session):
+    """Test update_subscription_tier uses proration when not explicitly disabled."""
+    org = Organization(
+        id="org_prorate_default",
+        name="Prorate Default Org",
+        slug="prorate-default",
+        subscription_tier="starter"
+    )
+    db_session.add(org)
+
+    sub = Subscription(
+        organization_id="org_prorate_default",
+        stripe_customer_id="cus_test",
+        stripe_subscription_id="sub_test",
+        tier=SubscriptionTier.STARTER,
+        status=SubscriptionStatus.ACTIVE
+    )
+    db_session.add(sub)
+    db_session.commit()
+
+    with patch('stripe.Subscription.retrieve') as mock_retrieve, \
+         patch('stripe.Subscription.modify') as mock_modify:
+
+        mock_retrieve.return_value = {"items": {"data": [Mock(id="si_test_default")]}}
+
+        subscription_service.update_subscription_tier(
+            organization_id="org_prorate_default",
+            new_tier=SubscriptionTier.PROFESSIONAL,
+            db=db_session
+        )
+
+        call_kwargs = mock_modify.call_args[1]
+        assert call_kwargs["proration_behavior"] == "create_prorations"
+
+
 # Tests for edge cases in cancel_subscription
 def test_cancel_subscription_with_none_db():
     """Test cancel_subscription requires database session."""
@@ -405,6 +440,97 @@ def test_cancel_subscription_at_period_end(db_session: Session):
 
         assert result.cancel_at_period_end is True
         assert result.status == SubscriptionStatus.ACTIVE  # Still active until period end
+
+
+# Tests for customer portal session creation
+def test_create_billing_portal_requires_db():
+    """Test create_billing_portal_session requires database session."""
+    with pytest.raises(ValueError, match="Database session is required"):
+        subscription_service.create_billing_portal_session(
+            organization_id="org_any",
+            db=None,
+        )
+
+
+def test_create_billing_portal_requires_active_subscription(db_session: Session):
+    """Test create_billing_portal_session rejects organizations without a subscription."""
+    org = Organization(
+        id="org_portal_no_sub",
+        name="Portal No Sub Org",
+        slug="portal-no-sub",
+        subscription_tier="starter",
+    )
+    db_session.add(org)
+    db_session.commit()
+
+    with pytest.raises(ValueError, match="No active subscription found"):
+        subscription_service.create_billing_portal_session(
+            organization_id="org_portal_no_sub",
+            db=db_session,
+        )
+
+
+def test_create_billing_portal_requires_customer_id(db_session: Session):
+    """Test create_billing_portal_session rejects subscriptions without Stripe customer ID."""
+    org = Organization(
+        id="org_portal_no_customer",
+        name="Portal No Customer Org",
+        slug="portal-no-customer",
+        subscription_tier="starter",
+    )
+    db_session.add(org)
+
+    sub = Subscription(
+        organization_id="org_portal_no_customer",
+        stripe_customer_id="",
+        stripe_subscription_id="sub_test",
+        tier=SubscriptionTier.STARTER,
+        status=SubscriptionStatus.ACTIVE,
+    )
+    db_session.add(sub)
+    db_session.commit()
+
+    with pytest.raises(ValueError, match="Stripe customer ID"):
+        subscription_service.create_billing_portal_session(
+            organization_id="org_portal_no_customer",
+            db=db_session,
+        )
+
+
+def test_create_billing_portal_session_success(db_session: Session):
+    """Test create_billing_portal_session returns Stripe billing portal URL."""
+    org = Organization(
+        id="org_portal_success",
+        name="Portal Success Org",
+        slug="portal-success",
+        subscription_tier="starter",
+    )
+    db_session.add(org)
+
+    sub = Subscription(
+        organization_id="org_portal_success",
+        stripe_customer_id="cus_portal",
+        stripe_subscription_id="sub_test",
+        tier=SubscriptionTier.PROFESSIONAL,
+        status=SubscriptionStatus.ACTIVE,
+    )
+    db_session.add(sub)
+    db_session.commit()
+
+    with patch('app.services.subscription_service.stripe.billing_portal.Session.create') as mock_portal:
+        mock_portal.return_value = Mock(url="https://billing.stripe.com/session/test")
+
+        result = subscription_service.create_billing_portal_session(
+            organization_id="org_portal_success",
+            return_url="https://example.com/return",
+            db=db_session,
+        )
+
+        mock_portal.assert_called_once()
+        call_kwargs = mock_portal.call_args[1]
+        assert call_kwargs["customer"] == "cus_portal"
+        assert call_kwargs["return_url"] == "https://example.com/return"
+        assert result["url"] == "https://billing.stripe.com/session/test"
 
 
 # Tests for webhook handlers edge cases
