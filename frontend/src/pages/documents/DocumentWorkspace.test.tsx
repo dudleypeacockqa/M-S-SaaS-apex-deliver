@@ -78,6 +78,22 @@ vi.mock('../../components/documents/PermissionModal', () => ({
   },
 }))
 
+vi.mock('../../components/documents/DocumentQuestionsPanel', () => ({
+  DocumentQuestionsPanel: (props: any) => {
+    questionPanelSpy(props)
+    if (!props.document) {
+      return null
+    }
+
+    return (
+      <div data-testid="mock-question-panel">
+        question panel {props.document.id}
+        <button onClick={props.onClose}>close-question-panel</button>
+      </div>
+    )
+  },
+}))
+
 vi.mock('../../components/documents/AccessLogDrawer', () => ({
   AccessLogDrawer: (props: any) => {
     accessLogDrawerSpy(props)
@@ -123,6 +139,7 @@ describe('DocumentWorkspace', () => {
     folderTreeSpy.mockClear()
     documentListSpy.mockClear()
     uploadPanelSpy.mockClear()
+    questionPanelSpy.mockClear()
     permissionModalSpy.mockClear()
     startUploadMock.mockReset()
     clearQueueMock.mockClear()

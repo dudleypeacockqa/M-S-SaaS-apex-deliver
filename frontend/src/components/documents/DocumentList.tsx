@@ -28,6 +28,7 @@ interface DocumentListProps {
     metadata?: Record<string, unknown>
   }) => void
   onViewAccessLogs?: (document: Document) => void
+  onShareDocument?: (document: Document) => void
   onOpenQuestions?: (document: Document) => void
 }
 
@@ -51,6 +52,7 @@ export const DocumentList: React.FC<DocumentListProps> = (props) => {
     onDocumentsLoaded,
     resetSelectionSignal,
     onManagePermissions,
+    onShareDocument,
     onViewAccessLogs,
     onOpenQuestions,
   } = props

@@ -140,3 +140,7 @@ tmp_patch.diff
 
 # Ignore large test output files
 frontend-test-*.txt
+
+# Ignore node_modules backups
+frontend/node_modules.bak.*/
+node_modules.bak.*/
