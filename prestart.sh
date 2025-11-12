@@ -12,7 +12,7 @@ normalize_database_url() {
 
   if printf '%s' "$DATABASE_URL" | grep -q "@dpg-" && ! printf '%s' "$DATABASE_URL" | grep -q "\.render\.com"; then
     echo "Normalizing DATABASE_URL host for Render public endpoint..."
-    local suffix="${RENDER_DB_DOMAIN_SUFFIX:-frankfurt-postgres.render.com}"
+    suffix="${RENDER_DB_DOMAIN_SUFFIX:-frankfurt-postgres.render.com}"
     DATABASE_URL=$(DB_URL_TMP="$DATABASE_URL" RENDER_DB_DOMAIN_SUFFIX="$suffix" python3 - <<'PY'
 import os
 from urllib.parse import urlsplit, urlunsplit
