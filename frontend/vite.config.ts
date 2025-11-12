@@ -1,40 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import viteImagemin from 'vite-plugin-imagemin'
 import path from 'node:path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    // Image optimization plugin (production builds only)
-    viteImagemin({
-      // WebP optimization
-      webp: {
-        quality: 85, // Balance quality vs file size (85 is high quality)
-      },
-      // PNG optimization
-      optipng: {
-        optimizationLevel: 7, // 0-7, higher = smaller files but slower builds
-      },
-      // JPG/JPEG optimization
-      mozjpeg: {
-        quality: 85,
-      },
-      // SVG optimization
-      svgo: {
-        plugins: [
-          {
-            name: 'removeViewBox',
-            active: false, // Keep viewBox for responsive SVGs
-          },
-          {
-            name: 'removeEmptyAttrs',
-            active: true,
-          },
-        ],
-      },
-    }),
+    // Image optimization disabled temporarily due to import issues
+    // TODO: Re-enable vite-plugin-imagemin after fixing import syntax
   ],
   resolve: {
     alias: {
