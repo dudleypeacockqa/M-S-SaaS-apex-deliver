@@ -11,15 +11,20 @@ Lines to cover:
 - 111-112, 118-119: usage metrics and tier config
 - 129, 135-137: invoice retrieval and response building
 """
-import pytest
+import math
+from datetime import datetime, timezone
 from unittest.mock import Mock, patch
+from uuid import uuid4
+
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
-from datetime import datetime, timezone
 
-from app.models.user import User
+from app.models.deal import Deal, DealStage
+from app.models.document import Document
 from app.models.organization import Organization
 from app.models.subscription import Subscription, SubscriptionTier
+from app.models.user import User
 from app.services import subscription_service
 
 
@@ -99,7 +104,7 @@ def test_billing_dashboard_no_subscription(client: TestClient, auth_headers_solo
         assert "No subscription found" in response.json()["detail"]
 
 
-def test_billing_dashboard_with_subscription(client: TestClient, auth_headers_solo: dict, db_session: Session, solo_user: User):
+def test_billing_dashboard_with_subscription(client: TestClient, db_session: Session, solo_user: User):
     """
     TDD RED: billing_dashboard should execute all query scalars (lines 95, 97, 103, 105, 111-112)
 
@@ -124,10 +129,60 @@ def test_billing_dashboard_with_subscription(client: TestClient, auth_headers_so
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
     )
+
+    deal = Deal(
+        id=str(uuid4()),
+        organization_id=solo_user.organization_id,
+        owner_id=solo_user.id,
+        name="Data Room Storage",
+        target_company="Storage Metrics Inc",
+        stage=DealStage.sourcing,
+        currency="GBP",
+        description="Seed data for billing dashboard tests",
+    )
+
+    doc_one_size = 6 * 1024 * 1024 + 256  # > 6MB file to test rounding up
+    doc_two_size = 3 * 1024 * 1024        # 3MB file
+
+    documents = [
+        Document(
+            id=str(uuid4()),
+            name="financials.zip",
+            file_key="documents/financials.zip",
+            file_size=doc_one_size,
+            file_type="application/zip",
+            deal_id=deal.id,
+            organization_id=solo_user.organization_id,
+            uploaded_by=solo_user.id,
+        ),
+        Document(
+            id=str(uuid4()),
+            name="pitch.pdf",
+            file_key="documents/pitch.pdf",
+            file_size=doc_two_size,
+            file_type="application/pdf",
+            deal_id=deal.id,
+            organization_id=solo_user.organization_id,
+            uploaded_by=solo_user.id,
+        ),
+    ]
+
     db_session.add(subscription)
+    db_session.add(deal)
+    db_session.add_all(documents)
     db_session.commit()
 
-    response = client.get("/api/billing/billing-dashboard", headers=auth_headers_solo)
+    from app.api.dependencies.auth import get_current_user
+    from app.main import app
+
+    def override_get_current_user():
+        return solo_user
+
+    app.dependency_overrides[get_current_user] = override_get_current_user
+    try:
+        response = client.get("/api/billing/billing-dashboard")
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
     assert response.status_code == 200
     data = response.json()
@@ -143,6 +198,9 @@ def test_billing_dashboard_with_subscription(client: TestClient, auth_headers_so
     assert "users_count" in data["usage"]
     assert "documents_count" in data["usage"]
     assert "storage_used_mb" in data["usage"]
+    total_bytes = doc_one_size + doc_two_size
+    expected_storage_mb = math.ceil(total_bytes / (1024 * 1024))
+    assert data["usage"]["storage_used_mb"] == expected_storage_mb
 
     # Verify tier details accessed TIER_CONFIG (lines 118-119)
     assert "tier" in data["tier_details"]
@@ -154,7 +212,7 @@ def test_billing_dashboard_with_subscription(client: TestClient, auth_headers_so
     assert isinstance(data["recent_invoices"], list)
 
 
-def test_billing_dashboard_zero_counts(client: TestClient, auth_headers_solo: dict, db_session: Session, solo_user: User):
+def test_billing_dashboard_zero_counts(client: TestClient, db_session: Session, solo_user: User):
     """
     TDD RED: billing_dashboard should handle scalar() returning None (lines 95, 103, 111)
 
@@ -176,7 +234,17 @@ def test_billing_dashboard_zero_counts(client: TestClient, auth_headers_solo: di
     db_session.add(subscription)
     db_session.commit()
 
-    response = client.get("/api/billing/billing-dashboard", headers=auth_headers_solo)
+    from app.api.dependencies.auth import get_current_user
+    from app.main import app
+
+    def override_get_current_user():
+        return solo_user
+
+    app.dependency_overrides[get_current_user] = override_get_current_user
+    try:
+        response = client.get("/api/billing/billing-dashboard")
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
     assert response.status_code == 200
     data = response.json()
@@ -492,4 +560,3 @@ def test_stripe_webhook_routes_events(
     assert response.status_code == 200
     assert called["handler"] == handler_name
     assert called["event_data"] == {"object": {"id": "evt_123"}}
-

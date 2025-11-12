@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { billingService, type BillingDashboard, type Subscription } from './billingService'
-import { api } from './api'
+import { apiClient } from './api/client'
 
-vi.mock('./api', () => ({
-  api: {
+vi.mock('./api/client', () => ({
+  apiClient: {
     get: vi.fn(),
     post: vi.fn(),
     put: vi.fn(),
   },
 }))
 
-const mockedApi = vi.mocked(api)
+const mockedApi = vi.mocked(apiClient)
 
 const mockSubscription: Subscription = {
   id: 'sub_001',
@@ -59,20 +59,20 @@ describe('billingService', () => {
       upcoming_invoice_amount: null,
     }
 
-    mockedApi.get.mockResolvedValueOnce({ data: dashboard })
+    mockedApi.get.mockResolvedValueOnce(dashboard)
 
     const result = await billingService.getBillingDashboard()
 
-    expect(mockedApi.get).toHaveBeenCalledWith('/subscriptions/billing-dashboard')
+    expect(mockedApi.get).toHaveBeenCalledWith('/billing/billing-dashboard')
     expect(result).toEqual(dashboard)
   })
 
   it('changes subscription tier', async () => {
-    mockedApi.put.mockResolvedValueOnce({ data: mockSubscription })
+    mockedApi.put.mockResolvedValueOnce(mockSubscription)
 
     const result = await billingService.changeTier({ new_tier: 'enterprise', prorate: true })
 
-    expect(mockedApi.put).toHaveBeenCalledWith('/subscriptions/change-tier', {
+    expect(mockedApi.put).toHaveBeenCalledWith('/billing/change-tier', {
       new_tier: 'enterprise',
       prorate: true,
     })
@@ -80,11 +80,11 @@ describe('billingService', () => {
   })
 
   it('cancels subscription with request payload', async () => {
-    mockedApi.post.mockResolvedValueOnce({ data: mockSubscription })
+    mockedApi.post.mockResolvedValueOnce(mockSubscription)
 
     const result = await billingService.cancelSubscription({ immediately: true, reason: 'testing' })
 
-    expect(mockedApi.post).toHaveBeenCalledWith('/subscriptions/cancel', {
+    expect(mockedApi.post).toHaveBeenCalledWith('/billing/cancel', {
       immediately: true,
       reason: 'testing',
     })
@@ -92,23 +92,24 @@ describe('billingService', () => {
   })
 
   it('retrieves customer portal url', async () => {
-    mockedApi.get.mockResolvedValueOnce({ data: { url: 'https://portal.example.com' } })
+    mockedApi.get.mockResolvedValueOnce({ url: 'https://portal.example.com' })
 
     const result = await billingService.getCustomerPortalUrl()
 
-    expect(mockedApi.get).toHaveBeenCalledWith('/subscriptions/customer-portal')
+    expect(mockedApi.get).toHaveBeenCalledWith('/billing/customer-portal')
     expect(result).toEqual({ url: 'https://portal.example.com' })
   })
 
   it('creates checkout session when redirecting to checkout', async () => {
     mockedApi.post.mockResolvedValueOnce({
-      data: { checkout_url: 'https://checkout.example.com', session_id: 'sess_123' },
+      checkout_url: 'https://checkout.example.com',
+      session_id: 'sess_123',
     })
 
     await billingService.redirectToCheckout('starter')
 
     expect(mockedApi.post).toHaveBeenCalledWith(
-      '/subscriptions/create-checkout-session',
+      '/billing/create-checkout-session',
       expect.objectContaining({ tier: 'starter' })
     )
   })

@@ -1,0 +1,1 @@
+2025-11-12T15:24:46Z: Render deploy dep-d4aacpchg0os73fug3t0 failed with psycopg2 OperationalError (SSL connection closed unexpectedly) while running alembic upgrade head against dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com.

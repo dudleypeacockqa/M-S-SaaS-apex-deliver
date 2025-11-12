@@ -30,6 +30,8 @@ vi.mock("@clerk/clerk-react", () => ({
     mockClerkState.isSignedIn ? <>{children}</> : null,
   SignedOut: ({ children }: { children: ReactNode }) =>
     mockClerkState.isSignedIn ? null : <>{children}</>,
+  SignIn: () => <div data-testid="mock-sign-in" />,
+  SignUp: () => <div data-testid="mock-sign-up" />,
   useAuth: () => ({
     isSignedIn: mockClerkState.isSignedIn,
     isLoaded: mockClerkState.isLoaded,

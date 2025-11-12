@@ -1,3 +1,9 @@
+> **2025-11-12 15:48 UTC**
+> - Triggered backend + frontend redeploys via  (see docs/deployments/2025-11-13-render-backend-trigger.txt and ...-frontend-...).
+> - Backend deploys  and  failed with  while subsequent attempt  remains queued; frontend deploy presently queued as well.
+> - Render API currently returning  for commit  and prior attempts hit psycopg2  (tracked in docs/backend-deploy-errors.txt).
+> - Next action: capture failing deploy logs, patch entrypoint/prestart scripts if needed, then rerun  + smoke tests once deploy succeeds.
+
 > **2025-11-12 16:35 UTC**
 > - Triggered Render redeploys via API:
 >   - Backend (`srv-d3ii9qk9c44c73aqsli0`): ✅ request succeeded (`docs/deployments/2025-11-12-render-backend-trigger.txt`).

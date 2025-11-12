@@ -9,6 +9,8 @@ node_modules/
 .env.production.local
 .env.production
 */.env.production
+.env-backend.md
+.env-frontend.md
 
 # Ignore build artifacts
 dist/
@@ -17,6 +19,7 @@ build/
 # Ignore Python virtual environment
 venv/
 .venv/
+.prestart-venv/
 
 # Ignore Python bytecode
 __pycache__/
@@ -39,10 +42,19 @@ htmlcov/
 .pytest_cache/
 .coverage
 test_results.txt
+*test-results*.txt
+*test-run*.txt
+backend-test-baseline*.txt
+frontend-test-baseline*.txt
+test_write.txt
 
 # Ignore test databases
 *.db
 test_*.db
+
+# Ignore temporary test files
+backend/tests/path_safety.py
+backend/tests/test_path_safety.py
 
 # Ignore TypeScript build info
 *.tsbuildinfo
@@ -72,12 +84,16 @@ env.READY_TO_USE
 
 # Ignore Render API responses
 render_*.json
+deployment-health-*.json
 
 docs/DEPLOYMENT-COMPLETE-RECORD.md
 
 # Ignore temporary development files
 testfile.txt
 dev.plan.md
+
+# Ignore Lighthouse temporary directories
+frontend/tmp-lighthouse/
 
 # Ignore Word documents and reference materials
 *.docx

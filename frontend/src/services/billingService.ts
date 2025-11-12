@@ -3,7 +3,7 @@
  * Implements DEV-009: Subscription & Billing Management (Frontend)
  */
 
-import { api } from './api';
+import { apiClient } from './api/client';
 
 // ============================================================================
 // Types & Interfaces
@@ -103,46 +103,41 @@ export interface CancelSubscriptionRequest {
   reason?: string;
 }
 
+const billingEndpoint = (path: string) => `/billing${path}`;
+
 const createCheckoutSessionRequest = async (
   data: CheckoutSessionRequest
 ): Promise<CheckoutSessionResponse> => {
-  const response = await api.post<CheckoutSessionResponse>(
-    '/subscriptions/create-checkout-session',
+  return apiClient.post<CheckoutSessionResponse>(
+    billingEndpoint('/create-checkout-session'),
     data
   );
-  return response.data;
 };
 
 const getMySubscriptionRequest = async (): Promise<Subscription> => {
-  const response = await api.get<Subscription>('/subscriptions/me');
-  return response.data;
+  return apiClient.get<Subscription>(billingEndpoint('/me'));
 };
 
 const getBillingDashboardRequest = async (): Promise<BillingDashboard> => {
-  const response = await api.get<BillingDashboard>('/subscriptions/billing-dashboard');
-  return response.data;
+  return apiClient.get<BillingDashboard>(billingEndpoint('/billing-dashboard'));
 };
 
 const changeTierRequest = async (data: ChangeTierRequest): Promise<Subscription> => {
-  const response = await api.put<Subscription>('/subscriptions/change-tier', data);
-  return response.data;
+  return apiClient.put<Subscription>(billingEndpoint('/change-tier'), data);
 };
 
 const cancelSubscriptionRequest = async (
   data: CancelSubscriptionRequest
 ): Promise<Subscription> => {
-  const response = await api.post<Subscription>('/subscriptions/cancel', data);
-  return response.data;
+  return apiClient.post<Subscription>(billingEndpoint('/cancel'), data);
 };
 
 const getAllTiersRequest = async (): Promise<TierDetails[]> => {
-  const response = await api.get<TierDetails[]>('/subscriptions/tiers');
-  return response.data;
+  return apiClient.get<TierDetails[]>(billingEndpoint('/tiers'));
 };
 
 const getCustomerPortalUrlRequest = async (): Promise<{ url: string }> => {
-  const response = await api.get<{ url: string }>('/subscriptions/customer-portal');
-  return response.data;
+  return apiClient.get<{ url: string }>(billingEndpoint('/customer-portal'));
 };
 
 export const billingService = {

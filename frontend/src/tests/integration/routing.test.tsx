@@ -31,6 +31,8 @@ vi.mock("@clerk/clerk-react", () => ({
   SignInButton: ({ children }: { children: ReactNode }) => (
     <button data-testid="sign-in-header">{children}</button>
   ),
+  SignIn: () => <div data-testid="mock-sign-in" />,
+  SignUp: () => <div data-testid="mock-sign-up" />,
   UserButton: () => <div data-testid="user-menu">User Menu</div>,
   useAuth: () => ({
     isSignedIn: mockClerkState.isSignedIn,
@@ -92,4 +94,15 @@ describe("Integration: routing", () => {
     // Verify we're not seeing the sign-in page
     expect(screen.queryByText(/sign in to apexdeliver/i)).not.toBeInTheDocument()
   }, 15000)
+
+  it("renders the rich sign-in page without redirecting", async () => {
+    window.history.replaceState({}, "Test", "/sign-in")
+
+    render(<App />)
+
+    expect(
+      await screen.findByRole("heading", { name: /sign in to apexdeliver/i }, { timeout: 10000 })
+    ).toBeInTheDocument()
+    expect(window.location.pathname).toBe("/sign-in")
+  }, 10000)
 })

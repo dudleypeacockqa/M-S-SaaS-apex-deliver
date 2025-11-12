@@ -8,6 +8,7 @@ Implements:
 - US-9.5: Stripe webhook handling
 """
 import os
+import math
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Header
@@ -129,11 +130,21 @@ def get_billing_dashboard(
         )
     )
     documents_count = result.scalar()
+
+    storage_bytes_result = db.execute(
+        select(func.coalesce(func.sum(Document.file_size), 0)).filter(
+            Document.organization_id == current_user.organization_id,
+            Document.archived_at.is_(None),
+        )
+    )
+    storage_bytes = storage_bytes_result.scalar() or 0
+    storage_used_mb = math.ceil(int(storage_bytes) / (1024 * 1024)) if storage_bytes else 0
+
     usage = UsageMetrics(
         deals_count=deals_count or 0,
         users_count=users_count or 0,
         documents_count=documents_count or 0,
-        storage_used_mb=0,
+        storage_used_mb=storage_used_mb,
     )
     tier_config = subscription_service.TIER_CONFIG[subscription.tier]
     tier_details = TierDetails(

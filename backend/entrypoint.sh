@@ -62,7 +62,10 @@ check_db_connection() {
 import os, sys
 import psycopg2
 
-dsn = os.environ["DATABASE_URL"]
+raw = os.environ["DATABASE_URL"].strip()
+if raw.upper().startswith("DATABASE_URL="):
+    raw = raw.split("=", 1)[1].strip()
+dsn = raw
 try:
     with psycopg2.connect(dsn) as conn:
         with conn.cursor() as cur:

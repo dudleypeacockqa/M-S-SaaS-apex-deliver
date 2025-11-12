@@ -151,8 +151,8 @@ export const AppRoutes = () => {
 
       {/* Authentication Routes (uses RootLayout) */}
       <Route element={<RootLayout />}>
-        <Route path="sign-in" element={<SignInPage />} />
-        <Route path="sign-up" element={<SignUpPage />} />
+        <Route path="sign-in/*" element={<SignInPage />} />
+        <Route path="sign-up/*" element={<SignUpPage />} />
         <Route path="dashboard" element={<DashboardRoute />} />
 
         {/* Admin Routes */}

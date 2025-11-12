@@ -1,0 +1,30 @@
+=========================================
+Render Prestart Script - Database Migrations
+=========================================
+Current directory: /mnt/c/Projects/ma-saas-platform/M-S-SaaS-apex-deliver
+Python version: Python 3.12.3
+Target DB Host: postgresql://***@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform?sslmode=require
+
+Navigating to backend directory...
+
+Current migration status:
+No current migration (fresh database)
+
+Available migration heads:
+86d427f030f2 (head)
+
+🔍 Checking for partial migration state...
+✅ Table valuation_export_logs doesn't exist yet - no recovery needed
+
+=========================================
+
+Applying database migrations...
+Command 'alembic_upgrade' failed (attempt 1/5).
+Command 'alembic_upgrade' failed (attempt 2/5).
+Command 'alembic_upgrade' failed (attempt 3/5).
+Command 'alembic_upgrade' failed (attempt 4/5).
+Command 'alembic_upgrade' failed (attempt 5/5).
+Giving up after 5 attempts.
+
+❌ ERROR: Migration failed
+=========================================

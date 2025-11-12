@@ -1,15 +1,15 @@
 # 100% Project Completion Plan
 **Project**: M&A Intelligence Platform (ApexDeliver)
-**Last Updated**: 2025-11-12 12:20 UTC
+**Last Updated**: 2025-11-13 15:25 UTC
 **Methodology**: BMAD v6-alpha + TDD (RED ➜ GREEN ➜ REFACTOR)
 
 ---
 
-## Current Delivery Snapshot (2025-11-12 12:20 UTC)
-- **Git state**: `HEAD` / `origin/main` = `ff939e5 feat(dashboard): add comprehensive onboarding for first-time users`. Working tree dirty (documentation, BMAD artefacts, MSW harnesses). No outstanding pushes; latest commit already on `origin/main`.
+## Current Delivery Snapshot (2025-11-13 15:25 UTC)
+- **Git state**: `HEAD` / `origin/main` = `0848b2b fix(render): add DB connectivity retry loop`. Branch is synced with `origin/main`, but the working tree contains large doc + BMAD manifest deltas plus regenerated frontend assets from prior sessions (`git status -sb`).
 - **Backend tests**: Last targeted pytest (document endpoints folder slice) still green (2/0). Full-suite baseline remains 750 passed / 54 skipped (84% coverage). Next complete run scheduled once deployment/ops artefacts refreshed.
 - **Frontend tests**: Document Room vitest suites (`FolderTree`, `DocumentWorkspace`, `PermissionModal`, `UploadPanel`) remain 100% green. Global `npm run test -- --runInBand --coverage` queued for Phase 6 verification window.
-- **Render deployment**: Production backend (`srv-d3ii9qk9c44c73aqsli0`) currently serving commit `834fa20`. Production frontend (`srv-d3ihptbipnbc73e72ne0`) serving `680c7a4`. Latest repo commits (`ff939e5`) are **not yet deployed**, so a redeploy is required before calling the platform “up to date.”
+- **Render deployment**: Production backend (`srv-d3ii9qk9c44c73aqsli0`) currently serving commit `834fa20`. Production frontend (`srv-d3ihptbipnbc73e72ne0`) serving `680c7a4`. Latest repo commits (`0848b2b`) are **not yet deployed**, so a redeploy is required before calling the platform “up to date.”
 - **Deployment health**: `python3 scripts/verify_deployment.py` (2025-11-12 12:18Z) → 10/10 HTTP checks ✅. Output stored in `docs/deployments/verify-deployment-refresh-2025-11-12-latest.txt`.
 - **Migrations**: Live database confirmed at Alembic head `dc2c0f69c1b1` (Render logs 2025-11-11). Need to re-run `alembic upgrade head` as part of the redeploy, then archive new evidence.
 - **BMAD artefacts**: `docs/bmad/bmm-workflow-status.md` reopened Phase 4 (dev-story). Progress tracker entry pending for this planning session; BMAD CLI still offline so manual markdown updates continue.
