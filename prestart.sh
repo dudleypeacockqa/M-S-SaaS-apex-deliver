@@ -97,6 +97,72 @@ echo ""
 echo "Available migration heads:"
 alembic heads
 
+# ==============================================================================
+# MIGRATION RECOVERY: Handle partially-applied 89a67cacf69a migration
+# ==============================================================================
+echo ""
+echo "🔍 Checking for partial migration state..."
+python3 <<'PY'
+import os
+import sys
+from sqlalchemy import create_engine, text
+
+db_url = os.environ.get("DATABASE_URL")
+if not db_url:
+    print("⚠️  DATABASE_URL not set - skipping recovery check")
+    sys.exit(0)
+
+try:
+    engine = create_engine(db_url)
+    with engine.connect() as conn:
+        # Check if valuation_export_logs table exists
+        result = conn.execute(text(
+            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'valuation_export_logs')"
+        ))
+        table_exists = result.scalar()
+
+        if not table_exists:
+            print("✅ Table valuation_export_logs doesn't exist yet - no recovery needed")
+            sys.exit(0)
+
+        # Check if task_id column exists (indicator that migration was partially applied)
+        result = conn.execute(text(
+            "SELECT EXISTS (SELECT FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'valuation_export_logs' AND column_name = 'task_id')"
+        ))
+        task_id_exists = result.scalar()
+
+        if task_id_exists:
+            # Migration was partially applied - check if it's marked as complete
+            result = conn.execute(text(
+                "SELECT EXISTS (SELECT FROM alembic_version WHERE version_num = '89a67cacf69a')"
+            ))
+            migration_recorded = result.scalar()
+
+            if not migration_recorded:
+                print("⚠️  PARTIAL MIGRATION DETECTED!")
+                print("   - valuation_export_logs.task_id column exists")
+                print("   - But migration 89a67cacf69a not recorded in alembic_version")
+                print("")
+                print("🔧 Applying recovery: Marking migration as complete...")
+
+                conn.execute(text("INSERT INTO alembic_version (version_num) VALUES ('89a67cacf69a')"))
+                conn.commit()
+
+                print("✅ Recovery complete: Migration 89a67cacf69a marked as applied")
+                print("   Next: Alembic will skip 89a67cacf69a and apply 86d427f030f2")
+            else:
+                print("✅ Migration 89a67cacf69a already recorded - no recovery needed")
+        else:
+            print("✅ No partial migration detected - proceeding normally")
+
+except Exception as e:
+    print(f"⚠️  Recovery check failed: {e}")
+    print("   Proceeding with normal migration (may fail if state is inconsistent)")
+PY
+
+echo ""
+echo "========================================="
+
 # Apply all pending migrations
 echo ""
 echo "Applying database migrations..."
