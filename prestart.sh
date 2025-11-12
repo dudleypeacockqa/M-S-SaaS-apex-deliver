@@ -10,19 +10,32 @@ normalize_database_url() {
     return
   fi
 
-  if printf '%s' "$DATABASE_URL" | grep -q "@dpg-" && ! printf '%s' "$DATABASE_URL" | grep -q "\.render\.com"; then
-    echo "Normalizing DATABASE_URL host for Render public endpoint..."
-    suffix="${RENDER_DB_DOMAIN_SUFFIX:-frankfurt-postgres.render.com}"
-    DATABASE_URL=$(DB_URL_TMP="$DATABASE_URL" RENDER_DB_DOMAIN_SUFFIX="$suffix" python3 - <<'PY'
+  DATABASE_URL=$(DB_URL_TMP="$DATABASE_URL" RENDER_DB_DOMAIN_SUFFIX="${RENDER_DB_DOMAIN_SUFFIX:-frankfurt-postgres.render.com}" python3 - <<'PY'
 import os
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import urlsplit, urlunsplit, parse_qs, urlencode
 
 url = os.environ["DB_URL_TMP"]
 suffix = os.environ["RENDER_DB_DOMAIN_SUFFIX"]
 parts = urlsplit(url)
 host = parts.hostname or ""
+
 if host and "." not in host:
     host = f"{host}.{suffix}"
+
+query = parse_qs(parts.query, keep_blank_values=True)
+normalized = {}
+ssl_added = False
+for key, value in query.items():
+    if key.lower() == "sslmode":
+        normalized["sslmode"] = [value[0] or "require"]
+        ssl_added = True
+    else:
+        normalized[key] = value
+if not ssl_added:
+    normalized["sslmode"] = ["require"]
+
+rebuilt_query = urlencode(normalized, doseq=True)
+
 if parts.port:
     netloc = f"{host}:{parts.port}"
 else:
@@ -32,11 +45,11 @@ if parts.username:
     if parts.password:
         auth = f"{auth}:{parts.password}"
     netloc = f"{auth}@{netloc}"
-print(urlunsplit((parts.scheme, netloc, parts.path, parts.query, parts.fragment)), end="")
+
+print(urlunsplit((parts.scheme, netloc, parts.path, rebuilt_query, parts.fragment)), end="")
 PY
 )
-    export DATABASE_URL
-  fi
+  export DATABASE_URL
 }
 
 normalize_database_url
