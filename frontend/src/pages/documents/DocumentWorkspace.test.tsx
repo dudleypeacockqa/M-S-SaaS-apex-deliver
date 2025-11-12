@@ -9,6 +9,7 @@ const uploadPanelSpy = vi.fn()
 const permissionModalSpy = vi.fn()
 const startUploadMock = vi.fn()
 const clearQueueMock = vi.fn()
+const questionPanelSpy = vi.fn()
 const accessLogDrawerSpy = vi.fn()
 
 const uploadHookState = {

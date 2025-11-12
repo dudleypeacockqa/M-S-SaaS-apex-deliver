@@ -474,6 +474,14 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
         onClose={closeAccessLogs}
       />
 
+      {questionPanelDocument && (
+        <DocumentQuestionsPanel
+          dealId={dealId}
+          document={questionPanelDocument}
+          onClose={() => setQuestionPanelDocument(null)}
+        />
+      )}
+
       {/* Toast notification */}
       {activeToast && (
         <div

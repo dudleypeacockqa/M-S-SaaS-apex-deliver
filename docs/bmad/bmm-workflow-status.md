@@ -25,13 +25,13 @@ PHASE_6_COMPLETE: false (95-98% complete, in progress)
 
 STORY_ID: MARK-002-enhanced-website-phases-3-10
 STORY_STATUS: IN_PROGRESS
-STORY_RESULT: Frontend redeploy triggered + verified (10/10 checks). Production Lighthouse/axe evidence still outstanding; CDN appears to serve pre-contrast palette and Windows Defender blocks local Lighthouse runs.
-BLOCKERS: (1) Windows Defender/Chrome headless temp-dir cleanup prevents Lighthouse CLI (`EPERM`, `NO_FCP`). (2) Axe CLI hits production but reports legacy palette contrast, implying CDN cache lag or redeploy not yet propagated. Need remote runner or CDN purge.
+STORY_RESULT: Emerald palette contrast sweep & case studies shipped; verified via targeted Vitest suites. Production audits still show legacy palette (axe detects `text-emerald-600`), indicating Render/CDN is serving the pre-contrast build.
+BLOCKERS: Production redeploy/cache invalidation required before axe/Lighthouse can confirm WCAG compliance; Windows sandbox still blocks Lighthouse headless runs (`EPERM`, `NO_FCP`).
 
 ## Next Action
 
-NEXT_ACTION: Run production Lighthouse + axe from clean environment (macOS/CI) after confirming CDN flush, then archive artefacts and close MARK-002.
-NEXT_COMMAND: scripts/run_lighthouse_audits.sh production
+NEXT_ACTION: Redeploy frontend (or purge CDN) so updated palette is live, then rerun production axe + Lighthouse and archive artefacts.
+NEXT_COMMAND: python trigger_render_deploy.py --service srv-d3ihptbipnbc73e72ne0 && npx axe https://ma-saas-platform.onrender.com --tags wcag2a,wcag2aa --save docs/marketing/accessibility-report-prod.json && npx lighthouse https://ma-saas-platform.onrender.com --preset=desktop --output=json --output-path=docs/marketing/lighthouse-report-prod.json
 NEXT_AGENT: marketing-qa
 PRIORITY: P1
 RATIONALE: Palette + redeploy complete; only external audit artefacts blocking story closure.

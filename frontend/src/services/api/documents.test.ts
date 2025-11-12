@@ -8,6 +8,10 @@ import {
   addDocumentPermission,
   bulkDownloadDocuments,
   bulkDeleteDocuments,
+  listDocumentAccessLogs,
+  listShareLinks,
+  createShareLink,
+  revokeShareLink,
 } from "./documents"
 
 describe("documents API client", () => {
@@ -207,7 +211,6 @@ describe("documents API client", () => {
       new Response(JSON.stringify(mockLogs), { status: 200 })
     )
 
-    const { listDocumentAccessLogs } = await import("./documents")
     const result = await listDocumentAccessLogs("deal-1", "doc-1", { limit: 25 })
 
     expect(fetch).toHaveBeenCalledWith(
@@ -215,5 +218,74 @@ describe("documents API client", () => {
       expect.objectContaining({ method: "GET" })
     )
     expect(result).toEqual(mockLogs)
+  })
+
+  it("lists document share links", async () => {
+    const payload = {
+      share_links: [
+        {
+          share_link_id: "link-1",
+          share_url: "https://example.com/shared/link-1",
+          expires_at: "2025-11-12T10:00:00Z",
+          created_at: "2025-11-11T09:00:00Z",
+          allow_download: true,
+          password_required: false,
+          access_count: 5,
+        },
+      ],
+    }
+
+    ;(fetch as unknown as vi.Mock).mockResolvedValueOnce(
+      new Response(JSON.stringify(payload), { status: 200 })
+    )
+
+    const result = await listShareLinks("doc-1")
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringMatching(/\/api\/documents\/doc-1\/shares$/),
+      expect.objectContaining({ method: "GET" })
+    )
+    expect(result).toEqual(payload.share_links)
+  })
+
+  it("creates a document share link", async () => {
+    const response = {
+      share_link_id: "link-2",
+      share_url: "https://example.com/shared/link-2",
+      expires_at: "2025-11-12T10:00:00Z",
+      created_at: "2025-11-11T09:00:00Z",
+      allow_download: true,
+      password_required: false,
+      access_count: 0,
+    }
+
+    ;(fetch as unknown as vi.Mock).mockResolvedValueOnce(
+      new Response(JSON.stringify(response), { status: 201 })
+    )
+
+    const payload = { expires_in_days: 7, allow_download: true, password_protected: false }
+    const result = await createShareLink("doc-1", payload)
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringMatching(/\/api\/documents\/doc-1\/share$/),
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify(payload),
+      })
+    )
+    expect(result).toEqual(response)
+  })
+
+  it("revokes a document share link", async () => {
+    ;(fetch as unknown as vi.Mock).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: "ok" }), { status: 200 })
+    )
+
+    await revokeShareLink("doc-1", "link-3")
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringMatching(/\/api\/documents\/doc-1\/shares\/link-3$/),
+      expect.objectContaining({ method: "DELETE" })
+    )
   })
 })

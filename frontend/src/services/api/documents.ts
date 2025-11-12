@@ -628,11 +628,69 @@ export async function updateDocumentPermission(
 
 
 export async function removeDocumentPermission(permissionId: string): Promise<void> {
-
   await removePermission(permissionId)
-
 }
 
+// ---------------------------------------------------------------------------
+// Document sharing (expiring links)
+// ---------------------------------------------------------------------------
+
+export interface ShareLink {
+  share_link_id: string
+  share_url: string
+  expires_at: string
+  created_at: string
+  allow_download: boolean
+  password_required: boolean
+  access_count: number
+}
+
+export interface ShareLinkListResponse {
+  share_links: ShareLink[]
+}
+
+export interface CreateShareLinkPayload {
+  expires_in_days: number
+  allow_download: boolean
+  password_protected: boolean
+  password?: string
+}
+
+export async function listShareLinks(documentId: string): Promise<ShareLink[]> {
+  const headers = await getAuthHeaders('json')
+
+  const response = await request<ShareLinkListResponse>(
+    `${API_BASE_URL}/api/documents/${documentId}/shares`,
+    {
+      method: 'GET',
+      headers,
+    }
+  )
+
+  return response.share_links
+}
+
+export async function createShareLink(
+  documentId: string,
+  payload: CreateShareLinkPayload
+): Promise<ShareLink> {
+  const headers = await getAuthHeaders('json')
+
+  return request<ShareLink>(`${API_BASE_URL}/api/documents/${documentId}/share`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function revokeShareLink(documentId: string, shareLinkId: string): Promise<void> {
+  const headers = await getAuthHeaders('json')
+
+  await request(`${API_BASE_URL}/api/documents/${documentId}/shares/${shareLinkId}`, {
+    method: 'DELETE',
+    headers,
+  })
+}
 
 
 export const ALLOWED_FILE_TYPES = [
