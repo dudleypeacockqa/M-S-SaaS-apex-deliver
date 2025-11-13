@@ -32,6 +32,7 @@
 - 📁 Prepared `coverage/chunks/` directory to store per-chunk `coverage-final.json` outputs so we can merge them later into the canonical report (`docs/tests/2025-11-14-frontend-vitest-coverage.txt`).
 - ❗ **Blocker**: Every `npm`/`node` invocation inside WSL now fails before Vitest starts because `/usr/local/bin/node` resolves to the Windows binary (`C:\Program Files\nodejs\node.exe`) and Windows interop is currently disabled. Example log: `docs/tests/2025-11-14-frontend-chunk1.log` (`Cannot find module 'C:\usr\bin\npm'`). Until a native Linux Node runtime is available (or the commands run from Windows/CI), the chunked coverage runs cannot proceed.
 - 📌 NEXT: Once Node functions locally/CI, execute `npm run test -- --run --coverage --pool=threads $(tr '\n' ' ' < .tmp/vitest-chunks/chunkN.txt)` for each chunk, move `coverage/coverage-final.json` into `coverage/chunks/chunkN.json`, then merge + document the consolidated coverage artefact.
+- ✅ Targeted regression (`npm test -- src/components/deals/CreateDealModal.test.tsx`) rerun via PowerShell after adding inline validation in `CreateDealModal.tsx`. The previously failing “should show error for negative deal size” spec is back to green; reference logs recorded alongside COMMAND-EXECUTION-MANIFEST.
 
 #### Document Generation Export Handler Fix
 - ✅ Fixed `DocumentEditor.tsx` export handler to properly use download URL

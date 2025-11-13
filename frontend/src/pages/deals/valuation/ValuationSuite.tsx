@@ -1627,7 +1627,7 @@ export const ValuationSuite = () => {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-12">
+    <section role="region" aria-label="Valuation suite workspace" className="min-h-screen bg-gray-50 pb-12">
       <div className="mx-auto max-w-6xl px-6 py-10">
         <header className="flex flex-col gap-4 border-b border-gray-200 pb-6 md:flex-row md:items-center md:justify-between">
           <div>
@@ -1647,10 +1647,9 @@ export const ValuationSuite = () => {
 
         <section className="mt-6 space-y-6">{tabContent}</section>
       </div>
-    </main>
+    </section>
   )
 }
-
 
 
 

@@ -5,7 +5,8 @@ export const AuthenticatedLayout = () => {
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <Sidebar />
-      <main
+      <section
+        aria-label="Authenticated workspace"
         style={{
           flex: 1,
           overflow: 'auto',
@@ -13,7 +14,7 @@ export const AuthenticatedLayout = () => {
         }}
       >
         <Outlet />
-      </main>
+      </section>
     </div>
   )
 }

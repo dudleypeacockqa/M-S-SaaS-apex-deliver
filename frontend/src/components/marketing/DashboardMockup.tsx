@@ -15,7 +15,7 @@ export const DashboardMockup: React.FC = () => {
           <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
           <div className="w-3 h-3 rounded-full bg-green-500"></div>
         </div>
-        <div className="flex-1 bg-gray-700 rounded px-4 py-1 text-gray-400 text-sm">
+        <div className="flex-1 rounded bg-gray-700 px-4 py-1 text-sm text-white/90">
           app.capliquify.com/cash-forecast
         </div>
       </div>
@@ -25,7 +25,9 @@ export const DashboardMockup: React.FC = () => {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h3 className="text-2xl font-bold text-gray-900">13-Week Cash Forecast</h3>
+            <p className="text-2xl font-bold text-gray-900" role="heading" aria-level={2}>
+              13-Week Cash Forecast
+            </p>
             <p className="text-gray-600">Updated 2 hours ago • 95.8% accuracy</p>
           </div>
           <div className="flex gap-2">

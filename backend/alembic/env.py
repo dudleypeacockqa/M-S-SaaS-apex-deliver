@@ -46,6 +46,7 @@ from app.models.document_generation import (  # noqa: F401, E402
     DocumentAISuggestion,
     DocumentVersion,
 )
+from app.models.event_payment import EventPayment, EventPaymentReceipt  # noqa: F401, E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

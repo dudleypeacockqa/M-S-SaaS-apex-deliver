@@ -17,9 +17,6 @@ from app.models.event import Event, EventTicket, EventRegistration, EventStatus,
 from app.models.user import User
 from app.models.organization import Organization
 
-# Skip entire module if service not implemented yet (TDD RED phase)
-pytest.importorskip("app.services.event_payment_service", reason="TDD RED phase - EventPaymentService not implemented (DEV-019)")
-
 from app.services.event_payment_service import (
     create_checkout_session,
     handle_webhook,

@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Search, FileText } from 'lucide-react';
-import MarketingNav from '@/components/MarketingNav';
-import MarketingFooter from '@/components/MarketingFooter';
+import { MarketingLayout } from '@/components/marketing/MarketingLayout';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -136,12 +135,13 @@ const BlogListingPage: React.FC = () => {
   const primaryColor = 'bg-indigo-900'; // Navy Blue
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <MarketingNav />
-
-      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+    <MarketingLayout>
+      <section
+        aria-labelledby="blog-heading"
+        className="container mx-auto flex-grow px-4 py-12 sm:px-6 md:py-20 lg:px-8"
+      >
         <header className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-4">
+          <h1 id="blog-heading" className="mb-4 text-4xl font-extrabold text-gray-900 md:text-6xl">
             Insights & Strategies for <span className="text-primary">M&A Success</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -256,10 +256,8 @@ const BlogListingPage: React.FC = () => {
             </div>
           )}
         </section>
-      </main>
-
-      <MarketingFooter />
-    </div>
+      </section>
+    </MarketingLayout>
   );
 };
 

@@ -60,7 +60,9 @@ export const StickyCTABar: React.FC = () => {
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-white font-bold text-lg md:text-xl truncate">Start Your 14-Day Free Trial Today</h3>
+                <p className="text-white font-bold text-lg md:text-xl truncate" role="heading" aria-level={2}>
+                  Start Your 14-Day Free Trial Today
+                </p>
                 <p className="text-blue-100 text-sm hidden md:block">Join 500+ M&A professionals · No credit card required</p>
               </div>
             </div>

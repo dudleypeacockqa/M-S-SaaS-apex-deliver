@@ -23,6 +23,9 @@
 - **Attempt 2 (Linux / WSL)**: `env PATH="/usr/bin:/usr/local/bin" lighthouse https://ma-saas-platform.onrender.com --chrome-path=/usr/bin/chromium-browser --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"`
   - **Log**: `docs/marketing/2025-11-13-audits/lighthouse-run-linux.log`
   - **Failure**: Chromium launches but DevTools socket immediately refuses connections (`connect ECONNREFUSED 127.0.0.1:<port>`). Likely due to snap sandbox + WSL networking; needs a native Linux/mac host or CI runner.
+- **Attempt 3 (Linux / local audit script 2025-11-13T14:05Z)**: `PATH="/usr/bin:/usr/local/bin" ./scripts/run_local_audits.sh`
+  - **Log**: `docs/marketing/2025-11-13-audits/run_local_audits-2025-11-13T1406Z.log`
+  - **Failure**: Preview server started successfully on WSL, but Lighthouse still cannot connect to the headless Chromium instance started by the script (`Unable to connect to Chrome`).
 - **Next Action**: Execute `.github/workflows/accessibility-audit.yml` on CI or rerun locally on macOS/Linux hardware with Chrome 20.x.
 
 ### Quality Thresholds

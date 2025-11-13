@@ -609,10 +609,12 @@ pm run preview:test) and ran Lighthouse/Axe manually; both headless Chrome clien
 
 ### Summary
 - Triggered manual backend redeploy for `srv-d3ii9qk9c44c73aqsli0` via `trigger_render_deploy.py` (commit `39d4f78`). Render deploy `dep-d4arp6ggjchc73f3ak50` failed with `update_failed`; captured API responses + health outputs in `docs/deployments/2025-11-13-backend-redeploy.txt` and refreshed `docs/deployments/2025-11-13-backend-deploy-status.json` + `latest-deploy.json`.
+- Captured latest Render API snapshot (`docs/deployments/render-deploys-2025-11-13.json` + `docs/deployments/2025-11-13-backend-deploy-status-refresh.json`) showing every post-`dep-d4actdofdonc73edtq70` deployment still `update_failed` (current head commits `ccdbeec3` and `9e45ab65`).
 - Verified Alembic head locally (`774225e563ca`) and backend `/health` still green on production (commit `0f04225f` remains live pending successful redeploy).
 - Cleared orphaned port 4173 process, re-ran `scripts/run_local_audits.sh`; server reachability check still fails on Windows due to WSL↔Windows boundary. Switched to direct Windows commands: started preview via PowerShell, ran `npx axe` against `http://localhost:4173` (0 violations) and stored reports/logs under `docs/marketing/2025-11-13-audits/`.
 - Attempted Lighthouse rerun multiple times; each invocation fails with `EPERM, Permission denied ... tmp\lighthouse.*` when Chrome launcher cleans temp directories on Windows (log: `lighthouse-run.log`). Documented blocker + next action (rerun on Linux/macOS/CI) inside audit README + status doc.
 - Installed Linux Node 20 (NodeSource) + snap Chromium (headless) to attempt Lighthouse from WSL; served production build via static host and ran `lighthouse https://ma-saas-platform.onrender.com` with `--chrome-path=/usr/bin/chromium-browser`, but Chrome DevTools socket still refuses connections (`connect ECONNREFUSED`). Captured log at `docs/marketing/2025-11-13-audits/lighthouse-run-linux.log` and updated audit docs with the new blocker.
+- Reran `scripts/run_local_audits.sh` under Linux PATH (2025-11-13T14:05Z). Build + preview succeeded, axe reran, but Lighthouse still fails with `Unable to connect to Chrome`; log archived at `docs/marketing/2025-11-13-audits/run_local_audits-2025-11-13T1406Z.log` and README/AUDIT-STATUS files updated.
 - Authored Phase 1 RED spec outline (`docs/bmad/sessions/SESSION-2025-11-13T11-Phase1-RED-SPECS.md`) covering Event Hub attendee exports + Community Platform MVP so backend/frontend work can start with failing tests once Phase 0 evidence closes.
 
 ### Next
@@ -6411,3 +6413,21 @@ python -m pytest --cov=app --cov-report=term
 
 **Session Completed**: 2025-11-15
 **Project Status**: PRODUCTION READY 🎉
+
+## Session 2025-11-14T16-BMAD-Reaffirmation – Full-Scope Plan Refresh
+
+**Status**: 🚧 IN PROGRESS – Reviewed SESSION-2025-11-13 plan + latest repo status to re-align on BMAD/TDD execution mandate
+**Duration**: ~15 minutes (doc audit + scope restatement)
+**Priority**: P0 → P1 bridge – ensure every remaining task tracks back to the 100% plan before coding
+
+### Summary
+- Re-read `docs/bmad/sessions/SESSION-2025-11-13-100PCT-COMPLETION-PLAN.md` plus this tracker to restate the remaining work streams: Phase 0 artefacts (backend redeploy + frontend coverage), Phase 1 polishing (doc-gen export queue, valuation charts, podcast gating), Phase 2 net-new features (Event Hub, Community Platform), and final release logistics.
+- Confirmed immediate blockers: backend deploy still failing because Render is building commit `9e45ab65…` (without the guarded migration), and frontend coverage evidence missing because Windows runs time out after 10–40 minutes. Both must be cleared before reopening P1/P2 code.
+- Captured Render schema snapshots pre/post UUID migration to prove the database is ready for the new code path; next deploy simply needs to include the updated Alembic script so the DO block guard takes effect.
+
+### Next
+1. Commit/push the guarded migration + GUID model updates so Render builds the latest code, then retrigger the backend deploy with `--clear-cache clear` and capture success evidence.
+2. Schedule a Linux-host Vitest coverage run (or chunked scripts) to generate the missing Phase 0 artefact once the backend is stable.
+3. Resume Phase 1 TDD threads (document export queue, valuation polish, podcast gating) after Phase 0 is officially closed in tracker + workflow status.
+
+---

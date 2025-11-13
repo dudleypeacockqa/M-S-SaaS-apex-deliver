@@ -152,7 +152,7 @@ export const LandingPage: React.FC = () => {
         ogImage="https://100daysandbeyond.com/assets/dashboard-preview.png"
         canonical="https://100daysandbeyond.com/"
       />
-      <main>
+      <section aria-label="CapLiquify + ApexDeliver overview">
         <EnhancedHeroSection />
         <TrustBadges />
         <section className="py-16 bg-white border-b border-gray-100">
@@ -326,7 +326,7 @@ export const LandingPage: React.FC = () => {
         </section>
 
         <CTASection />
-      </main>
+      </section>
     </MarketingLayout>
   )
 }

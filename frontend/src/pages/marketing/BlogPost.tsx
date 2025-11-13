@@ -1,5 +1,4 @@
-import MarketingNav from "@/components/MarketingNav";
-import MarketingFooter from "@/components/MarketingFooter";
+import { MarketingLayout } from "@/components/marketing/MarketingLayout";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Separator } from "@/components/ui/separator";
@@ -138,11 +137,8 @@ const BlogPost: React.FC = () => {
   // Bright Blue: bright-500
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <MarketingNav />
-
-      <main className="flex-grow">
-        <article className="container mx-auto px-4 py-12 md:py-20 max-w-6xl">
+    <MarketingLayout>
+      <article className="container mx-auto max-w-6xl px-4 py-12 md:py-20">
           {/* Hero Section */}
           <header className="text-center mb-12">
             <h1 className="text-4xl md:text-6xl font-extrabold text-navy-800 mb-4 leading-tight">
@@ -225,10 +221,7 @@ const BlogPost: React.FC = () => {
             </div>
           </section>
         </article>
-      </main>
-
-      <MarketingFooter />
-    </div>
+      </MarketingLayout>
   );
 };
 

@@ -12,7 +12,12 @@
 - **Lighthouse Config**: `.lighthouserc.js` - Configured with quality thresholds
 - **Audit Directory**: `docs/marketing/2025-11-13-audits/` - Ready for evidence
 
-- **Linux attempt (2025-11-13T13:25Z)**: `docs/marketing/2025-11-13-audits/lighthouse-run-linux.log` – Node 20 + snap Chromium still fails (`connect ECONNREFUSED 127.0.0.1:<port>` when Lighthouse attaches to DevTools). Indicates snap sandbox/WSL limitation.
+### Evidence / Attempts
+- **Axe Report (refreshed)**: `docs/marketing/2025-11-13-audits/axe-report.json` + `axe-run.log` – 0 violations @ 2025-11-13T11:30Z
+- **Legacy Lighthouse Report (2025-11-13)**: `docs/marketing/lighthouse-local-2025-11-13.json` – last successful run before blockers.
+- **Windows attempt**: `docs/marketing/2025-11-13-audits/lighthouse-run.log` – fails with `%TEMP%` `EPERM` when Chrome cleans profile.
+- **Linux attempt #1 (2025-11-13T13:25Z)**: `docs/marketing/2025-11-13-audits/lighthouse-run-linux.log` – Node 20 + snap Chromium, fails with `connect ECONNREFUSED 127.0.0.1:<port>` attaching to DevTools.
+- **Linux attempt #2 (2025-11-13T14:06Z)**: `docs/marketing/2025-11-13-audits/run_local_audits-2025-11-13T1406Z.log` – `scripts/run_local_audits.sh` completes build + preview start, but Lighthouse again cannot connect to Chromium (`Unable to connect to Chrome`).
 - **Documentation**: `docs/marketing/2025-11-13-audits/README.md` – updated with blockers + next actions
 
 ### GitHub Actions Workflow
