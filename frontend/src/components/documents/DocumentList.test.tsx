@@ -254,6 +254,64 @@ describe('DocumentList', () => {
     expect(selectedDocs[0].id).toBe('doc-1')
   });
 
+  it('renders manage access action when exactly one document selected', async () => {
+    const { listDocuments } = await import('../../services/api/documents');
+    const mockDocuments = [
+      { id: 'doc-1', name: 'Contract.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      { id: 'doc-2', name: 'Notes.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-02', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+    ];
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: mockDocuments,
+      total: 2,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    });
+
+    const onManagePermissions = vi.fn();
+
+    renderWithProviders(
+      <DocumentList
+        dealId="deal-1"
+        folderId={null}
+        onManagePermissions={onManagePermissions}
+      />
+    );
+
+    const checkbox = await screen.findByRole('checkbox', { name: /select contract\.pdf/i });
+    fireEvent.click(checkbox);
+
+    const manageButton = await screen.findByRole('button', { name: /manage access/i });
+    fireEvent.click(manageButton);
+
+    expect(onManagePermissions).toHaveBeenCalledWith(mockDocuments[0]);
+  });
+
+  it('hides manage access bulk action when multiple documents selected', async () => {
+    const { listDocuments } = await import('../../services/api/documents');
+    vi.mocked(listDocuments).mockResolvedValue({
+      items: [
+        { id: 'doc-1', name: 'Checklist.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-01', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+        { id: 'doc-2', name: 'Brief.pdf', file_size: 1024, file_type: 'application/pdf', version: 1, created_at: '2025-01-02', folder_id: null, deal_id: 'deal-1', organization_id: 'org-1', uploaded_by: 'user', updated_at: null, archived_at: null },
+      ],
+      total: 2,
+      page: 1,
+      per_page: 25,
+      pages: 1,
+    })
+
+    renderWithProviders(
+      <DocumentList dealId="deal-1" folderId={null} onManagePermissions={vi.fn()} />
+    );
+
+    fireEvent.click(await screen.findByRole('checkbox', { name: /select checklist\.pdf/i }));
+    fireEvent.click(await screen.findByRole('checkbox', { name: /select brief\.pdf/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: /manage access/i })).not.toBeInTheDocument();
+    });
+  });
+
   it('should expose a view activity button when callback provided', async () => {
     const { listDocuments } = await import('../../services/api/documents');
     vi.mocked(listDocuments).mockResolvedValue({

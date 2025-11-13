@@ -10,7 +10,7 @@ interface MatchScoreDistributionProps {
 }
 
 const BAR_COLORS = {
-  high: 'bg-emerald-500',
+  high: 'bg-emerald-700',
   medium: 'bg-amber-500',
   low: 'bg-rose-500',
 };

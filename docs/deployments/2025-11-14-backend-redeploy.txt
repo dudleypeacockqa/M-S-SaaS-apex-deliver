@@ -114,3 +114,7 @@ Result: Render still only returns update_failed deploys (latest dep-d4au3u2dbo4c
 2025-11-13T14:10:18.997385+00:00 – Status Poll #11
 Command: RENDER_API_KEY=<.env> python3 check_render_status.py (log: docs/deployments/2025-11-14-backend-redeploy-status11.txt)
 Result: Still seeing only update_failed deploys (latest dep-d4au3u2dbo4c73cahl0g). Awaiting successful redeploy entry.
+
+2025-11-13T14:16:25.560573+00:00 – Status Poll #12
+Command: RENDER_API_KEY=<.env> python3 check_render_status.py (log: docs/deployments/2025-11-14-backend-redeploy-status12.txt)
+Result: Render now shows dep-d4aue8o7ffvc73faohd0 as update_in_progress (commit 9e45ab65). Waiting for status=live before updating latest-deploy.json.

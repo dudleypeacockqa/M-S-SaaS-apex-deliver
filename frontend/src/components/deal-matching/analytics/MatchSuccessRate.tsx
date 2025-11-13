@@ -28,17 +28,17 @@ export const MatchSuccessRate: React.FC<MatchSuccessRateProps> = ({ successRate,
       <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Success Rate</h4>
       <div className="mt-3 flex items-end justify-between">
         <div>
-        <p className="text-3xl font-bold text-emerald-700">{boundedRate}%</p>
+          <p className="text-3xl font-bold text-emerald-800">{boundedRate}%</p>
           <p className="text-xs text-gray-500">{successCount} of {total} matches saved or intro requested</p>
         </div>
-        <div className="w-20 h-20 rounded-full border-4 border-emerald-100 flex items-center justify-center">
+        <div className="w-20 h-20 rounded-full border-4 border-emerald-200 flex items-center justify-center" aria-hidden="true">
           <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center">
-            <span className="text-lg font-semibold text-emerald-700">{boundedRate}%</span>
+            <span className="text-lg font-semibold text-emerald-800">{boundedRate}%</span>
           </div>
         </div>
       </div>
-      <div className="mt-4 h-2 rounded-full bg-emerald-100" role="presentation">
-        <div className="h-2 rounded-full bg-emerald-500" style={{ width: `${boundedRate}%` }} />
+      <div className="mt-4 h-2 rounded-full bg-emerald-100" role="presentation" aria-hidden>
+        <div className="h-2 rounded-full bg-emerald-700" style={{ width: `${boundedRate}%` }} />
       </div>
       <p className="mt-2 text-xs text-gray-500">{getTrendLabel(trendDelta)}</p>
     </div>

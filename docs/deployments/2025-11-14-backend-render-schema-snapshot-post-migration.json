@@ -1,0 +1,290 @@
+{
+  "document_access_logs": [
+    {
+      "column": "action",
+      "data_type": "character varying"
+    },
+    {
+      "column": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "document_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "ip_address",
+      "data_type": "character varying"
+    },
+    {
+      "column": "organization_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "user_agent",
+      "data_type": "character varying"
+    },
+    {
+      "column": "user_id",
+      "data_type": "character varying"
+    }
+  ],
+  "document_permissions": [
+    {
+      "column": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "document_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "folder_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "granted_by",
+      "data_type": "character varying"
+    },
+    {
+      "column": "id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "organization_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "permission_level",
+      "data_type": "character varying"
+    },
+    {
+      "column": "user_id",
+      "data_type": "character varying"
+    }
+  ],
+  "document_questions": [
+    {
+      "column": "answer",
+      "data_type": "text"
+    },
+    {
+      "column": "answered_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "answered_by",
+      "data_type": "character varying"
+    },
+    {
+      "column": "asked_by",
+      "data_type": "character varying"
+    },
+    {
+      "column": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "document_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "organization_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "question",
+      "data_type": "text"
+    },
+    {
+      "column": "status",
+      "data_type": "character varying"
+    },
+    {
+      "column": "updated_at",
+      "data_type": "timestamp with time zone"
+    }
+  ],
+  "document_share_links": [
+    {
+      "column": "access_count",
+      "data_type": "integer"
+    },
+    {
+      "column": "allow_download",
+      "data_type": "integer"
+    },
+    {
+      "column": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "created_by",
+      "data_type": "character varying"
+    },
+    {
+      "column": "document_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "download_count",
+      "data_type": "integer"
+    },
+    {
+      "column": "expires_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "last_accessed_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "organization_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "password_hash",
+      "data_type": "character varying"
+    },
+    {
+      "column": "revoked_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "share_token",
+      "data_type": "character varying"
+    }
+  ],
+  "documents": [
+    {
+      "column": "archived_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "deal_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "file_key",
+      "data_type": "character varying"
+    },
+    {
+      "column": "file_size",
+      "data_type": "bigint"
+    },
+    {
+      "column": "file_type",
+      "data_type": "character varying"
+    },
+    {
+      "column": "folder_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "name",
+      "data_type": "character varying"
+    },
+    {
+      "column": "organization_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "parent_document_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "updated_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "uploaded_by",
+      "data_type": "character varying"
+    },
+    {
+      "column": "version",
+      "data_type": "integer"
+    }
+  ],
+  "valuation_export_logs": [
+    {
+      "column": "completed_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "document_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "download_url",
+      "data_type": "character varying"
+    },
+    {
+      "column": "error_message",
+      "data_type": "text"
+    },
+    {
+      "column": "export_format",
+      "data_type": "character varying"
+    },
+    {
+      "column": "export_type",
+      "data_type": "character varying"
+    },
+    {
+      "column": "exported_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "exported_by",
+      "data_type": "character varying"
+    },
+    {
+      "column": "file_size_bytes",
+      "data_type": "integer"
+    },
+    {
+      "column": "id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "organization_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "scenario_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "status",
+      "data_type": "character varying"
+    },
+    {
+      "column": "task_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "valuation_id",
+      "data_type": "character varying"
+    }
+  ]
+}

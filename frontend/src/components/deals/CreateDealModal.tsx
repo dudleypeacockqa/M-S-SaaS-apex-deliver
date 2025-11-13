@@ -50,6 +50,24 @@ interface FormErrors {
   deal_size?: string
 }
 
+const getDealSizeError = (value?: string) => {
+  if (value === undefined || value === null) {
+    return undefined
+  }
+
+  const trimmedValue = value.trim()
+  if (!trimmedValue) {
+    return undefined
+  }
+
+  const parsedValue = Number(trimmedValue)
+  if (Number.isNaN(parsedValue)) {
+    return undefined
+  }
+
+  return parsedValue < 0 ? 'Deal size must be positive' : undefined
+}
+
 export const CreateDealModal: React.FC<CreateDealModalProps> = ({
   isOpen,
   onClose,
@@ -74,6 +92,21 @@ export const CreateDealModal: React.FC<CreateDealModalProps> = ({
 
   const [errors, setErrors] = useState<FormErrors>({})
   const [touched, setTouched] = useState<Set<string>>(new Set())
+
+  const syncDealSizeError = (value: string) => {
+    setErrors(prev => {
+      const updatedErrors = { ...prev }
+      const message = getDealSizeError(value)
+
+      if (message) {
+        updatedErrors.deal_size = message
+      } else {
+        delete updatedErrors.deal_size
+      }
+
+      return updatedErrors
+    })
+  }
 
   // Reset form when modal opens/closes or deal changes
   useEffect(() => {
@@ -137,8 +170,9 @@ export const CreateDealModal: React.FC<CreateDealModalProps> = ({
       newErrors.target_company = 'Target company is required'
     }
 
-    if (formData.deal_size && parseFloat(formData.deal_size) < 0) {
-      newErrors.deal_size = 'Deal size must be positive'
+    const dealSizeError = getDealSizeError(formData.deal_size)
+    if (dealSizeError) {
+      newErrors.deal_size = dealSizeError
     }
 
     setErrors(newErrors)
@@ -151,21 +185,18 @@ export const CreateDealModal: React.FC<CreateDealModalProps> = ({
 
     // Mark field as touched
     setTouched(prev => new Set(prev).add(name))
+
+    if (name === 'deal_size') {
+      syncDealSizeError(value)
+    }
   }
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setTouched(prev => new Set(prev).add(name))
 
-    // Validate deal_size specifically for negative values
-    if (name === 'deal_size' && value && parseFloat(value) < 0) {
-      setErrors(prev => ({ ...prev, deal_size: 'Deal size must be positive' }))
-    } else if (name === 'deal_size') {
-      setErrors(prev => {
-        const newErrors = { ...prev }
-        delete newErrors.deal_size
-        return newErrors
-      })
+    if (name === 'deal_size') {
+      syncDealSizeError(value)
     }
   }
 
@@ -343,7 +374,6 @@ export const CreateDealModal: React.FC<CreateDealModalProps> = ({
                 )}
                 placeholder="1000000"
                 step="1000"
-                min="0"
               />
               {errors.deal_size && touched.has('deal_size') && (
                 <p className="mt-1 text-sm text-red-600">{errors.deal_size}</p>

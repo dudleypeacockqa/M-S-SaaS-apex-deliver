@@ -57,6 +57,36 @@ describe('BulkActionsToolbar', () => {
     expect(onClearSelection).toHaveBeenCalled();
   });
 
+  it('renders manage access control when handler provided', async () => {
+    const user = userEvent.setup();
+    const onManageAccess = vi.fn();
+    render(
+      <BulkActionsToolbar
+        {...baseProps}
+        selectedCount={1}
+        onManageAccess={onManageAccess}
+      />
+    );
+
+    const manageButton = screen.getByRole('button', { name: /manage access/i });
+    expect(manageButton).toBeInTheDocument();
+    await user.click(manageButton);
+    expect(onManageAccess).toHaveBeenCalledTimes(1);
+  });
+
+  it('disables manage access control when disableManageAccess is true', () => {
+    render(
+      <BulkActionsToolbar
+        {...baseProps}
+        selectedCount={1}
+        onManageAccess={vi.fn()}
+        disableManageAccess
+      />
+    );
+
+    expect(screen.getByRole('button', { name: /manage access/i })).toBeDisabled();
+  });
+
   it('shows warning message when selection exceeds limit', () => {
     render(
       <BulkActionsToolbar

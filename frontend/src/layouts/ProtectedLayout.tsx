@@ -16,7 +16,8 @@ export const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ requiredRole, 
       <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#0f172a' }}>
         <NavigationMenu />
         <Breadcrumbs />
-        <main
+        <section
+          aria-label="Protected workspace"
           style={{
             maxWidth: '1200px',
             margin: '0 auto',
@@ -27,7 +28,7 @@ export const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ requiredRole, 
           }}
         >
           {children ?? <Outlet />}
-        </main>
+        </section>
       </div>
     </ProtectedRoute>
   )

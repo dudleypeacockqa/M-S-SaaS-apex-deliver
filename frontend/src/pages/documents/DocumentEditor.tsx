@@ -731,7 +731,7 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
 
               >
 
-                <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" />
+                <span className="h-2 w-2 rounded-full bg-emerald-700" aria-hidden="true" />
 
                 <span>{collaborator.name}</span>
 

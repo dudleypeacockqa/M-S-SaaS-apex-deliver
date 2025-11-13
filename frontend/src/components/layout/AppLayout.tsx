@@ -22,7 +22,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       <NavigationMenu />
       <Breadcrumbs />
 
-      <main
+      <section
+        aria-label="Application content"
         style={{
           flexGrow: 1,
           maxWidth: '1200px',
@@ -32,7 +33,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         }}
       >
         {children || <Outlet />}
-      </main>
+      </section>
     </div>
   )
 }

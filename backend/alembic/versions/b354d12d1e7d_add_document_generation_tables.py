@@ -321,7 +321,17 @@ def upgrade() -> None:
             has_lowercase boolean;
             has_uppercase boolean;
             default_val text;
+            enum_exists boolean;
         BEGIN
+            SELECT EXISTS (
+                SELECT 1 FROM pg_type WHERE typname = 'documentstatus'
+            ) INTO enum_exists;
+
+            IF NOT enum_exists THEN
+                RAISE NOTICE 'documentstatus enum missing; skipping generated_documents.status backfill block';
+                RETURN;
+            END IF;
+
             -- Check if enum has lowercase 'generated' value
             SELECT EXISTS (
                 SELECT 1 FROM pg_enum 

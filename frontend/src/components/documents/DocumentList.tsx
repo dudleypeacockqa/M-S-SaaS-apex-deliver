@@ -73,6 +73,7 @@ export const DocumentList: React.FC<DocumentListProps> = (props) => {
     () => documents.filter((doc) => selectedIds.includes(doc.id)),
     [documents, selectedIds]
   )
+  const canManageSelection = selectedDocuments.length === 1 && Boolean(onManagePermissions)
 
   useEffect(() => {
     setSelectedIds([])
@@ -200,6 +201,11 @@ export const DocumentList: React.FC<DocumentListProps> = (props) => {
           onDownload={handleBulkDownload}
           onDelete={handleBulkDelete}
           onClearSelection={handleClearSelection}
+          onManageAccess={
+            canManageSelection && onManagePermissions
+              ? () => onManagePermissions(selectedDocuments[0])
+              : undefined
+          }
         />
       )}
 

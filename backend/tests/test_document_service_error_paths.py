@@ -61,7 +61,7 @@ def test_delete_folder_with_documents_raises_value_error(
         file_size=1024,
         file_type="application/pdf",
         deal_id=deal.id,
-        folder_id=folder.id,
+        folder_id=str(folder.id),
         organization_id=organization.id,
         uploaded_by=owner.id,
     )
@@ -115,7 +115,7 @@ def test_delete_folder_with_subfolders_raises_value_error(
         id=sub_id,
         name="Subfolder",
         deal_id=deal.id,
-        parent_folder_id=parent_folder.id,
+        parent_folder_id=str(parent_folder.id),
         organization_id=organization.id,
         created_by=owner.id,
     )
@@ -247,7 +247,7 @@ def test_create_folder_insufficient_permissions_for_subfolder(
     db_session.commit()
 
     # Non-owner tries to create subfolder - should fail
-    payload = FolderCreate(name="Subfolder", parent_folder_id=parent_folder.id)
+    payload = FolderCreate(name="Subfolder", parent_folder_id=str(parent_folder.id))
 
     with pytest.raises(HTTPException) as exc_info:
         document_service.create_folder(

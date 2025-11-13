@@ -1,0 +1,42 @@
+======================================================================
+RENDER DEPLOYMENT STATUS CHECK
+======================================================================
+Service ID: srv-d3ii9qk9c44c73aqsli0
+
+Found 5 recent deployments:
+
+Deploy ID: dep-d4aue8o7ffvc73faohd0
+Status: update_in_progress
+Commit: 9e45ab65
+Message: feat(platform): v1.1.0 planning, Stripe event payments RED p...
+Created: 2025-11-13T14:11:49.447346Z
+Finished: N/A
+----------------------------------------------------------------------
+Deploy ID: dep-d4aue76mcj7s73dbovkg
+Status: update_failed
+Commit: 9e45ab65
+Message: feat(platform): v1.1.0 planning, Stripe event payments RED p...
+Created: 2025-11-13T14:11:43.990856Z
+Finished: 2025-11-13T14:12:57.240703Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4au3u2dbo4c73cahl0g
+Status: update_failed
+Commit: ccdbeec3
+Message: feat(platform): final verification, coverage, frontend enhan...
+Created: 2025-11-13T13:49:47.094642Z
+Finished: 2025-11-13T13:51:03.70103Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4au3tmmcj7s73dbm8sg
+Status: canceled
+Commit: ccdbeec3
+Message: feat(platform): final verification, coverage, frontend enhan...
+Created: 2025-11-13T13:49:45.158551Z
+Finished: 2025-11-13T13:49:49.362098Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4au1407ffvc73famdag
+Status: update_failed
+Commit: 0defb18d
+Message: feat(platform): final updates - models, frontend, test resul...
+Created: 2025-11-13T13:43:46.644411Z
+Finished: 2025-11-13T13:46:06.398984Z
+----------------------------------------------------------------------

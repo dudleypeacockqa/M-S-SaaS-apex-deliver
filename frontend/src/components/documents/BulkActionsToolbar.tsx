@@ -10,9 +10,11 @@ interface BulkActionsToolbarProps {
   selectedCount: number;
   disableDownload?: boolean;
   disableDelete?: boolean;
+  disableManageAccess?: boolean;
   onDownload: () => void;
   onDelete: () => void;
   onClearSelection: () => void;
+  onManageAccess?: () => void;
   warningMessage?: string;
 }
 
@@ -23,6 +25,8 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
   onDownload,
   onDelete,
   onClearSelection,
+  onManageAccess,
+  disableManageAccess = false,
   warningMessage,
 }) => {
   // Hide toolbar when nothing is selected
@@ -76,6 +80,18 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
             </svg>
             Delete
           </button>
+
+          {onManageAccess && (
+            <button
+              type="button"
+              onClick={onManageAccess}
+              disabled={disableManageAccess}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors"
+              aria-label="Manage access for selected documents"
+            >
+              🔐 Manage access
+            </button>
+          )}
 
           {/* Clear selection button */}
           <button

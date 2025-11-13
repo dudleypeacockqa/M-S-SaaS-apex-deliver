@@ -29,7 +29,7 @@ export const DashboardMockup: React.FC = () => {
             <p className="text-gray-600">Updated 2 hours ago • 95.8% accuracy</p>
           </div>
           <div className="flex gap-2">
-            <button className="px-4 py-2 bg-emerald-500 text-white rounded-md font-semibold text-sm">
+            <button className="px-4 py-2 rounded-md bg-emerald-700 text-white font-semibold text-sm transition-colors hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">
               Export PDF
             </button>
             <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold text-sm">
@@ -68,11 +68,11 @@ export const DashboardMockup: React.FC = () => {
             <div className="text-sm font-semibold text-gray-700">Cash Position Trend</div>
             <div className="flex gap-4 text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-emerald-700 rounded-full" aria-hidden="true"></div>
                 <span className="text-gray-600">Actual</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-blue-700 rounded-full" aria-hidden="true"></div>
                 <span className="text-gray-600">Forecast</span>
               </div>
             </div>
@@ -92,7 +92,7 @@ export const DashboardMockup: React.FC = () => {
               {[65, 70, 68, 75, 80, 85, 82, 88, 90, 92, 95, 98, 100].map((height, i) => (
                 <div
                   key={i}
-                  className={`flex-1 rounded-t ${i < 7 ? 'bg-emerald-500' : 'bg-blue-500 opacity-70'}`}
+                  className={`flex-1 rounded-t ${i < 7 ? 'bg-emerald-700' : 'bg-blue-700/80'}`}
                   style={{ height: `${height}%` }}
                 ></div>
               ))}
@@ -126,7 +126,7 @@ export const DashboardMockup: React.FC = () => {
           </div>
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+              <div className="w-8 h-8 bg-emerald-700 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
                 ✓
               </div>
               <div>
