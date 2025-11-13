@@ -1,226 +1,13 @@
 
-> ma-saas-frontend@2.0.0 test:coverage
-> vitest run --coverage
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --coverage --pool=threads
 
 
 [1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
       [2mCoverage enabled with [22m[33mv8[39m
 
- [32m✓[39m node_modules/fraction.js/tests/fraction.test.js [2m([22m[2m314 tests[22m[2m)[22m[33m 469[2mms[22m[39m
-     [33m[2m✓[22m[39m 3.3333333333333 [33m 311[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/retry.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 155[2mms[22m[39m
- [32m✓[39m node_modules/entities/src/decode.spec.ts [2m([22m[2m48 tests[22m[2m)[22m[32m 28[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/tests/createReducer.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 71[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/entities/tests/unsorted_state_adapter.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 37[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/entities/tests/sorted_state_adapter.test.ts [2m([22m[2m52 tests[22m[2m)[22m[33m 1173[2mms[22m[39m
-     [33m[2m✓[22m[39m should minimize the amount of sorting work needed [33m 862[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/optimisticUpserts.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 1090[2mms[22m[39m
-     [33m[2m✓[22m[39m Triggers cache lifecycles and side effects [33m 372[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/handlers/GraphQLHandler.test.ts [2m([22m[2m29 tests[22m[2m)[22m[33m 629[2mms[22m[39m
-       [33m[2m✓[22m[39m parses a query without variables (GET) [33m 379[2mms[22m[39m
- [31m❯[39m src/features/auth/Auth.test.tsx [2m([22m[2m3 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 4957[2mms[22m[39m
-     [33m[2m✓[22m[39m redirects unauthenticated users from /dashboard to /sign-in [33m 590[2mms[22m[39m
-     [33m[2m✓[22m[39m shows dashboard content when the user is authenticated [33m 1615[2mms[22m[39m
-[31m     [31m×[31m renders the appropriate header action depending on auth state[39m[33m 2745[2mms[22m[39m
- [31m❯[39m src/pages/marketing/EnhancedLandingPage.test.tsx [2m([22m[2m18 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 4163[2mms[22m[39m
-     [33m[2m✓[22m[39m renders without crashing [33m 554[2mms[22m[39m
-[31m     [31m×[31m renders EnhancedHeroSection[39m[32m 242[2mms[22m[39m
-[31m     [31m×[31m surfaces hero proof points for CapLiquify and ApexDeliver[39m[32m 129[2mms[22m[39m
-     [33m[2m✓[22m[39m renders How It Works section [33m 959[2mms[22m[39m
-     [32m✓[39m displays feature cards[32m 116[2mms[22m[39m
-     [32m✓[39m renders Pricing Teaser section[32m 245[2mms[22m[39m
-     [32m✓[39m displays branding with 100 Days & Beyond[32m 154[2mms[22m[39m
-     [32m✓[39m shows three-step workflow[32m 150[2mms[22m[39m
-     [32m✓[39m includes trust messaging in hero[32m 112[2mms[22m[39m
-     [32m✓[39m renders TrustBadges component[32m 105[2mms[22m[39m
-     [32m✓[39m renders CTASection component[32m 153[2mms[22m[39m
-     [32m✓[39m includes SEO component with proper meta tags[32m 212[2mms[22m[39m
-     [32m✓[39m displays sections in correct order[32m 115[2mms[22m[39m
-     [32m✓[39m all CTAs link to sign-up page[32m 259[2mms[22m[39m
-     [32m✓[39m includes Schedule a Demo CTA[32m 99[2mms[22m[39m
-     [32m✓[39m includes Explore All Features CTA[32m 143[2mms[22m[39m
-     [32m✓[39m renders final CTA section[32m 269[2mms[22m[39m
-     [32m✓[39m includes Schedule a Demo CTA in final section[32m 137[2mms[22m[39m
- [31m❯[39m src/tests/integration/PodcastStudioRouting.test.tsx [2m([22m[2m4 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 8304[2mms[22m[39m
-[31m     [31m×[31m redirects visitors to sign-in when unauthenticated[39m[33m 5318[2mms[22m[39m
-     [33m[2m✓[22m[39m renders transcript details when user is signed in and feature enabled [33m 1735[2mms[22m[39m
-[31m     [31m×[31m shows transcription upgrade prompt when API denies access[39m[33m 1106[2mms[22m[39m
-[31m     [31m×[31m displays quota warning when approaching limit[39m[32m 138[2mms[22m[39m
- [31m❯[39m src/App.test.tsx [2m([22m[2m5 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 7940[2mms[22m[39m
-     [33m[2m✓[22m[39m renders the home route with sign-in actions for visitors [33m 5435[2mms[22m[39m
-     [32m✓[39m redirects visitors from the dashboard to the sign-in page[32m 180[2mms[22m[39m
-     [33m[2m✓[22m[39m shows dashboard content when the user is authenticated [33m 367[2mms[22m[39m
-[31m     [31m×[31m updates the header to show the user menu for authenticated users[39m[33m 1546[2mms[22m[39m
-     [33m[2m✓[22m[39m routes to financial dashboard for authenticated users [33m 361[2mms[22m[39m
- [31m❯[39m node_modules/msw/src/core/utils/handleRequest.test.ts [2m([22m[2m14 tests[22m[2m | [22m[31m8 failed[39m[2m)[22m[32m 128[2mms[22m[39m
-   [32m✓[39m returns undefined for a request with the "accept: msw/passthrough" header equal to "bypass"[32m 9[2mms[22m[39m
-[31m   [31m×[31m does not bypass a request with "accept: msw/*" header set to arbitrary value[39m[32m 29[2mms[22m[39m
-   [32m✓[39m reports request as unhandled when it has no matching request handlers[32m 3[2mms[22m[39m
-[31m   [31m×[31m returns undefined on a request handler that returns no response[39m[32m 16[2mms[22m[39m
-[31m   [31m×[31m returns the mocked response for a request with a matching request handler[39m[32m 7[2mms[22m[39m
-[31m   [31m×[31m returns undefined without warning on a passthrough request[39m[32m 3[2mms[22m[39m
-[31m   [31m×[31m calls the handler with the requestId[39m[32m 3[2mms[22m[39m
-[31m   [31m×[31m marks the first matching one-time handler as used[39m[32m 4[2mms[22m[39m
-[31m   [31m×[31m does not mark non-matching one-time handlers as used[39m[32m 3[2mms[22m[39m
-[31m   [31m×[31m handles parallel requests with one-time handlers[39m[32m 2[2mms[22m[39m
-       [32m✓[39m when defined, handle requests to that base url only defining pathnames in the handler[32m 6[2mms[22m[39m
-       [32m✓[39m when defined, do not handle requests to different base urls when defining pathnames in the handler[32m 2[2mms[22m[39m
-     [32m✓[39m matches if custom predicate returns true[32m 4[2mms[22m[39m
-     [32m✓[39m does not match if custom predicate returns false[32m 28[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/listenerMiddleware/tests/fork.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 234[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/tests/matchers.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 126[2mms[22m[39m
- [31m❯[39m src/components/deals/CreateDealModal.test.tsx [2m([22m[2m29 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 17445[2mms[22m[39m
-       [33m[2m✓[22m[39m should render modal when isOpen is true [33m 525[2mms[22m[39m
-       [32m✓[39m should not render modal when isOpen is false[32m 25[2mms[22m[39m
-       [32m✓[39m should render correct title for create mode[32m 100[2mms[22m[39m
-       [32m✓[39m should render all form fields[32m 74[2mms[22m[39m
-       [32m✓[39m should render action buttons[32m 101[2mms[22m[39m
-       [32m✓[39m should render correct title for edit mode[32m 67[2mms[22m[39m
-       [32m✓[39m should pre-fill form fields with existing deal data[32m 19[2mms[22m[39m
-       [32m✓[39m should render update button instead of create[32m 71[2mms[22m[39m
-       [32m✓[39m should show error for empty deal name[32m 236[2mms[22m[39m
-       [33m[2m✓[22m[39m should show error for empty target company [33m 1124[2mms[22m[39m
-[31m       [31m×[31m should show error for negative deal size[39m[33m 1643[2mms[22m[39m
-       [33m[2m✓[22m[39m should not show errors when all required fields are filled [33m 1455[2mms[22m[39m
-       [33m[2m✓[22m[39m should call onCreate when form is submitted with valid data [33m 2531[2mms[22m[39m
-       [33m[2m✓[22m[39m should call onSuccess after successful creation [33m 2054[2mms[22m[39m
-       [33m[2m✓[22m[39m should close modal after successful creation [33m 1784[2mms[22m[39m
-       [33m[2m✓[22m[39m should disable submit button while submitting [33m 1359[2mms[22m[39m
-       [33m[2m✓[22m[39m should call onUpdate when editing existing deal [33m 1700[2mms[22m[39m
-       [32m✓[39m should call onClose when cancel button is clicked[32m 238[2mms[22m[39m
-       [32m✓[39m should call onClose when clicking outside modal[32m 299[2mms[22m[39m
-       [32m✓[39m should call onClose when pressing Escape key[32m 112[2mms[22m[39m
-       [33m[2m✓[22m[39m should reset form when closing and reopening [33m 348[2mms[22m[39m
-       [32m✓[39m should render all pipeline stages in dropdown[32m 18[2mms[22m[39m
-       [32m✓[39m should default to sourcing stage for new deals[32m 17[2mms[22m[39m
-       [32m✓[39m should render currency options[32m 16[2mms[22m[39m
-       [32m✓[39m should default to GBP currency[32m 20[2mms[22m[39m
-       [32m✓[39m should have proper ARIA labels for all inputs[32m 20[2mms[22m[39m
-       [32m✓[39m should set focus on first input when modal opens[32m 97[2mms[22m[39m
-       [33m[2m✓[22m[39m should trap focus within modal [33m 1288[2mms[22m[39m
-       [32m✓[39m should have proper heading hierarchy[32m 79[2mms[22m[39m
- [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 19115[2mms[22m[39m
-     [33m[2m✓[22m[39m shows loading indicator while valuations fetch [33m 410[2mms[22m[39m
-     [33m[2m✓[22m[39m shows upgrade messaging when valuations endpoint rejects with entitlement error [33m 343[2mms[22m[39m
-     [33m[2m✓[22m[39m submits new valuation when form completed [33m 862[2mms[22m[39m
-     [33m[2m✓[22m[39m allows adding comparable company to selected valuation [33m 1728[2mms[22m[39m
-     [33m[2m✓[22m[39m allows adding precedent transaction to selected valuation [33m 3584[2mms[22m[39m
-     [33m[2m✓[22m[39m displays scenario summary insights with analytics metrics [33m 536[2mms[22m[39m
-     [33m[2m✓[22m[39m allows creating a new scenario with JSON assumptions [33m 3081[2mms[22m[39m
-     [33m[2m✓[22m[39m shows validation error when scenario assumptions JSON is invalid [33m 2801[2mms[22m[39m
-     [33m[2m✓[22m[39m fetches scenario list when scenarios tab opened [33m 358[2mms[22m[39m
-     [33m[2m✓[22m[39m shows detailed confirmation after queuing an export [33m 716[2mms[22m[39m
-     [33m[2m✓[22m[39m displays export template selector with PDF, DOCX, and HTML options [33m 728[2mms[22m[39m
-     [33m[2m✓[22m[39m allows selecting export template (executive summary, detailed, custom) [33m 959[2mms[22m[39m
-     [33m[2m✓[22m[39m displays scenario comparison chart with multiple scenarios [33m 910[2mms[22m[39m
-     [33m[2m✓[22m[39m runs Monte Carlo simulation and displays percentile summary [33m 1506[2mms[22m[39m
- [32m✓[39m src/pages/deals/DealDetails.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 8888[2mms[22m[39m
-     [33m[2m✓[22m[39m should display deal details after loading [33m 592[2mms[22m[39m
-     [33m[2m✓[22m[39m should display "Edit" button when not in edit mode [33m 695[2mms[22m[39m
-     [33m[2m✓[22m[39m should enter edit mode when Edit button is clicked [33m 1066[2mms[22m[39m
-     [33m[2m✓[22m[39m should call updateDeal API when saving changes [33m 940[2mms[22m[39m
-     [33m[2m✓[22m[39m should call archiveDeal API when Archive button is clicked [33m 314[2mms[22m[39m
-     [33m[2m✓[22m[39m should display deal timestamps [33m 309[2mms[22m[39m
-       [33m[2m✓[22m[39m should render tab navigation with Overview, Financials, Documents, and Team tabs [33m 650[2mms[22m[39m
-       [33m[2m✓[22m[39m should show Overview tab content by default [33m 350[2mms[22m[39m
-       [33m[2m✓[22m[39m should switch to Financials tab when clicked [33m 656[2mms[22m[39m
-       [33m[2m✓[22m[39m should switch to Documents tab when clicked [33m 1023[2mms[22m[39m
-       [33m[2m✓[22m[39m should switch to Team tab when clicked [33m 688[2mms[22m[39m
-       [33m[2m✓[22m[39m should persist active tab when re-rendering [33m 658[2mms[22m[39m
- [32m✓[39m src/pages/marketing/ContactPage.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 13579[2mms[22m[39m
-     [33m[2m✓[22m[39m renders header, contact form, and information sections [33m 935[2mms[22m[39m
-     [33m[2m✓[22m[39m validates required fields before submission [33m 860[2mms[22m[39m
-     [33m[2m✓[22m[39m submits form and shows confirmation message [33m 6829[2mms[22m[39m
-     [33m[2m✓[22m[39m shows error state when submission fails [33m 4876[2mms[22m[39m
- [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx [2m([22m[2m26 tests[22m[2m)[22m[33m 8400[2mms[22m[39m
-     [33m[2m✓[22m[39m renders modal with dialog role and aria-modal [33m 628[2mms[22m[39m
-     [33m[2m✓[22m[39m renders all status options [33m 665[2mms[22m[39m
-     [33m[2m✓[22m[39m updates title field when user types [33m 988[2mms[22m[39m
-     [33m[2m✓[22m[39m updates description field when user types [33m 1021[2mms[22m[39m
-     [33m[2m✓[22m[39m updates show notes field when user types [33m 367[2mms[22m[39m
-     [33m[2m✓[22m[39m calls onSubmit with updated data when form submitted [33m 578[2mms[22m[39m
-     [33m[2m✓[22m[39m does not call onSubmit when title is empty [33m 509[2mms[22m[39m
-     [33m[2m✓[22m[39m validates title is required before submission [33m 432[2mms[22m[39m
-     [33m[2m✓[22m[39m does not call onSubmit when title is only whitespace [33m 1151[2mms[22m[39m
-     [33m[2m✓[22m[39m disables buttons when isSubmitting is true [33m 363[2mms[22m[39m
-     [33m[2m✓[22m[39m allows form submission after correcting validation errors [33m 709[2mms[22m[39m
- [32m✓[39m src/pages/deals/NewDealPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 10523[2mms[22m[39m
-     [33m[2m✓[22m[39m shows validation errors when required fields missing [33m 1107[2mms[22m[39m
-     [33m[2m✓[22m[39m submits payload and navigates to deal details on success [33m 7209[2mms[22m[39m
-     [33m[2m✓[22m[39m displays backend error when createDeal rejects [33m 2194[2mms[22m[39m
- [32m✓[39m src/components/podcast/YouTubePublisher.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 19304[2mms[22m[39m
-     [33m[2m✓[22m[39m shows connect call-to-action when YouTube is not connected and triggers OAuth flow [33m 1209[2mms[22m[39m
-     [33m[2m✓[22m[39m prefills metadata form with episode details and enforces title length [33m 9287[2mms[22m[39m
-     [33m[2m✓[22m[39m submits publish payload with metadata and schedule [33m 6895[2mms[22m[39m
-     [33m[2m✓[22m[39m surfaces status badge for publishing states [33m 323[2mms[22m[39m
-     [33m[2m✓[22m[39m allows disconnecting the connected channel [33m 383[2mms[22m[39m
- [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx [2m([22m[2m29 tests[22m[2m)[22m[33m 19496[2mms[22m[39m
-       [33m[2m✓[22m[39m should show upgrade prompt when user lacks podcast_audio access [33m 412[2mms[22m[39m
-       [33m[2m✓[22m[39m should disable new episode creation and show upgrade CTA when quota requires upgrade [33m 335[2mms[22m[39m
-       [33m[2m✓[22m[39m should show transcribe button when transcript missing [33m 373[2mms[22m[39m
-       [33m[2m✓[22m[39m should call API and show success message when transcription completes [33m 875[2mms[22m[39m
-       [33m[2m✓[22m[39m should indicate when transcript is ready [33m 364[2mms[22m[39m
-       [33m[2m✓[22m[39m should provide transcript download links when transcript ready [33m 510[2mms[22m[39m
-       [33m[2m✓[22m[39m allows editing metadata before publishing to YouTube when integration access granted [33m 5909[2mms[22m[39m
-       [33m[2m✓[22m[39m initiates OAuth connect flow when YouTube account is not connected [33m 569[2mms[22m[39m
-       [33m[2m✓[22m[39m should show upgrade button when youtube integration access denied [33m 372[2mms[22m[39m
-       [33m[2m✓[22m[39m should open Create Episode modal when New Episode button clicked [33m 337[2mms[22m[39m
-       [33m[2m✓[22m[39m should create episode when form submitted with valid data [33m 4081[2mms[22m[39m
-       [33m[2m✓[22m[39m should open Edit modal when Edit button clicked on episode [33m 550[2mms[22m[39m
-       [33m[2m✓[22m[39m should update episode when edit form submitted [33m 1484[2mms[22m[39m
-       [33m[2m✓[22m[39m should show delete confirmation when delete button clicked [33m 519[2mms[22m[39m
-       [33m[2m✓[22m[39m should delete episode when deletion confirmed [33m 718[2mms[22m[39m
- [32m✓[39m src/pages/documents/DocumentEditor.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 12583[2mms[22m[39m
-     [33m[2m✓[22m[39m loads the document and supports rich text editing with autosave [33m 2893[2mms[22m[39m
-     [33m[2m✓[22m[39m applies a selected template and updates the editor content [33m 821[2mms[22m[39m
-     [33m[2m✓[22m[39m surfaces AI suggestions and handles accept, reject, and regenerate flows [33m 2002[2mms[22m[39m
-     [33m[2m✓[22m[39m exports the document in the selected format with configured options [33m 1143[2mms[22m[39m
-     [33m[2m✓[22m[39m lists version history and restores a selected version into the editor [33m 1344[2mms[22m[39m
-     [33m[2m✓[22m[39m shows active collaborators and updates presence on subscription events [33m 338[2mms[22m[39m
-     [33m[2m✓[22m[39m surfaces keyboard shortcuts to accelerate editing workflows [33m 342[2mms[22m[39m
-     [33m[2m✓[22m[39m handles save errors gracefully and displays retry messaging [33m 914[2mms[22m[39m
-     [33m[2m✓[22m[39m updates context for AI suggestions when the user provides additional details [33m 2779[2mms[22m[39m
- [32m✓[39m src/pages/tasks/TaskBoard.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 15353[2mms[22m[39m
-     [33m[2m✓[22m[39m renders task board with required columns and tasks [33m 1583[2mms[22m[39m
-     [33m[2m✓[22m[39m persists filters when modified [33m 544[2mms[22m[39m
-     [33m[2m✓[22m[39m filters tasks by assignee, status, priority, and due date [33m 2664[2mms[22m[39m
-     [33m[2m✓[22m[39m sorts tasks by due date and priority [33m 1226[2mms[22m[39m
-     [33m[2m✓[22m[39m opens task creation modal and validates required fields [33m 4115[2mms[22m[39m
-     [33m[2m✓[22m[39m supports keyboard shortcut for opening the new task modal [33m 421[2mms[22m[39m
-     [33m[2m✓[22m[39m opens task detail modal on card click and loads task detail data [33m 586[2mms[22m[39m
-     [33m[2m✓[22m[39m updates task details from detail modal [33m 2677[2mms[22m[39m
-     [33m[2m✓[22m[39m assigns a task from the detail modal [33m 607[2mms[22m[39m
-     [33m[2m✓[22m[39m deletes a task from the detail modal [33m 576[2mms[22m[39m
- [32m✓[39m src/components/tasks/TaskTemplateModal.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 4098[2mms[22m[39m
-     [33m[2m✓[22m[39m allows adding tasks to the template [33m 1028[2mms[22m[39m
-     [33m[2m✓[22m[39m creates template when form is valid [33m 2542[2mms[22m[39m
- [32m✓[39m src/pages/deals/TaskBoard.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 3805[2mms[22m[39m
-     [33m[2m✓[22m[39m renders task board with columns for different statuses [33m 350[2mms[22m[39m
-     [33m[2m✓[22m[39m opens create task modal when "Add Task" button is clicked [33m 703[2mms[22m[39m
-     [33m[2m✓[22m[39m creates a new task when form is submitted [33m 1486[2mms[22m[39m
-     [33m[2m✓[22m[39m updates task status when moved to different column [33m 655[2mms[22m[39m
- [32m✓[39m src/components/deals/DealFilters.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[33m 5124[2mms[22m[39m
-       [33m[2m✓[22m[39m should render clear filters button [33m 431[2mms[22m[39m
-       [33m[2m✓[22m[39m should call onSearchChange when typing in search input [33m 778[2mms[22m[39m
-       [33m[2m✓[22m[39m should debounce search input (not call on every keystroke) [33m 737[2mms[22m[39m
-       [33m[2m✓[22m[39m should clear search when clear button is clicked [33m 509[2mms[22m[39m
-       [33m[2m✓[22m[39m should clear stage filter when clear button is clicked [33m 396[2mms[22m[39m
-       [33m[2m✓[22m[39m should handle both search and stage filter simultaneously [33m 755[2mms[22m[39m
-       [33m[2m✓[22m[39m should clear both filters when clear button is clicked [33m 681[2mms[22m[39m
- [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 4506[2mms[22m[39m
-       [33m[2m✓[22m[39m should show edit button when not editing [33m 466[2mms[22m[39m
-       [33m[2m✓[22m[39m should enter edit mode when edit button is clicked [33m 364[2mms[22m[39m
-       [33m[2m✓[22m[39m should update input values when changed [33m 451[2mms[22m[39m
-       [33m[2m✓[22m[39m should exit edit mode when cancel is clicked [33m 344[2mms[22m[39m
-       [33m[2m✓[22m[39m should call updateGoal mutation when saving existing goal [33m 649[2mms[22m[39m
-       [33m[2m✓[22m[39m should call createGoal mutation when saving new goal [33m 1191[2mms[22m[39m
- [32m✓[39m src/components/master-admin/activity/ActivityForm.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 6048[2mms[22m[39m
-       [33m[2m✓[22m[39m should render the form with all required fields [33m 889[2mms[22m[39m
-       [33m[2m✓[22m[39m should update date when changed [33m 374[2mms[22m[39m
-       [33m[2m✓[22m[39m should update notes when changed [33m 316[2mms[22m[39m
-       [33m[2m✓[22m[39m should submit form with all field values [33m 1802[2mms[22m[39m
-       [33m[2m✓[22m[39m should reset form after successful submission [33m 732[2mms[22m[39m
-       [33m[2m✓[22m[39m should not reset form if submission fails [33m 955[2mms[22m[39m
+ [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 1463[2mms[22m[39m
+       [33m[2m✓[22m[39m should disable upload button when no file selected [33m 344[2mms[22m[39m
 [90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document permission changes with affected user IDs
 [22m[39m[Audit] Permission changed: { documentId: [32m'doc-1'[39m, userId: [32m'user-abc'[39m, permission: [32m'edit'[39m }
 
@@ -246,592 +33,91 @@
   { id: [32m'doc-2'[39m, name: [32m'file2.pdf'[39m }
 ]
 
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/useMutation-fixedCacheKey.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1084[2mms[22m[39m
-     [33m[2m✓[22m[39m using `fixedCacheKey` will always use the latest dispatched thunk, prevent races [33m 404[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/optimisticUpdates.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 437[2mms[22m[39m
- [32m✓[39m src/components/documents/DocumentExporter.test.tsx [2m([22m[2m23 tests[22m[2m)[22m[33m 5169[2mms[22m[39m
-     [33m[2m✓[22m[39m renders section header and description [33m 518[2mms[22m[39m
-     [33m[2m✓[22m[39m renders export format select with all format options [33m 332[2mms[22m[39m
-     [33m[2m✓[22m[39m toggles cover page checkbox when clicked [33m 399[2mms[22m[39m
-     [33m[2m✓[22m[39m renders submit button with default text [33m 355[2mms[22m[39m
-     [33m[2m✓[22m[39m calls onExport with correct options when form submitted [33m 430[2mms[22m[39m
-     [33m[2m✓[22m[39m calls onExport with customized options [33m 1518[2mms[22m[39m
-     [33m[2m✓[22m[39m handles margin input with zero value [33m 312[2mms[22m[39m
- [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx [2m([22m[2m34 tests[22m[2m)[22m[33m 4420[2mms[22m[39m
-       [33m[2m✓[22m[39m should display cancel button for each uploading file [33m 599[2mms[22m[39m
-       [33m[2m✓[22m[39m should remove file from queue after cancellation [33m 627[2mms[22m[39m
-       [33m[2m✓[22m[39m should prevent upload when file would exceed quota [33m 418[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/HttpResponse.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 59[2mms[22m[39m
- [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 4148[2mms[22m[39m
-       [33m[2m✓[22m[39m renders workspace with title and tabs [33m 1139[2mms[22m[39m
-       [33m[2m✓[22m[39m shows new criteria button [33m 324[2mms[22m[39m
-       [33m[2m✓[22m[39m allows switching between tabs [33m 302[2mms[22m[39m
-       [33m[2m✓[22m[39m records view action and opens detail modal [33m 355[2mms[22m[39m
-       [33m[2m✓[22m[39m opens introduction request modal from detail view [33m 414[2mms[22m[39m
- [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx [2m([22m[2m28 tests[22m[2m)[22m[33m 5127[2mms[22m[39m
-       [33m[2m✓[22m[39m renders search input above folder tree [33m 434[2mms[22m[39m
-       [33m[2m✓[22m[39m filters folder tree based on search term [33m 546[2mms[22m[39m
-       [33m[2m✓[22m[39m clears search when clear button is clicked [33m 723[2mms[22m[39m
-       [33m[2m✓[22m[39m should perform optimistic move and show success toast [33m 326[2mms[22m[39m
-       [33m[2m✓[22m[39m should rollback optimistic move on API failure and show error [33m 404[2mms[22m[39m
-       [33m[2m✓[22m[39m should show undo option after successful archive [33m 312[2mms[22m[39m
- [32m✓[39m src/pages/marketing/BlogPostPage.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 4715[2mms[22m[39m
-       [33m[2m✓[22m[39m should render blog post title [33m 835[2mms[22m[39m
-       [33m[2m✓[22m[39m should display author name [33m 421[2mms[22m[39m
-       [33m[2m✓[22m[39m should show reading time [33m 311[2mms[22m[39m
-       [33m[2m✓[22m[39m should render featured image with alt text [33m 923[2mms[22m[39m
-       [33m[2m✓[22m[39m should display breadcrumb navigation with "Back to Blog" link [33m 654[2mms[22m[39m
-       [33m[2m✓[22m[39m should show "Back to Blog" link when post not found [33m 764[2mms[22m[39m
- [32m✓[39m src/components/documents/DocumentList.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 6914[2mms[22m[39m
-     [33m[2m✓[22m[39m should render document list with file details [33m 322[2mms[22m[39m
-     [33m[2m✓[22m[39m should sort documents by name [33m 1117[2mms[22m[39m
-     [33m[2m✓[22m[39m should sort documents by date [33m 752[2mms[22m[39m
-     [33m[2m✓[22m[39m should select single document with checkbox [33m 636[2mms[22m[39m
-     [33m[2m✓[22m[39m should expose a view activity button when callback provided [33m 430[2mms[22m[39m
-     [33m[2m✓[22m[39m should select all documents with header checkbox [33m 458[2mms[22m[39m
-     [33m[2m✓[22m[39m should render manage access button when provided [33m 317[2mms[22m[39m
-     [33m[2m✓[22m[39m shows bulk actions toolbar when documents are selected [33m 471[2mms[22m[39m
-     [33m[2m✓[22m[39m bulk download triggers download for each selected document [33m 436[2mms[22m[39m
-     [33m[2m✓[22m[39m bulk delete calls delete API for each selected document when confirmed [33m 511[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/refetchingBehaviors.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 3493[2mms[22m[39m
-     [33m[2m✓[22m[39m useQuery hook respects refetchOnFocus: true when set in createApi options [33m 674[2mms[22m[39m
-     [33m[2m✓[22m[39m useQuery hook respects refetchOnFocus: false from a hook and overrides createApi defaults [33m 350[2mms[22m[39m
-     [33m[2m✓[22m[39m useQuery hook prefers refetchOnFocus: true when multiple components have different configurations [33m 462[2mms[22m[39m
-     [33m[2m✓[22m[39m useQuery hook respects refetchOnReconnect: true when set in createApi options [33m 411[2mms[22m[39m
-     [33m[2m✓[22m[39m useQuery hook should not refetch when refetchOnReconnect: false from a hook and overrides createApi defaults [32m 300[2mms[22m[39m
-     [33m[2m✓[22m[39m useQuery hook prefers refetchOnReconnect: true when multiple components have different configurations [33m 481[2mms[22m[39m
-     [33m[2m✓[22m[39m setupListeners accepts a custom callback and executes it [33m 603[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/interceptors/ClientRequest/utils/normalizeClientRequestArgs.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 49[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/buildThunks.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[33m 1567[2mms[22m[39m
-     [33m[2m✓[22m[39m re-trigger on literal value change [33m 424[2mms[22m[39m
-     [33m[2m✓[22m[39m only re-trigger on shallow-equal arg change [33m 314[2mms[22m[39m
-[90mstdout[2m | node_modules/@reduxjs/toolkit/src/query/tests/performance-invalidation.test.ts[2m > [22m[2mTag Invalidation Performance[2m > [22m[2mmeasures CPU time for tag invalidation with large cache
-[22m[39mSetup time (300 entries): 60.36ms
-Entries affected by invalidating Tag2: 140
-
-[90mstdout[2m | node_modules/@reduxjs/toolkit/src/query/tests/performance-invalidation.test.ts[2m > [22m[2mTag Invalidation Performance[2m > [22m[2mmeasures CPU time for tag invalidation with large cache
-[22m[39mInvalidation time: 481.87ms
-
- [32m✓[39m src/components/billing/ChangeTierModal.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 2461[2mms[22m[39m
-     [33m[2m✓[22m[39m should render modal when isOpen is true [33m 415[2mms[22m[39m
-     [33m[2m✓[22m[39m should allow tier selection and submit change [33m 381[2mms[22m[39m
-     [33m[2m✓[22m[39m should display loading state while changing tier [33m 1313[2mms[22m[39m
-[90mstdout[2m | node_modules/@reduxjs/toolkit/src/query/tests/performance-invalidation.test.ts[2m > [22m[2mTag Invalidation Performance[2m > [22m[2mmeasures selectInvalidatedBy performance with various tag patterns
-[22m[39mSingle type tag: 180 entries in 0.185ms
-Multiple type tags: 300 entries in 0.229ms
-Specific ID tag: 0 entries in 0.015ms
-LIST tag: 60 entries in 0.026ms
-Mixed tags: 180 entries in 0.095ms
-
- [32m✓[39m src/components/marketing/OptInPopup.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 2060[2mms[22m[39m
-     [33m[2m✓[22m[39m becomes visible after the delay and submits successfully [33m 1296[2mms[22m[39m
-     [33m[2m✓[22m[39m shows an error message when subscription fails [33m 735[2mms[22m[39m
-[90mstdout[2m | node_modules/@reduxjs/toolkit/src/query/tests/performance-invalidation.test.ts[2m > [22m[2mTag Invalidation Performance[2m > [22m[2mmeasures hasPendingRequests performance with large cache
-[22m[39mInvalidation triggering hasPendingRequests: 554.67ms
-
-[90mstdout[2m | node_modules/@reduxjs/toolkit/src/query/tests/performance-invalidation.test.ts[2m > [22m[2mTag Invalidation Performance[2m > [22m[2mmeasures tag calculation performance during cache population
-[22m[39mTag calculation for 100 entries with 15 tags each: 79.47ms
-Total tag subscriptions created: 1245
-
- [32m✓[39m src/components/master-admin/activity/FocusTimer.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1234[2mms[22m[39m
-       [33m[2m✓[22m[39m should start 25-minute session when 25 min button is clicked [33m 606[2mms[22m[39m
-[90mstdout[2m | node_modules/@reduxjs/toolkit/src/query/tests/performance-invalidation.test.ts[2m > [22m[2mTag Invalidation Performance[2m > [22m[2mmeasures performance of repeated invalidations
-[22m[39m10 rapid invalidations: 337.17ms total, 33.72ms avg
-
- [32m✓[39m src/components/master-admin/activity/NudgePanel.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 1390[2mms[22m[39m
-       [33m[2m✓[22m[39m should display loading skeleton when data is loading [33m 617[2mms[22m[39m
-       [33m[2m✓[22m[39m should mark nudge as read when dismiss button is clicked [33m 332[2mms[22m[39m
- [31m❯[39m node_modules/@reduxjs/toolkit/src/query/tests/performance-invalidation.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 1755[2mms[22m[39m
-[31m     [31m×[31m measures CPU time for tag invalidation with large cache[39m[33m 602[2mms[22m[39m
-     [32m✓[39m measures selectInvalidatedBy performance with various tag patterns[32m 111[2mms[22m[39m
-[31m     [31m×[31m measures hasPendingRequests performance with large cache[39m[33m 589[2mms[22m[39m
-     [32m✓[39m measures tag calculation performance during cache population[32m 85[2mms[22m[39m
-     [33m[2m✓[22m[39m measures performance of repeated invalidations [33m 350[2mms[22m[39m
- [32m✓[39m src/components/master-admin/activity/ActivityList.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 3425[2mms[22m[39m
-       [33m[2m✓[22m[39m should display loading skeleton when data is loading [33m 915[2mms[22m[39m
-       [33m[2m✓[22m[39m should filter activities by type [33m 370[2mms[22m[39m
-       [33m[2m✓[22m[39m should filter activities by date range [33m 777[2mms[22m[39m
- [31m❯[39m node_modules/third-party-web/lib/index.test.js [2m([22m[2m23 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 299[2mms[22m[39m
-     [32m✓[39m works for IP addresses[32m 15[2mms[22m[39m
-     [32m✓[39m works for basic domains[32m 6[2mms[22m[39m
-     [32m✓[39m works for country-tlds[32m 0[2mms[22m[39m
-     [32m✓[39m works for URLs[32m 1[2mms[22m[39m
-     [32m✓[39m works for localhost[32m 7[2mms[22m[39m
-     [32m✓[39m works for wildcard domains[32m 1[2mms[22m[39m
-     [32m✓[39m runs on *massive* inputs[32m 8[2mms[22m[39m
-     [32m✓[39m runs on data URIs[32m 1[2mms[22m[39m
-     [32m✓[39m returns null on invalid inputs[32m 1[2mms[22m[39m
-[31m     [31m×[31m works for direct domain usage[39m[32m 72[2mms[22m[39m
-[31m     [31m×[31m works for inferred domain usage[39m[32m 10[2mms[22m[39m
-     [32m✓[39m does not over-infer[32m 0[2mms[22m[39m
-     [32m✓[39m only infers as a fallback[32m 0[2mms[22m[39m
-     [32m✓[39m runs on *massive* inputs[32m 4[2mms[22m[39m
-     [32m✓[39m runs on data URIs[32m 1[2mms[22m[39m
-     [32m✓[39m supports multi-tennant domains[32m 0[2mms[22m[39m
-     [32m✓[39m works on basic url[32m 6[2mms[22m[39m
-     [32m✓[39m works on regex based[32m 1[2mms[22m[39m
-     [32m✓[39m returns undefined when product does not match[32m 0[2mms[22m[39m
-     [32m✓[39m returns undefined with no products[32m 0[2mms[22m[39m
-[31m     [31m×[31m should use the complete entities set[39m[32m 21[2mms[22m[39m
-     [32m✓[39m should have all the same subsets in root as lib[32m 109[2mms[22m[39m
-[31m   [31m×[31m should work on real web data[39m[32m 5[2mms[22m[39m
- [32m✓[39m src/components/podcast/LiveStreamManager.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 5182[2mms[22m[39m
-     [33m[2m✓[22m[39m should render create stream button and invoke API on click [33m 887[2mms[22m[39m
-     [33m[2m✓[22m[39m should copy RTMP details to clipboard [33m 583[2mms[22m[39m
-     [33m[2m✓[22m[39m should stop an active stream and request status refresh [33m 303[2mms[22m[39m
-     [33m[2m✓[22m[39m should render recording toggle and retention selector [33m 1047[2mms[22m[39m
-     [33m[2m✓[22m[39m should persist recording preferences when toggled [33m 763[2mms[22m[39m
-     [33m[2m✓[22m[39m should show language selector with multiple options for enterprise tier [33m 347[2mms[22m[39m
- [32m✓[39m src/components/marketing/MarketingNav.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 5579[2mms[22m[39m
-     [33m[2m✓[22m[39m displays navigation links [33m 2086[2mms[22m[39m
-     [33m[2m✓[22m[39m shows Sign In and Sign Up CTAs [33m 589[2mms[22m[39m
-     [33m[2m✓[22m[39m toggles mobile dropdown panels [33m 352[2mms[22m[39m
-     [33m[2m✓[22m[39m supports keyboard navigation for desktop dropdowns [33m 1120[2mms[22m[39m
-     [33m[2m✓[22m[39m traps focus inside the mobile menu when open [33m 1130[2mms[22m[39m
- [31m❯[39m node_modules/@mswjs/interceptors/src/interceptors/ClientRequest/utils/recordRawHeaders.test.ts [2m([22m[2m23 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 67[2mms[22m[39m
-   [32m✓[39m returns an empty list if no headers were set[32m 14[2mms[22m[39m
-   [32m✓[39m records raw headers (Headers / object as init)[32m 3[2mms[22m[39m
-   [32m✓[39m records raw headers (Headers / array as init)[32m 1[2mms[22m[39m
-   [32m✓[39m records raw headers (Headers / Headers as init[32m 0[2mms[22m[39m
-   [32m✓[39m records raw headers added via ".set()"[32m 2[2mms[22m[39m
-[31m   [31m×[31m records raw headers added via ".append()"[39m[32m 14[2mms[22m[39m
-   [32m✓[39m deletes the header when called ".delete()"[32m 1[2mms[22m[39m
-   [32m✓[39m records raw headers (Request / object as init)[32m 1[2mms[22m[39m
-   [32m✓[39m records raw headers (Request / array as init)[32m 1[2mms[22m[39m
-   [32m✓[39m records raw headers (Request / Headers as init)[32m 1[2mms[22m[39m
-   [32m✓[39m records raw headers (Request / Request as init)[32m 2[2mms[22m[39m
-   [32m✓[39m preserves headers instanceof (Request / Request as init)[32m 1[2mms[22m[39m
-   [32m✓[39m preserves headers instanceof (Request / Request with Headers as init)[32m 1[2mms[22m[39m
-   [32m✓[39m preserves headers instanceof (Response / Response with Headers as init)[32m 4[2mms[22m[39m
-   [32m✓[39m records raw headers (Request / Request+Headers as init)[32m 2[2mms[22m[39m
-   [32m✓[39m records raw headers (Response / object as init)[32m 1[2mms[22m[39m
-   [32m✓[39m records raw headers (Response / array as init)[32m 0[2mms[22m[39m
-   [32m✓[39m records raw headers (Response / Headers as init)[32m 0[2mms[22m[39m
-   [32m✓[39m stops recording once the patches are restored[32m 0[2mms[22m[39m
-   [32m✓[39m overrides an existing header when calling ".set()"[32m 2[2mms[22m[39m
-   [32m✓[39m overrides an existing multi-value header when calling ".set()"[32m 0[2mms[22m[39m
-   [32m✓[39m does not throw on using Headers before recording[32m 0[2mms[22m[39m
-[31m   [31m×[31m isolates headers between different headers instances[39m[32m 1[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/interceptors/Socket/MockSocket.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 292[2mms[22m[39m
- [31m❯[39m node_modules/@reduxjs/toolkit/src/query/tests/polling.test.tsx [2m([22m[2m8 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 594[2mms[22m[39m
-     [32m✓[39m clears intervals when seeing a resetApiState action[32m 115[2mms[22m[39m
-     [32m✓[39m replaces polling interval when the subscription options are updated[32m 32[2mms[22m[39m
-     [32m✓[39m doesn't replace the interval when removing a shared query instance with a poll [32m 57[2mms[22m[39m
-     [32m✓[39m uses lowest specified interval when two components are mounted[32m 44[2mms[22m[39m
-     [32m✓[39m respects skipPollingIfUnfocused[32m 109[2mms[22m[39m
-     [32m✓[39m respects skipPollingIfUnfocused if at least one subscription has it[32m 132[2mms[22m[39m
-     [32m✓[39m replaces skipPollingIfUnfocused when the subscription options are updated[32m 29[2mms[22m[39m
-[31m     [31m×[31m should minimize polling recalculations when adding multiple subscribers[39m[32m 57[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/getCallFrame.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 32[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/buildMiddleware.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1008[2mms[22m[39m
-   [33m[2m✓[22m[39m correctly stringifies subscription state and dispatches subscriptionsUpdated [33m 622[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/BatchInterceptor.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 32[2mms[22m[39m
- [31m❯[39m node_modules/msw/src/core/utils/request/onUnhandledRequest.test.ts [2m([22m[2m13 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[32m 100[2mms[22m[39m
-   [32m✓[39m supports the "bypass" request strategy[32m 36[2mms[22m[39m
-[31m   [31m×[31m supports the "warn" request strategy[39m[32m 15[2mms[22m[39m
-[31m   [31m×[31m supports the "warn" request strategy with request body[39m[32m 9[2mms[22m[39m
-[31m   [31m×[31m supports the "error" request strategy[39m[32m 7[2mms[22m[39m
-   [32m✓[39m supports a custom callback function[32m 8[2mms[22m[39m
-[31m   [31m×[31m supports calling default strategies from the custom callback function[39m[32m 2[2mms[22m[39m
-[31m   [31m×[31m does not print any suggestions given no handlers to suggest[39m[32m 1[2mms[22m[39m
-   [32m✓[39m throws an exception given unknown request strategy[32m 1[2mms[22m[39m
-[31m   [31m×[31m prints with a relative URL and search params[39m[32m 1[2mms[22m[39m
-   [32m✓[39m prints with an absolute URL and search params[32m 1[2mms[22m[39m
-   [32m✓[39m ignores common static assets when using the "warn" strategy[32m 1[2mms[22m[39m
-   [32m✓[39m ignores common static assets when using the "error" strategy[32m 1[2mms[22m[39m
-   [32m✓[39m exposes common static assets to the explicit callback[32m 1[2mms[22m[39m
- [31m❯[39m node_modules/msw/src/core/handlers/HttpHandler.test.ts [2m([22m[2m14 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 109[2mms[22m[39m
-     [32m✓[39m exposes request handler information[32m 8[2mms[22m[39m
-     [32m✓[39m parses a URL given a matching request[32m 26[2mms[22m[39m
-     [32m✓[39m parses a URL and ignores the request method[32m 3[2mms[22m[39m
-     [32m✓[39m returns negative match result given a non-matching request[32m 1[2mms[22m[39m
-     [32m✓[39m returns true given a matching request[32m 3[2mms[22m[39m
-     [32m✓[39m supports RegExp as the request method[32m 3[2mms[22m[39m
-     [32m✓[39m returns false given a non-matching request[32m 2[2mms[22m[39m
-     [32m✓[39m supports custom predicate function[32m 3[2mms[22m[39m
-     [32m✓[39m returns true given a matching request[32m 12[2mms[22m[39m
-     [32m✓[39m returns false given a non-matching request[32m 2[2mms[22m[39m
-[31m     [31m×[31m returns a mocked response given a matching request[39m[32m 20[2mms[22m[39m
-     [32m✓[39m returns null given a non-matching request[32m 2[2mms[22m[39m
-     [32m✓[39m returns an empty "params" object given request with no URL parameters[32m 2[2mms[22m[39m
-     [32m✓[39m exhausts resolver until its generator completes[32m 14[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/buildSlice.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 151[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/tests/combineSlices.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 56[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/Interceptor.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 43[2mms[22m[39m
- [32m✓[39m node_modules/serve/node_modules/json-schema-traverse/spec/index.spec.js [2m([22m[2m10 tests[22m[2m)[22m[32m 33[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/tests/autoBatchEnhancer.test.ts [2m([22m[2m48 tests[22m[2m)[22m[33m 931[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/listenerMiddleware/tests/useCases.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 56[2mms[22m[39m
- [32m✓[39m src/components/documents/UploadPanel.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 893[2mms[22m[39m
-     [33m[2m✓[22m[39m opens file picker when upload button clicked [33m 521[2mms[22m[39m
- [32m✓[39m src/pages/marketing/Blog.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 2903[2mms[22m[39m
-       [33m[2m✓[22m[39m should render blog heading [33m 398[2mms[22m[39m
-       [33m[2m✓[22m[39m should request posts for selected category [33m 1104[2mms[22m[39m
-       [33m[2m✓[22m[39m should show loading indicator while fetching [33m 303[2mms[22m[39m
-       [33m[2m✓[22m[39m should clear filters and search when clicking Clear Filters [33m 451[2mms[22m[39m
- [32m✓[39m src/pages/marketing/PricingPage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 4298[2mms[22m[39m
-     [33m[2m✓[22m[39m renders all 4 pricing tiers with correct headings and prices [33m 1180[2mms[22m[39m
-     [33m[2m✓[22m[39m redirects unauthenticated users to sign-in when clicking Get Started [33m 846[2mms[22m[39m
-     [33m[2m✓[22m[39m calls redirectToCheckout for authenticated users selecting Starter [33m 568[2mms[22m[39m
-     [33m[2m✓[22m[39m uses correct tier mapping for Professional plan [33m 459[2mms[22m[39m
-     [33m[2m✓[22m[39m shows loading state while redirect promise pending [33m 373[2mms[22m[39m
-     [33m[2m✓[22m[39m shows error message when redirect fails [33m 588[2mms[22m[39m
- [32m✓[39m src/pages/marketing/LandingPage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 4674[2mms[22m[39m
-     [33m[2m✓[22m[39m renders the enhanced hero section headline [33m 1032[2mms[22m[39m
-     [33m[2m✓[22m[39m includes trust badge section [33m 387[2mms[22m[39m
-     [33m[2m✓[22m[39m adds quantified social proof stats and logos [33m 581[2mms[22m[39m
-     [33m[2m✓[22m[39m maintains CTA section at the end [33m 1515[2mms[22m[39m
-     [33m[2m✓[22m[39m renders case study callouts [33m 350[2mms[22m[39m
- [32m✓[39m src/components/podcast/VideoUploadModal.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 2876[2mms[22m[39m
-       [33m[2m✓[22m[39m should display file size [33m 1053[2mms[22m[39m
-       [33m[2m✓[22m[39m should disable upload button when no file selected [33m 556[2mms[22m[39m
- [32m✓[39m src/tests/integration/routing.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 2548[2mms[22m[39m
-     [33m[2m✓[22m[39m renders the landing page for visitors [33m 1902[2mms[22m[39m
-     [33m[2m✓[22m[39m directs visitors to the sign-in page when accessing the dashboard [33m 420[2mms[22m[39m
- [32m✓[39m src/pages/podcast/PodcastStudio.featureGates.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 2571[2mms[22m[39m
-     [33m[2m✓[22m[39m shows audio controls but locks video uploads for Professional tier [33m 785[2mms[22m[39m
-     [33m[2m✓[22m[39m opens the upgrade modal with pricing when CTA is clicked [33m 401[2mms[22m[39m
-     [33m[2m✓[22m[39m renders upload video button for Premium users and opens modal [33m 353[2mms[22m[39m
-     [33m[2m✓[22m[39m shows live streaming upgrade call-to-action when feature is locked [33m 317[2mms[22m[39m
- [32m✓[39m src/components/marketing/Footer.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1913[2mms[22m[39m
-       [33m[2m✓[22m[39m should render Product section with links [33m 580[2mms[22m[39m
-       [33m[2m✓[22m[39m should render Legal section with links [33m 330[2mms[22m[39m
- [32m✓[39m src/components/marketing/MarketingLayout.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 554[2mms[22m[39m
-       [33m[2m✓[22m[39m should have main element with aria-label [33m 351[2mms[22m[39m
- [32m✓[39m src/components/layout/NavigationMenu.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 2351[2mms[22m[39m
-     [33m[2m✓[22m[39m renders navigation shell with brand and user menu [33m 532[2mms[22m[39m
-     [33m[2m✓[22m[39m shows base workspace links for solo users [33m 551[2mms[22m[39m
-     [33m[2m✓[22m[39m renders admin + master admin pills for admin role [33m 337[2mms[22m[39m
- [32m✓[39m src/pages/deals/DocumentRoomPage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1748[2mms[22m[39m
-       [33m[2m✓[22m[39m should render the main document room layout [33m 531[2mms[22m[39m
-       [33m[2m✓[22m[39m applies search query to document requests [33m 306[2mms[22m[39m
-       [33m[2m✓[22m[39m applies file type filter to document requests [33m 383[2mms[22m[39m
- [32m✓[39m src/components/marketing/ROICalculator.test.tsx [2m([22m[2m33 tests[22m[2m)[22m[33m 2310[2mms[22m[39m
-     [33m[2m✓[22m[39m updates deal count when slider changes [33m 459[2mms[22m[39m
- [32m✓[39m src/pages/marketing/SecurityPage.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[33m 2960[2mms[22m[39m
-       [33m[2m✓[22m[39m should render main heading [33m 615[2mms[22m[39m
- [32m✓[39m src/components/documents/DocumentQuestionsPanel.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 951[2mms[22m[39m
-     [33m[2m✓[22m[39m submits a new question [33m 438[2mms[22m[39m
-     [33m[2m✓[22m[39m resolves a question with an answer [33m 310[2mms[22m[39m
- [32m✓[39m src/components/billing/CancelSubscriptionModal.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 963[2mms[22m[39m
- [32m✓[39m src/pages/dashboard/BillingDashboard.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1114[2mms[22m[39m
-     [33m[2m✓[22m[39m opens customer portal and shows loading state [33m 547[2mms[22m[39m
- [32m✓[39m src/components/marketing/ComparisonTable.test.tsx [2m([22m[2m40 tests[22m[2m)[22m[33m 1533[2mms[22m[39m
- [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 1583[2mms[22m[39m
-       [33m[2m✓[22m[39m should disable upload button when no file selected [33m 361[2mms[22m[39m
- [32m✓[39m src/components/marketing/TrustBadges.test.tsx [2m([22m[2m47 tests[22m[2m)[22m[33m 1749[2mms[22m[39m
-     [33m[2m✓[22m[39m displays all 6 integration logos [33m 484[2mms[22m[39m
- [32m✓[39m src/components/documents/FolderTree.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 2552[2mms[22m[39m
-     [33m[2m✓[22m[39m lazy loads child folders when expanded [33m 607[2mms[22m[39m
-     [33m[2m✓[22m[39m persists expanded folders between remounts [33m 434[2mms[22m[39m
-     [33m[2m✓[22m[39m does not re-fetch child folders after initial load [33m 423[2mms[22m[39m
- [32m✓[39m src/components/documents/TemplateSelector.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 1593[2mms[22m[39m
-     [33m[2m✓[22m[39m renders loading state with skeleton loaders [33m 518[2mms[22m[39m
- [32m✓[39m src/pages/deals/DealPipeline.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 2405[2mms[22m[39m
-     [33m[2m✓[22m[39m should display deals grouped by stage after loading [33m 558[2mms[22m[39m
-     [33m[2m✓[22m[39m should display "New Deal" button [33m 382[2mms[22m[39m
- [32m✓[39m src/components/documents/AISuggestionPanel.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[33m 2796[2mms[22m[39m
-     [33m[2m✓[22m[39m renders section header and description [33m 430[2mms[22m[39m
-     [33m[2m✓[22m[39m calls onContextChange when textarea value changes [33m 399[2mms[22m[39m
-     [33m[2m✓[22m[39m renders accept button for each suggestion with proper ARIA label [33m 317[2mms[22m[39m
- [32m✓[39m src/components/deal-matching/CriteriaBuilderModal.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 2740[2mms[22m[39m
-     [33m[2m✓[22m[39m should render modal when isOpen is true [33m 552[2mms[22m[39m
- [32m✓[39m src/components/documents/PermissionModal.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 2492[2mms[22m[39m
-     [33m[2m✓[22m[39m should render modal with permissions list when isOpen is true [33m 612[2mms[22m[39m
- [32m✓[39m src/components/marketing/FAQSection.test.tsx [2m([22m[2m41 tests[22m[2m)[22m[33m 1821[2mms[22m[39m
-     [33m[2m✓[22m[39m first FAQ is open by default [33m 459[2mms[22m[39m
- [32m✓[39m src/components/podcast/YouTubePublishButton.test.tsx [2m([22m[2m22 tests[22m[2m)[22m[33m 1586[2mms[22m[39m
-     [33m[2m✓[22m[39m renders button with default text [33m 516[2mms[22m[39m
- [32m✓[39m src/components/deals/DealCard.test.tsx [2m([22m[2m28 tests[22m[2m)[22m[33m 1401[2mms[22m[39m
-       [33m[2m✓[22m[39m should call onClick handler when clicked [33m 441[2mms[22m[39m
- [32m✓[39m src/components/documents/AccessLogDrawer.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 802[2mms[22m[39m
-     [33m[2m✓[22m[39m surfaces error state and retries on demand [33m 442[2mms[22m[39m
- [32m✓[39m src/components/documents/BulkActionsToolbar.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1324[2mms[22m[39m
-     [33m[2m✓[22m[39m disables download button when disableDownload true [33m 463[2mms[22m[39m
-     [33m[2m✓[22m[39m invokes onDownload when download clicked [33m 307[2mms[22m[39m
- [32m✓[39m src/components/tasks/TaskTemplateSelector.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 1602[2mms[22m[39m
-     [33m[2m✓[22m[39m calls onTemplateSelect when a template is clicked [33m 856[2mms[22m[39m
-     [33m[2m✓[22m[39m calls onClose when close button is clicked [33m 427[2mms[22m[39m
- [32m✓[39m src/components/podcast/DeleteEpisodeModal.test.tsx [2m([22m[2m22 tests[22m[2m)[22m[33m 1495[2mms[22m[39m
-     [33m[2m✓[22m[39m renders modal with dialog role and aria-modal [33m 377[2mms[22m[39m
- [32m✓[39m src/pages/marketing/FeaturesPage.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 1819[2mms[22m[39m
-     [33m[2m✓[22m[39m renders main heading [33m 705[2mms[22m[39m
-     [33m[2m✓[22m[39m contains CTA to pricing [33m 539[2mms[22m[39m
- [32m✓[39m src/components/deal-matching/MatchDetailModal.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 1242[2mms[22m[39m
-     [33m[2m✓[22m[39m should render modal when isOpen is true [33m 389[2mms[22m[39m
- [32m✓[39m src/components/documents/BulkActions.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1845[2mms[22m[39m
-       [33m[2m✓[22m[39m should display bulk download button [33m 439[2mms[22m[39m
- [32m✓[39m src/components/deals/DealKanbanBoard.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 1787[2mms[22m[39m
-       [33m[2m✓[22m[39m should have accessible column headings [33m 589[2mms[22m[39m
- [32m✓[39m src/components/marketing/EnhancedHeroSection.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 1210[2mms[22m[39m
-     [33m[2m✓[22m[39m includes both primary and secondary CTAs [33m 638[2mms[22m[39m
- [32m✓[39m src/components/MarketingFooter.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 838[2mms[22m[39m
-       [33m[2m✓[22m[39m should render app title [33m 686[2mms[22m[39m
- [32m✓[39m src/components/marketing/EnhancedTestimonials.test.tsx [2m([22m[2m36 tests[22m[2m)[22m[33m 952[2mms[22m[39m
- [32m✓[39m src/components/deal-matching/MatchCard.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 890[2mms[22m[39m
-     [33m[2m✓[22m[39m shows truncated explanation with View More button [33m 518[2mms[22m[39m
- [32m✓[39m src/components/podcast/EpisodeTranscriptPanel.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 970[2mms[22m[39m
-     [33m[2m✓[22m[39m renders transcribe button when no transcript exists [33m 660[2mms[22m[39m
- [32m✓[39m src/pages/marketing/FAQPage.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 1705[2mms[22m[39m
-       [33m[2m✓[22m[39m should render main heading [33m 368[2mms[22m[39m
- [32m✓[39m src/components/financial/FinancialOverview.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 1022[2mms[22m[39m
-     [33m[2m✓[22m[39m should render connection status card when not connected [33m 491[2mms[22m[39m
- [32m✓[39m src/components/documents/VersionHistory.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 1323[2mms[22m[39m
-     [33m[2m✓[22m[39m renders section header and description [33m 508[2mms[22m[39m
- [32m✓[39m src/pages/marketing/FourStageCyclePage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1290[2mms[22m[39m
-       [33m[2m✓[22m[39m should render page without errors [33m 461[2mms[22m[39m
- [32m✓[39m src/components/podcast/QuotaWarning.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 623[2mms[22m[39m
-     [33m[2m✓[22m[39m shows warning when usage crosses threshold [33m 382[2mms[22m[39m
- [32m✓[39m src/pages/deals/DealDocuments.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1118[2mms[22m[39m
-     [33m[2m✓[22m[39m renders document rows with formatted size, version badge, and action buttons [33m 859[2mms[22m[39m
- [32m✓[39m src/pages/deals/FinancialDashboard.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 954[2mms[22m[39m
-     [33m[2m✓[22m[39m should display financial ratios grouped by category [33m 624[2mms[22m[39m
- [32m✓[39m src/pages/marketing/BookTrial.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1867[2mms[22m[39m
-       [33m[2m✓[22m[39m should render success badge [33m 460[2mms[22m[39m
- [32m✓[39m src/components/podcast/FeatureGate.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 632[2mms[22m[39m
-       [33m[2m✓[22m[39m should display required tier in upgrade CTA [33m 354[2mms[22m[39m
- [32m✓[39m src/pages/marketing/AboutPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1883[2mms[22m[39m
-     [33m[2m✓[22m[39m sets the document title and renders the hero heading [33m 977[2mms[22m[39m
-     [33m[2m✓[22m[39m includes value statements and call to action [33m 663[2mms[22m[39m
- [32m✓[39m src/pages/marketing/CaseStudiesPage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1230[2mms[22m[39m
-       [33m[2m✓[22m[39m should render main heading [33m 335[2mms[22m[39m
- [32m✓[39m src/pages/marketing/TeamPage.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 1085[2mms[22m[39m
-       [33m[2m✓[22m[39m should render main heading [33m 303[2mms[22m[39m
- [32m✓[39m src/pages/marketing/CapLiquifyFPAPage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1042[2mms[22m[39m
- [32m✓[39m src/components/financial/FinancialNarrativeDisplay.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 654[2mms[22m[39m
-     [33m[2m✓[22m[39m should call onRegenerate when regenerate button is clicked [33m 347[2mms[22m[39m
- [32m✓[39m src/pages/marketing/PodcastPage.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 858[2mms[22m[39m
- [32m✓[39m src/components/deal-matching/IntroductionRequestModal.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1150[2mms[22m[39m
- [32m✓[39m src/pages/marketing/LandingPage.meta.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 584[2mms[22m[39m
-     [33m[2m✓[22m[39m sets canonical and og:url to 100daysandbeyond.com [33m 574[2mms[22m[39m
- [32m✓[39m src/pages/marketing/SalesPromotionPricingPage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 961[2mms[22m[39m
- [32m✓[39m src/pages/checkout/CheckoutSuccess.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 477[2mms[22m[39m
-     [33m[2m✓[22m[39m should provide link to billing dashboard [33m 362[2mms[22m[39m
- [32m✓[39m src/pages/marketing/NotFound.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 675[2mms[22m[39m
-     [33m[2m✓[22m[39m should render "Go Home" button [33m 442[2mms[22m[39m
- [32m✓[39m src/pages/marketing/BlogPost.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 695[2mms[22m[39m
-     [33m[2m✓[22m[39m links related articles using their slug [33m 682[2mms[22m[39m
- [32m✓[39m src/pages/marketing/BlogListingPage.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 661[2mms[22m[39m
-     [33m[2m✓[22m[39m fetches and renders blog posts from the API [33m 461[2mms[22m[39m
- [32m✓[39m src/pages/checkout/CheckoutCancel.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 460[2mms[22m[39m
-     [33m[2m✓[22m[39m should provide link back to pricing page [33m 374[2mms[22m[39m
- [32m✓[39m src/tests/msw/documentsHandlers.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 205[2mms[22m[39m
- [32m✓[39m src/services/api/documents.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 89[2mms[22m[39m
- [32m✓[39m src/pages/marketing/AboutPage.meta.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 228[2mms[22m[39m
- [32m✓[39m src/pages/marketing/EnhancedLandingPage.meta.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 277[2mms[22m[39m
- [32m✓[39m src/services/api/masterAdmin.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 33[2mms[22m[39m
- [32m✓[39m node_modules/json-schema-traverse/spec/index.spec.js [2m([22m[2m10 tests[22m[2m)[22m[32m 45[2mms[22m[39m
- [32m✓[39m src/components/documents/ShareLinkModal.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1435[2mms[22m[39m
-     [33m[2m✓[22m[39m creates share link with form values [33m 889[2mms[22m[39m
-     [33m[2m✓[22m[39m lists existing links and revokes one [33m 313[2mms[22m[39m
- [32m✓[39m src/components/podcast/VideoPlayerModal.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 476[2mms[22m[39m
-     [33m[2m✓[22m[39m renders video player and download link when open [33m 348[2mms[22m[39m
- [32m✓[39m src/components/marketing/HeroSection.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 548[2mms[22m[39m
-     [33m[2m✓[22m[39m renders main headline [33m 335[2mms[22m[39m
- [32m✓[39m src/components/financial/DealReadinessScore.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 237[2mms[22m[39m
- [32m✓[39m src/components/auth/ProtectedRoute.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 279[2mms[22m[39m
- [32m✓[39m src/components/layout/Breadcrumbs.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 748[2mms[22m[39m
-     [33m[2m✓[22m[39m renders breadcrumb trail for top-level route [33m 402[2mms[22m[39m
- [32m✓[39m src/components/financial/FinancialRatiosDashboard.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 799[2mms[22m[39m
-     [33m[2m✓[22m[39m should display ratio descriptions on hover or click [33m 474[2mms[22m[39m
- [32m✓[39m src/components/marketing/PricingCard.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 510[2mms[22m[39m
-     [33m[2m✓[22m[39m renders CTA button [33m 333[2mms[22m[39m
- [32m✓[39m src/components/common/SEO.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 140[2mms[22m[39m
- [32m✓[39m src/components/auth/AuthErrorBoundary.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 568[2mms[22m[39m
-     [33m[2m✓[22m[39m should provide a way to recover from error [33m 370[2mms[22m[39m
- [32m✓[39m src/components/marketing/DashboardMockup.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 203[2mms[22m[39m
- [32m✓[39m src/components/marketing/StickyCTABar.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 201[2mms[22m[39m
- [32m✓[39m src/components/podcast/VideoPlayer.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[32m 251[2mms[22m[39m
- [32m✓[39m src/hooks/useUploadProgress.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 199[2mms[22m[39m
- [32m✓[39m src/components/marketing/AnalyticsProvider.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 172[2mms[22m[39m
- [32m✓[39m src/hooks/useDealMatches.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 134[2mms[22m[39m
- [32m✓[39m src/components/marketing/ExitIntentPopup.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 273[2mms[22m[39m
- [32m✓[39m src/hooks/useFeatureAccess.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 356[2mms[22m[39m
- [32m✓[39m src/components/common/OptimizedImage.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[32m 192[2mms[22m[39m
- [32m✓[39m src/components/layout/PageSection.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[32m 133[2mms[22m[39m
- [32m✓[39m src/components/layout/ContentContainer.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 94[2mms[22m[39m
- [32m✓[39m src/components/marketing/CTASection.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 174[2mms[22m[39m
- [32m✓[39m src/components/podcast/CreateEpisodeModal.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 124[2mms[22m[39m
- [32m✓[39m src/components/deal-matching/MatchScoreBadge.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 91[2mms[22m[39m
- [32m✓[39m src/components/marketing/MarketingLayout.domain.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 133[2mms[22m[39m
- [32m✓[39m src/components/podcast/YouTubeStatusBadge.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[32m 134[2mms[22m[39m
- [32m✓[39m src/components/common/Breadcrumbs.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 158[2mms[22m[39m
- [32m✓[39m src/components/marketing/FeatureCard.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 97[2mms[22m[39m
- [32m✓[39m src/components/ui/Spinner.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 104[2mms[22m[39m
- [32m✓[39m src/components/deal-matching/SaveMatchButton.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 64[2mms[22m[39m
- [32m✓[39m src/components/deal-matching/RequestIntroButton.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 80[2mms[22m[39m
- [32m✓[39m src/components/ui/Button.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 61[2mms[22m[39m
- [32m✓[39m src/components/deal-matching/PassMatchButton.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 106[2mms[22m[39m
- [32m✓[39m src/tests/domainConfig.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
- [32m✓[39m src/utils/dateFormat.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 34[2mms[22m[39m
- [32m✓[39m src/services/billingService.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 27[2mms[22m[39m
- [32m✓[39m src/utils/imageUtils.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 23[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/matching/matchRequestUrl.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 22[2mms[22m[39m
- [31m❯[39m node_modules/@mswjs/interceptors/src/interceptors/XMLHttpRequest/utils/getBodyByteLength.test.ts [2m([22m[2m15 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 59[2mms[22m[39m
-   [32m✓[39m returns explicit body length set in the "Content-Length" header[32m 9[2mms[22m[39m
-   [32m✓[39m returns 0 for a request with an empty body[32m 3[2mms[22m[39m
-   [32m✓[39m calculates body length from the text request body[32m 1[2mms[22m[39m
-   [32m✓[39m calculates body length from the URLSearchParams request body[32m 1[2mms[22m[39m
-   [32m✓[39m calculates body length from the Blob request body[32m 1[2mms[22m[39m
-   [32m✓[39m calculates body length from the ArrayBuffer request body[32m 1[2mms[22m[39m
-[31m   [31m×[31m calculates body length from the FormData request body[39m[32m 18[2mms[22m[39m
-   [32m✓[39m calculates body length from the ReadableStream request body[32m 3[2mms[22m[39m
-   [32m✓[39m returns 0 for a response with an empty body[32m 2[2mms[22m[39m
-   [32m✓[39m calculates body length from the text response body[32m 1[2mms[22m[39m
-   [32m✓[39m calculates body length from the URLSearchParams response body[32m 1[2mms[22m[39m
-   [32m✓[39m calculates body length from the Blob response body[32m 1[2mms[22m[39m
-   [32m✓[39m calculates body length from the ArrayBuffer response body[32m 2[2mms[22m[39m
-[31m   [31m×[31m calculates body length from the FormData response body[39m[32m 3[2mms[22m[39m
-   [32m✓[39m calculates body length from the ReadableStream response body[32m 1[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/tests/createAction.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 21[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/apiProvider.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 551[2mms[22m[39m
-     [33m[2m✓[22m[39m ApiProvider allows a user to make queries without a traditional Redux setup [33m 306[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/entities/tests/state_selectors.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 29[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/cleanup.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 1616[2mms[22m[39m
-   [33m[2m✓[22m[39m Minimizes the number of subscription dispatches when multiple components ask for the same data [33m 1447[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/buildCreateApi.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 416[2mms[22m[39m
- [32m✓[39m src/utils/schemas/offerSchema.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 18[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/tests/combinedTest.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 35[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/utils/getUrlByRequestOptions.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 18[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/invalidation.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 2042[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/utils/createProxy.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 19[2mms[22m[39m
- [32m✓[39m src/services/api.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 55[2mms[22m[39m
- [32m✓[39m src/utils/schemas/organizationSchema.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 23[2mms[22m[39m
- [32m✓[39m src/utils/schemas/personSchema.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 27[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/raceConditions.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 86[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/entities/tests/entity_state.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 24[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/RequestController.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 53[2mms[22m[39m
- [32m✓[39m node_modules/entities/src/encode.spec.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 39[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/dynamicMiddleware/tests/react.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 58[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/parseGraphQLRequest.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 200[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/interceptors/WebSocket/utils/events.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 19[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/listenerMiddleware/tests/listenerMiddleware.withTypes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 16[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/utils/hasConfigurableGlobal.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 20[2mms[22m[39m
- [32m✓[39m src/components/master-admin/shared/StatCard.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 328[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/handlers/WebSocketHandler.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 35[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/bypass.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 42[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/query/tests/copyWithStructuralSharing.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 19[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/parseMultipartData.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 23[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/getResponse.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 51[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/isHandlerKind.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 22[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/dynamicMiddleware/tests/index.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 17[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/entities/tests/state_adapter.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 27[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/logging/serializeResponse.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 26[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/utils/cloneObject.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 18[2mms[22m[39m
- [32m✓[39m src/utils/schemas/breadcrumbSchema.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 39[2mms[22m[39m
- [32m✓[39m src/utils/schemas/blogPostSchema.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 20[2mms[22m[39m
- [32m✓[39m src/services/api/financial.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 21[2mms[22m[39m
- [32m✓[39m src/pages/marketing/legal/__tests__/LegalPages.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1494[2mms[22m[39m
-     [33m[2m✓[22m[39m renders Terms of Service with last updated date and sections [33m 723[2mms[22m[39m
-     [33m[2m✓[22m[39m renders Privacy Policy with GDPR notice and DPO contact [33m 354[2mms[22m[39m
-     [33m[2m✓[22m[39m renders Cookie Policy with control information [33m 408[2mms[22m[39m
- [32m✓[39m node_modules/no-case/dist/index.spec.js [2m([22m[2m31 tests[22m[2m)[22m[32m 22[2mms[22m[39m
- [32m✓[39m node_modules/no-case/dist.es2015/index.spec.js [2m([22m[2m31 tests[22m[2m)[22m[32m 20[2mms[22m[39m
- [32m✓[39m node_modules/style-to-js/src/utilities.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 25[2mms[22m[39m
- [32m✓[39m src/pages/marketing/legal/LegalMeta.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 342[2mms[22m[39m
- [31m❯[39m node_modules/msw/src/core/utils/matching/normalizePath.test.ts [2m([22m[2m9 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 26[2mms[22m[39m
-   [32m✓[39m returns RegExp as-is[32m 4[2mms[22m[39m
-   [32m✓[39m returns a clean absolute URL as-is[32m 2[2mms[22m[39m
-   [32m✓[39m rebases a relative URL against the current location[32m 2[2mms[22m[39m
-   [32m✓[39m rebases a relative URL against a custom base URL[32m 1[2mms[22m[39m
-   [32m✓[39m removes query parameters and hashes from an absolute URL[32m 1[2mms[22m[39m
-   [32m✓[39m removes query parameters and hashes from a relative URL[32m 1[2mms[22m[39m
-[31m   [31m×[31m returns a path pattern string as-is[39m[32m 7[2mms[22m[39m
-[31m   [31m×[31m removes query parameters and hashes from a path pattern string[39m[32m 2[2mms[22m[39m
-[31m   [31m×[31m preserves optional path parameters[39m[32m 1[2mms[22m[39m
- [32m✓[39m node_modules/third-party-web/lib/create-entity-finder-api.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/interceptors/Socket/utils/normalizeSocketWriteArgs.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/matching/normalizePath.node.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 15[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/interceptors/ClientRequest/utils/getIncomingMessageBody.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 29[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/tests/createDraftSafeSelector.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 20[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/entities/tests/entity_slice_enhancer.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 17[2mms[22m[39m
- [31m❯[39m node_modules/msw/src/core/utils/url/getAbsoluteUrl.test.ts [2m([22m[2m6 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 21[2mms[22m[39m
-[31m   [31m×[31m resolves a relative URL against the current location (default)[39m[32m 10[2mms[22m[39m
-   [32m✓[39m supports relative URLs starting with search parameters[32m 1[2mms[22m[39m
-   [32m✓[39m resolves a relative URL against a custom base URL[32m 1[2mms[22m[39m
-   [32m✓[39m returns a given absolute URL as-is[32m 1[2mms[22m[39m
-   [32m✓[39m returns an absolute URL given a relative path without a leading slash[32m 0[2mms[22m[39m
-   [32m✓[39m returns a path with a pattern as-is[32m 0[2mms[22m[39m
- [32m✓[39m node_modules/lower-case/dist/index.spec.js [2m([22m[2m6 tests[22m[2m)[22m[32m 13[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/isStringEqual.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 29[2mms[22m[39m
- [32m✓[39m node_modules/upper-case/dist/index.spec.js [2m([22m[2m6 tests[22m[2m)[22m[32m 18[2mms[22m[39m
- [31m❯[39m node_modules/msw/src/core/ws/utils/getPublicData.test.ts [2m([22m[2m6 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 18[2mms[22m[39m
-   [32m✓[39m returns a short string as-is[32m 4[2mms[22m[39m
-   [32m✓[39m returns a truncated long string[32m 1[2mms[22m[39m
-[31m   [31m×[31m returns a short Blob text as-is[39m[32m 4[2mms[22m[39m
-[31m   [31m×[31m returns a truncated long Blob text[39m[32m 2[2mms[22m[39m
-   [32m✓[39m returns a short ArrayBuffer text as-is[32m 1[2mms[22m[39m
-   [32m✓[39m returns a truncated ArrayBuffer text[32m 0[2mms[22m[39m
- [32m✓[39m node_modules/lower-case/dist.es2015/index.spec.js [2m([22m[2m6 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m node_modules/upper-case/dist.es2015/index.spec.js [2m([22m[2m6 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/utils/getCleanUrl.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 19[2mms[22m[39m
- [32m✓[39m node_modules/@reduxjs/toolkit/src/tests/createDraftSafeSelector.withTypes.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 12[2mms[22m[39m
- [32m✓[39m src/components/deal-matching/analytics/MatchingActivity.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 105[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/browser/utils/pruneGetRequestBody.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/logging/getTimestamp.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 16[2mms[22m[39m
- [32m✓[39m src/components/deal-matching/analytics/RecentMatches.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 129[2mms[22m[39m
- [32m✓[39m src/components/deal-matching/analytics/MatchScoreDistribution.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 75[2mms[22m[39m
- [32m✓[39m node_modules/camel-case/dist/index.spec.js [2m([22m[2m9 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m node_modules/pascal-case/dist/index.spec.js [2m([22m[2m8 tests[22m[2m)[22m[32m 15[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/url/isAbsoluteUrl.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m node_modules/third-party-web/lib/entities.test.js [2m([22m[2m2 tests[22m[2m)[22m[33m 1023[2mms[22m[39m
-     [33m[2m✓[22m[39m should not have duplicate names [33m 895[2mms[22m[39m
- [32m✓[39m node_modules/camel-case/dist.es2015/index.spec.js [2m([22m[2m9 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m node_modules/pascal-case/dist.es2015/index.spec.js [2m([22m[2m8 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 456[2mms[22m[39m
-     [33m[2m✓[22m[39m shows a friendly outage message when the blog API fails [33m 449[2mms[22m[39m
- [32m✓[39m node_modules/dot-case/dist/index.spec.js [2m([22m[2m9 tests[22m[2m)[22m[32m 12[2mms[22m[39m
- [32m✓[39m node_modules/constant-case/dist/index.spec.js [2m([22m[2m9 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/url/cleanUrl.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/toReadonlyArray.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [31m❯[39m node_modules/msw/src/browser/utils/getAbsoluteWorkerUrl.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 19[2mms[22m[39m
-[31m   [31m×[31m returns absolute worker url relatively to the root[39m[32m 12[2mms[22m[39m
-   [32m✓[39m returns an absolute worker url relatively to the current path[32m 1[2mms[22m[39m
- [32m✓[39m node_modules/snake-case/dist/index.spec.js [2m([22m[2m8 tests[22m[2m)[22m[32m 12[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/utils/findPropertySource.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/logging/getStatusCodeColor.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m src/pages/marketing/__tests__/ContactPage.form.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 216[2mms[22m[39m
- [32m✓[39m src/components/deal-matching/analytics/MatchSuccessRate.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 83[2mms[22m[39m
- [32m✓[39m node_modules/sentence-case/dist/index.spec.js [2m([22m[2m7 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m node_modules/header-case/dist/index.spec.js [2m([22m[2m7 tests[22m[2m)[22m[32m 13[2mms[22m[39m
- [32m✓[39m node_modules/capital-case/dist/index.spec.js [2m([22m[2m7 tests[22m[2m)[22m[32m 15[2mms[22m[39m
- [32m✓[39m node_modules/param-case/dist/index.spec.js [2m([22m[2m7 tests[22m[2m)[22m[32m 13[2mms[22m[39m
- [32m✓[39m node_modules/constant-case/dist.es2015/index.spec.js [2m([22m[2m9 tests[22m[2m)[22m[32m 15[2mms[22m[39m
- [32m✓[39m node_modules/path-case/dist/index.spec.js [2m([22m[2m7 tests[22m[2m)[22m[32m 22[2mms[22m[39m
- [32m✓[39m node_modules/dot-case/dist.es2015/index.spec.js [2m([22m[2m9 tests[22m[2m)[22m[32m 23[2mms[22m[39m
- [32m✓[39m node_modules/snake-case/dist.es2015/index.spec.js [2m([22m[2m8 tests[22m[2m)[22m[32m 20[2mms[22m[39m
- [32m✓[39m node_modules/sentence-case/dist.es2015/index.spec.js [2m([22m[2m7 tests[22m[2m)[22m[32m 13[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/interceptors/XMLHttpRequest/utils/createEvent.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 17[2mms[22m[39m
- [32m✓[39m node_modules/capital-case/dist.es2015/index.spec.js [2m([22m[2m7 tests[22m[2m)[22m[32m 19[2mms[22m[39m
- [32m✓[39m node_modules/header-case/dist.es2015/index.spec.js [2m([22m[2m7 tests[22m[2m)[22m[32m 42[2mms[22m[39m
- [32m✓[39m node_modules/param-case/dist.es2015/index.spec.js [2m([22m[2m7 tests[22m[2m)[22m[32m 18[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/utils/bufferUtils.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/logging/serializeRequest.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 19[2mms[22m[39m
- [32m✓[39m node_modules/path-case/dist.es2015/index.spec.js [2m([22m[2m7 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/mergeRight.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/interceptors/WebSocket/utils/bindEvent.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 10[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/devUtils.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/tryCatch.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/utils/isObject.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 15[2mms[22m[39m
- [32m✓[39m node_modules/upper-case-first/dist/index.spec.js [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
- [32m✓[39m node_modules/until-async/src/until.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 12[2mms[22m[39m
- [32m✓[39m node_modules/upper-case-first/dist.es2015/index.spec.js [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
- [31m❯[39m node_modules/msw/src/core/utils/request/toPublicUrl.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 16[2mms[22m[39m
-[31m   [31m×[31m returns an absolute request URL without search params[39m[32m 9[2mms[22m[39m
-[31m   [31m×[31m returns a relative URL given the request to the same origin[39m[32m 1[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/url/getAbsoluteUrl.node.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/utils/getValueBySymbol.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 10[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/isObject.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 14[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/ws/utils/getMessageLength.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
- [32m✓[39m node_modules/entities/src/escape.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 12[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/pipeEvents.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 10[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/isIterable.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/passthrough.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 12[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/utils/internal/jsonParse.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 9[2mms[22m[39m
- [31m❯[39m node_modules/@mswjs/interceptors/src/interceptors/XMLHttpRequest/utils/concateArrayBuffer.test.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 19[2mms[22m[39m
-[31m   [31m×[31m concatenates two Uint8Array buffers[39m[32m 11[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/ws/utils/truncateMessage.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 10[2mms[22m[39m
- [32m✓[39m node_modules/change-case/dist/index.spec.js [2m([22m[2m1 test[22m[2m)[22m[32m 13[2mms[22m[39m
- [32m✓[39m node_modules/@mswjs/interceptors/src/utils/parseJson.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 10[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/http.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 19[2mms[22m[39m
- [32m✓[39m node_modules/msw/src/core/graphql.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 9[2mms[22m[39m
- [32m✓[39m node_modules/change-case/dist.es2015/index.spec.js [2m([22m[2m1 test[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 4327[2mms[22m[39m
+     [33m[2m✓[22m[39m should sort documents by name [33m 639[2mms[22m[39m
+     [33m[2m✓[22m[39m should sort documents by date [33m 468[2mms[22m[39m
+     [33m[2m✓[22m[39m shows bulk actions toolbar when documents are selected [33m 481[2mms[22m[39m
+     [33m[2m✓[22m[39m bulk download triggers download for each selected document [33m 581[2mms[22m[39m
+     [33m[2m✓[22m[39m bulk delete calls delete API for each selected document when confirmed [33m 521[2mms[22m[39m
+ [32m✓[39m src/components/documents/FolderTree.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 3237[2mms[22m[39m
+     [33m[2m✓[22m[39m lazy loads child folders when expanded [33m 599[2mms[22m[39m
+     [33m[2m✓[22m[39m persists expanded folders between remounts [33m 691[2mms[22m[39m
+     [33m[2m✓[22m[39m supports keyboard navigation and selection [33m 363[2mms[22m[39m
+     [33m[2m✓[22m[39m does not re-fetch child folders after initial load [33m 528[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 3461[2mms[22m[39m
+       [33m[2m✓[22m[39m should enter edit mode when edit button is clicked [33m 346[2mms[22m[39m
+       [33m[2m✓[22m[39m should update input values when changed [33m 361[2mms[22m[39m
+       [33m[2m✓[22m[39m should call updateGoal mutation when saving existing goal [33m 561[2mms[22m[39m
+       [33m[2m✓[22m[39m should call createGoal mutation when saving new goal [33m 973[2mms[22m[39m
+ [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 3047[2mms[22m[39m
+       [33m[2m✓[22m[39m renders workspace with title and tabs [33m 401[2mms[22m[39m
+       [33m[2m✓[22m[39m triggers find matches using selected preset [33m 351[2mms[22m[39m
+       [33m[2m✓[22m[39m records view action and opens detail modal [33m 403[2mms[22m[39m
+       [33m[2m✓[22m[39m opens introduction request modal from detail view [33m 521[2mms[22m[39m
+ [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx [2m([22m[2m34 tests[22m[2m)[22m[33m 3417[2mms[22m[39m
+       [33m[2m✓[22m[39m should display cancel button for each uploading file [33m 541[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx [2m([22m[2m28 tests[22m[2m)[22m[33m 3886[2mms[22m[39m
+       [33m[2m✓[22m[39m renders search input above folder tree [33m 535[2mms[22m[39m
+       [33m[2m✓[22m[39m should perform optimistic move and show success toast [33m 389[2mms[22m[39m
+       [33m[2m✓[22m[39m should rollback optimistic move on API failure and show error [33m 432[2mms[22m[39m
+       [33m[2m✓[22m[39m should handle partial move failures with detailed error message [33m 303[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 7486[2mms[22m[39m
+     [33m[2m✓[22m[39m renders task board with required columns and tasks [33m 650[2mms[22m[39m
+     [33m[2m✓[22m[39m filters tasks by assignee, status, priority, and due date [33m 936[2mms[22m[39m
+     [33m[2m✓[22m[39m sorts tasks by due date and priority [33m 932[2mms[22m[39m
+     [33m[2m✓[22m[39m opens task creation modal and validates required fields [33m 1806[2mms[22m[39m
+     [33m[2m✓[22m[39m updates task details from detail modal [33m 1268[2mms[22m[39m
+     [33m[2m✓[22m[39m assigns a task from the detail modal [33m 417[2mms[22m[39m
+     [33m[2m✓[22m[39m deletes a task from the detail modal [33m 443[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx [2m([22m[2m29 tests[22m[2m)[22m[33m 9611[2mms[22m[39m
+       [33m[2m✓[22m[39m should show upgrade prompt when user lacks podcast_audio access [33m 389[2mms[22m[39m
+       [33m[2m✓[22m[39m should show transcribe button when transcript missing [33m 352[2mms[22m[39m
+       [33m[2m✓[22m[39m should call API and show success message when transcription completes [33m 410[2mms[22m[39m
+       [33m[2m✓[22m[39m allows editing metadata before publishing to YouTube when integration access granted [33m 2204[2mms[22m[39m
+       [33m[2m✓[22m[39m initiates OAuth connect flow when YouTube account is not connected [33m 506[2mms[22m[39m
+       [33m[2m✓[22m[39m should create episode when form submitted with valid data [33m 1497[2mms[22m[39m
+       [33m[2m✓[22m[39m should update episode when edit form submitted [33m 748[2mms[22m[39m
+       [33m[2m✓[22m[39m should show delete confirmation when delete button clicked [33m 302[2mms[22m[39m
+       [33m[2m✓[22m[39m should delete episode when deletion confirmed [33m 344[2mms[22m[39m
+ [32m✓[39m src/pages/deals/DealDetails.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 9525[2mms[22m[39m
+     [33m[2m✓[22m[39m should display deal details after loading [33m 591[2mms[22m[39m
+     [33m[2m✓[22m[39m should display "Edit" button when not in edit mode [33m 388[2mms[22m[39m
+     [33m[2m✓[22m[39m should enter edit mode when Edit button is clicked [33m 747[2mms[22m[39m
+     [33m[2m✓[22m[39m should call updateDeal API when saving changes [33m 1010[2mms[22m[39m
+     [33m[2m✓[22m[39m should display deal timestamps [33m 356[2mms[22m[39m
+       [33m[2m✓[22m[39m should render tab navigation with Overview, Financials, Documents, and Team tabs [33m 939[2mms[22m[39m
+       [33m[2m✓[22m[39m should show Overview tab content by default [33m 498[2mms[22m[39m
+       [33m[2m✓[22m[39m should switch to Financials tab when clicked [33m 762[2mms[22m[39m
+       [33m[2m✓[22m[39m should switch to Documents tab when clicked [33m 992[2mms[22m[39m
+       [33m[2m✓[22m[39m should switch to Team tab when clicked [33m 850[2mms[22m[39m
+       [33m[2m✓[22m[39m should persist active tab when re-rendering [33m 1299[2mms[22m[39m
+ [32m✓[39m src/components/deals/DealKanbanBoard.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 957[2mms[22m[39m
+       [33m[2m✓[22m[39m should have accessible column headings [33m 311[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/ActivityForm.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 3061[2mms[22m[39m
+       [33m[2m✓[22m[39m should render the form with all required fields [33m 362[2mms[22m[39m
+       [33m[2m✓[22m[39m should submit form with all field values [33m 970[2mms[22m[39m
+       [33m[2m✓[22m[39m should reset form after successful submission [33m 392[2mms[22m[39m
+       [33m[2m✓[22m[39m should not reset form if submission fails [33m 308[2mms[22m[39m
+ [32m✓[39m src/components/podcast/VideoUploadModal.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 1563[2mms[22m[39m
+       [33m[2m✓[22m[39m should display file size [33m 527[2mms[22m[39m
+ [32m✓[39m src/components/documents/PermissionModal.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 1262[2mms[22m[39m
+     [33m[2m✓[22m[39m should render modal with permissions list when isOpen is true [33m 306[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 8556[2mms[22m[39m
+     [33m[2m✓[22m[39m shows loading indicator while valuations fetch [33m 418[2mms[22m[39m
+     [33m[2m✓[22m[39m shows upgrade messaging when valuations endpoint rejects with entitlement error [33m 342[2mms[22m[39m
+     [33m[2m✓[22m[39m submits new valuation when form completed [33m 728[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding comparable company to selected valuation [33m 800[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding precedent transaction to selected valuation [33m 1528[2mms[22m[39m
+     [33m[2m✓[22m[39m allows creating a new scenario with JSON assumptions [33m 1232[2mms[22m[39m
+     [33m[2m✓[22m[39m shows validation error when scenario assumptions JSON is invalid [33m 733[2mms[22m[39m
+     [33m[2m✓[22m[39m shows detailed confirmation after queuing an export [33m 317[2mms[22m[39m
+     [33m[2m✓[22m[39m displays export template selector with PDF, DOCX, and HTML options [33m 435[2mms[22m[39m
+     [33m[2m✓[22m[39m allows selecting export template (executive summary, detailed, custom) [33m 412[2mms[22m[39m
+     [33m[2m✓[22m[39m runs Monte Carlo simulation and displays percentile summary [33m 515[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentEditor.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 5364[2mms[22m[39m
+     [33m[2m✓[22m[39m loads the document and supports rich text editing with autosave [33m 1352[2mms[22m[39m
+     [33m[2m✓[22m[39m applies a selected template and updates the editor content [33m 555[2mms[22m[39m
+     [33m[2m✓[22m[39m surfaces AI suggestions and handles accept, reject, and regenerate flows [33m 1142[2mms[22m[39m
+     [33m[2m✓[22m[39m exports the document in the selected format with configured options [33m 499[2mms[22m[39m
+     [33m[2m✓[22m[39m handles save errors gracefully and displays retry messaging [33m 461[2mms[22m[39m
+     [33m[2m✓[22m[39m updates context for AI suggestions when the user provides additional details [33m 794[2mms[22m[39m

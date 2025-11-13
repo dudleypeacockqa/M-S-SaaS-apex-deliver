@@ -197,12 +197,17 @@ export async function checkFeatureAccess(feature: string): Promise<FeatureAccess
  * Get quota usage summary for current organization
  */
 export async function getQuotaSummary(): Promise<QuotaSummary> {
-  const { data } = await axios.get<ApiQuotaSummary>(
-    `${API_BASE_URL}/api/podcasts/usage`,
-    {
+  const fetchQuota = async (endpoint: string) =>
+    axios.get<ApiQuotaSummary>(endpoint, {
       withCredentials: true,
-    }
-  );
+    });
+
+  let data: ApiQuotaSummary;
+  try {
+    ({ data } = await fetchQuota(`${API_BASE_URL}/api/podcasts/quota`));
+  } catch (error) {
+    ({ data } = await fetchQuota(`${API_BASE_URL}/api/podcasts/usage`));
+  }
 
   return {
     tier: data.tier,

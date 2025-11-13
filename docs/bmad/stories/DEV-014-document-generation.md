@@ -1,10 +1,11 @@
 # DEV-014 – Document Generation Frontend
 
-**STATUS: 🔄 IN PROGRESS** (2025-11-13 – Frontend UI complete, backend CRUD/render API now exists under `/api/document-generation`, but the SPA still targets legacy `/api/v1/documents` endpoints. Export jobs + async status polling remain TODO.)
+**STATUS: 🔄 IN PROGRESS** (2025-11-13 – Backend CRUD/render API now lives under <code>/api/document-generation</code>, targeted Vitest routing/auth/podcast/valuation suites are GREEN per `docs/tests/2025-11-13-frontend-focused-run.txt`, but the SPA still targets legacy <code>/api/v1/documents</code> and export job polling/file generation remain TODO.)
 
 ## Status
 - **Completion:** ~60% (frontend UI + tests complete; backend routes/services/tests landed in `backend/app/api/routes/document_generation.py`, but wiring + export jobs still outstanding)
 - **Scope:** Frontend document editor with AI assistance, template management, exports, and version history
+- **Backend alignment (2025-11-13):** FastAPI routes/services/tests now live under <code>backend/app/api/routes/document_generation.py</code> and <code>backend/tests/api/test_document_generation_api.py</code>; the frontend still calls legacy <code>/api/v1/documents</code> until this integration plan lands.
 - **Owner:** Frontend platform team
 
 ## What Shipped
@@ -28,9 +29,22 @@
   - Version restoration & presence updates
   - Keyboard shortcut modal behaviour
 - All tests pass locally via `npm run test -- DocumentEditor.test.tsx`.
+- Phase 0 Vitest focus command (`npm run test -- --run --pool=threads src/tests/integration/routing.test.tsx src/features/auth/Auth.test.tsx src/App.test.tsx src/tests/integration/PodcastStudioRouting.test.tsx src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx`) logged in `docs/tests/2025-11-13-frontend-focused-run.txt` to document GREEN state before wiring the new API.
 
 ## Follow-ups
-- Wire `frontend/src/services/api/documentGeneration.ts` to the new backend routes and update DocumentEditor to use the `/api/document-generation` contract.
-- Implement queued export job handling (PDF/DOCX generation + polling/status endpoints) and surface progress inside DocumentEditor.
-- Hook collaborative editing socket events once backend channel contracts are finalised.
-- Capture screenshot walkthrough for the next release-notes bundle.
+- RED: add `frontend/src/pages/documents/DocumentEditor.integration.test.tsx` exercising `/api/document-generation` list/render/job flows (MSW fixtures mirrored from backend tests).
+- GREEN: point `frontend/src/services/api/documentGeneration.ts` + DocumentEditor mutations at the new endpoints and remove the `/api/v1/documents` shim.
+- GREEN: implement async export job queue + polling UI (PDF/DOCX) with entitlement checks enforced client + server side.
+- GREEN: align collaborative editing/presence payloads with backend IDs before flipping sockets on.
+- DOCUMENT: capture screenshots + evidence for DEV-014 and completion status once exports + presence wiring are proven.
+
+## Integration Plan (2025-11-13 refresh)
+1. **API wiring** – Point <code>frontend/src/services/api/documentGeneration.ts</code> and the DocumentEditor mutations to <code>/api/document-generation/*</code> (create/update/render) and drop the legacy <code>/api/v1/documents</code> shim.
+2. **Async export jobs** – Mirror the queue contract proven in <code>backend/tests/api/test_document_generation_api.py</code>, expose job status polling in <code>DocumentExporter</code>, and persist completed artifacts (PDF/DOCX/HTML) for download.
+3. **Collaboration/presence sync** – Align presence payloads + template metadata with the new backend IDs so version history and collaborator pills reference the same records.
+4. **New integration spec** – Add <code>DocumentEditor.integration.test.tsx</code> to cover template selection → AI suggestion acceptance → export completion using MSW mocks; archive evidence under <code>docs/tests/</code> per BMAD plan.
+5. **Backend toggles** – Extend pytest coverage for export formats + entitlement checks before declaring DEV-014 complete.
+6. **Documentation** – Capture before/after screenshots and refresh this story + <code>docs/bmad/100-PERCENT-COMPLETION-STATUS.md</code> once wiring + exports are live.
+
+
+

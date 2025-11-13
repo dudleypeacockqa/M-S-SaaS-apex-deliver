@@ -1,11 +1,13 @@
 # MARK-002: Enhanced Marketing Website Completion
 
-**STATUS: 🔄 IN PROGRESS** (2025-11-13 - Palette updates complete, production audits pending)
+**STATUS: 🔄 IN PROGRESS** (2025-11-13 - Palette updates complete, audit evidence archived)
 
-**Latest Update (2025-11-13 10:30 UTC)**:
+**Latest Update (2025-11-13 22:00 UTC)**:
 - ✅ Frontend redeploy for `srv-d3ihptbipnbc73e72ne0` triggered and verified (10/10 checks via `scripts/verify_deployment.py production`).
-- ⚠️ Production Lighthouse + axe evidence still pending; local CLI blocked by Windows Defender/Chrome (`EPERM`, `NO_FCP`) and CDN cache serving pre-contrast palette causing residual axe violations.
-- 🔄 NEXT: Run audits from clean macOS/CI runner after CDN purge; update `docs/marketing/lighthouse-report.json` and `docs/marketing/axe-report.txt`, then close MARK-002 Phase 4.
+- ✅ Accessibility audit evidence archived: `docs/marketing/2025-11-13-audits/README.md`
+- ✅ Local Axe audit: 0 violations (WCAG 2A/2AA compliant) - `docs/marketing/accessibility-report-local-2025-11-13.json`
+- ✅ GitHub Actions workflow configured: `.github/workflows/accessibility-audit.yml` (runs on push to main, PRs, weekly schedule)
+- 🔄 NEXT: Production audits will run automatically via GitHub Actions on next push to `main`. Update this story with production evidence links once available.
 
 **Latest Update (2025-10-29 12:10 UTC)**:
 - ✅ Marketing documentation refreshed: analytics integration, cross-browser matrix, load/performance and deployment runbooks captured in `/docs/marketing`.

@@ -1,0 +1,67 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --pool=threads src/tests/integration/routing.test.tsx src/features/auth/Auth.test.tsx src/App.test.tsx src/tests/integration/PodcastStudioRouting.test.tsx src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx src/pages/deals/valuation/ValuationSuite.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+(node:57068) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:57068) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:57068) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ [32m✓[39m src/features/auth/Auth.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 3674[2mms[22m[39m
+     [33m[2m✓[22m[39m redirects unauthenticated users from /dashboard to /sign-in [33m 637[2mms[22m[39m
+     [33m[2m✓[22m[39m shows dashboard content when the user is authenticated [33m 830[2mms[22m[39m
+     [33m[2m✓[22m[39m shows marketing sign-in link for visitors and remains stable when authenticated [33m 2201[2mms[22m[39m
+ [32m✓[39m src/App.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 5259[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the home route with sign-in actions for visitors [33m 3866[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps marketing sign-in actions visible even when authenticated [33m 584[2mms[22m[39m
+     [33m[2m✓[22m[39m routes to financial dashboard for authenticated users [33m 331[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 7543[2mms[22m[39m
+     [33m[2m✓[22m[39m submits new valuation when form completed [33m 568[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding comparable company to selected valuation [33m 833[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding precedent transaction to selected valuation [33m 1461[2mms[22m[39m
+     [33m[2m✓[22m[39m allows creating a new scenario with JSON assumptions [33m 1136[2mms[22m[39m
+     [33m[2m✓[22m[39m shows validation error when scenario assumptions JSON is invalid [33m 727[2mms[22m[39m
+     [33m[2m✓[22m[39m displays export template selector with PDF, DOCX, and HTML options [33m 456[2mms[22m[39m
+     [33m[2m✓[22m[39m allows selecting export template (executive summary, detailed, custom) [33m 445[2mms[22m[39m
+     [33m[2m✓[22m[39m runs Monte Carlo simulation and displays percentile summary [33m 456[2mms[22m[39m
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Errors [49m[22m[31m⎯⎯⎯⎯⎯⎯[39m
+[31m[1m
+Vitest caught 3 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Error [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: [vitest-pool]: Timeout starting threads runner.[39m
+[90m [2m❯[22m Timeout.<anonymous> node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m7235:65[22m[39m
+[90m [2m❯[22m listOnTimeout node:internal/timers:[2m605:17[22m[39m
+[90m [2m❯[22m processTimers node:internal/timers:[2m541:7[22m[39m
+
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Error [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: [vitest-pool]: Timeout starting threads runner.[39m
+[90m [2m❯[22m Timeout.<anonymous> node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m7235:65[22m[39m
+[90m [2m❯[22m listOnTimeout node:internal/timers:[2m605:17[22m[39m
+[90m [2m❯[22m processTimers node:internal/timers:[2m541:7[22m[39m
+
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Error [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: [vitest-pool]: Timeout starting threads runner.[39m
+[90m [2m❯[22m Timeout.<anonymous> node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m7235:65[22m[39m
+[90m [2m❯[22m listOnTimeout node:internal/timers:[2m605:17[22m[39m
+[90m [2m❯[22m processTimers node:internal/timers:[2m541:7[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39m
+
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m25 passed[39m[22m[90m (25)[39m
+[2m     Errors [22m [1m[31m3 errors[39m[22m
+[2m   Start at [22m 06:42:03
+[2m   Duration [22m 22.31s[2m (transform 11.64s, setup 7.88s, collect 12.07s, tests 16.48s, environment 7.99s, prepare 120ms)[22m
+
+close timed out after 90000ms
+Tests closed successfully but something prevents Vite server from exiting
+You can try to identify the cause by enabling "hanging-process" reporter. See https://vitest.dev/config/#reporters

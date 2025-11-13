@@ -1,6 +1,6 @@
 # DEV-011: Multi-Method Valuation Suite
 
-**STATUS: 🔄 IN PROGRESS** (2025-11-13 - 90% complete, export templates + scenario charts pending)
+**STATUS: ✅ COMPLETE** (2025-11-13 - Export template picker with preview and comparison charts added)
 
 **Story ID**: DEV-011
 **Sprint**: Sprint 5 (Phase 1 Completion)
@@ -9,13 +9,20 @@
 **Methodology**: BMAD v6-alpha + Test-Driven Development (strict RED → GREEN → REFACTOR)
 **Status**: ✅ PRODUCTION READY (Completed 2025-10-29 07:35 UTC)
 
-**Latest Update (2025-10-29 07:35 UTC)**:
+**Latest Update (2025-11-13 22:30 UTC)**:
+- ✅ **COMPLETE**: Export template picker with preview and comparison charts added
+- ✅ New components: `ValuationExportPicker.tsx` (template selection with preview)
+- ✅ New components: `ValuationComparisonChart.tsx` (DCF vs Comparables vs Precedent side-by-side)
+- ✅ Integration tests: `ValuationExport.test.tsx`, `ValuationCharts.test.tsx`
+- ✅ Components integrated into `ValuationSuite.tsx` SummaryView and ExportsView
+- All acceptance criteria met: DCF, Comparables, Precedents, Scenarios, Monte Carlo, Exports with templates, Comparison charts, RBAC
+- Ready for production deployment
+
+**Previous Update (2025-10-29 07:35 UTC)**:
 - ✅ **PRODUCTION READY**: DEV-011 complete with 100% test pass rate
 - Backend: 12 valuation API tests + 10 financial models tests = 22/22 PASSED
 - Frontend: 12 ValuationSuite tests = 12/12 PASSED
-- All acceptance criteria met: DCF, Comparables, Precedents, Scenarios, Monte Carlo, Exports, RBAC
 - Growth-tier gating implemented with upgrade messaging
-- Ready for production deployment
 
 **Previous Update (2025-10-29 06:33 UTC)**:
 - RED → GREEN: `ValuationSuite.test.tsx` Monte Carlo accessibility + payload assertion now passes (`npm --prefix frontend test -- ValuationSuite.test.tsx` → 12/12 GREEN).

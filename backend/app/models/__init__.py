@@ -35,6 +35,16 @@ from .document_generation import (
     TemplateStatus,
     DocumentStatus,
 )
+from .event import (
+    Event,
+    EventTicket,
+    EventRegistration,
+    EventSession,
+    EventAnalytics,
+    EventType as EventLocationType,  # Alias for compatibility
+    EventStatus,
+    RegistrationStatus,
+)
 
 # Master Admin Portal models
 from .master_admin import (
@@ -111,6 +121,15 @@ __all__ = [
     "GeneratedDocument",
     "TemplateStatus",
     "DocumentStatus",
+    # Event Management
+    "Event",
+    "EventTicket",
+    "EventRegistration",
+    "EventSession",
+    "EventAnalytics",
+    "EventLocationType",
+    "EventStatus",
+    "RegistrationStatus",
     # Master Admin Portal
     "AdminGoal",
     "AdminActivity",

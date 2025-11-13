@@ -139,7 +139,7 @@
 
 ## Immediate Next Actions (P0 Stack)
 
-1. **Vitest T0/T1** – Continue focused runs (`DocumentQuestionsPanel`, `CreateDealModal`, routing/auth suites) and then full `npm run test -- --run --coverage --pool=threads`; archive to `docs/tests/2025-11-13-frontend-full-suite.txt`. (✅ 2025-11-13: `vitest.config.ts` excludes `node_modules.before-vitest/**`; `RootLayout` exposes `data-testid="user-menu"`, unblocking `src/App.test.tsx`; marketing hero assertions updated in `EnhancedLandingPage.test.tsx` to reflect current copy.)
+1. **Vitest T0/T1** – Continue focused runs (`DocumentQuestionsPanel`, `CreateDealModal`, routing/auth suites) and then full `npm run test -- --run --coverage --pool=threads`; archive to `docs/tests/2025-11-13-frontend-full-suite.txt`. (✅ 2025-11-13: `vitest.config.ts` excludes `node_modules.before-vitest/**`; `RootLayout` exposes `data-testid="user-menu"`; marketing hero assertions updated; Podcast Studio route stabilized by eager-loading `RootLayout`/`PodcastStudio` and pointing quota API to `/api/podcasts/quota`, so `PodcastStudioRouting.test.tsx` now green.)
 2. **Story Hygiene Sweep** – Add STATUS markers + evidence links for DEV-002, DEV-006, DEV-007, MARK-001, MARK-005-008, OPS-004/005, etc.; log progress in `docs/bmad/BMAD_PROGRESS_TRACKER.md`.
 3. **Document Generation Wiring Plan** – Update DEV-014 to reflect backend progress, draft integration TDD plan (mock contract tests, end-to-end service tests).
 4. **Deployment Fix** – Investigate Render logs referenced in `docs/deployments/2025-11-13-backend-deploy-status.json`, rerun Alembic upgrade (already green locally), and trigger manual deploy with new entrypoint; capture outcome.

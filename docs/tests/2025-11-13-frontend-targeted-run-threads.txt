@@ -1,0 +1,215 @@
+npm warn exec The following package was not found and will be installed: cross-env@10.1.0
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --pool=threads src/tests/routing.test.tsx src/features/auth/Auth.test.tsx src/App.test.tsx src/tests/integration/PodcastStudioRouting.test.tsx src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx src/pages/deals/valuation/ValuationSuite.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+(node:142696) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:142696) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:142696) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:142696) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:142696) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+[90mstderr[2m | src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx[2m > [22m[2mBlogListingPage contract[2m > [22m[2mshows a friendly outage message when the blog API fails
+[22m[39mFailed to load blog posts AxiosError: Request failed with status code 500
+    at settle [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4maxios[24m/lib/core/settle.js:19:12[90m)[39m
+    at XMLHttpRequest.onloadend [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4maxios[24m/lib/adapters/xhr.js:59:7[90m)[39m
+    at XMLHttpRequest.methodCall [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@mswjs/interceptors[24m/lib/node/chunk-5V3SIIW2.mjs:354:20[90m)[39m
+    at Proxy.<anonymous> [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@mswjs/interceptors[24m/lib/node/chunk-5V3SIIW2.mjs:177:29[90m)[39m
+    at XMLHttpRequestController.trigger [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@mswjs/interceptors[24m/lib/node/chunk-5V3SIIW2.mjs:652:16[90m)[39m
+    at finalizeResponse [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@mswjs/interceptors[24m/lib/node/chunk-5V3SIIW2.mjs:506:12[90m)[39m
+    at readNextResponseBodyChunk [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4m@mswjs/interceptors[24m/lib/node/chunk-5V3SIIW2.mjs:518:11[90m)[39m
+    at Axios.request [90m(file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/[39mnode_modules/[4maxios[24m/lib/core/Axios.js:45:41[90m)[39m
+    at fetchBlogPosts (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/services/blogService.ts:16:20)
+    at loadPosts (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/BlogListingPage.tsx:29:22) {
+  code: [32m'ERR_BAD_RESPONSE'[39m,
+  config: {
+    transitional: {
+      silentJSONParsing: [33mtrue[39m,
+      forcedJSONParsing: [33mtrue[39m,
+      clarifyTimeoutError: [33mfalse[39m
+    },
+    adapter: [ [32m'xhr'[39m, [32m'http'[39m, [32m'fetch'[39m ],
+    transformRequest: [ [36m[Function: transformRequest][39m ],
+    transformResponse: [ [36m[Function: transformResponse][39m ],
+    timeout: [33m0[39m,
+    xsrfCookieName: [32m'XSRF-TOKEN'[39m,
+    xsrfHeaderName: [32m'X-XSRF-TOKEN'[39m,
+    maxContentLength: [33m-1[39m,
+    maxBodyLength: [33m-1[39m,
+    env: { FormData: [36m[Function [FormData]][39m, Blob: [36m[class Blob][39m },
+    validateStatus: [36m[Function: validateStatus][39m,
+    headers: Object [AxiosHeaders] {
+      Accept: [32m'application/json, text/plain, */*'[39m,
+      [32m'Content-Type'[39m: [32m'application/json'[39m
+    },
+    baseURL: [32m'http://localhost:8000/api'[39m,
+    method: [32m'get'[39m,
+    url: [32m'/blog'[39m,
+    allowAbsoluteUrls: [33mtrue[39m,
+    data: [90mundefined[39m
+  },
+  request: XMLHttpRequest {
+    open: [36m[Function: open][39m,
+    setRequestHeader: [36m[Function: setRequestHeader][39m,
+    send: [36m[Function: send][39m,
+    abort: [36m[Function: abort][39m,
+    getResponseHeader: [36m[Function (anonymous)][39m,
+    getAllResponseHeaders: [36m[Function (anonymous)][39m,
+    overrideMimeType: [36m[Function: overrideMimeType][39m,
+    onreadystatechange: [36m[Getter/Setter][39m,
+    readyState: [33m4[39m,
+    timeout: [36m[Getter/Setter][39m,
+    withCredentials: [36m[Getter/Setter][39m,
+    upload: XMLHttpRequestUpload {},
+    responseURL: [32m'http://localhost:8000/api/blog'[39m,
+    status: [33m500[39m,
+    statusText: [32m'Internal Server Error'[39m,
+    responseType: [36m[Getter/Setter][39m,
+    response: [36m[Getter][39m,
+    responseText: [36m[Getter][39m,
+    responseXML: [36m[Getter][39m,
+    UNSENT: [33m0[39m,
+    OPENED: [33m1[39m,
+    HEADERS_RECEIVED: [33m2[39m,
+    LOADING: [33m3[39m,
+    DONE: [33m4[39m,
+    [32mSymbol(SameObject caches)[39m: [Object: null prototype] { upload: XMLHttpRequestUpload {} }
+  },
+  response: {
+    data: {
+      detail: [32m'Internal server error'[39m,
+      message: [32m'Internal server error'[39m
+    },
+    status: [33m500[39m,
+    statusText: [32m'Internal Server Error'[39m,
+    headers: Object [AxiosHeaders] {
+      [32m'content-length'[39m: [32m'68'[39m,
+      [32m'content-type'[39m: [32m'application/json'[39m
+    },
+    config: {
+      transitional: [36m[Object][39m,
+      adapter: [36m[Array][39m,
+      transformRequest: [36m[Array][39m,
+      transformResponse: [36m[Array][39m,
+      timeout: [33m0[39m,
+      xsrfCookieName: [32m'XSRF-TOKEN'[39m,
+      xsrfHeaderName: [32m'X-XSRF-TOKEN'[39m,
+      maxContentLength: [33m-1[39m,
+      maxBodyLength: [33m-1[39m,
+      env: [36m[Object][39m,
+      validateStatus: [36m[Function: validateStatus][39m,
+      headers: [36m[Object [AxiosHeaders]][39m,
+      baseURL: [32m'http://localhost:8000/api'[39m,
+      method: [32m'get'[39m,
+      url: [32m'/blog'[39m,
+      allowAbsoluteUrls: [33mtrue[39m,
+      data: [90mundefined[39m
+    },
+    request: XMLHttpRequest {
+      open: [36m[Function: open][39m,
+      setRequestHeader: [36m[Function: setRequestHeader][39m,
+      send: [36m[Function: send][39m,
+      abort: [36m[Function: abort][39m,
+      getResponseHeader: [36m[Function (anonymous)][39m,
+      getAllResponseHeaders: [36m[Function (anonymous)][39m,
+      overrideMimeType: [36m[Function: overrideMimeType][39m,
+      onreadystatechange: [36m[Getter/Setter][39m,
+      readyState: [33m4[39m,
+      timeout: [36m[Getter/Setter][39m,
+      withCredentials: [36m[Getter/Setter][39m,
+      upload: XMLHttpRequestUpload {},
+      responseURL: [32m'http://localhost:8000/api/blog'[39m,
+      status: [33m500[39m,
+      statusText: [32m'Internal Server Error'[39m,
+      responseType: [36m[Getter/Setter][39m,
+      response: [36m[Getter][39m,
+      responseText: [36m[Getter][39m,
+      responseXML: [36m[Getter][39m,
+      UNSENT: [33m0[39m,
+      OPENED: [33m1[39m,
+      HEADERS_RECEIVED: [33m2[39m,
+      LOADING: [33m3[39m,
+      DONE: [33m4[39m,
+      [32mSymbol(SameObject caches)[39m: [36m[Object: null prototype][39m
+    }
+  },
+  status: [33m500[39m
+}
+
+ [32m✓[39m src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 389[2mms[22m[39m
+     [33m[2m✓[22m[39m shows a friendly outage message when the blog API fails [33m 383[2mms[22m[39m
+ [32m✓[39m src/tests/integration/PodcastStudioRouting.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 985[2mms[22m[39m
+     [33m[2m✓[22m[39m redirects visitors to sign-in when unauthenticated [33m 427[2mms[22m[39m
+     [33m[2m✓[22m[39m renders transcript details when user is signed in and feature enabled [33m 339[2mms[22m[39m
+ [32m✓[39m src/features/auth/Auth.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 2367[2mms[22m[39m
+     [33m[2m✓[22m[39m redirects unauthenticated users from /dashboard to /sign-in [33m 430[2mms[22m[39m
+     [33m[2m✓[22m[39m shows dashboard content when the user is authenticated [33m 1012[2mms[22m[39m
+     [33m[2m✓[22m[39m shows marketing sign-in link for visitors and remains stable when authenticated [33m 920[2mms[22m[39m
+[90mstderr[2m | src/App.test.tsx[2m > [22m[2mAppRoutes[2m > [22m[2mroutes to financial dashboard for authenticated users
+[22m[39m[MSW] Warning: intercepted a request without a matching request handler:
+
+  • GET http://localhost:8000/api/deals/test-deal-123/financial/ratios
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  • GET http://localhost:8000/api/deals/test-deal-123/financial/narrative
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+
+[90mstderr[2m | src/App.test.tsx[2m > [22m[2mAppRoutes[2m > [22m[2mroutes to financial dashboard for authenticated users
+[22m[39m[MSW] Warning: intercepted a request without a matching request handler:
+
+  • OPTIONS http://localhost:8000/api/deals/test-deal-123/financial/ratios
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+
+[90mstderr[2m | src/App.test.tsx[2m > [22m[2mAppRoutes[2m > [22m[2mroutes to financial dashboard for authenticated users
+[22m[39m[MSW] Warning: intercepted a request without a matching request handler:
+
+  • OPTIONS http://localhost:8000/api/deals/test-deal-123/financial/narrative
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+
+[90mstderr[2m | src/App.test.tsx[2m > [22m[2mAppRoutes[2m > [22m[2mroutes to financial dashboard for authenticated users
+[22m[39m[MSW] Warning: intercepted a request without a matching request handler:
+
+  • GET http://localhost:8000/api/deals/test-deal-123/financial/ratios
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  • GET http://localhost:8000/api/deals/test-deal-123/financial/narrative
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+
+ [32m✓[39m src/App.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 3283[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the home route with sign-in actions for visitors [33m 2433[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps marketing sign-in actions visible even when authenticated [33m 419[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 5842[2mms[22m[39m
+     [33m[2m✓[22m[39m submits new valuation when form completed [33m 451[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding comparable company to selected valuation [33m 432[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding precedent transaction to selected valuation [33m 1069[2mms[22m[39m
+     [33m[2m✓[22m[39m allows creating a new scenario with JSON assumptions [33m 981[2mms[22m[39m
+     [33m[2m✓[22m[39m shows validation error when scenario assumptions JSON is invalid [33m 629[2mms[22m[39m
+     [33m[2m✓[22m[39m allows selecting export template (executive summary, detailed, custom) [33m 334[2mms[22m[39m
+     [33m[2m✓[22m[39m runs Monte Carlo simulation and displays percentile summary [33m 375[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m      Tests [22m [1m[32m30 passed[39m[22m[90m (30)[39m
+[2m   Start at [22m 07:37:49
+[2m   Duration [22m 13.23s[2m (transform 3.73s, setup 5.69s, collect 6.89s, tests 12.87s, environment 11.01s, prepare 245ms)[22m
+

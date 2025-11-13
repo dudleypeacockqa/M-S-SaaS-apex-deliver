@@ -72,6 +72,7 @@ class GeneratedDocumentCreate(GeneratedDocumentBase):
 
 class GeneratedDocumentUpdate(BaseModel):
     """Schema for updating a generated document"""
+    generated_content: Optional[str] = Field(None, min_length=1)
     status: Optional[str] = Field(None, pattern="^(draft|generated|finalized|sent)$")
     file_path: Optional[str] = None
 
@@ -108,5 +109,86 @@ class TemplateRenderResponse(BaseModel):
     generated_content: str
     file_path: Optional[str] = None
     status: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ============================================================================
+# AI Suggestion Schemas
+# ============================================================================
+
+class AISuggestionBase(BaseModel):
+    """Base schema for AI suggestions"""
+    title: str = Field(..., min_length=1, max_length=255)
+    content: str = Field(..., min_length=1)
+    confidence: Optional[int] = Field(None, ge=0, le=100, description="Confidence score (0-100)")
+    reasoning: Optional[str] = None
+
+
+class AISuggestionCreate(AISuggestionBase):
+    """Schema for creating an AI suggestion"""
+    document_id: str = Field(..., min_length=36, max_length=36)
+    organization_id: str = Field(..., min_length=36, max_length=36)
+    created_by_user_id: str = Field(..., min_length=1)
+
+
+class AISuggestionResponse(AISuggestionBase):
+    """Schema for AI suggestion responses"""
+    id: str
+    document_id: str
+    status: str
+    organization_id: str
+    created_by_user_id: str
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    applied_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class FetchSuggestionRequest(BaseModel):
+    """Schema for fetching AI suggestions"""
+    context: Optional[str] = None
+    content: Optional[str] = None
+    tone: Optional[str] = Field(None, pattern="^(professional|casual|formal|friendly)$")
+
+
+# ============================================================================
+# Version History Schemas
+# ============================================================================
+
+class DocumentVersionBase(BaseModel):
+    """Base schema for document versions"""
+    version_number: int = Field(..., ge=1)
+    content: str = Field(..., min_length=1)
+    label: Optional[str] = Field(None, max_length=100)
+    summary: Optional[str] = None
+
+
+class DocumentVersionCreate(DocumentVersionBase):
+    """Schema for creating a document version"""
+    document_id: str = Field(..., min_length=36, max_length=36)
+    organization_id: str = Field(..., min_length=36, max_length=36)
+    created_by_user_id: str = Field(..., min_length=1)
+
+
+class DocumentVersionResponse(DocumentVersionBase):
+    """Schema for document version responses"""
+    id: str
+    document_id: str
+    organization_id: str
+    created_by_user_id: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class DocumentVersionSummary(BaseModel):
+    """Schema for document version summary (list view)"""
+    id: str
+    label: str
+    created_at: datetime
+    created_by: Optional[str] = None
+    summary: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

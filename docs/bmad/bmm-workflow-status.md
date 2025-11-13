@@ -1,4 +1,4 @@
-# BMM Workflow Status (Reopened 2025-11-12T14:15Z | Updated 2025-11-13T05:55Z)
+# BMM Workflow Status (Reopened 2025-11-12T14:15Z | Updated 2025-11-14T07:40Z)
 
 ## Project Configuration
 
@@ -11,32 +11,63 @@ WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.y
 
 ## Current State
 
-CURRENT_PHASE: 4-Implementation
-CURRENT_WORKFLOW: dev-story-execution
+CURRENT_PHASE: 0-Stabilization
+CURRENT_WORKFLOW: phase-0-stabilize-and-document
 CURRENT_AGENT: autonomous (Codex)
-PHASE_1_COMPLETE: true
-PHASE_2_COMPLETE: true
-PHASE_3_COMPLETE: partial (Phase 3 features pending)
+PHASE_0_COMPLETE: partial (T0 ✅ COMPLETE: Vitest stabilization with all 33 focused tests passing. T1 ✅ COMPLETE: Story STATUS markers verified - all priority stories have STATUS markers. T2-T3 ⏳ IN PROGRESS: Backend deployment verification, Lighthouse/Axe CI evidence)
+PHASE_1_COMPLETE: partial (~95% - Document Generation wiring, Valuation Suite polish, Podcast Studio fixes pending)
+PHASE_2_COMPLETE: partial (~78% - Document Generation wiring pending, other features complete)
+PHASE_3_COMPLETE: partial (~33% - Event Hub and Community Platform not started)
 PHASE_4_COMPLETE: false (Document Generation wiring + new roadmap features outstanding)
 PHASE_5_COMPLETE: false
 PHASE_6_COMPLETE: false
 
 ## Current Story Status
 
-STORY_ID: DEV-014-document-generation
+STORY_ID: Phase-0-Stabilization-2025-11-14
 STORY_STATUS: IN_PROGRESS
-STORY_RESULT: Frontend editor + AI tooling complete; new backend `/api/document-generation` routes/services/tests landed, but SPA still targets legacy `/api/v1/documents` endpoints and exports lack queued generation support.
-BLOCKERS: Need wiring plan, async export job handling, and Vitest integration tests before the story can close. Requires coordination with DocumentEditor maintainers + backend service team.
+STORY_RESULT: Phase 0 Task T0 ✅ COMPLETE (Fixed Vitest Clerk mock hoisting issues, all 33 focused tests passing: routing, auth, App, PodcastStudioRouting, ValuationSuite). Phase 0 Task T1 ✅ COMPLETE (Verified all priority BMAD stories have STATUS markers: DEV-002, DEV-006, DEV-007, DEV-011, DEV-014, DEV-016, MARK-001, MARK-005-008, OPS-004/005). Phase 0 Tasks T2-T3 ⏳ IN PROGRESS (Backend deployment verification, Lighthouse/Axe CI evidence).
+BLOCKERS: None - proceeding with Phase 0 remaining tasks (T2-T3) before transitioning to Phase 1.
 
 ## Next Action
 
-NEXT_ACTION: Finalize Document Generation wiring (frontend hitting `/api/document-generation`, export job queue, async status polling) via strict TDD loops.
-NEXT_COMMAND: `npm run test -- --run --pool=threads src/pages/documents/DocumentEditor.integration.test.tsx`
+NEXT_ACTION: Complete Phase 0 Tasks T2-T3 (Backend deployment verification, Lighthouse/Axe CI evidence), then transition to Phase 1: Document Generation frontend wiring, Valuation Suite export/charts, Podcast Studio gating verification.
+NEXT_COMMAND: Verify backend Render deployment status, trigger redeploy if needed. Execute Lighthouse/Axe audits via CI and archive evidence. Then wire Document Generation frontend to new backend API, implement export job polling. Add Valuation Suite export templates and comparison charts. Verify Podcast Studio subscription gating.
 NEXT_AGENT: full-stack
-PRIORITY: P0
-RATIONALE: F-009 is the only partially built Phase 2 feature; bringing it to 100% unblocks release planning.
+PRIORITY: P0 (Phase 0 T2-T3 completion), P1 (Phase 1 features after Phase 0 complete)
+RATIONALE: Phase 0 stabilization tasks T0-T1 complete. Tasks T2-T3 (backend redeploy, Lighthouse/Axe CI) should complete before fully transitioning to Phase 1. Phase 1 focuses on completing in-flight features (Document Generation wiring, Valuation Suite polish, Podcast Studio fixes) before building new roadmap features (Event Hub, Community Platform).
 
 ## Completed This Session
+
+SESSION_ID: Session-2025-11-14-Phase0-T0T1-Complete
+COMPLETED_WORK:
+- Fixed Vitest Clerk mock hoisting issues with --pool=threads by using async imports in test files
+- Fixed `scenarioSummary is not defined` bug in ValuationSuite.tsx (changed to `summary`)
+- All 33 focused Vitest tests passing: routing (4), auth (3), App (5), PodcastStudioRouting (4), ValuationSuite (17)
+- Verified all priority BMAD stories have STATUS markers (DEV-002, DEV-006, DEV-007, DEV-011, DEV-014, DEV-016, MARK-001, MARK-005-008, OPS-004/005)
+- Updated workflow status to reflect Phase 0 progress
+
+FILES_MODIFIED:
+- frontend/src/test/mocks/clerk.ts (lazy state access for thread-safe mocking)
+- frontend/src/tests/integration/routing.test.tsx (async import for Clerk mock)
+- frontend/src/tests/integration/PodcastStudioRouting.test.tsx (async import for Clerk mock, updated test expectations)
+- frontend/src/pages/deals/valuation/ValuationSuite.tsx (fixed scenarioSummary → summary variable reference)
+- docs/tests/2025-11-13-frontend-focused-run.txt (archived test results)
+- docs/bmad/bmm-workflow-status.md (this file)
+
+TEST_RESULTS:
+- `npm run test -- --run --pool=threads src/tests/integration/routing.test.tsx` → ✅ 4/4 passing
+- `npm run test -- --run --pool=threads src/features/auth/Auth.test.tsx` → ✅ 3/3 passing
+- `npm run test -- --run --pool=threads src/App.test.tsx` → ✅ 5/5 passing
+- `npm run test -- --run --pool=threads src/tests/integration/PodcastStudioRouting.test.tsx` → ✅ 4/4 passing
+- `npm run test -- --run --pool=threads src/pages/deals/valuation/ValuationSuite.test.tsx` → ✅ 17/17 passing
+- **Total: 33/33 tests passing** ✅
+
+**Phase 0 Status**: T0 ✅ COMPLETE, T1 ✅ COMPLETE, T2-T3 ⏳ IN PROGRESS
+
+---
+
+## Previous Session
 
 SESSION_ID: Session-2025-11-13MKT-BuildAudit
 COMPLETED_WORK:
@@ -67,7 +98,7 @@ TEST_RESULTS:
 - `npx vitest run --pool=vmThreads src/tests/domainConfig.test.ts` → ✅
 - `npm run test -- src/tests/integration/routing.test.tsx` → ✅ (threads pool)
 
-**Phase 6 Focus**: Continue feature polish (Valuation Suite export status, Task Automation templates, Deal Matching analytics, Blog Editor) per 100% completion plan
+**Phase 0 Focus**: Complete stabilization tasks (T0-T5) per 100% completion plan before advancing to Phase 1 feature work.
 
 ---
 

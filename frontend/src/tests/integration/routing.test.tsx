@@ -1,56 +1,24 @@
-import type { ReactNode } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 
 import App from "../../App"
+import { setMockClerkState } from "../../test/mocks/clerk"
+import { createClerkMock } from "../../test/mocks/clerk"
 
-type MockClerkState = {
-  isSignedIn: boolean
-  isLoaded: boolean
-  user: {
-    firstName?: string | null
-  } | null
-}
-
-const mockClerkState: MockClerkState = {
-  isSignedIn: false,
-  isLoaded: true,
-  user: null,
-}
-
-const setMockClerkState = (state: Partial<MockClerkState>) => {
-  Object.assign(mockClerkState, state)
-}
-
-vi.mock("@clerk/clerk-react", () => ({
-  ClerkProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
-  SignedIn: ({ children }: { children: ReactNode }) =>
-    mockClerkState.isSignedIn ? <>{children}</> : null,
-  SignedOut: ({ children }: { children: ReactNode }) =>
-    mockClerkState.isSignedIn ? null : <>{children}</>,
-  SignInButton: ({ children }: { children: ReactNode }) => (
-    <button data-testid="sign-in-header">{children}</button>
-  ),
-  SignIn: () => <div data-testid="mock-sign-in" />,
-  SignUp: () => <div data-testid="mock-sign-up" />,
-  UserButton: () => <div data-testid="user-menu">User Menu</div>,
-  useAuth: () => ({
-    isSignedIn: mockClerkState.isSignedIn,
-    isLoaded: mockClerkState.isLoaded,
-  }),
-  useUser: () => ({
-    isSignedIn: mockClerkState.isSignedIn,
-    isLoaded: mockClerkState.isLoaded,
-    user: mockClerkState.user,
-  }),
-}))
+// Use async mock factory to avoid hoisting issues
+vi.mock("@clerk/clerk-react", async () => {
+  const { createClerkMock } = await import("../../test/mocks/clerk")
+  return createClerkMock()
+})
 
 describe("Integration: routing", () => {
   beforeEach(() => {
+    // Reset state before each test
     setMockClerkState({
       isSignedIn: false,
       isLoaded: true,
       user: null,
+      organization: null,
     })
     window.history.replaceState({}, "Test", "/")
   })
@@ -81,7 +49,8 @@ describe("Integration: routing", () => {
      setMockClerkState({
        isSignedIn: true,
        isLoaded: true,
-       user: { firstName: "Taylor" },
+       user: { firstName: "Taylor", id: "user-1" },
+       organization: { name: "Test Org", id: "org-1" },
      })
      window.history.replaceState({}, "Test", "/dashboard")
 

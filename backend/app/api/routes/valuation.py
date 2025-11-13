@@ -376,6 +376,7 @@ def trigger_export(
         organization_id=current_user.organization_id,
         export_type=export_request.export_type,
         export_format=export_request.export_format,
+        db=db,
     )
     if task.get("task_id"):
         export_log = valuation_service.attach_task_metadata_to_export(

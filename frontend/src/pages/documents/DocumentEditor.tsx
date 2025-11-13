@@ -243,7 +243,10 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
       }
 
       const response = await applyTemplateToDocument(documentId, templateId, options)
-      const nextContent = response.content || ''
+      const nextContent =
+        typeof response.generated_content === 'string' && response.generated_content.length > 0
+          ? response.generated_content
+          : (response as { content?: string }).content || ''
       latestContentRef.current = nextContent
       setEditorHtml(nextContent)
       setSaveState('saving')
@@ -304,27 +307,62 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
     try {
       const response = await exportDocument(documentId, {
         format: options.format,
-        options,
+        options: {
+          margin: options.margin,
+          font_family: options.fontFamily,
+          include_cover_page: options.includeCoverPage,
+        },
       })
 
-      const bytes = response.file_content
-        ? decodeBase64(response.file_content)
-        : new Uint8Array()
+      // If backend returns file_content (base64), decode and download
+      if (response.file_content) {
+        const bytes = decodeBase64(response.file_content)
+        const blob = new Blob([bytes as BlobPart], {
+          type: response.file_type || options.format,
+        })
+        const url = URL.createObjectURL(blob)
 
-      const blob = new Blob([bytes as BlobPart], {
-        type: response.file_type || options.format,
-      })
-      const url = URL.createObjectURL(blob)
+        const anchor = document.createElement('a')
+        anchor.href = url
+        anchor.download = response.file_name || 'document'
+        anchor.rel = 'noopener'
+        anchor.click()
 
-      const anchor = document.createElement('a')
-      anchor.href = response.download_url || url
-      anchor.download = response.file_name || 'document'
-      anchor.rel = 'noopener'
-      anchor.click()
+        window.setTimeout(() => {
+          URL.revokeObjectURL(url)
+        }, 100)
+      } else if (response.download_url) {
+        // If backend returns download_url, construct full URL and trigger download
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+        const downloadUrl = response.download_url.startsWith('http')
+          ? response.download_url
+          : `${apiBaseUrl}${response.download_url}`
 
-      window.setTimeout(() => {
-        URL.revokeObjectURL(url)
-      }, 2000)
+        // Fetch file with authentication
+        const { getAuthHeaders } = await import('../../services/api/client')
+        const fileResponse = await fetch(downloadUrl, {
+          headers: await getAuthHeaders(''), // Empty content-type for binary download
+        })
+        
+        if (!fileResponse.ok) {
+          throw new Error(`Failed to download file: ${fileResponse.statusText}`)
+        }
+
+        const blob = await fileResponse.blob()
+        const url = URL.createObjectURL(blob)
+
+        const anchor = document.createElement('a')
+        anchor.href = url
+        anchor.download = response.file_name || 'document'
+        anchor.rel = 'noopener'
+        anchor.click()
+
+        window.setTimeout(() => {
+          URL.revokeObjectURL(url)
+        }, 100)
+      } else {
+        throw new Error('No file content or download URL returned from export')
+      }
     } catch (error) {
       console.error('Document export failed', error)
     } finally {

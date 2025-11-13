@@ -5,47 +5,13 @@ import { MemoryRouter } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import { AppRoutes } from "./App"
+import { setMockClerkState } from "./test/mocks/clerk"
 
-type MockClerkState = {
-  isSignedIn: boolean
-  isLoaded: boolean
-  user: {
-    firstName?: string | null
-  } | null
-}
-
-const mockClerkState: MockClerkState = {
-  isSignedIn: false,
-  isLoaded: true,
-  user: null,
-}
-
-const setMockClerkState = (state: Partial<MockClerkState>) => {
-  Object.assign(mockClerkState, state)
-}
-
-vi.mock("@clerk/clerk-react", () => ({
-  ClerkProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
-  SignedIn: ({ children }: { children: ReactNode }) =>
-    mockClerkState.isSignedIn ? <>{children}</> : null,
-  SignedOut: ({ children }: { children: ReactNode }) =>
-    mockClerkState.isSignedIn ? null : <>{children}</>,
-  SignIn: () => <div data-testid="mock-sign-in" />,
-  SignUp: () => <div data-testid="mock-sign-up" />,
-  useAuth: () => ({
-    isSignedIn: mockClerkState.isSignedIn,
-    isLoaded: mockClerkState.isLoaded,
-  }),
-  useUser: () => ({
-    isSignedIn: mockClerkState.isSignedIn,
-    isLoaded: mockClerkState.isLoaded,
-    user: mockClerkState.user,
-  }),
-  SignInButton: ({ children }: { children: ReactNode }) => (
-    <button data-testid="sign-in-action">{children}</button>
-  ),
-  UserButton: () => <div data-testid="user-menu">User Menu</div>,
-}))
+// Mock Clerk before importing components that use it
+vi.mock("@clerk/clerk-react", async () => {
+  const { createClerkMock } = await import("./test/mocks/clerk")
+  return createClerkMock()
+})
 
 const renderApp = (initialEntries: string[] = ["/"]) => {
   const queryClient = new QueryClient({
@@ -71,6 +37,7 @@ describe("AppRoutes", () => {
       isSignedIn: false,
       isLoaded: true,
       user: null,
+      organization: null,
     })
   })
 
@@ -98,7 +65,9 @@ describe("AppRoutes", () => {
   it("shows dashboard content when the user is authenticated", async () => {
      setMockClerkState({
        isSignedIn: true,
-       user: { firstName: "Jamie" },
+       isLoaded: true,
+       user: { firstName: "Jamie", id: "user-1" },
+       organization: { name: "Test Org", id: "org-1" },
      })
  
      renderApp(["/dashboard"])
@@ -112,7 +81,9 @@ describe("AppRoutes", () => {
   it("keeps marketing sign-in actions visible even when authenticated", async () => {
      setMockClerkState({
        isSignedIn: true,
-       user: { firstName: "Jamie" },
+       isLoaded: true,
+       user: { firstName: "Jamie", id: "user-1" },
+       organization: { name: "Test Org", id: "org-1" },
      })
 
      renderApp(["/"])
@@ -126,7 +97,9 @@ describe("AppRoutes", () => {
   it("routes to financial dashboard for authenticated users", async () => {
     setMockClerkState({
       isSignedIn: true,
-      user: { firstName: "Jamie" },
+      isLoaded: true,
+      user: { firstName: "Jamie", id: "user-1" },
+      organization: { name: "Test Org", id: "org-1" },
     })
 
     renderApp(["/deals/test-deal-123/financial"])

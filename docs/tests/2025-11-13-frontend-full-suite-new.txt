@@ -1,0 +1,110 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --coverage --pool=threads
+
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+ [32mΓ£ô[39m src/components/podcast/AudioUploadModal.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 1438[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should disable upload button when no file selected [33m 357[2mms[22m[39m
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document permission changes with affected user IDs
+[22m[39m[Audit] Permission changed: { documentId: [32m'doc-1'[39m, userId: [32m'user-abc'[39m, permission: [32m'edit'[39m }
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document deletion events
+[22m[39m[Audit] {
+  action: [32m'DOCUMENT_DELETED'[39m,
+  resource_type: [32m'document'[39m,
+  resource_id: [32m'doc-to-delete'[39m,
+  metadata: { fileName: [32m'contract.pdf'[39m }
+}
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs bulk actions with affected document IDs
+[22m[39m[Audit] {
+  action: [32m'BULK_DELETE'[39m,
+  resource_type: [32m'document'[39m,
+  resource_id: [32m'bulk-operation'[39m,
+  metadata: { documentIds: [ [32m'doc-1'[39m, [32m'doc-2'[39m, [32m'doc-3'[39m ], count: [33m3[39m }
+}
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mBulk Actions[2m > [22m[2mcalls bulk delete handler when requested
+[22m[39m[Bulk Delete] [
+  { id: [32m'doc-1'[39m, name: [32m'file1.pdf'[39m },
+  { id: [32m'doc-2'[39m, name: [32m'file2.pdf'[39m }
+]
+
+ [32mΓ£ô[39m src/components/documents/FolderTree.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 2544[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m lazy loads child folders when expanded [33m 640[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m persists expanded folders between remounts [33m 508[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m supports keyboard navigation and selection [33m 340[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m does not re-fetch child folders after initial load [33m 358[2mms[22m[39m
+ [32mΓ£ô[39m src/components/documents/UploadPanel.enhanced.test.tsx [2m([22m[2m34 tests[22m[2m)[22m[33m 2812[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should display cancel button for each uploading file [33m 448[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should surface manage storage action when quota error is shown [33m 303[2mms[22m[39m
+ [32mΓ£ô[39m src/components/documents/DocumentList.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 5679[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should sort documents by name [33m 683[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should sort documents by date [33m 424[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should show delete button for each document [33m 306[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should confirm before deleting document [32m 300[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m shows bulk actions toolbar when documents are selected [33m 770[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m bulk download triggers download for each selected document [33m 642[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m bulk delete calls delete API for each selected document when confirmed [33m 480[2mms[22m[39m
+ [32mΓ£ô[39m src/pages/deals/MatchingWorkspace.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 3529[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m renders workspace with title and tabs [33m 521[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m triggers find matches using selected preset [33m 437[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m records view action and opens detail modal [33m 466[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m opens introduction request modal from detail view [33m 435[2mms[22m[39m
+ [32mΓ£ô[39m src/pages/documents/DocumentWorkspace.test.tsx [2m([22m[2m28 tests[22m[2m)[22m[33m 3017[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m renders search input above folder tree [33m 323[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show undo option after successful archive [33m 327[2mms[22m[39m
+ [32mΓ£ô[39m src/components/master-admin/activity/GoalCard.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 4572[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show edit button when not editing [33m 337[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should enter edit mode when edit button is clicked [33m 697[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should populate inputs with current goal values in edit mode [33m 459[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should update input values when changed [33m 704[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should exit edit mode when cancel is clicked [33m 462[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call updateGoal mutation when saving existing goal [33m 468[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call createGoal mutation when saving new goal [33m 801[2mms[22m[39m
+ [32mΓ£ô[39m src/pages/deals/DealDetails.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 6688[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should display deal details after loading [33m 301[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should enter edit mode when Edit button is clicked [33m 668[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should call updateDeal API when saving changes [33m 629[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should render tab navigation with Overview, Financials, Documents, and Team tabs [33m 711[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show Overview tab content by default [33m 312[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should switch to Financials tab when clicked [33m 572[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should switch to Documents tab when clicked [33m 524[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should switch to Team tab when clicked [33m 545[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should persist active tab when re-rendering [33m 814[2mms[22m[39m
+ [32mΓ£ô[39m src/pages/tasks/TaskBoard.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 8758[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m renders task board with required columns and tasks [33m 1343[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m persists filters when modified [33m 365[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m filters tasks by assignee, status, priority, and due date [33m 1273[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m sorts tasks by due date and priority [33m 720[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m opens task creation modal and validates required fields [33m 1626[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m opens task detail modal on card click and loads task detail data [33m 451[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m updates task details from detail modal [33m 1618[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m assigns a task from the detail modal [33m 432[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m deletes a task from the detail modal [33m 412[2mms[22m[39m
+ [32mΓ£ô[39m src/pages/podcast/PodcastStudio.test.tsx [2m([22m[2m29 tests[22m[2m)[22m[33m 10559[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show upgrade prompt when user lacks podcast_audio access [33m 580[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show transcribe button when transcript missing [33m 355[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call API and show success message when transcription completes [33m 498[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m allows editing metadata before publishing to YouTube when integration access granted [33m 2940[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m initiates OAuth connect flow when YouTube account is not connected [33m 498[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should create episode when form submitted with valid data [33m 1618[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should open Edit modal when Edit button clicked on episode [33m 305[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should update episode when edit form submitted [33m 780[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show delete confirmation when delete button clicked [33m 341[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should delete episode when deletion confirmed [33m 393[2mms[22m[39m
+ [32mΓ£ô[39m src/pages/deals/valuation/ValuationSuite.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 9032[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m shows upgrade messaging when valuations endpoint rejects with entitlement error [33m 366[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m submits new valuation when form completed [33m 758[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m allows adding comparable company to selected valuation [33m 785[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m allows adding precedent transaction to selected valuation [33m 1368[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m allows creating a new scenario with JSON assumptions [33m 1288[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m shows validation error when scenario assumptions JSON is invalid [33m 956[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m shows detailed confirmation after queuing an export [33m 364[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m displays export template selector with PDF, DOCX, and HTML options [33m 600[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m allows selecting export template (executive summary, detailed, custom) [33m 535[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m displays scenario comparison chart with multiple scenarios [33m 318[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m runs Monte Carlo simulation and displays percentile summary [33m 590[2mms[22m[39m

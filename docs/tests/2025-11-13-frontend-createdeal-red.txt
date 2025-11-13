@@ -1,0 +1,23 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --pool=threads src/components/deals/CreateDealModal.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx [2m([22m[2m29 tests[22m[2m)[22m[33m 6496[2mms[22m[39m
+       [33m[2m✓[22m[39m should render modal when isOpen is true [33m 350[2mms[22m[39m
+       [33m[2m✓[22m[39m should show error for empty target company [33m 499[2mms[22m[39m
+       [33m[2m✓[22m[39m should not show errors when all required fields are filled [33m 507[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onCreate when form is submitted with valid data [33m 981[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onSuccess after successful creation [33m 570[2mms[22m[39m
+       [33m[2m✓[22m[39m should close modal after successful creation [33m 576[2mms[22m[39m
+       [33m[2m✓[22m[39m should disable submit button while submitting [33m 563[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onUpdate when editing existing deal [33m 396[2mms[22m[39m
+       [33m[2m✓[22m[39m should trap focus within modal [33m 567[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m29 passed[39m[22m[90m (29)[39m
+[2m   Start at [22m 06:27:31
+[2m   Duration [22m 25.37s[2m (transform 759ms, setup 1.55s, collect 1.24s, tests 6.50s, environment 2.50s, prepare 63ms)[22m
+

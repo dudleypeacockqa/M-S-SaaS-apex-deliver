@@ -79,8 +79,12 @@
   "health_status": {
     "backend": {
       "url": "https://ma-saas-backend.onrender.com",
-      "status": "deploying",
-      "last_check": "2025-11-13T05:19:38Z"
+      "status": "deployment_triggered",
+      "last_check": "2025-11-13T06:45:56Z",
+      "deployment_triggered": "2025-11-13T06:45:56Z",
+      "trigger_method": "manual_api",
+      "current_head_commit": "238bb52d51410d25d3e2b09a4acabd8d821e8d68",
+      "alembic_head": "b354d12d1e7d"
     },
     "frontend": {
       "url": "https://ma-saas-platform.onrender.com",
@@ -88,5 +92,12 @@
       "last_check": "2025-11-13T05:19:51Z"
     }
   },
-  "notes": "F-009 backend complete (TDD GREEN). Frontend API service complete. Both services deploying with commit fc92c395. Migration will run on backend deploy. Frontend UI components pending (TDD Loop 3)."
+  "deployment_verification": {
+    "date": "2025-11-13",
+    "alembic_head_verified": true,
+    "alembic_head": "b354d12d1e7d",
+    "deployment_triggered": true,
+    "verification_doc": "docs/deployments/2025-11-13-backend-redeploy-verification.txt"
+  },
+  "notes": "F-009 backend complete (TDD GREEN). Frontend API service complete. Backend deployment triggered manually via Render API on 2025-11-13. Alembic head verified (b354d12d1e7d). Migration will run on backend deploy. Frontend UI components pending (TDD Loop 3)."
 }

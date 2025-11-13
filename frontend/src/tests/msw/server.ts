@@ -1077,15 +1077,62 @@ const podcastUsageHandler = http.get(`${API_BASE_URL}/api/podcasts/usage`, () =>
   HttpResponse.json(podcastQuotaState)
 )
 
+const podcastTranscriptDownloadHandler = http.get(
+  `${API_BASE_URL}/api/podcasts/episodes/:episode_id/transcript`,
+  ({ params }) => {
+    const { episode_id } = params as { episode_id: string }
+    const episode = podcastEpisodes.find((entry) => entry.id === episode_id)
+    if (!episode || !episode.transcript) {
+      return HttpResponse.json({ detail: 'Transcript not found' }, { status: 404 })
+    }
+    // Return transcript as plain text
+    return new HttpResponse(episode.transcript, {
+      status: 200,
+      headers: { 'Content-Type': 'text/plain' },
+    })
+  }
+)
+
+const podcastTranscriptSrtHandler = http.get(
+  `${API_BASE_URL}/api/podcasts/episodes/:episode_id/transcript.srt`,
+  ({ params }) => {
+    const { episode_id } = params as { episode_id: string }
+    const episode = podcastEpisodes.find((entry) => entry.id === episode_id)
+    if (!episode || !episode.transcript) {
+      return HttpResponse.json({ detail: 'Transcript not found' }, { status: 404 })
+    }
+    // Return transcript as SRT format (simplified)
+    const srtContent = `1\n00:00:00,000 --> 00:00:10,000\n${episode.transcript}`
+    return new HttpResponse(srtContent, {
+      status: 200,
+      headers: { 'Content-Type': 'text/plain' },
+    })
+  }
+)
+
 const podcastHandlers = [
   podcastFeatureHandler,
   podcastQuotaHandler,
   podcastUsageHandler,
   podcastEpisodesHandler,
   podcastTranscribeHandler,
+  podcastTranscriptDownloadHandler,
+  podcastTranscriptSrtHandler,
 ]
 
+// Blog API failure state (for testing error handling)
+let blogApiShouldFail = false
+
+export const setBlogApiFailure = (shouldFail: boolean) => {
+  blogApiShouldFail = shouldFail
+}
+
 const blogListHandler = http.get(`${API_BASE_URL}/api/blog`, ({ request }) => {
+  if (blogApiShouldFail) {
+    // Return a network error response that axios will throw
+    return HttpResponse.json({ detail: 'Internal server error', message: 'Internal server error' }, { status: 500 })
+  }
+
   const url = new URL(request.url)
   const category = url.searchParams.get('category')
   const search = url.searchParams.get('search')

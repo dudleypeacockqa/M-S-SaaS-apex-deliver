@@ -580,6 +580,57 @@ class TestGeneratedDocumentEndpoints:
 
         app.dependency_overrides.pop(get_current_user, None)
 
+    def test_update_document_content(
+        self,
+        client,
+        create_user,
+        create_organization,
+        db_session: Session,
+    ):
+        """Test updating generated document content"""
+        org = create_organization(name="Template Org")
+        user = create_user(email="user@example.com", organization_id=str(org.id))
+
+        template = DocumentTemplate(
+            name="Template",
+            content="Content",
+            organization_id=str(org.id),
+            created_by_user_id=user.id,
+        )
+        db_session.add(template)
+        db_session.flush()
+
+        document = GeneratedDocument(
+            template_id=template.id,
+            generated_content="Original Content",
+            status="draft",
+            organization_id=str(org.id),
+            generated_by_user_id=user.id,
+        )
+        db_session.add(document)
+        db_session.commit()
+        db_session.refresh(document)
+
+        from app.api.dependencies.auth import get_current_user
+        from app.main import app
+        app.dependency_overrides[get_current_user] = lambda: user
+
+        update_data = {
+            "generated_content": "Updated Content",
+        }
+
+        response = client.patch(
+            f"/api/document-generation/documents/{document.id}",
+            json=update_data,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["generated_content"] == "Updated Content"
+        assert data["status"] == "draft"  # Status unchanged
+
+        app.dependency_overrides.pop(get_current_user, None)
+
 
 class TestTemplateRenderingService:
     """Test template rendering and variable substitution"""
@@ -649,5 +700,146 @@ Buyer Signature: _________________
         assert "December 31, 2025" in content
         assert "123 Main St, London" in content
         assert "{{" not in content  # All variables replaced
+
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+class TestDocumentExportEndpoints:
+    """Test document export endpoints (PDF/DOCX)"""
+
+    def test_export_document_as_pdf(
+        self,
+        client,
+        create_user,
+        create_organization,
+        db_session: Session,
+    ):
+        """Test exporting a document as PDF"""
+        org = create_organization(name="Template Org")
+        user = create_user(email="user@example.com", organization_id=str(org.id))
+
+        template = DocumentTemplate(
+            name="Test Template",
+            content="Test Content: {{name}}",
+            variables=["name"],
+            organization_id=str(org.id),
+            created_by_user_id=user.id,
+        )
+        db_session.add(template)
+        db_session.flush()
+
+        document = GeneratedDocument(
+            template_id=template.id,
+            generated_content="Test Content: John Doe",
+            variable_values={"name": "John Doe"},
+            organization_id=str(org.id),
+            generated_by_user_id=user.id,
+        )
+        db_session.add(document)
+        db_session.commit()
+        db_session.refresh(document)
+
+        from app.api.dependencies.auth import get_current_user
+        from app.main import app
+        app.dependency_overrides[get_current_user] = lambda: user
+
+        export_request = {
+            "format": "application/pdf",
+            "options": {
+                "margin": 15,
+                "font_family": "Inter",
+                "include_cover_page": True,
+            },
+        }
+
+        response = client.post(
+            f"/api/document-generation/documents/{document.id}/export",
+            json=export_request,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "job_id" in data or "download_url" in data
+        assert data.get("file_type") == "application/pdf" or data.get("status") in ["completed", "processing"]
+
+        app.dependency_overrides.pop(get_current_user, None)
+
+    def test_export_document_as_docx(
+        self,
+        client,
+        create_user,
+        create_organization,
+        db_session: Session,
+    ):
+        """Test exporting a document as DOCX"""
+        org = create_organization(name="Template Org")
+        user = create_user(email="user@example.com", organization_id=str(org.id))
+
+        template = DocumentTemplate(
+            name="Test Template",
+            content="Test Content: {{name}}",
+            variables=["name"],
+            organization_id=str(org.id),
+            created_by_user_id=user.id,
+        )
+        db_session.add(template)
+        db_session.flush()
+
+        document = GeneratedDocument(
+            template_id=template.id,
+            generated_content="Test Content: John Doe",
+            variable_values={"name": "John Doe"},
+            organization_id=str(org.id),
+            generated_by_user_id=user.id,
+        )
+        db_session.add(document)
+        db_session.commit()
+        db_session.refresh(document)
+
+        from app.api.dependencies.auth import get_current_user
+        from app.main import app
+        app.dependency_overrides[get_current_user] = lambda: user
+
+        export_request = {
+            "format": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "options": {},
+        }
+
+        response = client.post(
+            f"/api/document-generation/documents/{document.id}/export",
+            json=export_request,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "job_id" in data or "download_url" in data
+        assert data.get("file_type") == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" or data.get("status") in ["completed", "processing"]
+
+        app.dependency_overrides.pop(get_current_user, None)
+
+    def test_export_document_not_found(
+        self,
+        client,
+        create_user,
+        create_organization,
+    ):
+        """Test exporting non-existent document returns 404"""
+        org = create_organization(name="Template Org")
+        user = create_user(email="user@example.com", organization_id=str(org.id))
+
+        from app.api.dependencies.auth import get_current_user
+        from app.main import app
+        app.dependency_overrides[get_current_user] = lambda: user
+
+        export_request = {
+            "format": "application/pdf",
+        }
+
+        response = client.post(
+            "/api/document-generation/documents/nonexistent-id/export",
+            json=export_request,
+        )
+
+        assert response.status_code == 404
 
         app.dependency_overrides.pop(get_current_user, None)

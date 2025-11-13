@@ -1,0 +1,91 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\User\AppData\Local\Programs\Python\Python311\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 16 items
+
+tests\api\test_document_generation_api.py::test_create_template_success PASSED [  6%]
+tests\api\test_document_generation_api.py::test_create_template_wrong_organization FAILED [ 12%]
+tests\api\test_document_generation_api.py::test_list_templates FAILED    [ 18%]
+tests\api\test_document_generation_api.py::test_get_template_by_id FAILED [ 25%]
+tests\api\test_document_generation_api.py::test_get_template_not_found PASSED [ 31%]
+tests\api\test_document_generation_api.py::test_update_template FAILED   [ 37%]
+tests\api\test_document_generation_api.py::test_delete_template FAILED   [ 43%]
+tests\api\test_document_generation_api.py::test_generate_document_success FAILED [ 50%]
+tests\api\test_document_generation_api.py::test_generate_document_missing_variables FAILED [ 56%]
+tests\api\test_document_generation_api.py::test_generate_document_inactive_template FAILED [ 62%]
+tests\api\test_document_generation_api.py::test_list_generated_documents FAILED [ 68%]
+tests\api\test_document_generation_api.py::test_get_generated_document_by_id FAILED [ 75%]
+tests\api\test_document_generation_api.py::test_update_document_status FAILED [ 81%]
+tests\api\test_document_generation_api.py::test_extract_variables_from_template PASSED [ 87%]
+tests\api\test_document_generation_api.py::test_render_template PASSED   [ 93%]
+tests\api\test_document_generation_api.py::test_render_template_with_missing_variable PASSED [100%]
+
+================================== FAILURES ===================================
+___________________ test_create_template_wrong_organization ___________________
+tests\api\test_document_generation_api.py:98: in test_create_template_wrong_organization
+    assert response.status_code == 403
+E   assert 422 == 403
+E    +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+_____________________________ test_list_templates _____________________________
+tests\api\test_document_generation_api.py:125: in test_list_templates
+    db.commit()
+E   NameError: name 'db' is not defined
+___________________________ test_get_template_by_id ___________________________
+tests\api\test_document_generation_api.py:158: in test_get_template_by_id
+    organization_id=test_organization.id,
+E   NameError: name 'test_organization' is not defined
+____________________________ test_update_template _____________________________
+tests\api\test_document_generation_api.py:201: in test_update_template
+    organization_id=test_organization.id,
+E   NameError: name 'test_organization' is not defined
+____________________________ test_delete_template _____________________________
+tests\api\test_document_generation_api.py:239: in test_delete_template
+    organization_id=test_organization.id,
+E   NameError: name 'test_organization' is not defined
+_______________________ test_generate_document_success ________________________
+tests\api\test_document_generation_api.py:275: in test_generate_document_success
+    organization_id=test_organization.id,
+E   NameError: name 'test_organization' is not defined
+__________________ test_generate_document_missing_variables ___________________
+tests\api\test_document_generation_api.py:320: in test_generate_document_missing_variables
+    organization_id=test_organization.id,
+E   NameError: name 'test_organization' is not defined
+__________________ test_generate_document_inactive_template ___________________
+tests\api\test_document_generation_api.py:357: in test_generate_document_inactive_template
+    organization_id=test_organization.id,
+E   NameError: name 'test_organization' is not defined
+________________________ test_list_generated_documents ________________________
+tests\api\test_document_generation_api.py:393: in test_list_generated_documents
+    organization_id=test_organization.id,
+E   NameError: name 'test_organization' is not defined
+______________________ test_get_generated_document_by_id ______________________
+tests\api\test_document_generation_api.py:446: in test_get_generated_document_by_id
+    organization_id=test_organization.id,
+E   NameError: name 'test_organization' is not defined
+_________________________ test_update_document_status _________________________
+tests\api\test_document_generation_api.py:486: in test_update_document_status
+    organization_id=test_organization.id,
+E   NameError: name 'test_organization' is not defined
+============================== warnings summary ===============================
+backend/tests/api/test_document_generation_api.py: 13 warnings
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests\api\test_document_generation_api.py::test_create_template_wrong_organization
+FAILED tests\api\test_document_generation_api.py::test_list_templates - NameE...
+FAILED tests\api\test_document_generation_api.py::test_get_template_by_id - N...
+FAILED tests\api\test_document_generation_api.py::test_update_template - Name...
+FAILED tests\api\test_document_generation_api.py::test_delete_template - Name...
+FAILED tests\api\test_document_generation_api.py::test_generate_document_success
+FAILED tests\api\test_document_generation_api.py::test_generate_document_missing_variables
+FAILED tests\api\test_document_generation_api.py::test_generate_document_inactive_template
+FAILED tests\api\test_document_generation_api.py::test_list_generated_documents
+FAILED tests\api\test_document_generation_api.py::test_get_generated_document_by_id
+FAILED tests\api\test_document_generation_api.py::test_update_document_status
+================== 11 failed, 5 passed, 13 warnings in 3.35s ==================

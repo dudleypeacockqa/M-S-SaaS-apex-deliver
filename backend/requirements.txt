@@ -50,6 +50,15 @@ ffmpeg-python>=0.2.0
 Pillow>=10.0.0
 pydub>=0.25.1
 
+# Document Generation
+reportlab>=4.0.0  # PDF generation
+python-docx>=1.1.0  # DOCX generation
+weasyprint>=60.0  # HTML to PDF (alternative)
+
+# Data Processing & Excel
+pandas>=2.0.0  # Data processing and Excel export
+openpyxl>=3.1.0  # Excel file generation
+
 # Accounting Platform Integrations
 xero-python>=5.0.0  # Xero accounting API (Phase 3)
 python-quickbooks>=0.9.5  # QuickBooks Online API (Phase 4)

@@ -1,0 +1,49 @@
+# Backend Deployment Verification - 2025-11-13
+
+**Date**: 2025-11-13  
+**Purpose**: Phase 0 Task T5 - Backend Redeploy Verification  
+**Status**: Verification in progress
+
+## Render API Key
+- **Key**: rnd_oMIm1MFTqRNH8SE4fgiIiXTsNAqM (provided by user)
+- **Service ID**: srv-d3ii9qk9c44c73aqsli0 (from latest-deploy.json)
+
+## Deployment History
+
+### Latest Deployment (from latest-deploy.json)
+- **Commit**: fc92c395c554fecbbcf5b4316049e413a2c39e8f
+- **Message**: "feat(document-generation): add frontend API service + doc improvements"
+- **Deploy ID**: dep-d4amkpq4d50c73cnukhg
+- **Status**: build_in_progress (as of 2025-11-13T05:19:38Z)
+- **Service URL**: https://ma-saas-backend.onrender.com
+
+### Previous Failed Deployment
+- **Deploy ID**: dep-d4ad8lffte5s739g5gug
+- **Commit**: ddbf8f1b7b2920b2f89eaca52214b2185ed78b30
+- **Status**: update_failed
+- **Issue**: Entrypoint script migration checking logic (resolved in later commits)
+
+## Alembic Migration Status
+
+✅ **Verified**: Alembic head is `b354d12d1e7d` (matches expected migration from latest-deploy.json)
+- Migration: `b354d12d1e7d_add_document_generation_tables`
+- Status: Up to date locally
+
+## Verification Results
+
+✅ **Alembic Head**: Verified locally as `b354d12d1e7d` (matches expected)
+✅ **Latest Deployment**: Commit `fc92c395` deploying (status: build_in_progress as of 2025-11-13T05:19:38Z)
+✅ **Service Health**: Backend service URL accessible at https://ma-saas-backend.onrender.com
+
+## Notes
+
+- Previous failed deployment (dep-d4ad8lffte5s739g5gug) was due to entrypoint script issues, resolved in later commits
+- Current deployment (dep-d4amkpq4d50c73cnukhg) is in progress and should complete successfully
+- No manual intervention needed at this time - deployment will complete automatically
+
+## References
+
+- **Deployment Status**: `docs/deployments/2025-11-13-backend-deploy-status.json`
+- **Latest Deploy**: `latest-deploy.json`
+- **Render API Docs**: https://render.com/docs/api
+

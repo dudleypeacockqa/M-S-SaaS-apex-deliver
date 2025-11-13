@@ -1,0 +1,9 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --pool=threads --maxWorkers=1 src/tests/integration/routing.test.ts src/tests/domainConfig.test.ts src/tests/integration/PodcastStudioRouting.test.tsx src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+ [32m✓[39m src/tests/integration/routing.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 2842[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the landing page for visitors [33m 2527[2mms[22m[39m

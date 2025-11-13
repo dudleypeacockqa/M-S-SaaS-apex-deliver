@@ -1,13 +1,13 @@
 # MARK-001: Marketing Website - Landing, Pricing, Features & Legal Pages
 
-**STATUS: ✅ COMPLETE** (2025-11-13 - All pages implemented, tests passing)
+**STATUS: ✅ COMPLETE** (2025-11-13 – Landing, pricing, features, legal pages shipped; tests verified via `docs/tests/2025-11-13-frontend-final-verification.txt` marketing block)
 
 **Story ID**: MARK-001
 **Epic**: Marketing & Lead Generation
 **Priority**: High
 **Sprint**: Sprint 3
 **Estimated Effort**: 9-10 hours
-**Status**: In Progress
+**Status**: ✅ COMPLETE
 **Created**: 2025-10-25
 **Assigned To**: CODEX (AI Developer)
 

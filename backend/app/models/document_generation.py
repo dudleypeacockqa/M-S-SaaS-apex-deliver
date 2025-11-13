@@ -62,7 +62,7 @@ class GeneratedDocument(Base):
     template_id = Column(String(36), ForeignKey("document_templates.id"), nullable=False)
     generated_content = Column(Text, nullable=False)
     variable_values = Column(JSON, default=dict)  # Actual values used for variables
-    file_path = Column(String)  # Path to generated PDF/DOCX
+    file_path = Column(String)  # Path to generated PDF/DOCX (stores file_key|format)
     status = Column(SQLEnum(DocumentStatus), default=DocumentStatus.GENERATED, nullable=False)
 
     # Multi-tenancy
@@ -75,9 +75,72 @@ class GeneratedDocument(Base):
 
     # Relationships
     template = relationship("DocumentTemplate", back_populates="generated_documents")
+    ai_suggestions = relationship("DocumentAISuggestion", back_populates="document", cascade="all, delete-orphan")
+    versions = relationship("DocumentVersion", back_populates="document", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<GeneratedDocument(id={self.id}, template_id={self.template_id}, status={self.status})>"
+
+
+class SuggestionStatus(str, enum.Enum):
+    """AI suggestion status"""
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+    APPLIED = "applied"
+
+
+class DocumentAISuggestion(Base):
+    """AI suggestion for a generated document"""
+    __tablename__ = "document_ai_suggestions"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    document_id = Column(String(36), ForeignKey("generated_documents.id", ondelete="CASCADE"), nullable=False)
+    title = Column(String, nullable=False)
+    content = Column(Text, nullable=False)
+    confidence = Column(Integer)  # Confidence score (0-100)
+    reasoning = Column(Text)  # AI reasoning for the suggestion
+    status = Column(SQLEnum(SuggestionStatus), default=SuggestionStatus.PENDING, nullable=False)
+    
+    # Multi-tenancy
+    organization_id = Column(String(36), ForeignKey("organizations.id"), nullable=False)
+
+    # Audit fields
+    created_by_user_id = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime(timezone=True), onupdate=lambda: datetime.now(UTC))
+    applied_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Relationships
+    document = relationship("GeneratedDocument", back_populates="ai_suggestions")
+
+    def __repr__(self):
+        return f"<DocumentAISuggestion(id={self.id}, document_id={self.document_id}, status={self.status})>"
+
+
+class DocumentVersion(Base):
+    """Version history for a generated document"""
+    __tablename__ = "document_versions"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    document_id = Column(String(36), ForeignKey("generated_documents.id", ondelete="CASCADE"), nullable=False)
+    version_number = Column(Integer, nullable=False)
+    content = Column(Text, nullable=False)
+    label = Column(String)  # Optional version label (e.g., "v1.0", "Final")
+    summary = Column(Text)  # Optional version summary
+    
+    # Multi-tenancy
+    organization_id = Column(String(36), ForeignKey("organizations.id"), nullable=False)
+
+    # Audit fields
+    created_by_user_id = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+
+    # Relationships
+    document = relationship("GeneratedDocument", back_populates="versions")
+
+    def __repr__(self):
+        return f"<DocumentVersion(id={self.id}, document_id={self.document_id}, version_number={self.version_number})>"
 
 
 # Type alias for template variables

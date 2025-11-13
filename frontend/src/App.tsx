@@ -1,11 +1,13 @@
-import { Suspense, lazy, type ComponentType, type LazyExoticComponent } from "react"
+import { Suspense, lazy, useState, type ComponentType, type LazyExoticComponent } from "react"
 import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom"
+import { RootLayout } from "./layouts/RootLayout"
 import { SignedIn, SignedOut } from "@clerk/clerk-react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import { ErrorBoundary } from "./components/common"
 import { LoadingSpinner } from "./components/common/LoadingSpinner"
 import { usePageAnalytics } from "./hooks/usePageAnalytics"
+import { PodcastStudio } from "./pages/podcast/PodcastStudio"
 
 const lazyNamed = <T extends ComponentType<any>>(
   importer: () => Promise<Record<string, unknown>>,
@@ -35,7 +37,6 @@ const RouteLoader = () => (
   </div>
 )
 
-const RootLayout = lazyNamed(() => import("./layouts/RootLayout"), "RootLayout")
 const SignInPage = lazyNamed(() => import("./pages/SignInPage"), "SignInPage")
 const SignUpPage = lazyNamed(() => import("./pages/SignUpPage"), "SignUpPage")
 const DashboardPage = lazyNamed(() => import("./pages/DashboardPage"), "DashboardPage")
@@ -49,7 +50,6 @@ const DealDetails = lazyNamed(() => import("./pages/deals/DealDetails"), "DealDe
 const DataRoom = lazyNamed(() => import("./pages/deals/DataRoom"), "DataRoom")
 const ValuationSuite = lazyNamed(() => import("./pages/deals/valuation/ValuationSuite"), "ValuationSuite")
 const FinancialDashboard = lazyDefault(() => import("./pages/deals/FinancialDashboard"))
-const PodcastStudio = lazyNamed(() => import("./pages/podcast/PodcastStudio"), "PodcastStudio")
 const BillingDashboard = lazyNamed(() => import("./pages/dashboard/BillingDashboard"), "BillingDashboard")
 const CheckoutSuccess = lazyNamed(() => import("./pages/checkout/CheckoutSuccess"), "CheckoutSuccess")
 const CheckoutCancel = lazyNamed(() => import("./pages/checkout/CheckoutCancel"), "CheckoutCancel")
@@ -196,9 +196,8 @@ export const AppRoutes = () => {
   )
 }
 
-const queryClient = new QueryClient()
-
 const App = () => {
+  const [queryClient] = useState(() => new QueryClient())
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>

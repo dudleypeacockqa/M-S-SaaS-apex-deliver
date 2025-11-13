@@ -5,47 +5,13 @@ import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { AppRoutes } from '../../App'
+import { setMockClerkState } from '../../test/mocks/clerk'
 
-type MockClerkState = {
-  isSignedIn: boolean
-  isLoaded: boolean
-  user: {
-    firstName?: string | null
-    emailAddress?: string | null
-  } | null
-}
-
-const mockClerkState: MockClerkState = {
-  isSignedIn: false,
-  isLoaded: true,
-  user: null,
-}
-
-const setMockClerkState = (state: Partial<MockClerkState>) => {
-  Object.assign(mockClerkState, state)
-}
-
-vi.mock('@clerk/clerk-react', () => ({
-  ClerkProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
-  SignedIn: ({ children }: { children: ReactNode }) =>
-    mockClerkState.isSignedIn ? <>{children}</> : null,
-  SignedOut: ({ children }: { children: ReactNode }) =>
-    mockClerkState.isSignedIn ? null : <>{children}</>,
-  SignIn: () => <div data-testid="mock-sign-in-component" />,
-  useAuth: () => ({
-    isSignedIn: mockClerkState.isSignedIn,
-    isLoaded: mockClerkState.isLoaded,
-  }),
-  useUser: () => ({
-    isLoaded: mockClerkState.isLoaded,
-    isSignedIn: mockClerkState.isSignedIn,
-    user: mockClerkState.user,
-  }),
-  SignInButton: ({ children }: { children: ReactNode }) => (
-    <button data-testid="sign-in-button">{children}</button>
-  ),
-  UserButton: () => <div data-testid="user-menu">User Menu</div>,
-}))
+// Mock Clerk before importing components that use it
+vi.mock('@clerk/clerk-react', async () => {
+  const { createClerkMock } = await import('../../test/mocks/clerk')
+  return createClerkMock()
+})
 
 describe('Clerk authentication routing', () => {
   beforeEach(() => {
@@ -53,6 +19,7 @@ describe('Clerk authentication routing', () => {
       isSignedIn: false,
       isLoaded: true,
       user: null,
+      organization: null,
     })
   })
 
@@ -84,7 +51,9 @@ describe('Clerk authentication routing', () => {
   it('shows dashboard content when the user is authenticated', async () => {
     setMockClerkState({
       isSignedIn: true,
-      user: { firstName: 'Ada', emailAddress: 'ada@example.com' },
+      isLoaded: true,
+      user: { firstName: 'Ada', emailAddress: 'ada@example.com', id: 'user-1' },
+      organization: { name: 'Test Org', id: 'org-1' },
     })
 
     const queryClient = new QueryClient({
@@ -133,7 +102,9 @@ describe('Clerk authentication routing', () => {
 
     setMockClerkState({
       isSignedIn: true,
-      user: { firstName: 'Morgan' },
+      isLoaded: true,
+      user: { firstName: 'Morgan', id: 'user-1' },
+      organization: { name: 'Test Org', id: 'org-1' },
     })
 
     rerender(

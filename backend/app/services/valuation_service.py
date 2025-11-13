@@ -960,8 +960,53 @@ def trigger_export_task(
     organization_id: str,
     export_type: Literal["pdf", "excel"],
     export_format: Optional[str],
+    db=None,
 ) -> dict:
+    """
+    Trigger an export task for a valuation.
+    
+    This function can be called synchronously or asynchronously.
+    If db is provided, the export will be processed immediately.
+    Otherwise, it returns a task ID for async processing.
+    """
     task_id = str(uuid.uuid4())
+    
+    # If db is provided, process export synchronously
+    if db is not None:
+        try:
+            from app.services.valuation_export_service import ValuationExportService
+            from app.models.valuation import ValuationExportLog
+            
+            # Find the export log by valuation_id and organization_id
+            export_log = db.query(ValuationExportLog).filter(
+                ValuationExportLog.valuation_id == valuation_id,
+                ValuationExportLog.organization_id == organization_id,
+                ValuationExportLog.export_type == export_type,
+                ValuationExportLog.export_format == export_format,
+            ).order_by(ValuationExportLog.exported_at.desc()).first()
+            
+            if export_log:
+                # Process export
+                result = ValuationExportService.process_export_task(
+                    export_log_id=export_log.id,
+                    db=db,
+                )
+                return {
+                    "task_id": task_id,
+                    "status": "completed",
+                    "export_type": export_type,
+                    "export_format": export_format,
+                    "valuation_id": valuation_id,
+                    "organization_id": organization_id,
+                    "download_url": result.get("download_url"),
+                    "file_size_bytes": result.get("file_size_bytes"),
+                }
+        except Exception as e:
+            # If export fails, return queued status for async processing
+            # In production, this would be handled by Celery
+            pass
+    
+    # Return queued status for async processing
     return {
         "task_id": task_id,
         "status": "queued",

@@ -71,14 +71,17 @@ async function getClerkToken(): Promise<string | null> {
 /**
  * Build authorization headers with Clerk JWT token
  */
-async function getAuthHeaders(): Promise<HeadersInit> {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-  }
+export async function getAuthHeaders(contentType: string = 'application/json'): Promise<HeadersInit> {
+  const headers: HeadersInit = {}
 
   const token = await getClerkToken()
   if (token) {
     headers['Authorization'] = `Bearer ${token}`
+  }
+
+  // Only set Content-Type if specified (for binary downloads, omit it)
+  if (contentType) {
+    headers['Content-Type'] = contentType
   }
 
   return headers
@@ -94,7 +97,7 @@ async function fetchWithAuth<T>(
   const { method = 'GET', body, timeout = 30000 } = options
 
   // Build headers with Clerk token
-  const headers = await getAuthHeaders()
+  const headers = await getAuthHeaders('application/json')
 
   // Build full URL
   const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`

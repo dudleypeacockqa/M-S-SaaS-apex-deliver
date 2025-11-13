@@ -85,9 +85,10 @@ describe('DocumentEditor', () => {
     ])
 
     vi.mocked(documentApi.applyTemplateToDocument).mockResolvedValue({
-      id: DEFAULT_DOCUMENT_ID,
-      content: '<h1>Executive Summary</h1><p>Template content...</p>',
-      applied_template_id: 'template-1',
+      generated_document_id: DEFAULT_DOCUMENT_ID,
+      generated_content: '<h1>Executive Summary</h1><p>Template content...</p>',
+      file_path: '/tmp/document.pdf',
+      status: 'generated',
     })
 
     vi.mocked(documentApi.fetchAISuggestions).mockResolvedValue([

@@ -32,6 +32,7 @@ class Organization(Base):
     subscription = relationship("Subscription", back_populates="organization", uselist=False)
     invoices = relationship("Invoice", back_populates="organization")
     deal_match_criteria = relationship("DealMatchCriteria", back_populates="organization", cascade="all, delete-orphan")
+    events = relationship("Event", back_populates="organization", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:  # pragma: no cover - repr aid
         return f"Organization(id={self.id!s}, name={self.name!r})"

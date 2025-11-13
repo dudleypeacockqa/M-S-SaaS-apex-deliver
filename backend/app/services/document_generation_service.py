@@ -204,6 +204,21 @@ class DocumentGenerationService:
             pass
 
         db.add(generated)
+        db.flush()  # Flush to get the document ID
+        
+        # Create initial version snapshot
+        from app.models.document_generation import DocumentVersion
+        initial_version = DocumentVersion(
+            document_id=generated.id,
+            version_number=1,
+            content=generated_content,
+            label="v1.0",
+            summary="Initial version",
+            organization_id=organization_id,
+            created_by_user_id=generated_by_user_id,
+        )
+        db.add(initial_version)
+        
         db.commit()
         db.refresh(generated)
         return generated
@@ -265,6 +280,63 @@ class DocumentGenerationService:
             return None
 
         document.status = new_status
+        document.updated_at = datetime.now(UTC)
+        db.commit()
+        db.refresh(document)
+        return document
+
+    @staticmethod
+    def update_generated_document(
+        db: Session,
+        document_id: str,
+        organization_id: str,
+        update_data: "GeneratedDocumentUpdate",
+        user_id: Optional[str] = None,
+    ) -> Optional[GeneratedDocument]:
+        """Update a generated document (content, status, file_path)"""
+        from app.schemas.document_generation import GeneratedDocumentUpdate
+        from app.models.document_generation import DocumentVersion
+        from sqlalchemy import select, desc
+        
+        document = DocumentGenerationService.get_generated_document(
+            db, document_id, organization_id
+        )
+        if not document:
+            return None
+
+        update_dict = update_data.model_dump(exclude_unset=True)
+        
+        # If content is being updated, create a version snapshot first
+        if "generated_content" in update_dict and update_dict["generated_content"] != document.generated_content:
+            # Get latest version number
+            latest_version = db.scalar(
+                select(DocumentVersion)
+                .where(DocumentVersion.document_id == document_id)
+                .order_by(desc(DocumentVersion.version_number))
+                .limit(1)
+            )
+            
+            # Create version snapshot of current content
+            new_version_number = (latest_version.version_number + 1) if latest_version else 1
+            version = DocumentVersion(
+                document_id=document_id,
+                version_number=new_version_number,
+                content=document.generated_content,  # Save current content before update
+                label=f"v{new_version_number}",
+                summary="Auto-saved version",
+                organization_id=organization_id,
+                created_by_user_id=user_id or document.generated_by_user_id,
+            )
+            db.add(version)
+            
+            # Update document content
+            document.generated_content = update_dict["generated_content"]
+        
+        if "status" in update_dict:
+            document.status = DocumentStatus(update_dict["status"])
+        if "file_path" in update_dict:
+            document.file_path = update_dict["file_path"]
+
         document.updated_at = datetime.now(UTC)
         db.commit()
         db.refresh(document)

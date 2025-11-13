@@ -152,6 +152,13 @@ Progress on each step must be documented in the tracker and relevant story files
 | 2025-11-13 19:05 | Added `data-testid="user-menu"` to `RootLayout` `UserButton` and re-ran `src/App.test.tsx` (pass) | Codex | `frontend/src/layouts/RootLayout.tsx`, `npm run test -- --run src/App.test.tsx` output |
 | 2025-11-13 19:15 | Re-ran `Auth.test.tsx` and `CreateDealModal.test.tsx` to confirm they’re clean in isolation | Codex | `npm run test -- --run src/features/auth/Auth.test.tsx`, `npm run test -- --run src/components/deals/CreateDealModal.test.tsx` |
 | 2025-11-13 19:25 | Modernized `EnhancedLandingPage.test.tsx` hero assertions to match live copy; targeted suite now green | Codex | `frontend/src/pages/marketing/EnhancedLandingPage.test.tsx`, `npm run test -- --run src/pages/marketing/EnhancedLandingPage.test.tsx` |
+| 2025-11-13 19:40 | Converted `RootLayout` + `PodcastStudio` to eager imports, pointed quota API at `/api/podcasts/quota`, and reran `PodcastStudioRouting.test.tsx` (pass) | Codex | `frontend/src/App.tsx`, `frontend/src/services/api/podcasts.ts`, `npm run test -- --run src/tests/integration/PodcastStudioRouting.test.tsx --pool=threads` |
+| 2025-11-13 19:55 | Valuation Suite RED suite (`src/pages/deals/valuation/ValuationSuite.test.tsx`) green under `--pool=threads` | Codex | `npm run test -- --run src/pages/deals/valuation/ValuationSuite.test.tsx --pool=threads` |
+| 2025-11-13 20:10 | Routed smoke tests green: `src/tests/integration/routing.test.tsx`, `DocumentQuestionsPanel`, `UploadPanel.enhanced`, `DocumentWorkspace` | Codex | `npm run test -- --run src/tests/integration/routing.test.tsx --pool=threads`, etc. |
+| 2025-11-13 07:20 | Fixed duplicate export error in MSW server.ts (setBlogApiFailure) | Codex | `frontend/src/tests/msw/server.ts` |
+| 2025-11-13 07:25 | Added document content update endpoint (TDD: RED→GREEN) - PATCH /api/document-generation/documents/{id} | Codex | `backend/app/api/routes/document_generation.py`, `backend/app/services/document_generation_service.py`, `backend/tests/test_document_generation_api.py::test_update_document_content` |
+| 2025-11-13 07:26 | Updated frontend saveDocument to use new content update endpoint | Codex | `frontend/src/services/api/documentGeneration.ts` |
+| 2025-11-13 07:27 | All Document Generation tests passing: 19/19 backend, 9/9 frontend | Codex | `pytest backend/tests/test_document_generation_api.py`, `npm run test -- DocumentEditor.test.tsx` |
 
 **Cadence Rules**
 

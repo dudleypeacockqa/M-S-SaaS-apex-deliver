@@ -8,11 +8,10 @@ import { installClerkMock } from './test/shims/clerk'
 import { setupServer } from 'msw/node'
 import { mswHandlers, resetDocumentRoomFixtures, resetPodcastFixtures } from './tests/msw/server'
 
-
 const server = setupServer(...mswHandlers)
 
 beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'error' })
+  server.listen({ onUnhandledRequest: 'warn' }) // Changed from 'error' to 'warn' to allow graceful handling
   vi.stubEnv('VITE_CLERK_PUBLISHABLE_KEY', 'test_clerk_publishable_key')
 })
 

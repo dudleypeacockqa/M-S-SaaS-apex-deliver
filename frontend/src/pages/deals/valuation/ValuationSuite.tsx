@@ -2,6 +2,8 @@ import { useMemo, useState, useEffect, useRef, ChangeEvent, FormEvent } from 're
 import { Link, useParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { ValuationComparisonChart } from './components/ValuationComparisonChart'
+import { ValuationExportPicker, type ExportTemplate } from './components/ValuationExportPicker'
 import {
   listValuations,
   listScenarios,
@@ -1271,6 +1273,37 @@ const ScenariosView = ({ dealId, valuationId }: { dealId: string; valuationId: s
             <RangeValue label="Median" value={summary.enterprise_value_range.median} />
             <RangeValue label="Max" value={summary.enterprise_value_range.max} />
           </div>
+        </SectionCard>
+      )}
+
+      {/* Methodology Comparison Chart */}
+      {summary && (
+        <SectionCard title="Methodology Comparison">
+          <ValuationComparisonChart
+            data={{
+              dcf: summary.dcf_valuation
+                ? {
+                    enterpriseValue: summary.dcf_valuation.enterprise_value || 0,
+                    equityValue: summary.dcf_valuation.equity_value || 0,
+                    method: 'DCF',
+                  }
+                : null,
+              comparables: summary.comparable_summary
+                ? {
+                    enterpriseValue: summary.comparable_summary.implied_enterprise_value || 0,
+                    equityValue: summary.comparable_summary.implied_equity_value || 0,
+                    method: 'Comparables',
+                  }
+                : null,
+              precedent: summary.precedent_summary
+                ? {
+                    enterpriseValue: summary.precedent_summary.implied_enterprise_value || 0,
+                    equityValue: summary.precedent_summary.implied_equity_value || 0,
+                    method: 'Precedent',
+                  }
+                : null,
+            }}
+          />
         </SectionCard>
       )}
 

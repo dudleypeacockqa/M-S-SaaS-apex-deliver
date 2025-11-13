@@ -1,0 +1,88 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --pool=threads src/tests/integration/routing.test.tsx src/features/auth/Auth.test.tsx src/App.test.tsx src/tests/integration/PodcastStudioRouting.test.tsx src/pages/deals/valuation/ValuationSuite.test.tsx
+
+
+ RUN  v4.0.8 C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend
+
+(node:180588) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:180588) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:180588) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:180588) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:180588) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/tests/integration/PodcastStudioRouting.test.tsx (4 tests) 942ms
+     Γ£ô redirects visitors to sign-in when unauthenticated  399ms
+     Γ£ô renders transcript details when user is signed in and feature enabled  307ms
+ Γ£ô src/tests/integration/routing.test.tsx (4 tests) 1471ms
+     Γ£ô renders the landing page for visitors  1261ms
+ Γ£ô src/features/auth/Auth.test.tsx (3 tests) 1664ms
+     Γ£ô redirects unauthenticated users from /dashboard to /sign-in  367ms
+     Γ£ô shows dashboard content when the user is authenticated  400ms
+     Γ£ô shows marketing sign-in link for visitors and remains stable when authenticated  891ms
+stderr | src/App.test.tsx > AppRoutes > routes to financial dashboard for authenticated users
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  ΓÇó GET http://localhost:8000/api/deals/test-deal-123/financial/ratios
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  ΓÇó GET http://localhost:8000/api/deals/test-deal-123/financial/narrative
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+
+stderr | src/App.test.tsx > AppRoutes > routes to financial dashboard for authenticated users
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  ΓÇó OPTIONS http://localhost:8000/api/deals/test-deal-123/financial/ratios
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+
+stderr | src/App.test.tsx > AppRoutes > routes to financial dashboard for authenticated users
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  ΓÇó OPTIONS http://localhost:8000/api/deals/test-deal-123/financial/narrative
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+
+stderr | src/App.test.tsx > AppRoutes > routes to financial dashboard for authenticated users
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  ΓÇó GET http://localhost:8000/api/deals/test-deal-123/financial/ratios
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  ΓÇó GET http://localhost:8000/api/deals/test-deal-123/financial/narrative
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+
+ Γ£ô src/App.test.tsx (5 tests) 2407ms
+     Γ£ô renders the home route with sign-in actions for visitors  1582ms
+     Γ£ô keeps marketing sign-in actions visible even when authenticated  399ms
+ Γ£ô src/pages/deals/valuation/ValuationSuite.test.tsx (17 tests) 6221ms
+     Γ£ô submits new valuation when form completed  428ms
+     Γ£ô allows adding comparable company to selected valuation  431ms
+     Γ£ô allows adding precedent transaction to selected valuation  968ms
+     Γ£ô allows creating a new scenario with JSON assumptions  1003ms
+     Γ£ô shows validation error when scenario assumptions JSON is invalid  940ms
+     Γ£ô displays export template selector with PDF, DOCX, and HTML options  468ms
+     Γ£ô allows selecting export template (executive summary, detailed, custom)  363ms
+     Γ£ô runs Monte Carlo simulation and displays percentile summary  372ms
+
+ Test Files  5 passed (5)
+      Tests  33 passed (33)
+   Start at  07:35:26
+   Duration  11.99s (transform 3.07s, setup 4.41s, collect 4.93s, tests 12.71s, environment 9.11s, prepare 197ms)
+

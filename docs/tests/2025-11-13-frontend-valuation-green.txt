@@ -1,0 +1,22 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --pool=threads src/pages/deals/valuation/ValuationSuite.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 6243[2mms[22m[39m
+     [33m[2m✓[22m[39m submits new valuation when form completed [33m 494[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding comparable company to selected valuation [33m 533[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding precedent transaction to selected valuation [33m 1157[2mms[22m[39m
+     [33m[2m✓[22m[39m allows creating a new scenario with JSON assumptions [33m 1013[2mms[22m[39m
+     [33m[2m✓[22m[39m shows validation error when scenario assumptions JSON is invalid [33m 603[2mms[22m[39m
+     [33m[2m✓[22m[39m displays export template selector with PDF, DOCX, and HTML options [33m 381[2mms[22m[39m
+     [33m[2m✓[22m[39m allows selecting export template (executive summary, detailed, custom) [33m 343[2mms[22m[39m
+     [33m[2m✓[22m[39m runs Monte Carlo simulation and displays percentile summary [33m 407[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m17 passed[39m[22m[90m (17)[39m
+[2m   Start at [22m 06:26:03
+[2m   Duration [22m 22.04s[2m (transform 1.50s, setup 1.82s, collect 3.94s, tests 6.24s, environment 4.13s, prepare 44ms)[22m
+

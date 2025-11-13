@@ -85,14 +85,14 @@ export function saveDocument(
   documentId: string,
   payload: Partial<{ content: string; title: string; context: string; metadata: Record<string, unknown> }>
 ): Promise<GeneratedDocument> {
-  // Map old payload to new API structure
-  // Note: New API may not support all old fields - may need to update DocumentEditor
-  const updatePayload: { status?: string; file_path?: string } = {}
+  // Map payload to new API structure
+  const updatePayload: { generated_content?: string; status?: string } = {}
   if (payload.content) {
-    // Content updates might need a different endpoint - checking backend routes
-    // For now, map to status update if needed
+    updatePayload.generated_content = payload.content
   }
-  return apiClient.patch<GeneratedDocument>(`${BASE_PATH}/documents/${documentId}/status?status=draft`, updatePayload)
+  // Default to draft status if not specified
+  updatePayload.status = 'draft'
+  return apiClient.patch<GeneratedDocument>(`${BASE_PATH}/documents/${documentId}`, updatePayload)
 }
 
 export function listTemplates(
@@ -133,30 +133,30 @@ export function fetchAISuggestions(
   documentId: string,
   options: FetchSuggestionOptions = {}
 ): Promise<AISuggestion[]> {
-  return apiClient.post<AISuggestion[]>(`${BASE_PATH}/${documentId}/ai/suggestions`, options)
+  return apiClient.post<AISuggestion[]>(`${BASE_PATH}/documents/${documentId}/ai/suggestions`, options)
 }
 
 export function acceptAISuggestion(documentId: string, suggestionId: string): Promise<AISuggestion> {
-  return apiClient.post<AISuggestion>(`${BASE_PATH}/${documentId}/ai/suggestions/${suggestionId}/accept`)
+  return apiClient.post<AISuggestion>(`${BASE_PATH}/documents/${documentId}/ai/suggestions/${suggestionId}/accept`)
 }
 
 export function rejectAISuggestion(documentId: string, suggestionId: string): Promise<AISuggestion> {
-  return apiClient.post<AISuggestion>(`${BASE_PATH}/${documentId}/ai/suggestions/${suggestionId}/reject`)
+  return apiClient.post<AISuggestion>(`${BASE_PATH}/documents/${documentId}/ai/suggestions/${suggestionId}/reject`)
 }
 
 export function exportDocument(documentId: string, request: ExportRequest): Promise<ExportResponse> {
-  return apiClient.post<ExportResponse>(`${BASE_PATH}/${documentId}/export`, request)
+  return apiClient.post<ExportResponse>(`${BASE_PATH}/documents/${documentId}/export`, request)
 }
 
 export function listDocumentVersions(documentId: string): Promise<DocumentVersionSummary[]> {
-  return apiClient.get<DocumentVersionSummary[]>(`${BASE_PATH}/${documentId}/versions`)
+  return apiClient.get<DocumentVersionSummary[]>(`${BASE_PATH}/documents/${documentId}/versions`)
 }
 
 export function restoreDocumentVersion(
   documentId: string,
   versionId: string
 ): Promise<GeneratedDocument> {
-  return apiClient.post<GeneratedDocument>(`${BASE_PATH}/${documentId}/versions/${versionId}/restore`)
+  return apiClient.post<GeneratedDocument>(`${BASE_PATH}/documents/${documentId}/versions/${versionId}/restore`)
 }
 
 export type PresenceCallback = (presence: CollaboratorPresence[]) => void
@@ -166,7 +166,7 @@ export function subscribeToPresence(documentId: string, callback: PresenceCallba
     return () => {}
   }
 
-  const sourceUrl = `${API_BASE_URL}${BASE_PATH}/${documentId}/presence`
+  const sourceUrl = `${API_BASE_URL}${BASE_PATH}/documents/${documentId}/presence`
 
   if (typeof EventSource === 'undefined') {
     let cancelled = false
