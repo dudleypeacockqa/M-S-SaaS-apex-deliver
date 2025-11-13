@@ -214,6 +214,18 @@ def upgrade() -> None:
         )
     """)
 
+    # Ensure the documentstatus enum has the 'generated' value committed before we use it
+    bind = op.get_bind()
+    if bind.dialect.name == 'postgresql':
+        result = bind.execute(sa.text(
+            "SELECT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'documentstatus')"
+        ))
+        if result.scalar():
+            with op.get_context().autocommit_block():
+                bind.execute(
+                    sa.text("ALTER TYPE documentstatus ADD VALUE IF NOT EXISTS 'generated'")
+                )
+
     # Ensure all columns exist (handle case where table exists but columns are missing)
     # First, ensure the enum has the lowercase 'active' value before using it
     op.execute("""
@@ -423,16 +435,6 @@ def upgrade() -> None:
             ELSIF has_uppercase THEN
                 default_val := 'GENERATED';
             ELSE
-                -- Neither exists, try to add lowercase
-                BEGIN
-                    ALTER TYPE documentstatus ADD VALUE 'generated';
-                    default_val := 'generated';
-                EXCEPTION
-                    WHEN duplicate_object THEN 
-                        default_val := 'generated';
-                    WHEN OTHERS THEN
-                        RAISE EXCEPTION 'Could not determine or create documentstatus enum value';
-                END;
             END IF;
             
             -- Add status column if it doesn't exist
