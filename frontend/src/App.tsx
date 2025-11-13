@@ -8,6 +8,9 @@ import { ErrorBoundary } from "./components/common"
 import { LoadingSpinner } from "./components/common/LoadingSpinner"
 import { usePageAnalytics } from "./hooks/usePageAnalytics"
 import { PodcastStudio } from "./pages/podcast/PodcastStudio"
+import { EventDashboard } from "./pages/events/EventDashboard"
+import { EventCreator } from "./pages/events/EventCreator"
+import { EventDetails } from "./pages/events/EventDetails"
 
 const lazyNamed = <T extends ComponentType<any>>(
   importer: () => Promise<Record<string, unknown>>,
@@ -182,6 +185,11 @@ export const AppRoutes = () => {
 
         {/* Podcast Routes */}
         <Route path="podcast-studio" element={<SignedIn><PodcastStudio /></SignedIn>} />
+
+        {/* Event Routes */}
+        <Route path="events" element={<SignedIn><EventDashboard /></SignedIn>} />
+        <Route path="events/new" element={<SignedIn><EventCreator /></SignedIn>} />
+        <Route path="events/:eventId" element={<SignedIn><EventDetails /></SignedIn>} />
 
         {/* Billing & Subscription Routes */}
         <Route path="dashboard/billing" element={<SignedIn><BillingDashboard /></SignedIn>} />

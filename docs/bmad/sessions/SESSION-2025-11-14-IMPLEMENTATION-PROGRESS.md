@@ -31,6 +31,34 @@
 - `frontend/src/pages/documents/DocumentEditor.tsx` - Fixed export handler
 - `frontend/src/services/api/client.ts` - Exported getAuthHeaders function
 
+### Phase 1 - Valuation Suite Export Service
+
+#### Valuation Export Service Implementation (TDD)
+- ✅ Added pandas and openpyxl to `backend/requirements.txt`
+- ✅ Created `backend/app/services/valuation_export_service.py` with:
+  - `export_to_pdf()` - PDF generation using weasyprint (preferred) or reportlab (fallback)
+  - `export_to_excel()` - Excel generation using pandas and openpyxl
+  - `process_export_task()` - Async export task processor
+  - HTML template generation for PDF exports
+  - Multi-sheet Excel workbook generation (Summary, Cash Flows, Comparables, Precedents, Scenarios)
+- ✅ Updated `valuation_service.trigger_export_task()` to call export service
+- ✅ Added download endpoint `/api/deals/{deal_id}/valuations/{valuation_id}/exports/download/{file_key}`
+- ✅ Fixed duplicate route issue in `valuation.py`
+
+**Files Created/Modified**:
+- `backend/app/services/valuation_export_service.py` - New export service
+- `backend/tests/test_valuation_export_service.py` - RED phase tests
+- `backend/app/services/valuation_service.py` - Updated trigger_export_task
+- `backend/app/api/routes/valuation.py` - Added download endpoint
+- `backend/requirements.txt` - Added pandas and openpyxl
+
+**Export Features**:
+- PDF export with professional HTML template
+- Excel export with multiple sheets (Summary, Cash Flows, Comparables, Precedents, Scenarios)
+- File storage integration
+- Download URL generation
+- Export log tracking
+
 ---
 
 ## In Progress
@@ -41,10 +69,12 @@
 - ⏳ **NEXT**: Verify end-to-end export functionality
 
 ### Phase 1 - Valuation Suite
-- ⚠️ Export service is stubbed (returns task ID but doesn't generate files)
-- ⏳ **NEXT**: Implement actual PDF/Excel generation service using TDD
-- ⏳ **NEXT**: Create export templates (HTML)
-- ⏳ **NEXT**: Wire export task to generate files
+- ✅ Export service implemented
+- ✅ Download endpoint added
+- ⏳ **NEXT**: Write tests for export service
+- ⏳ **NEXT**: Verify export functionality end-to-end
+- ⏳ **NEXT**: Test PDF and Excel generation
+- ⏳ **NEXT**: Verify file downloads work correctly
 
 ---
 
@@ -63,11 +93,11 @@
    - Write integration tests for export flow
    - Verify end-to-end functionality
 
-4. **Phase 1**: Implement Valuation Export Service (TDD)
-   - Write RED tests for PDF/Excel generation
-   - Implement export service
-   - Create HTML templates
-   - Wire to export task
+4. **Phase 1**: Complete Valuation Suite Exports
+   - Write tests for export service (GREEN phase)
+   - Verify PDF and Excel generation
+   - Test file downloads
+   - Fix any issues
 
 5. **Phase 1**: Verify Podcast Studio
    - Check subscription gating
@@ -100,7 +130,7 @@
 | Phase 0 | T2: Backend deployment verification | 🟡 IN PROGRESS | Status checked, failures identified |
 | Phase 0 | T3: Lighthouse/Axe audits | ⏳ PENDING | |
 | Phase 1 | Document Generation export | 🟢 COMPLETE | Export handler fixed |
-| Phase 1 | Valuation Suite exports | 🟡 IN PROGRESS | Service needs implementation |
+| Phase 1 | Valuation Suite exports | 🟡 IN PROGRESS | Export service implemented, download endpoint added, needs testing |
 | Phase 1 | Podcast Studio fixes | ⏳ PENDING | |
 | Phase 2 | Event Hub (F-012) | ⏳ PENDING | 0% complete |
 | Phase 2 | Community Platform (F-013) | ⏳ PENDING | 0% complete |
@@ -113,6 +143,10 @@
 - `check_render_status.py` - Script to check Render deployment status
 - `frontend/src/pages/documents/DocumentEditor.tsx` - Fixed export handler
 - `frontend/src/services/api/client.ts` - Exported getAuthHeaders function
+- `backend/app/services/valuation_export_service.py` - New export service
+- `backend/tests/test_valuation_export_service.py` - RED phase tests
+- `backend/app/api/routes/valuation.py` - Added download endpoint
+- `backend/requirements.txt` - Added pandas and openpyxl
 - `docs/bmad/sessions/SESSION-2025-11-14-IMPLEMENTATION-PROGRESS.md` - This file
 
 ---
@@ -121,10 +155,33 @@
 
 - Backend deployment failures need investigation - multiple commits failing with `update_failed` status
 - Document Generation export handler is now properly wired to download files
-- Valuation export service is stubbed and needs full implementation
+- Valuation export service is implemented with PDF and Excel generation
+- Download endpoint added for valuation exports
 - Phase 2 features (Event Hub, Community Platform) are 0% complete and require significant work
+- Export service uses async storage operations - need to verify event loop handling works correctly
+
+---
+
+## Technical Details
+
+### Valuation Export Service Architecture
+
+1. **Export Trigger**: API endpoint receives export request
+2. **Export Log**: Creates export log entry with status "queued"
+3. **Export Task**: Calls `trigger_export_task()` which processes export synchronously (or queues for async)
+4. **Export Processing**: 
+   - For PDF: Generates HTML template → Converts to PDF using weasyprint or reportlab
+   - For Excel: Creates pandas DataFrame → Saves to Excel using openpyxl
+5. **File Storage**: Saves file to storage service (local or S3/R2)
+6. **Export Log Update**: Updates export log with file path, download URL, and status "completed"
+7. **Download**: User can download file via download endpoint
+
+### Async Handling
+
+- Export service methods are async to work with async storage service
+- `trigger_export_task()` uses `asyncio.run_until_complete()` to call async export methods from sync context
+- May need to verify event loop handling works correctly in production
 
 ---
 
 **Last Updated**: 2025-11-14
-

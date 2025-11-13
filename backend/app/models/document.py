@@ -12,6 +12,7 @@ from sqlalchemy import (
     CheckConstraint,
     Text,
 )
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -27,14 +28,14 @@ class Folder(Base):
 
     __tablename__ = "folders"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(255), nullable=False)
-    deal_id = Column(String(36), ForeignKey("deals.id"), nullable=False)
-    parent_folder_id = Column(String(36), ForeignKey("folders.id"), nullable=True)
+    deal_id = Column(UUID(as_uuid=True), ForeignKey("deals.id"), nullable=False)
+    parent_folder_id = Column(UUID(as_uuid=True), ForeignKey("folders.id"), nullable=True)
     organization_id = Column(
-        String(36), ForeignKey("organizations.id"), nullable=False
+        UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
     )
-    created_by = Column(String(36), ForeignKey("users.id"), nullable=False)
+    created_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -70,20 +71,20 @@ class Document(Base):
 
     __tablename__ = "documents"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(255), nullable=False)  # Original filename
     file_key = Column(String(500), nullable=False, unique=True)  # Storage key
     file_size = Column(BigInteger, nullable=False)  # Bytes
     file_type = Column(String(100), nullable=False)  # MIME type
-    deal_id = Column(String(36), ForeignKey("deals.id"), nullable=False)
-    folder_id = Column(String(36), ForeignKey("folders.id"), nullable=True)
+    deal_id = Column(UUID(as_uuid=True), ForeignKey("deals.id"), nullable=False)
+    folder_id = Column(UUID(as_uuid=True), ForeignKey("folders.id"), nullable=True)
     organization_id = Column(
-        String(36), ForeignKey("organizations.id"), nullable=False
+        UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
     )
-    uploaded_by = Column(String(36), ForeignKey("users.id"), nullable=False)
+    uploaded_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     version = Column(Integer, default=1, nullable=False)
     parent_document_id = Column(
-        String(36), ForeignKey("documents.id"), nullable=True
+        UUID(as_uuid=True), ForeignKey("documents.id"), nullable=True
     )
     archived_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -218,8 +219,8 @@ class DocumentShareLink(Base):
 
     __tablename__ = "document_share_links"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    document_id = Column(String(36), ForeignKey("documents.id"), nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    document_id = Column(UUID(as_uuid=True), ForeignKey("documents.id"), nullable=False)
     share_token = Column(String(64), nullable=False, unique=True, index=True)  # Secure random token
     expires_at = Column(DateTime(timezone=True), nullable=False)
     allow_download = Column(Integer, default=1, nullable=False)  # SQLite: 1=True, 0=False
@@ -228,8 +229,8 @@ class DocumentShareLink(Base):
     last_accessed_at = Column(DateTime(timezone=True), nullable=True)
     download_count = Column(Integer, default=0, nullable=False)
     revoked_at = Column(DateTime(timezone=True), nullable=True)  # NULL = active, non-NULL = revoked
-    created_by = Column(String(36), ForeignKey("users.id"), nullable=False)
-    organization_id = Column(String(36), ForeignKey("organizations.id"), nullable=False)
+    created_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
@@ -256,14 +257,14 @@ class DocumentQuestion(Base):
 
     __tablename__ = "document_questions"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    document_id = Column(String(36), ForeignKey("documents.id", ondelete="CASCADE"), nullable=False)
-    organization_id = Column(String(36), ForeignKey("organizations.id"), nullable=False)
-    asked_by = Column(String(36), ForeignKey("users.id"), nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    document_id = Column(UUID(as_uuid=True), ForeignKey("documents.id", ondelete="CASCADE"), nullable=False)
+    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False)
+    asked_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     question = Column(Text, nullable=False)
     status = Column(String(20), nullable=False, default=QUESTION_STATUS_OPEN)
     answer = Column(Text, nullable=True)
-    answered_by = Column(String(36), ForeignKey("users.id"), nullable=True)
+    answered_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     answered_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

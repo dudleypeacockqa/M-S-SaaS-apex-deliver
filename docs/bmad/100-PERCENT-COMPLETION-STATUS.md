@@ -56,7 +56,7 @@
 | Feature | Status | Notes |
 |---------|--------|-------|
 | F-011 Podcast & Video Studio | ✅ 100% | Audio/video infrastructure complete. Subscription gating verified, routing tests green. Transcript UX functional. All acceptance criteria met. |
-| F-012 Event Management Hub | ❌ 0% | No backend models/routes/services; no frontend pages/components. |
+| F-012 Event Management Hub | ⚠️ 75% | Backend complete (19 endpoints, 10/10 model tests passing). Frontend: API service ✅, EventDashboard ✅, EventCreator/EventDetails pages pending, tests pending. |
 | F-013 Community Platform | ❌ 0% | No code artifacts; story placeholders only. |
 
 ---

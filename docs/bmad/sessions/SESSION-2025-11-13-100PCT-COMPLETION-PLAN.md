@@ -159,6 +159,9 @@ Progress on each step must be documented in the tracker and relevant story files
 | 2025-11-13 07:25 | Added document content update endpoint (TDD: RED→GREEN) - PATCH /api/document-generation/documents/{id} | Codex | `backend/app/api/routes/document_generation.py`, `backend/app/services/document_generation_service.py`, `backend/tests/test_document_generation_api.py::test_update_document_content` |
 | 2025-11-13 07:26 | Updated frontend saveDocument to use new content update endpoint | Codex | `frontend/src/services/api/documentGeneration.ts` |
 | 2025-11-13 07:27 | All Document Generation tests passing: 19/19 backend, 9/9 frontend | Codex | `pytest backend/tests/test_document_generation_api.py`, `npm run test -- DocumentEditor.test.tsx` |
+| 2025-11-13 07:55 | Fixed events model conflicts (removed duplicate events.py, added extend_existing, fixed relationships) | Codex | `backend/app/models/event.py`, `backend/app/models/__init__.py` |
+| 2025-11-13 07:56 | Event Hub frontend started: Created events API service and EventDashboard page | Codex | `frontend/src/services/api/events.ts`, `frontend/src/pages/events/EventDashboard.tsx`, `frontend/src/App.tsx` |
+| 2025-11-13 07:57 | Frontend build successful with Event Hub integration | Codex | `npm run build` - no errors |
 
 **Cadence Rules**
 

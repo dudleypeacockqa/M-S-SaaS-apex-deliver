@@ -9,6 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 
 # revision identifiers, used by Alembic.
@@ -22,7 +23,7 @@ def upgrade() -> None:
     # Create document_templates table
     op.create_table(
         'document_templates',
-        sa.Column('id', sa.String(36), primary_key=True),
+        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('name', sa.String(), nullable=False),
         sa.Column('description', sa.Text(), nullable=True),
         sa.Column('template_type', sa.String(), nullable=True),
@@ -30,8 +31,8 @@ def upgrade() -> None:
         sa.Column('variables', sa.JSON(), nullable=False, server_default='[]'),
         sa.Column('status', sa.Enum('DRAFT', 'ACTIVE', 'ARCHIVED', name='templatestatus'), nullable=False, server_default='ACTIVE'),
         sa.Column('version', sa.Integer(), nullable=False, server_default='1'),
-        sa.Column('organization_id', sa.String(36), sa.ForeignKey('organizations.id'), nullable=False),
-        sa.Column('created_by_user_id', sa.String(), nullable=False),
+        sa.Column('organization_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('organizations.id'), nullable=False),
+        sa.Column('created_by_user_id', postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     )
@@ -45,14 +46,14 @@ def upgrade() -> None:
     # Create generated_documents table
     op.create_table(
         'generated_documents',
-        sa.Column('id', sa.String(36), primary_key=True),
-        sa.Column('template_id', sa.String(36), sa.ForeignKey('document_templates.id'), nullable=False),
+        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
+        sa.Column('template_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('document_templates.id'), nullable=False),
         sa.Column('generated_content', sa.Text(), nullable=False),
         sa.Column('variable_values', sa.JSON(), nullable=False, server_default='{}'),
         sa.Column('file_path', sa.String(), nullable=True),
         sa.Column('status', sa.Enum('DRAFT', 'GENERATED', 'FINALIZED', 'SENT', name='documentstatus'), nullable=False, server_default='GENERATED'),
-        sa.Column('organization_id', sa.String(36), sa.ForeignKey('organizations.id'), nullable=False),
-        sa.Column('generated_by_user_id', sa.String(), nullable=False),
+        sa.Column('organization_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('organizations.id'), nullable=False),
+        sa.Column('generated_by_user_id', postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     )

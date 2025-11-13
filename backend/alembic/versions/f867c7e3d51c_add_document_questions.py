@@ -10,11 +10,12 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 
 # revision identifiers, used by Alembic.
 revision: str = "f867c7e3d51c"
-down_revision: Union[str, None] = "ef1234567890"
+down_revision: Union[str, None] = "86d427f030f2"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -22,14 +23,14 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.create_table(
         "document_questions",
-        sa.Column("id", sa.String(length=36), nullable=False),
-        sa.Column("document_id", sa.String(length=36), nullable=False),
-        sa.Column("organization_id", sa.String(length=36), nullable=False),
-        sa.Column("asked_by", sa.String(length=36), nullable=False),
+        sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("document_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("organization_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("asked_by", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("question", sa.Text(), nullable=False),
         sa.Column("status", sa.String(length=20), nullable=False, server_default="open"),
         sa.Column("answer", sa.Text(), nullable=True),
-        sa.Column("answered_by", sa.String(length=36), nullable=True),
+        sa.Column("answered_by", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("answered_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
