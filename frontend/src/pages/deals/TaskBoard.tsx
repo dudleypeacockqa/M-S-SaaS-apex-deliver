@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { listTasks, createTask, updateTask, type Task, type TaskCreate, type TaskUpdate } from '../../services/api/tasks'
+import TaskTemplateSelector from '../../components/tasks/TaskTemplateSelector'
+import TaskTemplateModal from '../../components/tasks/TaskTemplateModal'
+import { applyTaskTemplate } from '../../services/tasksService'
 
 type TaskStatus = Task['status']
 type TaskPriority = Task['priority']
@@ -14,6 +17,8 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ dealId }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [priorityFilter, setPriorityFilter] = useState<TaskPriority | 'all'>('all')
+  const [isTemplateSelectorOpen, setIsTemplateSelectorOpen] = useState(false)
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false)
 
   // Fetch tasks
   const { data, isLoading, error } = useQuery({
@@ -38,6 +43,24 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ dealId }) => {
       setSelectedTask(null)
     },
   })
+
+  // Apply template mutation
+  const applyTemplateMutation = useMutation({
+    mutationFn: (templateId: string) => applyTaskTemplate(dealId, templateId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', dealId] })
+      queryClient.invalidateQueries({ queryKey: ['taskTemplates', dealId] })
+      setIsTemplateSelectorOpen(false)
+    },
+  })
+
+  const handleTemplateSelect = async (templateId: string) => {
+    await applyTemplateMutation.mutateAsync(templateId)
+  }
+
+  const handleTemplateCreated = () => {
+    queryClient.invalidateQueries({ queryKey: ['taskTemplates', dealId] })
+  }
 
   if (isLoading) {
     return <div className="flex items-center justify-center p-8">Loading tasks...</div>
@@ -99,6 +122,18 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ dealId }) => {
               <option value="low">Low</option>
             </select>
           </div>
+          <button
+            onClick={() => setIsTemplateSelectorOpen(true)}
+            className="rounded-md border border-indigo-600 bg-white px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+          >
+            Use Template
+          </button>
+          <button
+            onClick={() => setIsTemplateModalOpen(true)}
+            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Create Template
+          </button>
           <button
             onClick={() => setIsCreateModalOpen(true)}
             className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
@@ -165,6 +200,27 @@ const TaskBoard: React.FC<TaskBoardProps> = ({ dealId }) => {
           isLoading={updateMutation.isPending}
         />
       )}
+
+      {/* Template Selector */}
+      {isTemplateSelectorOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-2xl">
+            <TaskTemplateSelector
+              dealId={dealId}
+              onTemplateSelect={handleTemplateSelect}
+              onClose={() => setIsTemplateSelectorOpen(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Template Creation Modal */}
+      <TaskTemplateModal
+        dealId={dealId}
+        isOpen={isTemplateModalOpen}
+        onClose={() => setIsTemplateModalOpen(false)}
+        onSuccess={handleTemplateCreated}
+      />
     </div>
   )
 }

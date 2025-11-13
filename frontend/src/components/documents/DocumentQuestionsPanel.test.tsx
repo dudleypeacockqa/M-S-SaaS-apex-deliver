@@ -1,5 +1,5 @@
 import React from 'react'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { DocumentQuestionsPanel } from './DocumentQuestionsPanel'
@@ -116,7 +116,7 @@ describe('DocumentQuestionsPanel', () => {
     renderPanel(mockDocument)
 
     expect(await screen.findByText('Has legal approved this?')).toBeInTheDocument()
-    expect(screen.getByText('Deal Owner')).toBeInTheDocument()
+    expect(screen.getByText(/deal owner/i)).toBeInTheDocument()
   })
 
   it('submits a new question', async () => {

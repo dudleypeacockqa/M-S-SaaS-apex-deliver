@@ -1,7 +1,9 @@
 # DEV-014 – Document Generation Frontend
 
+**STATUS: 🔄 IN PROGRESS** (2025-11-13 - Frontend 100%, backend APIs 0% - models exist but no router/service)
+
 ## Status
-- **Completion:** 100%
+- **Completion:** 15% (frontend UI exists but backend APIs missing)
 - **Scope:** Frontend document editor with AI assistance, template management, exports, and version history
 - **Owner:** Frontend platform team
 

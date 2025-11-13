@@ -3328,3 +3328,1520 @@ Not implemented: HTMLCanvasElement's getContext() method: without installing the
  [32m✓[39m src/utils/dateFormat.test.ts[2m > [22mformatDate[2m > [22mformats ISO strings as short dates by default[32m 5[2mms[22m[39m
  [32m✓[39m src/utils/dateFormat.test.ts[2m > [22mformatDate[2m > [22mreturns empty string for invalid values[32m 1[2mms[22m[39m
  [32m✓[39m src/utils/dateFormat.test.ts[2m > [22mformatDate[2m > [22msupports overriding format options and locale[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 18 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/App.test.tsx[2m > [22mAppRoutes[2m > [22mrenders the home route with sign-in actions for visitors
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the role "link" and name `/sign in/i`
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"text-gray-700 hover:text-indigo-900 font-medium transition-colors"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/sign-in"[39m
+[36m>[39m
+  [0mSign In[0m
+[36m</a>[39m
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"block w-full text-center py-2 text-gray-700 hover:text-indigo-900 font-medium"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/sign-in"[39m
+[36m>[39m
+  [0mSign In[0m
+[36m</a>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen flex flex-col"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-indigo-900 focus:shadow-lg"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0mSkip to main content[0m
+      [36m</a>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary"[39m
+        [33mclass[39m=[32m"bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-between items-center h-16"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"ApexDeliver home"[39m
+                [33mclass[39m=[32m"flex items-center space-x-2"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-2xl font-bold bg-gradient-to-r from-indigo-900 to-purple-900 bg-clip-text text-transparent"[39m
+                [36m>[39m
+                  [0mApexDeliver[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-sm font-semibold text-emerald-700"[39m
+                [36m>[39m
+                  [0m+ CapLiquify[0m
+                [36m</span>[39m
+              [36m</a>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hidden lg:flex items-center space-x-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mProducts[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mSolutions[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mResources[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mCompany[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/App.test.tsx:[2m83:19[22m[39m
+    [90m 81| [39m    expect(await screen.findByRole("heading", { name: /from deal flow …
+    [90m 82| [39m    [90m// Marketing nav has regular links, not Clerk's SignInButton[39m
+    [90m 83| [39m    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDo…
+    [90m   | [39m                  [31m^[39m
+    [90m 84| [39m    [90m// Multiple "Start Your Free" CTA buttons/links exist[39m
+    [90m 85| [39m    const ctaLinks = screen.getAllByRole("link", { name: /start your f…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/App.test.tsx[2m > [22mAppRoutes[2m > [22mupdates the header to show the user menu for authenticated users
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the role "link" and name `/sign in/i`
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"text-gray-700 hover:text-indigo-900 font-medium transition-colors"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/sign-in"[39m
+[36m>[39m
+  [0mSign In[0m
+[36m</a>[39m
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"block w-full text-center py-2 text-gray-700 hover:text-indigo-900 font-medium"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/sign-in"[39m
+[36m>[39m
+  [0mSign In[0m
+[36m</a>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen flex flex-col"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-indigo-900 focus:shadow-lg"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0mSkip to main content[0m
+      [36m</a>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary"[39m
+        [33mclass[39m=[32m"bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-between items-center h-16"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"ApexDeliver home"[39m
+                [33mclass[39m=[32m"flex items-center space-x-2"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-2xl font-bold bg-gradient-to-r from-indigo-900 to-purple-900 bg-clip-text text-transparent"[39m
+                [36m>[39m
+                  [0mApexDeliver[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-sm font-semibold text-emerald-700"[39m
+                [36m>[39m
+                  [0m+ CapLiquify[0m
+                [36m</span>[39m
+              [36m</a>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hidden lg:flex items-center space-x-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mProducts[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mSolutions[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mResources[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mCompany[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/App.test.tsx:[2m123:20[22m[39m
+    [90m121| [39m     expect(await screen.findByRole("heading", { name: /from deal flow…
+    [90m122| [39m     // Marketing pages show sign-in link even when authenticated (mar…
+    [90m123| [39m     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheD…
+    [90m   | [39m                   [31m^[39m
+    [90m124| [39m  }[33m,[39m [34m10000[39m)
+    [90m125| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mForm Validation[2m > [22mshould show error for negative deal size
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: /deal size must be positive/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"[39m
+      [33mdata-testid[39m=[32m"modal-backdrop"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"modal-title"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"[39m
+        [33mrole[39m=[32m"dialog"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center justify-between p-6 border-b border-gray-200"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-2xl font-semibold text-gray-900"[39m
+            [33mid[39m=[32m"modal-title"[39m
+          [36m>[39m
+            [0mCreate New Deal[0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Close modal"[39m
+            [33mclass[39m=[32m"text-gray-400 hover:text-gray-600 transition-colors"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x h-6 w-6"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<form[39m
+          [33mclass[39m=[32m"p-6 space-y-6"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+              [33mfor[39m=[32m"name"[39m
+            [36m>[39m
+              [0mDeal Name [0m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-red-500"[39m
+              [36m>[39m
+                [0m*[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<input[39m
+              [33maria-label[39m=[32m"Deal name"[39m
+              [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"[39m
+              [33mid[39m=[32m"name"[39m
+              [33mname[39m=[32m"name"[39m
+              [33mplaceholder[39m=[32m"e.g., Acme Corp Acquisition"[39m
+              [33mtype[39m=[32m"text"[39m
+              [33mvalue[39m=[32m"-1000"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+              [33mfor[39m=[32m"target_company"[39m
+            [36m>[39m
+              [0mTarget Company [0m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-red-500"[39m
+              [36m>[39m
+                [0m*[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<input[39m
+              [33maria-label[39m=[32m"Target company"[39m
+              [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"[39m
+              [33mid[39m=[32m"target_company"[39m
+              [33mname[39m=[32m"target_company"[39m
+              [33mplaceholder[39m=[32m"e.g., Acme Corporation Ltd"[39m
+              [33mtype[39m=[32m"text"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+              [33mfor[39m=[32m"industry"[39m
+            [36m>[39m
+              [0mIndustry[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33maria-label[39m=[32m"Industry"[39m
+              [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+              [33mid[39m=[32m"industry"[39m
+              [33mname[39m=[32m"industry"[39m
+              [33mplaceholder[39m=[32m"e.g., Technology, Healthcare, Finance"[39m
+              [33mtype[39m=[32m"text"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-2 gap-4"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"deal_size"[39m
+              [36m>[39m
+                [0mDeal Size[0m
+              [36m</label>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Deal size"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"[39m
+                [33mid[39m=[32m"deal_size"[39m
+                [33mmin[39m=[32m"0"[39m
+                [33mname[39m=[32m"deal_size"[39m
+                [33mplaceholder[39m=[32m"1000000"[39m
+                [33mstep[39m=[32m"1000"[39m
+                [33mtype[39m=[32m"number"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"currency"[39m
+              [36m>[39m
+                [0mCurrency[0m
+              [36m</label>[39m
+              [36m<select[39m
+                [33maria-label[39m=[32m"Currency"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+                [33mid[39m=[32m"currency"[39m
+                [33mname[39m=[32m"currency"[39m
+              [36m>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"GBP"[39m
+                [36m>[39m
+                  [0m£ GBP[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"USD"[39m
+                [36m>[39m
+                  [0m$ USD[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"EUR"[39m
+                [36m>[39m
+                  [0m€ EUR[0m
+                [36m</option>[39m
+              [36m</select>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+              [33mfor[39m=[32m"stage"[39m
+            [36m>[39m
+              [0mStage[0m
+            [36m</label>[39m
+            [36m<select[39m
+              [33maria-label[39m=[32m"Stage"[39m
+              [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+              [33mid[39m=[32m"stage"[39m
+              [33mname[39m=[32m"stage"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"sourcing"[39m
+              [36m>[39m
+                [0mSourcing[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"evaluation"[39m
+              [36m>[39m
+                [0mEvaluation[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"due_diligence"[39m
+              [36m>[39m
+                [0mDue Diligence[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"negotiation"[39m
+              [36m>[39m
+                [0mNegotiation[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"closing"[39m
+              [36m>[39m
+                [0mClosing[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+              [33mfor[39m=[32m"description"[39m
+            [36m>[39m
+              [0mDescription[0m
+            [36m</label>[39m
+            [36m<textarea[39m
+              [33maria-label[39m=[32m"Description"[39m
+              [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+              [33mid[39m=[32m"description"[39m
+              [33mname[39m=[32m"description"[39m
+              [33mplaceholder[39m=[32m"Add any additional notes or context about this deal..."[39m
+              [33mrows[39m=[32m"4"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-end gap-3 pt-4 border-t border-gray-200"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mCancel[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"[39m
+              [33mtype[39m=[32m"submit"[39m
+            [36m>[39m
+              [0mCreate Deal[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</form>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"[39m
+        [33mdata-testid[39m=[32m"modal-backdrop"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"modal-title"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"[39m
+          [33mrole[39m=[32m"dialog"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-between p-6 border-b border-gray-200"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"text-2xl font-semibold text-gray-900"[39m
+              [33mid[39m=[32m"modal-title"[39m
+            [36m>[39m
+              [0mCreate New Deal[0m
+            [36m</h2>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Close modal"[39m
+              [33mclass[39m=[32m"text-gray-400 hover:text-gray-600 transition-colors"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-x h-6 w-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<form[39m
+            [33mclass[39m=[32m"p-6 space-y-6"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"name"[39m
+              [36m>[39m
+                [0mDeal Name [0m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-red-500"[39m
+                [36m>[39m
+                  [0m*[0m
+                [36m</span>[39m
+              [36m</label>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Deal name"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"[39m
+                [33mid[39m=[32m"name"[39m
+                [33mname[39m=[32m"name"[39m
+                [33mplaceholder[39m=[32m"e.g., Acme Corp Acquisition"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m"-1000"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"target_company"[39m
+              [36m>[39m
+                [0mTarget Company [0m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-red-500"[39m
+                [36m>[39m
+                  [0m*[0m
+                [36m</span>[39m
+              [36m</label>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Target company"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"[39m
+                [33mid[39m=[32m"target_company"[39m
+                [33mname[39m=[32m"target_company"[39m
+                [33mplaceholder[39m=[32m"e.g., Acme Corporation Ltd"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"industry"[39m
+              [36m>[39m
+                [0mIndustry[0m
+              [36m</label>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Industry"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+                [33mid[39m=[32m"industry"[39m
+                [33mname[39m=[32m"industry"[39m
+                [33mplaceholder[39m=[32m"e.g., Technology, Healthcare, Finance"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"grid grid-cols-2 gap-4"[39m
+            [36m>[39m
+              [36m<div>[39m
+                [36m<label[39m
+                  [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                  [33mfor[39m=[32m"deal_size"[39m
+                [36m>[39m
+                  [0mDeal Size[0m
+                [36m</label>[39m
+                [36m<input[39m
+                  [33maria-label[39m=[32m"Deal size"[39m
+                  [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"[39m
+                  [33mid[39m=[32m"deal_size"[39m
+                  [33mmin[39m=[32m"0"[39m
+                  [33mname[39m=[32m"deal_size"[39m
+                  [33mplaceholder[39m=[32m"1000000"[39m
+                  [33mstep[39m=[32m"1000"[39m
+                  [33mtype[39m=[32m"number"[39m
+                  [33mvalue[39m=[32m""[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<div>[39m
+                [36m<label[39m
+                  [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                  [33mfor[39m=[32m"currency"[39m
+                [36m>[39m
+                  [0mCurrency[0m
+                [36m</label>[39m
+                [36m<select[39m
+                  [33maria-label[39m=[32m"Currency"[39m
+                  [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+                  [33mid[39m=[32m"currency"[39m
+                  [33mname[39m=[32m"currency"[39m
+                [36m>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"GBP"[39m
+                  [36m>[39m
+                    [0m£ GBP[0m
+                  [36m</option>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"USD"[39m
+                  [36m>[39m
+                    [0m$ USD[0m
+                  [36m</option>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"EUR"[39m
+                  [36m>[39m
+                    [0m€ EUR[0m
+                  [36m</option>[39m
+                [36m</select>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"stage"[39m
+              [36m>[39m
+                [0mStage[0m
+              [36m</label>[39m
+              [36m<select[39m
+                [33maria-label[39m=[32m"Stage"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+                [33mid[39m=[32m"stage"[39m
+                [33mname[39m=[32m"stage"[39m
+              [36m>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"sourcing"[39m
+                [36m>[39m
+                  [0mSourcing[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"evaluation"[39m
+                [36m>[39m
+                  [0mEvaluation[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"due_diligence"[39m
+                [36m>[39m
+                  [0mDue Diligence[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"negotiation"[39m
+                [36m>[39m
+                  [0mNegotiation[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"closing"[39m
+                [36m>[39m
+                  [0mClosing[0m
+                [36m</option>[39m
+              [36m</select>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"description"[39m
+              [36m>[39m
+                [0mDescription[0m
+              [36m</label>[39m
+              [36m<textarea[39m
+                [33maria-label[39m=[32m"Description"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+                [33mid[39m=[32m"description"[39m
+                [33mname[39m=[32m"description"[39m
+                [33mplaceholder[39m=[32m"Add any additional notes or context about this deal..."[39m
+                [33mrows[39m=[32m"4"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center justify-end gap-3 pt-4 border-t border-gray-200"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mCancel[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"[39m
+                [33mtype[39m=[32m"submit"[39m
+              [36m>[39m
+                [0mCreate Deal[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</form>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+[90m [2m❯[22m Proxy.waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[36m [2m❯[22m src/components/deals/CreateDealModal.test.tsx:[2m175:13[22m[39m
+    [90m173| [39m      [35mawait[39m user[33m.[39m[34mtab[39m() [90m// Trigger blur event to validate[39m
+    [90m174| [39m
+    [90m175| [39m      [35mawait[39m [34mwaitFor[39m(() [33m=>[39m {
+    [90m   | [39m            [31m^[39m
+    [90m176| [39m        expect(screen.getByText(/deal size must be positive/i)).toBeIn…
+    [90m177| [39m      })
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/features/auth/Auth.test.tsx[2m > [22mClerk authentication routing[2m > [22mredirects unauthenticated users from /dashboard to /sign-in
+[31m[1mTestingLibraryElementError[22m: Unable to find role="heading" and name `/sign in to apexdeliver/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div />[31m
+[36m</body>[31m
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div />[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m src/features/auth/Auth.test.tsx:[2m77:20[22m[39m
+    [90m 75| [39m    [90m// Wait for lazy-loaded SignInPage to render[39m
+    [90m 76| [39m    [34mexpect[39m(
+    [90m 77| [39m      [35mawait[39m screen[33m.[39m[34mfindByRole[39m([32m'heading'[39m[33m,[39m {
+    [90m   | [39m                   [31m^[39m
+    [90m 78| [39m        name[33m:[39m [36m/sign in to apexdeliver/i[39m[33m,[39m
+    [90m 79| [39m      }[33m,[39m { timeout[33m:[39m [34m3000[39m })
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/features/auth/Auth.test.tsx[2m > [22mClerk authentication routing[2m > [22mrenders the appropriate header action depending on auth state
+[31m[1mError[22m: Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+[36m [2m❯[22m src/features/auth/Auth.test.tsx:[2m113:3[22m[39m
+    [90m111| [39m  })
+    [90m112| [39m
+    [90m113| [39m  it('renders the appropriate header action depending on auth state', …
+    [90m   | [39m  [31m^[39m
+    [90m114| [39m    [35mconst[39m queryClient [33m=[39m [35mnew[39m [33mQueryClient[39m({
+    [90m115| [39m      defaultOptions[33m:[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/pages/marketing/Blog.test.tsx[2m > [22mBlog Listing Page[2m > [22mPage Rendering[2m > [22mshould render blog heading
+[41m[1m FAIL [22m[49m src/pages/marketing/Blog.test.tsx[2m > [22mBlog Listing Page[2m > [22mPage Rendering[2m > [22mshould fetch and render blog posts
+[41m[1m FAIL [22m[49m src/pages/marketing/Blog.test.tsx[2m > [22mBlog Listing Page[2m > [22mPage Rendering[2m > [22mshould render blog post categories
+[41m[1m FAIL [22m[49m src/pages/marketing/Blog.test.tsx[2m > [22mBlog Listing Page[2m > [22mPage Rendering[2m > [22mshould render read time for posts
+[41m[1m FAIL [22m[49m src/pages/marketing/Blog.test.tsx[2m > [22mBlog Listing Page[2m > [22mPage Rendering[2m > [22mshould show search bar
+[41m[1m FAIL [22m[49m src/pages/marketing/Blog.test.tsx[2m > [22mBlog Listing Page[2m > [22mInteractions[2m > [22mshould request posts for selected category
+[41m[1m FAIL [22m[49m src/pages/marketing/Blog.test.tsx[2m > [22mBlog Listing Page[2m > [22mInteractions[2m > [22mshould include search term in request query
+[41m[1m FAIL [22m[49m src/pages/marketing/Blog.test.tsx[2m > [22mBlog Listing Page[2m > [22mInteractions[2m > [22mshould show loading indicator while fetching
+[41m[1m FAIL [22m[49m src/pages/marketing/Blog.test.tsx[2m > [22mBlog Listing Page[2m > [22mInteractions[2m > [22mshould render error banner when fetch fails
+[41m[1m FAIL [22m[49m src/pages/marketing/Blog.test.tsx[2m > [22mBlog Listing Page[2m > [22mInteractions[2m > [22mshould clear filters and search when clicking Clear Filters
+[31m[1mTypeError[22m: global.fetch.mockResolvedValue is not a function[39m
+[36m [2m❯[22m src/pages/marketing/Blog.test.tsx:[2m43:27[22m[39m
+    [90m 41| [39m  [34mbeforeEach[39m(() [33m=>[39m {
+    [90m 42| [39m    vi[33m.[39m[34mclearAllMocks[39m()[33m;[39m
+    [90m 43| [39m    (global[33m.[39mfetch [35mas[39m any)[33m.[39m[34mmockResolvedValue[39m({
+    [90m   | [39m                          [31m^[39m
+    [90m 44| [39m      ok[33m:[39m [35mtrue[39m[33m,[39m
+    [90m 45| [39m      json[33m:[39m [35masync[39m () [33m=>[39m mockBlogPosts[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/pages/marketing/CapLiquifyFPAPage.test.tsx[2m > [22mCapLiquifyFPAPage[2m > [22mHero Section[2m > [22mshould render CapLiquify FP&A badge
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the text: CapLiquify FP&A
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"block py-2 text-sm text-gray-600 hover:text-indigo-900"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/capliquify-fpa"[39m
+[36m>[39m
+  [0mCapLiquify FP&A[0m
+[36m</a>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"inline-block bg-emerald-700 text-white px-4 py-2 rounded-full text-sm font-semibold mb-6"[39m
+[36m>[39m
+  [0mCapLiquify FP&A[0m
+[36m</div>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen flex flex-col"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-indigo-900 focus:shadow-lg"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0mSkip to main content[0m
+      [36m</a>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary"[39m
+        [33mclass[39m=[32m"bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-between items-center h-16"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"ApexDeliver home"[39m
+                [33mclass[39m=[32m"flex items-center space-x-2"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-2xl font-bold bg-gradient-to-r from-indigo-900 to-purple-900 bg-clip-text text-transparent"[39m
+                [36m>[39m
+                  [0mApexDeliver[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-sm font-semibold text-emerald-700"[39m
+                [36m>[39m
+                  [0m+ CapLiquify[0m
+                [36m</span>[39m
+              [36m</a>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hidden lg:flex items-center space-x-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mProducts[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mSolutions[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mResources[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mCompany[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/pages/marketing/CapLiquifyFPAPage.test.tsx:[2m30:21[22m[39m
+    [90m 28| [39m    [34mit[39m([32m'should render CapLiquify FP&A badge'[39m[33m,[39m () [33m=>[39m {
+    [90m 29| [39m      [34mrenderWithRouter[39m([33m<[39m[33mCapLiquifyFPAPage[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 30| [39m      [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'CapLiquify FP&A'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m   | [39m                    [31m^[39m
+    [90m 31| [39m    })[33m;[39m
+    [90m 32| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/pages/marketing/PricingPage.test.tsx[2m > [22mPricingPage[2m > [22mrenders all 4 pricing tiers with correct headings and prices
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the text: CapLiquify FP&A
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"block py-2 text-sm text-gray-600 hover:text-indigo-900"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/capliquify-fpa"[39m
+[36m>[39m
+  [0mCapLiquify FP&A[0m
+[36m</a>[39m
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"text-2xl font-bold text-gray-900 mb-2"[39m
+[36m>[39m
+  [0mCapLiquify FP&A[0m
+[36m</h3>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen flex flex-col"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-indigo-900 focus:shadow-lg"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0mSkip to main content[0m
+      [36m</a>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary"[39m
+        [33mclass[39m=[32m"bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-between items-center h-16"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"ApexDeliver home"[39m
+                [33mclass[39m=[32m"flex items-center space-x-2"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-2xl font-bold bg-gradient-to-r from-indigo-900 to-purple-900 bg-clip-text text-transparent"[39m
+                [36m>[39m
+                  [0mApexDeliver[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-sm font-semibold text-emerald-700"[39m
+                [36m>[39m
+                  [0m+ CapLiquify[0m
+                [36m</span>[39m
+              [36m</a>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hidden lg:flex items-center space-x-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mProducts[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mSolutions[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mResources[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mCompany[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/pages/marketing/PricingPage.test.tsx:[2m51:21[22m[39m
+    [90m 49| [39m
+    [90m 50| [39m    expectedTierNames[33m.[39m[34mforEach[39m((tier) [33m=>[39m {
+    [90m 51| [39m      [35mconst[39m matches [33m=[39m screen[33m.[39m[34mqueryAllByText[39m(tier)[33m;[39m
+    [90m   | [39m                    [31m^[39m
+    [90m 52| [39m      [34mexpect[39m(matches[33m.[39mlength)[33m.[39m[34mtoBeGreaterThan[39m([34m0[39m)[33m;[39m
+    [90m 53| [39m    })[33m;[39m
+[90m [2m❯[22m src/pages/marketing/PricingPage.test.tsx:[2m50:23[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/tests/integration/routing.test.tsx[2m > [22mIntegration: routing[2m > [22mrenders the landing page for visitors
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the role "link" and name `/sign in/i`
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"text-gray-700 hover:text-indigo-900 font-medium transition-colors"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/sign-in"[39m
+[36m>[39m
+  [0mSign In[0m
+[36m</a>[39m
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"block w-full text-center py-2 text-gray-700 hover:text-indigo-900 font-medium"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/sign-in"[39m
+[36m>[39m
+  [0mSign In[0m
+[36m</a>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen flex flex-col"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-indigo-900 focus:shadow-lg"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0mSkip to main content[0m
+      [36m</a>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary"[39m
+        [33mclass[39m=[32m"bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-between items-center h-16"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"ApexDeliver home"[39m
+                [33mclass[39m=[32m"flex items-center space-x-2"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-2xl font-bold bg-gradient-to-r from-indigo-900 to-purple-900 bg-clip-text text-transparent"[39m
+                [36m>[39m
+                  [0mApexDeliver[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-sm font-semibold text-emerald-700"[39m
+                [36m>[39m
+                  [0m+ CapLiquify[0m
+                [36m</span>[39m
+              [36m</a>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hidden lg:flex items-center space-x-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mProducts[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mSolutions[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mResources[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                [36m>[39m
+                  [0mCompany[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/tests/integration/routing.test.tsx:[2m65:19[22m[39m
+    [90m 63| [39m    )[33m.[39m[34mtoBeInTheDocument[39m()
+    [90m 64| [39m    [90m// Marketing nav uses regular links, not Clerk's SignInButton[39m
+    [90m 65| [39m    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDo…
+    [90m   | [39m                  [31m^[39m
+    [90m 66| [39m  }[33m,[39m [34m10000[39m)
+    [90m 67| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/18]⎯[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Errors [49m[22m[31m⎯⎯⎯⎯⎯⎯[39m
+[31m[1m
+Vitest caught 2 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.[22m[39m
+
+[31m⎯⎯⎯⎯⎯[39m[1m[41m Uncaught Exception [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: [vitest] No "SignIn" export is defined on the "@clerk/clerk-react" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+vi.mock(import("@clerk/clerk-react"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+[90m [2m❯[22m VitestMocker.createError node_modules/vitest/dist/chunks/startModuleRunner.BOmUtLIO.js:[2m307:17[22m[39m
+[90m [2m❯[22m Object.get node_modules/vitest/dist/chunks/startModuleRunner.BOmUtLIO.js:[2m362:16[22m[39m
+[36m [2m❯[22m SignInPage src/pages/SignInPage.tsx:[2m44:16[22m[39m
+    [90m 42| [39m          <div className="rounded-2xl bg-white p-6 shadow-xl ring-1 ri…
+    [90m 43| [39m            [33m<[39m[33mSignedOut[39m[33m>[39m
+    [90m 44| [39m              [33m<[39m[33mSignIn[39m
+    [90m   | [39m               [31m^[39m
+    [90m 45| [39m                [33mrouting[39m[33m=[39m[32m"path"[39m
+    [90m 46| [39m                [33mpath[39m[33m=[39m[32m"/sign-in"[39m
+[90m [2m❯[22m Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:[2m25904:20[22m[39m
+[90m [2m❯[22m renderWithHooks node_modules/react-dom/cjs/react-dom-client.development.js:[2m7662:22[22m[39m
+[90m [2m❯[22m updateFunctionComponent node_modules/react-dom/cjs/react-dom-client.development.js:[2m10166:19[22m[39m
+[90m [2m❯[22m beginWork node_modules/react-dom/cjs/react-dom-client.development.js:[2m11727:35[22m[39m
+[90m [2m❯[22m runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:[2m874:13[22m[39m
+[90m [2m❯[22m performUnitOfWork node_modules/react-dom/cjs/react-dom-client.development.js:[2m17641:22[22m[39m
+[90m [2m❯[22m workLoopSync node_modules/react-dom/cjs/react-dom-client.development.js:[2m17469:41[22m[39m
+
+[31mThis error originated in "[1msrc/features/auth/Auth.test.tsx[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1mredirects unauthenticated users from /dashboard to /sign-in[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Error [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: [vitest-pool]: Worker threads emitted error.[39m
+[90m [2m❯[22m EventEmitter.<anonymous> node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m7233:22[22m[39m
+[90m [2m❯[22m EventEmitter.emit node:events:[2m508:28[22m[39m
+[90m [2m❯[22m Worker.emitWorkerError node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m6769:22[22m[39m
+[90m [2m❯[22m Worker.emit node:events:[2m508:28[22m[39m
+[90m [2m❯[22m Worker.[kOnExit] node:internal/worker:[2m378:12[22m[39m
+[90m [2m❯[22m Worker.<computed>.onexit node:internal/worker:[2m294:20[22m[39m
+
+[31m[1mCaused by: Error[22m: Worker terminated due to reaching memory limit: JS heap out of memory[39m
+[90m [2m❯[22m Worker.[kOnExit] node:internal/worker:[2m378:26[22m[39m
+[90m [2m❯[22m Worker.<computed>.onexit node:internal/worker:[2m294:20[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ code: 'ERR_WORKER_OUT_OF_MEMORY' }[39m
+[31m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39m
+
+
+[2m Test Files [22m [1m[31m7 failed[39m[22m[2m | [22m[1m[32m142 passed[39m[22m[90m (150)[39m
+[2m      Tests [22m [1m[31m18 failed[39m[22m[2m | [22m[1m[32m1550 passed[39m[22m[90m (1580)[39m
+[2m     Errors [22m [1m[31m2 errors[39m[22m
+[2m   Start at [22m 18:09:59
+[2m   Duration [22m 4480.37s[2m (transform 73.65s, setup 180.42s, collect 135.26s, tests 285.61s, environment 317.13s, prepare 7.41s)[22m
+
+error during close Error: [vitest-pool-runner]: Timeout waiting for worker to respond
+    at Timeout.<anonymous> (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:6798:58)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)

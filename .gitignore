@@ -48,6 +48,12 @@ backend-test-baseline*.txt
 frontend-test-baseline*.txt
 test_write.txt
 
+# Ignore Lighthouse and Axe accessibility reports (generated locally)
+docs/testing/lighthouse-report.html
+docs/testing/lighthouse-report.json
+docs/testing/axe-report.json
+.lighthouseci/
+
 # Ignore test databases
 *.db
 test_*.db

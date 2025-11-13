@@ -135,6 +135,79 @@ interface DealStore {
   permissions: Map<string, PermissionRecord[]>
 }
 
+interface DealRecord {
+  id: string
+  name: string
+  targetCompany: string
+  industry: string | null
+  dealSize: number | null
+  currency: string
+  stage: DealStage
+  ownerId: string
+  organizationId: string
+  description: string | null
+  archivedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+type DealStage =
+  | 'sourcing'
+  | 'evaluation'
+  | 'due_diligence'
+  | 'negotiation'
+  | 'closing'
+  | 'won'
+  | 'lost'
+
+const mockDeals: DealRecord[] = [
+  {
+    id: 'deal-001',
+    name: 'Capstone Analytics Acquisition',
+    targetCompany: 'Capstone Analytics',
+    industry: 'Analytics',
+    dealSize: 12500000,
+    currency: 'GBP',
+    stage: 'due_diligence',
+    ownerId: 'owner-1',
+    organizationId: DEFAULT_ORG_ID,
+    description: 'High-growth analytics platform acquisition.',
+    archivedAt: null,
+    createdAt: '2025-10-01T12:00:00Z',
+    updatedAt: '2025-10-10T09:30:00Z',
+  },
+  {
+    id: 'deal-002',
+    name: 'Northwind Manufacturing Buyout',
+    targetCompany: 'Northwind Manufacturing',
+    industry: 'Manufacturing',
+    dealSize: 42000000,
+    currency: 'GBP',
+    stage: 'negotiation',
+    ownerId: 'owner-2',
+    organizationId: DEFAULT_ORG_ID,
+    description: 'Control buyout to consolidate manufacturing footprint.',
+    archivedAt: null,
+    createdAt: '2025-09-15T15:45:00Z',
+    updatedAt: '2025-10-12T08:15:00Z',
+  },
+  {
+    id: 'deal-003',
+    name: 'Helios Health Platform',
+    targetCompany: 'Helios Health',
+    industry: 'Healthcare',
+    dealSize: null,
+    currency: 'GBP',
+    stage: 'evaluation',
+    ownerId: 'owner-3',
+    organizationId: DEFAULT_ORG_ID,
+    description: 'Early evaluation of tech-enabled health services provider.',
+    archivedAt: null,
+    createdAt: '2025-10-05T10:00:00Z',
+    updatedAt: '2025-10-08T14:22:00Z',
+  },
+]
+
 const deals = new Map<string, DealStore>()
 const blogPosts: BlogPostRecord[] = [
   {
@@ -1007,7 +1080,6 @@ const podcastHandlers = [
   podcastTranscribeHandler,
 ]
 
-
 const blogListHandler = http.get(`${API_BASE_URL}/api/blog`, ({ request }) => {
   const url = new URL(request.url)
   const category = url.searchParams.get('category')
@@ -1054,7 +1126,57 @@ const contactHandler = http.post(`${API_BASE_URL}/marketing/contact`, async ({ r
   return HttpResponse.json({ success: true, message: 'Thanks for contacting us!' })
 })
 
-export const mswHandlers = [...documentHandlers, ...podcastHandlers, blogListHandler, blogDetailHandler, contactHandler]
+const serializeDealRecord = (record: DealRecord) => ({
+  id: record.id,
+  name: record.name,
+  target_company: record.targetCompany,
+  industry: record.industry,
+  deal_size: record.dealSize,
+  currency: record.currency,
+  stage: record.stage,
+  owner_id: record.ownerId,
+  organization_id: record.organizationId,
+  description: record.description,
+  archived_at: record.archivedAt,
+  created_at: record.createdAt,
+  updated_at: record.updatedAt,
+})
+
+const listDealsHandler = http.get(`${API_BASE_URL}/api/deals`, ({ request }) => {
+  const url = new URL(request.url)
+  const page = Math.max(1, Number(url.searchParams.get('page') ?? '1'))
+  const perPage = Math.max(1, Number(url.searchParams.get('per_page') ?? '10'))
+  const start = (page - 1) * perPage
+  const items = mockDeals.slice(start, start + perPage).map(serializeDealRecord)
+  const total = mockDeals.length
+  const totalPages = Math.max(1, Math.ceil(total / perPage))
+
+  return HttpResponse.json({
+    items,
+    total,
+    page,
+    per_page: perPage,
+    total_pages: totalPages,
+  })
+})
+
+const getDealHandler = http.get(`${API_BASE_URL}/api/deals/:dealId`, ({ params }) => {
+  const dealId = params.dealId as string
+  const deal = mockDeals.find((entry) => entry.id === dealId)
+  if (!deal) {
+    return HttpResponse.json({ detail: 'Deal not found' }, { status: 404 })
+  }
+  return HttpResponse.json(serializeDealRecord(deal))
+})
+
+export const mswHandlers = [
+  listDealsHandler,
+  getDealHandler,
+  ...documentHandlers,
+  ...podcastHandlers,
+  blogListHandler,
+  blogDetailHandler,
+  contactHandler,
+]
 
 export { resetDocumentRoomFixtures, collectAllFolders }
-

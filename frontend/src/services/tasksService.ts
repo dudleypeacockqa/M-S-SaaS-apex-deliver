@@ -359,3 +359,135 @@ export async function logTaskActivity(taskId: string, message: string): Promise<
 }
 
 export const getDefaultFilters = (): TaskFiltersState => ({ ...DEFAULT_FILTERS });
+
+// Task Template Types
+export interface TaskTemplateTask {
+  title: string;
+  description?: string | null;
+  priority?: TaskPriority;
+  stage_gate?: string | null;
+}
+
+export interface TaskTemplate {
+  id: string;
+  organization_id: string;
+  name: string;
+  description: string | null;
+  tasks: TaskTemplateTask[];
+  created_by: string;
+  created_at: string;
+}
+
+export interface TaskTemplateCreateInput {
+  name: string;
+  description?: string | null;
+  tasks: TaskTemplateTask[];
+}
+
+interface TaskTemplateTaskApi {
+  title: string;
+  description?: string | null;
+  priority?: string;
+  stage_gate?: string | null;
+}
+
+interface TaskTemplateApiResponse {
+  id: string;
+  organization_id: string;
+  name: string;
+  description?: string | null;
+  tasks: TaskTemplateTaskApi[];
+  created_by: string;
+  created_at: string;
+}
+
+const fromApiTemplateTask = (task: TaskTemplateTaskApi): TaskTemplateTask => ({
+  title: task.title,
+  description: task.description ?? null,
+  priority: task.priority ? toTaskPriority(task.priority) : undefined,
+  stage_gate: task.stage_gate ?? null,
+});
+
+const toApiTemplateTask = (task: TaskTemplateTask): TaskTemplateTaskApi => ({
+  title: task.title,
+  description: task.description ?? null,
+  priority: task.priority ? priorityToApi[task.priority] : undefined,
+  stage_gate: task.stage_gate ?? null,
+});
+
+const fromApiTemplate = (template: TaskTemplateApiResponse): TaskTemplate => ({
+  id: template.id,
+  organization_id: template.organization_id,
+  name: template.name,
+  description: template.description ?? null,
+  tasks: template.tasks.map(fromApiTemplateTask),
+  created_by: template.created_by,
+  created_at: template.created_at,
+});
+
+// Task Template API Functions
+export async function listTaskTemplates(dealId: string): Promise<TaskTemplate[]> {
+  const response = await apiClient.get<TaskTemplateApiResponse[]>(
+    `/api/deals/${dealId}/task-templates`
+  );
+  return response.map(fromApiTemplate);
+}
+
+export async function createTaskTemplate(
+  dealId: string,
+  payload: TaskTemplateCreateInput
+): Promise<TaskTemplate> {
+  const response = await apiClient.post<TaskTemplateApiResponse>(
+    `/api/deals/${dealId}/task-templates`,
+    {
+      name: payload.name,
+      description: payload.description ?? null,
+      tasks: payload.tasks.map(toApiTemplateTask),
+    }
+  );
+  return fromApiTemplate(response);
+}
+
+export async function applyTaskTemplate(
+  dealId: string,
+  templateId: string
+): Promise<Task[]> {
+  // Apply template by creating tasks from template definition
+  const templates = await listTaskTemplates(dealId);
+  const template = templates.find((t) => t.id === templateId);
+  if (!template) {
+    throw new Error(`Template ${templateId} not found`);
+  }
+
+  // Import the deal-scoped API for creating tasks
+  // Note: This creates tasks individually - backend could provide bulk endpoint in future
+  const { createTask: createDealTask } = await import('./api/tasks');
+  
+  const createdTasks: Task[] = [];
+  for (const taskDef of template.tasks) {
+    const task = await createDealTask(dealId, {
+      title: taskDef.title,
+      description: taskDef.description ?? null,
+      priority: taskDef.priority || 'normal',
+      status: 'todo',
+    });
+    
+    // Convert API task to service task format
+    createdTasks.push({
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      status: task.status === 'completed' ? 'done' : (task.status as TaskStatus),
+      priority: task.priority === 'normal' ? 'medium' : (task.priority as TaskPriority),
+      dueDate: task.due_date,
+      assignee: null, // Will be populated by full task fetch if needed
+      deal: null,
+      comments: [],
+      activity: [],
+      createdAt: task.created_at,
+      updatedAt: task.updated_at,
+    });
+  }
+
+  return createdTasks;
+}

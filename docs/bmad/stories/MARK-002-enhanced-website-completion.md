@@ -1,3 +1,7 @@
+# MARK-002: Enhanced Marketing Website Completion
+
+**STATUS: 🔄 IN PROGRESS** (2025-11-13 - Palette updates complete, production audits pending)
+
 **Latest Update (2025-11-13 10:30 UTC)**:
 - ✅ Frontend redeploy for `srv-d3ihptbipnbc73e72ne0` triggered and verified (10/10 checks via `scripts/verify_deployment.py production`).
 - ⚠️ Production Lighthouse + axe evidence still pending; local CLI blocked by Windows Defender/Chrome (`EPERM`, `NO_FCP`) and CDN cache serving pre-contrast palette causing residual axe violations.

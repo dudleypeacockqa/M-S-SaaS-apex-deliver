@@ -266,6 +266,67 @@ async def test_create_deal(client: AsyncClient):
 - **Critical Paths**: 100% coverage (auth, payments, data security)
 - **Run Coverage**: `npm run test:coverage` (frontend), `pytest --cov=app` (backend)
 
+### Accessibility & Performance Testing
+
+In addition to unit tests, we run automated accessibility and performance audits using **Lighthouse** and **Axe**.
+
+#### Quality Gates
+
+| Category | Minimum Score | Target Score |
+|----------|--------------|--------------|
+| Performance | 90% | 95%+ |
+| Accessibility | 95% | 100% |
+| Best Practices | 90% | 95%+ |
+| SEO | 90% | 95%+ |
+
+#### Running Audits Locally
+
+**Automated (Recommended)**:
+```bash
+# From project root
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_xxxx ./scripts/run_local_audits.sh
+```
+
+**Manual**:
+```bash
+# Terminal 1: Start preview server
+cd frontend
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_xxxx npm run preview:test
+
+# Terminal 2: Run audits
+cd frontend
+npm run audit:local  # Runs both Lighthouse + Axe
+```
+
+**Reports Location**: `docs/testing/`
+- `lighthouse-report.html` - Performance, accessibility, SEO metrics
+- `lighthouse-report.json` - Machine-readable results
+- `axe-report.json` - Detailed accessibility violations
+
+#### NPM Scripts
+
+```json
+"preview:test": "vite preview --host 0.0.0.0 --port 4173 --strictPort",
+"lighthouse:local": "lighthouse http://127.0.0.1:4173/ --output html --output json",
+"axe:local": "axe http://127.0.0.1:4173/ --load-delay 5000 --timeout 60000",
+"audit:local": "npm run lighthouse:local && npm run axe:local"
+```
+
+#### When to Run
+
+- **Before every PR**: Ensure no regressions
+- **After accessibility changes**: Verify fixes work
+- **Before deployment**: Final quality gate
+
+#### Documentation
+
+See [docs/testing/ACCESSIBILITY-TESTING.md](docs/testing/ACCESSIBILITY-TESTING.md) for:
+- Detailed testing guide
+- Understanding reports
+- Common violations and fixes
+- CI/CD integration
+- Troubleshooting
+
 ---
 
 ## 5. Code Conventions & Best Practices

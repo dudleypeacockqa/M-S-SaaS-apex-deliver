@@ -1,6 +1,6 @@
 # DEV-016: Podcast Studio (Subscription Add-On)
 
-**Status**: Reopened – Subscription gating & transcript routing coverage outstanding (Updated 2025-11-12 08:10 UTC)
+**STATUS: 🔄 IN PROGRESS** (2025-11-13 – Subscription gating + transcript download proofs pending. Latest backend evidence: `docs/tests/2025-11-13-backend-full-suite.txt`; frontend gating verified via `docs/tests/2025-11-13-frontend-focused.txt`.)
 **Priority**: High
 **Epic**: Phase 3 - Ecosystem & Network Effects
 **Started**: 2025-10-28

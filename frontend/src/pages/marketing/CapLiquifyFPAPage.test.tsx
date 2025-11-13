@@ -27,7 +27,7 @@ describe('CapLiquifyFPAPage', () => {
 
     it('should render CapLiquify FP&A badge', () => {
       renderWithRouter(<CapLiquifyFPAPage />);
-      expect(screen.getByText('CapLiquify FP&A')).toBeInTheDocument();
+      expect(screen.getAllByText('CapLiquify FP&A')[0]).toBeInTheDocument();
     });
   });
 

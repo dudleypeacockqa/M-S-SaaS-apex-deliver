@@ -24,6 +24,17 @@ from .podcast import (
     PodcastQuotaSummary,
 )
 
+from .document_generation import (
+    DocumentTemplateCreate,
+    DocumentTemplateUpdate,
+    DocumentTemplateResponse,
+    GeneratedDocumentCreate,
+    GeneratedDocumentUpdate,
+    GeneratedDocumentResponse,
+    TemplateRenderRequest,
+    TemplateRenderResponse,
+)
+
 __all__ = [
     "ValuationCreate",
     "ValuationUpdate",
@@ -43,4 +54,13 @@ __all__ = [
     "PodcastEpisodeCreate",
     "PodcastEpisodeResponse",
     "PodcastQuotaSummary",
+    # Document Generation
+    "DocumentTemplateCreate",
+    "DocumentTemplateUpdate",
+    "DocumentTemplateResponse",
+    "GeneratedDocumentCreate",
+    "GeneratedDocumentUpdate",
+    "GeneratedDocumentResponse",
+    "TemplateRenderRequest",
+    "TemplateRenderResponse",
 ]

@@ -2,13 +2,10 @@
  * Tests for Blog listing page
  * Following TDD RED → GREEN → REFACTOR methodology
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import Blog from './Blog';
 import { BrowserRouter} from 'react-router-dom';
-
-// Mock fetch
-global.fetch = vi.fn();
 
 const mockBlogPosts = [
   {
@@ -38,12 +35,20 @@ const renderWithRouter = (component: React.ReactElement) => {
 };
 
 describe('Blog Listing Page', () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as any).mockResolvedValue({
+    fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => mockBlogPosts,
     });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   describe('Page Rendering', () => {
@@ -85,7 +90,7 @@ describe('Blog Listing Page', () => {
 
   describe('Interactions', () => {
     it('should request posts for selected category', async () => {
-      (global.fetch as any)
+      fetchMock
         .mockResolvedValueOnce({
           ok: true,
           json: async () => mockBlogPosts,
@@ -105,10 +110,10 @@ describe('Blog Listing Page', () => {
       fireEvent.click(fpACategory);
 
       await waitFor(() => {
-        expect((global.fetch as any).mock.calls.length).toBe(2);
+        expect(fetchMock.mock.calls.length).toBe(2);
       });
 
-      const secondCallUrl = (global.fetch as any).mock.calls[1][0];
+      const secondCallUrl = fetchMock.mock.calls[1][0];
       expect(secondCallUrl).toContain('category=FP%26A');
       expect(screen.getByText('FP&A Best Practices')).toBeInTheDocument();
     });
@@ -120,16 +125,16 @@ describe('Blog Listing Page', () => {
       fireEvent.change(searchInput, { target: { value: 'Best' } });
 
       await waitFor(() => {
-        expect((global.fetch as any).mock.calls.length).toBeGreaterThanOrEqual(2);
+        expect(fetchMock.mock.calls.length).toBeGreaterThanOrEqual(2);
       });
 
-      const latestCallUrl = (global.fetch as any).mock.calls.at(-1)[0];
+      const latestCallUrl = fetchMock.mock.calls.at(-1)[0];
       expect(latestCallUrl).toContain('search=Best');
     });
 
     it('should show loading indicator while fetching', async () => {
       let resolveFetch: (value: any) => void;
-      (global.fetch as any).mockReturnValueOnce(
+      fetchMock.mockReturnValueOnce(
         new Promise((resolve) => {
           resolveFetch = resolve;
         })
@@ -150,7 +155,7 @@ describe('Blog Listing Page', () => {
     });
 
     it('should render error banner when fetch fails', async () => {
-      (global.fetch as any).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: false,
         statusText: 'Internal Server Error',
       });
