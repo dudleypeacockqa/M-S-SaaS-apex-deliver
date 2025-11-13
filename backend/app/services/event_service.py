@@ -1,12 +1,11 @@
-"""
-Event Management Service
-Feature: F-012 Event Management Hub
-"""
+"""Event Management Service (F-012)."""
+import logging
 from typing import List, Optional, Dict, Any
 from sqlalchemy import select, desc, func
 from sqlalchemy.orm import Session
 from datetime import datetime, UTC
 from decimal import Decimal
+import logging
 
 from app.models.event import (
     Event,
@@ -29,6 +28,9 @@ from app.schemas.event import (
     EventRegistrationCreate,
     EventRegistrationUpdate,
 )
+from app.services import event_reminder_service
+
+logger = logging.getLogger(__name__)
 
 
 class EventService:
@@ -435,6 +437,21 @@ class EventService:
 
         db.commit()
         db.refresh(registration)
+
+        # Schedule reminders only if registered_by_user_id is provided and not empty
+        if registration.registered_by_user_id and (isinstance(registration.registered_by_user_id, str) and registration.registered_by_user_id.strip()):
+            try:
+                event_reminder_service.schedule_event_reminders(
+                    db=db,
+                    event=event,
+                    user_id=registration.registered_by_user_id,
+                )
+            except Exception as exc:  # pragma: no cover - non-critical
+                logger.warning(
+                    "Failed to schedule reminders for registration %s: %s",
+                    registration.id,
+                    exc,
+                )
         return registration
 
     @staticmethod

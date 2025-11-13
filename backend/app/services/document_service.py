@@ -105,12 +105,14 @@ def _resolve_folder_permission(
 
     current_folder = folder
     while current_folder is not None:
+        folder_id_str = str(current_folder.id)
+        org_id_str = str(current_folder.organization_id)
         perm = (
             db.query(DocumentPermission)
             .filter(
-                DocumentPermission.folder_id == current_folder.id,
+                DocumentPermission.folder_id == folder_id_str,
                 DocumentPermission.user_id == str(user.id),
-                DocumentPermission.organization_id == current_folder.organization_id,
+                DocumentPermission.organization_id == org_id_str,
             )
             .one_or_none()
         )
@@ -152,7 +154,7 @@ def _resolve_document_permission(
         .filter(
             DocumentPermission.document_id == document.id,
             DocumentPermission.user_id == str(user.id),
-            DocumentPermission.organization_id == document.organization_id,
+            DocumentPermission.organization_id == str(document.organization_id),
         )
         .one_or_none()
     )
@@ -750,15 +752,18 @@ def list_folders(
             if parent_folder_id:
                 child_counts[str(parent_folder_id)] = child_count
 
-    return [
-        _folder_to_response(
-            folder,
-            document_count=documents_per_folder.get(folder.id, 0),
-            children=[],
-            has_children=bool(child_counts.get(folder.id)),
+    responses = []
+    for folder in folder_rows:
+        folder_id_str = str(folder.id)
+        responses.append(
+            _folder_to_response(
+                folder,
+                document_count=documents_per_folder.get(folder_id_str, 0),
+                children=[],
+                has_children=bool(child_counts.get(folder_id_str)),
+            )
         )
-        for folder in folder_rows
-    ]
+    return responses
 
 
 def get_folder_by_id(
@@ -819,9 +824,11 @@ def update_folder(
     db.commit()
     db.refresh(folder_model)
 
+    folder_id_str = str(folder_model.id)
+
     doc_count = (
         db.query(func.count(Document.id))
-        .filter(Document.folder_id == folder_model.id)
+        .filter(Document.folder_id == folder_id_str)
         .scalar()
     ) or 0
 
@@ -855,7 +862,7 @@ def delete_folder(
 
     subfolder_count = (
         db.query(func.count(Folder.id))
-        .filter(Folder.parent_folder_id == folder_model.id)
+        .filter(Folder.parent_folder_id == folder_id_str)
         .scalar()
     ) or 0
     if subfolder_count > 0:
@@ -1016,14 +1023,14 @@ def grant_document_permission(
         .filter(
             DocumentPermission.document_id == document.id,
             DocumentPermission.user_id == str(permission_data.user_id),
-            DocumentPermission.organization_id == document.organization_id,
+            DocumentPermission.organization_id == str(document.organization_id),
         )
         .one_or_none()
     )
 
     if existing_permission:
         existing_permission.permission_level = permission_data.permission_level
-        existing_permission.granted_by = granter.id
+        existing_permission.granted_by = str(granter.id)
         permission = existing_permission
     else:
         permission = DocumentPermission(
@@ -1032,8 +1039,8 @@ def grant_document_permission(
             folder_id=None,
             user_id=str(permission_data.user_id),
             permission_level=permission_data.permission_level,
-            organization_id=document.organization_id,
-            granted_by=granter.id,
+            organization_id=str(document.organization_id),
+            granted_by=str(granter.id),
         )
         db.add(permission)
 
@@ -1179,28 +1186,31 @@ def grant_folder_permission(
     if target_user is None or target_user.organization_id != folder.organization_id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
 
+    folder_id_str = str(folder.id)
+    org_id_str = str(folder.organization_id)
+
     permission = (
         db.query(DocumentPermission)
         .filter(
-            DocumentPermission.folder_id == folder.id,
+            DocumentPermission.folder_id == folder_id_str,
             DocumentPermission.user_id == str(permission_data.user_id),
-            DocumentPermission.organization_id == folder.organization_id,
+            DocumentPermission.organization_id == org_id_str,
         )
         .one_or_none()
     )
 
     if permission:
         permission.permission_level = permission_data.permission_level
-        permission.granted_by = current_user.id
+        permission.granted_by = str(current_user.id)
     else:
         permission = DocumentPermission(
             id=str(uuid4()),
             document_id=None,
-            folder_id=folder.id,
+            folder_id=folder_id_str,
             user_id=str(permission_data.user_id),
             permission_level=permission_data.permission_level,
-            organization_id=folder.organization_id,
-            granted_by=current_user.id,
+            organization_id=org_id_str,
+            granted_by=str(current_user.id),
         )
         db.add(permission)
 
@@ -1209,8 +1219,8 @@ def grant_folder_permission(
     affected_documents = (
         db.query(Document)
         .filter(
-            Document.folder_id == folder.id,
-            Document.organization_id == folder.organization_id,
+            Document.folder_id == folder_id_str,
+            Document.organization_id == org_id_str,
         )
         .all()
     )
@@ -1253,11 +1263,14 @@ def list_folder_permissions(
 
     _ensure_folder_owner_permission(db, folder=folder, user=current_user, deal=deal)
 
+    folder_id_str = str(folder.id)
+    org_id_str = str(folder.organization_id)
+
     permissions = (
         db.query(DocumentPermission)
         .filter(
-            DocumentPermission.folder_id == folder.id,
-            DocumentPermission.organization_id == folder.organization_id,
+            DocumentPermission.folder_id == folder_id_str,
+            DocumentPermission.organization_id == org_id_str,
         )
         .order_by(DocumentPermission.created_at.desc())
         .all()
@@ -1294,12 +1307,15 @@ def revoke_folder_permission(
 
     _ensure_folder_owner_permission(db, folder=folder, user=current_user, deal=deal)
 
+    folder_id_str = str(folder.id)
+    org_id_str = str(folder.organization_id)
+
     permission = (
         db.query(DocumentPermission)
         .filter(
-            DocumentPermission.folder_id == folder.id,
+            DocumentPermission.folder_id == folder_id_str,
             DocumentPermission.user_id == target_user_id,
-            DocumentPermission.organization_id == folder.organization_id,
+            DocumentPermission.organization_id == org_id_str,
         )
         .one_or_none()
     )
@@ -1312,8 +1328,8 @@ def revoke_folder_permission(
     affected_documents = (
         db.query(Document)
         .filter(
-            Document.folder_id == folder.id,
-            Document.organization_id == folder.organization_id,
+            Document.folder_id == folder_id_str,
+            Document.organization_id == org_id_str,
         )
         .all()
     )

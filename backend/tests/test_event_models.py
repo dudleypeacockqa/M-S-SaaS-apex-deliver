@@ -18,8 +18,7 @@ from app.models.event import (
     EventStatus,
     RegistrationStatus,
 )
-# EventReminder model not yet implemented - tests skipped
-# from app.models.event_reminder import EventReminder
+from app.models.event_reminder import EventReminder
 from app.models.organization import Organization
 from app.models.user import User
 
@@ -186,14 +185,12 @@ class TestEventTicketModel:
             db_session.commit()
 
 
-@pytest.mark.skip(reason="EventReminder model not yet implemented")
 class TestEventReminderModel:
-    """Test EventReminder model (skipped - model not implemented)"""
+    """Test EventReminder model"""
 
     def test_create_event_reminder(self, db_session, sample_event, sample_user):
-        """Test that reminders persist with scheduled time (skipped - model not implemented)"""
-        pytest.skip("EventReminder model not yet implemented")
         reminder = EventReminder(
+            id=str(uuid4()),
             event_id=sample_event.id,
             user_id=sample_user.id,
             reminder_type="24h",
@@ -208,6 +205,7 @@ class TestEventReminderModel:
         assert reminder.id is not None
         assert reminder.status == "pending"
         assert reminder.reminder_type == "24h"
+
 
 class TestEventRegistrationModel:
     """Test EventRegistration model"""

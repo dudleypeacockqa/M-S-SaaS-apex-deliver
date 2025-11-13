@@ -29,6 +29,8 @@ def schedule_event_reminders(*, db: Session, event: Event, user_id: str) -> List
     now = datetime.now(UTC)
     for reminder_type, offset, _ in REMINDER_OFFSETS:
         scheduled_for = event.start_date - offset
+        if scheduled_for.tzinfo is None:
+            scheduled_for = scheduled_for.replace(tzinfo=UTC)
         if scheduled_for <= now:
             continue
         reminder = EventReminder(
