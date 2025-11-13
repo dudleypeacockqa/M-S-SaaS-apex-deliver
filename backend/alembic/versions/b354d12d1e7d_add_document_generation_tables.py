@@ -435,16 +435,7 @@ def upgrade() -> None:
             ELSIF has_uppercase THEN
                 default_val := 'GENERATED';
             ELSE
-                -- Neither exists, try to add lowercase
-                BEGIN
-                    ALTER TYPE documentstatus ADD VALUE 'generated';
-                    default_val := 'generated';
-                EXCEPTION
-                    WHEN duplicate_object THEN 
-                        default_val := 'generated';
-                    WHEN OTHERS THEN
-                        RAISE EXCEPTION 'Could not determine or create documentstatus enum value';
-                END;
+                default_val := 'generated';
             END IF;
             
             -- Add status column if it doesn't exist
