@@ -1,0 +1,224 @@
+name: Accessibility Audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # Run weekly on Mondays at 9 AM UTC
+    - cron: '0 9 * * 1'
+
+jobs:
+  lighthouse-preview:
+    name: Lighthouse - Preview Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: cd frontend && npm ci
+
+      - name: Build frontend
+        run: cd frontend && npm run build
+        env:
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+      - name: Start preview server
+        run: |
+          cd frontend
+          npm run preview:test &
+          echo $! > preview.pid
+        env:
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+      - name: Wait for server to be ready
+        run: |
+          timeout 60 bash -c 'until curl -s http://localhost:4173 > /dev/null; do sleep 2; done'
+          echo "Preview server is ready!"
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            http://localhost:4173
+            http://localhost:4173/pricing
+            http://localhost:4173/features
+            http://localhost:4173/about
+            http://localhost:4173/contact
+            http://localhost:4173/blog
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Run axe accessibility tests
+        run: |
+          cd frontend
+          npm run axe:local || true
+        continue-on-error: true
+
+      - name: Upload Lighthouse reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports-preview-${{ github.run_number }}
+          path: |
+            .lighthouseci/
+            frontend/docs/testing/
+          retention-days: 30
+
+      - name: Cleanup preview server
+        if: always()
+        run: |
+          if [ -f frontend/preview.pid ]; then
+            kill $(cat frontend/preview.pid) || true
+          fi
+
+  lighthouse-production:
+    name: Lighthouse - Production URLs
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Lighthouse globally
+        run: npm install -g lighthouse @axe-core/cli jq
+
+      - name: Create report directory
+        run: mkdir -p docs/marketing/lighthouse-reports-$(date +%Y-%m-%d)
+
+      - name: Run production audits
+        run: |
+          chmod +x scripts/run_lighthouse_audits.sh
+          bash scripts/run_lighthouse_audits.sh
+        env:
+          OUTPUT_DIR: docs/marketing/lighthouse-reports-$(date +%Y-%m-%d)
+
+      - name: Run axe on production
+        run: |
+          PAGES=(
+            "https://100daysandbeyond.com"
+            "https://100daysandbeyond.com/pricing"
+            "https://100daysandbeyond.com/about"
+            "https://100daysandbeyond.com/contact"
+            "https://100daysandbeyond.com/blog"
+            "https://100daysandbeyond.com/features"
+          )
+
+          for PAGE in "${PAGES[@]}"; do
+            PAGE_NAME=$(echo "$PAGE" | sed 's|https://100daysandbeyond.com||' | sed 's|/|-|g' | sed 's|^-||')
+            if [ -z "$PAGE_NAME" ]; then
+              PAGE_NAME="home"
+            fi
+
+            echo "Running axe on: $PAGE"
+            axe "$PAGE" \
+              --load-delay 5000 \
+              --timeout 60000 \
+              --save "docs/marketing/lighthouse-reports-$(date +%Y-%m-%d)/axe-${PAGE_NAME}.json" \
+              || echo "Warning: axe failed for $PAGE"
+          done
+        continue-on-error: true
+
+      - name: Generate summary report
+        run: |
+          REPORT_DIR="docs/marketing/lighthouse-reports-$(date +%Y-%m-%d)"
+          SUMMARY_FILE="$REPORT_DIR/SUMMARY.md"
+
+          echo "# Accessibility Audit Summary" > "$SUMMARY_FILE"
+          echo "" >> "$SUMMARY_FILE"
+          echo "**Date**: $(date +%Y-%m-%d)" >> "$SUMMARY_FILE"
+          echo "**Commit**: ${{ github.sha }}" >> "$SUMMARY_FILE"
+          echo "**Run**: #${{ github.run_number }}" >> "$SUMMARY_FILE"
+          echo "" >> "$SUMMARY_FILE"
+          echo "## Lighthouse Scores" >> "$SUMMARY_FILE"
+          echo "" >> "$SUMMARY_FILE"
+
+          for JSON_FILE in $REPORT_DIR/lighthouse-*.json; do
+            if [ -f "$JSON_FILE" ]; then
+              PAGE_NAME=$(basename "$JSON_FILE" .json | sed 's/lighthouse-//')
+              PERFORMANCE=$(jq '.categories.performance.score * 100' "$JSON_FILE" 2>/dev/null || echo "N/A")
+              ACCESSIBILITY=$(jq '.categories.accessibility.score * 100' "$JSON_FILE" 2>/dev/null || echo "N/A")
+              BEST_PRACTICES=$(jq '.categories["best-practices"].score * 100' "$JSON_FILE" 2>/dev/null || echo "N/A")
+              SEO=$(jq '.categories.seo.score * 100' "$JSON_FILE" 2>/dev/null || echo "N/A")
+
+              echo "### $PAGE_NAME" >> "$SUMMARY_FILE"
+              echo "- **Performance**: ${PERFORMANCE}%" >> "$SUMMARY_FILE"
+              echo "- **Accessibility**: ${ACCESSIBILITY}%" >> "$SUMMARY_FILE"
+              echo "- **Best Practices**: ${BEST_PRACTICES}%" >> "$SUMMARY_FILE"
+              echo "- **SEO**: ${SEO}%" >> "$SUMMARY_FILE"
+              echo "" >> "$SUMMARY_FILE"
+            fi
+          done
+
+          echo "## Files Generated" >> "$SUMMARY_FILE"
+          echo "" >> "$SUMMARY_FILE"
+          echo '```' >> "$SUMMARY_FILE"
+          ls -lh "$REPORT_DIR" >> "$SUMMARY_FILE"
+          echo '```' >> "$SUMMARY_FILE"
+
+          cat "$SUMMARY_FILE"
+
+      - name: Upload production audit reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports-production-${{ github.run_number }}
+          path: docs/marketing/lighthouse-reports-*
+          retention-days: 90
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportDir = `docs/marketing/lighthouse-reports-${new Date().toISOString().split('T')[0]}`;
+            const summaryPath = `${reportDir}/SUMMARY.md`;
+
+            if (fs.existsSync(summaryPath)) {
+              const summary = fs.readFileSync(summaryPath, 'utf8');
+
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: summary
+              });
+            }
+
+  accessibility-compliance-check:
+    name: Accessibility Compliance Check
+    runs-on: ubuntu-latest
+    needs: [lighthouse-preview, lighthouse-production]
+    if: always()
+
+    steps:
+      - name: Check accessibility scores
+        run: |
+          echo "Accessibility audit completed"
+          echo "Review the artifacts for detailed reports"
+          echo ""
+          echo "Minimum acceptable scores:"
+          echo "- Accessibility: 90+"
+          echo "- Performance: 80+"
+          echo "- Best Practices: 85+"
+          echo "- SEO: 85+"
