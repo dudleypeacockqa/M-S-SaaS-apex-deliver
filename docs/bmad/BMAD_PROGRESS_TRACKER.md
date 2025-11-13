@@ -1,4 +1,22 @@
 
+## Session 2025-11-14T02-DEV014-Refresh – Phase 0 Story Hygiene
+
+**Status**: 🚧 IN PROGRESS – Story alignment + evidence capture for DEV-014 before export job TDD
+**Duration**: ~20 minutes (doc audit + targeted Vitest run)
+**Priority**: P0 – Keep governance artefacts truthful while prepping export queue work
+
+### Summary
+- Reviewed DEV-014 story vs latest repo state (backend routes, frontend service wiring) and downgraded status from COMPLETE to IN PROGRESS with accurate completion (~85%) and blockers (export job queue, entitlement enforcement, integration spec).
+- Captured fresh evidence references: backend pytest log (`docs/tests/2025-11-13-f009-document-generation-15-15-passing.txt`) and new Vitest output for `DocumentEditor.test.tsx` (`docs/tests/2025-11-14-document-editor-vitest.txt`).
+- Documented remaining scope + next BMAD/TDD steps (RED tests for export polling, entitlement guards, integration screenshot updates) so Phase 1 execution can resume once Phase 0 artefacts are stable.
+
+### Next
+1. Update additional BMAD stories (DEV-016, MARK-005/006) with STATUS markers reflecting current progress during this session.
+2. Kick off Phase 0 Task T1b – full `npm run test -- --run --coverage --pool=threads` to refresh coverage artefacts prior to backend redeploy work.
+3. Begin RED spec for Document Generation export job polling immediately after coverage run completes.
+
+---
+
 ## Session 2025-11-14T01-Plan-Realignment – 100% Completion Orchestration
 
 **Status**: 🚧 IN PROGRESS – Refreshed roadmap + artefact checklist for the 76% → 100% push

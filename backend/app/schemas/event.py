@@ -36,7 +36,7 @@ class EventBase(BaseModel):
 
 class EventCreate(EventBase):
     """Schema for creating a new event"""
-    organization_id: str = Field(..., min_length=36, max_length=36)
+    organization_id: str = Field(..., min_length=1)
     created_by_user_id: str = Field(..., min_length=1)
 
 
@@ -88,8 +88,8 @@ class EventSessionBase(BaseModel):
 
 class EventSessionCreate(EventSessionBase):
     """Schema for creating a new event session"""
-    event_id: str = Field(..., min_length=36, max_length=36)
-    organization_id: str = Field(..., min_length=36, max_length=36)
+    event_id: str = Field(..., min_length=1)
+    organization_id: str = Field(..., min_length=1)
     created_by_user_id: str = Field(..., min_length=1)
 
 
@@ -138,8 +138,8 @@ class EventTicketBase(BaseModel):
 
 class EventTicketCreate(EventTicketBase):
     """Schema for creating a new event ticket"""
-    event_id: str = Field(..., min_length=36, max_length=36)
-    organization_id: str = Field(..., min_length=36, max_length=36)
+    event_id: str = Field(..., min_length=1)
+    organization_id: str = Field(..., min_length=1)
     created_by_user_id: str = Field(..., min_length=1)
 
 
@@ -179,14 +179,14 @@ class EventRegistrationBase(BaseModel):
     attendee_name: str = Field(..., min_length=1, max_length=255)
     attendee_email: str = Field(..., pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
     attendee_phone: Optional[str] = None
-    session_id: Optional[str] = Field(None, min_length=36, max_length=36)
-    ticket_id: Optional[str] = Field(None, min_length=36, max_length=36)
+    session_id: Optional[str] = Field(None, min_length=1)
+    ticket_id: Optional[str] = Field(None, min_length=1)
 
 
 class EventRegistrationCreate(EventRegistrationBase):
     """Schema for creating a new event registration"""
-    event_id: str = Field(..., min_length=36, max_length=36)
-    organization_id: str = Field(..., min_length=36, max_length=36)
+    event_id: str = Field(..., min_length=1)
+    organization_id: str = Field(..., min_length=1)
     registered_by_user_id: Optional[str] = Field(None, min_length=1)
 
 

@@ -4,12 +4,11 @@ Feature: F-009 Automated Document Generation
 """
 from datetime import datetime, UTC
 from sqlalchemy import Column, String, Text, JSON, ForeignKey, Integer, DateTime, Enum as SQLEnum
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import uuid
 import enum
 
-from app.db.base import Base
+from app.db.base import Base, GUID
 
 
 class TemplateStatus(str, enum.Enum):
@@ -31,7 +30,7 @@ class DocumentTemplate(Base):
     """Document template for automated generation"""
     __tablename__ = "document_templates"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     description = Column(Text)
     template_type = Column(String)  # legal, proposal, report, etc.
@@ -41,10 +40,10 @@ class DocumentTemplate(Base):
     version = Column(Integer, default=1)
 
     # Multi-tenancy
-    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False)
+    organization_id = Column(GUID, ForeignKey("organizations.id"), nullable=False)
 
     # Audit fields
-    created_by_user_id = Column(UUID(as_uuid=True), nullable=False)
+    created_by_user_id = Column(GUID, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
     updated_at = Column(DateTime(timezone=True), onupdate=lambda: datetime.now(UTC))
 
@@ -59,18 +58,18 @@ class GeneratedDocument(Base):
     """Generated document from a template"""
     __tablename__ = "generated_documents"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    template_id = Column(UUID(as_uuid=True), ForeignKey("document_templates.id"), nullable=False)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    template_id = Column(GUID, ForeignKey("document_templates.id"), nullable=False)
     generated_content = Column(Text, nullable=False)
     variable_values = Column(JSON, default=dict)  # Actual values used for variables
     file_path = Column(String)  # Path to generated PDF/DOCX (stores file_key|format)
     status = Column(SQLEnum(DocumentStatus), default=DocumentStatus.GENERATED, nullable=False)
 
     # Multi-tenancy
-    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False)
+    organization_id = Column(GUID, ForeignKey("organizations.id"), nullable=False)
 
     # Audit fields
-    generated_by_user_id = Column(UUID(as_uuid=True), nullable=False)
+    generated_by_user_id = Column(GUID, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
     updated_at = Column(DateTime(timezone=True), onupdate=lambda: datetime.now(UTC))
 
@@ -95,8 +94,8 @@ class DocumentAISuggestion(Base):
     """AI suggestion for a generated document"""
     __tablename__ = "document_ai_suggestions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    document_id = Column(UUID(as_uuid=True), ForeignKey("generated_documents.id", ondelete="CASCADE"), nullable=False)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    document_id = Column(GUID, ForeignKey("generated_documents.id", ondelete="CASCADE"), nullable=False)
     title = Column(String, nullable=False)
     content = Column(Text, nullable=False)
     confidence = Column(Integer)  # Confidence score (0-100)
@@ -104,10 +103,10 @@ class DocumentAISuggestion(Base):
     status = Column(SQLEnum(SuggestionStatus), default=SuggestionStatus.PENDING, nullable=False)
 
     # Multi-tenancy
-    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False)
+    organization_id = Column(GUID, ForeignKey("organizations.id"), nullable=False)
 
     # Audit fields
-    created_by_user_id = Column(UUID(as_uuid=True), nullable=False)
+    created_by_user_id = Column(GUID, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
     updated_at = Column(DateTime(timezone=True), onupdate=lambda: datetime.now(UTC))
     applied_at = Column(DateTime(timezone=True), nullable=True)
@@ -123,18 +122,18 @@ class DocumentVersion(Base):
     """Version history for a generated document"""
     __tablename__ = "document_versions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    document_id = Column(UUID(as_uuid=True), ForeignKey("generated_documents.id", ondelete="CASCADE"), nullable=False)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    document_id = Column(GUID, ForeignKey("generated_documents.id", ondelete="CASCADE"), nullable=False)
     version_number = Column(Integer, nullable=False)
     content = Column(Text, nullable=False)
     label = Column(String)  # Optional version label (e.g., "v1.0", "Final")
     summary = Column(Text)  # Optional version summary
 
     # Multi-tenancy
-    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False)
+    organization_id = Column(GUID, ForeignKey("organizations.id"), nullable=False)
 
     # Audit fields
-    created_by_user_id = Column(UUID(as_uuid=True), nullable=False)
+    created_by_user_id = Column(GUID, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
 
     # Relationships

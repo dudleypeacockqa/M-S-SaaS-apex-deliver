@@ -6,7 +6,6 @@ from datetime import datetime
 from uuid import uuid4
 
 from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Numeric, String
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 

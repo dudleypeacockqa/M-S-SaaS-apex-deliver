@@ -15,5 +15,56 @@
             "finishedAt": "2025-11-12T18:42:22.18513Z"
         },
         "cursor": "cj7sc0PAsIs4bGZmdGU1czczOWc1Z3Vn"
+    },
+    {
+        "deploy": {
+            "id": "dep-d4aqfahr0fns73eg6img",
+            "commit": {
+                "id": "0f04225fb058b4d7c184ce8c7a9681adcaa3a76d",
+                "message": "docs(deployment): comprehensive UUID migration attempt summary",
+                "createdAt": "2025-11-13T08:31:48Z"
+            },
+            "status": "update_failed",
+            "trigger": "api",
+            "createdAt": "2025-11-13T09:41:04.188065Z",
+            "updatedAt": "2025-11-13T09:42:16.992839Z",
+            "startedAt": "2025-11-13T09:41:03.760283Z",
+            "finishedAt": "2025-11-13T09:42:16.992132Z"
+        },
+        "cursor": "3Nr8IZRdF2lmYWhyMGZuczczZWc2aW1n"
+    },
+    {
+        "deploy": {
+            "id": "dep-d4aqfgenat6s738hr3og",
+            "commit": {
+                "id": "0f04225fb058b4d7c184ce8c7a9681adcaa3a76d",
+                "message": "docs(deployment): comprehensive UUID migration attempt summary",
+                "createdAt": "2025-11-13T08:31:48Z"
+            },
+            "status": "update_failed",
+            "trigger": "api",
+            "createdAt": "2025-11-13T09:41:23.058783Z",
+            "updatedAt": "2025-11-13T09:43:47.629377Z",
+            "startedAt": "2025-11-13T09:42:21.712348Z",
+            "finishedAt": "2025-11-13T09:43:47.62815Z"
+        },
+        "cursor": "3Nr8IZRdF2lmZ2VuYXQ2czczOGhyM29n"
+    },
+    {
+        "deploy": {
+            "id": "dep-d4aqg0o7ffvc73fa34kg",
+            "commit": {
+                "id": "0f04225fb058b4d7c184ce8c7a9681adcaa3a76d",
+                "message": "docs(deployment): comprehensive UUID migration attempt summary",
+                "createdAt": "2025-11-13T08:31:48Z"
+            },
+            "status": "update_failed",
+            "trigger": "api",
+            "createdAt": "2025-11-13T09:42:30.034238Z",
+            "updatedAt": "2025-11-13T09:45:05.445919Z",
+            "startedAt": "2025-11-13T09:43:53.046157Z",
+            "finishedAt": "2025-11-13T09:45:05.443991Z"
+        },
+        "cursor": "3Nr8IZRdF2lnMG83ZmZ2YzczZmEzNGtn"
     }
 ]

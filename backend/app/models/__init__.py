@@ -76,6 +76,20 @@ from .master_admin import (
     ContentStatus,
 )
 
+# Community Platform models
+from .community import (
+    Post,
+    Comment,
+    Reaction,
+    Follow,
+    ModerationAction,
+    PostStatus,
+    PostCategory,
+    ReactionType,
+    ModerationActionType,
+    TargetType,
+)
+
 __all__ = [
     "User",
     "UserRole",
@@ -157,4 +171,15 @@ __all__ = [
     "CampaignStatus",
     "ContentType",
     "ContentStatus",
+    # Community Platform
+    "Post",
+    "Comment",
+    "Reaction",
+    "Follow",
+    "ModerationAction",
+    "PostStatus",
+    "PostCategory",
+    "ReactionType",
+    "ModerationActionType",
+    "TargetType",
 ]

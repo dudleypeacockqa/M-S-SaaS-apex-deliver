@@ -3,8 +3,9 @@ Document Generation Pydantic Schemas
 Feature: F-009 Automated Document Generation
 """
 from datetime import datetime
-from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, Field, ConfigDict
+from typing import Optional, List, Dict, Any, Union
+from uuid import UUID
+from pydantic import BaseModel, Field, ConfigDict, field_serializer
 
 
 # ============================================================================
@@ -41,15 +42,20 @@ class DocumentTemplateUpdate(BaseModel):
 
 class DocumentTemplateResponse(DocumentTemplateBase):
     """Schema for document template responses"""
-    id: str
+    id: Union[str, UUID]
     status: str
     version: int
-    organization_id: str
-    created_by_user_id: str
+    organization_id: Union[str, UUID]
+    created_by_user_id: Union[str, UUID]
     created_at: datetime
     updated_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('id', 'organization_id', 'created_by_user_id')
+    def serialize_uuid(self, value: Union[str, UUID]) -> str:
+        """Convert UUID to string for JSON serialization"""
+        return str(value) if value else None
 
 
 # ============================================================================
@@ -81,15 +87,20 @@ class GeneratedDocumentUpdate(BaseModel):
 
 class GeneratedDocumentResponse(GeneratedDocumentBase):
     """Schema for generated document responses"""
-    id: str
-    template_id: str
+    id: Union[str, UUID]
+    template_id: Union[str, UUID]
     status: str
-    organization_id: str
-    generated_by_user_id: str
+    organization_id: Union[str, UUID]
+    generated_by_user_id: Union[str, UUID]
     created_at: datetime
     updated_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('id', 'template_id', 'organization_id', 'generated_by_user_id')
+    def serialize_uuid(self, value: Union[str, UUID]) -> str:
+        """Convert UUID to string for JSON serialization"""
+        return str(value) if value else None
 
 
 # ============================================================================
@@ -105,12 +116,17 @@ class TemplateRenderRequest(BaseModel):
 
 class TemplateRenderResponse(BaseModel):
     """Schema for template rendering response"""
-    generated_document_id: str
+    generated_document_id: Union[str, UUID]
     generated_content: str
     file_path: Optional[str] = None
     status: str
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('generated_document_id')
+    def serialize_uuid(self, value: Union[str, UUID]) -> str:
+        """Convert UUID to string for JSON serialization"""
+        return str(value) if value else None
 
 
 # ============================================================================
@@ -134,16 +150,21 @@ class AISuggestionCreate(AISuggestionBase):
 
 class AISuggestionResponse(AISuggestionBase):
     """Schema for AI suggestion responses"""
-    id: str
-    document_id: str
+    id: Union[str, UUID]
+    document_id: Union[str, UUID]
     status: str
-    organization_id: str
-    created_by_user_id: str
+    organization_id: Union[str, UUID]
+    created_by_user_id: Union[str, UUID]
     created_at: datetime
     updated_at: Optional[datetime] = None
     applied_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('id', 'document_id', 'organization_id', 'created_by_user_id')
+    def serialize_uuid(self, value: Union[str, UUID]) -> str:
+        """Convert UUID to string for JSON serialization"""
+        return str(value) if value else None
 
 
 class FetchSuggestionRequest(BaseModel):
@@ -174,21 +195,31 @@ class DocumentVersionCreate(DocumentVersionBase):
 
 class DocumentVersionResponse(DocumentVersionBase):
     """Schema for document version responses"""
-    id: str
-    document_id: str
-    organization_id: str
-    created_by_user_id: str
+    id: Union[str, UUID]
+    document_id: Union[str, UUID]
+    organization_id: Union[str, UUID]
+    created_by_user_id: Union[str, UUID]
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
+    @field_serializer('id', 'document_id', 'organization_id', 'created_by_user_id')
+    def serialize_uuid(self, value: Union[str, UUID]) -> str:
+        """Convert UUID to string for JSON serialization"""
+        return str(value) if value else None
+
 
 class DocumentVersionSummary(BaseModel):
     """Schema for document version summary (list view)"""
-    id: str
+    id: Union[str, UUID]
     label: str
     created_at: datetime
     created_by: Optional[str] = None
     summary: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('id')
+    def serialize_uuid(self, value: Union[str, UUID]) -> str:
+        """Convert UUID to string for JSON serialization"""
+        return str(value) if value else None

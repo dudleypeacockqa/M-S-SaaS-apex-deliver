@@ -7,6 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { MemoryRouter } from 'react-router-dom'
 import { EventDashboard } from '../EventDashboard'
 import * as eventsApi from '../../../services/api/events'
 
@@ -21,11 +22,19 @@ const createTestQueryClient = () =>
     },
   })
 
-describe('EventDashboard', () => {
-  let queryClient: QueryClient
+const renderWithProviders = (component: React.ReactElement) => {
+  const queryClient = createTestQueryClient()
+  return render(
+    <MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        {component}
+      </QueryClientProvider>
+    </MemoryRouter>
+  )
+}
 
+describe('EventDashboard', () => {
   beforeEach(() => {
-    queryClient = createTestQueryClient()
     vi.clearAllMocks()
   })
 
@@ -35,8 +44,8 @@ describe('EventDashboard', () => {
         id: 'event-1',
         name: 'M&A Conference 2025',
         description: 'Annual M&A conference',
-        event_type: 'in_person',
-        status: 'published',
+        event_type: 'in_person' as const,
+        status: 'published' as const,
         start_date: '2025-12-01T09:00:00Z',
         end_date: '2025-12-01T17:00:00Z',
         location: 'London, UK',
@@ -51,11 +60,7 @@ describe('EventDashboard', () => {
 
     vi.mocked(eventsApi.listEvents).mockResolvedValue(mockEvents)
 
-    render(
-      <QueryClientProvider client={queryClient}>
-        <EventDashboard />
-      </QueryClientProvider>
-    )
+    renderWithProviders(<EventDashboard />)
 
     await waitFor(() => {
       expect(screen.getByText('M&A Conference 2025')).toBeInTheDocument()
@@ -69,14 +74,11 @@ describe('EventDashboard', () => {
       () => new Promise(() => {}) // Never resolves
     )
 
-    render(
-      <QueryClientProvider client={queryClient}>
-        <EventDashboard />
-      </QueryClientProvider>
-    )
+    renderWithProviders(<EventDashboard />)
 
-    // Should show loading indicator
-    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+    // Should show loading spinner
+    const spinner = document.querySelector('.animate-spin')
+    expect(spinner).toBeInTheDocument()
   })
 
   it('should filter events by status', async () => {
@@ -84,8 +86,8 @@ describe('EventDashboard', () => {
       {
         id: 'event-1',
         name: 'Published Event',
-        event_type: 'virtual',
-        status: 'published',
+        event_type: 'virtual' as const,
+        status: 'published' as const,
         start_date: '2025-12-01T09:00:00Z',
         end_date: '2025-12-01T17:00:00Z',
         base_price: 0,
@@ -98,11 +100,7 @@ describe('EventDashboard', () => {
 
     vi.mocked(eventsApi.listEvents).mockResolvedValue(mockEvents)
 
-    render(
-      <QueryClientProvider client={queryClient}>
-        <EventDashboard />
-      </QueryClientProvider>
-    )
+    renderWithProviders(<EventDashboard />)
 
     await waitFor(() => {
       expect(eventsApi.listEvents).toHaveBeenCalled()
@@ -112,14 +110,10 @@ describe('EventDashboard', () => {
   it('should handle empty event list', async () => {
     vi.mocked(eventsApi.listEvents).mockResolvedValue([])
 
-    render(
-      <QueryClientProvider client={queryClient}>
-        <EventDashboard />
-      </QueryClientProvider>
-    )
+    renderWithProviders(<EventDashboard />)
 
     await waitFor(() => {
-      expect(screen.getByText(/no events/i)).toBeInTheDocument()
+      expect(screen.getByText(/no events found/i)).toBeInTheDocument()
     })
   })
 })
