@@ -1,0 +1,44 @@
+======================================================================
+RENDER DEPLOYMENT STATUS CHECK
+======================================================================
+Service ID: srv-d3ii9qk9c44c73aqsli0
+
+Found 5 recent deployments:
+
+Deploy ID: dep-d4b0gpali9vc73dm1nl0
+Status: build_in_progress
+Commit: d0c076ea
+Message: feat(platform): DEV-020 execution complete, accessibility wo...
+Created: 2025-11-13T16:33:49.079889Z
+Finished: N/A
+----------------------------------------------------------------------
+Deploy ID: dep-d4b0eq87ffvc73fb2qd0
+Status: update_failed
+Commit: d0c076ea
+Message: feat(platform): DEV-020 execution complete, accessibility wo...
+Created: 2025-11-13T16:29:31.824248Z
+Finished: 2025-11-13T16:32:21.473674Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4b0eoali9vc73agru80
+Status: update_failed
+Commit: d0c076ea
+Message: feat(platform): DEV-020 execution complete, accessibility wo...
+Created: 2025-11-13T16:29:25.138414Z
+Finished: 2025-11-13T16:31:12.963998Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4b0dgjuibrs73d1aqcg
+Status: update_failed
+Commit: 682bd319
+Message: fix(backend): merge email notifications with uuid-event-paym...
+Created: 2025-11-13T16:26:47.76905Z
+Finished: 2025-11-13T16:28:06.481874Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4b08rmnat6s738iq95g
+Status: update_failed
+Commit: b372f1af
+Message: feat(backend): add event notification service stub + docs
+
+*...
+Created: 2025-11-13T16:16:48.745698Z
+Finished: 2025-11-13T16:19:23.850407Z
+----------------------------------------------------------------------

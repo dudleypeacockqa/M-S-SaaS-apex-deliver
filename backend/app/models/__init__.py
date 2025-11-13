@@ -47,6 +47,7 @@ from .event import (
     EventStatus,
     RegistrationStatus,
 )
+from .event_reminder import EventReminder
 
 # Master Admin Portal models
 from .master_admin import (
@@ -145,6 +146,7 @@ __all__ = [
     "EventRegistration",
     "EventSession",
     "EventAnalytics",
+    "EventReminder",
     "EventLocationType",
     "EventStatus",
     "RegistrationStatus",

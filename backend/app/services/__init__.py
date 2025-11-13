@@ -7,7 +7,14 @@ from .user_service import (
     update_user_from_clerk,
 )
 
-from . import valuation_service, podcast_service, quota_service, organization_service
+from . import (
+    valuation_service,
+    podcast_service,
+    quota_service,
+    organization_service,
+    notification_service,
+    event_reminder_service,
+)
 from .task_service import (
     create_task,
     list_tasks,
@@ -66,4 +73,6 @@ __all__ = [
     "render_template",
     "queue_email",
     "retry_failed_email",
+    "notification_service",
+    "event_reminder_service",
 ]

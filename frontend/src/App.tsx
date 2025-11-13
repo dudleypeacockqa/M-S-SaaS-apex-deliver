@@ -11,6 +11,7 @@ import { PodcastStudio } from "./pages/podcast/PodcastStudio"
 import { EventDashboard } from "./pages/events/EventDashboard"
 import { EventCreator } from "./pages/events/EventCreator"
 import { EventDetails } from "./pages/events/EventDetails"
+import { CommunityFeed } from "./pages/community/CommunityFeed"
 
 const lazyNamed = <T extends ComponentType<any>>(
   importer: () => Promise<Record<string, unknown>>,
@@ -190,6 +191,9 @@ export const AppRoutes = () => {
         <Route path="events" element={<SignedIn><EventDashboard /></SignedIn>} />
         <Route path="events/new" element={<SignedIn><EventCreator /></SignedIn>} />
         <Route path="events/:eventId" element={<SignedIn><EventDetails /></SignedIn>} />
+
+        {/* Community Routes */}
+        <Route path="community" element={<SignedIn><CommunityFeed /></SignedIn>} />
 
         {/* Billing & Subscription Routes */}
         <Route path="dashboard/billing" element={<SignedIn><BillingDashboard /></SignedIn>} />

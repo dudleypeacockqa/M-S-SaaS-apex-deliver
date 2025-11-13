@@ -498,16 +498,16 @@ async def upload_document(
     uploader_name = _user_display_name(current_user)
 
     return DocumentUploadResponse(
-        id=UUID(document.id),
+        id=_ensure_uuid(document.id),
         name=document.name,
         file_size=document.file_size,
         file_type=document.file_type,
-        deal_id=document.deal_id,
-        folder_id=UUID(document.folder_id) if document.folder_id else None,
-        organization_id=UUID(document.organization_id),
-        uploaded_by=UUID(document.uploaded_by),
+        deal_id=str(document.deal_id),
+        folder_id=_ensure_uuid(document.folder_id),
+        organization_id=_ensure_uuid(document.organization_id),
+        uploaded_by=_ensure_uuid(document.uploaded_by),
         version=document.version,
-        parent_document_id=UUID(document.parent_document_id) if document.parent_document_id else None,
+        parent_document_id=_ensure_uuid(document.parent_document_id),
         archived_at=document.archived_at,
         created_at=document.created_at,
         updated_at=document.updated_at,
@@ -636,16 +636,16 @@ def list_documents(
 
     metadata_items = [
         DocumentMetadata(
-            id=UUID(item.id),
+            id=_ensure_uuid(item.id),
             name=item.name,
             file_size=item.file_size,
             file_type=item.file_type,
-            deal_id=item.deal_id,
-            folder_id=UUID(item.folder_id) if item.folder_id else None,
-            organization_id=UUID(item.organization_id),
-            uploaded_by=UUID(item.uploaded_by),
+            deal_id=str(item.deal_id),
+            folder_id=_ensure_uuid(item.folder_id),
+            organization_id=_ensure_uuid(item.organization_id),
+            uploaded_by=_ensure_uuid(item.uploaded_by),
             version=item.version,
-            parent_document_id=UUID(item.parent_document_id) if item.parent_document_id else None,
+            parent_document_id=_ensure_uuid(item.parent_document_id),
             archived_at=item.archived_at,
             created_at=item.created_at,
             updated_at=item.updated_at,
@@ -1041,13 +1041,13 @@ def grant_document_permission(
     db.refresh(permission)
 
     return PermissionResponse(
-        id=UUID(permission.id),
-        document_id=UUID(permission.document_id) if permission.document_id else None,
-        folder_id=UUID(permission.folder_id) if permission.folder_id else None,
-        user_id=UUID(permission.user_id),
+        id=_ensure_uuid(permission.id),
+        document_id=_ensure_uuid(permission.document_id),
+        folder_id=_ensure_uuid(permission.folder_id),
+        user_id=_ensure_uuid(permission.user_id),
         user_name=_user_display_name(target_user),
         permission_level=permission.permission_level,
-        granted_by=UUID(permission.granted_by),
+        granted_by=_ensure_uuid(permission.granted_by),
         granter_name=_user_display_name(granter),
         created_at=permission.created_at,
     )
@@ -1071,13 +1071,13 @@ def list_document_permissions(
 
     return [
         PermissionResponse(
-            id=UUID(permission.id),
-            document_id=UUID(permission.document_id) if permission.document_id else None,
-            folder_id=UUID(permission.folder_id) if permission.folder_id else None,
-            user_id=UUID(permission.user_id),
+            id=_ensure_uuid(permission.id),
+            document_id=_ensure_uuid(permission.document_id),
+            folder_id=_ensure_uuid(permission.folder_id),
+            user_id=_ensure_uuid(permission.user_id),
             user_name=_user_display_name(permission.user),
             permission_level=permission.permission_level,
-            granted_by=UUID(permission.granted_by),
+            granted_by=_ensure_uuid(permission.granted_by),
             granter_name=_user_display_name(permission.granter),
             created_at=permission.created_at,
         )
@@ -1147,9 +1147,9 @@ def get_document_access_logs(
     logs = query.all()
     return [
         DocumentAccessLogEntry(
-            id=UUID(log.id),
-            document_id=UUID(log.document_id),
-            user_id=UUID(log.user_id),
+            id=_ensure_uuid(log.id),
+            document_id=_ensure_uuid(log.document_id),
+            user_id=_ensure_uuid(log.user_id),
             user_name=_user_display_name(log.user),
             action=log.action,
             ip_address=log.ip_address,
@@ -1227,13 +1227,13 @@ def grant_folder_permission(
     db.refresh(permission)
 
     return PermissionResponse(
-        id=UUID(permission.id),
+        id=_ensure_uuid(permission.id),
         document_id=None,
-        folder_id=UUID(permission.folder_id) if permission.folder_id else None,
-        user_id=UUID(permission.user_id),
+        folder_id=_ensure_uuid(permission.folder_id),
+        user_id=_ensure_uuid(permission.user_id),
         user_name=_user_display_name(target_user),
         permission_level=permission.permission_level,
-        granted_by=UUID(permission.granted_by),
+        granted_by=_ensure_uuid(permission.granted_by),
         granter_name=_user_display_name(current_user),
         created_at=permission.created_at,
     )
@@ -1265,13 +1265,13 @@ def list_folder_permissions(
 
     return [
         PermissionResponse(
-            id=UUID(permission.id),
+            id=_ensure_uuid(permission.id),
             document_id=None,
-            folder_id=UUID(permission.folder_id) if permission.folder_id else None,
-            user_id=UUID(permission.user_id),
+            folder_id=_ensure_uuid(permission.folder_id),
+            user_id=_ensure_uuid(permission.user_id),
             user_name=_user_display_name(permission.user),
             permission_level=permission.permission_level,
-            granted_by=UUID(permission.granted_by),
+            granted_by=_ensure_uuid(permission.granted_by),
             granter_name=_user_display_name(permission.granter),
             created_at=permission.created_at,
         )
@@ -1350,9 +1350,9 @@ def log_document_access(
     db.refresh(entry)
 
     return DocumentAccessLogEntry(
-        id=UUID(entry.id),
-        document_id=UUID(entry.document_id),
-        user_id=UUID(entry.user_id),
+        id=_ensure_uuid(entry.id),
+        document_id=_ensure_uuid(entry.document_id),
+        user_id=_ensure_uuid(entry.user_id),
         user_name=_user_display_name(entry.user),
         action=entry.action,
         ip_address=entry.ip_address,
@@ -1418,16 +1418,16 @@ def get_document_versions(
 
     return [
         DocumentMetadata(
-            id=UUID(v.id),
+            id=_ensure_uuid(v.id),
             name=v.name,
             file_size=v.file_size,
             file_type=v.file_type,
-            deal_id=v.deal_id,
-            folder_id=UUID(v.folder_id) if v.folder_id else None,
-            organization_id=UUID(v.organization_id),
-            uploaded_by=UUID(v.uploaded_by),
+            deal_id=str(v.deal_id),
+            folder_id=_ensure_uuid(v.folder_id),
+            organization_id=_ensure_uuid(v.organization_id),
+            uploaded_by=_ensure_uuid(v.uploaded_by),
             version=v.version,
-            parent_document_id=UUID(v.parent_document_id) if v.parent_document_id else None,
+            parent_document_id=_ensure_uuid(v.parent_document_id),
             archived_at=v.archived_at,
             created_at=v.created_at,
             updated_at=v.updated_at,
@@ -1533,16 +1533,16 @@ async def restore_document_version(
     persisted_document = db.get(Document, restored_document.id)
 
     return DocumentUploadResponse(
-        id=UUID(persisted_document.id),
+        id=_ensure_uuid(persisted_document.id),
         name=persisted_document.name,
         file_size=persisted_document.file_size,
         file_type=persisted_document.file_type,
-        deal_id=persisted_document.deal_id,
-        folder_id=UUID(persisted_document.folder_id) if persisted_document.folder_id else None,
-        organization_id=UUID(persisted_document.organization_id),
-        uploaded_by=UUID(persisted_document.uploaded_by),
+        deal_id=str(persisted_document.deal_id),
+        folder_id=_ensure_uuid(persisted_document.folder_id),
+        organization_id=_ensure_uuid(persisted_document.organization_id),
+        uploaded_by=_ensure_uuid(persisted_document.uploaded_by),
         version=persisted_document.version,
-        parent_document_id=UUID(persisted_document.parent_document_id) if persisted_document.parent_document_id else None,
+        parent_document_id=_ensure_uuid(persisted_document.parent_document_id),
         archived_at=persisted_document.archived_at,
         created_at=persisted_document.created_at,
         updated_at=persisted_document.updated_at,
@@ -1841,4 +1841,3 @@ def _ensure_uuid(value):
     if isinstance(value, UUID):
         return value
     return UUID(str(value))
-
