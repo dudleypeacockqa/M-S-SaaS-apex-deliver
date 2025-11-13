@@ -84,6 +84,7 @@ class GeneratedDocument(Base):
     template = relationship("DocumentTemplate", back_populates="generated_documents")
     ai_suggestions = relationship("DocumentAISuggestion", back_populates="document", cascade="all, delete-orphan")
     versions = relationship("DocumentVersion", back_populates="document", cascade="all, delete-orphan")
+    export_jobs = relationship("DocumentExportJob", back_populates="document", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<GeneratedDocument(id={self.id}, template_id={self.template_id}, status={self.status})>"
@@ -152,3 +153,30 @@ class DocumentVersion(Base):
 
 # Type alias for template variables
 TemplateVariable = dict  # {name: str, type: str, required: bool, default: Any}
+
+
+class DocumentExportJob(Base):
+    """Tracks asynchronous document export jobs"""
+
+    __tablename__ = "document_export_jobs"
+
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    document_id = Column(GUID, ForeignKey("generated_documents.id", ondelete="CASCADE"), nullable=False)
+    organization_id = Column(GUID, ForeignKey("organizations.id"), nullable=False)
+    requested_by_user_id = Column(GUID, nullable=False)
+    format = Column(String, nullable=False)
+    options = Column(JSON, default=dict)
+    status = Column(SQLEnum(DocumentExportStatus), default=DocumentExportStatus.QUEUED, nullable=False)
+    file_path = Column(String)
+    download_url = Column(String)
+    failure_reason = Column(Text)
+    queued_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
+    started_at = Column(DateTime(timezone=True))
+    completed_at = Column(DateTime(timezone=True))
+    updated_at = Column(DateTime(timezone=True), onupdate=lambda: datetime.now(UTC))
+
+    document = relationship("GeneratedDocument", back_populates="export_jobs")
+
+    def __repr__(self):
+        return f"<DocumentExportJob(id={self.id}, document_id={self.document_id}, status={self.status})>"
+

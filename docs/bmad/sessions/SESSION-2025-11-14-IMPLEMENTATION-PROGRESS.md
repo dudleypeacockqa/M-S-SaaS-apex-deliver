@@ -26,6 +26,13 @@
 - 🔧 `scripts/run_local_audits.sh` updated to support overridable wait time, primary/fallback URLs, and custom preview commands.
 - 📝 Need to investigate why `curl http://127.0.0.1:4173` continues to return non-zero while preview is running; likely Windows↔WSL networking quirk. Once resolved, rerun the audits to generate Lighthouse/Axe artefacts under `docs/marketing/2025-11-14-audits/`.
 
+#### T1: Frontend Test Evidence & Coverage
+- ⚙️ Rebased Vitest runner defaults (`frontend/vitest.config.ts`) to allow up to **8 worker threads** when `--pool=threads` is used; this matches the 100% plan’s requirement for multi-threaded runs and reduces full-suite duration.
+- 🗂️ Enumerated the entire frontend Vitest surface (168 specs) and split them into six balanced chunks (`frontend/.tmp/vitest-chunks/chunk{1..6}.txt`). Each file lists ~28 specs to keep single runs under the sandbox time limit.
+- 📁 Prepared `coverage/chunks/` directory to store per-chunk `coverage-final.json` outputs so we can merge them later into the canonical report (`docs/tests/2025-11-14-frontend-vitest-coverage.txt`).
+- ❗ **Blocker**: Every `npm`/`node` invocation inside WSL now fails before Vitest starts because `/usr/local/bin/node` resolves to the Windows binary (`C:\Program Files\nodejs\node.exe`) and Windows interop is currently disabled. Example log: `docs/tests/2025-11-14-frontend-chunk1.log` (`Cannot find module 'C:\usr\bin\npm'`). Until a native Linux Node runtime is available (or the commands run from Windows/CI), the chunked coverage runs cannot proceed.
+- 📌 NEXT: Once Node functions locally/CI, execute `npm run test -- --run --coverage --pool=threads $(tr '\n' ' ' < .tmp/vitest-chunks/chunkN.txt)` for each chunk, move `coverage/coverage-final.json` into `coverage/chunks/chunkN.json`, then merge + document the consolidated coverage artefact.
+
 #### Document Generation Export Handler Fix
 - ✅ Fixed `DocumentEditor.tsx` export handler to properly use download URL
 - ✅ Updated `apiClient` to export `getAuthHeaders` function for binary downloads
