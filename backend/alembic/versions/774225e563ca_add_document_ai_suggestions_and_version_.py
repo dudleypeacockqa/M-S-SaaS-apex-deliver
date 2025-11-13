@@ -138,7 +138,165 @@ def upgrade() -> None:
                         -- Step 2: Convert organizations.id to VARCHAR(36) (CRITICAL)
                         ALTER TABLE organizations ALTER COLUMN id TYPE VARCHAR(36) USING id::text;
                     END IF;
-                END IF;  -- End organizations table exists check
+                END IF;
+                
+                -- Also check and convert document_templates.id if it's UUID
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.tables
+                    WHERE table_schema = 'public'
+                    AND table_name = 'document_templates'
+                ) THEN
+                    SELECT data_type INTO col_type
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                    AND table_name = 'document_templates'
+                    AND column_name = 'id';
+                    
+                    IF col_type = 'uuid' THEN
+                        -- Drop all FK constraints that reference document_templates.id
+                        FOR fk_rec IN 
+                            SELECT 
+                                con.conname AS constraint_name,
+                                con.conrelid::regclass::text AS table_name,
+                                a.attname AS column_name
+                            FROM pg_constraint con
+                            JOIN pg_attribute a ON a.attrelid = con.conrelid 
+                                AND a.attnum = ANY(con.conkey)
+                            WHERE con.confrelid = 'document_templates'::regclass
+                            AND con.contype = 'f'
+                            AND con.conrelid != 'document_templates'::regclass
+                        LOOP
+                            EXECUTE format('ALTER TABLE %s DROP CONSTRAINT IF EXISTS %I CASCADE', 
+                                fk_rec.table_name, fk_rec.constraint_name);
+                            
+                            BEGIN
+                                EXECUTE format('ALTER TABLE %s ALTER COLUMN %I TYPE VARCHAR(36) USING %I::text',
+                                    fk_rec.table_name, fk_rec.column_name, fk_rec.column_name);
+                            EXCEPTION
+                                WHEN OTHERS THEN
+                                    NULL;
+                            END;
+                        END LOOP;
+                        
+                        -- Convert document_templates.id to VARCHAR(36)
+                        ALTER TABLE document_templates ALTER COLUMN id TYPE VARCHAR(36) USING id::text;
+                        
+                        -- Also convert other UUID columns in document_templates
+                        BEGIN
+                            SELECT data_type INTO col_type
+                            FROM information_schema.columns
+                            WHERE table_schema = 'public'
+                            AND table_name = 'document_templates'
+                            AND column_name = 'organization_id';
+                            IF col_type = 'uuid' THEN
+                                ALTER TABLE document_templates 
+                                ALTER COLUMN organization_id TYPE VARCHAR(36) USING organization_id::text;
+                            END IF;
+                        EXCEPTION
+                            WHEN OTHERS THEN NULL;
+                        END;
+                        
+                        BEGIN
+                            SELECT data_type INTO col_type
+                            FROM information_schema.columns
+                            WHERE table_schema = 'public'
+                            AND table_name = 'document_templates'
+                            AND column_name = 'created_by_user_id';
+                            IF col_type = 'uuid' THEN
+                                ALTER TABLE document_templates 
+                                ALTER COLUMN created_by_user_id TYPE VARCHAR(36) USING created_by_user_id::text;
+                            END IF;
+                        EXCEPTION
+                            WHEN OTHERS THEN NULL;
+                        END;
+                    END IF;
+                END IF;
+                
+                -- Also check and convert generated_documents.id if it's UUID
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.tables
+                    WHERE table_schema = 'public'
+                    AND table_name = 'generated_documents'
+                ) THEN
+                    SELECT data_type INTO col_type
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                    AND table_name = 'generated_documents'
+                    AND column_name = 'id';
+                    
+                    IF col_type = 'uuid' THEN
+                        -- Drop all FK constraints that reference generated_documents.id
+                        FOR fk_rec IN 
+                            SELECT 
+                                con.conname AS constraint_name,
+                                con.conrelid::regclass::text AS table_name,
+                                a.attname AS column_name
+                            FROM pg_constraint con
+                            JOIN pg_attribute a ON a.attrelid = con.conrelid 
+                                AND a.attnum = ANY(con.conkey)
+                            WHERE con.confrelid = 'generated_documents'::regclass
+                            AND con.contype = 'f'
+                            AND con.conrelid != 'generated_documents'::regclass
+                        LOOP
+                            EXECUTE format('ALTER TABLE %s DROP CONSTRAINT IF EXISTS %I CASCADE', 
+                                fk_rec.table_name, fk_rec.constraint_name);
+                            
+                            BEGIN
+                                EXECUTE format('ALTER TABLE %s ALTER COLUMN %I TYPE VARCHAR(36) USING %I::text',
+                                    fk_rec.table_name, fk_rec.column_name, fk_rec.column_name);
+                            EXCEPTION
+                                WHEN OTHERS THEN
+                                    NULL;
+                            END;
+                        END LOOP;
+                        
+                        -- Convert generated_documents.id to VARCHAR(36)
+                        ALTER TABLE generated_documents ALTER COLUMN id TYPE VARCHAR(36) USING id::text;
+                        
+                        -- Also convert other UUID columns in generated_documents
+                        BEGIN
+                            SELECT data_type INTO col_type
+                            FROM information_schema.columns
+                            WHERE table_schema = 'public'
+                            AND table_name = 'generated_documents'
+                            AND column_name = 'template_id';
+                            IF col_type = 'uuid' THEN
+                                ALTER TABLE generated_documents 
+                                ALTER COLUMN template_id TYPE VARCHAR(36) USING template_id::text;
+                            END IF;
+                        EXCEPTION
+                            WHEN OTHERS THEN NULL;
+                        END;
+                        
+                        BEGIN
+                            SELECT data_type INTO col_type
+                            FROM information_schema.columns
+                            WHERE table_schema = 'public'
+                            AND table_name = 'generated_documents'
+                            AND column_name = 'organization_id';
+                            IF col_type = 'uuid' THEN
+                                ALTER TABLE generated_documents 
+                                ALTER COLUMN organization_id TYPE VARCHAR(36) USING organization_id::text;
+                            END IF;
+                        EXCEPTION
+                            WHEN OTHERS THEN NULL;
+                        END;
+                        
+                        BEGIN
+                            SELECT data_type INTO col_type
+                            FROM information_schema.columns
+                            WHERE table_schema = 'public'
+                            AND table_name = 'generated_documents'
+                            AND column_name = 'generated_by_user_id';
+                            IF col_type = 'uuid' THEN
+                                ALTER TABLE generated_documents 
+                                ALTER COLUMN generated_by_user_id TYPE VARCHAR(36) USING generated_by_user_id::text;
+                            END IF;
+                        EXCEPTION
+                            WHEN OTHERS THEN NULL;
+                        END;
+                    END IF;
+                END IF;
             END $$;
         """)
     
