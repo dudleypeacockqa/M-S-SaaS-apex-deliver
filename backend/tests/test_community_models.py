@@ -65,8 +65,8 @@ def test_create_post(db_session, test_user_data: dict):
         status=PostStatus.published,
     )
     db_session.add(post)
-    await db_session.commit()
-    await db_session.refresh(post)
+    db_session.commit()
+    db_session.refresh(post)
 
     # Verify
     assert post.id is not None
@@ -79,12 +79,12 @@ def test_create_post(db_session, test_user_data: dict):
     assert isinstance(post.updated_at, datetime)
 
 
-@pytest.mark.asyncio
-async def test_post_with_tags(db_session: AsyncSession, test_user_data: dict):
+
+def test_post_with_tags(db_session, test_user_data: dict):
     """Test creating a post with tags."""
     user = User(**test_user_data)
     db_session.add(user)
-    await db_session.commit()
+    db_session.commit()
 
     post = Post(
         organization_id=test_user_data["organization_id"],
@@ -94,18 +94,18 @@ async def test_post_with_tags(db_session: AsyncSession, test_user_data: dict):
         tags="ma,deals,valuation",
     )
     db_session.add(post)
-    await db_session.commit()
-    await db_session.refresh(post)
+    db_session.commit()
+    db_session.refresh(post)
 
     assert post.tags == "ma,deals,valuation"
 
 
-@pytest.mark.asyncio
-async def test_post_multi_tenancy(db_session: AsyncSession, test_user_data: dict):
+
+def test_post_multi_tenancy(db_session, test_user_data: dict):
     """Test post multi-tenancy isolation."""
     user = User(**test_user_data)
     db_session.add(user)
-    await db_session.commit()
+    db_session.commit()
 
     post = Post(
         organization_id=test_user_data["organization_id"],
@@ -114,10 +114,10 @@ async def test_post_multi_tenancy(db_session: AsyncSession, test_user_data: dict
         content="Organization specific post",
     )
     db_session.add(post)
-    await db_session.commit()
+    db_session.commit()
 
     # Query with correct org_id
-    result = await db_session.execute(
+    result = db_session.execute(
         select(Post).where(Post.organization_id == test_user_data["organization_id"])
     )
     posts = result.scalars().all()
@@ -125,17 +125,17 @@ async def test_post_multi_tenancy(db_session: AsyncSession, test_user_data: dict
 
     # Query with wrong org_id
     wrong_org_id = str(uuid.uuid4())
-    result = await db_session.execute(select(Post).where(Post.organization_id == wrong_org_id))
+    result = db_session.execute(select(Post).where(Post.organization_id == wrong_org_id))
     posts = result.scalars().all()
     assert len(posts) == 0
 
 
-@pytest.mark.asyncio
-async def test_create_comment(db_session: AsyncSession, test_user_data: dict):
+
+def test_create_comment(db_session, test_user_data: dict):
     """Test creating a comment."""
     user = User(**test_user_data)
     db_session.add(user)
-    await db_session.commit()
+    db_session.commit()
 
     post = Post(
         organization_id=test_user_data["organization_id"],
@@ -144,7 +144,7 @@ async def test_create_comment(db_session: AsyncSession, test_user_data: dict):
         content="Content",
     )
     db_session.add(post)
-    await db_session.commit()
+    db_session.commit()
 
     comment = Comment(
         post_id=post.id,
@@ -152,8 +152,8 @@ async def test_create_comment(db_session: AsyncSession, test_user_data: dict):
         content="This is a comment",
     )
     db_session.add(comment)
-    await db_session.commit()
-    await db_session.refresh(comment)
+    db_session.commit()
+    db_session.refresh(comment)
 
     assert comment.id is not None
     assert comment.post_id == post.id
@@ -162,12 +162,12 @@ async def test_create_comment(db_session: AsyncSession, test_user_data: dict):
     assert comment.parent_comment_id is None
 
 
-@pytest.mark.asyncio
-async def test_nested_comments(db_session: AsyncSession, test_user_data: dict):
+
+def test_nested_comments(db_session, test_user_data: dict):
     """Test nested comment threading."""
     user = User(**test_user_data)
     db_session.add(user)
-    await db_session.commit()
+    db_session.commit()
 
     post = Post(
         organization_id=test_user_data["organization_id"],
@@ -176,7 +176,7 @@ async def test_nested_comments(db_session: AsyncSession, test_user_data: dict):
         content="Content",
     )
     db_session.add(post)
-    await db_session.commit()
+    db_session.commit()
 
     # Parent comment
     parent_comment = Comment(
@@ -185,7 +185,7 @@ async def test_nested_comments(db_session: AsyncSession, test_user_data: dict):
         content="Parent comment",
     )
     db_session.add(parent_comment)
-    await db_session.commit()
+    db_session.commit()
 
     # Reply comment
     reply_comment = Comment(
@@ -195,18 +195,18 @@ async def test_nested_comments(db_session: AsyncSession, test_user_data: dict):
         parent_comment_id=parent_comment.id,
     )
     db_session.add(reply_comment)
-    await db_session.commit()
-    await db_session.refresh(reply_comment)
+    db_session.commit()
+    db_session.refresh(reply_comment)
 
     assert reply_comment.parent_comment_id == parent_comment.id
 
 
-@pytest.mark.asyncio
-async def test_post_comment_relationship(db_session: AsyncSession, test_user_data: dict):
+
+def test_post_comment_relationship(db_session, test_user_data: dict):
     """Test relationship between post and comments."""
     user = User(**test_user_data)
     db_session.add(user)
-    await db_session.commit()
+    db_session.commit()
 
     post = Post(
         organization_id=test_user_data["organization_id"],
@@ -215,7 +215,7 @@ async def test_post_comment_relationship(db_session: AsyncSession, test_user_dat
         content="Content",
     )
     db_session.add(post)
-    await db_session.commit()
+    db_session.commit()
 
     # Add multiple comments
     for i in range(3):
@@ -225,18 +225,18 @@ async def test_post_comment_relationship(db_session: AsyncSession, test_user_dat
             content=f"Comment {i}",
         )
         db_session.add(comment)
-    await db_session.commit()
-    await db_session.refresh(post)
+    db_session.commit()
+    db_session.refresh(post)
 
     assert len(post.comments) == 3
 
 
-@pytest.mark.asyncio
-async def test_create_reaction(db_session: AsyncSession, test_user_data: dict):
+
+def test_create_reaction(db_session, test_user_data: dict):
     """Test creating a reaction."""
     user = User(**test_user_data)
     db_session.add(user)
-    await db_session.commit()
+    db_session.commit()
 
     post = Post(
         organization_id=test_user_data["organization_id"],
@@ -245,7 +245,7 @@ async def test_create_reaction(db_session: AsyncSession, test_user_data: dict):
         content="Content",
     )
     db_session.add(post)
-    await db_session.commit()
+    db_session.commit()
 
     reaction = Reaction(
         target_type=TargetType.post,
@@ -254,8 +254,8 @@ async def test_create_reaction(db_session: AsyncSession, test_user_data: dict):
         reaction_type=ReactionType.like,
     )
     db_session.add(reaction)
-    await db_session.commit()
-    await db_session.refresh(reaction)
+    db_session.commit()
+    db_session.refresh(reaction)
 
     assert reaction.id is not None
     assert reaction.target_type == TargetType.post
@@ -264,12 +264,12 @@ async def test_create_reaction(db_session: AsyncSession, test_user_data: dict):
     assert reaction.reaction_type == ReactionType.like
 
 
-@pytest.mark.asyncio
-async def test_reaction_on_comment(db_session: AsyncSession, test_user_data: dict):
+
+def test_reaction_on_comment(db_session, test_user_data: dict):
     """Test creating a reaction on a comment."""
     user = User(**test_user_data)
     db_session.add(user)
-    await db_session.commit()
+    db_session.commit()
 
     post = Post(
         organization_id=test_user_data["organization_id"],
@@ -278,7 +278,7 @@ async def test_reaction_on_comment(db_session: AsyncSession, test_user_data: dic
         content="Content",
     )
     db_session.add(post)
-    await db_session.commit()
+    db_session.commit()
 
     comment = Comment(
         post_id=post.id,
@@ -286,7 +286,7 @@ async def test_reaction_on_comment(db_session: AsyncSession, test_user_data: dic
         content="Comment",
     )
     db_session.add(comment)
-    await db_session.commit()
+    db_session.commit()
 
     reaction = Reaction(
         target_type=TargetType.comment,
@@ -295,20 +295,20 @@ async def test_reaction_on_comment(db_session: AsyncSession, test_user_data: dic
         reaction_type=ReactionType.insightful,
     )
     db_session.add(reaction)
-    await db_session.commit()
-    await db_session.refresh(reaction)
+    db_session.commit()
+    db_session.refresh(reaction)
 
     assert reaction.target_type == TargetType.comment
     assert reaction.target_id == comment.id
     assert reaction.reaction_type == ReactionType.insightful
 
 
-@pytest.mark.asyncio
-async def test_unique_reaction_constraint(db_session: AsyncSession, test_user_data: dict):
+
+def test_unique_reaction_constraint(db_session, test_user_data: dict):
     """Test that a user cannot react twice with the same reaction type."""
     user = User(**test_user_data)
     db_session.add(user)
-    await db_session.commit()
+    db_session.commit()
 
     post = Post(
         organization_id=test_user_data["organization_id"],
@@ -317,7 +317,7 @@ async def test_unique_reaction_constraint(db_session: AsyncSession, test_user_da
         content="Content",
     )
     db_session.add(post)
-    await db_session.commit()
+    db_session.commit()
 
     # First reaction
     reaction1 = Reaction(
@@ -327,7 +327,7 @@ async def test_unique_reaction_constraint(db_session: AsyncSession, test_user_da
         reaction_type=ReactionType.like,
     )
     db_session.add(reaction1)
-    await db_session.commit()
+    db_session.commit()
 
     # Try to add duplicate reaction
     reaction2 = Reaction(
@@ -339,17 +339,17 @@ async def test_unique_reaction_constraint(db_session: AsyncSession, test_user_da
     db_session.add(reaction2)
 
     with pytest.raises(Exception):  # Will raise IntegrityError
-        await db_session.commit()
+        db_session.commit()
 
 
-@pytest.mark.asyncio
-async def test_create_follow(db_session: AsyncSession, test_user_data: dict, test_user_data_2: dict):
+
+def test_create_follow(db_session, test_user_data: dict, test_user_data_2: dict):
     """Test creating a follow relationship."""
     user1 = User(**test_user_data)
     user2 = User(**test_user_data_2)
     db_session.add(user1)
     db_session.add(user2)
-    await db_session.commit()
+    db_session.commit()
 
     follow = Follow(
         follower_user_id=user1.id,
@@ -357,8 +357,8 @@ async def test_create_follow(db_session: AsyncSession, test_user_data: dict, tes
         organization_id=test_user_data["organization_id"],
     )
     db_session.add(follow)
-    await db_session.commit()
-    await db_session.refresh(follow)
+    db_session.commit()
+    db_session.refresh(follow)
 
     assert follow.id is not None
     assert follow.follower_user_id == user1.id
@@ -366,14 +366,14 @@ async def test_create_follow(db_session: AsyncSession, test_user_data: dict, tes
     assert isinstance(follow.created_at, datetime)
 
 
-@pytest.mark.asyncio
-async def test_unique_follow_constraint(db_session: AsyncSession, test_user_data: dict, test_user_data_2: dict):
+
+def test_unique_follow_constraint(db_session, test_user_data: dict, test_user_data_2: dict):
     """Test that a user cannot follow the same user twice."""
     user1 = User(**test_user_data)
     user2 = User(**test_user_data_2)
     db_session.add(user1)
     db_session.add(user2)
-    await db_session.commit()
+    db_session.commit()
 
     # First follow
     follow1 = Follow(
@@ -382,7 +382,7 @@ async def test_unique_follow_constraint(db_session: AsyncSession, test_user_data
         organization_id=test_user_data["organization_id"],
     )
     db_session.add(follow1)
-    await db_session.commit()
+    db_session.commit()
 
     # Try to add duplicate follow
     follow2 = Follow(
@@ -393,15 +393,15 @@ async def test_unique_follow_constraint(db_session: AsyncSession, test_user_data
     db_session.add(follow2)
 
     with pytest.raises(Exception):  # Will raise IntegrityError
-        await db_session.commit()
+        db_session.commit()
 
 
-@pytest.mark.asyncio
-async def test_create_moderation_action(db_session: AsyncSession, test_user_data: dict):
+
+def test_create_moderation_action(db_session, test_user_data: dict):
     """Test creating a moderation action."""
     user = User(**test_user_data)
     db_session.add(user)
-    await db_session.commit()
+    db_session.commit()
 
     post = Post(
         organization_id=test_user_data["organization_id"],
@@ -410,7 +410,7 @@ async def test_create_moderation_action(db_session: AsyncSession, test_user_data
         content="Inappropriate content",
     )
     db_session.add(post)
-    await db_session.commit()
+    db_session.commit()
 
     moderation = ModerationAction(
         target_type=TargetType.post,
@@ -420,8 +420,8 @@ async def test_create_moderation_action(db_session: AsyncSession, test_user_data
         reason="Inappropriate content",
     )
     db_session.add(moderation)
-    await db_session.commit()
-    await db_session.refresh(moderation)
+    db_session.commit()
+    db_session.refresh(moderation)
 
     assert moderation.id is not None
     assert moderation.target_type == TargetType.post
@@ -431,12 +431,12 @@ async def test_create_moderation_action(db_session: AsyncSession, test_user_data
     assert moderation.reason == "Inappropriate content"
 
 
-@pytest.mark.asyncio
-async def test_moderation_action_types(db_session: AsyncSession, test_user_data: dict):
+
+def test_moderation_action_types(db_session, test_user_data: dict):
     """Test different moderation action types."""
     user = User(**test_user_data)
     db_session.add(user)
-    await db_session.commit()
+    db_session.commit()
 
     post = Post(
         organization_id=test_user_data["organization_id"],
@@ -445,7 +445,7 @@ async def test_moderation_action_types(db_session: AsyncSession, test_user_data:
         content="Content",
     )
     db_session.add(post)
-    await db_session.commit()
+    db_session.commit()
 
     # Test all action types
     action_types = [
@@ -465,9 +465,9 @@ async def test_moderation_action_types(db_session: AsyncSession, test_user_data:
         )
         db_session.add(moderation)
 
-    await db_session.commit()
+    db_session.commit()
 
     # Verify all were created
-    result = await db_session.execute(select(ModerationAction).where(ModerationAction.target_id == post.id))
+    result = db_session.execute(select(ModerationAction).where(ModerationAction.target_id == post.id))
     actions = result.scalars().all()
     assert len(actions) == len(action_types)

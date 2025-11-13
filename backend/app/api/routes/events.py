@@ -19,12 +19,15 @@ from app.schemas.event import (
     EventCreate,
     EventUpdate,
     EventResponse,
+    EventSessionCreateRequest,
     EventSessionCreate,
     EventSessionUpdate,
     EventSessionResponse,
+    EventTicketCreateRequest,
     EventTicketCreate,
     EventTicketUpdate,
     EventTicketResponse,
+    EventRegistrationCreateRequest,
     EventRegistrationCreate,
     EventRegistrationUpdate,
     EventRegistrationResponse,
@@ -158,7 +161,7 @@ def delete_event(
 @router.post("/{event_id}/sessions", response_model=EventSessionResponse, status_code=201)
 def create_session(
     event_id: str,
-    session_data: EventSessionCreate,
+    session_data: EventSessionCreateRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -177,13 +180,16 @@ def create_session(
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
 
-    # Override event_id and organization_id
-    session_data.event_id = event_id
-    session_data.organization_id = current_user.organization_id
-    session_data.created_by_user_id = current_user.id
+    # Create full schema with fields set by route
+    full_session_data = EventSessionCreate(
+        **session_data.model_dump(),
+        event_id=event_id,
+        organization_id=current_user.organization_id,
+        created_by_user_id=current_user.id,
+    )
 
     try:
-        session = EventService.create_session(db, session_data)
+        session = EventService.create_session(db, full_session_data)
         return session
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -285,7 +291,7 @@ def delete_session(
 @router.post("/{event_id}/tickets", response_model=EventTicketResponse, status_code=201)
 def create_ticket(
     event_id: str,
-    ticket_data: EventTicketCreate,
+    ticket_data: EventTicketCreateRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -304,13 +310,16 @@ def create_ticket(
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
 
-    # Override event_id and organization_id
-    ticket_data.event_id = event_id
-    ticket_data.organization_id = current_user.organization_id
-    ticket_data.created_by_user_id = current_user.id
+    # Create full schema with fields set by route
+    full_ticket_data = EventTicketCreate(
+        **ticket_data.model_dump(),
+        event_id=event_id,
+        organization_id=current_user.organization_id,
+        created_by_user_id=current_user.id,
+    )
 
     try:
-        ticket = EventService.create_ticket(db, ticket_data)
+        ticket = EventService.create_ticket(db, full_ticket_data)
         return ticket
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -412,7 +421,7 @@ def delete_ticket(
 @router.post("/{event_id}/registrations", response_model=EventRegistrationResponse, status_code=201)
 def create_registration(
     event_id: str,
-    registration_data: EventRegistrationCreate,
+    registration_data: EventRegistrationCreateRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -431,13 +440,16 @@ def create_registration(
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
 
-    # Override event_id and organization_id
-    registration_data.event_id = event_id
-    registration_data.organization_id = current_user.organization_id
-    registration_data.registered_by_user_id = current_user.id
+    # Create full schema with fields set by route
+    full_registration_data = EventRegistrationCreate(
+        **registration_data.model_dump(),
+        event_id=event_id,
+        organization_id=current_user.organization_id,
+        registered_by_user_id=current_user.id,
+    )
 
     try:
-        registration = EventService.create_registration(db, registration_data)
+        registration = EventService.create_registration(db, full_registration_data)
         return registration
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

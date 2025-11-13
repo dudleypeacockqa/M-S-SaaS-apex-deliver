@@ -20,67 +20,138 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Create document_templates table
-    op.create_table(
-        'document_templates',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
-        sa.Column('name', sa.String(), nullable=False),
-        sa.Column('description', sa.Text(), nullable=True),
-        sa.Column('template_type', sa.String(), nullable=True),
-        sa.Column('content', sa.Text(), nullable=False),
-        sa.Column('variables', sa.JSON(), nullable=False, server_default='[]'),
-        sa.Column('status', sa.Enum('DRAFT', 'ACTIVE', 'ARCHIVED', name='templatestatus'), nullable=False, server_default='ACTIVE'),
-        sa.Column('version', sa.Integer(), nullable=False, server_default='1'),
-        sa.Column('organization_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('organizations.id'), nullable=False),
-        sa.Column('created_by_user_id', postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
-        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
-    )
+    """Create document generation tables if they don't exist (idempotent)."""
 
-    # Create indexes for document_templates
-    op.create_index('idx_document_templates_organization_id', 'document_templates', ['organization_id'])
-    op.create_index('idx_document_templates_status', 'document_templates', ['status'])
-    op.create_index('idx_document_templates_template_type', 'document_templates', ['template_type'])
-    op.create_index('idx_document_templates_created_at', 'document_templates', ['created_at'])
+    # Create ENUMs if they don't exist
+    op.execute("""
+        DO $$ BEGIN
+            CREATE TYPE templatestatus AS ENUM ('DRAFT', 'ACTIVE', 'ARCHIVED');
+        EXCEPTION
+            WHEN duplicate_object THEN null;
+        END $$;
+    """)
 
-    # Create generated_documents table
-    op.create_table(
-        'generated_documents',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
-        sa.Column('template_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('document_templates.id'), nullable=False),
-        sa.Column('generated_content', sa.Text(), nullable=False),
-        sa.Column('variable_values', sa.JSON(), nullable=False, server_default='{}'),
-        sa.Column('file_path', sa.String(), nullable=True),
-        sa.Column('status', sa.Enum('DRAFT', 'GENERATED', 'FINALIZED', 'SENT', name='documentstatus'), nullable=False, server_default='GENERATED'),
-        sa.Column('organization_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('organizations.id'), nullable=False),
-        sa.Column('generated_by_user_id', postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
-        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
-    )
+    op.execute("""
+        DO $$ BEGIN
+            CREATE TYPE documentstatus AS ENUM ('DRAFT', 'GENERATED', 'FINALIZED', 'SENT');
+        EXCEPTION
+            WHEN duplicate_object THEN null;
+        END $$;
+    """)
 
-    # Create indexes for generated_documents
-    op.create_index('idx_generated_documents_organization_id', 'generated_documents', ['organization_id'])
-    op.create_index('idx_generated_documents_template_id', 'generated_documents', ['template_id'])
-    op.create_index('idx_generated_documents_status', 'generated_documents', ['status'])
-    op.create_index('idx_generated_documents_created_at', 'generated_documents', ['created_at'])
+    # Create document_templates table if not exists
+    op.execute("""
+        CREATE TABLE IF NOT EXISTS document_templates (
+            id UUID PRIMARY KEY,
+            name VARCHAR NOT NULL,
+            description TEXT,
+            template_type VARCHAR,
+            content TEXT NOT NULL,
+            variables JSON DEFAULT '[]' NOT NULL,
+            status templatestatus DEFAULT 'ACTIVE' NOT NULL,
+            version INTEGER DEFAULT 1 NOT NULL,
+            organization_id UUID NOT NULL REFERENCES organizations(id),
+            created_by_user_id UUID NOT NULL,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+            updated_at TIMESTAMP WITH TIME ZONE
+        )
+    """)
+
+    # Create indexes for document_templates (idempotent)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE INDEX idx_document_templates_organization_id ON document_templates(organization_id);
+        EXCEPTION WHEN duplicate_table THEN
+            NULL;
+        END $$;
+    """)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE INDEX idx_document_templates_status ON document_templates(status);
+        EXCEPTION WHEN duplicate_table THEN
+            NULL;
+        END $$;
+    """)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE INDEX idx_document_templates_template_type ON document_templates(template_type);
+        EXCEPTION WHEN duplicate_table THEN
+            NULL;
+        END $$;
+    """)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE INDEX idx_document_templates_created_at ON document_templates(created_at);
+        EXCEPTION WHEN duplicate_table THEN
+            NULL;
+        END $$;
+    """)
+
+    # Create generated_documents table if not exists
+    op.execute("""
+        CREATE TABLE IF NOT EXISTS generated_documents (
+            id UUID PRIMARY KEY,
+            template_id UUID NOT NULL REFERENCES document_templates(id),
+            generated_content TEXT NOT NULL,
+            variable_values JSON DEFAULT '{}' NOT NULL,
+            file_path VARCHAR,
+            status documentstatus DEFAULT 'GENERATED' NOT NULL,
+            organization_id UUID NOT NULL REFERENCES organizations(id),
+            generated_by_user_id UUID NOT NULL,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+            updated_at TIMESTAMP WITH TIME ZONE
+        )
+    """)
+
+    # Create indexes for generated_documents (idempotent)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE INDEX idx_generated_documents_organization_id ON generated_documents(organization_id);
+        EXCEPTION WHEN duplicate_table THEN
+            NULL;
+        END $$;
+    """)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE INDEX idx_generated_documents_template_id ON generated_documents(template_id);
+        EXCEPTION WHEN duplicate_table THEN
+            NULL;
+        END $$;
+    """)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE INDEX idx_generated_documents_status ON generated_documents(status);
+        EXCEPTION WHEN duplicate_table THEN
+            NULL;
+        END $$;
+    """)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE INDEX idx_generated_documents_created_at ON generated_documents(created_at);
+        EXCEPTION WHEN duplicate_table THEN
+            NULL;
+        END $$;
+    """)
 
 
 def downgrade() -> None:
-    # Drop indexes first
-    op.drop_index('idx_generated_documents_created_at', 'generated_documents')
-    op.drop_index('idx_generated_documents_status', 'generated_documents')
-    op.drop_index('idx_generated_documents_template_id', 'generated_documents')
-    op.drop_index('idx_generated_documents_organization_id', 'generated_documents')
+    """Drop document generation tables if they exist (idempotent)."""
 
-    op.drop_index('idx_document_templates_created_at', 'document_templates')
-    op.drop_index('idx_document_templates_template_type', 'document_templates')
-    op.drop_index('idx_document_templates_status', 'document_templates')
-    op.drop_index('idx_document_templates_organization_id', 'document_templates')
+    # Drop indexes first (idempotent)
+    op.execute("DROP INDEX IF EXISTS idx_generated_documents_created_at")
+    op.execute("DROP INDEX IF EXISTS idx_generated_documents_status")
+    op.execute("DROP INDEX IF EXISTS idx_generated_documents_template_id")
+    op.execute("DROP INDEX IF EXISTS idx_generated_documents_organization_id")
 
-    # Drop tables
-    op.drop_table('generated_documents')
-    op.drop_table('document_templates')
+    op.execute("DROP INDEX IF EXISTS idx_document_templates_created_at")
+    op.execute("DROP INDEX IF EXISTS idx_document_templates_template_type")
+    op.execute("DROP INDEX IF EXISTS idx_document_templates_status")
+    op.execute("DROP INDEX IF EXISTS idx_document_templates_organization_id")
 
-    # Drop enums
-    op.execute('DROP TYPE documentstatus')
-    op.execute('DROP TYPE templatestatus')
+    # Drop tables (idempotent)
+    op.execute("DROP TABLE IF EXISTS generated_documents CASCADE")
+    op.execute("DROP TABLE IF EXISTS document_templates CASCADE")
+
+    # Drop enums (idempotent)
+    op.execute("DROP TYPE IF EXISTS documentstatus")
+    op.execute("DROP TYPE IF EXISTS templatestatus")

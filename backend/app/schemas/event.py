@@ -86,8 +86,13 @@ class EventSessionBase(BaseModel):
     speaker_bio: Optional[str] = None
 
 
+class EventSessionCreateRequest(EventSessionBase):
+    """Schema for creating a new event session (request body - fields set by route)"""
+    pass
+
+
 class EventSessionCreate(EventSessionBase):
-    """Schema for creating a new event session"""
+    """Schema for creating a new event session (internal - with all fields)"""
     event_id: str = Field(..., min_length=1)
     organization_id: str = Field(..., min_length=1)
     created_by_user_id: str = Field(..., min_length=1)
@@ -136,8 +141,13 @@ class EventTicketBase(BaseModel):
     sale_end_date: Optional[datetime] = None
 
 
+class EventTicketCreateRequest(EventTicketBase):
+    """Schema for creating a new event ticket (request body - fields set by route)"""
+    pass
+
+
 class EventTicketCreate(EventTicketBase):
-    """Schema for creating a new event ticket"""
+    """Schema for creating a new event ticket (internal - with all fields)"""
     event_id: str = Field(..., min_length=1)
     organization_id: str = Field(..., min_length=1)
     created_by_user_id: str = Field(..., min_length=1)
@@ -183,8 +193,13 @@ class EventRegistrationBase(BaseModel):
     ticket_id: Optional[str] = Field(None, min_length=1)
 
 
+class EventRegistrationCreateRequest(EventRegistrationBase):
+    """Schema for creating a new event registration (request body - fields set by route)"""
+    pass
+
+
 class EventRegistrationCreate(EventRegistrationBase):
-    """Schema for creating a new event registration"""
+    """Schema for creating a new event registration (internal - with all fields)"""
     event_id: str = Field(..., min_length=1)
     organization_id: str = Field(..., min_length=1)
     registered_by_user_id: Optional[str] = Field(None, min_length=1)

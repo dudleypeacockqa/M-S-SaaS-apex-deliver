@@ -10,6 +10,21 @@ import { createEvent, type EventCreate } from '../../services/api/events'
 import { useUser } from '@clerk/clerk-react'
 import { Button, Spinner } from '../../components/ui'
 
+const fieldIds = {
+  name: 'event-name',
+  description: 'event-description',
+  eventType: 'event-type',
+  status: 'event-status',
+  startDate: 'event-start-date',
+  endDate: 'event-end-date',
+  registrationDeadline: 'event-registration-deadline',
+  location: 'event-location',
+  virtualLink: 'event-virtual-link',
+  capacity: 'event-capacity',
+  basePrice: 'event-base-price',
+  currency: 'event-currency',
+}
+
 export const EventCreator: React.FC = () => {
   const navigate = useNavigate()
   const { user } = useUser()
@@ -65,11 +80,12 @@ export const EventCreator: React.FC = () => {
               <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={fieldIds.name}>
                   Event Name *
                 </label>
                 <input
                   type="text"
+                  id={fieldIds.name}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -78,10 +94,11 @@ export const EventCreator: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={fieldIds.description}>
                   Description
                 </label>
                 <textarea
+                  id={fieldIds.description}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -91,10 +108,11 @@ export const EventCreator: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={fieldIds.eventType}>
                     Event Type *
                   </label>
                   <select
+                    id={fieldIds.eventType}
                     value={formData.event_type}
                     onChange={(e) => setFormData({ ...formData, event_type: e.target.value as any })}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -107,10 +125,11 @@ export const EventCreator: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={fieldIds.status}>
                     Status *
                   </label>
                   <select
+                    id={fieldIds.status}
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -130,11 +149,13 @@ export const EventCreator: React.FC = () => {
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={fieldIds.startDate}>
                     Start Date *
                   </label>
                   <input
                     type="datetime-local"
+                    id={fieldIds.startDate}
+                    role="textbox"
                     value={formData.start_date}
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -143,11 +164,13 @@ export const EventCreator: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={fieldIds.endDate}>
                     End Date *
                   </label>
                   <input
                     type="datetime-local"
+                    id={fieldIds.endDate}
+                    role="textbox"
                     value={formData.end_date}
                     onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -157,11 +180,13 @@ export const EventCreator: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={fieldIds.registrationDeadline}>
                   Registration Deadline
                 </label>
                 <input
                   type="datetime-local"
+                  id={fieldIds.registrationDeadline}
+                  role="textbox"
                   value={formData.registration_deadline}
                   onChange={(e) => setFormData({ ...formData, registration_deadline: e.target.value })}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -174,11 +199,12 @@ export const EventCreator: React.FC = () => {
               <h2 className="text-lg font-semibold text-gray-900">Location</h2>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Location
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={fieldIds.location}>
+                  Event Location
                 </label>
                 <input
                   type="text"
+                  id={fieldIds.location}
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -188,11 +214,12 @@ export const EventCreator: React.FC = () => {
 
               {(formData.event_type === 'virtual' || formData.event_type === 'hybrid') && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={fieldIds.virtualLink}>
                     Virtual Link
                   </label>
                   <input
                     type="url"
+                    id={fieldIds.virtualLink}
                     value={formData.virtual_link}
                     onChange={(e) => setFormData({ ...formData, virtual_link: e.target.value })}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -208,11 +235,12 @@ export const EventCreator: React.FC = () => {
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={fieldIds.capacity}>
                     Capacity
                   </label>
                   <input
                     type="number"
+                    id={fieldIds.capacity}
                     value={formData.capacity || ''}
                     onChange={(e) => setFormData({ ...formData, capacity: e.target.value ? parseInt(e.target.value) : undefined })}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -222,12 +250,13 @@ export const EventCreator: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={fieldIds.basePrice}>
                     Base Price
                   </label>
                   <div className="flex items-center gap-2">
                     <input
                       type="number"
+                      id={fieldIds.basePrice}
                       value={formData.base_price}
                       onChange={(e) => setFormData({ ...formData, base_price: parseFloat(e.target.value) || 0 })}
                       className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -235,6 +264,8 @@ export const EventCreator: React.FC = () => {
                       step={0.01}
                     />
                     <select
+                      id={fieldIds.currency}
+                      aria-label="Currency"
                       value={formData.currency}
                       onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
                       className="rounded-md border border-gray-300 px-3 py-2 text-sm"
