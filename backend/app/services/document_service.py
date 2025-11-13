@@ -720,7 +720,7 @@ def list_folders(
             query = query.filter(Folder.parent_folder_id.is_(None))
 
     folder_rows = query.order_by(Folder.name).all()
-    folder_ids = [folder.id for folder in folder_rows]
+    folder_ids = [str(folder.id) for folder in folder_rows]
 
     documents_per_folder: dict[str, int] = defaultdict(int)
     if folder_ids:
@@ -852,9 +852,11 @@ def delete_folder(
 
     _ensure_folder_owner_permission(db, folder=folder_model, user=current_user, deal=deal)
 
+    folder_id_str = str(folder_model.id)
+
     doc_count = (
         db.query(func.count(Document.id))
-        .filter(Document.folder_id == folder_model.id)
+        .filter(Document.folder_id == folder_id_str)
         .scalar()
     ) or 0
     if doc_count > 0:

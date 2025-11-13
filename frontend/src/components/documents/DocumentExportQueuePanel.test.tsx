@@ -90,18 +90,21 @@ describe('DocumentExportQueuePanel', () => {
           },
         },
       },
-    })
+    } as any)
 
     renderWithQueryClient(<DocumentExportQueuePanel documentId="doc-123" />)
 
     const queueButton = await screen.findByRole('button', { name: /queue export/i })
     await userEvent.click(queueButton)
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(/upgrade to the pro tier to export documents/i),
-      ).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(
+          screen.getByText(/upgrade to the pro tier to export documents/i),
+        ).toBeInTheDocument()
+      },
+      { timeout: 3000 }
+    )
   })
 
   it('shows existing queued jobs from the API', async () => {

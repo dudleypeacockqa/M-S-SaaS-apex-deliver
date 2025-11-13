@@ -6531,3 +6531,20 @@ python -m pytest --cov=app --cov-report=term
 ### Evidence
 - Tests: `./venv/Scripts/python.exe -m pytest tests/api/test_event_api.py::test_create_registration_sends_confirmation_email tests/test_event_notification_service.py`
 - Code: `backend/app/services/event_notification_service.py`, `backend/app/api/routes/events.py`
+
+## Session 2025-11-15B – Event Reminder Scheduler (F-012)
+
+**Status**: ✅ COMPLETE – Reminder scheduling + dispatcher implemented via TDD
+**Duration**: ~2 hrs (model + service + migration + tests)
+**Priority**: P1 – Required for Event Hub AC-20.3 (reminder emails)
+
+### Summary
+- ✅ Added `event_reminders` table/model with Alembic migration
+- ✅ Extended `EventService.create_registration` to auto-schedule 24h/1h reminders for authenticated organizers
+- ✅ Built `event_reminder_service` to schedule reminders and send due notifications via `notification_service`
+- ✅ Created RED tests for models/services then drove them GREEN (`tests/test_event_models.py`, `tests/test_event_service.py`, `tests/test_event_reminder_service.py`)
+
+### Evidence
+- Tests: `cd backend && ./venv/Scripts/python.exe -m pytest tests/test_event_models.py::TestEventReminderModel::test_create_event_reminder tests/test_event_service.py::TestEventRegistrationService::test_create_registration tests/test_event_reminder_service.py`
+- Code: `backend/app/models/event_reminder.py`, `backend/app/services/event_reminder_service.py`, `backend/app/services/event_service.py`
+- Migration: `backend/alembic/versions/f0a1b2c3d4e5_add_event_reminders.py`
