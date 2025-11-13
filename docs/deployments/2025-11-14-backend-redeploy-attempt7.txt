@@ -1,0 +1,11 @@
+======================================================================
+RENDER BACKEND DEPLOYMENT TRIGGER
+======================================================================
+Service ID: srv-d3ii9qk9c44c73aqsli0
+API Key: rnd_o...NAqM
+Payload: {"clearCache": "do_not_clear"}
+
+[INFO] Triggering manual deployment...
+[ERROR] HTTP 401: Unauthorized
+Unauthorized
+

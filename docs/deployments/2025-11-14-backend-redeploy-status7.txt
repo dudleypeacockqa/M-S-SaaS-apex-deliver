@@ -5,6 +5,33 @@ Service ID: srv-d3ii9qk9c44c73aqsli0
 
 Found 5 recent deployments:
 
+Deploy ID: dep-d4atmfhe2q1c73b8ou8g
+Status: build_in_progress
+Commit: 6737d3ad
+Message: docs: update frontend test run 7 notes
+
+🤖 Generated with [Cl...
+Created: 2025-11-13T13:21:06.944965Z
+Finished: N/A
+----------------------------------------------------------------------
+Deploy ID: dep-d4atkd6nat6s738ib8t0
+Status: update_failed
+Commit: 6737d3ad
+Message: docs: update frontend test run 7 notes
+
+🤖 Generated with [Cl...
+Created: 2025-11-13T13:16:38.055444Z
+Finished: 2025-11-13T13:18:46.11912Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4atk6s9c44c738tmu3g
+Status: update_failed
+Commit: 6737d3ad
+Message: docs: update frontend test run 7 notes
+
+🤖 Generated with [Cl...
+Created: 2025-11-13T13:16:14.808258Z
+Finished: 2025-11-13T13:17:31.083181Z
+----------------------------------------------------------------------
 Deploy ID: dep-d4asjgk9c44c738osqi0
 Status: update_failed
 Commit: 3380b263
@@ -18,25 +45,4 @@ Commit: 3380b263
 Message: docs(session): Week 1 Day 1 complete - major discoveries mad...
 Created: 2025-11-13T11:55:42.200219Z
 Finished: 2025-11-13T11:57:54.840935Z
-----------------------------------------------------------------------
-Deploy ID: dep-d4as9sjipnbc73ah825g
-Status: update_failed
-Commit: 3380b263
-Message: docs(session): Week 1 Day 1 complete - major discoveries mad...
-Created: 2025-11-13T11:45:59.095303Z
-Finished: 2025-11-13T11:46:57.604732Z
-----------------------------------------------------------------------
-Deploy ID: dep-d4as8gg7ffvc73fabtsg
-Status: update_failed
-Commit: 3380b263
-Message: docs(session): Week 1 Day 1 complete - major discoveries mad...
-Created: 2025-11-13T11:43:00.326159Z
-Finished: 2025-11-13T11:44:56.107543Z
-----------------------------------------------------------------------
-Deploy ID: dep-d4as8cu3jp1c73ebl1ng
-Status: update_failed
-Commit: 3380b263
-Message: docs(session): Week 1 Day 1 complete - major discoveries mad...
-Created: 2025-11-13T11:42:47.986861Z
-Finished: 2025-11-13T11:43:31.433463Z
 ----------------------------------------------------------------------
