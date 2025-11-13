@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect, useRef, ChangeEvent, FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import {
   listValuations,
   listScenarios,
@@ -11,6 +12,7 @@ import {
   getPrecedentSummary,
   runMonteCarlo,
   triggerExport,
+  getExportStatus,
   createValuation,
   addComparableCompany,
   createScenario,
@@ -21,6 +23,7 @@ import {
 import type {
   MonteCarloRequest,
   ValuationExportResponse,
+  ValuationExportLogEntry,
   ComparableSummaryMetrics,
   ValuationCreateRequest,
   ScenarioCreateRequest,
@@ -29,7 +32,6 @@ import type {
 
 import { formatCurrency } from '../../../services/api/deals'
 import { Spinner as LoadingSpinner } from '../../../components/ui'
-import type { ChangeEvent, FormEvent } from 'react'
 
 const skeletonClass = 'animate-pulse rounded bg-gray-200 h-4'
 
@@ -1272,6 +1274,24 @@ const ScenariosView = ({ dealId, valuationId }: { dealId: string; valuationId: s
         </SectionCard>
       )}
 
+      {hasScenarios && scenarios && scenarios.length > 0 && (
+        <SectionCard title="Scenario Comparison">
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={scenarios.map(s => ({
+              name: s.name,
+              'Enterprise Value': s.enterprise_value ? s.enterprise_value / 1000000 : 0
+            }))}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis label={{ value: 'Enterprise Value (£M)', angle: -90, position: 'insideLeft' }} />
+              <Tooltip formatter={(value: number) => [`£${value.toFixed(2)}M`, 'Enterprise Value']} />
+              <Legend />
+              <Bar dataKey="Enterprise Value" fill="#4f46e5" />
+            </BarChart>
+          </ResponsiveContainer>
+        </SectionCard>
+      )}
+
       <SectionCard title="Scenario Details">
         {hasScenarios ? (
           <div className="grid grid-cols-1 gap-4">
@@ -1335,22 +1355,80 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
   const [exportFormat, setExportFormat] = useState<string | null>('summary')
 
   const [lastExport, setLastExport] = useState<ValuationExportResponse | null>(null)
+  const [exportStatus, setExportStatus] = useState<ValuationExportLogEntry | null>(null)
   const [exportError, setExportError] = useState<string | null>(null)
+  const pollingIntervalRef = useRef<number | null>(null)
 
   const { mutate, isPending } = useMutation({
     mutationFn: () => triggerExport(dealId, valuationId, exportType, exportFormat),
     onMutate: () => {
       setExportError(null)
       setLastExport(null)
+      setExportStatus(null)
+      // Clear any existing polling
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current)
+        pollingIntervalRef.current = null
+      }
     },
     onSuccess: (response: ValuationExportResponse) => {
       setLastExport(response)
       queryClient.invalidateQueries({ queryKey: ['valuations', dealId, valuationId, 'exports'] })
+      // Start polling for status
+      if (response.task_id) {
+        pollExportStatus(response.task_id)
+      }
     },
     onError: () => {
       setExportError('Unable to queue export. Please try again.')
     },
   })
+
+  const pollExportStatus = async (taskId: string) => {
+    const checkStatus = async () => {
+      try {
+        const status = await getExportStatus(dealId, valuationId, taskId)
+        setExportStatus(status)
+
+        // Stop polling if export is complete or failed
+        if (status.status === 'complete' || status.status === 'failed') {
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current)
+            pollingIntervalRef.current = null
+          }
+          return false // Signal to stop polling
+        }
+        return true // Continue polling
+      } catch (error) {
+        console.error('Failed to check export status:', error)
+        // Continue polling on error (might be transient)
+        return true
+      }
+    }
+
+    // Check immediately
+    const shouldContinue = await checkStatus()
+
+    // Poll every 2 seconds if still processing
+    if (shouldContinue) {
+      pollingIntervalRef.current = window.setInterval(async () => {
+        const continuePolling = await checkStatus()
+        if (!continuePolling && pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current)
+          pollingIntervalRef.current = null
+        }
+      }, 2000)
+    }
+  }
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current)
+      }
+    }
+  }, [])
 
   const formatLabel = (value: string | null) => {
     if (!value) {
@@ -1359,32 +1437,99 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
     return value.replace(/_/g, ' ')
   }
 
+  const getStatusDisplay = () => {
+    if (!exportStatus && !lastExport) {
+      return null
+    }
+
+    const status = exportStatus?.status || lastExport?.status || 'queued'
+    const taskId = exportStatus?.task_id || lastExport?.task_id
+
+    if (status === 'queued') {
+      return (
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700" role="status">
+          <div className="flex items-center gap-2">
+            <LoadingSpinner className="h-4 w-4" />
+            <span>
+              Export queued: {exportStatus?.export_type || lastExport?.export_type} ({formatLabel(exportStatus?.export_format || lastExport?.export_format)}) · Task ID {taskId}
+            </span>
+          </div>
+        </div>
+      )
+    }
+
+    if (status === 'processing') {
+      return (
+        <div className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700" role="status">
+          <div className="flex items-center gap-2">
+            <LoadingSpinner className="h-4 w-4" />
+            <span>Processing export... This may take a few moments.</span>
+          </div>
+        </div>
+      )
+    }
+
+    if (status === 'complete' && exportStatus?.download_url) {
+      const fileSize = exportStatus.file_size_bytes
+        ? ` (${(exportStatus.file_size_bytes / 1024 / 1024).toFixed(2)} MB)`
+        : ''
+      return (
+        <div className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700" role="status">
+          <div className="flex items-center justify-between">
+            <span>Export complete!{fileSize}</span>
+            <a
+              href={exportStatus.download_url}
+              download
+              className="ml-4 font-medium text-emerald-800 underline hover:text-emerald-900"
+            >
+              Download
+            </a>
+          </div>
+        </div>
+      )
+    }
+
+    if (status === 'failed') {
+      return (
+        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+          <div>
+            <strong>Export failed.</strong>
+            {exportStatus?.error_message && <span className="ml-2">{exportStatus.error_message}</span>}
+          </div>
+        </div>
+      )
+    }
+
+    return null
+  }
+
   return (
     <div className="space-y-6">
       <SectionCard title="Generate Report">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Export Type</label>
+            <label className="block text-sm font-medium text-gray-700">Export Format</label>
             <select
               value={exportType}
               onChange={(event) => setExportType(event.target.value as 'pdf' | 'excel')}
               className="mt-1 w-48 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
             >
-              <option value="pdf">PDF Report</option>
-              <option value="excel">Excel Workbook</option>
+              <option value="pdf">PDF</option>
+              <option value="excel">DOCX</option>
+              <option value="html">HTML</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Export Format</label>
+            <label className="block text-sm font-medium text-gray-700">Export Template</label>
             <select
               value={exportFormat ?? ''}
               onChange={(event) => setExportFormat(event.target.value || null)}
               className="mt-1 w-64 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
             >
               <option value="summary">Executive Summary</option>
-              <option value="detailed">Detailed Model</option>
-              <option value="full_model">Full Model</option>
-              <option value="">Custom / Not specified</option>
+              <option value="detailed">Detailed</option>
+              <option value="custom">Custom</option>
+              <option value="">Not specified</option>
             </select>
           </div>
           <button
@@ -1400,11 +1545,7 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
               {exportError}
             </p>
           )}
-          {lastExport && (
-            <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700" role="status">
-              Export queued: {lastExport.export_type} ({formatLabel(lastExport.export_format)}) · Task ID {lastExport.task_id}
-            </p>
-          )}
+          {getStatusDisplay()}
         </div>
       </SectionCard>
     </div>

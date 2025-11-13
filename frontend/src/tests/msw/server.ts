@@ -160,54 +160,6 @@ type DealStage =
   | 'won'
   | 'lost'
 
-const mockDeals: DealRecord[] = [
-  {
-    id: 'deal-001',
-    name: 'Capstone Analytics Acquisition',
-    targetCompany: 'Capstone Analytics',
-    industry: 'Analytics',
-    dealSize: 12500000,
-    currency: 'GBP',
-    stage: 'due_diligence',
-    ownerId: 'owner-1',
-    organizationId: DEFAULT_ORG_ID,
-    description: 'High-growth analytics platform acquisition.',
-    archivedAt: null,
-    createdAt: '2025-10-01T12:00:00Z',
-    updatedAt: '2025-10-10T09:30:00Z',
-  },
-  {
-    id: 'deal-002',
-    name: 'Northwind Manufacturing Buyout',
-    targetCompany: 'Northwind Manufacturing',
-    industry: 'Manufacturing',
-    dealSize: 42000000,
-    currency: 'GBP',
-    stage: 'negotiation',
-    ownerId: 'owner-2',
-    organizationId: DEFAULT_ORG_ID,
-    description: 'Control buyout to consolidate manufacturing footprint.',
-    archivedAt: null,
-    createdAt: '2025-09-15T15:45:00Z',
-    updatedAt: '2025-10-12T08:15:00Z',
-  },
-  {
-    id: 'deal-003',
-    name: 'Helios Health Platform',
-    targetCompany: 'Helios Health',
-    industry: 'Healthcare',
-    dealSize: null,
-    currency: 'GBP',
-    stage: 'evaluation',
-    ownerId: 'owner-3',
-    organizationId: DEFAULT_ORG_ID,
-    description: 'Early evaluation of tech-enabled health services provider.',
-    archivedAt: null,
-    createdAt: '2025-10-05T10:00:00Z',
-    updatedAt: '2025-10-08T14:22:00Z',
-  },
-]
-
 const deals = new Map<string, DealStore>()
 const blogPosts: BlogPostRecord[] = [
   {
@@ -260,6 +212,54 @@ const blogPosts: BlogPostRecord[] = [
 const DEFAULT_DEAL_ID = 'deal-msw'
 const DEFAULT_ORG_ID = 'org-msw'
 const DEFAULT_USER_ID = 'user-msw'
+
+const mockDeals: DealRecord[] = [
+  {
+    id: 'deal-001',
+    name: 'Capstone Analytics Acquisition',
+    targetCompany: 'Capstone Analytics',
+    industry: 'Analytics',
+    dealSize: 12500000,
+    currency: 'GBP',
+    stage: 'due_diligence',
+    ownerId: 'owner-1',
+    organizationId: DEFAULT_ORG_ID,
+    description: 'High-growth analytics platform acquisition.',
+    archivedAt: null,
+    createdAt: '2025-10-01T12:00:00Z',
+    updatedAt: '2025-10-10T09:30:00Z',
+  },
+  {
+    id: 'deal-002',
+    name: 'Northwind Manufacturing Buyout',
+    targetCompany: 'Northwind Manufacturing',
+    industry: 'Manufacturing',
+    dealSize: 42000000,
+    currency: 'GBP',
+    stage: 'negotiation',
+    ownerId: 'owner-2',
+    organizationId: DEFAULT_ORG_ID,
+    description: 'Control buyout to consolidate manufacturing footprint.',
+    archivedAt: null,
+    createdAt: '2025-09-15T15:45:00Z',
+    updatedAt: '2025-10-12T08:15:00Z',
+  },
+  {
+    id: 'deal-003',
+    name: 'Helios Health Platform',
+    targetCompany: 'Helios Health',
+    industry: 'Healthcare',
+    dealSize: null,
+    currency: 'GBP',
+    stage: 'evaluation',
+    ownerId: 'owner-3',
+    organizationId: DEFAULT_ORG_ID,
+    description: 'Early evaluation of tech-enabled health services provider.',
+    archivedAt: null,
+    createdAt: '2025-10-05T10:00:00Z',
+    updatedAt: '2025-10-08T14:22:00Z',
+  },
+]
 
 const generateId = (prefix: string) => `${prefix}-${Math.random().toString(36).slice(2, 10)}`
 

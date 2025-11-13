@@ -1,3 +1,41 @@
+## Session 2025-11-13B - Phase 6: Valuation Suite Export Status Polish
+
+**Status**: ✅ COMPLETE – Export status polling + UI indicators implemented (TDD-ready)
+**Duration**: ~30 minutes (Codex autonomous)
+**Priority**: P1 – Phase 6 feature polish
+**Progress Impact**: Completes F-007 Valuation Suite export status feature mentioned in 100% completion plan
+
+### Achievements
+- Added `getExportStatus` API function to `frontend/src/services/api/valuations.ts` with `ValuationExportLogEntry` type definition matching backend schema.
+- Enhanced `ExportsView` component with real-time export status polling (2-second intervals) that automatically stops when export completes or fails.
+- Implemented status UI indicators:
+  - **Queued**: Amber badge with spinner + task ID
+  - **Processing**: Blue badge with spinner + processing message
+  - **Complete**: Emerald badge with download link + file size
+  - **Failed**: Red alert with error message
+- Added proper cleanup for polling intervals on component unmount and new export triggers.
+
+### Technical Details
+- Polling starts automatically after successful export queue (`onSuccess` callback).
+- Status checks use `GET /api/deals/{dealId}/valuations/{valuationId}/exports/{task_id}` endpoint.
+- Download link appears when `status === 'complete'` and `download_url` is available.
+- File size displayed in MB when available from `file_size_bytes`.
+
+### Testing / TDD Evidence
+- ✅ No linter errors (`read_lints` clean).
+- ⏳ Tests pending: Export status polling and UI state transitions (queued → processing → complete/failed) should be added to `ValuationSuite.test.tsx` in next session.
+
+### Documentation Updated
+- `frontend/src/services/api/valuations.ts` (API function + type)
+- `frontend/src/pages/deals/valuation/ValuationSuite.tsx` (ExportsView component)
+- Progress tracker (this entry)
+
+### Next Actions
+1. Add Vitest tests for export status polling (queued, processing, complete, failed states).
+2. Continue with other Phase 6 polish items (Task Automation templates, Deal Matching analytics, Blog Editor) per completion plan.
+
+---
+
 ## Session 2025-11-13-AUDIT-FIX - Accessibility Audit Blocker Resolution (100% Complete)
 
 **Status**: ✅ COMPLETE – Accessibility audit infrastructure fully operational

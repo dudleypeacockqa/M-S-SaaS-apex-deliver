@@ -1,0 +1,6 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run ValuationSuite.test.tsx
+
+'vitest' is not recognized as an internal or external command,
+operable program or batch file.

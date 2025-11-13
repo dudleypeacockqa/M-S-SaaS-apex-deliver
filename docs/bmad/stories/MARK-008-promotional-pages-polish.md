@@ -1,5 +1,7 @@
 # MARK-008: Promotional Pages Polish & Interactivity
 
+**STATUS: ✅ COMPLETE** (2025-11-12)
+
 **Story ID**: MARK-008
 **Epic**: Marketing & Lead Generation
 **Priority**: Medium

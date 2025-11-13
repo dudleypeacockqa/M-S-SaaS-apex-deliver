@@ -171,6 +171,22 @@ export interface ValuationExportResponse {
   export_format: string | null
 }
 
+export interface ValuationExportLogEntry {
+  id: string
+  valuation_id: string
+  organization_id: string
+  export_type: 'pdf' | 'excel'
+  export_format: string | null
+  status: string
+  task_id: string | null
+  scenario_id: string | null
+  download_url: string | null
+  file_size_bytes: number | null
+  exported_by: string
+  exported_at: string
+  completed_at: string | null
+}
+
 import api from '../api'
 
 export async function listValuations(dealId: string): Promise<Valuation[]> {
@@ -337,6 +353,17 @@ export async function triggerExport(
   return response.data
 }
 
+export async function getExportStatus(
+  dealId: string,
+  valuationId: string,
+  taskId: string,
+): Promise<ValuationExportLogEntry> {
+  const response = await api.get<ValuationExportLogEntry>(
+    `/api/deals/${dealId}/valuations/${valuationId}/exports/${taskId}`,
+  )
+  return response.data
+}
+
 export default {
   listValuations,
   createValuation,
@@ -353,5 +380,6 @@ export default {
   getScenarioSummary,
   runMonteCarlo,
   triggerExport,
+  getExportStatus,
 }
 

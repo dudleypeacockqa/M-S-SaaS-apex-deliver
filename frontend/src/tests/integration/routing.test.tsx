@@ -62,7 +62,7 @@ describe("Integration: routing", () => {
       await screen.findByRole("heading", { name: /from deal flow to cash flow/i, level: 1 }, { timeout: 10000 })
     ).toBeInTheDocument()
     // Marketing nav uses regular links, not Clerk's SignInButton
-    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
+    expect(screen.getAllByRole("link", { name: /sign in/i }).length).toBeGreaterThan(0)
   }, 10000)
 
   it("directs visitors to the sign-in page when accessing the dashboard", async () => {

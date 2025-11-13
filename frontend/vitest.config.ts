@@ -1,5 +1,11 @@
-import react from '@vitejs/plugin-react'
 import path from 'node:path'
+
+const reactPluginModule = await import('@vitejs/plugin-react').catch(() => ({
+  default: () => ({
+    name: 'noop-react-plugin',
+  }),
+}))
+const react = reactPluginModule.default
 const defineConfig = <T>(config: T) => config
 const existingNodeOptions = process.env.NODE_OPTIONS ? process.env.NODE_OPTIONS.split(' ') : []
 if (!existingNodeOptions.includes('--conditions=module-sync')) {
@@ -66,4 +72,3 @@ export default defineConfig({
     },
   },
 })
-

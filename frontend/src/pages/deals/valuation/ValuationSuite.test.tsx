@@ -19,6 +19,7 @@ vi.mock('../../../services/api/valuations', () => ({
   getPrecedentSummary: vi.fn(),
   runMonteCarlo: vi.fn(),
   triggerExport: vi.fn(),
+  getExportStatus: vi.fn(),
   addComparableCompany: vi.fn(),
   addPrecedentTransaction: vi.fn(),
   createScenario: vi.fn(),
@@ -321,6 +322,93 @@ describe('ValuationSuite RED tests', () => {
     expect(
       await screen.findByText(/export queued: pdf \(summary\) · task id task-1/i),
     ).toBeInTheDocument()
+  })
+
+  it('displays export template selector with PDF, DOCX, and HTML options', async () => {
+    const user = userEvent.setup()
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
+      { id: 'val-template', enterprise_value: 10500000, equity_value: 8000000, deal_id: 'deal-template', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
+    ])
+
+    renderSuite('/deals/deal-template/valuations/val-template')
+
+    await waitFor(() => expect(screen.getByText(/£10,500,000/i)).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /exports/i }))
+
+    // Template selector should be visible
+    expect(await screen.findByLabelText(/export format/i)).toBeInTheDocument()
+    expect(await screen.findByLabelText(/export template/i)).toBeInTheDocument()
+
+    // Should have format options
+    const formatSelect = await screen.findByLabelText(/export format/i)
+    await user.click(formatSelect)
+    expect(await screen.findByRole('option', { name: /pdf/i })).toBeInTheDocument()
+    expect(await screen.findByRole('option', { name: /docx/i })).toBeInTheDocument()
+    expect(await screen.findByRole('option', { name: /html/i })).toBeInTheDocument()
+  })
+
+  it('allows selecting export template (executive summary, detailed, custom)', async () => {
+    const user = userEvent.setup()
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
+      { id: 'val-template-select', enterprise_value: 10500000, equity_value: 8000000, deal_id: 'deal-template-select', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
+    ])
+    vi.mocked(valuationApi.triggerExport).mockResolvedValueOnce({ task_id: 'task-2', status: 'queued', export_type: 'docx', export_format: 'executive_summary' })
+
+    renderSuite('/deals/deal-template-select/valuations/val-template-select')
+
+    await waitFor(() => expect(screen.getByText(/£10,500,000/i)).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /exports/i }))
+
+    // Select DOCX format
+    const formatSelect = await screen.findByLabelText(/export format/i)
+    await user.click(formatSelect)
+    await user.click(await screen.findByRole('option', { name: /docx/i }))
+
+    // Select executive summary template
+    const templateSelect = await screen.findByLabelText(/export template/i)
+    await user.click(templateSelect)
+    await user.click(await screen.findByRole('option', { name: /executive summary/i }))
+
+    // Queue export
+    await user.click(screen.getByRole('button', { name: /queue export/i }))
+
+    await waitFor(() => {
+      expect(valuationApi.triggerExport).toHaveBeenCalledWith('deal-template-select', 'val-template-select', {
+        export_type: 'docx',
+        export_format: 'executive_summary',
+      })
+    })
+  })
+
+  it('displays scenario comparison chart with multiple scenarios', async () => {
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
+      { id: 'val-chart', enterprise_value: 10500000, equity_value: 8000000, deal_id: 'deal-chart', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
+    ])
+    vi.mocked(valuationApi.listScenarios).mockResolvedValueOnce([
+      { id: 'scenario-base', valuation_id: 'val-chart', organization_id: 'org-1', name: 'Base Case', description: 'Baseline assumptions', assumptions: {}, enterprise_value: 10500000, equity_value: 8000000, created_at: '2025-01-01', updated_at: null },
+      { id: 'scenario-upside', valuation_id: 'val-chart', organization_id: 'org-1', name: 'Upside Case', description: 'Optimistic growth', assumptions: { revenue_growth: 0.18 }, enterprise_value: 12500000, equity_value: 9500000, created_at: '2025-01-01', updated_at: null },
+      { id: 'scenario-downside', valuation_id: 'val-chart', organization_id: 'org-1', name: 'Downside Case', description: 'Conservative assumptions', assumptions: { revenue_growth: 0.08 }, enterprise_value: 9000000, equity_value: 7000000, created_at: '2025-01-01', updated_at: null },
+    ])
+
+    renderSuite('/deals/deal-chart/valuations/val-chart')
+
+    await waitFor(() => expect(screen.getByText(/£10,500,000/i)).toBeInTheDocument())
+    await userEvent.setup().click(screen.getByRole('tab', { name: /scenarios/i }))
+
+    // Scenario comparison chart should be visible
+    await waitFor(() => {
+      expect(screen.getByText(/scenario comparison/i)).toBeInTheDocument()
+    })
+
+    // Chart should display all three scenarios
+    expect(await screen.findByText(/base case/i)).toBeInTheDocument()
+    expect(await screen.findByText(/upside case/i)).toBeInTheDocument()
+    expect(await screen.findByText(/downside case/i)).toBeInTheDocument()
+
+    // Chart should show enterprise values
+    expect(await screen.findByText(/£10,500,000/i)).toBeInTheDocument()
+    expect(await screen.findByText(/£12,500,000/i)).toBeInTheDocument()
+    expect(await screen.findByText(/£9,000,000/i)).toBeInTheDocument()
   })
 
   // TODO: Add 403 error handling with upgrade message to component
