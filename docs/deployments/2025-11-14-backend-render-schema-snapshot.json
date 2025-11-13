@@ -1,0 +1,286 @@
+{
+  "document_ai_suggestions": [
+    {
+      "column": "applied_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "confidence",
+      "data_type": "integer"
+    },
+    {
+      "column": "content",
+      "data_type": "text"
+    },
+    {
+      "column": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "created_by_user_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "document_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "organization_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "reasoning",
+      "data_type": "text"
+    },
+    {
+      "column": "status",
+      "data_type": "USER-DEFINED"
+    },
+    {
+      "column": "title",
+      "data_type": "character varying"
+    },
+    {
+      "column": "updated_at",
+      "data_type": "timestamp with time zone"
+    }
+  ],
+  "document_questions": [
+    {
+      "column": "answer",
+      "data_type": "text"
+    },
+    {
+      "column": "answered_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "answered_by",
+      "data_type": "character varying"
+    },
+    {
+      "column": "asked_by",
+      "data_type": "character varying"
+    },
+    {
+      "column": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "document_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "organization_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "question",
+      "data_type": "text"
+    },
+    {
+      "column": "status",
+      "data_type": "character varying"
+    },
+    {
+      "column": "updated_at",
+      "data_type": "timestamp with time zone"
+    }
+  ],
+  "document_templates": [
+    {
+      "column": "content",
+      "data_type": "text"
+    },
+    {
+      "column": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "created_by_user_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "description",
+      "data_type": "text"
+    },
+    {
+      "column": "id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "name",
+      "data_type": "character varying"
+    },
+    {
+      "column": "organization_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "status",
+      "data_type": "USER-DEFINED"
+    },
+    {
+      "column": "template_type",
+      "data_type": "character varying"
+    },
+    {
+      "column": "updated_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "variables",
+      "data_type": "json"
+    },
+    {
+      "column": "version",
+      "data_type": "integer"
+    }
+  ],
+  "document_versions": [
+    {
+      "column": "content",
+      "data_type": "text"
+    },
+    {
+      "column": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "created_by_user_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "document_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "label",
+      "data_type": "character varying"
+    },
+    {
+      "column": "organization_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "summary",
+      "data_type": "text"
+    },
+    {
+      "column": "version_number",
+      "data_type": "integer"
+    }
+  ],
+  "documents": [
+    {
+      "column": "archived_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "deal_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "file_key",
+      "data_type": "character varying"
+    },
+    {
+      "column": "file_size",
+      "data_type": "bigint"
+    },
+    {
+      "column": "file_type",
+      "data_type": "character varying"
+    },
+    {
+      "column": "folder_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "name",
+      "data_type": "character varying"
+    },
+    {
+      "column": "organization_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "parent_document_id",
+      "data_type": "character varying"
+    },
+    {
+      "column": "updated_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "uploaded_by",
+      "data_type": "character varying"
+    },
+    {
+      "column": "version",
+      "data_type": "integer"
+    }
+  ],
+  "generated_documents": [
+    {
+      "column": "created_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "file_path",
+      "data_type": "character varying"
+    },
+    {
+      "column": "generated_by_user_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "generated_content",
+      "data_type": "text"
+    },
+    {
+      "column": "id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "organization_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "status",
+      "data_type": "USER-DEFINED"
+    },
+    {
+      "column": "template_id",
+      "data_type": "uuid"
+    },
+    {
+      "column": "updated_at",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "column": "variable_values",
+      "data_type": "json"
+    }
+  ]
+}

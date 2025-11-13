@@ -30,6 +30,37 @@ PREVIEW_PORT="4173"
 PRIMARY_URL=${AUDIT_PREVIEW_URL:-"http://127.0.0.1:${PREVIEW_PORT}"}
 FALLBACK_URL=${AUDIT_PREVIEW_FALLBACK:-"http://localhost:${PREVIEW_PORT}"}
 PREVIEW_CMD=${AUDIT_PREVIEW_CMD:-"npm run preview:test"}
+INSTALL_FLAGS=${AUDIT_NPM_INSTALL_FLAGS:-"--include=dev"}
+
+WIN_NPM_CLI=${AUDIT_WIN_NPM_CLI:-"/mnt/c/Program Files/nodejs/node_modules/npm/bin/npm-cli.js"}
+LINUX_NPM_CLI="/usr/lib/node_modules/npm/bin/npm-cli.js"
+WIN_NPX_CLI=${AUDIT_WIN_NPX_CLI:-"/mnt/c/Program Files/nodejs/node_modules/npm/bin/npx-cli.js"}
+LINUX_NPX_CLI="/usr/lib/node_modules/npm/bin/npx-cli.js"
+
+# Resolve npm/npx binaries. Some Windows shells expose npm shims that call into
+# C:\usr\bin\npm (which does not exist inside WSL), so fall back to the
+# npm CLI bundled with Node if the shim is broken.
+if command -v npm >/dev/null 2>&1 && npm --version >/dev/null 2>&1; then
+    NPM_CMD=(npm)
+elif [ -f "$WIN_NPM_CLI" ]; then
+    NPM_CMD=(node "$WIN_NPM_CLI")
+elif [ -f "$LINUX_NPM_CLI" ]; then
+    NPM_CMD=(node "$LINUX_NPM_CLI")
+else
+    echo "${RED}ERROR: Unable to locate npm CLI. Set AUDIT_WIN_NPM_CLI or AUDIT_NPM_BIN.${NC}" >&2
+    exit 1
+fi
+
+if command -v npx >/dev/null 2>&1 && npx --version >/dev/null 2>&1; then
+    NPX_CMD=(npx)
+elif [ -f "$WIN_NPX_CLI" ]; then
+    NPX_CMD=(node "$WIN_NPX_CLI")
+elif [ -f "$LINUX_NPX_CLI" ]; then
+    NPX_CMD=(node "$LINUX_NPX_CLI")
+else
+    echo "${RED}ERROR: Unable to locate npx CLI. Set AUDIT_WIN_NPX_CLI or AUDIT_NPX_BIN.${NC}" >&2
+    exit 1
+fi
 REPORT_DIR="docs/testing"
 # Allow overriding via AUDIT_WAIT_SECONDS env (defaults to 60s to account for cold builds)
 MAX_WAIT_TIME=${AUDIT_WAIT_SECONDS:-60}
@@ -63,10 +94,10 @@ mkdir -p "$REPORT_DIR"
 cd frontend
 
 echo -e "${YELLOW}Step 1: Installing dependencies...${NC}"
-npm install --include=dev --silent
+"${NPM_CMD[@]}" install --silent ${INSTALL_FLAGS}
 
 echo -e "${YELLOW}Step 2: Building frontend for preview...${NC}"
-npm run build
+"${NPM_CMD[@]}" run build
 
 # Start preview server in background
 echo -e "${YELLOW}Step 3: Starting preview server on ${PREVIEW_HOST}:${PREVIEW_PORT}...${NC}"
@@ -121,7 +152,7 @@ echo -e "${YELLOW}Step 5: Running Lighthouse performance audit...${NC}"
 echo "  URL: $ACTIVE_URL"
 echo "  Report: ${REPORT_DIR}/lighthouse-report.html"
 
-npx lighthouse "$ACTIVE_URL" \
+"${NPX_CMD[@]}" lighthouse "$ACTIVE_URL" \
     --output html \
     --output json \
     --output-path="../${REPORT_DIR}/lighthouse-report.html" \
@@ -141,7 +172,7 @@ echo -e "${YELLOW}Step 6: Running Axe accessibility audit...${NC}"
 echo "  URL: $ACTIVE_URL"
 echo "  Report: ${REPORT_DIR}/axe-report.json"
 
-npx axe "$ACTIVE_URL" \
+"${NPX_CMD[@]}" axe "$ACTIVE_URL" \
     --load-delay 5000 \
     --timeout 60000 \
     --save "../${REPORT_DIR}/axe-report.json" \

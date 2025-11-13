@@ -433,6 +433,8 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
         <DocumentList
           dealId={dealId}
           folderId={selectedFolderId}
+          onDocumentsLoaded={onDocumentsLoaded}
+          onError={onError}
           onManagePermissions={handleManagePermissions}
           onAuditLog={handleAuditLog}
           onBulkMove={handleBulkMove}

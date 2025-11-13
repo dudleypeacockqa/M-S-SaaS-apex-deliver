@@ -1,3 +1,115 @@
+## Session 2025-11-13-AUDIT-AUTOMATION – Lighthouse + Axe Audit Pipeline Setup
+
+**Status**: ✅ COMPLETE – Automated audit pipeline successfully deployed, initial baseline captured
+**Duration**: ~2 hours (npm troubleshooting + script creation + audit execution)
+**Priority**: P1 – Quality gates automation + performance baseline
+
+### Summary
+- ✅ Created native PowerShell audit scripts (`scripts/run_local_audits.ps1`, `scripts/run_audits.ps1`) for Windows development
+- ✅ Fixed critical npm configuration issue: `omit=["dev"]` was blocking all devDependencies installation
+- ✅ Successfully ran complete audit pipeline: dependencies → build → preview server → Lighthouse + Axe
+- ✅ Generated comprehensive reports in `docs/testing/`
+- ✅ Created detailed optimization action plan
+
+### Audit Results (Baseline - November 13, 2025)
+**Lighthouse Scores:**
+- Performance: 74% (Target: 90%+) ⚠️
+- Accessibility: 94% (Target: 95%+) ⚠️
+- Best Practices: 74% (Target: 90%+) ⚠️
+- SEO: 97% (Target: 90%+) ✅
+
+**Core Web Vitals:**
+- LCP: 5.3s (Target: <2.5s) 🔴 Critical
+- FCP: 2.4s (Target: <1.8s) ⚠️
+- TBT: 190ms (Target: <200ms) ✅
+- CLS: 0 (Target: <0.1) ✅
+
+**Axe Accessibility:**
+- Critical: 0 ✅
+- Serious: 0 ✅
+- Moderate: 0 ✅
+- Minor: 0 ✅
+- Total violations: 1 (informational)
+
+### Critical Issue Discovered & Fixed
+**Problem**: npm was configured with `omit=["dev"]` globally, preventing ALL devDependencies from installing
+**Impact**: Only 262/805 packages installed; Vite, Lighthouse, Axe, and all dev tools were missing
+**Solution**: Removed `omit` setting, updated scripts to use `npm install --include=dev`
+**Verification**: Now installs 805 packages correctly (262 production + 543 dev)
+
+### Files Created
+1. **Scripts** (4 files):
+   - `scripts/run_local_audits.ps1` (256 lines) - Main PowerShell automation
+   - `scripts/run_audits.ps1` (22 lines) - Simplified wrapper
+   - `scripts/run_local_audits.bat` (12 lines) - CMD support
+   - `scripts/AUDIT_SCRIPTS_README.md` (180 lines) - Complete usage guide
+
+2. **Reports** (3 files):
+   - `docs/testing/lighthouse-report.report.html` (876 KB) - Visual report
+   - `docs/testing/lighthouse-report.report.json` (789 KB) - Machine-readable
+   - `docs/testing/axe-report.json` (69 KB) - Accessibility violations
+
+3. **Documentation** (2 files):
+   - `docs/testing/2025-11-13-audit-automation-setup-report.md` (comprehensive setup report)
+   - `docs/testing/2025-11-13-performance-optimization-action-plan.md` (3-phase optimization roadmap)
+
+### Performance Bottlenecks Identified
+1. **Render-Blocking Resources** (160ms potential savings)
+   - CSS blocking first paint
+   - No critical CSS inlining
+   - Heavy initial JavaScript load
+
+2. **Unused JavaScript** (93 KiB wasted, 24% of bundle)
+   - ValuationSuite (375 KiB) not code-split
+   - client.ts imported both statically and dynamically
+   - No lazy loading for heavy features
+
+3. **Legacy JavaScript** (polyfills for old browsers)
+   - Targeting too old browsers
+   - Unnecessary polyfills shipped to 95%+ of users
+
+### Next Steps (3-Phase Optimization Plan)
+**Phase 1** (Target: 85% score, 4-6 hours):
+- Implement lazy loading for ValuationSuite and heavy routes
+- Fix render-blocking resources (critical CSS)
+- Resolve client.ts import conflict
+- Expected: 74% → 85% (+11 points)
+
+**Phase 2** (Target: 90% score, 3-4 hours):
+- Split large vendor bundles (react, clerk, charts)
+- Remove unused JavaScript (depcheck)
+- Update browser targets to es2020
+- Add resource hints (preload/prefetch)
+- Expected: 85% → 90% (+5 points)
+
+**Phase 3** (Target: 95% score, 2-3 hours):
+- Optimize images to WebP/AVIF
+- Implement service worker caching
+- Fine-tune critical CSS extraction
+- Expected: 90% → 95% (+5 points)
+
+### How to Run Audits
+```powershell
+# Simple (auto-loads Clerk key)
+.\scripts\run_audits.ps1
+
+# Or with custom key
+$env:VITE_CLERK_PUBLISHABLE_KEY="pk_test_xxxx"
+.\scripts\run_local_audits.ps1
+```
+
+### Impact on Project Goals
+- ✅ Quality automation infrastructure in place
+- ✅ Performance baseline documented
+- ✅ Clear optimization roadmap created
+- ⚠️ Performance score below target (74% vs 90%) - needs Phase 1 optimizations
+- ✅ Accessibility near-perfect (94%, 0 critical violations)
+- ✅ SEO excellent (97%)
+
+**Overall Assessment**: Audit automation successful. Performance needs improvement (LCP 5.3s is critical), but foundation is solid.
+
+---
+
 ## Session 2025-11-14T13-Phase0-T2-Redeploy-Attempt – Backend Deploy Investigation
 
 **Status**: 🚧 IN PROGRESS – Triggered Render backend redeploy per Phase 0 Task T2; deploy failed with `update_failed`, evidence captured for follow-up
@@ -14,6 +126,24 @@
 1. Pull Render build logs for `dep-d4atmfhe2q1c73b8ou8g` (via dashboard or `render.yaml` CLI) to identify the exact failure step (likely failing health check or migration). Patch and rerun deploy until status is `live`.
 2. Consider triggering the next redeploy with `--clear-cache clear` once the root cause is fixed to avoid stale layers.
 3. Offload the `npm run test -- --run --coverage --pool=threads` command to a Linux runner (or split into themed batches) to close Phase 0 Task P0.1 after the backend redeploy succeeds.
+
+---
+
+## Session 2025-11-14T13-Phase0-T2-Schema-Snapshot – Production DB Type Audit
+
+**Status**: ✅ COMPLETE – Captured live Render schema snapshot for document tables to unblock redeploy root-cause analysis
+**Duration**: ~15 minutes (psycopg2 queries + documentation)
+**Priority**: P0 – Provide concrete evidence for the `update_failed` redeploys so we can craft the right migration fix
+
+### Summary
+- Used the checked-in backend virtualenv (`backend/venv/Scripts/python.exe`) plus the `.env` `DATABASE_URL` to connect directly to Render Postgres and dump column data types for all document-related tables (documents, document_questions, document_templates, generated_documents, document_ai_suggestions, document_versions).
+- Stored the snapshot at `docs/deployments/2025-11-14-backend-render-schema-snapshot.json`; confirmed that `documents` and `document_questions` still expose `character varying` IDs while `document_templates`, `generated_documents`, AI suggestions, and versions have already been converted to `uuid`.
+- This mixed state explains the earlier migration failures documented on 2025-11-13: the new doc-gen/AI tables expect UUIDs, but the legacy documents/folders stack is still VARCHAR(36). Upcoming redeploy attempts will continue to hit constraints until we reconcile the types or write defensive migrations.
+
+### Next
+1. Draft a reversible Alembic migration that converts `documents` (and dependent tables: `document_permissions`, `document_access_logs`, `document_share_links`, `folders`, `deals`, etc.) back to UUID using the shared `GUID` helper, mirroring the approach already used for document templates.
+2. Update SQLAlchemy models (`backend/app/models/document.py`, `backend/app/models/valuation.py`, others referencing documents) to use `GUID` so Postgres and SQLite stay aligned.
+3. Re-run migrations locally with a Postgres container (or the Render DB) to verify the conversion before re-triggering deploy `dep-d4atmfhe2q1c73b8ou8g` with `--clear-cache clear`.
 
 ---
 

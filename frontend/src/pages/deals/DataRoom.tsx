@@ -1,18 +1,7 @@
-import React, { useRef, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useQueryClient } from '@tanstack/react-query'
 
-import { BulkActions } from '../../components/documents/BulkActions'
-import { DocumentList } from '../../components/documents/DocumentList'
-import { FolderTree } from '../../components/documents/FolderTree'
-import { PermissionModal } from '../../components/documents/PermissionModal'
-import {
-  ALLOWED_FILE_TYPES,
-  MAX_FILE_SIZE,
-  formatFileSize,
-  uploadDocument,
-  type Document,
-} from '../../services/api/documents'
+import DocumentWorkspace from '../documents/DocumentWorkspace'
 
 interface EntitlementState {
   message: string
@@ -22,37 +11,19 @@ interface EntitlementState {
 
 export const DataRoom: React.FC = () => {
   const { dealId } = useParams<{ dealId: string }>()
-  const queryClient = useQueryClient()
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
-
-  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null)
-  const [selectedDocuments, setSelectedDocuments] = useState<Document[]>([])
-  const [selectionResetSignal, setSelectionResetSignal] = useState(0)
-  const [permissionDocumentId, setPermissionDocumentId] = useState<string | null>(null)
-  const [isPermissionModalOpen, setPermissionModalOpen] = useState(false)
   const [entitlementGate, setEntitlementGate] = useState<EntitlementState | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [uploading, setUploading] = useState(false)
-  const [uploadMessage, setUploadMessage] = useState<string | null>(null)
 
   if (!dealId) {
     throw new Error('dealId param is required to render DataRoom')
   }
 
-  const invalidateDocuments = () => {
-    queryClient.invalidateQueries({ queryKey: ['deal-documents', dealId, selectedFolderId] })
-  }
-
-  const handleSelectionChange = (documents: Document[]) => {
-    setSelectedDocuments(documents)
-  }
-
-  const handleDocumentsLoaded = () => {
+  const handleDocumentsLoaded = useCallback(() => {
     setEntitlementGate(null)
     setError(null)
-  }
+  }, [])
 
-  const handleDocumentError = (err: unknown) => {
+  const handleDocumentError = useCallback((err: unknown) => {
     const status = (err as { status?: number })?.status ?? (err as { response?: { status?: number } })?.response?.status
     if (status === 403) {
       const detail = (err as { data?: { detail?: Record<string, string> } })?.data?.detail ?? {}
@@ -66,58 +37,7 @@ export const DataRoom: React.FC = () => {
     }
 
     setError(err instanceof Error ? err.message : 'Failed to load documents')
-  }
-
-  const handleClearSelection = () => {
-    setSelectedDocuments([])
-    setSelectionResetSignal((signal) => signal + 1)
-  }
-
-  const handleManagePermissions = (document: Document) => {
-    setPermissionDocumentId(document.id)
-    setPermissionModalOpen(true)
-  }
-
-  const handlePermissionModalClose = () => {
-    setPermissionModalOpen(false)
-    setPermissionDocumentId(null)
-  }
-
-  const handleFolderSelect = (folderId: string | null) => {
-    setSelectedFolderId(folderId)
-  }
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-      setError(`File type ${file.type} is not allowed. Please upload PDF, Office documents, or images.`)
-      event.target.value = ''
-      return
-    }
-
-    if (file.size > MAX_FILE_SIZE) {
-      setError(`File size exceeds the ${formatFileSize(MAX_FILE_SIZE)} limit. Please upload a smaller file.`)
-      event.target.value = ''
-      return
-    }
-
-    try {
-      setUploading(true)
-      setUploadMessage(`Uploading ${file.name} (${formatFileSize(file.size)})`)
-      await uploadDocument(dealId, file, { folderId: selectedFolderId ?? undefined })
-      setUploadMessage(`Uploaded ${file.name}`)
-      invalidateDocuments()
-      handleClearSelection()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload document')
-    } finally {
-      setUploading(false)
-      event.target.value = ''
-      setTimeout(() => setUploadMessage(null), 1500)
-    }
-  }
+  }, [])
 
   return (
     <section data-testid="deal-documents" className="space-y-6">
