@@ -12,9 +12,22 @@ USE_STRIPE = settings.STRIPE_SECRET_KEY is not None
 
 if USE_STRIPE:
     import stripe
-    from stripe.error import StripeError, SignatureVerificationError  # type: ignore[attr-defined]
+    try:  # pragma: no cover
+        from stripe.error import StripeError, SignatureVerificationError  # type: ignore[attr-defined]
+    except Exception:  # pragma: no cover
+        class StripeError(Exception):
+            pass
+
+        class SignatureVerificationError(Exception):
+            pass
 
     stripe.api_key = settings.STRIPE_SECRET_KEY
+else:  # pragma: no cover
+    class StripeError(Exception):
+        pass
+
+    class SignatureVerificationError(Exception):
+        pass
 
 
 class EventPaymentError(Exception):
