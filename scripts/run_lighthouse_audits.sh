@@ -2,7 +2,7 @@
 # Run Lighthouse audits on production marketing pages
 # Requires: npm install -g lighthouse
 
-OUTPUT_DIR="docs/marketing/lighthouse-reports-2025-11-12"
+OUTPUT_DIR="${OUTPUT_DIR:-docs/marketing/lighthouse-reports-$(date +%Y-%m-%d)}"
 mkdir -p "$OUTPUT_DIR"
 
 echo "=========================================="

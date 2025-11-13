@@ -1,0 +1,23 @@
+======================================================================
+RENDER BACKEND DEPLOYMENT TRIGGER
+======================================================================
+Service ID: srv-d3ii9qk9c44c73aqsli0
+API Key: rnd_o...NAqM
+Payload: {"clearCache": "do_not_clear"}
+
+[INFO] Triggering manual deployment...
+[SUCCESS] Render response status: 201
+Full response body:
+{
+  "id": "dep-d4avf77diees73a68aq0",
+  "commit": {
+    "id": "1c870634aa41cc181ca18ef20d6bba3d39b90eb8",
+    "message": "fix(backend): merge dual head migrations to unblock Render deployments\n\nRoot cause: Two parallel migrations (event payments + UUID conversion) created\ndual heads, causing alembic upgrade head to fail on Render with unclear error.\n\nSolution: Created merge migration b9003e932e59 combining:\n- a1b2c3d4e5f7 (Add event payment tables - DEV-019)\n- e2c1f2f5a7b7 (Convert document-related identifiers to UUID)\n\nVerified locally: alembic heads now shows single head b9003e932e59\n\nThis should unblock backend deployments on Render.\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+    "createdAt": "2025-11-13T15:21:45Z"
+  },
+  "status": "build_in_progress",
+  "trigger": "api",
+  "createdAt": "2025-11-13T15:22:11.558073Z",
+  "updatedAt": "2025-11-13T15:22:11.558073Z",
+  "startedAt": "2025-11-13T15:22:10.189289Z"
+}
