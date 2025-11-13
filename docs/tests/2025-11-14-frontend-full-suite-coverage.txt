@@ -1,0 +1,999 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --coverage --pool=threads
+
+
+ RUN  v4.0.8 C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend
+      Coverage enabled with v8
+
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/podcast/AudioUploadModal.test.tsx (16 tests) 1243ms
+stdout | src/pages/documents/DocumentWorkspace.test.tsx > DocumentWorkspace > Audit Logging > logs document permission changes with affected user IDs
+[Audit] Permission changed: { documentId: 'doc-1', userId: 'user-abc', permission: 'edit' }
+
+stdout | src/pages/documents/DocumentWorkspace.test.tsx > DocumentWorkspace > Audit Logging > logs document deletion events
+[Audit] {
+  action: 'DOCUMENT_DELETED',
+  resource_type: 'document',
+  resource_id: 'doc-to-delete',
+  metadata: { fileName: 'contract.pdf' }
+}
+
+stdout | src/pages/documents/DocumentWorkspace.test.tsx > DocumentWorkspace > Audit Logging > logs bulk actions with affected document IDs
+[Audit] {
+  action: 'BULK_DELETE',
+  resource_type: 'document',
+  resource_id: 'bulk-operation',
+  metadata: { documentIds: [ 'doc-1', 'doc-2', 'doc-3' ], count: 3 }
+}
+
+ Γ£ô src/components/documents/FolderTree.test.tsx (13 tests) 2197ms
+     Γ£ô lazy loads child folders when expanded  504ms
+     Γ£ô persists expanded folders between remounts  443ms
+     Γ£ô does not re-fetch child folders after initial load  376ms
+stdout | src/pages/documents/DocumentWorkspace.test.tsx > DocumentWorkspace > Bulk Actions > calls bulk delete handler when requested
+[Bulk Delete] [
+  { id: 'doc-1', name: 'file1.pdf' },
+  { id: 'doc-2', name: 'file2.pdf' }
+]
+
+Not implemented: navigation to another Document
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx (34 tests) 2675ms
+       Γ£ô should display cancel button for each uploading file  346ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/documents/DocumentWorkspace.test.tsx (28 tests) 2555ms
+       Γ£ô renders search input above folder tree  308ms
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+ Γ£ô src/pages/deals/MatchingWorkspace.test.tsx (17 tests) 2733ms
+       Γ£ô renders workspace with title and tabs  511ms
+       Γ£ô triggers find matches using selected preset  301ms
+       Γ£ô records view action and opens detail modal  362ms
+       Γ£ô opens introduction request modal from detail view  493ms
+ Γ£ô src/components/master-admin/activity/GoalCard.test.tsx (16 tests) 3465ms
+       Γ£ô should enter edit mode when edit button is clicked  511ms
+       Γ£ô should update input values when changed  418ms
+       Γ£ô should call updateGoal mutation when saving existing goal  448ms
+       Γ£ô should call createGoal mutation when saving new goal  779ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/documents/DocumentList.test.tsx (19 tests) 4198ms
+     Γ£ô should sort documents by name  743ms
+     Γ£ô should sort documents by date  425ms
+     Γ£ô shows bulk actions toolbar when documents are selected  460ms
+     Γ£ô bulk download triggers download for each selected document  356ms
+     Γ£ô bulk delete calls delete API for each selected document when confirmed  444ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/deals/DealKanbanBoard.test.tsx (18 tests) 1113ms
+       Γ£ô should have accessible column headings  451ms
+ Γ£ô src/pages/deals/DealDetails.test.tsx (19 tests) 6084ms
+     Γ£ô should enter edit mode when Edit button is clicked  532ms
+     Γ£ô should call updateDeal API when saving changes  496ms
+       Γ£ô should render tab navigation with Overview, Financials, Documents, and Team tabs  725ms
+       Γ£ô should show Overview tab content by default  386ms
+       Γ£ô should switch to Financials tab when clicked  612ms
+       Γ£ô should switch to Documents tab when clicked  587ms
+       Γ£ô should switch to Team tab when clicked  548ms
+       Γ£ô should persist active tab when re-rendering  733ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/deal-matching/CriteriaBuilderModal.test.tsx (14 tests) 6394ms
+     Γ£ô should render modal when isOpen is true  767ms
+     Γ£ô validates required fields before submission  479ms
+     Γ£ô validates deal size boundaries  1079ms
+     Γ£ô allows selecting multiple geographies and includes them in submission  833ms
+     Γ£ô preloads existing criteria values when provided  334ms
+     Γ£ô supports adding and removing custom fields  939ms
+     Γ£ô submits create payload with dynamic fields  388ms
+     Γ£ô shows loading state during submission  757ms
+ Γ£ô src/pages/tasks/TaskBoard.test.tsx (13 tests) 7816ms
+     Γ£ô renders task board with required columns and tasks  967ms
+     Γ£ô filters tasks by assignee, status, priority, and due date  927ms
+     Γ£ô sorts tasks by due date and priority  892ms
+     Γ£ô opens task creation modal and validates required fields  1700ms
+     Γ£ô opens task detail modal on card click and loads task detail data  368ms
+     Γ£ô updates task details from detail modal  1254ms
+     Γ£ô assigns a task from the detail modal  468ms
+     Γ£ô deletes a task from the detail modal  426ms
+ Γ£ô src/pages/podcast/PodcastStudio.featureGates.test.tsx (9 tests) 5801ms
+     Γ£ô shows audio controls but locks video uploads for Professional tier  1737ms
+     Γ£ô displays quota warnings alongside upgrade messaging when nearing limits  368ms
+     Γ£ô opens the upgrade modal with pricing when CTA is clicked  941ms
+     Γ£ô renders upload video button for Premium users and opens modal  535ms
+     Γ£ô blocks video upload for Professional tier with upgrade messaging  360ms
+     Γ£ô shows transcription upgrade messaging when transcription feature is locked  646ms
+     Γ£ô shows live streaming upgrade call-to-action when feature is locked  1039ms
+ Γ£ô src/components/podcast/VideoUploadModal.test.tsx (16 tests) 2320ms
+       Γ£ô should display file size  926ms
+       Γ£ô should disable upload button when no file selected  393ms
+stderr | src/components/master-admin/activity/ActivityForm.test.tsx > ActivityForm > Form Submission > should not reset form if submission fails
+Failed to create activity: Error: Failed to create
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/components/master-admin/activity/ActivityForm.test.tsx:302:60
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:157:11
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:753:26
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1602:10)
+    at runTest (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1309:12)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+
+ Γ£ô src/components/master-admin/activity/ActivityForm.test.tsx (20 tests) 3656ms
+       Γ£ô should render the form with all required fields  481ms
+       Γ£ô should submit form with all field values  1039ms
+       Γ£ô should reset form after successful submission  455ms
+       Γ£ô should not reset form if submission fails  369ms
+ Γ£ô src/pages/deals/valuation/ValuationSuite.test.tsx (17 tests) 9171ms
+     Γ£ô shows loading indicator while valuations fetch  343ms
+     Γ£ô submits new valuation when form completed  770ms
+     Γ£ô allows adding comparable company to selected valuation  915ms
+     Γ£ô allows adding precedent transaction to selected valuation  1670ms
+     Γ£ô allows creating a new scenario with JSON assumptions  1465ms
+     Γ£ô shows validation error when scenario assumptions JSON is invalid  906ms
+     Γ£ô shows detailed confirmation after queuing an export  315ms
+     Γ£ô displays export template selector with PDF, DOCX, and HTML options  492ms
+     Γ£ô allows selecting export template (executive summary, detailed, custom)  522ms
+     Γ£ô runs Monte Carlo simulation and displays percentile summary  471ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx (14 tests) 1884ms
+     Γ£ô should render modal with permissions list when isOpen is true  436ms
+ Γ£ô src/components/podcast/EditEpisodeModal.test.tsx (26 tests) 8581ms
+     Γ£ô renders modal with dialog role and aria-modal  1041ms
+     Γ£ô renders all status options  377ms
+     Γ£ô updates title field when user types  461ms
+     Γ£ô updates description field when user types  897ms
+     Γ£ô updates show notes field when user types  1202ms
+     Γ£ô calls onSubmit with updated data when form submitted  1740ms
+     Γ£ô does not call onSubmit when title is empty  339ms
+     Γ£ô does not call onSubmit when title is only whitespace  643ms
+ Γ£ô src/components/master-admin/activity/ActivityList.test.tsx (15 tests) 1565ms
+       Γ£ô should display loading skeleton when data is loading  348ms
+       Γ£ô should filter activities by date range  512ms
+Not implemented: navigation to another Document
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/podcast/PodcastStudio.test.tsx (29 tests) 10442ms
+       Γ£ô should show upgrade prompt when user lacks podcast_audio access  493ms
+       Γ£ô should show transcribe button when transcript missing  363ms
+       Γ£ô should call API and show success message when transcription completes  542ms
+       Γ£ô should provide transcript download links when transcript ready  300ms
+       Γ£ô allows editing metadata before publishing to YouTube when integration access granted  2323ms
+       Γ£ô initiates OAuth connect flow when YouTube account is not connected  457ms
+       Γ£ô should create episode when form submitted with valid data  1627ms
+       Γ£ô should open Edit modal when Edit button clicked on episode  334ms
+       Γ£ô should update episode when edit form submitted  957ms
+       Γ£ô should show delete confirmation when delete button clicked  428ms
+       Γ£ô should delete episode when deletion confirmed  483ms
+ Γ£ô src/hooks/useUploadProgress.test.ts (13 tests) 105ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/podcast/LiveStreamManager.test.tsx (15 tests) 2778ms
+     Γ£ô should render create stream button and invoke API on click  452ms
+     Γ£ô should render recording toggle and retention selector  407ms
+     Γ£ô should show language selector with multiple options for enterprise tier  300ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/podcast/DeleteEpisodeModal.test.tsx (22 tests) 1419ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/documents/DocumentEditor.test.tsx (9 tests) 7593ms
+     Γ£ô loads the document and supports rich text editing with autosave  1567ms
+     Γ£ô applies a selected template and updates the editor content  686ms
+     Γ£ô surfaces AI suggestions and handles accept, reject, and regenerate flows  1349ms
+     Γ£ô exports the document in the selected format with configured options  742ms
+     Γ£ô lists version history and restores a selected version into the editor  589ms
+     Γ£ô surfaces keyboard shortcuts to accelerate editing workflows  304ms
+     Γ£ô handles save errors gracefully and displays retry messaging  632ms
+     Γ£ô updates context for AI suggestions when the user provides additional details  1595ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/master-admin/activity/NudgePanel.test.tsx (11 tests) 818ms
+       Γ£ô should display loading skeleton when data is loading  364ms
+ Γ£ô src/components/marketing/EnhancedTestimonials.test.tsx (36 tests) 1003ms
+ Γ£ô src/components/marketing/FAQSection.test.tsx (41 tests) 1404ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/deals/DealCard.test.tsx (28 tests) 1023ms
+ Γ£ô src/components/master-admin/activity/FocusTimer.test.tsx (10 tests) 2162ms
+       Γ£ô should start 25-minute session when 25 min button is clicked  1099ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/deals/TaskBoard.test.tsx (9 tests) 2496ms
+     Γ£ô opens create task modal when "Add Task" button is clicked  581ms
+     Γ£ô creates a new task when form is submitted  1084ms
+     Γ£ô updates task status when moved to different column  380ms
+ Γ£ô src/components/common/OptimizedImage.test.tsx (21 tests) 177ms
+ Γ£ô src/services/api/__tests__/documentGeneration.integration.test.ts (10 tests) 25ms
+Not implemented: navigation to another Document
+ Γ£ô src/components/documents/BulkActions.test.tsx (15 tests) 1737ms
+       Γ£ô should display bulk download button  474ms
+ Γ£ô src/components/documents/DocumentExporter.test.tsx (23 tests) 2682ms
+     Γ£ô renders section header and description  343ms
+     Γ£ô renders export format select with all format options  313ms
+     Γ£ô calls onExport with customized options  570ms
+ Γ£ô src/components/deals/DealFilters.test.tsx (21 tests) 3627ms
+       Γ£ô should render clear filters button  390ms
+       Γ£ô should call onSearchChange when typing in search input  476ms
+       Γ£ô should debounce search input (not call on every keystroke)  515ms
+       Γ£ô should clear search when clear button is clicked  318ms
+       Γ£ô should handle both search and stage filter simultaneously  571ms
+       Γ£ô should clear both filters when clear button is clicked  419ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+stderr | src/pages/marketing/BlogPostPage.test.tsx > BlogPostPage > Error Handling > should display error message when post not found
+Error fetching blog post: Error: Post not found
+    at fetchPost (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/BlogPostPage.tsx:42:17)
+
+ Γ£ô src/components/documents/AISuggestionPanel.test.tsx (21 tests) 2611ms
+     Γ£ô renders section header and description  574ms
+     Γ£ô calls onContextChange when textarea value changes  355ms
+stderr | src/pages/marketing/BlogPostPage.test.tsx > BlogPostPage > Error Handling > should show "Back to Blog" link when post not found
+Error fetching blog post: Error: Post not found
+    at fetchPost (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/BlogPostPage.tsx:42:17)
+
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/marketing/BlogPostPage.test.tsx (13 tests) 2389ms
+       Γ£ô should render featured image with alt text  355ms
+       Γ£ô should display breadcrumb navigation with "Back to Blog" link  391ms
+       Γ£ô should show "Back to Blog" link when post not found  666ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/marketing/ROICalculator.test.tsx (33 tests) 1627ms
+     Γ£ô updates deal count when slider changes  341ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/deals/CreateDealModal.test.tsx (29 tests) 18676ms
+       Γ£ô should render modal when isOpen is true  1104ms
+       Γ£ô should render correct title for create mode  367ms
+       Γ£ô should render update button instead of create  362ms
+       Γ£ô should show error for empty deal name  539ms
+       Γ£ô should show error for empty target company  1097ms
+       Γ£ô should show error for negative deal size  1204ms
+       Γ£ô should not show errors when all required fields are filled  1414ms
+       Γ£ô should call onCreate when form is submitted with valid data  3482ms
+       Γ£ô should call onSuccess after successful creation  1715ms
+       Γ£ô should close modal after successful creation  1571ms
+       Γ£ô should disable submit button while submitting  1252ms
+       Γ£ô should call onUpdate when editing existing deal  1018ms
+       Γ£ô should reset form when closing and reopening  387ms
+       Γ£ô should trap focus within modal  1362ms
+ Γ£ô src/pages/deals/FinancialDashboard.test.tsx (10 tests) 1003ms
+     Γ£ô should display financial ratios grouped by category  588ms
+ Γ£ô src/components/documents/VersionHistory.test.tsx (19 tests) 951ms
+ Γ£ô src/components/marketing/ComparisonTable.test.tsx (40 tests) 1442ms
+ Γ£ô src/pages/deals/DealPipeline.test.tsx (10 tests) 1622ms
+     Γ£ô should display deals grouped by stage after loading  330ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/tests/msw/documentsHandlers.test.ts (13 tests) 188ms
+ Γ£ô src/services/api/masterAdmin.test.ts (16 tests) 123ms
+ Γ£ô src/components/podcast/VideoPlayer.test.tsx (19 tests) 178ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/services/api/documents.test.ts (11 tests) 84ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/marketing/TrustBadges.test.tsx (47 tests) 2350ms
+     Γ£ô renders without crashing  358ms
+     Γ£ô displays all 6 integration logos  625ms
+ Γ£ô src/components/podcast/FeatureGate.test.tsx (8 tests) 373ms
+ Γ£ô src/components/documents/TemplateSelector.test.tsx (14 tests) 1858ms
+     Γ£ô renders loading state with skeleton loaders  559ms
+ Γ£ô src/components/podcast/YouTubePublishButton.test.tsx (22 tests) 981ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/deal-matching/IntroductionRequestModal.test.tsx (8 tests) 2105ms
+     Γ£ô should submit request with valid data  423ms
+     Γ£ô should call onSuccess after submission  316ms
+     Γ£ô should show loading state during submission  563ms
+ Γ£ô src/components/billing/ChangeTierModal.test.tsx (6 tests) 1960ms
+     Γ£ô should display loading state while changing tier  1223ms
+ Γ£ô src/pages/deals/DocumentRoomPage.test.tsx (8 tests) 1991ms
+       Γ£ô should render the main document room layout  678ms
+       Γ£ô applies search query to document requests  419ms
+       Γ£ô applies file type filter to document requests  376ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/podcast/YouTubeStatusBadge.test.tsx (19 tests) 146ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ Γ£ô src/utils/imageUtils.test.ts (25 tests) 29ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/marketing/AnalyticsProvider.test.tsx (10 tests) 142ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/documents/DocumentQuestionsPanel.test.tsx (4 tests) 711ms
+     Γ£ô submits a new question  330ms
+ Γ£ô src/components/deal-matching/MatchDetailModal.test.tsx (9 tests) 747ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/layout/PageSection.test.tsx (16 tests) 121ms
+ Γ£ô src/components/documents/AccessLogDrawer.test.tsx (6 tests) 665ms
+     Γ£ô surfaces error state and retries on demand  390ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+Not implemented: navigation to another Document
+ Γ£ô src/components/marketing/ExitIntentPopup.test.tsx (10 tests) 299ms
+ Γ£ô src/components/tasks/TaskTemplateSelector.test.tsx (7 tests) 862ms
+     Γ£ô calls onTemplateSelect when a template is clicked  440ms
+ Γ£ô src/pages/marketing/PricingPage.test.tsx (8 tests) 2461ms
+     Γ£ô renders all 4 pricing tiers with correct headings and prices  445ms
+     Γ£ô redirects unauthenticated users to sign-in when clicking Get Started  430ms
+     Γ£ô uses correct tier mapping for Professional plan  320ms
+     Γ£ô shows error message when redirect fails  350ms
+ Γ£ô src/pages/dashboard/BillingDashboard.test.tsx (8 tests) 1422ms
+     Γ£ô opens customer portal and shows loading state  701ms
+ Γ£ô src/components/tasks/TaskTemplateModal.test.tsx (6 tests) 2261ms
+     Γ£ô allows adding tasks to the template  390ms
+     Γ£ô creates template when form is valid  1507ms
+ Γ£ô src/components/billing/CancelSubscriptionModal.test.tsx (6 tests) 789ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+stderr | src/pages/marketing/Blog.test.tsx > Blog Listing Page > Interactions > should render error banner when fetch fails
+Error fetching blog posts: Error: Failed to fetch blog posts: Internal Server Error
+    at fetchPosts (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/Blog.tsx:119:17)
+
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/marketing/Blog.test.tsx (10 tests) 2241ms
+       Γ£ô should request posts for selected category  814ms
+       Γ£ô should clear filters and search when clicking Clear Filters  451ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/tests/integration/PodcastStudioRouting.test.tsx (4 tests) 1745ms
+     Γ£ô redirects visitors to sign-in when unauthenticated  862ms
+     Γ£ô renders transcript details when user is signed in and feature enabled  459ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/utils/schemas/offerSchema.test.ts (7 tests) 17ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/marketing/StickyCTABar.test.tsx (9 tests) 206ms
+ Γ£ô src/components/podcast/YouTubePublisher.test.tsx (11 tests) 18717ms
+     Γ£ô shows connect call-to-action when YouTube is not connected and triggers OAuth flow  1075ms
+     Γ£ô prefills metadata form with episode details and enforces title length  10036ms
+     Γ£ô submits publish payload with metadata and schedule  5767ms
+     Γ£ô surfaces status badge for publishing states  387ms
+     Γ£ô handles publish failure path with actionable messaging  300ms
+     Γ£ô allows disconnecting the connected channel  339ms
+ Γ£ô src/components/financial/FinancialNarrativeDisplay.test.tsx (9 tests) 520ms
+ Γ£ô src/pages/marketing/EnhancedLandingPage.test.tsx (18 tests) 3826ms
+     Γ£ô renders without crashing  520ms
+     Γ£ô renders EnhancedHeroSection  652ms
+     Γ£ô renders How It Works section  551ms
+     Γ£ô displays feature cards  331ms
+ Γ£ô src/components/deal-matching/MatchCard.test.tsx (8 tests) 823ms
+     Γ£ô shows truncated explanation with View More button  421ms
+ Γ£ô src/components/documents/UploadPanel.test.tsx (10 tests) 1116ms
+     Γ£ô opens file picker when upload button clicked  580ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/marketing/FAQPage.test.tsx (16 tests) 1356ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/layout/ContentContainer.test.tsx (11 tests) 103ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/marketing/SecurityPage.test.tsx (21 tests) 2436ms
+       Γ£ô should render main heading  361ms
+ Γ£ô src/components/financial/FinancialRatiosDashboard.test.tsx (10 tests) 1219ms
+     Γ£ô should display ratio descriptions on hover or click  768ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/common/SEO.test.tsx (8 tests) 125ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/financial/FinancialOverview.test.tsx (6 tests) 555ms
+ Γ£ô src/services/api/financial.test.ts (4 tests) 17ms
+ Γ£ô src/components/financial/DealReadinessScore.test.tsx (8 tests) 268ms
+ Γ£ô src/hooks/useFeatureAccess.test.ts (5 tests) 210ms
+ Γ£ô src/pages/deals/DealDocuments.test.tsx (3 tests) 796ms
+     Γ£ô renders document rows with formatted size, version badge, and action buttons  585ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+stderr | src/App.test.tsx > AppRoutes > routes to financial dashboard for authenticated users
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  ΓÇó GET http://localhost:8000/api/deals/test-deal-123/financial/ratios
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  ΓÇó GET http://localhost:8000/api/deals/test-deal-123/financial/narrative
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+
+stderr | src/App.test.tsx > AppRoutes > routes to financial dashboard for authenticated users
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  ΓÇó OPTIONS http://localhost:8000/api/deals/test-deal-123/financial/ratios
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+
+stderr | src/App.test.tsx > AppRoutes > routes to financial dashboard for authenticated users
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  ΓÇó OPTIONS http://localhost:8000/api/deals/test-deal-123/financial/narrative
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+
+stderr | src/App.test.tsx > AppRoutes > routes to financial dashboard for authenticated users
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  ΓÇó GET http://localhost:8000/api/deals/test-deal-123/financial/ratios
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+[MSW] Warning: intercepted a request without a matching request handler:
+
+  ΓÇó GET http://localhost:8000/api/deals/test-deal-123/financial/narrative
+
+If you still wish to intercept this unhandled request, please create a request handler for it.
+Read more: https://mswjs.io/docs/http/intercepting-requests
+
+ Γ£ô src/App.test.tsx (5 tests) 3454ms
+     Γ£ô renders the home route with sign-in actions for visitors  1686ms
+     Γ£ô shows dashboard content when the user is authenticated  455ms
+     Γ£ô keeps marketing sign-in actions visible even when authenticated  862ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/utils/schemas/personSchema.test.ts (7 tests) 19ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+Not implemented: navigation to another Document
+ Γ£ô src/services/billingService.test.ts (5 tests) 31ms
+ Γ£ô src/pages/marketing/PodcastPage.test.tsx (11 tests) 765ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/common/Breadcrumbs.test.tsx (7 tests) 541ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/documents/ShareLinkModal.test.tsx (3 tests) 1337ms
+     Γ£ô creates share link with form values  746ms
+     Γ£ô lists existing links and revokes one  316ms
+ Γ£ô src/features/auth/Auth.test.tsx (3 tests) 2418ms
+     Γ£ô redirects unauthenticated users from /dashboard to /sign-in  434ms
+     Γ£ô shows dashboard content when the user is authenticated  346ms
+     Γ£ô shows marketing sign-in link for visitors and remains stable when authenticated  1632ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/marketing/Footer.test.tsx (10 tests) 1796ms
+       Γ£ô should render Product section with links  520ms
+ Γ¥» src/pages/events/__tests__/EventDashboard.test.tsx (4 tests | 4 failed) 75ms
+     ├ù should render event dashboard with event list 53ms
+     ├ù should display loading state initially 6ms
+     ├ù should filter events by status 5ms
+     ├ù should handle empty event list 3ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+stderr | src/components/marketing/MarketingNav.test.tsx > MarketingNav > supports keyboard navigation for desktop dropdowns
+An update to MarketingNav inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ Γ£ô src/components/layout/NavigationMenu.test.tsx (7 tests) 1838ms
+     Γ£ô renders navigation shell with brand and user menu  384ms
+     Γ£ô shows base workspace links for solo users  363ms
+     Γ£ô renders admin + master admin pills for admin role  351ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/marketing/CTASection.test.tsx (11 tests) 305ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/marketing/MarketingNav.test.tsx (8 tests) 6346ms
+     Γ£ô displays navigation links  1588ms
+     Γ£ô shows Sign In and Sign Up CTAs  616ms
+     Γ£ô toggles mobile dropdown panels  1165ms
+     Γ£ô supports keyboard navigation for desktop dropdowns  1279ms
+     Γ£ô traps focus inside the mobile menu when open  1100ms
+ Γ£ô src/pages/marketing/TeamPage.test.tsx (9 tests) 868ms
+ Γ£ô src/components/auth/ProtectedRoute.test.tsx (5 tests) 158ms
+ Γ£ô src/utils/schemas/blogPostSchema.test.ts (6 tests) 19ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/deals/NewDealPage.test.tsx (3 tests) 4850ms
+     Γ£ô shows validation errors when required fields missing  804ms
+     Γ£ô submits payload and navigates to deal details on success  2869ms
+     Γ£ô displays backend error when createDeal rejects  1168ms
+ Γ£ô src/components/marketing/MarketingLayout.test.tsx (8 tests) 657ms
+       Γ£ô should have main element with aria-label  447ms
+ Γ£ô src/components/podcast/CreateEpisodeModal.test.tsx (2 tests) 176ms
+ Γ£ô src/pages/marketing/CaseStudiesPage.test.tsx (8 tests) 950ms
+ Γ£ô src/utils/schemas/breadcrumbSchema.test.ts (5 tests) 108ms
+ Γ£ô src/pages/marketing/FourStageCyclePage.test.tsx (8 tests) 948ms
+ Γ£ô src/components/master-admin/shared/StatCard.test.tsx (8 tests) 744ms
+     Γ£ô should call onClick when clicked (if provided)  486ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/deals/valuation/__tests__/ValuationExport.test.tsx (4 tests) 137ms
+stderr | src/pages/marketing/ContactPage.test.tsx > ContactPage > shows error state when submission fails
+Error submitting contact form: Error: Network error
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/ContactPage.test.tsx:64:51
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:157:11
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:753:26
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1602:10)
+    at runTest (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1309:12)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runFiles (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1526:3)
+
+ Γ£ô src/services/api.test.ts (5 tests) 19ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/marketing/ContactPage.test.tsx (5 tests) 12093ms
+     Γ£ô renders header, contact form, and information sections  1220ms
+     Γ£ô validates required fields before submission  1189ms
+     Γ£ô submits form and shows confirmation message  4887ms
+     Γ£ô shows error state when submission fails  4580ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/marketing/CapLiquifyFPAPage.test.tsx (8 tests) 956ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/documents/BulkActionsToolbar.test.tsx (8 tests) 979ms
+     Γ£ô disables download button when disableDownload true  323ms
+ Γ£ô src/pages/marketing/BookTrial.test.tsx (10 tests) 1173ms
+ Γ£ô src/components/MarketingFooter.test.tsx (8 tests) 749ms
+       Γ£ô should render app title  617ms
+ Γ£ô src/tests/integration/routing.test.tsx (4 tests) 1770ms
+     Γ£ô renders the landing page for visitors  1538ms
+ Γ£ô src/pages/marketing/FeaturesPage.test.tsx (6 tests) 1734ms
+     Γ£ô renders main heading  644ms
+     Γ£ô contains CTA to pricing  599ms
+ Γ£ô src/pages/marketing/SalesPromotionPricingPage.test.tsx (8 tests) 881ms
+stderr | src/components/marketing/OptInPopup.test.tsx > OptInPopup > shows an error message when subscription fails
+Failed to subscribe: Error: network
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/components/marketing/OptInPopup.test.tsx:49:43
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:157:11
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:753:26
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1602:10)
+    at runTest (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1309:12)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runFiles (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1526:3)
+
+ Γ£ô src/components/marketing/OptInPopup.test.tsx (2 tests) 1227ms
+     Γ£ô becomes visible after the delay and submits successfully  787ms
+     Γ£ô shows an error message when subscription fails  433ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/marketing/DashboardMockup.test.tsx (6 tests) 256ms
+ Γ£ô src/components/podcast/EpisodeTranscriptPanel.test.tsx (2 tests) 559ms
+     Γ£ô renders transcribe button when no transcript exists  365ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/marketing/EnhancedHeroSection.test.tsx (6 tests) 959ms
+     Γ£ô includes both primary and secondary CTAs  434ms
+ Γ£ô src/pages/marketing/legal/__tests__/LegalPages.test.tsx (3 tests) 1560ms
+     Γ£ô renders Terms of Service with last updated date and sections  781ms
+     Γ£ô renders Privacy Policy with GDPR notice and DPO contact  440ms
+     Γ£ô renders Cookie Policy with control information  330ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/podcast/VideoPlayerModal.test.tsx (5 tests) 709ms
+     Γ£ô renders video player and download link when open  522ms
+ Γ£ô src/pages/deals/valuation/__tests__/ValuationCharts.test.tsx (5 tests) 671ms
+     Γ£ô should allow switching between enterprise and equity value views  479ms
+ Γ£ô src/components/podcast/QuotaWarning.test.tsx (5 tests) 738ms
+     Γ£ô shows warning when usage crosses threshold  445ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/hooks/useDealMatches.test.tsx (2 tests) 129ms
+ Γ£ô src/pages/marketing/legal/LegalMeta.test.tsx (3 tests) 401ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+stderr | src/pages/marketing/BlogListingPage.test.tsx > BlogListingPage > shows a friendly error message when the API call fails
+Failed to load blog posts Error: Network error
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/BlogListingPage.test.tsx:54:48
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:157:11
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:753:26
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1602:10)
+    at runTest (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1309:12)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runFiles (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1526:3)
+
+ Γ£ô src/pages/marketing/BlogListingPage.test.tsx (2 tests) 417ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/marketing/PricingCard.test.tsx (6 tests) 363ms
+ Γ£ô src/components/ui/Spinner.test.tsx (6 tests) 67ms
+ Γ£ô src/components/marketing/FeatureCard.test.tsx (4 tests) 103ms
+ Γ£ô src/pages/marketing/NotFound.test.tsx (5 tests) 483ms
+ Γ£ô src/components/layout/Breadcrumbs.test.tsx (4 tests) 704ms
+     Γ£ô renders breadcrumb trail for top-level route  345ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/tests/domainConfig.test.ts (3 tests) 17ms
+ Γ£ô src/pages/marketing/LandingPage.test.tsx (8 tests) 4265ms
+     Γ£ô renders the enhanced hero section headline  1255ms
+     Γ£ô includes trust badge section  768ms
+     Γ£ô adds quantified social proof stats and logos  332ms
+     Γ£ô maintains CTA section at the end  938ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/deal-matching/MatchScoreBadge.test.tsx (4 tests) 87ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/utils/schemas/organizationSchema.test.ts (4 tests) 87ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/checkout/CheckoutSuccess.test.tsx (3 tests) 482ms
+     Γ£ô should provide link to billing dashboard  362ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/marketing/MarketingLayout.domain.test.tsx (1 test) 108ms
+ Γ£ô src/pages/checkout/CheckoutCancel.test.tsx (3 tests) 353ms
+ Γ£ô src/components/deal-matching/analytics/MatchingActivity.test.tsx (2 tests) 85ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/auth/AuthErrorBoundary.test.tsx (3 tests) 1144ms
+     Γ£ô should provide a way to recover from error  789ms
+ Γ£ô src/components/marketing/HeroSection.test.tsx (5 tests) 1327ms
+     Γ£ô renders main headline  679ms
+     Γ£ô shows primary CTA button  387ms
+ Γ£ô src/components/deal-matching/analytics/MatchScoreDistribution.test.tsx (2 tests) 76ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/marketing/EnhancedLandingPage.meta.test.tsx (1 test) 251ms
+ Γ£ô src/components/deal-matching/analytics/RecentMatches.test.tsx (2 tests) 68ms
+ Γ£ô src/pages/marketing/AboutPage.test.tsx (3 tests) 2412ms
+     Γ£ô sets the document title and renders the hero heading  1003ms
+     Γ£ô includes value statements and call to action  1125ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/pages/marketing/AboutPage.meta.test.tsx (1 test) 180ms
+ Γ£ô src/pages/marketing/LandingPage.meta.test.tsx (1 test) 387ms
+     Γ£ô sets canonical and og:url to 100daysandbeyond.com  381ms
+stderr | src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx > BlogListingPage contract > shows a friendly outage message when the blog API fails
+Failed to load blog posts AxiosError: Request failed with status code 500
+    at settle (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/axios/lib/core/settle.js:19:12)
+    at XMLHttpRequest.onloadend (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/axios/lib/adapters/xhr.js:59:7)
+    at XMLHttpRequest.methodCall (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@mswjs/interceptors/lib/node/chunk-5V3SIIW2.mjs:354:20)
+    at Proxy.<anonymous> (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@mswjs/interceptors/lib/node/chunk-5V3SIIW2.mjs:177:29)
+    at XMLHttpRequestController.trigger (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@mswjs/interceptors/lib/node/chunk-5V3SIIW2.mjs:652:16)
+    at finalizeResponse (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@mswjs/interceptors/lib/node/chunk-5V3SIIW2.mjs:506:12)
+    at readNextResponseBodyChunk (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@mswjs/interceptors/lib/node/chunk-5V3SIIW2.mjs:518:11)
+    at Axios.request (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/axios/lib/core/Axios.js:45:41)
+    at fetchBlogPosts (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/services/blogService.ts:16:20)
+    at loadPosts (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/BlogListingPage.tsx:29:22) {
+  code: 'ERR_BAD_RESPONSE',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function [FormData]], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    baseURL: 'http://localhost:8000/api',
+    method: 'get',
+    url: '/blog',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: XMLHttpRequest {
+    open: [Function: open],
+    setRequestHeader: [Function: setRequestHeader],
+    send: [Function: send],
+    abort: [Function: abort],
+    getResponseHeader: [Function (anonymous)],
+    getAllResponseHeaders: [Function (anonymous)],
+    overrideMimeType: [Function: overrideMimeType],
+    onreadystatechange: [Getter/Setter],
+    readyState: 4,
+    timeout: [Getter/Setter],
+    withCredentials: [Getter/Setter],
+    upload: XMLHttpRequestUpload {},
+    responseURL: 'http://localhost:8000/api/blog',
+    status: 500,
+    statusText: 'Internal Server Error',
+    responseType: [Getter/Setter],
+    response: [Getter],
+    responseText: [Getter],
+    responseXML: [Getter],
+    UNSENT: 0,
+    OPENED: 1,
+    HEADERS_RECEIVED: 2,
+    LOADING: 3,
+    DONE: 4,
+    Symbol(SameObject caches): [Object: null prototype] { upload: XMLHttpRequestUpload {} }
+  },
+  response: {
+    data: {
+      detail: 'Internal server error',
+      message: 'Internal server error'
+    },
+    status: 500,
+    statusText: 'Internal Server Error',
+    headers: Object [AxiosHeaders] {
+      'content-length': '68',
+      'content-type': 'application/json'
+    },
+    config: {
+      transitional: [Object],
+      adapter: [Array],
+      transformRequest: [Array],
+      transformResponse: [Array],
+      timeout: 0,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+      maxContentLength: -1,
+      maxBodyLength: -1,
+      env: [Object],
+      validateStatus: [Function: validateStatus],
+      headers: [Object [AxiosHeaders]],
+      baseURL: 'http://localhost:8000/api',
+      method: 'get',
+      url: '/blog',
+      allowAbsoluteUrls: true,
+      data: undefined
+    },
+    request: XMLHttpRequest {
+      open: [Function: open],
+      setRequestHeader: [Function: setRequestHeader],
+      send: [Function: send],
+      abort: [Function: abort],
+      getResponseHeader: [Function (anonymous)],
+      getAllResponseHeaders: [Function (anonymous)],
+      overrideMimeType: [Function: overrideMimeType],
+      onreadystatechange: [Getter/Setter],
+      readyState: 4,
+      timeout: [Getter/Setter],
+      withCredentials: [Getter/Setter],
+      upload: XMLHttpRequestUpload {},
+      responseURL: 'http://localhost:8000/api/blog',
+      status: 500,
+      statusText: 'Internal Server Error',
+      responseType: [Getter/Setter],
+      response: [Getter],
+      responseText: [Getter],
+      responseXML: [Getter],
+      UNSENT: 0,
+      OPENED: 1,
+      HEADERS_RECEIVED: 2,
+      LOADING: 3,
+      DONE: 4,
+      Symbol(SameObject caches): [Object: null prototype]
+    }
+  },
+  status: 500
+}
+
+ Γ£ô src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx (1 test) 508ms
+     Γ£ô shows a friendly outage message when the blog API fails  502ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/deal-matching/PassMatchButton.test.tsx (2 tests) 68ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/deal-matching/SaveMatchButton.test.tsx (2 tests) 71ms
+(node:43900) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/components/deal-matching/analytics/MatchSuccessRate.test.tsx (2 tests) 116ms
+ Γ£ô src/utils/dateFormat.test.ts (3 tests) 14ms
+ Γ£ô src/components/deal-matching/RequestIntroButton.test.tsx (2 tests) 117ms
+ Γ£ô src/components/ui/Button.test.tsx (3 tests) 115ms
+ Γ£ô src/pages/marketing/__tests__/ContactPage.form.test.tsx (1 test) 248ms
+ Γ£ô src/pages/marketing/BlogPost.test.tsx (1 test) 467ms
+     Γ£ô links related articles using their slug  458ms

@@ -1,0 +1,21 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --pool=threads src/tests/integration/routing.test.tsx src/features/auth/Auth.test.tsx src/App.test.tsx src/tests/integration/PodcastStudioRouting.test.tsx src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+ [32m✓[39m src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 265[2mms[22m[39m
+ [32m✓[39m src/tests/integration/PodcastStudioRouting.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 637[2mms[22m[39m
+ [32m✓[39m src/tests/integration/routing.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 936[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the landing page for visitors [33m 781[2mms[22m[39m
+ [32m✓[39m src/features/auth/Auth.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1002[2mms[22m[39m
+     [33m[2m✓[22m[39m shows marketing sign-in link for visitors and remains stable when authenticated [33m 588[2mms[22m[39m
+ [32m✓[39m src/App.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 1368[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the home route with sign-in actions for visitors [33m 873[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m      Tests [22m [1m[32m17 passed[39m[22m[90m (17)[39m
+[2m   Start at [22m 09:26:50
+[2m   Duration [22m 4.96s[2m (transform 2.34s, setup 3.66s, collect 3.00s, tests 4.21s, environment 6.69s, prepare 110ms)[22m
+

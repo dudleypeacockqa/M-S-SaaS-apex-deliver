@@ -7,7 +7,7 @@ import urllib.request
 import urllib.error
 
 SERVICE_ID = os.environ.get("RENDER_SERVICE_ID", "srv-d3ii9qk9c44c73aqsli0")
-API_KEY = os.environ.get("RENDER_API_KEY", "rnd_oMIm1MFTqRNH8SE4fgiIiXTsNAqM")
+API_KEY = os.environ.get("RENDER_API_KEY", "rnd_oMIm1MFTqRNH8sE4fgIiIXTsNAqM")
 API_URL = f"https://api.render.com/v1/services/{SERVICE_ID}/deploys?limit=5"
 
 headers = {
