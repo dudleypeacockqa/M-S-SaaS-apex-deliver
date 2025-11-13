@@ -57,33 +57,87 @@ def upgrade() -> None:
         )
     """)
 
+    # Ensure all columns exist (handle case where table exists but columns are missing)
+    op.execute("""
+        DO $$ BEGIN
+            -- Add status column if it doesn't exist
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'document_templates' AND column_name = 'status'
+            ) THEN
+                ALTER TABLE document_templates 
+                ADD COLUMN status templatestatus DEFAULT 'ACTIVE' NOT NULL;
+            END IF;
+            
+            -- Add template_type column if it doesn't exist
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'document_templates' AND column_name = 'template_type'
+            ) THEN
+                ALTER TABLE document_templates 
+                ADD COLUMN template_type VARCHAR;
+            END IF;
+            
+            -- Add created_at column if it doesn't exist
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'document_templates' AND column_name = 'created_at'
+            ) THEN
+                ALTER TABLE document_templates 
+                ADD COLUMN created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL;
+            END IF;
+            
+            -- Add organization_id column if it doesn't exist
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'document_templates' AND column_name = 'organization_id'
+            ) THEN
+                ALTER TABLE document_templates 
+                ADD COLUMN organization_id UUID NOT NULL REFERENCES organizations(id);
+            END IF;
+        END $$;
+    """)
+
     # Create indexes for document_templates (idempotent)
+    # Only create indexes if the columns exist
     op.execute("""
         DO $$ BEGIN
-            CREATE INDEX idx_document_templates_organization_id ON document_templates(organization_id);
-        EXCEPTION WHEN duplicate_table THEN
-            NULL;
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'document_templates' AND column_name = 'organization_id'
+            ) THEN
+                CREATE INDEX IF NOT EXISTS idx_document_templates_organization_id ON document_templates(organization_id);
+            END IF;
         END $$;
     """)
     op.execute("""
         DO $$ BEGIN
-            CREATE INDEX idx_document_templates_status ON document_templates(status);
-        EXCEPTION WHEN duplicate_table THEN
-            NULL;
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'document_templates' AND column_name = 'status'
+            ) THEN
+                CREATE INDEX IF NOT EXISTS idx_document_templates_status ON document_templates(status);
+            END IF;
         END $$;
     """)
     op.execute("""
         DO $$ BEGIN
-            CREATE INDEX idx_document_templates_template_type ON document_templates(template_type);
-        EXCEPTION WHEN duplicate_table THEN
-            NULL;
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'document_templates' AND column_name = 'template_type'
+            ) THEN
+                CREATE INDEX IF NOT EXISTS idx_document_templates_template_type ON document_templates(template_type);
+            END IF;
         END $$;
     """)
     op.execute("""
         DO $$ BEGIN
-            CREATE INDEX idx_document_templates_created_at ON document_templates(created_at);
-        EXCEPTION WHEN duplicate_table THEN
-            NULL;
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'document_templates' AND column_name = 'created_at'
+            ) THEN
+                CREATE INDEX IF NOT EXISTS idx_document_templates_created_at ON document_templates(created_at);
+            END IF;
         END $$;
     """)
 
@@ -103,33 +157,87 @@ def upgrade() -> None:
         )
     """)
 
+    # Ensure all columns exist (handle case where table exists but columns are missing)
+    op.execute("""
+        DO $$ BEGIN
+            -- Add status column if it doesn't exist
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'generated_documents' AND column_name = 'status'
+            ) THEN
+                ALTER TABLE generated_documents 
+                ADD COLUMN status documentstatus DEFAULT 'GENERATED' NOT NULL;
+            END IF;
+            
+            -- Add created_at column if it doesn't exist
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'generated_documents' AND column_name = 'created_at'
+            ) THEN
+                ALTER TABLE generated_documents 
+                ADD COLUMN created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL;
+            END IF;
+            
+            -- Add organization_id column if it doesn't exist
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'generated_documents' AND column_name = 'organization_id'
+            ) THEN
+                ALTER TABLE generated_documents 
+                ADD COLUMN organization_id UUID NOT NULL REFERENCES organizations(id);
+            END IF;
+            
+            -- Add template_id column if it doesn't exist
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'generated_documents' AND column_name = 'template_id'
+            ) THEN
+                ALTER TABLE generated_documents 
+                ADD COLUMN template_id UUID NOT NULL REFERENCES document_templates(id);
+            END IF;
+        END $$;
+    """)
+
     # Create indexes for generated_documents (idempotent)
+    # Only create indexes if the columns exist
     op.execute("""
         DO $$ BEGIN
-            CREATE INDEX idx_generated_documents_organization_id ON generated_documents(organization_id);
-        EXCEPTION WHEN duplicate_table THEN
-            NULL;
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'generated_documents' AND column_name = 'organization_id'
+            ) THEN
+                CREATE INDEX IF NOT EXISTS idx_generated_documents_organization_id ON generated_documents(organization_id);
+            END IF;
         END $$;
     """)
     op.execute("""
         DO $$ BEGIN
-            CREATE INDEX idx_generated_documents_template_id ON generated_documents(template_id);
-        EXCEPTION WHEN duplicate_table THEN
-            NULL;
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'generated_documents' AND column_name = 'template_id'
+            ) THEN
+                CREATE INDEX IF NOT EXISTS idx_generated_documents_template_id ON generated_documents(template_id);
+            END IF;
         END $$;
     """)
     op.execute("""
         DO $$ BEGIN
-            CREATE INDEX idx_generated_documents_status ON generated_documents(status);
-        EXCEPTION WHEN duplicate_table THEN
-            NULL;
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'generated_documents' AND column_name = 'status'
+            ) THEN
+                CREATE INDEX IF NOT EXISTS idx_generated_documents_status ON generated_documents(status);
+            END IF;
         END $$;
     """)
     op.execute("""
         DO $$ BEGIN
-            CREATE INDEX idx_generated_documents_created_at ON generated_documents(created_at);
-        EXCEPTION WHEN duplicate_table THEN
-            NULL;
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'generated_documents' AND column_name = 'created_at'
+            ) THEN
+                CREATE INDEX IF NOT EXISTS idx_generated_documents_created_at ON generated_documents(created_at);
+            END IF;
         END $$;
     """)
 
