@@ -1,0 +1,348 @@
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 19%]
+................................FF.FFFFFFFFF.FF.FFFFFFFFFFFFFFFFFFFFFFFF [ 26%]
+FF.................................FF.......F........................... [ 33%]
+................................FFFFFFFEEEE.FEEEE....................... [ 39%]
+........................................................................ [ 46%]
+.s..................ss..........ss..s.......ssssssssss....EE............ [ 53%]
+.......................................................................s [ 59%]
+ssssssss.......................................sssssssssssssssssssssssss [ 66%]
+sssss.s..s.............................ssss............................. [ 73%]
+........................................................................ [ 79%]
+........ssss.................................sssssssss.................. [ 86%]
+........................................................................ [ 92%]
+...........................................................sss..s...sss. [ 99%]
+....                                                                     [100%]
+============================== warnings summary ===============================
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.8/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+tests\test_netsuite_integration.py:30
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:30: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:42
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:42: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:59
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:59: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:97
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:97: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:114
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:114: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:132
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:132: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:153
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:153: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:209
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:209: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:229
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:229: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:249
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:249: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:29
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:29: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:49
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:49: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:66
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:66: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:104
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:104: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:121
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:121: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:143
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:143: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:164
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:164: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:219
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:219: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:238
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:238: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:28
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:28: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:40
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:40: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:57
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:57: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:95
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:95: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:112
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:112: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:130
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:130: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:151
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:151: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:206
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:206: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:226
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:226: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:30
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:30: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:47
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:47: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:63
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:63: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:104
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:104: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:136
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:136: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:153
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:153: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:175
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:175: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:196
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:196: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:284
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:284: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+backend/tests/test_billing_endpoints.py: 16 warnings
+backend/tests/test_billing_simple.py: 3 warnings
+backend/tests/test_clerk_auth_complete.py: 26 warnings
+backend/tests/test_community_api.py: 22 warnings
+backend/tests/test_deal_endpoints.py: 25 warnings
+backend/tests/test_deal_matching_api.py: 16 warnings
+backend/tests/test_document_ai_and_versions.py: 5 warnings
+backend/tests/test_document_endpoints.py: 42 warnings
+backend/tests/test_document_generation_api.py: 19 warnings
+backend/tests/test_event_payment_api.py: 7 warnings
+backend/tests/test_financial_api.py: 34 warnings
+backend/tests/test_master_admin_api.py: 13 warnings
+backend/tests/test_pipeline_template_api.py: 3 warnings
+backend/tests/test_podcast_api.py: 54 warnings
+backend/tests/test_subscription_error_paths.py: 16 warnings
+backend/tests/test_task_crud.py: 6 warnings
+backend/tests/test_valuation_api.py: 20 warnings
+backend/tests/test_valuation_crud.py: 8 warnings
+backend/tests/api/test_blog.py: 16 warnings
+backend/tests/api/test_blog_api.py: 6 warnings
+backend/tests/api/test_document_sharing.py: 8 warnings
+backend/tests/api/test_event_api.py: 26 warnings
+backend/tests/api/test_marketing.py: 4 warnings
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+backend/tests/test_clerk_auth_complete.py: 24 warnings
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\httpx\_content.py:202: DeprecationWarning: Use 'content=<...>' to upload raw bytes/text content.
+    warnings.warn(message, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_financial_xero_integration.py:9: To be implemented in ratio engine phase
+SKIPPED [1] tests\test_master_admin_models.py:134: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:148: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:335: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:348: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:405: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_netsuite_integration.py:30: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:42: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:59: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:97: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:114: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:132: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:153: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:209: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:229: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:249: Requires real NetSuite sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_quickbooks_integration.py:29: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:49: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:66: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:104: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:121: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:143: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:164: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:219: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:238: Requires real QuickBooks sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_s3_storage_service.py:32: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:54: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:68: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:86: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:109: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:136: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:164: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:194: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:219: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:249: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:273: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:304: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:330: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:355: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:381: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:406: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:433: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:465: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:497: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:516: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:535: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_sage_integration.py:28: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:40: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:57: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:95: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:112: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:130: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:151: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:206: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:226: Requires real Sage sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_storage_factory.py:48: boto3 not installed - S3 storage optional
+SKIPPED [1] tests\test_storage_factory.py:116: boto3 not installed - S3 storage optional
+SKIPPED [1] tests\test_subscription_error_paths.py:379: Stripe module imported inside function - mocking complex, error handling already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:403: Stripe module imported inside function - mocking complex, error handling already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:431: Stripe module imported inside function - mocking complex, event routing already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:474: Stripe module imported inside function - mocking complex, exception handling already verified in code
+SKIPPED [1] tests\test_valuation_export_service.py:47: TDD RED phase - awaiting ValuationExportService implementation (DEV-011 Phase 5)
+SKIPPED [1] tests\test_valuation_export_service.py:67: TDD RED phase - awaiting ValuationExportService implementation (DEV-011 Phase 5)
+SKIPPED [1] tests\test_valuation_export_service.py:86: TDD RED phase - awaiting ValuationExportService implementation (DEV-011 Phase 5)
+SKIPPED [1] tests\test_valuation_export_service.py:118: TDD RED phase - awaiting ValuationExportService implementation (DEV-011 Phase 5)
+SKIPPED [1] tests\test_xero_integration.py:30: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:47: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:63: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:104: Requires real Xero sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_xero_integration.py:136: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:153: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:175: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:196: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:284: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\services\test_rbac_permissions.py:223: Auth dependency integration test - requires auth.py mocking
+SKIPPED [1] tests\services\test_rbac_permissions.py:234: Auth dependency integration test - requires auth.py mocking
+SKIPPED [1] tests\services\test_rbac_permissions.py:238: Auth dependency integration test - requires FastAPI request context
+SKIPPED [1] tests\services\test_rbac_permissions.py:269: Entitlement service test - covered in test_entitlement.py
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:150: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:167: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:189: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+ERROR tests\test_event_payment_service.py::test_create_checkout_session_success
+ERROR tests\test_event_payment_service.py::test_create_checkout_session_invalid_ticket_type
+ERROR tests\test_event_payment_service.py::test_create_checkout_session_sold_out_ticket
+ERROR tests\test_event_payment_service.py::test_handle_webhook_payment_succeeded
+ERROR tests\test_event_payment_service.py::test_assign_tickets_success - sqla...
+ERROR tests\test_event_payment_service.py::test_generate_receipt_success - sq...
+ERROR tests\test_event_payment_service.py::test_process_refund_success - sqla...
+ERROR tests\test_event_payment_service.py::test_process_refund_partial - sqla...
+ERROR tests\test_notification_service.py::test_trigger_event_ticket_confirmation
+ERROR tests\test_notification_service.py::test_trigger_event_reminder_24h - s...
+FAILED tests\test_document_endpoints.py::test_create_folder_success - Attribu...
+FAILED tests\test_document_endpoints.py::test_upload_document_success - Attri...
+FAILED tests\test_document_endpoints.py::test_list_documents_filters_by_folder
+FAILED tests\test_document_endpoints.py::test_download_document_records_access_log
+FAILED tests\test_document_endpoints.py::test_set_document_permission - Attri...
+FAILED tests\test_document_endpoints.py::test_list_folders_lazy_loading - Att...
+FAILED tests\test_document_endpoints.py::test_list_folders_supports_search - ...
+FAILED tests\test_document_endpoints.py::test_create_nested_folder - Attribut...
+FAILED tests\test_document_endpoints.py::test_rename_folder - AttributeError:...
+FAILED tests\test_document_endpoints.py::test_delete_empty_folder - Attribute...
+FAILED tests\test_document_endpoints.py::test_delete_non_empty_folder_fails
+FAILED tests\test_document_endpoints.py::test_folder_organization_isolation
+FAILED tests\test_document_endpoints.py::test_upload_multiple_documents - Att...
+FAILED tests\test_document_endpoints.py::test_upload_creates_audit_log - Attr...
+FAILED tests\test_document_endpoints.py::test_search_documents_by_filename - ...
+FAILED tests\test_document_endpoints.py::test_filter_documents_by_file_type
+FAILED tests\test_document_endpoints.py::test_upload_same_name_creates_new_version
+FAILED tests\test_document_endpoints.py::test_list_document_versions - Attrib...
+FAILED tests\test_document_endpoints.py::test_download_specific_version - Att...
+FAILED tests\test_document_endpoints.py::test_restore_previous_version - Attr...
+FAILED tests\test_document_endpoints.py::test_max_versions_enforced - Attribu...
+FAILED tests\test_document_endpoints.py::test_delete_document_archives_all_versions
+FAILED tests\test_document_endpoints.py::test_viewer_cannot_delete_document
+FAILED tests\test_document_endpoints.py::test_viewer_can_download_document - ...
+FAILED tests\test_document_endpoints.py::test_editor_can_upload_with_folder_permission
+FAILED tests\test_document_endpoints.py::test_granting_folder_permission_creates_audit_log
+FAILED tests\test_document_endpoints.py::test_revoking_folder_permission_creates_audit_log
+FAILED tests\test_document_endpoints.py::test_revoking_document_permission_creates_audit_log
+FAILED tests\test_document_endpoints.py::test_editor_cannot_delete_others_document
+FAILED tests\test_document_endpoints.py::test_editor_can_delete_own_document
+FAILED tests\test_document_endpoints.py::test_delete_document_requires_editor_permission
+FAILED tests\test_document_endpoints.py::test_delete_document_records_audit_log
+FAILED tests\test_document_endpoints.py::test_access_logs_include_user_name
+FAILED tests\test_document_endpoints.py::test_bulk_download_documents - Attri...
+FAILED tests\test_document_endpoints.py::test_bulk_download_requires_permission
+FAILED tests\test_document_endpoints.py::test_bulk_delete_documents - Attribu...
+FAILED tests\test_document_endpoints.py::test_bulk_delete_requires_owner_permission
+FAILED tests\test_document_endpoints.py::test_bulk_delete_partial_failure - A...
+FAILED tests\test_document_endpoints.py::test_document_question_workflow - At...
+FAILED tests\test_document_service_error_paths.py::test_delete_folder_with_documents_raises_value_error
+FAILED tests\test_document_service_error_paths.py::test_delete_folder_with_subfolders_raises_value_error
+FAILED tests\test_email_service.py::test_render_template_success - assert 'Te...
+FAILED tests\test_event_payment_api.py::test_initiate_purchase_success - asse...
+FAILED tests\test_event_payment_api.py::test_initiate_purchase_invalid_event
+FAILED tests\test_event_payment_api.py::test_initiate_purchase_invalid_ticket_type
+FAILED tests\test_event_payment_api.py::test_webhook_payment_succeeded - asse...
+FAILED tests\test_event_payment_api.py::test_webhook_invalid_signature - asse...
+FAILED tests\test_event_payment_api.py::test_get_receipt_success - assert 404...
+FAILED tests\test_event_payment_api.py::test_get_receipt_not_found - Assertio...
+FAILED tests\test_event_payment_service.py::test_handle_webhook_invalid_signature
+50 failed, 943 passed, 81 skipped, 462 warnings, 10 errors in 152.34s (0:02:32)

@@ -47,7 +47,8 @@ def test_user(db_session: Session, create_organization):
 def test_event(db_session: Session, create_organization, test_user):
     """Create a test event."""
     from app.models.event import Event, EventStatus, EventType
-    org = create_organization(name="Test Org")
+    import uuid
+    org = create_organization(name=f"Test Org {uuid.uuid4().hex[:8]}")
     event = Event(
         id="event-test-123",
         name="M&A Summit 2025",
@@ -93,7 +94,7 @@ async def test_send_notification_email_enabled(
     db_session.add(prefs)
     db_session.commit()
 
-    with patch('app.services.notification_service.send_email') as mock_send:
+    with patch('app.services.notification_service.email_service.send_email') as mock_send:
         mock_send.return_value = {'status': 'sent'}
 
         # Act
@@ -242,7 +243,7 @@ async def test_trigger_event_ticket_confirmation(
         "amount": 40000,
     }
 
-    with patch('app.services.notification_service.send_notification') as mock_send:
+    with patch('app.services.notification_service.email_service.send_email') as mock_send:
         mock_send.return_value = {'status': 'sent'}
 
         # Act
@@ -276,7 +277,7 @@ async def test_trigger_event_reminder_24h(
         "event_date": test_event.start_date.isoformat(),
     }
 
-    with patch('app.services.notification_service.send_notification') as mock_send:
+    with patch('app.services.notification_service.email_service.send_email') as mock_send:
         mock_send.return_value = {'status': 'sent'}
 
         # Act
@@ -314,7 +315,7 @@ async def test_trigger_community_comment_notification(
         "comment_content": "Great post!",
     }
 
-    with patch('app.services.notification_service.send_notification') as mock_send:
+    with patch('app.services.notification_service.email_service.send_email') as mock_send:
         mock_send.return_value = {'status': 'sent'}
 
         # Act
@@ -347,7 +348,7 @@ async def test_trigger_community_reaction_notification(
         "reactor_name": "Jane Doe",
     }
 
-    with patch('app.services.notification_service.send_notification') as mock_send:
+    with patch('app.services.notification_service.email_service.send_email') as mock_send:
         mock_send.return_value = {'status': 'sent'}
 
         # Act
@@ -361,4 +362,5 @@ async def test_trigger_community_reaction_notification(
         # Assert
         assert result is not None
         assert result['status'] == 'sent'
+
 

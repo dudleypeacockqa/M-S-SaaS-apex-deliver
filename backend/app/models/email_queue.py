@@ -43,3 +43,4 @@ class EmailQueue(Base):
     def __repr__(self):
         return f"<EmailQueue(id={self.id}, to_email={self.to_email}, status={self.status})>"
 
+

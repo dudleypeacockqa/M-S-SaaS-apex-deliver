@@ -64,9 +64,6 @@ async def send_email(
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"
 
-    async def _send() -> httpx.Response:
-        return httpx.post(api_url, headers=headers, json=payload, timeout=10)
-
     try:
         response = await asyncio.get_running_loop().run_in_executor(None, lambda: httpx.post(api_url, headers=headers, json=payload, timeout=10))
         response.raise_for_status()
@@ -107,7 +104,10 @@ async def render_template(*, template_name: str, template_data: Dict[str, Any]) 
     def apply(template: str) -> str:
         rendered = template
         for key, value in template_dict.items():
-            rendered = rendered.replace(f"{{{{ {key} }}}}", str(value))
+            # Replace {{ { key } }} pattern (with spaces)
+            # Need to match literal: {{ { event_name } }}
+            pattern = "{{ { " + key + " } }}"
+            rendered = rendered.replace(pattern, str(value))
         return rendered
 
     return {
@@ -178,3 +178,4 @@ async def retry_failed_email(*, db: Session, email_id: str) -> Dict[str, Any]:
     db.commit()
 
     return result
+

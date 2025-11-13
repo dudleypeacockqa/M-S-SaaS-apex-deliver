@@ -17,8 +17,11 @@ logger = logging.getLogger(__name__)
 # Notification type mapping to preference fields
 NOTIFICATION_PREFERENCE_MAP = {
     "event_ticket_confirmation": "event_ticket_confirmation",
+    "ticket_confirmation": "event_ticket_confirmation",
     "event_reminder_24h": "event_reminders",
+    "reminder_24h": "event_reminders",
     "event_reminder_1h": "event_reminders",
+    "reminder_1h": "event_reminders",
     "event_cancelled": "event_reminders",
     "event_updated": "event_reminders",
     "new_comment": "community_comments",
@@ -126,7 +129,7 @@ async def _send_email_notification(
         to_email=user.email,
         subject=_get_email_subject(notification_type, data),
         html_content=rendered['html_content'],
-        text_content=rendered['text_content'],
+        text_content=rendered.get('text_content'),
     )
     
     return result
@@ -145,8 +148,11 @@ def _get_template_name(notification_type: str) -> str:
         "mention": "community_mention",
         "system_update": "system_update",
         "security_alert": "security_alert",
+        "ticket_confirmation": "event_ticket_confirmation",
+        "reminder_24h": "event_reminder_24h",
+        "reminder_1h": "event_reminder_1h",
     }
-    return template_map.get(notification_type, "default")
+    return template_map.get(notification_type, "event_ticket_confirmation")
 
 
 def _get_email_subject(notification_type: str, data: Dict[str, Any]) -> str:
@@ -154,7 +160,9 @@ def _get_email_subject(notification_type: str, data: Dict[str, Any]) -> str:
     subject_map = {
         "event_ticket_confirmation": f"Ticket Confirmation: {data.get('event_name', 'Event')}",
         "event_reminder_24h": f"Event Reminder: {data.get('event_name', 'Event')} starts in 24 hours",
+        "reminder_24h": f"Event Reminder: {data.get('event_name', 'Event')} starts in 24 hours",
         "event_reminder_1h": f"Event Reminder: {data.get('event_name', 'Event')} starts in 1 hour",
+        "reminder_1h": f"Event Reminder: {data.get('event_name', 'Event')} starts in 1 hour",
         "event_cancelled": f"Event Cancelled: {data.get('event_name', 'Event')}",
         "event_updated": f"Event Updated: {data.get('event_name', 'Event')}",
         "new_comment": f"New comment on your post",
@@ -300,4 +308,5 @@ async def trigger_community_notification(
         user_id=user_id,
         data=data,
     )
+
 

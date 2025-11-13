@@ -571,27 +571,22 @@ def test_export_registrations_empty_event_returns_200(client: TestClient, test_e
     assert len(rows) == 0, "Should have no registrations"
 
 
-@pytest.mark.skip(reason="Email notification service is a stub - feature not yet fully implemented")
 def test_create_registration_sends_confirmation_email(
     client: TestClient,
     test_event: Event,
     test_ticket: EventTicket,
     monkeypatch,
 ):
-    """Test that creating a registration queues a confirmation email.
-    
-    NOTE: This test is skipped because the email notification service is currently
-    a stub. Once email sending is fully implemented, this test should be enabled.
-    """
+    """Test that creating a registration queues a confirmation email."""
 
     called_payload = {}
 
     def fake_send_registration_confirmation_email(payload):
         called_payload["data"] = payload
 
-    # Mock the function from the service module where it's actually defined
+    # Patch the function imported by the events router
     monkeypatch.setattr(
-        "app.services.event_notification_service.send_registration_confirmation_email",
+        "app.api.routes.events.send_registration_confirmation_email",
         fake_send_registration_confirmation_email,
     )
 

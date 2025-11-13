@@ -1,0 +1,4 @@
+You're confirmed for {{ event_name }}
+Hello {{ user_name }},
+Your ticket type: {{ ticket_type }} (Qty: {{ quantity }})
+See you on {{ event_date }}.

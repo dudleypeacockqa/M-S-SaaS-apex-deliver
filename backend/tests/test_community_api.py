@@ -428,3 +428,4 @@ def test_get_analytics_returns_200(client: TestClient, test_post: Post):
     assert "total_reactions" in data
     assert isinstance(data["total_posts"], int)
 
+

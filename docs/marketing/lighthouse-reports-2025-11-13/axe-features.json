@@ -14,7 +14,7 @@
       "orientationAngle": 0,
       "orientationType": "landscape-primary"
     },
-    "timestamp": "2025-11-13T15:10:37.386Z",
+    "timestamp": "2025-11-13T15:56:31.074Z",
     "url": "https://100daysandbeyond.com/features",
     "toolOptions": {
       "reporter": "v1"
@@ -57,6 +57,18 @@
         "nodes": []
       },
       {
+        "id": "aria-allowed-role",
+        "impact": null,
+        "tags": [
+          "cat.aria",
+          "best-practice"
+        ],
+        "description": "Ensure role attribute has an appropriate value for the element",
+        "help": "ARIA role should be appropriate for the element",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-allowed-role?application=webdriverjs",
+        "nodes": []
+      },
+      {
         "id": "aria-braille-equivalent",
         "impact": null,
         "tags": [
@@ -92,6 +104,23 @@
         "nodes": []
       },
       {
+        "id": "aria-deprecated-role",
+        "impact": null,
+        "tags": [
+          "cat.aria",
+          "wcag2a",
+          "wcag412",
+          "EN-301-549",
+          "EN-9.4.1.2",
+          "RGAAv4",
+          "RGAA-7.1.1"
+        ],
+        "description": "Ensure elements do not use deprecated roles",
+        "help": "Deprecated ARIA roles must not be used",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-deprecated-role?application=webdriverjs",
+        "nodes": []
+      },
+      {
         "id": "aria-dialog-name",
         "impact": null,
         "tags": [
@@ -101,6 +130,25 @@
         "description": "Ensure every ARIA dialog and alertdialog node has an accessible name",
         "help": "ARIA dialog and alertdialog nodes should have an accessible name",
         "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-dialog-name?application=webdriverjs",
+        "nodes": []
+      },
+      {
+        "id": "aria-hidden-focus",
+        "impact": null,
+        "tags": [
+          "cat.name-role-value",
+          "wcag2a",
+          "wcag412",
+          "TTv5",
+          "TT6.a",
+          "EN-301-549",
+          "EN-9.4.1.2",
+          "RGAAv4",
+          "RGAA-7.1.1"
+        ],
+        "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+        "help": "ARIA hidden element must not be focusable or contain focusable elements",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-hidden-focus?application=webdriverjs",
         "nodes": []
       },
       {
@@ -158,6 +206,23 @@
         "nodes": []
       },
       {
+        "id": "aria-required-attr",
+        "impact": null,
+        "tags": [
+          "cat.aria",
+          "wcag2a",
+          "wcag412",
+          "EN-301-549",
+          "EN-9.4.1.2",
+          "RGAAv4",
+          "RGAA-7.1.1"
+        ],
+        "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+        "help": "Required ARIA attributes must be provided",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-required-attr?application=webdriverjs",
+        "nodes": []
+      },
+      {
         "id": "aria-required-children",
         "impact": null,
         "tags": [
@@ -189,6 +254,23 @@
         "description": "Ensure elements with an ARIA role that require parent roles are contained by them",
         "help": "Certain ARIA roles must be contained by particular parents",
         "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-required-parent?application=webdriverjs",
+        "nodes": []
+      },
+      {
+        "id": "aria-roles",
+        "impact": null,
+        "tags": [
+          "cat.aria",
+          "wcag2a",
+          "wcag412",
+          "EN-301-549",
+          "EN-9.4.1.2",
+          "RGAAv4",
+          "RGAA-7.1.1"
+        ],
+        "description": "Ensure all elements with a role attribute use a valid value",
+        "help": "ARIA roles used must conform to valid values",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-roles?application=webdriverjs",
         "nodes": []
       },
       {
@@ -565,18 +647,6 @@
         "nodes": []
       },
       {
-        "id": "landmark-contentinfo-is-top-level",
-        "impact": null,
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the contentinfo landmark is at top level",
-        "help": "Contentinfo landmark should not be contained in another landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-contentinfo-is-top-level?application=webdriverjs",
-        "nodes": []
-      },
-      {
         "id": "landmark-no-duplicate-banner",
         "impact": null,
         "tags": [
@@ -776,20 +846,6 @@
         "nodes": []
       },
       {
-        "id": "skip-link",
-        "impact": null,
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-12.7.1"
-        ],
-        "description": "Ensure all skip links have a focusable target",
-        "help": "The skip-link target should exist and be focusable",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/skip-link?application=webdriverjs",
-        "nodes": []
-      },
-      {
         "id": "summary-name",
         "impact": null,
         "tags": [
@@ -986,7 +1042,7 @@
               }
             ],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<div id=\"app-root\" aria-live=\"polite\">",
             "target": [
               "#app-root"
             ]
@@ -1197,37 +1253,6 @@
             "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
             "target": [
               "#main-content"
-            ]
-          }
-        ]
-      },
-      {
-        "id": "aria-allowed-role",
-        "impact": null,
-        "tags": [
-          "cat.aria",
-          "best-practice"
-        ],
-        "description": "Ensure role attribute has an appropriate value for the element",
-        "help": "ARIA role should be appropriate for the element",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-allowed-role?application=webdriverjs",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "aria-allowed-role",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "minor",
-                "message": "ARIA role is allowed for given element"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
-            "target": [
-              "#app-root"
             ]
           }
         ]
@@ -1261,7 +1286,7 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<div id=\"app-root\" aria-live=\"polite\">",
             "target": [
               "#app-root"
             ]
@@ -1408,42 +1433,6 @@
             "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
             "target": [
               "#main-content"
-            ]
-          }
-        ]
-      },
-      {
-        "id": "aria-deprecated-role",
-        "impact": null,
-        "tags": [
-          "cat.aria",
-          "wcag2a",
-          "wcag412",
-          "EN-301-549",
-          "EN-9.4.1.2",
-          "RGAAv4",
-          "RGAA-7.1.1"
-        ],
-        "description": "Ensure elements do not use deprecated roles",
-        "help": "Deprecated ARIA roles must not be used",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-deprecated-role?application=webdriverjs",
-        "nodes": [
-          {
-            "any": [],
-            "all": [],
-            "none": [
-              {
-                "id": "deprecatedrole",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "minor",
-                "message": "ARIA role is not deprecated"
-              }
-            ],
-            "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
-            "target": [
-              "#app-root"
             ]
           }
         ]
@@ -1487,58 +1476,6 @@
         ]
       },
       {
-        "id": "aria-hidden-focus",
-        "impact": null,
-        "tags": [
-          "cat.name-role-value",
-          "wcag2a",
-          "wcag412",
-          "TTv5",
-          "TT6.a",
-          "EN-301-549",
-          "EN-9.4.1.2",
-          "RGAAv4",
-          "RGAA-7.1.1"
-        ],
-        "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
-        "help": "ARIA hidden element must not be focusable or contain focusable elements",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-hidden-focus?application=webdriverjs",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "focusable-modal-open",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "serious",
-                "message": "No focusable elements while a modal is open"
-              },
-              {
-                "id": "focusable-disabled",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "serious",
-                "message": "No focusable elements contained within element"
-              },
-              {
-                "id": "focusable-not-tabbable",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "serious",
-                "message": "No focusable elements contained within element"
-              }
-            ],
-            "none": [],
-            "impact": null,
-            "html": "<a href=\"https://100daysandbeyond.com/cdn-cgi/content?id=ecBLKuKMbAOJBoNRVcvTK3QAh.akd50Oth7WEwZIMGE-1763046631-1.1.1.1-eAHcXlhpeWbQOjEPJBgp0WqymzOuk1t.rDsSzsOReKc\" aria-hidden=\"true\" rel=\"nofollow noopener\" style=\"display: none !important; visibility: hidden !important\"></a>",
-            "target": [
-              "a[aria-hidden=\"true\"]"
-            ]
-          }
-        ]
-      },
-      {
         "id": "aria-prohibited-attr",
         "impact": null,
         "tags": [
@@ -1567,7 +1504,7 @@
               }
             ],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<div id=\"app-root\" aria-live=\"polite\">",
             "target": [
               "#app-root"
             ]
@@ -1714,92 +1651,6 @@
             "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
             "target": [
               "#main-content"
-            ]
-          }
-        ]
-      },
-      {
-        "id": "aria-required-attr",
-        "impact": null,
-        "tags": [
-          "cat.aria",
-          "wcag2a",
-          "wcag412",
-          "EN-301-549",
-          "EN-9.4.1.2",
-          "RGAAv4",
-          "RGAA-7.1.1"
-        ],
-        "description": "Ensure elements with ARIA roles have all required ARIA attributes",
-        "help": "Required ARIA attributes must be provided",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-required-attr?application=webdriverjs",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "aria-required-attr",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "critical",
-                "message": "All required ARIA attributes are present"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
-            "target": [
-              "#app-root"
-            ]
-          }
-        ]
-      },
-      {
-        "id": "aria-roles",
-        "impact": null,
-        "tags": [
-          "cat.aria",
-          "wcag2a",
-          "wcag412",
-          "EN-301-549",
-          "EN-9.4.1.2",
-          "RGAAv4",
-          "RGAA-7.1.1"
-        ],
-        "description": "Ensure all elements with a role attribute use a valid value",
-        "help": "ARIA roles used must conform to valid values",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/aria-roles?application=webdriverjs",
-        "nodes": [
-          {
-            "any": [],
-            "all": [],
-            "none": [
-              {
-                "id": "invalidrole",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "critical",
-                "message": "ARIA role is valid"
-              },
-              {
-                "id": "abstractrole",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "critical",
-                "message": "Abstract roles are not used"
-              },
-              {
-                "id": "unsupportedrole",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "critical",
-                "message": "ARIA role is supported"
-              }
-            ],
-            "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
-            "target": [
-              "#app-root"
             ]
           }
         ]
@@ -1847,7 +1698,7 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<div id=\"app-root\" aria-live=\"polite\">",
             "target": [
               "#app-root"
             ]
@@ -2139,7 +1990,7 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<div id=\"app-root\" aria-live=\"polite\">",
             "target": [
               "#app-root"
             ]
@@ -2534,12 +2385,6 @@
                 "id": "landmark",
                 "data": null,
                 "relatedNodes": [
-                  {
-                    "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
-                    "target": [
-                      "#app-root"
-                    ]
-                  },
                   {
                     "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
                     "target": [
@@ -4881,91 +4726,91 @@
                   "headingOrder": [
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > h1:nth-child(1)"
+                        "html > body > div:nth-child(3) > h1:nth-child(1)"
                       ],
                       "level": 1
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(1) > div > h1:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(1) > div > h1:nth-child(1)"
                       ],
                       "level": 1
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(2) > div > div > div:nth-child(1) > h2:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(2) > div > div > div:nth-child(1) > h2:nth-child(2)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div > div:nth-child(2) > h2:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div > div:nth-child(2) > h2:nth-child(2)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(4) > div > div > div:nth-child(1) > h2:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(4) > div > div > div:nth-child(1) > h2:nth-child(2)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(5) > div > div > div:nth-child(2) > h2:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(5) > div > div > div:nth-child(2) > h2:nth-child(2)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(6) > div > div > div:nth-child(1) > h2:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(6) > div > div > div:nth-child(1) > h2:nth-child(2)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(7) > div > div > div:nth-child(2) > h2:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(7) > div > div > div:nth-child(2) > h2:nth-child(2)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(8) > div > div > div:nth-child(1) > h2:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(8) > div > div > div:nth-child(1) > h2:nth-child(2)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(9) > div > div > div:nth-child(2) > h2:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(9) > div > div > div:nth-child(2) > h2:nth-child(2)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(10) > div > h2:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(10) > div > h2:nth-child(1)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(1) > h3:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(1) > h3:nth-child(1)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(2) > h4:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(2) > h4:nth-child(1)"
                       ],
                       "level": 4
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(3) > h4:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(3) > h4:nth-child(1)"
                       ],
                       "level": 4
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(4) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(4) > h4:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(4) > h4:nth-child(1)"
                       ],
                       "level": 4
                     }
@@ -5706,8 +5551,41 @@
         ]
       },
       {
+        "id": "landmark-contentinfo-is-top-level",
+        "impact": null,
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure the contentinfo landmark is at top level",
+        "help": "Contentinfo landmark should not be contained in another landmark",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-contentinfo-is-top-level?application=webdriverjs",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "landmark-is-top-level",
+                "data": {
+                  "role": "contentinfo"
+                },
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "The contentinfo landmark is at the top level."
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<footer class=\"bg-gray-900 text-gray-300\">",
+            "target": [
+              "footer"
+            ]
+          }
+        ]
+      },
+      {
         "id": "landmark-main-is-top-level",
-        "impact": "moderate",
+        "impact": null,
         "tags": [
           "cat.semantics",
           "best-practice"
@@ -5731,9 +5609,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
             "target": [
-              "#app-root"
+              "#main-content"
             ]
           }
         ]
@@ -5770,6 +5648,37 @@
         ]
       },
       {
+        "id": "landmark-no-duplicate-main",
+        "impact": null,
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure the document has at most one main landmark",
+        "help": "Document should not have more than one main landmark",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-no-duplicate-main?application=webdriverjs",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "page-no-duplicate-main",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Document does not have more than one main landmark"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
+            "target": [
+              "#main-content"
+            ]
+          }
+        ]
+      },
+      {
         "id": "landmark-one-main",
         "impact": null,
         "tags": [
@@ -5787,12 +5696,6 @@
                 "id": "page-has-main",
                 "data": null,
                 "relatedNodes": [
-                  {
-                    "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
-                    "target": [
-                      "#app-root"
-                    ]
-                  },
                   {
                     "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
                     "target": [
@@ -5824,27 +5727,6 @@
         "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
         "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-unique?application=webdriverjs",
         "nodes": [
-          {
-            "any": [
-              {
-                "id": "landmark-is-unique",
-                "data": {
-                  "role": "main",
-                  "accessibleText": null
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Landmarks must have a unique role or role/label/title (i.e. accessible name) combination"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
-            "target": [
-              "#app-root"
-            ]
-          },
           {
             "any": [
               {
@@ -5885,6 +5767,27 @@
             "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
             "target": [
               "#main-content"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "landmark-is-unique",
+                "data": {
+                  "role": "contentinfo",
+                  "accessibleText": null
+                },
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Landmarks must have a unique role or role/label/title (i.e. accessible name) combination"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<footer class=\"bg-gray-900 text-gray-300\">",
+            "target": [
+              "footer"
             ]
           }
         ]
@@ -8095,7 +7998,7 @@
       },
       {
         "id": "region",
-        "impact": "moderate",
+        "impact": null,
         "tags": [
           "cat.keyboard",
           "best-practice",
@@ -8121,7 +8024,27 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<a class=\"skip-link\" href=\"#app-root\">Skip to main content</a>",
+            "target": [
+              ".skip-link"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "region",
+                "data": {
+                  "isIframe": false
+                },
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "All page content is contained by landmarks"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<div id=\"app-root\" aria-live=\"polite\">",
             "target": [
               "#app-root"
             ]
@@ -14269,6 +14192,57 @@
         ]
       },
       {
+        "id": "skip-link",
+        "impact": null,
+        "tags": [
+          "cat.keyboard",
+          "best-practice",
+          "RGAAv4",
+          "RGAA-12.7.1"
+        ],
+        "description": "Ensure all skip links have a focusable target",
+        "help": "The skip-link target should exist and be focusable",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/skip-link?application=webdriverjs",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "skip-link",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Skip link target exists"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<a class=\"skip-link\" href=\"#app-root\">Skip to main content</a>",
+            "target": [
+              ".skip-link"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "skip-link",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Skip link target exists"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<a href=\"#main-content\" class=\"sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-indigo-900 focus:shadow-lg\">Skip to main content</a>",
+            "target": [
+              ".focus\\:not-sr-only"
+            ]
+          }
+        ]
+      },
+      {
         "id": "tabindex",
         "impact": null,
         "tags": [
@@ -15175,116 +15149,6 @@
         ]
       }
     ],
-    "violations": [
-      {
-        "id": "landmark-main-is-top-level",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the main landmark is at top level",
-        "help": "Main landmark should not be contained in another landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-main-is-top-level?application=webdriverjs",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "landmark-is-top-level",
-                "data": {
-                  "role": "main"
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "The main landmark is contained in another landmark."
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
-            "target": [
-              "#main-content"
-            ],
-            "failureSummary": "Fix any of the following:\n  The main landmark is contained in another landmark."
-          }
-        ]
-      },
-      {
-        "id": "landmark-no-duplicate-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has at most one main landmark",
-        "help": "Document should not have more than one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-no-duplicate-main?application=webdriverjs",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "page-no-duplicate-main",
-                "data": null,
-                "relatedNodes": [
-                  {
-                    "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
-                    "target": [
-                      "#main-content"
-                    ]
-                  }
-                ],
-                "impact": "moderate",
-                "message": "Document has more than one main landmark"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
-            "target": [
-              "#app-root"
-            ],
-            "failureSummary": "Fix any of the following:\n  Document has more than one main landmark"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/region?application=webdriverjs",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<a class=\"skip-link\" href=\"#app-root\">Skip to main content</a>",
-            "target": [
-              ".skip-link"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   }
 ]

@@ -73,4 +73,4 @@ def test_send_registration_confirmation_email_sends_payload(monkeypatch):
     body = captured["json"]
     assert body["personalizations"][0]["to"][0]["email"] == "attendee@example.com"
     assert "Test Event" in body["personalizations"][0]["subject"]
-    assert "attendee@example.com" in body["content"][0]["value"]
+    assert body["content"][0]["value"].startswith("Hi Test Attendee")

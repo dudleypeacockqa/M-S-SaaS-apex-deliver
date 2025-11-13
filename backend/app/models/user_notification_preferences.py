@@ -45,3 +45,4 @@ class UserNotificationPreferences(Base):
     def __repr__(self):
         return f"<UserNotificationPreferences(user_id={self.user_id}, email_enabled={self.email_enabled})>"
 
+

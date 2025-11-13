@@ -314,12 +314,12 @@ def _folder_to_response(
     has_children: bool | None = None,
 ) -> FolderResponse:
     return FolderResponse(
-        id=UUID(folder.id),
+        id=_ensure_uuid(folder.id),
         name=folder.name,
-        deal_id=folder.deal_id,
-        parent_folder_id=UUID(folder.parent_folder_id) if folder.parent_folder_id else None,
-        organization_id=UUID(folder.organization_id),
-        created_by=UUID(folder.created_by),
+        deal_id=str(folder.deal_id),
+        parent_folder_id=_ensure_uuid(folder.parent_folder_id),
+        organization_id=_ensure_uuid(folder.organization_id),
+        created_by=_ensure_uuid(folder.created_by),
         created_at=folder.created_at,
         updated_at=folder.updated_at,
         children=children or [],
@@ -1835,4 +1835,10 @@ def resolve_document_question(
     db.commit()
     db.refresh(question)
     return _annotate_question(question)
+def _ensure_uuid(value):
+    if value is None:
+        return None
+    if isinstance(value, UUID):
+        return value
+    return UUID(str(value))
 

@@ -14,7 +14,7 @@
       "orientationAngle": 0,
       "orientationType": "landscape-primary"
     },
-    "timestamp": "2025-11-13T15:10:01.926Z",
+    "timestamp": "2025-11-13T15:55:54.761Z",
     "url": "https://100daysandbeyond.com/",
     "toolOptions": {
       "reporter": "v1"
@@ -549,18 +549,6 @@
         "nodes": []
       },
       {
-        "id": "landmark-contentinfo-is-top-level",
-        "impact": null,
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the contentinfo landmark is at top level",
-        "help": "Contentinfo landmark should not be contained in another landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-contentinfo-is-top-level?application=webdriverjs",
-        "nodes": []
-      },
-      {
         "id": "landmark-no-duplicate-banner",
         "impact": null,
         "tags": [
@@ -937,7 +925,7 @@
               }
             ],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<div id=\"app-root\" aria-live=\"polite\">",
             "target": [
               "#app-root"
             ]
@@ -1171,9 +1159,61 @@
               }
             ],
             "impact": null,
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
+            "target": [
+              ".md\\:text-xl"
+            ]
+          },
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "aria-allowed-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attributes are used correctly for the defined role"
+              }
+            ],
+            "none": [
+              {
+                "id": "aria-unsupported-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attribute is supported"
+              }
+            ],
+            "impact": null,
             "html": "<button type=\"button\" class=\"text-white/70 hover:text-white transition-colors p-2\" aria-label=\"Close\"><svg class=\"w-5 h-5\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button>",
             "target": [
               ".text-white\\/70"
+            ]
+          },
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "aria-allowed-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attributes are used correctly for the defined role"
+              }
+            ],
+            "none": [
+              {
+                "id": "aria-unsupported-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attribute is supported"
+              }
+            ],
+            "impact": null,
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
+            "target": [
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           },
           {
@@ -1280,9 +1320,27 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
             "target": [
-              "#app-root"
+              ".md\\:text-xl"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "aria-allowed-role",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "minor",
+                "message": "ARIA role is allowed for given element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
+            "target": [
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           }
         ]
@@ -1316,7 +1374,7 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<div id=\"app-root\" aria-live=\"polite\">",
             "target": [
               "#app-root"
             ]
@@ -1478,9 +1536,45 @@
             ],
             "none": [],
             "impact": null,
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
+            "target": [
+              ".md\\:text-xl"
+            ]
+          },
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "aria-conditional-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "ARIA attribute is allowed"
+              }
+            ],
+            "none": [],
+            "impact": null,
             "html": "<button type=\"button\" class=\"text-white/70 hover:text-white transition-colors p-2\" aria-label=\"Close\"><svg class=\"w-5 h-5\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button>",
             "target": [
               ".text-white\\/70"
+            ]
+          },
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "aria-conditional-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "ARIA attribute is allowed"
+              }
+            ],
+            "none": [],
+            "impact": null,
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
+            "target": [
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           },
           {
@@ -1568,9 +1662,27 @@
               }
             ],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
             "target": [
-              "#app-root"
+              ".md\\:text-xl"
+            ]
+          },
+          {
+            "any": [],
+            "all": [],
+            "none": [
+              {
+                "id": "deprecatedrole",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "minor",
+                "message": "ARIA role is not deprecated"
+              }
+            ],
+            "impact": null,
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
+            "target": [
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           }
         ]
@@ -1660,7 +1772,71 @@
             "impact": null,
             "html": "<svg class=\"w-6 h-6 text-white\" viewBox=\"0 0 20 20\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z\"></path><path d=\"M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z\"></path></svg>",
             "target": [
-              "svg[aria-hidden=\"true\"]"
+              ".w-6.h-6[aria-hidden=\"true\"]"
+            ]
+          },
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "focusable-modal-open",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "No focusable elements while a modal is open"
+              },
+              {
+                "id": "focusable-disabled",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "No focusable elements contained within element"
+              },
+              {
+                "id": "focusable-not-tabbable",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "No focusable elements contained within element"
+              }
+            ],
+            "none": [],
+            "impact": null,
+            "html": "<div class=\"w-3 h-3 bg-emerald-700 rounded-full\" aria-hidden=\"true\"></div>",
+            "target": [
+              ".gap-2.flex.items-center:nth-child(1) > .w-3.h-3[aria-hidden=\"true\"]"
+            ]
+          },
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "focusable-modal-open",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "No focusable elements while a modal is open"
+              },
+              {
+                "id": "focusable-disabled",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "No focusable elements contained within element"
+              },
+              {
+                "id": "focusable-not-tabbable",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "No focusable elements contained within element"
+              }
+            ],
+            "none": [],
+            "impact": null,
+            "html": "<div class=\"w-3 h-3 bg-blue-700 rounded-full\" aria-hidden=\"true\"></div>",
+            "target": [
+              ".bg-blue-700"
             ]
           }
         ]
@@ -1694,7 +1870,7 @@
               }
             ],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<div id=\"app-root\" aria-live=\"polite\">",
             "target": [
               "#app-root"
             ]
@@ -1856,9 +2032,45 @@
               }
             ],
             "impact": null,
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
+            "target": [
+              ".md\\:text-xl"
+            ]
+          },
+          {
+            "any": [],
+            "all": [],
+            "none": [
+              {
+                "id": "aria-prohibited-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "ARIA attribute is allowed"
+              }
+            ],
+            "impact": null,
             "html": "<button type=\"button\" class=\"text-white/70 hover:text-white transition-colors p-2\" aria-label=\"Close\"><svg class=\"w-5 h-5\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button>",
             "target": [
               ".text-white\\/70"
+            ]
+          },
+          {
+            "any": [],
+            "all": [],
+            "none": [
+              {
+                "id": "aria-prohibited-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "ARIA attribute is allowed"
+              }
+            ],
+            "impact": null,
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
+            "target": [
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           },
           {
@@ -1946,9 +2158,27 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
             "target": [
-              "#app-root"
+              ".md\\:text-xl"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "aria-required-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "All required ARIA attributes are present"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
+            "target": [
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           }
         ]
@@ -1996,9 +2226,41 @@
               }
             ],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
             "target": [
-              "#app-root"
+              ".md\\:text-xl"
+            ]
+          },
+          {
+            "any": [],
+            "all": [],
+            "none": [
+              {
+                "id": "invalidrole",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA role is valid"
+              },
+              {
+                "id": "abstractrole",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "Abstract roles are not used"
+              },
+              {
+                "id": "unsupportedrole",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA role is supported"
+              }
+            ],
+            "impact": null,
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
+            "target": [
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           }
         ]
@@ -2046,7 +2308,7 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<div id=\"app-root\" aria-live=\"polite\">",
             "target": [
               "#app-root"
             ]
@@ -2334,9 +2596,73 @@
             ],
             "none": [],
             "impact": null,
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
+            "target": [
+              ".md\\:text-xl"
+            ]
+          },
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "aria-valid-attr-value",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attribute values are valid"
+              },
+              {
+                "id": "aria-errormessage",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "aria-errormessage exists and references elements visible to screen readers that use a supported aria-errormessage technique"
+              },
+              {
+                "id": "aria-level",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "aria-level values are valid"
+              }
+            ],
+            "none": [],
+            "impact": null,
             "html": "<button type=\"button\" class=\"text-white/70 hover:text-white transition-colors p-2\" aria-label=\"Close\"><svg class=\"w-5 h-5\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button>",
             "target": [
               ".text-white\\/70"
+            ]
+          },
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "aria-valid-attr-value",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attribute values are valid"
+              },
+              {
+                "id": "aria-errormessage",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "aria-errormessage exists and references elements visible to screen readers that use a supported aria-errormessage technique"
+              },
+              {
+                "id": "aria-level",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "aria-level values are valid"
+              }
+            ],
+            "none": [],
+            "impact": null,
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
+            "target": [
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           },
           {
@@ -2466,7 +2792,7 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<div id=\"app-root\" aria-live=\"polite\">",
             "target": [
               "#app-root"
             ]
@@ -2628,9 +2954,45 @@
             "all": [],
             "none": [],
             "impact": null,
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
+            "target": [
+              ".md\\:text-xl"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "aria-valid-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attribute name is valid"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
             "html": "<button type=\"button\" class=\"text-white/70 hover:text-white transition-colors p-2\" aria-label=\"Close\"><svg class=\"w-5 h-5\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button>",
             "target": [
               ".text-white\\/70"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "aria-valid-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attribute name is valid"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
+            "target": [
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           },
           {
@@ -2731,9 +3093,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 65%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 65%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(1)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(1)"
             ]
           },
           {
@@ -2763,9 +3125,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 70%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 70%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(2)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(2)"
             ]
           },
           {
@@ -2795,9 +3157,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 68%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 68%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(3)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(3)"
             ]
           },
           {
@@ -2827,9 +3189,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 75%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 75%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(4)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(4)"
             ]
           },
           {
@@ -2859,9 +3221,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 80%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 80%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(5)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(5)"
             ]
           },
           {
@@ -2891,9 +3253,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 85%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 85%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(6)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(6)"
             ]
           },
           {
@@ -2923,9 +3285,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 82%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 82%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(7)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(7)"
             ]
           },
           {
@@ -2955,9 +3317,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-blue-500 opacity-70\" style=\"height: 88%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-blue-700/80\" style=\"height: 88%;\"></div>",
             "target": [
-              ".opacity-70.bg-blue-500.rounded-t:nth-child(8)"
+              ".bg-blue-700\\/80.rounded-t.flex-1:nth-child(8)"
             ]
           },
           {
@@ -2987,9 +3349,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-blue-500 opacity-70\" style=\"height: 90%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-blue-700/80\" style=\"height: 90%;\"></div>",
             "target": [
-              ".opacity-70.bg-blue-500.rounded-t:nth-child(9)"
+              ".bg-blue-700\\/80.rounded-t.flex-1:nth-child(9)"
             ]
           },
           {
@@ -3019,9 +3381,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-blue-500 opacity-70\" style=\"height: 92%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-blue-700/80\" style=\"height: 92%;\"></div>",
             "target": [
-              ".opacity-70.bg-blue-500.rounded-t:nth-child(10)"
+              ".bg-blue-700\\/80.rounded-t.flex-1:nth-child(10)"
             ]
           },
           {
@@ -3051,9 +3413,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-blue-500 opacity-70\" style=\"height: 95%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-blue-700/80\" style=\"height: 95%;\"></div>",
             "target": [
-              ".opacity-70.bg-blue-500.rounded-t:nth-child(11)"
+              ".bg-blue-700\\/80.rounded-t.flex-1:nth-child(11)"
             ]
           },
           {
@@ -3083,9 +3445,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-blue-500 opacity-70\" style=\"height: 98%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-blue-700/80\" style=\"height: 98%;\"></div>",
             "target": [
-              ".opacity-70.bg-blue-500.rounded-t:nth-child(12)"
+              ".bg-blue-700\\/80.rounded-t.flex-1:nth-child(12)"
             ]
           },
           {
@@ -3115,9 +3477,9 @@
             ],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-blue-500 opacity-70\" style=\"height: 100%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-blue-700/80\" style=\"height: 100%;\"></div>",
             "target": [
-              ".opacity-70.bg-blue-500.rounded-t:nth-child(13)"
+              ".bg-blue-700\\/80.rounded-t.flex-1:nth-child(13)"
             ]
           }
         ]
@@ -3282,9 +3644,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<button class=\"px-4 py-2 bg-emerald-500 text-white rounded-md font-semibold text-sm\">Export PDF</button>",
+            "html": "<button class=\"px-4 py-2 rounded-md bg-emerald-700 text-white font-semibold text-sm transition-colors hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600\">Export PDF</button>",
             "target": [
-              ".bg-emerald-500.rounded-md"
+              ".hover\\:bg-emerald-800"
             ]
           },
           {
@@ -3347,7 +3709,7 @@
                     ]
                   },
                   {
-                    "html": "<h3 class=\"text-white font-bold text-lg md:text-xl truncate\">Start Your 14-Day Free Trial Today</h3>",
+                    "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
                     "target": [
                       ".md\\:text-xl"
                     ]
@@ -3359,9 +3721,9 @@
                     ]
                   },
                   {
-                    "html": "<h3 class=\"text-2xl font-bold text-gray-900\">13-Week Cash Forecast</h3>",
+                    "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
                     "target": [
-                      ".mb-6.justify-between.flex > div:nth-child(1) > .text-2xl"
+                      ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
                     ]
                   },
                   {
@@ -3523,12 +3885,6 @@
                 "data": null,
                 "relatedNodes": [
                   {
-                    "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
-                    "target": [
-                      "#app-root"
-                    ]
-                  },
-                  {
                     "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
                     "target": [
                       "#main-content"
@@ -3640,7 +3996,7 @@
             "impact": null,
             "html": "<a class=\"bg-emerald-700 hover:bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5\" href=\"/sign-up\" data-discover=\"true\">Start Your Free 14-Day Trial</a>",
             "target": [
-              ".bg-emerald-700"
+              ".hover\\:bg-emerald-600"
             ]
           },
           {
@@ -3673,6 +4029,31 @@
               {
                 "id": "color-contrast",
                 "data": {
+                  "fgColor": "#ebecee",
+                  "bgColor": "#374151",
+                  "contrastRatio": 8.71,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element has sufficient color contrast of 8.71"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<div class=\"flex-1 rounded bg-gray-700 px-4 py-1 text-sm text-white/90\">app.capliquify.com/cash-forecast</div>",
+            "target": [
+              ".rounded"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
                   "fgColor": "#111827",
                   "bgColor": "#ffffff",
                   "contrastRatio": 17.73,
@@ -3688,9 +4069,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<h3 class=\"text-2xl font-bold text-gray-900\">13-Week Cash Forecast</h3>",
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
             "target": [
-              ".mb-6.justify-between.flex > div:nth-child(1) > .text-2xl"
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           },
           {
@@ -3715,7 +4096,32 @@
             "impact": null,
             "html": "<p class=\"text-gray-600\">Updated 2 hours ago • 95.8% accuracy</p>",
             "target": [
-              ".mb-6.justify-between.flex > div:nth-child(1) > p"
+              ".mb-6.justify-between.flex > div:nth-child(1) > p:nth-child(2)"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#ffffff",
+                  "bgColor": "#047857",
+                  "contrastRatio": 5.48,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element has sufficient color contrast of 5.48"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<button class=\"px-4 py-2 rounded-md bg-emerald-700 text-white font-semibold text-sm transition-colors hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600\">Export PDF</button>",
+            "target": [
+              ".hover\\:bg-emerald-800"
             ]
           },
           {
@@ -5888,7 +6294,7 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<h3 class=\"text-white font-bold text-lg md:text-xl truncate\">Start Your 14-Day Free Trial Today</h3>",
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
             "target": [
               ".md\\:text-xl"
             ]
@@ -5924,9 +6330,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<h3 class=\"text-2xl font-bold text-gray-900\">13-Week Cash Forecast</h3>",
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
             "target": [
-              ".mb-6.justify-between.flex > div:nth-child(1) > .text-2xl"
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           },
           {
@@ -6383,7 +6789,7 @@
       },
       {
         "id": "heading-order",
-        "impact": "moderate",
+        "impact": null,
         "tags": [
           "cat.semantics",
           "best-practice"
@@ -6400,175 +6806,175 @@
                   "headingOrder": [
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > h1:nth-child(1)"
+                        "html > body > div:nth-child(3) > h1:nth-child(1)"
                       ],
                       "level": 1
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > div:nth-child(1) > div > div > div > div:nth-child(1) > div:nth-child(2) > h3:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > div:nth-child(1) > div > div > div > div:nth-child(1) > div:nth-child(2) > p:nth-child(1)"
                       ],
-                      "level": 3
+                      "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(2) > div > div:nth-child(1) > h1:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(2) > div > div:nth-child(1) > h1:nth-child(1)"
                       ],
                       "level": 1
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > h3:nth-child(1)"
-                      ],
-                      "level": 3
-                    },
-                    {
-                      "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(1) > h2:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > p:nth-child(1)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > h3:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(1) > h2:nth-child(1)"
+                      ],
+                      "level": 2
+                    },
+                    {
+                      "ancestry": [
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > h3:nth-child(2)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > h3:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > h3:nth-child(2)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > h3:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > h3:nth-child(2)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(4) > h3:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(4) > h3:nth-child(2)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(5) > h3:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(5) > h3:nth-child(2)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(6) > h3:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(6) > h3:nth-child(2)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div > div:nth-child(2) > h4:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div > div:nth-child(2) > h4:nth-child(1)"
                       ],
                       "level": 4
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div > div:nth-child(2) > h4:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div > div:nth-child(2) > h4:nth-child(1)"
                       ],
                       "level": 4
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(3) > div > div:nth-child(2) > h4:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(3) > div > div:nth-child(2) > h4:nth-child(1)"
                       ],
                       "level": 4
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(2) > div:nth-child(1) > h2:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(3) > div > div:nth-child(2) > div:nth-child(1) > h2:nth-child(1)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(4) > div > div:nth-child(1) > h2"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(4) > div > div:nth-child(1) > h2"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(4) > div > div:nth-child(2) > div:nth-child(1) > h3:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(4) > div > div:nth-child(2) > div:nth-child(1) > h3:nth-child(2)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(4) > div > div:nth-child(2) > div:nth-child(2) > h3:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(4) > div > div:nth-child(2) > div:nth-child(2) > h3:nth-child(2)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(4) > div > div:nth-child(2) > div:nth-child(3) > h3:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(4) > div > div:nth-child(2) > div:nth-child(3) > h3:nth-child(2)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(5) > div > div:nth-child(1) > h2"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(5) > div > div:nth-child(1) > h2"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(5) > div > div:nth-child(2) > article:nth-child(1) > h3:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(5) > div > div:nth-child(2) > article:nth-child(1) > h3:nth-child(2)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(5) > div > div:nth-child(2) > article:nth-child(2) > h3:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(5) > div > div:nth-child(2) > article:nth-child(2) > h3:nth-child(2)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(5) > div > div:nth-child(2) > article:nth-child(3) > h3:nth-child(2)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(5) > div > div:nth-child(2) > article:nth-child(3) > h3:nth-child(2)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(6) > div > div:nth-child(1) > h2:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(6) > div > div:nth-child(1) > h2:nth-child(1)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(7) > div > h2:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > main:nth-child(3) > section:nth-child(7) > div > h2:nth-child(1)"
                       ],
                       "level": 2
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(1) > h3:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(1) > h3:nth-child(1)"
                       ],
                       "level": 3
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(2) > h4:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(2) > h4:nth-child(1)"
                       ],
                       "level": 4
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(3) > h4:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(3) > h4:nth-child(1)"
                       ],
                       "level": 4
                     },
                     {
                       "ancestry": [
-                        "html > body > main:nth-child(3) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(4) > h4:nth-child(1)"
+                        "html > body > div:nth-child(3) > div:nth-child(2) > div > footer:nth-child(4) > div > div:nth-child(1) > div:nth-child(4) > h4:nth-child(1)"
                       ],
                       "level": 4
                     }
@@ -6600,9 +7006,45 @@
             "all": [],
             "none": [],
             "impact": null,
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
+            "target": [
+              ".md\\:text-xl"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "heading-order",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Heading order valid"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
             "html": "<h1 class=\"text-4xl md:text-6xl font-extrabold leading-tight mb-6\">From Deal Flow to Cash Flow: The End-to-End M&amp;A Intelligence Platform</h1>",
             "target": [
               ".md\\:text-6xl"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "heading-order",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Heading order valid"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
+            "target": [
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           },
           {
@@ -7569,8 +8011,41 @@
         ]
       },
       {
+        "id": "landmark-contentinfo-is-top-level",
+        "impact": null,
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure the contentinfo landmark is at top level",
+        "help": "Contentinfo landmark should not be contained in another landmark",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-contentinfo-is-top-level?application=webdriverjs",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "landmark-is-top-level",
+                "data": {
+                  "role": "contentinfo"
+                },
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "The contentinfo landmark is at the top level."
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<footer class=\"bg-gray-900 text-gray-300\">",
+            "target": [
+              "footer"
+            ]
+          }
+        ]
+      },
+      {
         "id": "landmark-main-is-top-level",
-        "impact": "moderate",
+        "impact": null,
         "tags": [
           "cat.semantics",
           "best-practice"
@@ -7594,9 +8069,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
             "target": [
-              "#app-root"
+              "#main-content"
             ]
           }
         ]
@@ -7633,6 +8108,37 @@
         ]
       },
       {
+        "id": "landmark-no-duplicate-main",
+        "impact": null,
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure the document has at most one main landmark",
+        "help": "Document should not have more than one main landmark",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-no-duplicate-main?application=webdriverjs",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "page-no-duplicate-main",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Document does not have more than one main landmark"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
+            "target": [
+              "#main-content"
+            ]
+          }
+        ]
+      },
+      {
         "id": "landmark-one-main",
         "impact": null,
         "tags": [
@@ -7650,12 +8156,6 @@
                 "id": "page-has-main",
                 "data": null,
                 "relatedNodes": [
-                  {
-                    "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
-                    "target": [
-                      "#app-root"
-                    ]
-                  },
                   {
                     "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
                     "target": [
@@ -7687,27 +8187,6 @@
         "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
         "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-unique?application=webdriverjs",
         "nodes": [
-          {
-            "any": [
-              {
-                "id": "landmark-is-unique",
-                "data": {
-                  "role": "main",
-                  "accessibleText": null
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Landmarks must have a unique role or role/label/title (i.e. accessible name) combination"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
-            "target": [
-              "#app-root"
-            ]
-          },
           {
             "any": [
               {
@@ -7748,6 +8227,27 @@
             "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
             "target": [
               "#main-content"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "landmark-is-unique",
+                "data": {
+                  "role": "contentinfo",
+                  "accessibleText": null
+                },
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Landmarks must have a unique role or role/label/title (i.e. accessible name) combination"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<footer class=\"bg-gray-900 text-gray-300\">",
+            "target": [
+              "footer"
             ]
           }
         ]
@@ -8410,7 +8910,7 @@
             "impact": null,
             "html": "<a class=\"bg-emerald-700 hover:bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5\" href=\"/sign-up\" data-discover=\"true\">Start Your Free 14-Day Trial</a>",
             "target": [
-              ".bg-emerald-700"
+              ".hover\\:bg-emerald-600"
             ]
           },
           {
@@ -9238,9 +9738,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<button class=\"px-4 py-2 bg-emerald-500 text-white rounded-md font-semibold text-sm\">Export PDF</button>",
+            "html": "<button class=\"px-4 py-2 rounded-md bg-emerald-700 text-white font-semibold text-sm transition-colors hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600\">Export PDF</button>",
             "target": [
-              ".bg-emerald-500.rounded-md"
+              ".hover\\:bg-emerald-800"
             ]
           },
           {
@@ -9517,7 +10017,7 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
+            "html": "<div id=\"app-root\" aria-live=\"polite\">",
             "target": [
               "#app-root"
             ]
@@ -10777,7 +11277,7 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 min-w-0\"><h3 class=\"text-white font-bold text-lg md:text-xl truncate\">Start Your 14-Day Free Trial Today</h3><p class=\"text-blue-100 text-sm hidden md:block\">Join 500+ M&amp;A professionals · No credit card required</p></div>",
+            "html": "<div class=\"flex-1 min-w-0\"><p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p><p class=\"text-blue-100 text-sm hidden md:block\">Join 500+ M&amp;A professionals · No credit card required</p></div>",
             "target": [
               ".min-w-0.gap-4.flex-1 > .min-w-0.flex-1"
             ]
@@ -10797,7 +11297,7 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<h3 class=\"text-white font-bold text-lg md:text-xl truncate\">Start Your 14-Day Free Trial Today</h3>",
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
             "target": [
               ".md\\:text-xl"
             ]
@@ -11079,7 +11579,7 @@
             "impact": null,
             "html": "<a class=\"bg-emerald-700 hover:bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5\" href=\"/sign-up\" data-discover=\"true\">Start Your Free 14-Day Trial</a>",
             "target": [
-              ".bg-emerald-700"
+              ".hover\\:bg-emerald-600"
             ]
           },
           {
@@ -11239,7 +11739,7 @@
             "impact": null,
             "html": "<div class=\"w-3 h-3 rounded-full bg-green-500\"></div>",
             "target": [
-              ".bg-green-500.w-3.h-3"
+              ".bg-green-500"
             ]
           },
           {
@@ -11257,9 +11757,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 bg-gray-700 rounded px-4 py-1 text-gray-400 text-sm\">app.capliquify.com/cash-forecast</div>",
+            "html": "<div class=\"flex-1 rounded bg-gray-700 px-4 py-1 text-sm text-white/90\">app.capliquify.com/cash-forecast</div>",
             "target": [
-              ".bg-gray-700"
+              ".rounded"
             ]
           },
           {
@@ -11317,7 +11817,7 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div><h3 class=\"text-2xl font-bold text-gray-900\">13-Week Cash Forecast</h3><p class=\"text-gray-600\">Updated 2 hours ago • 95.8% accuracy</p></div>",
+            "html": "<div><p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p><p class=\"text-gray-600\">Updated 2 hours ago • 95.8% accuracy</p></div>",
             "target": [
               ".mb-6.justify-between.flex > div:nth-child(1)"
             ]
@@ -11337,9 +11837,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<h3 class=\"text-2xl font-bold text-gray-900\">13-Week Cash Forecast</h3>",
+            "html": "<p class=\"text-2xl font-bold text-gray-900\" role=\"heading\" aria-level=\"2\">13-Week Cash Forecast</p>",
             "target": [
-              ".mb-6.justify-between.flex > div:nth-child(1) > .text-2xl"
+              ".text-2xl[role=\"heading\"][aria-level=\"2\"]"
             ]
           },
           {
@@ -11359,7 +11859,7 @@
             "impact": null,
             "html": "<p class=\"text-gray-600\">Updated 2 hours ago • 95.8% accuracy</p>",
             "target": [
-              ".mb-6.justify-between.flex > div:nth-child(1) > p"
+              ".mb-6.justify-between.flex > div:nth-child(1) > p:nth-child(2)"
             ]
           },
           {
@@ -11377,7 +11877,7 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex gap-2\"><button class=\"px-4 py-2 bg-emerald-500 text-white rounded-md font-semibold text-sm\">Export PDF</button><button class=\"px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold text-sm\">Share</button></div>",
+            "html": "<div class=\"flex gap-2\">",
             "target": [
               ".mb-6.justify-between.flex > .gap-2.flex"
             ]
@@ -11397,9 +11897,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<button class=\"px-4 py-2 bg-emerald-500 text-white rounded-md font-semibold text-sm\">Export PDF</button>",
+            "html": "<button class=\"px-4 py-2 rounded-md bg-emerald-700 text-white font-semibold text-sm transition-colors hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600\">Export PDF</button>",
             "target": [
-              ".bg-emerald-500.rounded-md"
+              ".hover\\:bg-emerald-800"
             ]
           },
           {
@@ -11857,29 +12357,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex items-center gap-2\"><div class=\"w-3 h-3 bg-emerald-500 rounded-full\"></div><span class=\"text-gray-600\">Actual</span></div>",
+            "html": "<div class=\"flex items-center gap-2\"><div class=\"w-3 h-3 bg-emerald-700 rounded-full\" aria-hidden=\"true\"></div><span class=\"text-gray-600\">Actual</span></div>",
             "target": [
               ".gap-4.text-xs.flex > .gap-2.flex.items-center:nth-child(1)"
-            ]
-          },
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "All page content is contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": null,
-            "html": "<div class=\"w-3 h-3 bg-emerald-500 rounded-full\"></div>",
-            "target": [
-              ".w-3.h-3.bg-emerald-500"
             ]
           },
           {
@@ -11917,29 +12397,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex items-center gap-2\"><div class=\"w-3 h-3 bg-blue-500 rounded-full\"></div><span class=\"text-gray-600\">Forecast</span></div>",
+            "html": "<div class=\"flex items-center gap-2\"><div class=\"w-3 h-3 bg-blue-700 rounded-full\" aria-hidden=\"true\"></div><span class=\"text-gray-600\">Forecast</span></div>",
             "target": [
               ".gap-4.text-xs.flex > .gap-2.flex.items-center:nth-child(2)"
-            ]
-          },
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "All page content is contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": null,
-            "html": "<div class=\"w-3 h-3 bg-blue-500 rounded-full\"></div>",
-            "target": [
-              ".w-3.h-3.bg-blue-500"
             ]
           },
           {
@@ -12137,9 +12597,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 65%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 65%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(1)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(1)"
             ]
           },
           {
@@ -12157,9 +12617,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 70%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 70%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(2)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(2)"
             ]
           },
           {
@@ -12177,9 +12637,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 68%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 68%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(3)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(3)"
             ]
           },
           {
@@ -12197,9 +12657,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 75%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 75%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(4)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(4)"
             ]
           },
           {
@@ -12217,9 +12677,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 80%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 80%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(5)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(5)"
             ]
           },
           {
@@ -12237,9 +12697,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 85%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 85%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(6)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(6)"
             ]
           },
           {
@@ -12257,9 +12717,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-emerald-500\" style=\"height: 82%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-emerald-700\" style=\"height: 82%;\"></div>",
             "target": [
-              ".bg-emerald-500.rounded-t.flex-1:nth-child(7)"
+              ".bg-emerald-700.rounded-t.flex-1:nth-child(7)"
             ]
           },
           {
@@ -12277,9 +12737,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-blue-500 opacity-70\" style=\"height: 88%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-blue-700/80\" style=\"height: 88%;\"></div>",
             "target": [
-              ".opacity-70.bg-blue-500.rounded-t:nth-child(8)"
+              ".bg-blue-700\\/80.rounded-t.flex-1:nth-child(8)"
             ]
           },
           {
@@ -12297,9 +12757,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-blue-500 opacity-70\" style=\"height: 90%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-blue-700/80\" style=\"height: 90%;\"></div>",
             "target": [
-              ".opacity-70.bg-blue-500.rounded-t:nth-child(9)"
+              ".bg-blue-700\\/80.rounded-t.flex-1:nth-child(9)"
             ]
           },
           {
@@ -12317,9 +12777,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-blue-500 opacity-70\" style=\"height: 92%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-blue-700/80\" style=\"height: 92%;\"></div>",
             "target": [
-              ".opacity-70.bg-blue-500.rounded-t:nth-child(10)"
+              ".bg-blue-700\\/80.rounded-t.flex-1:nth-child(10)"
             ]
           },
           {
@@ -12337,9 +12797,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-blue-500 opacity-70\" style=\"height: 95%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-blue-700/80\" style=\"height: 95%;\"></div>",
             "target": [
-              ".opacity-70.bg-blue-500.rounded-t:nth-child(11)"
+              ".bg-blue-700\\/80.rounded-t.flex-1:nth-child(11)"
             ]
           },
           {
@@ -12357,9 +12817,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-blue-500 opacity-70\" style=\"height: 98%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-blue-700/80\" style=\"height: 98%;\"></div>",
             "target": [
-              ".opacity-70.bg-blue-500.rounded-t:nth-child(12)"
+              ".bg-blue-700\\/80.rounded-t.flex-1:nth-child(12)"
             ]
           },
           {
@@ -12377,9 +12837,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"flex-1 rounded-t bg-blue-500 opacity-70\" style=\"height: 100%;\"></div>",
+            "html": "<div class=\"flex-1 rounded-t bg-blue-700/80\" style=\"height: 100%;\"></div>",
             "target": [
-              ".opacity-70.bg-blue-500.rounded-t:nth-child(13)"
+              ".bg-blue-700\\/80.rounded-t.flex-1:nth-child(13)"
             ]
           },
           {
@@ -12697,9 +13157,9 @@
             "all": [],
             "none": [],
             "impact": null,
-            "html": "<div class=\"w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0\">✓</div>",
+            "html": "<div class=\"w-8 h-8 bg-emerald-700 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0\">✓</div>",
             "target": [
-              ".bg-green-500.w-8.h-8"
+              ".bg-green-50 > .gap-3.items-start.flex > .w-8.h-8.flex-shrink-0"
             ]
           },
           {
@@ -16905,7 +17365,7 @@
             "all": [],
             "none": [],
             "impact": "serious",
-            "html": "<h3 class=\"text-white font-bold text-lg md:text-xl truncate\">Start Your 14-Day Free Trial Today</h3>",
+            "html": "<p class=\"text-white font-bold text-lg md:text-xl truncate\" role=\"heading\" aria-level=\"2\">Start Your 14-Day Free Trial Today</p>",
             "target": [
               ".md\\:text-xl"
             ],
@@ -17438,9 +17898,9 @@
             "all": [],
             "none": [],
             "impact": "serious",
-            "html": "<div class=\"w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0\">✓</div>",
+            "html": "<div class=\"w-8 h-8 bg-emerald-700 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0\">✓</div>",
             "target": [
-              ".bg-green-500.w-8.h-8"
+              ".bg-green-50 > .gap-3.items-start.flex > .w-8.h-8.flex-shrink-0"
             ],
             "failureSummary": "Fix any of the following:\n  Element content contains only non-text characters"
           },
@@ -17511,220 +17971,6 @@
         ]
       }
     ],
-    "violations": [
-      {
-        "id": "color-contrast",
-        "impact": "serious",
-        "tags": [
-          "cat.color",
-          "wcag2aa",
-          "wcag143",
-          "TTv5",
-          "TT13.c",
-          "EN-301-549",
-          "EN-9.1.4.3",
-          "ACT",
-          "RGAAv4",
-          "RGAA-3.2.1"
-        ],
-        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-        "help": "Elements must meet minimum color contrast ratio thresholds",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/color-contrast?application=webdriverjs",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "color-contrast",
-                "data": {
-                  "fgColor": "#9ca3af",
-                  "bgColor": "#374151",
-                  "contrastRatio": 4.05,
-                  "fontSize": "10.5pt (14px)",
-                  "fontWeight": "normal",
-                  "messageKey": null,
-                  "expectedContrastRatio": "4.5:1"
-                },
-                "relatedNodes": [
-                  {
-                    "html": "<div class=\"flex-1 bg-gray-700 rounded px-4 py-1 text-gray-400 text-sm\">app.capliquify.com/cash-forecast</div>",
-                    "target": [
-                      ".bg-gray-700"
-                    ]
-                  }
-                ],
-                "impact": "serious",
-                "message": "Element has insufficient color contrast of 4.05 (foreground color: #9ca3af, background color: #374151, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "serious",
-            "html": "<div class=\"flex-1 bg-gray-700 rounded px-4 py-1 text-gray-400 text-sm\">app.capliquify.com/cash-forecast</div>",
-            "target": [
-              ".bg-gray-700"
-            ],
-            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.05 (foreground color: #9ca3af, background color: #374151, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
-          },
-          {
-            "any": [
-              {
-                "id": "color-contrast",
-                "data": {
-                  "fgColor": "#ffffff",
-                  "bgColor": "#10b981",
-                  "contrastRatio": 2.53,
-                  "fontSize": "10.5pt (14px)",
-                  "fontWeight": "normal",
-                  "messageKey": null,
-                  "expectedContrastRatio": "4.5:1"
-                },
-                "relatedNodes": [
-                  {
-                    "html": "<button class=\"px-4 py-2 bg-emerald-500 text-white rounded-md font-semibold text-sm\">Export PDF</button>",
-                    "target": [
-                      ".bg-emerald-500.rounded-md"
-                    ]
-                  }
-                ],
-                "impact": "serious",
-                "message": "Element has insufficient color contrast of 2.53 (foreground color: #ffffff, background color: #10b981, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "serious",
-            "html": "<button class=\"px-4 py-2 bg-emerald-500 text-white rounded-md font-semibold text-sm\">Export PDF</button>",
-            "target": [
-              ".bg-emerald-500.rounded-md"
-            ],
-            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #ffffff, background color: #10b981, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
-          }
-        ]
-      },
-      {
-        "id": "heading-order",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the order of headings is semantically correct",
-        "help": "Heading levels should only increase by one",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/heading-order?application=webdriverjs",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "heading-order",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Heading order invalid"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<h3 class=\"text-white font-bold text-lg md:text-xl truncate\">Start Your 14-Day Free Trial Today</h3>",
-            "target": [
-              ".md\\:text-xl"
-            ],
-            "failureSummary": "Fix any of the following:\n  Heading order invalid"
-          },
-          {
-            "any": [
-              {
-                "id": "heading-order",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Heading order invalid"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<h3 class=\"text-2xl font-bold text-gray-900\">13-Week Cash Forecast</h3>",
-            "target": [
-              ".mb-6.justify-between.flex > div:nth-child(1) > .text-2xl"
-            ],
-            "failureSummary": "Fix any of the following:\n  Heading order invalid"
-          }
-        ]
-      },
-      {
-        "id": "landmark-main-is-top-level",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the main landmark is at top level",
-        "help": "Main landmark should not be contained in another landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-main-is-top-level?application=webdriverjs",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "landmark-is-top-level",
-                "data": {
-                  "role": "main"
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "The main landmark is contained in another landmark."
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
-            "target": [
-              "#main-content"
-            ],
-            "failureSummary": "Fix any of the following:\n  The main landmark is contained in another landmark."
-          }
-        ]
-      },
-      {
-        "id": "landmark-no-duplicate-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has at most one main landmark",
-        "help": "Document should not have more than one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/landmark-no-duplicate-main?application=webdriverjs",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "page-no-duplicate-main",
-                "data": null,
-                "relatedNodes": [
-                  {
-                    "html": "<main id=\"main-content\" tabindex=\"-1\" class=\"flex-grow\" aria-label=\"Main content\">",
-                    "target": [
-                      "#main-content"
-                    ]
-                  }
-                ],
-                "impact": "moderate",
-                "message": "Document has more than one main landmark"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<main id=\"app-root\" role=\"main\" aria-live=\"polite\">",
-            "target": [
-              "#app-root"
-            ],
-            "failureSummary": "Fix any of the following:\n  Document has more than one main landmark"
-          }
-        ]
-      }
-    ]
+    "violations": []
   }
 ]

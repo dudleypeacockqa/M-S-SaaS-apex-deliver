@@ -59,6 +59,8 @@ from app.core.config import get_settings, settings  # noqa: E402
 from app.db import session as session_module  # noqa: E402
 from app.db.base import Base  # noqa: E402
 from app.db.session import get_db  # noqa: E402
+# Create fresh mocks per test to avoid shared state
+# These will be reset in the autouse fixture below
 stripe_mock = MagicMock()
 stripe_module = stripe_mock
 sys.modules.setdefault("stripe", stripe_module)
@@ -119,6 +121,21 @@ def _reset_database(engine):
 
     yield
     _reset_metadata(engine)
+
+
+@pytest.fixture(autouse=True)
+def _reset_mocks():
+    """Reset all module-level mocks between tests to prevent shared state."""
+    yield
+    # Reset mocks to clean state
+    if "stripe" in sys.modules:
+        sys.modules["stripe"].reset_mock()
+    if "celery" in sys.modules:
+        sys.modules["celery"].reset_mock()
+    if "openai" in sys.modules:
+        sys.modules["openai"].reset_mock()
+        if hasattr(sys.modules["openai"], "AsyncOpenAI"):
+            sys.modules["openai"].AsyncOpenAI.reset_mock()
 
 
 def _reset_metadata(engine) -> None:

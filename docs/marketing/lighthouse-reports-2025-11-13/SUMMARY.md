@@ -1,38 +1,68 @@
 # Accessibility Audit Summary
 
 **Date**: 2025-11-13
-**Commit**: 9e45ab656a15c322eb3e3b674b13434f12cae61e
-**Run**: #32
+**Commit**: 286744a8da29aad1674aa204e0afc5e6cf3743c7
+**Run**: #37
 
 ## Lighthouse Scores
 
-| Page | Performance | Accessibility | Best Practices | SEO |
-|------|-------------|---------------|-----------------|-----|
-| Home | 43% | 95% | 75% | 100% |
-| Pricing | 67% | 98% | 75% | 100% |
-| About | 74% | 100% | 75% | 100% |
-| Contact | 73% | 100% | 75% | 100% |
-| Blog | 69% | 98% | 75% | 100% |
-| Features | 71% | 100% | 75% | 100% |
+### about.report
+- **Performance**: N/A%
+- **Accessibility**: N/A%
+- **Best Practices**: N/A%
+- **SEO**: N/A%
+
+### blog.report
+- **Performance**: N/A%
+- **Accessibility**: N/A%
+- **Best Practices**: N/A%
+- **SEO**: N/A%
+
+### contact.report
+- **Performance**: N/A%
+- **Accessibility**: N/A%
+- **Best Practices**: N/A%
+- **SEO**: N/A%
+
+### features.report
+- **Performance**: N/A%
+- **Accessibility**: N/A%
+- **Best Practices**: N/A%
+- **SEO**: N/A%
+
+### home.report
+- **Performance**: N/A%
+- **Accessibility**: N/A%
+- **Best Practices**: N/A%
+- **SEO**: N/A%
+
+### pricing.report
+- **Performance**: N/A%
+- **Accessibility**: N/A%
+- **Best Practices**: N/A%
+- **SEO**: N/A%
 
 ## Files Generated
 
-- SUMMARY.md: 0.5 KB
-- axe-about.json: 340.5 KB
-- axe-blog.json: 1170.6 KB
-- axe-contact.json: 333.7 KB
-- axe-features.json: 538.2 KB
-- axe-home.json: 604.3 KB
-- axe-pricing.json: 746.0 KB
-- lighthouse-about.report.html: 932.9 KB
-- lighthouse-about.report.json: 868.2 KB
-- lighthouse-blog.report.html: 1264.4 KB
-- lighthouse-blog.report.json: 1285.4 KB
-- lighthouse-contact.report.html: 684.3 KB
-- lighthouse-contact.report.json: 619.8 KB
-- lighthouse-features.report.html: 938.0 KB
-- lighthouse-features.report.json: 875.2 KB
-- lighthouse-home.report.html: 838.8 KB
-- lighthouse-home.report.json: 782.2 KB
-- lighthouse-pricing.report.html: 884.2 KB
-- lighthouse-pricing.report.json: 820.7 KB
+```
+total 15M
+-rw-r--r-- 1 runner runner  836 Nov 13 15:56 SUMMARY.md
+-rw-r--r-- 1 runner runner 337K Nov 13 15:56 axe-about.json
+-rw-r--r-- 1 runner runner 1.2M Nov 13 15:56 axe-blog.json
+-rw-r--r-- 1 runner runner 330K Nov 13 15:56 axe-contact.json
+-rw-r--r-- 1 runner runner 534K Nov 13 15:56 axe-features.json
+-rw-r--r-- 1 runner runner 613K Nov 13 15:55 axe-home.json
+-rw-r--r-- 1 runner runner 743K Nov 13 15:56 axe-pricing.json
+-rw-r--r-- 1 runner runner 933K Nov 13 15:53 lighthouse-about.report.html
+-rw-r--r-- 1 runner runner 869K Nov 13 15:53 lighthouse-about.report.json
+-rw-r--r-- 1 runner runner 1.3M Nov 13 15:53 lighthouse-blog.report.html
+-rw-r--r-- 1 runner runner 1.3M Nov 13 15:53 lighthouse-blog.report.json
+-rw-r--r-- 1 runner runner 685K Nov 13 15:53 lighthouse-contact.report.html
+-rw-r--r-- 1 runner runner 620K Nov 13 15:53 lighthouse-contact.report.json
+-rw-r--r-- 1 runner runner 939K Nov 13 15:53 lighthouse-features.report.html
+-rw-r--r-- 1 runner runner 876K Nov 13 15:53 lighthouse-features.report.json
+-rw-r--r-- 1 runner runner 839K Nov 13 15:53 lighthouse-home.report.html
+-rw-r--r-- 1 runner runner 783K Nov 13 15:53 lighthouse-home.report.json
+-rw-r--r-- 1 runner runner 885K Nov 13 15:53 lighthouse-pricing.report.html
+-rw-r--r-- 1 runner runner 821K Nov 13 15:53 lighthouse-pricing.report.json
+```

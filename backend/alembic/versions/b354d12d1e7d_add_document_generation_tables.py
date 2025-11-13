@@ -323,6 +323,14 @@ def upgrade() -> None:
             default_val text;
             enum_exists boolean;
         BEGIN
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'generated_documents' AND column_name = 'status'
+            ) THEN
+                RAISE NOTICE 'generated_documents.status already exists; skipping backfill block';
+                RETURN;
+            END IF;
+
             SELECT EXISTS (
                 SELECT 1 FROM pg_type WHERE typname = 'documentstatus'
             ) INTO enum_exists;
