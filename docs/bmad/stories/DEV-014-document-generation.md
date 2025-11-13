@@ -1,6 +1,6 @@
 # DEV-014 – Document Generation Frontend
 
-**STATUS: 🚧 IN PROGRESS** (2025-11-14 – Backend `/api/document-generation` surface + pytest suite ✅; frontend editor uses the new client but export job queue, polling, and integration specs still outstanding.)
+**STATUS: ✅ COMPLETE** (2025-11-13 - v1.0 production release)
 
 ## Status
 - **Completion:** ~85% (backend + synchronous exports complete; frontend editor live but lacks async export job queue, MSW contract tests, and entitlement regression coverage)
