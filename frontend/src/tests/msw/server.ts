@@ -958,7 +958,7 @@ export const resetPodcastFixtures = () => {
       defaults.required_tier = feature === 'live_streaming' ? 'enterprise' : 'premium'
       defaults.required_tier_label =
         defaults.required_tier.charAt(0).toUpperCase() + defaults.required_tier.slice(1)
-      defaults.upgrade_message = 
+      defaults.upgrade_message = `Upgrade to ${defaults.required_tier_label} to access ${feature.replace('_', ' ')}`
     }
     podcastFeatureStore.set(feature, defaults)
   })
@@ -969,23 +969,23 @@ export const resetPodcastFixtures = () => {
 
 resetPodcastFixtures()
 
-const podcastFeatureHandler = http.get(, ({ params }) => {
+const podcastFeatureHandler = http.get(`${API_BASE_URL}/api/podcasts/features/:feature`, ({ params }) => {
   const feature = params.feature as string
   const record = ensurePodcastFeature(feature)
   return HttpResponse.json(record)
 })
 
-const podcastQuotaHandler = http.get(, () => HttpResponse.json(podcastQuotaState))
+const podcastQuotaHandler = http.get(`${API_BASE_URL}/api/podcasts/quota`, () => HttpResponse.json(podcastQuotaState))
 
-const podcastEpisodesHandler = http.get(, () =>
+const podcastEpisodesHandler = http.get(`${API_BASE_URL}/api/podcasts/episodes`, () =>
   HttpResponse.json(podcastEpisodes)
 )
 
 const podcastTranscribeHandler = http.post(
-  ,
+  `${API_BASE_URL}/api/podcasts/episodes/:episode_id/transcribe`,
   async ({ params }) => {
-    const { episodeId } = params as { episodeId: string }
-    const episode = podcastEpisodes.find((entry) => entry.id === episodeId)
+    const { episode_id } = params as { episode_id: string }
+    const episode = podcastEpisodes.find((entry) => entry.id === episode_id)
     if (!episode) {
       return HttpResponse.json({ detail: 'Episode not found' }, { status: 404 })
     }
@@ -1056,5 +1056,5 @@ const contactHandler = http.post(`${API_BASE_URL}/marketing/contact`, async ({ r
 
 export const mswHandlers = [...documentHandlers, ...podcastHandlers, blogListHandler, blogDetailHandler, contactHandler]
 
-export { resetDocumentRoomFixtures, collectAllFolders, resetPodcastFixtures, setPodcastFeatureAccess, setPodcastQuota, setPodcastEpisodes }
+export { resetDocumentRoomFixtures, collectAllFolders }
 
