@@ -5,7 +5,6 @@ from sqlalchemy import select, desc, func
 from sqlalchemy.orm import Session
 from datetime import datetime, UTC
 from decimal import Decimal
-import logging
 
 from app.models.event import (
     Event,
