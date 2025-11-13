@@ -135,6 +135,8 @@ __all__ = [
     "GeneratedDocument",
     "TemplateStatus",
     "DocumentStatus",
+    "DocumentExportStatus",
+    "DocumentExportJob",
     # Event Management
     "Event",
     "EventTicket",
@@ -183,3 +185,4 @@ __all__ = [
     "ModerationActionType",
     "TargetType",
 ]
+

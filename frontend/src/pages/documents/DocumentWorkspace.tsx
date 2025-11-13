@@ -36,9 +36,11 @@ interface ToastState {
 
 export interface DocumentWorkspaceProps {
   dealId: string
+  onDocumentsLoaded?: (documents: Document[]) => void
+  onError?: (error: unknown) => void
 }
 
-const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId }) => {
+const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumentsLoaded, onError }) => {
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null)
   const [folderSearchTerm, setFolderSearchTerm] = useState('')
   const [permissionState, setPermissionState] = useState<{ id: string; isOpen: boolean }>({
