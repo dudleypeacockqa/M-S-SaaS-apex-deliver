@@ -1,0 +1,9 @@
+2025-11-14T11:07Z - Vitest focused stack per SESSION-2025-11-13 plan
+Command: npm run test -- --run --pool=threads src/tests/routing.test.tsx src/features/auth/Auth.test.tsx src/App.test.tsx src/pages/podcast/PodcastStudioRouting.test.tsx src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx
+Result: PASS (5 files / 17 tests)
+Runtime: 6.0s (threads pool, Windows host)
+Notable warnings:
+- Vitest prints "--localstorage-file was provided without a valid path" (known Windows runner limitation documented in BMAD tracker)
+- MSW raised expected warnings for missing handlers on financial ratio/narrative endpoints; test coverage unaffected
+- Axios intentionally returned HTTP 500 in BlogListingPage contract test to assert outage UI
+Evidence captured interactively because piping output causes threads-runner timeouts on Windows (see docs/tests/2025-11-14-frontend-focused-run.txt for prior write-up).

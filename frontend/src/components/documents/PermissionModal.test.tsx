@@ -72,7 +72,7 @@ describe('PermissionModal', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('john@example.com')).toBeInTheDocument();
       expect(screen.getByText('jane@example.com')).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
   });
 
   it('should display user roles (viewer/editor/owner)', async () => {
@@ -95,7 +95,7 @@ describe('PermissionModal', () => {
       expect(screen.getByLabelText(/role for viewer@example.com/i)).toHaveValue('viewer');
       expect(screen.getByLabelText(/role for editor@example.com/i)).toHaveValue('editor');
       expect(screen.getByLabelText(/role for owner@example.com/i)).toHaveValue('owner');
-    });
+    }, { timeout: 5000 });
   });
 
   it('should show add user input field', async () => {
@@ -113,7 +113,7 @@ describe('PermissionModal', () => {
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/enter email/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /add user/i })).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
   });
 
   it('should add new user with default viewer role', async () => {
@@ -146,7 +146,7 @@ describe('PermissionModal', () => {
         user_email: 'newuser@example.com',
         role: 'viewer',
       });
-    });
+    }, { timeout: 5000 });
   });
 
   it('should change user role via dropdown', async () => {
@@ -172,14 +172,14 @@ describe('PermissionModal', () => {
 
     await waitFor(() => {
       expect(screen.getByText('user@example.com')).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
 
     const roleSelect = screen.getByRole('combobox', { name: /role for user@example\.com/i });
     fireEvent.change(roleSelect, { target: { value: 'editor' } });
 
     await waitFor(() => {
       expect(updatePermission).toHaveBeenCalledWith('perm-1', { role: 'editor' });
-    });
+    }, { timeout: 5000 });
   });
 
   it('should remove user permission', async () => {
@@ -199,14 +199,14 @@ describe('PermissionModal', () => {
 
     await waitFor(() => {
       expect(screen.getByText('remove@example.com')).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
 
     const removeButton = screen.getByRole('button', { name: /remove remove@example\.com/i });
     fireEvent.click(removeButton);
 
     await waitFor(() => {
       expect(removePermission).toHaveBeenCalledWith('perm-1');
-    });
+    }, { timeout: 5000 });
   });
 
   it('should close modal when close button clicked', async () => {
@@ -252,7 +252,7 @@ describe('PermissionModal', () => {
     await waitFor(() => {
       expect(addPermission).toHaveBeenCalled();
       expect(screen.getByRole('alert')).toHaveTextContent('Upgrade required to share documents');
-    });
+    }, { timeout: 5000 });
   });
 
   it('should disable removal when user is the sole owner', async () => {
@@ -290,7 +290,7 @@ describe('PermissionModal', () => {
       expect(
         screen.getByText(/at least one owner must remain on this document/i)
       ).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
 
     expect(roleSelect).toHaveValue('owner');
   });

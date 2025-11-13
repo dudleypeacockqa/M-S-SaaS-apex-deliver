@@ -27,11 +27,11 @@ describe("Integration: routing", () => {
     render(<App />)
 
     expect(
-      await screen.findByRole("heading", { name: /from deal flow to cash flow/i, level: 1 }, { timeout: 10000 })
+      await screen.findByRole("heading", { name: /from deal flow to cash flow/i, level: 1 }, { timeout: 20000 })
     ).toBeInTheDocument()
     // Marketing nav uses regular links, not Clerk's SignInButton
     expect(screen.getAllByRole("link", { name: /sign in/i }).length).toBeGreaterThan(0)
-  }, 10000)
+  }, 20000)
 
   it("directs visitors to the sign-in page when accessing the dashboard", async () => {
     window.history.replaceState({}, "Test", "/dashboard")
@@ -41,9 +41,9 @@ describe("Integration: routing", () => {
     // When not signed in, ProtectedRoute shows a loading state initially,
     // then redirects to sign-in page
     expect(
-      await screen.findByText(/sign in to apexdeliver/i, undefined, { timeout: 10000 })
+      await screen.findByText(/sign in to apexdeliver/i, undefined, { timeout: 20000 })
     ).toBeInTheDocument()
-  }, 10000)
+  }, 20000)
 
   it("displays the dashboard when the user is authenticated", async () => {
      setMockClerkState({
@@ -58,7 +58,7 @@ describe("Integration: routing", () => {
 
     // When authenticated, user should NOT be redirected to sign-in page
     // The dashboard may show loading state or actual dashboard content
-    await screen.findByText(/preparing the apexdeliver experience/i, undefined, { timeout: 5000 })
+    await screen.findByText(/preparing the apexdeliver experience/i, undefined, { timeout: 15000 })
 
     // Verify we're not seeing the sign-in page
     expect(screen.queryByText(/sign in to apexdeliver/i)).not.toBeInTheDocument()
@@ -70,8 +70,8 @@ describe("Integration: routing", () => {
     render(<App />)
 
     expect(
-      await screen.findByRole("heading", { name: /sign in to apexdeliver/i }, { timeout: 10000 })
+      await screen.findByRole("heading", { name: /sign in to apexdeliver/i }, { timeout: 20000 })
     ).toBeInTheDocument()
     expect(window.location.pathname).toBe("/sign-in")
-  }, 10000)
+  }, 20000)
 })

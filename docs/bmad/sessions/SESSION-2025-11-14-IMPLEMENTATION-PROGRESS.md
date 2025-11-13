@@ -15,7 +15,16 @@
 - ✅ Created `check_render_status.py` script to query Render API
 - ✅ Verified backend deployment status: latest deploy `dep-d4aopoumcj7s73ed5hug` is `build_in_progress`
 - ✅ Identified multiple failed deployments (commits: 238bb52d, f0b53162, 1715bc52, fc92c395)
-- ⏳ **NEXT**: Investigate deployment failures and trigger successful redeploy
+- ⚠️ 2025-11-14T11:26Z redeploy attempt via `python3 trigger_backend_deploy.py --service srv-d3ii9qk9c44c73aqsli0` returned **HTTP 401 Unauthorized** (log: `docs/deployments/2025-11-14-backend-redeploy.txt`).
+- ✅ 2025-11-14T11:37Z: Retried with API key from `.env` (capital "S" variant) via `RENDER_API_KEY=$(...) python3 trigger_backend_deploy.py --service srv-d3ii9qk9c44c73aqsli0`; Render responded `[SUCCESS] Deployment triggered!` (same log).
+- ✅ 2025-11-14T11:55Z: Upgraded `trigger_backend_deploy.py` (argparse, Accept header, verbose logging) and re-ran with `.env` API key; Render returned HTTP 202 Accepted. Output + redeploy log stored in `docs/deployments/2025-11-14-backend-redeploy.txt`.
+- ⚠️ `check_render_status.py` logs (`docs/deployments/2025-11-14-backend-redeploy-status.txt`, `...-status2.txt`, `...-status3.txt`, `...-status4.txt`, `...-status5.txt`, `...-status6.txt`, `...-status7.txt`) still show the 11-13 failures only; new deploy ID not yet reported by the API (likely still provisioning or awaiting commit). Continue polling and capture status once Render surfaces the new deploy record.
+- ⏳ **NEXT**: Monitor Render API until the triggered deploy appears, then document status + update `latest-deploy.json` & smoke evidence.
+
+#### T3: Lighthouse/Axe Accessibility Audits
+- ⚠️ Multiple attempts to run `scripts/run_local_audits.sh` (now with `AUDIT_PREVIEW_URL`/fallback + `AUDIT_WAIT_SECONDS=120` + `AUDIT_PREVIEW_CMD="npx serve dist --listen 127.0.0.1:4173 --single"`) failed because the curl-based readiness probe never sees the preview server as ready even though `serve` reports its address (`docs/marketing/2025-11-14-audit-run.log`). Likely Windows↔WSL loopback quirk.
+- 🔧 `scripts/run_local_audits.sh` updated to support overridable wait time, primary/fallback URLs, and custom preview commands.
+- 📝 Need to investigate why `curl http://127.0.0.1:4173` continues to return non-zero while preview is running; likely Windows↔WSL networking quirk. Once resolved, rerun the audits to generate Lighthouse/Axe artefacts under `docs/marketing/2025-11-14-audits/`.
 
 #### Document Generation Export Handler Fix
 - ✅ Fixed `DocumentEditor.tsx` export handler to properly use download URL
@@ -118,6 +127,51 @@
    - Full test suites
    - Lint
    - Build
+
+---
+
+## 100% Completion Roadmap – 2025-11-14 Reality Refresh
+
+**Scope of review**: `SESSION-2025-11-13-100PCT-COMPLETION-PLAN.md`, `100-PERCENT-COMPLETION-STATUS.md`, `BMAD_PROGRESS_TRACKER.md`, `bmm-workflow-status.md`, deployment/audit/test logs under `docs/deployments/` + `docs/tests/`.
+
+### Phase 0 – Evidence & Infrastructure Closure (P0)
+- **T2 Backend Redeploy Evidence**: Use `python trigger_backend_deploy.py --service srv-d3ii9qk9c44c73aqsli0` (Render API key from .env). Archive logs in `docs/deployments/2025-11-14-backend-redeploy.txt`, update `latest-deploy.json`, rerun `scripts/monitoring/collect_health_snapshot.py`.
+- **T3 Accessibility/Lighthouse Proof**: Run `scripts/run_local_audits.sh` (Linux runner) → store Axe + Lighthouse artefacts in `docs/marketing/2025-11-14-audits/`, update MARK-002 + `CLAUDE.md`. Record results in BMAD tracker + workflow file.
+- **Exit Criteria**: Backend deploy log + audit artefacts referenced in tracker, `bmm-workflow-status.md` moved to Phase 1 readiness.
+
+### Phase 1 – Complete In-Flight Features (P1)
+- **Document Generation (DEV-014 / F-009)**
+  - RED: `frontend/src/pages/documents/__tests__/DocumentEditor.integration.test.tsx` covering export queue + entitlement enforcement (MSW + `getExportStatus`).
+  - GREEN: Implement queue UI (`ExportJobPanel`), polling hook, entitlement guards tied to `/api/subscriptions/usage`.
+  - Backend: extend `backend/app/services/document_export_service.py` to expose job status filtering + quota checks; add pytest cases in `backend/tests/test_document_generation_api.py`.
+- **Valuation Suite Export Polish (DEV-011)**
+  - RED: Extend `backend/tests/test_valuation_export_service.py` + `frontend/src/pages/deals/valuation/__tests__/ValuationSuite.exports.test.tsx` for template picker + comparison charts.
+  - GREEN: Finalize picker UI, ensure PDF/Excel artifacts validated, wire download endpoint + MSW handlers.
+- **Podcast Studio Subscription Gating (DEV-016)**
+  - Re-run `src/pages/podcast/PodcastStudioRouting.test.tsx` under tier variations; add telemetry assertions.
+  - Ensure backend quota endpoint returns deterministic fixtures for Vitest.
+- **Acceptance Evidence**: Updated stories (DEV-014/DEV-011/DEV-016), new Vitest + pytest logs, UI screenshot set for exports.
+
+### Phase 2 – Net-New Event Hub Delivery (F-012)
+- **Backend**: finalize ticketing schema (TicketType, Registration, Checkpoint), add Alembic migration, ensure `backend/tests/api/test_event_api.py` covers attendees, ticket quotas, exports.
+- **Frontend**: ship `EventCreator`, `EventDetails`, attendee management modals, calendar view. Add Vitest suites + Playwright smoke stub.
+- **Integrations**: Stripe Checkout/Portal flows for paid tickets, email templates for confirmations, ICS download service.
+- **Deployment Proof**: Screenshots, tests, story (DEV-020) updated to COMPLETE.
+
+### Phase 3 – Community Platform (F-013)
+- **Story Creation**: Add DEV-021 story describing community requirements + STATUS markers.
+- **Backend**: Models (Community, Channel, Thread, Post, Reaction, Membership), routers + services, websocket gateway for live threads, pytest coverage.
+- **Frontend**: `CommunityHub`, `ChannelView`, `ThreadComposer`, notifications + moderation UI; Vitest + integration coverage.
+- **Entitlements**: Align with subscription tiers + master-admin controls.
+
+### Release & QA (Phase 4/5)
+- Full `pytest --cov=backend/app`, `npm run test -- --run --coverage --pool=threads`, `npm run build`, Lighthouse/Axe, smoke tests.
+- Update `docs/bmad/100-PERCENT-COMPLETION-STATUS.md` to 100%, capture release notes, tag `v1.0.0`, update `latest-deploy.json` and ops checklist.
+
+### Tracking & Evidence Expectations
+- Every major step logs to `BMAD_PROGRESS_TRACKER.md` and Section 7 execution log inside this session file.
+- Stories under `docs/bmad/stories/` reflect accurate `STATUS:` + evidence links immediately after each loop.
+- Test artefacts live under `docs/tests/` with ISO timestamps; deployment/audit logs under `docs/deployments/` and `docs/marketing/`.
    - Accessibility audits
    - Release notes
 

@@ -186,6 +186,9 @@ describe('EventCreator', () => {
       expect(eventsApi.createEvent).toHaveBeenCalled()
     })
 
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/unable to create event/i)
+
     consoleErrorSpy.mockRestore()
   })
 

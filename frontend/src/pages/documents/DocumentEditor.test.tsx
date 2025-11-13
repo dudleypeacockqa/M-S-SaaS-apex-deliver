@@ -17,12 +17,15 @@ vi.mock('../../services/api/documentGeneration', async (importOriginal) => {
     fetchAISuggestions: vi.fn(),
     acceptAISuggestion: vi.fn(),
     rejectAISuggestion: vi.fn(),
-    exportDocument: vi.fn(),
     listDocumentVersions: vi.fn(),
     restoreDocumentVersion: vi.fn(),
     subscribeToPresence: vi.fn(),
   }
 })
+
+vi.mock('../../components/documents/DocumentExportQueuePanel', () => ({
+  DocumentExportQueuePanel: () => <div data-testid="document-export-queue-panel" />,
+}))
 
 const DEFAULT_DOCUMENT_ID = 'doc-123'
 const DEFAULT_DEAL_ID = 'deal-789'
@@ -119,12 +122,6 @@ describe('DocumentEditor', () => {
       status: 'rejected',
     })
 
-    vi.mocked(documentApi.exportDocument).mockResolvedValue({
-      file_name: 'Acquisition Overview.pdf',
-      file_type: 'application/pdf',
-      download_url: 'https://example.com/documents/doc-123.pdf',
-      file_content: 'VGhpcyBpcyBhIHNpbXVsYXRlZCBwZGYgZmlsZS4=',
-    })
 
     vi.mocked(documentApi.listDocumentVersions).mockResolvedValue([
       {
@@ -190,6 +187,11 @@ describe('DocumentEditor', () => {
     )
   })
 
+  it('renders the export queue panel', async () => {
+    createRender()
+    expect(await screen.findByTestId('document-export-queue-panel')).toBeInTheDocument()
+  })
+
   it('applies a selected template and updates the editor content', async () => {
     const documentApi = await documentApiPromise
 
@@ -252,34 +254,6 @@ describe('DocumentEditor', () => {
       expect(documentApi.fetchAISuggestions).toHaveBeenCalledTimes(2)
       expect(screen.getByRole('heading', { name: /add valuation summary/i })).toBeInTheDocument()
     })
-  })
-
-  it('exports the document in the selected format with configured options', async () => {
-    const documentApi = await documentApiPromise
-
-    const createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url')
-
-    createRender()
-
-    const formatSelect = await screen.findByLabelText(/export format/i)
-    await userEvent.selectOptions(formatSelect, 'application/pdf')
-
-    const marginInput = screen.getByLabelText(/margin \(mm\)/i)
-    await userEvent.clear(marginInput)
-    await userEvent.type(marginInput, '20')
-
-    const exportButton = screen.getByRole('button', { name: /download document/i })
-    await userEvent.click(exportButton)
-
-    await waitFor(() => {
-      expect(documentApi.exportDocument).toHaveBeenCalledWith(DEFAULT_DOCUMENT_ID, {
-        format: 'application/pdf',
-        options: expect.objectContaining({ margin: 20 }),
-      })
-      expect(createObjectURLSpy).toHaveBeenCalled()
-    })
-
-    createObjectURLSpy.mockRestore()
   })
 
   it('lists version history and restores a selected version into the editor', async () => {

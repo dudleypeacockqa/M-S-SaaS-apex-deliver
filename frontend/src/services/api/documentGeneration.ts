@@ -63,6 +63,25 @@ export interface ExportResponse {
   file_content?: string
 }
 
+export type DocumentExportStatus = 'queued' | 'processing' | 'ready' | 'failed'
+
+export interface DocumentExportJob {
+  task_id: string
+  document_id: string
+  format: string
+  status: DocumentExportStatus
+  download_url?: string | null
+  failure_reason?: string | null
+  queued_at?: string
+  completed_at?: string | null
+}
+
+export interface QueueDocumentExportResponse {
+  task_id: string
+  status: DocumentExportStatus
+  format: string
+}
+
 export interface DocumentVersionSummary {
   id: string
   label: string
@@ -146,6 +165,26 @@ export function rejectAISuggestion(documentId: string, suggestionId: string): Pr
 
 export function exportDocument(documentId: string, request: ExportRequest): Promise<ExportResponse> {
   return apiClient.post<ExportResponse>(`${BASE_PATH}/documents/${documentId}/export`, request)
+}
+
+export function queueDocumentExport(
+  documentId: string,
+  request: ExportRequest
+): Promise<QueueDocumentExportResponse> {
+  return apiClient.post<QueueDocumentExportResponse>(
+    `${BASE_PATH}/documents/${documentId}/export-jobs`,
+    request
+  )
+}
+
+export function listDocumentExportJobs(documentId: string): Promise<DocumentExportJob[]> {
+  return apiClient.get<DocumentExportJob[]>(`${BASE_PATH}/documents/${documentId}/export-jobs`)
+}
+
+export function getDocumentExportJob(documentId: string, taskId: string): Promise<DocumentExportJob> {
+  return apiClient.get<DocumentExportJob>(
+    `${BASE_PATH}/documents/${documentId}/export-jobs/${taskId}`
+  )
 }
 
 export function listDocumentVersions(documentId: string): Promise<DocumentVersionSummary[]> {

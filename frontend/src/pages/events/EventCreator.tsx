@@ -45,6 +45,7 @@ export const EventCreator: React.FC = () => {
     currency: 'GBP',
     organization_id: user?.organizationId || '',
   })
+  const [submissionError, setSubmissionError] = useState<string | null>(null)
 
   const createMutation = useMutation({
     mutationFn: (event: EventCreate) => createEvent(event),
@@ -61,7 +62,14 @@ export const EventCreator: React.FC = () => {
       return
     }
 
-    await createMutation.mutateAsync(formData as EventCreate)
+    setSubmissionError(null)
+
+    try {
+      await createMutation.mutateAsync(formData as EventCreate)
+    } catch (error) {
+      console.error('Failed to create event', error)
+      setSubmissionError('Unable to create event. Please try again.')
+    }
   }
 
   const handleCancel = () => {
@@ -73,6 +81,15 @@ export const EventCreator: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Create Event</h1>
+
+          {submissionError && (
+            <div
+              role="alert"
+              className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 mb-4"
+            >
+              {submissionError}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
@@ -302,4 +319,3 @@ export const EventCreator: React.FC = () => {
     </div>
   )
 }
-

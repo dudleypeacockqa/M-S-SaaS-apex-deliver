@@ -29,7 +29,8 @@ const resolveThreadOverride = () => {
 
 // Default to a single worker for determinism, but allow env-based overrides so
 // long coverage runs can finish within CI/CLI time limits.
-const threadCount = Math.max(1, Math.min(resolveWorkerCount(), resolveThreadOverride() ?? 1))
+const defaultThreadTarget = Math.max(1, Math.min(resolveWorkerCount(), 8))
+const threadCount = Math.max(1, Math.min(resolveWorkerCount(), resolveThreadOverride() ?? defaultThreadTarget))
 const singleThread = threadCount === 1
 
 const reactPluginModule = await import('@vitejs/plugin-react').catch(() => ({

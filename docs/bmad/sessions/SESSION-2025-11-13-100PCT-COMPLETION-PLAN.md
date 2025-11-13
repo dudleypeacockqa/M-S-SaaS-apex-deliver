@@ -146,6 +146,8 @@ Progress on each step must be documented in the tracker and relevant story files
 
 | Timestamp (UTC) | Action | Owner | Evidence |
 |-----------------|--------|-------|----------|
+| 2025-11-14 12:15 | Refreshed execution plan + governance alignment (Plan doc + tracker/workflow updates) | Codex | `docs/bmad/sessions/SESSION-2025-11-14-EXECUTION-PLAN.md`, `docs/bmad/BMAD_PROGRESS_TRACKER.md`, `docs/bmad/bmm-workflow-status.md` |
+| 2025-11-14 12:42 | Triggered backend redeploy via Render API (dep-d4as4tjuibrs73fbqec0 now update_in_progress) | Codex | `docs/deployments/2025-11-14-backend-redeploy.txt`, `latest-deploy.json` |
 | 2025-11-13 18:10 | Re-affirmed phased plan (P0→P3) and selected Phase 0 focus for this working session | Codex | This document revision |
 | 2025-11-13 18:20 | Kick off Phase 0 Task P0.1 – inspect routing/auth Vitest failures to prep fixes | Codex | notes in `docs/tests/2025-11-13-frontend-final-verification.txt` |
 | 2025-11-13 18:40 | Updated `frontend/vitest.config.ts` to exclude `node_modules.before-vitest/**` so third‑party fixture tests stop failing | Codex | commit-in-progress |
@@ -162,6 +164,7 @@ Progress on each step must be documented in the tracker and relevant story files
 | 2025-11-13 07:55 | Fixed events model conflicts (removed duplicate events.py, added extend_existing, fixed relationships) | Codex | `backend/app/models/event.py`, `backend/app/models/__init__.py` |
 | 2025-11-13 07:56 | Event Hub frontend started: Created events API service and EventDashboard page | Codex | `frontend/src/services/api/events.ts`, `frontend/src/pages/events/EventDashboard.tsx`, `frontend/src/App.tsx` |
 | 2025-11-13 07:57 | Frontend build successful with Event Hub integration | Codex | `npm run build` - no errors |
+| 2025-11-14 11:15 | Refreshed SESSION-2025-11-14 implementation doc with full roadmap + reran mandated Vitest focus stack | Codex | `docs/bmad/sessions/SESSION-2025-11-14-IMPLEMENTATION-PROGRESS.md`, `docs/tests/2025-11-14-frontend-focused-run2.txt` |
 
 **Cadence Rules**
 

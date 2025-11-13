@@ -76,7 +76,7 @@ describe('EventDashboard', () => {
 
     renderWithProviders(<EventDashboard />)
 
-    // Should show loading spinner
+    // Should show loading spinner - Spinner renders a div with animate-spin class
     const spinner = document.querySelector('.animate-spin')
     expect(spinner).toBeInTheDocument()
   })
@@ -113,7 +113,7 @@ describe('EventDashboard', () => {
     renderWithProviders(<EventDashboard />)
 
     await waitFor(() => {
-      expect(screen.getByText(/no events found/i)).toBeInTheDocument()
+      expect(screen.getByText(/No events found/i)).toBeInTheDocument()
     })
   })
 })

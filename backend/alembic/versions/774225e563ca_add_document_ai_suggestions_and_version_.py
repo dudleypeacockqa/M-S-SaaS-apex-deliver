@@ -564,7 +564,7 @@ def upgrade() -> None:
                server_default=None,
                nullable=True)
     op.alter_column('generated_documents', 'status',
-               existing_type=postgresql.ENUM('DRAFT', 'GENERATED', 'FINALIZED', 'SENT', name='documentstatus'),
+               existing_type=postgresql.ENUM('draft', 'generated', 'finalized', 'sent', name='documentstatus'),
                server_default=None,
                existing_nullable=False)
     op.alter_column('generated_documents', 'organization_id',
@@ -679,8 +679,8 @@ def downgrade() -> None:
                type_=sa.VARCHAR(length=36),
                existing_nullable=False)
     op.alter_column('generated_documents', 'status',
-               existing_type=postgresql.ENUM('DRAFT', 'GENERATED', 'FINALIZED', 'SENT', name='documentstatus'),
-               server_default=sa.text("'GENERATED'::documentstatus"),
+               existing_type=postgresql.ENUM('draft', 'generated', 'finalized', 'sent', name='documentstatus'),
+               server_default=sa.text("'generated'::documentstatus"),
                existing_nullable=False)
     op.alter_column('generated_documents', 'variable_values',
                existing_type=postgresql.JSON(astext_type=sa.Text()),

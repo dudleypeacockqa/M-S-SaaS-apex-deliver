@@ -47,7 +47,7 @@ export const EventDashboard: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Spinner />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
       </div>
     )
   }
@@ -162,7 +162,7 @@ export const EventDashboard: React.FC = () => {
             ))
           ) : (
             <div className="col-span-full text-center py-12">
-              <p className="text-gray-500">No events found. Create your first event to get started.</p>
+              <p className="text-gray-500">No events found</p>
               <Button onClick={handleCreateEvent} className="mt-4 bg-indigo-600 text-white hover:bg-indigo-500">
                 Create Event
               </Button>

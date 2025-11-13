@@ -1,0 +1,125 @@
+
+> ma-saas-frontend@2.0.0 test
+> node scripts/run-vitest.mjs run --run --coverage --pool=threads
+
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document permission changes with affected user IDs
+[22m[39m[Audit] Permission changed: { documentId: [32m'doc-1'[39m, userId: [32m'user-abc'[39m, permission: [32m'edit'[39m }
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document deletion events
+[22m[39m[Audit] {
+  action: [32m'DOCUMENT_DELETED'[39m,
+  resource_type: [32m'document'[39m,
+  resource_id: [32m'doc-to-delete'[39m,
+  metadata: { fileName: [32m'contract.pdf'[39m }
+}
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs bulk actions with affected document IDs
+[22m[39m[Audit] {
+  action: [32m'BULK_DELETE'[39m,
+  resource_type: [32m'document'[39m,
+  resource_id: [32m'bulk-operation'[39m,
+  metadata: { documentIds: [ [32m'doc-1'[39m, [32m'doc-2'[39m, [32m'doc-3'[39m ], count: [33m3[39m }
+}
+
+[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mBulk Actions[2m > [22m[2mcalls bulk delete handler when requested
+[22m[39m[Bulk Delete] [
+  { id: [32m'doc-1'[39m, name: [32m'file1.pdf'[39m },
+  { id: [32m'doc-2'[39m, name: [32m'file2.pdf'[39m }
+]
+
+ [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx [2m([22m[2m28 tests[22m[2m)[22m[33m 3015[2mms[22m[39m
+       [33m[2m✓[22m[39m renders search input above folder tree [33m 420[2mms[22m[39m
+ [32m✓[39m src/components/documents/DocumentList.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 5039[2mms[22m[39m
+     [33m[2m✓[22m[39m should sort documents by name [33m 768[2mms[22m[39m
+     [33m[2m✓[22m[39m should sort documents by date [33m 395[2mms[22m[39m
+     [33m[2m✓[22m[39m should select all documents with header checkbox [33m 315[2mms[22m[39m
+     [33m[2m✓[22m[39m shows bulk actions toolbar when documents are selected [33m 470[2mms[22m[39m
+     [33m[2m✓[22m[39m bulk download triggers download for each selected document [33m 435[2mms[22m[39m
+     [33m[2m✓[22m[39m bulk delete calls delete API for each selected document when confirmed [33m 376[2mms[22m[39m
+ [32m✓[39m src/components/podcast/EditEpisodeModal.test.tsx [2m([22m[2m26 tests[22m[2m)[22m[33m 5445[2mms[22m[39m
+     [33m[2m✓[22m[39m updates title field when user types [33m 314[2mms[22m[39m
+     [33m[2m✓[22m[39m updates description field when user types [33m 370[2mms[22m[39m
+     [33m[2m✓[22m[39m updates show notes field when user types [33m 727[2mms[22m[39m
+     [33m[2m✓[22m[39m calls onSubmit with updated data when form submitted [33m 1142[2mms[22m[39m
+     [33m[2m✓[22m[39m does not call onSubmit when title is only whitespace [33m 357[2mms[22m[39m
+     [33m[2m✓[22m[39m allows form submission after correcting validation errors [33m 548[2mms[22m[39m
+ [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 4310[2mms[22m[39m
+       [33m[2m✓[22m[39m should show edit button when not editing [33m 320[2mms[22m[39m
+       [33m[2m✓[22m[39m should enter edit mode when edit button is clicked [33m 473[2mms[22m[39m
+       [33m[2m✓[22m[39m should populate inputs with current goal values in edit mode [33m 342[2mms[22m[39m
+       [33m[2m✓[22m[39m should update input values when changed [33m 718[2mms[22m[39m
+       [33m[2m✓[22m[39m should exit edit mode when cancel is clicked [33m 456[2mms[22m[39m
+       [33m[2m✓[22m[39m should call updateGoal mutation when saving existing goal [33m 594[2mms[22m[39m
+       [33m[2m✓[22m[39m should call createGoal mutation when saving new goal [33m 855[2mms[22m[39m
+ [32m✓[39m src/pages/events/__tests__/EventDetails.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 3834[2mms[22m[39m
+     [33m[2m✓[22m[39m should render all tabs [33m 977[2mms[22m[39m
+     [33m[2m✓[22m[39m should have export CSV button on registrations tab [33m 304[2mms[22m[39m
+     [33m[2m✓[22m[39m should export registrations when export button clicked [33m 442[2mms[22m[39m
+     [33m[2m✓[22m[39m should show empty states for no sessions, tickets, registrations [33m 537[2mms[22m[39m
+ [32m✓[39m src/pages/deals/NewDealPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 6807[2mms[22m[39m
+     [33m[2m✓[22m[39m shows validation errors when required fields missing [33m 1088[2mms[22m[39m
+     [33m[2m✓[22m[39m submits payload and navigates to deal details on success [33m 4072[2mms[22m[39m
+     [33m[2m✓[22m[39m displays backend error when createDeal rejects [33m 1630[2mms[22m[39m
+ [32m✓[39m src/pages/tasks/TaskBoard.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 8435[2mms[22m[39m
+     [33m[2m✓[22m[39m renders task board with required columns and tasks [33m 990[2mms[22m[39m
+     [33m[2m✓[22m[39m filters tasks by assignee, status, priority, and due date [33m 875[2mms[22m[39m
+     [33m[2m✓[22m[39m sorts tasks by due date and priority [33m 946[2mms[22m[39m
+     [33m[2m✓[22m[39m opens task creation modal and validates required fields [33m 1659[2mms[22m[39m
+     [33m[2m✓[22m[39m opens task detail modal on card click and loads task detail data [33m 390[2mms[22m[39m
+     [33m[2m✓[22m[39m updates task details from detail modal [33m 1464[2mms[22m[39m
+     [33m[2m✓[22m[39m assigns a task from the detail modal [33m 483[2mms[22m[39m
+     [33m[2m✓[22m[39m deletes a task from the detail modal [33m 751[2mms[22m[39m
+ [32m✓[39m src/components/podcast/YouTubePublisher.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 8871[2mms[22m[39m
+     [33m[2m✓[22m[39m shows connect call-to-action when YouTube is not connected and triggers OAuth flow [33m 626[2mms[22m[39m
+     [33m[2m✓[22m[39m prefills metadata form with episode details and enforces title length [33m 3571[2mms[22m[39m
+     [33m[2m✓[22m[39m submits publish payload with metadata and schedule [33m 2790[2mms[22m[39m
+     [33m[2m✓[22m[39m allows disconnecting the connected channel [33m 448[2mms[22m[39m
+ [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx [2m([22m[2m29 tests[22m[2m)[22m[33m 9360[2mms[22m[39m
+       [33m[2m✓[22m[39m should show upgrade prompt when user lacks podcast_audio access [33m 605[2mms[22m[39m
+       [33m[2m✓[22m[39m should show transcribe button when transcript missing [33m 459[2mms[22m[39m
+       [33m[2m✓[22m[39m should call API and show success message when transcription completes [33m 487[2mms[22m[39m
+       [33m[2m✓[22m[39m allows editing metadata before publishing to YouTube when integration access granted [33m 1895[2mms[22m[39m
+       [33m[2m✓[22m[39m initiates OAuth connect flow when YouTube account is not connected [33m 418[2mms[22m[39m
+       [33m[2m✓[22m[39m should create episode when form submitted with valid data [33m 1498[2mms[22m[39m
+       [33m[2m✓[22m[39m should update episode when edit form submitted [33m 801[2mms[22m[39m
+       [33m[2m✓[22m[39m should show delete confirmation when delete button clicked [33m 320[2mms[22m[39m
+       [33m[2m✓[22m[39m should delete episode when deletion confirmed [33m 389[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx [2m([22m[2m29 tests[22m[2m)[22m[33m 8627[2mms[22m[39m
+       [33m[2m✓[22m[39m should render modal when isOpen is true [33m 402[2mms[22m[39m
+       [33m[2m✓[22m[39m should show error for empty target company [33m 460[2mms[22m[39m
+       [33m[2m✓[22m[39m should show error for negative deal size [33m 347[2mms[22m[39m
+       [33m[2m✓[22m[39m should not show errors when all required fields are filled [33m 651[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onCreate when form is submitted with valid data [33m 1198[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onSuccess after successful creation [33m 712[2mms[22m[39m
+       [33m[2m✓[22m[39m should close modal after successful creation [33m 858[2mms[22m[39m
+       [33m[2m✓[22m[39m should disable submit button while submitting [33m 933[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onUpdate when editing existing deal [33m 544[2mms[22m[39m
+       [33m[2m✓[22m[39m should trap focus within modal [33m 837[2mms[22m[39m
+ [32m✓[39m src/pages/documents/DocumentEditor.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 9085[2mms[22m[39m
+     [33m[2m✓[22m[39m loads the document and supports rich text editing with autosave [33m 1579[2mms[22m[39m
+     [33m[2m✓[22m[39m applies a selected template and updates the editor content [33m 672[2mms[22m[39m
+     [33m[2m✓[22m[39m surfaces AI suggestions and handles accept, reject, and regenerate flows [33m 1603[2mms[22m[39m
+     [33m[2m✓[22m[39m exports the document in the selected format with configured options [33m 1001[2mms[22m[39m
+     [33m[2m✓[22m[39m lists version history and restores a selected version into the editor [33m 662[2mms[22m[39m
+     [33m[2m✓[22m[39m surfaces keyboard shortcuts to accelerate editing workflows [33m 310[2mms[22m[39m
+     [33m[2m✓[22m[39m handles save errors gracefully and displays retry messaging [33m 691[2mms[22m[39m
+     [33m[2m✓[22m[39m updates context for AI suggestions when the user provides additional details [33m 2418[2mms[22m[39m
+ [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 10766[2mms[22m[39m
+     [33m[2m✓[22m[39m submits new valuation when form completed [33m 827[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding comparable company to selected valuation [33m 945[2mms[22m[39m
+     [33m[2m✓[22m[39m allows adding precedent transaction to selected valuation [33m 1503[2mms[22m[39m
+     [33m[2m✓[22m[39m allows creating a new scenario with JSON assumptions [33m 1663[2mms[22m[39m
+     [33m[2m✓[22m[39m shows validation error when scenario assumptions JSON is invalid [33m 1156[2mms[22m[39m
+     [33m[2m✓[22m[39m shows detailed confirmation after queuing an export [33m 504[2mms[22m[39m
+     [33m[2m✓[22m[39m displays export template selector with PDF, DOCX, and HTML options [33m 1003[2mms[22m[39m
+     [33m[2m✓[22m[39m allows selecting export template (executive summary, detailed, custom) [33m 547[2mms[22m[39m
+     [33m[2m✓[22m[39m runs Monte Carlo simulation and displays percentile summary [33m 720[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/ContactPage.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 9041[2mms[22m[39m
+     [33m[2m✓[22m[39m renders header, contact form, and information sections [33m 771[2mms[22m[39m
+     [33m[2m✓[22m[39m validates required fields before submission [33m 739[2mms[22m[39m
+     [33m[2m✓[22m[39m submits form and shows confirmation message [33m 3952[2mms[22m[39m
+     [33m[2m✓[22m[39m shows error state when submission fails [33m 3457[2mms[22m[39m

@@ -27,9 +27,12 @@ NC='\033[0m' # No Color
 # Configuration
 PREVIEW_HOST="0.0.0.0"
 PREVIEW_PORT="4173"
-TEST_URL="http://127.0.0.1:${PREVIEW_PORT}"
+PRIMARY_URL=${AUDIT_PREVIEW_URL:-"http://127.0.0.1:${PREVIEW_PORT}"}
+FALLBACK_URL=${AUDIT_PREVIEW_FALLBACK:-"http://localhost:${PREVIEW_PORT}"}
+PREVIEW_CMD=${AUDIT_PREVIEW_CMD:-"npm run preview:test"}
 REPORT_DIR="docs/testing"
-MAX_WAIT_TIME=30  # seconds
+# Allow overriding via AUDIT_WAIT_SECONDS env (defaults to 60s to account for cold builds)
+MAX_WAIT_TIME=${AUDIT_WAIT_SECONDS:-60}
 
 # Print banner
 echo -e "${BLUE}========================================${NC}"
@@ -67,7 +70,11 @@ npm run build
 
 # Start preview server in background
 echo -e "${YELLOW}Step 3: Starting preview server on ${PREVIEW_HOST}:${PREVIEW_PORT}...${NC}"
-VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY npm run preview:test &
+echo "  Command: ${PREVIEW_CMD}"
+(
+  export VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
+  bash -lc "$PREVIEW_CMD"
+) &
 SERVER_PID=$!
 
 # Function to cleanup on exit
@@ -85,7 +92,18 @@ trap cleanup EXIT INT TERM
 # Wait for server to be ready
 echo -e "${YELLOW}Step 4: Waiting for server to start...${NC}"
 ELAPSED=0
-while ! curl -s "$TEST_URL" > /dev/null; do
+ACTIVE_URL=""
+while true; do
+    if curl -sf "$PRIMARY_URL" > /dev/null 2>&1; then
+        ACTIVE_URL="$PRIMARY_URL"
+        break
+    fi
+
+    if [ "$FALLBACK_URL" != "$PRIMARY_URL" ] && curl -sf "$FALLBACK_URL" > /dev/null 2>&1; then
+        ACTIVE_URL="$FALLBACK_URL"
+        break
+    fi
+
     if [ $ELAPSED -ge $MAX_WAIT_TIME ]; then
         echo -e "${RED}ERROR: Server failed to start within ${MAX_WAIT_TIME} seconds${NC}"
         exit 1
@@ -95,15 +113,15 @@ while ! curl -s "$TEST_URL" > /dev/null; do
     echo -n "."
 done
 echo ""
-echo -e "${GREEN}Server is ready!${NC}"
+echo -e "${GREEN}Server is ready at ${ACTIVE_URL}!${NC}"
 echo ""
 
 # Run Lighthouse audit
 echo -e "${YELLOW}Step 5: Running Lighthouse performance audit...${NC}"
-echo "  URL: $TEST_URL"
+echo "  URL: $ACTIVE_URL"
 echo "  Report: ${REPORT_DIR}/lighthouse-report.html"
 
-npx lighthouse "$TEST_URL" \
+npx lighthouse "$ACTIVE_URL" \
     --output html \
     --output json \
     --output-path="../${REPORT_DIR}/lighthouse-report.html" \
@@ -120,10 +138,10 @@ echo ""
 
 # Run Axe accessibility audit
 echo -e "${YELLOW}Step 6: Running Axe accessibility audit...${NC}"
-echo "  URL: $TEST_URL"
+echo "  URL: $ACTIVE_URL"
 echo "  Report: ${REPORT_DIR}/axe-report.json"
 
-npx axe "$TEST_URL" \
+npx axe "$ACTIVE_URL" \
     --load-delay 5000 \
     --timeout 60000 \
     --save "../${REPORT_DIR}/axe-report.json" \

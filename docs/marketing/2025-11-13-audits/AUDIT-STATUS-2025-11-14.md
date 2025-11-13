@@ -2,7 +2,7 @@
 
 **Date**: 2025-11-14  
 **Task**: Phase 0 T3 - Lighthouse/Axe CI Evidence  
-**Status**: ✅ COMPLETE - Infrastructure verified and documented
+**Status**: 🚧 IN PROGRESS – Axe rerun complete (0 violations); Lighthouse rerun blocked on Windows EPERM temp cleanup. Needs Linux/macOS execution for Phase 0 T3 sign-off.
 
 ## Current Status
 
@@ -12,10 +12,10 @@
 - **Lighthouse Config**: `.lighthouserc.js` - Configured with quality thresholds
 - **Audit Directory**: `docs/marketing/2025-11-13-audits/` - Ready for evidence
 
-### Existing Evidence ✅
-- **Local Axe Report**: `docs/marketing/accessibility-report-local-2025-11-13.json` - 0 violations
-- **Local Lighthouse Report**: `docs/marketing/lighthouse-local-2025-11-13.json` - Available
-- **Documentation**: `docs/marketing/2025-11-13-audits/README.md` - Complete
+### Existing Evidence ✅ / Pending Refresh
+- **Local Axe Report (refreshed)**: `docs/marketing/2025-11-13-audits/axe-report.json` + `axe-run.log` – 0 violations @ 2025-11-13T11:30Z
+- **Local Lighthouse Report (2025-11-13)**: `docs/marketing/lighthouse-local-2025-11-13.json` – prior evidence; rerun blocked on Windows (see `lighthouse-run.log`)
+- **Documentation**: `docs/marketing/2025-11-13-audits/README.md` – updated with blocker + next steps
 
 ### GitHub Actions Workflow
 The workflow is configured to:
@@ -34,9 +34,10 @@ The workflow is configured to:
 ## Next Steps
 
 1. ✅ Infrastructure verified and documented
-2. ⏳ Production audits will run automatically on next push to `main`
-3. ⏳ Reports will be archived in `docs/marketing/lighthouse-reports-YYYY-MM-DD/`
-4. ✅ MARK-002 story updated with evidence links
+2. ⏳ Re-run Lighthouse on Linux/macOS (or WSL+Chromium) to refresh local evidence referenced by MARK-002.
+3. ⏳ Production audits will run automatically on next push to `main`
+4. ⏳ Reports will be archived in `docs/marketing/lighthouse-reports-YYYY-MM-DD/`
+5. ✅ MARK-002 story updated with evidence links
 
 ## Evidence Links
 

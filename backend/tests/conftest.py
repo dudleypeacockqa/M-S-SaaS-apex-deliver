@@ -11,10 +11,6 @@ from uuid import uuid4
 import pytest
 from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
-try:
-    import coverage
-except ImportError:  # pragma: no cover - fallback when coverage not installed
-    coverage = None
 from httpx import AsyncClient
 from jose import jwt
 from sqlalchemy import create_engine, inspect, text
@@ -162,15 +158,6 @@ def client(engine) -> Iterator[TestClient]:
     """Return a FastAPI TestClient with database dependency override."""
 
     SessionTesting = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
-    cov_controller = None
-    cov_collector = None
-    if coverage is not None:
-        try:
-            cov_controller = coverage.Coverage.current()
-        except coverage.CoverageException:
-            cov_controller = None
-        if cov_controller is not None:
-            cov_collector = getattr(cov_controller, "_collector", None)
 
     def _get_db_override():
         db = SessionTesting()
@@ -183,12 +170,8 @@ def client(engine) -> Iterator[TestClient]:
     try:
         with TestClient(app) as test_client:
             yield test_client
-            if cov_collector is not None:
-                cov_collector.pause()
     finally:
         app.dependency_overrides.pop(get_db, None)
-        if cov_collector is not None:
-            cov_collector.resume()
 
 
 @pytest.fixture()
