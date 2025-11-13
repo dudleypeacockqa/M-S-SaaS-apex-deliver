@@ -270,3 +270,26 @@ export async function exportEventRegistrations(eventId: string): Promise<Blob> {
     contentType: null,
   })
 }
+
+// Event Ticket Purchase (Stripe)
+export interface TicketPurchaseRequest {
+  ticket_type: string
+  quantity: number
+}
+
+export interface TicketPurchaseResponse {
+  checkout_session_id: string
+  checkout_url: string
+  amount: number
+  currency: string
+}
+
+export async function purchaseEventTicket(
+  eventId: string,
+  request: TicketPurchaseRequest
+): Promise<TicketPurchaseResponse> {
+  return apiClient.post<TicketPurchaseResponse>(
+    `/api/events/${eventId}/tickets/purchase`,
+    request
+  )
+}

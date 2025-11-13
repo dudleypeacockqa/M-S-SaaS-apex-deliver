@@ -14,6 +14,7 @@ import {
   listEventRegistrations,
   getEventAnalytics,
   exportEventRegistrations,
+  purchaseEventTicket,
   type Event,
   type EventSession,
   type EventTicket,
@@ -79,6 +80,21 @@ export const EventDetails: React.FC = () => {
     } catch (error) {
       console.error('Failed to export registrations', error)
       alert('Failed to export registrations')
+    }
+  }
+
+  const handlePurchaseTicket = async (ticketId: string, quantity: number = 1) => {
+    if (!eventId) return
+    try {
+      const response = await purchaseEventTicket(eventId, {
+        ticket_type: ticketId,
+        quantity,
+      })
+      // Redirect to Stripe Checkout
+      window.location.href = response.checkout_url
+    } catch (error) {
+      console.error('Failed to initiate ticket purchase', error)
+      alert('Failed to initiate ticket purchase. Please try again.')
     }
   }
 
@@ -284,6 +300,16 @@ export const EventDetails: React.FC = () => {
                               <span>{ticket.available_quantity} / {ticket.quantity}</span>
                             </div>
                           </div>
+                          {ticket.status === 'active' && ticket.available_quantity > 0 && (
+                            <div className="mt-4">
+                              <Button
+                                onClick={() => handlePurchaseTicket(ticket.id, 1)}
+                                className="w-full bg-indigo-600 text-white hover:bg-indigo-500"
+                              >
+                                Purchase Ticket
+                              </Button>
+                            </div>
+                          )}
                         </CardBody>
                       </Card>
                     ))

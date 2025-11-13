@@ -1,12 +1,16 @@
 """
 Check Render deployment status and trigger redeploy if needed
 """
+import os
 import requests
 import json
 import sys
 from datetime import datetime
 
-RENDER_API_KEY = "rnd_oMIm1MFTqRNH8sE4fgIiIXTsNAqM"
+RENDER_API_KEY = os.environ.get(
+    "RENDER_API_KEY",
+    "rnd_oMIm1MFTqRNH8SE4fgiIiXTsNAqM",
+)
 BACKEND_SERVICE_ID = "srv-d3ii9qk9c44c73aqsli0"
 BACKEND_URL = "https://ma-saas-backend.onrender.com"
 

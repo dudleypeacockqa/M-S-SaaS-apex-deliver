@@ -625,6 +625,25 @@ pm run preview:test) and ran Lighthouse/Axe manually; both headless Chrome clien
 
 ---
 
+## Session 2025-11-13T15-Lighthouse-CI-Run – Phase 0 T3 Evidence
+
+**Status**: 🚧 IN PROGRESS – Production Lighthouse/Axe evidence captured via GitHub Actions, preview leg still blocked on Node 20.
+**Duration**: ~15 minutes (workflow dispatch + artifact collection)
+**Priority**: P0 – Close audit evidence loop per completion plan
+
+### Summary
+- Triggered `.github/workflows/accessibility-audit.yml` via `gh workflow run ...` using the repo’s `GITHUB_TOKEN` (Run #32, https://github.com/dudleypeacockqa/M-S-SaaS-apex-deliver/actions/runs/19336009202).
+- Production job succeeded: downloaded artifacts into `docs/marketing/lighthouse-reports-2025-11-13/` (six `lighthouse-*.report.{json,html}` files + refreshed `SUMMARY.md` highlighting Home 43/95/75/100 through Features 71/100/75/100) and archived raw logs (`lighthouse-production-gh-run.log`).
+- Preview job failed in `npm run build` because the workflow still installs Node 18.20.8; Vite 7.2.2 now requires Node ≥20.19, so the build crashes with `crypto.hash is not a function`. Logged the failure at `docs/marketing/2025-11-13-audits/lighthouse-preview-gh-run.log` and updated `scripts/run_lighthouse_audits.sh` to honor externally supplied `OUTPUT_DIR`.
+- Copied the downloaded production Lighthouse reports into the 2025-11-13 evidence folder and regenerated `SUMMARY.md` to include the new scores plus file inventory.
+
+### Next
+1. Bump `.github/workflows/accessibility-audit.yml` preview job to Node 20+ (e.g., `node-version: '20'`) and re-run to obtain preview Lighthouse artefacts.
+2. Keep `docs/marketing/lighthouse-reports-YYYY-MM-DD/` synchronized with future workflow runs so MARK-002 references stay current.
+3. Proceed with Render redeploy investigation (needs container logs) so Phase 0 can be fully closed.
+
+---
+
 ## Session 2025-11-14T12-CODEX-Plan-Alignment – Phase 0 Evidence Prep
 
 **Status**: 🚧 IN PROGRESS – Re-reviewed governing docs, refreshed the 100% roadmap, and queued Phase 0/1 actions under BMAD v6

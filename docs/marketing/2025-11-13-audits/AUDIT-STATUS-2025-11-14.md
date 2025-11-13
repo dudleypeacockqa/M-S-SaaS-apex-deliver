@@ -6,7 +6,6 @@
 
 ## Current Status
 
-### Infrastructure ✅
 - **GitHub Actions Workflow**: `.github/workflows/accessibility-audit.yml` - Configured and ready
 - **Local Audit Script**: `scripts/run_local_audits.sh` - Available for macOS/Linux
 - **Lighthouse Config**: `.lighthouserc.js` - Configured with quality thresholds
@@ -14,10 +13,10 @@
 
 ### Evidence / Attempts
 - **Axe Report (refreshed)**: `docs/marketing/2025-11-13-audits/axe-report.json` + `axe-run.log` – 0 violations @ 2025-11-13T11:30Z
-- **Legacy Lighthouse Report (2025-11-13)**: `docs/marketing/lighthouse-local-2025-11-13.json` – last successful run before blockers.
-- **Windows attempt**: `docs/marketing/2025-11-13-audits/lighthouse-run.log` – fails with `%TEMP%` `EPERM` when Chrome cleans profile.
-- **Linux attempt #1 (2025-11-13T13:25Z)**: `docs/marketing/2025-11-13-audits/lighthouse-run-linux.log` – Node 20 + snap Chromium, fails with `connect ECONNREFUSED 127.0.0.1:<port>` attaching to DevTools.
-- **Linux attempt #2 (2025-11-13T14:06Z)**: `docs/marketing/2025-11-13-audits/run_local_audits-2025-11-13T1406Z.log` – `scripts/run_local_audits.sh` completes build + preview start, but Lighthouse again cannot connect to Chromium (`Unable to connect to Chrome`).
+- **GitHub Actions Run #32 (2025-11-13T15:07Z)**:
+  - **Production job** (`Lighthouse - Production URLs`) ✅ – reports + summary downloaded to `docs/marketing/lighthouse-reports-2025-11-13/`; see `SUMMARY.md` for Lighthouse scores (Home 43/95/75/100, Pricing 67/98/75/100, etc.) and `lighthouse-production-gh-run.log` for full output.
+  - **Preview job** (`Lighthouse - Preview Build`) ❌ – failed during `npm run build` because workflow still installs Node 18.20.8; Vite 7.2.2 requires Node ≥20.19, and build crashed with `crypto.hash is not a function` (log: `docs/marketing/2025-11-13-audits/lighthouse-preview-gh-run.log`).
+- **Local CLI Attempts** (Windows + Linux) remain blocked (logs: `lighthouse-run.log`, `lighthouse-run-linux.log`, `run_local_audits-2025-11-13T1406Z.log`).
 - **Documentation**: `docs/marketing/2025-11-13-audits/README.md` – updated with blockers + next actions
 
 ### GitHub Actions Workflow
@@ -37,8 +36,8 @@ The workflow is configured to:
 ## Next Steps
 
 1. ✅ Infrastructure verified and documented
-2. 🚧 Re-run Lighthouse on a native Linux/macOS runner (WSL + snap Chromium still failing). CI workflow or mac host required to refresh evidence referenced by MARK-002.
-3. ⏳ Production audits will run automatically on next push to `main`
+2. 🚧 Update GitHub Actions preview job to use Node 20+ (matches Vite requirement) so Lighthouse can run end-to-end. Until then, use macOS/Linux hardware or CI overrides to capture preview evidence.
+3. ✅ Production audits now captured via GH Actions run #32 (`docs/marketing/lighthouse-reports-2025-11-13/`).
 4. ⏳ Reports will be archived in `docs/marketing/lighthouse-reports-YYYY-MM-DD/`
 5. ✅ MARK-002 story updated with evidence links
 

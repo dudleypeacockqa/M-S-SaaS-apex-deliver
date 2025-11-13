@@ -3,7 +3,7 @@ Event Management API Routes
 Feature: F-012 Event Management Hub
 """
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import select
@@ -34,6 +34,7 @@ from app.schemas.event import (
     EventAnalyticsResponse,
 )
 from app.services.event_service import EventService
+from app.services.event_notification_service import send_registration_confirmation_email
 
 
 router = APIRouter(prefix="/events", tags=["events"])
@@ -422,6 +423,7 @@ def delete_ticket(
 def create_registration(
     event_id: str,
     registration_data: EventRegistrationCreateRequest,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -450,6 +452,33 @@ def create_registration(
 
     try:
         registration = EventService.create_registration(db, full_registration_data)
+
+        ticket_name = None
+        if registration.ticket_id:
+            ticket = db.scalar(
+                select(EventTicket).where(
+                    EventTicket.id == registration.ticket_id,
+                    EventTicket.event_id == event_id,
+                )
+            )
+            if ticket:
+                ticket_name = ticket.name
+
+        # Queue confirmation email in the background (best-effort)
+        background_tasks.add_task(
+            send_registration_confirmation_email,
+            {
+                "attendee_email": registration.attendee_email,
+                "attendee_name": registration.attendee_name,
+                "event_name": event.name,
+                "event_start": event.start_date.isoformat() if event.start_date else None,
+                "event_location": event.location or event.virtual_link or "",
+                "ticket_name": ticket_name,
+                "payment_amount": str(registration.payment_amount),
+                "currency": registration.currency,
+            },
+        )
+
         return registration
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

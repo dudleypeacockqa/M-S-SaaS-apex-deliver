@@ -15,18 +15,23 @@
 - **Test URL**: http://localhost:4173/
 - **Notes**: Run via Windows headless Chrome with `npx axe`; matches prior evidence in `docs/testing/axe-report.json`
 
-### Performance Audit ⚠️ BLOCKED (Windows + Linux attempts)
-- **Tools**: Lighthouse 12.8.2 CLI, Chromium (snap) on WSL
+- **CI Attempt (GitHub Actions Run #32, 2025-11-13T15:07Z)**
+  - **Command**: `gh workflow run accessibility-audit.yml -r main`
+  - **Production job**: ✅ `Lighthouse - Production URLs` succeeded. Reports + summary downloaded to `docs/marketing/lighthouse-reports-2025-11-13/` (see table below).
+  - **Preview job**: ❌ `Lighthouse - Preview Build` failed during `npm run build` because the workflow still installs Node 18.20.8 while Vite 7.2.2 + plugin-react 5.1.1 require Node ≥20.19.0; build crashed with `crypto.hash is not a function`. Logs: `docs/marketing/2025-11-13-audits/lighthouse-preview-gh-run.log`.
+- **Tools**: Lighthouse 12.8.2 CLI, Chromium (snap) on WSL + GitHub Actions Ubuntu runners
 - **Attempt 1 (Windows)**: `npx lighthouse http://localhost:4173 --output html,json`
   - **Log**: `docs/marketing/2025-11-13-audits/lighthouse-run.log`
   - **Failure**: `EPERM, Permission denied` when Chrome launcher deletes `%TEMP%\lighthouse.*` (Windows sandbox limitation)
-- **Attempt 2 (Linux / WSL)**: `env PATH="/usr/bin:/usr/local/bin" lighthouse https://ma-saas-platform.onrender.com --chrome-path=/usr/bin/chromium-browser --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"`
+- **Attempt 2 (Linux / WSL CLI)**: `env PATH="/usr/bin:/usr/local/bin" lighthouse https://ma-saas-platform.onrender.com --chrome-path=/usr/bin/chromium-browser --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"`
   - **Log**: `docs/marketing/2025-11-13-audits/lighthouse-run-linux.log`
   - **Failure**: Chromium launches but DevTools socket immediately refuses connections (`connect ECONNREFUSED 127.0.0.1:<port>`). Likely due to snap sandbox + WSL networking; needs a native Linux/mac host or CI runner.
 - **Attempt 3 (Linux / local audit script 2025-11-13T14:05Z)**: `PATH="/usr/bin:/usr/local/bin" ./scripts/run_local_audits.sh`
   - **Log**: `docs/marketing/2025-11-13-audits/run_local_audits-2025-11-13T1406Z.log`
   - **Failure**: Preview server started successfully on WSL, but Lighthouse still cannot connect to the headless Chromium instance started by the script (`Unable to connect to Chrome`).
-- **Next Action**: Execute `.github/workflows/accessibility-audit.yml` on CI or rerun locally on macOS/Linux hardware with Chrome 20.x.
+- **Next Actions**:
+  1. Update `.github/workflows/accessibility-audit.yml` to use Node 20 for the preview job so CI can build and run Lighthouse end-to-end.
+  2. Keep using the GitHub Actions workflow for production metrics (already succeeding) and archive reports under `docs/marketing/lighthouse-reports-YYYY-MM-DD/`.
 
 ### Quality Thresholds
 - **Performance**: ≥90% (target: ≥95%)

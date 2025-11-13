@@ -40,19 +40,16 @@ class EventPayment(Base):
     # Ticket details
     ticket_type = Column(String(50), nullable=False)  # e.g., "vip", "standard", "early_bird"
     quantity = Column(Integer, nullable=False)
-    
-    # Receipt reference
-    receipt_id = Column(String(36), ForeignKey("event_payment_receipts.id", ondelete="SET NULL"), nullable=True)
-    
+
     # Timestamps
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
-    
+
     # Relationships
     event = relationship("Event", foreign_keys=[event_id])
     user = relationship("User", foreign_keys=[user_id])
     organization = relationship("Organization", foreign_keys=[organization_id])
-    receipt = relationship("EventPaymentReceipt", foreign_keys=[receipt_id], back_populates="payment")
+    receipt = relationship("EventPaymentReceipt", back_populates="payment", uselist=False)
 
     def __repr__(self):
         return f"<EventPayment(id={self.id}, payment_intent_id={self.payment_intent_id}, status={self.status})>"

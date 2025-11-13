@@ -6,15 +6,33 @@
 
 ## Lighthouse Scores
 
+| Page | Performance | Accessibility | Best Practices | SEO |
+|------|-------------|---------------|-----------------|-----|
+| Home | 43% | 95% | 75% | 100% |
+| Pricing | 67% | 98% | 75% | 100% |
+| About | 74% | 100% | 75% | 100% |
+| Contact | 73% | 100% | 75% | 100% |
+| Blog | 69% | 98% | 75% | 100% |
+| Features | 71% | 100% | 75% | 100% |
+
 ## Files Generated
 
-```
-total 3.7M
--rw-r--r-- 1 runner runner  165 Nov 13 15:10 SUMMARY.md
--rw-r--r-- 1 runner runner 341K Nov 13 15:10 axe-about.json
--rw-r--r-- 1 runner runner 1.2M Nov 13 15:10 axe-blog.json
--rw-r--r-- 1 runner runner 334K Nov 13 15:10 axe-contact.json
--rw-r--r-- 1 runner runner 539K Nov 13 15:10 axe-features.json
--rw-r--r-- 1 runner runner 605K Nov 13 15:10 axe-home.json
--rw-r--r-- 1 runner runner 747K Nov 13 15:10 axe-pricing.json
-```
+- SUMMARY.md: 0.5 KB
+- axe-about.json: 340.5 KB
+- axe-blog.json: 1170.6 KB
+- axe-contact.json: 333.7 KB
+- axe-features.json: 538.2 KB
+- axe-home.json: 604.3 KB
+- axe-pricing.json: 746.0 KB
+- lighthouse-about.report.html: 932.9 KB
+- lighthouse-about.report.json: 868.2 KB
+- lighthouse-blog.report.html: 1264.4 KB
+- lighthouse-blog.report.json: 1285.4 KB
+- lighthouse-contact.report.html: 684.3 KB
+- lighthouse-contact.report.json: 619.8 KB
+- lighthouse-features.report.html: 938.0 KB
+- lighthouse-features.report.json: 875.2 KB
+- lighthouse-home.report.html: 838.8 KB
+- lighthouse-home.report.json: 782.2 KB
+- lighthouse-pricing.report.html: 884.2 KB
+- lighthouse-pricing.report.json: 820.7 KB
