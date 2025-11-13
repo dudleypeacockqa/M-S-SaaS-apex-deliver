@@ -34,6 +34,8 @@ from .document_generation import (
     GeneratedDocument,
     TemplateStatus,
     DocumentStatus,
+    DocumentExportStatus,
+    DocumentExportJob,
 )
 from .event import (
     Event,
