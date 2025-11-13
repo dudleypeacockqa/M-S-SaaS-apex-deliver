@@ -18,6 +18,7 @@ from app.models.event import (
     EventStatus,
     RegistrationStatus,
 )
+from app.models.event_reminder import EventReminder
 from app.models.organization import Organization
 from app.models.user import User
 
@@ -184,6 +185,27 @@ class TestEventTicketModel:
             db_session.commit()
 
 
+class TestEventReminderModel:
+    """Test EventReminder model"""
+
+    def test_create_event_reminder(self, db_session, sample_event, sample_user):
+        """Test that reminders persist with scheduled time"""
+        reminder = EventReminder(
+            event_id=sample_event.id,
+            user_id=sample_user.id,
+            reminder_type="24h",
+            scheduled_for=datetime.now() + timedelta(days=10),
+            status="pending",
+            organization_id=sample_event.organization_id,
+        )
+        db_session.add(reminder)
+        db_session.commit()
+        db_session.refresh(reminder)
+
+        assert reminder.id is not None
+        assert reminder.status == "pending"
+        assert reminder.reminder_type == "24h"
+
 class TestEventRegistrationModel:
     """Test EventRegistration model"""
 
@@ -285,4 +307,3 @@ class TestEventAnalyticsModel:
         assert analytics.event_id == sample_event.id
         assert analytics.total_registrations == 50
         assert analytics.total_revenue == 2500.00
-

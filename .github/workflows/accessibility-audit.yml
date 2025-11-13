@@ -22,9 +22,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20.19.0'
+          check-latest: true
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
+
+      - name: Verify Node version
+        run: |
+          node -v
+          npm -v
 
       - name: Install dependencies
         run: cd frontend && npm ci
@@ -97,7 +103,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20.19.0'
+          check-latest: true
 
       - name: Install Lighthouse globally
         run: npm install -g lighthouse @axe-core/cli jq
