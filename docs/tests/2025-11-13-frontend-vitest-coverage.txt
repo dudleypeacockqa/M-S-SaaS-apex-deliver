@@ -1,123 +1,36 @@
+2025-11-13 – Vitest full-suite w/ coverage execution attempts (Phase 0 Task P0.1)
+==========================================================================
+Command: npm run test -- --run --coverage --pool=threads
+Environment: Windows shell via Codex CLI (single-thread pool configured in vitest.config.ts)
 
+Attempt log
+-----------
+1. 06:45 UTC (~7 minutes) – process timed out at harness 420s limit even though tests were still executing; partial stdout captured (not enough time for summary). Command re-run immediately afterwards.
+2. 07:00 UTC (~15 minutes) – extended timeout to 900s; vitest continued to stream passing suites but CLI session expired again before completion.
+3. 07:20 UTC (~18 minutes) – increased timeout to 1800s; vitest continued to run (all observed suites passing) yet CLI disconnected after ~18.5 minutes without emitting the final summary/coverage table. No FAIL lines appeared in the captured output, but the process likely exceeded the harness keep-alive window.
+
+Next steps
+----------
+- Re-run the same command on a longer-lived runner (local terminal outside the Codex harness or CI) so vitest can finish (~20+ minutes expected for 2k suites with coverage).
+- Alternatively split the suite (for example,  or per-domain commands) and merge LCOV outputs via nyc/vitest merge.
+
+Partial stdout (attempt #3 excerpt)
+-----------------------------------
 > ma-saas-frontend@2.0.0 test
 > vitest run --run --coverage --pool=threads
 
+RUN v4.0.8 C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend
+      Coverage enabled with v8
 
-[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
-      [2mCoverage enabled with [22m[33mv8[39m
-
- [32m✓[39m src/components/podcast/AudioUploadModal.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 1463[2mms[22m[39m
-       [33m[2m✓[22m[39m should disable upload button when no file selected [33m 344[2mms[22m[39m
-[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document permission changes with affected user IDs
-[22m[39m[Audit] Permission changed: { documentId: [32m'doc-1'[39m, userId: [32m'user-abc'[39m, permission: [32m'edit'[39m }
-
-[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs document deletion events
-[22m[39m[Audit] {
-  action: [32m'DOCUMENT_DELETED'[39m,
-  resource_type: [32m'document'[39m,
-  resource_id: [32m'doc-to-delete'[39m,
-  metadata: { fileName: [32m'contract.pdf'[39m }
-}
-
-[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mAudit Logging[2m > [22m[2mlogs bulk actions with affected document IDs
-[22m[39m[Audit] {
-  action: [32m'BULK_DELETE'[39m,
-  resource_type: [32m'document'[39m,
-  resource_id: [32m'bulk-operation'[39m,
-  metadata: { documentIds: [ [32m'doc-1'[39m, [32m'doc-2'[39m, [32m'doc-3'[39m ], count: [33m3[39m }
-}
-
-[90mstdout[2m | src/pages/documents/DocumentWorkspace.test.tsx[2m > [22m[2mDocumentWorkspace[2m > [22m[2mBulk Actions[2m > [22m[2mcalls bulk delete handler when requested
-[22m[39m[Bulk Delete] [
-  { id: [32m'doc-1'[39m, name: [32m'file1.pdf'[39m },
-  { id: [32m'doc-2'[39m, name: [32m'file2.pdf'[39m }
-]
-
- [32m✓[39m src/components/documents/DocumentList.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 4327[2mms[22m[39m
-     [33m[2m✓[22m[39m should sort documents by name [33m 639[2mms[22m[39m
-     [33m[2m✓[22m[39m should sort documents by date [33m 468[2mms[22m[39m
-     [33m[2m✓[22m[39m shows bulk actions toolbar when documents are selected [33m 481[2mms[22m[39m
-     [33m[2m✓[22m[39m bulk download triggers download for each selected document [33m 581[2mms[22m[39m
-     [33m[2m✓[22m[39m bulk delete calls delete API for each selected document when confirmed [33m 521[2mms[22m[39m
- [32m✓[39m src/components/documents/FolderTree.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 3237[2mms[22m[39m
-     [33m[2m✓[22m[39m lazy loads child folders when expanded [33m 599[2mms[22m[39m
-     [33m[2m✓[22m[39m persists expanded folders between remounts [33m 691[2mms[22m[39m
-     [33m[2m✓[22m[39m supports keyboard navigation and selection [33m 363[2mms[22m[39m
-     [33m[2m✓[22m[39m does not re-fetch child folders after initial load [33m 528[2mms[22m[39m
- [32m✓[39m src/components/master-admin/activity/GoalCard.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 3461[2mms[22m[39m
-       [33m[2m✓[22m[39m should enter edit mode when edit button is clicked [33m 346[2mms[22m[39m
-       [33m[2m✓[22m[39m should update input values when changed [33m 361[2mms[22m[39m
-       [33m[2m✓[22m[39m should call updateGoal mutation when saving existing goal [33m 561[2mms[22m[39m
-       [33m[2m✓[22m[39m should call createGoal mutation when saving new goal [33m 973[2mms[22m[39m
- [32m✓[39m src/pages/deals/MatchingWorkspace.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 3047[2mms[22m[39m
-       [33m[2m✓[22m[39m renders workspace with title and tabs [33m 401[2mms[22m[39m
-       [33m[2m✓[22m[39m triggers find matches using selected preset [33m 351[2mms[22m[39m
-       [33m[2m✓[22m[39m records view action and opens detail modal [33m 403[2mms[22m[39m
-       [33m[2m✓[22m[39m opens introduction request modal from detail view [33m 521[2mms[22m[39m
- [32m✓[39m src/components/documents/UploadPanel.enhanced.test.tsx [2m([22m[2m34 tests[22m[2m)[22m[33m 3417[2mms[22m[39m
-       [33m[2m✓[22m[39m should display cancel button for each uploading file [33m 541[2mms[22m[39m
- [32m✓[39m src/pages/documents/DocumentWorkspace.test.tsx [2m([22m[2m28 tests[22m[2m)[22m[33m 3886[2mms[22m[39m
-       [33m[2m✓[22m[39m renders search input above folder tree [33m 535[2mms[22m[39m
-       [33m[2m✓[22m[39m should perform optimistic move and show success toast [33m 389[2mms[22m[39m
-       [33m[2m✓[22m[39m should rollback optimistic move on API failure and show error [33m 432[2mms[22m[39m
-       [33m[2m✓[22m[39m should handle partial move failures with detailed error message [33m 303[2mms[22m[39m
- [32m✓[39m src/pages/tasks/TaskBoard.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 7486[2mms[22m[39m
-     [33m[2m✓[22m[39m renders task board with required columns and tasks [33m 650[2mms[22m[39m
-     [33m[2m✓[22m[39m filters tasks by assignee, status, priority, and due date [33m 936[2mms[22m[39m
-     [33m[2m✓[22m[39m sorts tasks by due date and priority [33m 932[2mms[22m[39m
-     [33m[2m✓[22m[39m opens task creation modal and validates required fields [33m 1806[2mms[22m[39m
-     [33m[2m✓[22m[39m updates task details from detail modal [33m 1268[2mms[22m[39m
-     [33m[2m✓[22m[39m assigns a task from the detail modal [33m 417[2mms[22m[39m
-     [33m[2m✓[22m[39m deletes a task from the detail modal [33m 443[2mms[22m[39m
- [32m✓[39m src/pages/podcast/PodcastStudio.test.tsx [2m([22m[2m29 tests[22m[2m)[22m[33m 9611[2mms[22m[39m
-       [33m[2m✓[22m[39m should show upgrade prompt when user lacks podcast_audio access [33m 389[2mms[22m[39m
-       [33m[2m✓[22m[39m should show transcribe button when transcript missing [33m 352[2mms[22m[39m
-       [33m[2m✓[22m[39m should call API and show success message when transcription completes [33m 410[2mms[22m[39m
-       [33m[2m✓[22m[39m allows editing metadata before publishing to YouTube when integration access granted [33m 2204[2mms[22m[39m
-       [33m[2m✓[22m[39m initiates OAuth connect flow when YouTube account is not connected [33m 506[2mms[22m[39m
-       [33m[2m✓[22m[39m should create episode when form submitted with valid data [33m 1497[2mms[22m[39m
-       [33m[2m✓[22m[39m should update episode when edit form submitted [33m 748[2mms[22m[39m
-       [33m[2m✓[22m[39m should show delete confirmation when delete button clicked [33m 302[2mms[22m[39m
-       [33m[2m✓[22m[39m should delete episode when deletion confirmed [33m 344[2mms[22m[39m
- [32m✓[39m src/pages/deals/DealDetails.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 9525[2mms[22m[39m
-     [33m[2m✓[22m[39m should display deal details after loading [33m 591[2mms[22m[39m
-     [33m[2m✓[22m[39m should display "Edit" button when not in edit mode [33m 388[2mms[22m[39m
-     [33m[2m✓[22m[39m should enter edit mode when Edit button is clicked [33m 747[2mms[22m[39m
-     [33m[2m✓[22m[39m should call updateDeal API when saving changes [33m 1010[2mms[22m[39m
-     [33m[2m✓[22m[39m should display deal timestamps [33m 356[2mms[22m[39m
-       [33m[2m✓[22m[39m should render tab navigation with Overview, Financials, Documents, and Team tabs [33m 939[2mms[22m[39m
-       [33m[2m✓[22m[39m should show Overview tab content by default [33m 498[2mms[22m[39m
-       [33m[2m✓[22m[39m should switch to Financials tab when clicked [33m 762[2mms[22m[39m
-       [33m[2m✓[22m[39m should switch to Documents tab when clicked [33m 992[2mms[22m[39m
-       [33m[2m✓[22m[39m should switch to Team tab when clicked [33m 850[2mms[22m[39m
-       [33m[2m✓[22m[39m should persist active tab when re-rendering [33m 1299[2mms[22m[39m
- [32m✓[39m src/components/deals/DealKanbanBoard.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 957[2mms[22m[39m
-       [33m[2m✓[22m[39m should have accessible column headings [33m 311[2mms[22m[39m
- [32m✓[39m src/components/master-admin/activity/ActivityForm.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 3061[2mms[22m[39m
-       [33m[2m✓[22m[39m should render the form with all required fields [33m 362[2mms[22m[39m
-       [33m[2m✓[22m[39m should submit form with all field values [33m 970[2mms[22m[39m
-       [33m[2m✓[22m[39m should reset form after successful submission [33m 392[2mms[22m[39m
-       [33m[2m✓[22m[39m should not reset form if submission fails [33m 308[2mms[22m[39m
- [32m✓[39m src/components/podcast/VideoUploadModal.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 1563[2mms[22m[39m
-       [33m[2m✓[22m[39m should display file size [33m 527[2mms[22m[39m
- [32m✓[39m src/components/documents/PermissionModal.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 1262[2mms[22m[39m
-     [33m[2m✓[22m[39m should render modal with permissions list when isOpen is true [33m 306[2mms[22m[39m
- [32m✓[39m src/pages/deals/valuation/ValuationSuite.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 8556[2mms[22m[39m
-     [33m[2m✓[22m[39m shows loading indicator while valuations fetch [33m 418[2mms[22m[39m
-     [33m[2m✓[22m[39m shows upgrade messaging when valuations endpoint rejects with entitlement error [33m 342[2mms[22m[39m
-     [33m[2m✓[22m[39m submits new valuation when form completed [33m 728[2mms[22m[39m
-     [33m[2m✓[22m[39m allows adding comparable company to selected valuation [33m 800[2mms[22m[39m
-     [33m[2m✓[22m[39m allows adding precedent transaction to selected valuation [33m 1528[2mms[22m[39m
-     [33m[2m✓[22m[39m allows creating a new scenario with JSON assumptions [33m 1232[2mms[22m[39m
-     [33m[2m✓[22m[39m shows validation error when scenario assumptions JSON is invalid [33m 733[2mms[22m[39m
-     [33m[2m✓[22m[39m shows detailed confirmation after queuing an export [33m 317[2mms[22m[39m
-     [33m[2m✓[22m[39m displays export template selector with PDF, DOCX, and HTML options [33m 435[2mms[22m[39m
-     [33m[2m✓[22m[39m allows selecting export template (executive summary, detailed, custom) [33m 412[2mms[22m[39m
-     [33m[2m✓[22m[39m runs Monte Carlo simulation and displays percentile summary [33m 515[2mms[22m[39m
- [32m✓[39m src/pages/documents/DocumentEditor.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 5364[2mms[22m[39m
-     [33m[2m✓[22m[39m loads the document and supports rich text editing with autosave [33m 1352[2mms[22m[39m
-     [33m[2m✓[22m[39m applies a selected template and updates the editor content [33m 555[2mms[22m[39m
-     [33m[2m✓[22m[39m surfaces AI suggestions and handles accept, reject, and regenerate flows [33m 1142[2mms[22m[39m
-     [33m[2m✓[22m[39m exports the document in the selected format with configured options [33m 499[2mms[22m[39m
-     [33m[2m✓[22m[39m handles save errors gracefully and displays retry messaging [33m 461[2mms[22m[39m
-     [33m[2m✓[22m[39m updates context for AI suggestions when the user provides additional details [33m 794[2mms[22m[39m
+✓ src/components/podcast/AudioUploadModal.test.tsx (16 tests) 1463ms
+✓ src/components/documents/DocumentList.test.tsx (19 tests) 4327ms
+✓ src/components/documents/FolderTree.test.tsx (13 tests) 3237ms
+✓ src/components/master-admin/activity/GoalCard.test.tsx (16 tests) 3461ms
+✓ src/pages/deals/MatchingWorkspace.test.tsx (17 tests) 3047ms
+✓ src/components/documents/UploadPanel.enhanced.test.tsx (34 tests) 3417ms
+✓ src/pages/documents/DocumentWorkspace.test.tsx (28 tests) 3886ms
+✓ src/pages/tasks/TaskBoard.test.tsx (13 tests) 7486ms
+✓ src/pages/podcast/PodcastStudio.test.tsx (29 tests) 9611ms
+✓ src/pages/deals/valuation/ValuationSuite.test.tsx (17 tests) 8556ms
+✓ src/pages/documents/DocumentEditor.test.tsx (9 tests) 5364ms
+… (additional suites continued streaming green before timeout)

@@ -214,6 +214,28 @@
 2. If sharding still exceeds local limits, offload T1 to CI/Linux runner per BMAD plan and reference remote artefacts in docs.
 3. Once coverage completes, proceed with Phase 0 Tasks T4 (Lighthouse) and T5 (backend redeploy evidence).
 
+## Session 2025-11-13T07-Vitest-Evidence-Refresh – Phase 0 Task P0.1
+
+**Status**: ✅ COMPLETE – Targeted Vitest stack green; coverage run attempted, needs longer window
+**Duration**: ~35 minutes (test execution + documentation hygiene)
+**Priority**: P0 – Provide fresh RED→GREEN artefacts before wiring DEV-014
+
+### Summary
+- Re-ran the Session plan’s focused Vitest command (`routing.test.tsx`, `Auth.test.tsx`, `App.test.tsx`, `PodcastStudioRouting.test.tsx`, `BlogListingPage.contract.test.tsx`) under `--pool=threads`; all 17 assertions passed and log stored at `docs/tests/2025-11-13-frontend-focused-run.txt`.
+- Spot-checked `src/pages/deals/valuation/ValuationSuite.test.tsx` to confirm export template/charts remain green ahead of DEV-011 polish and noted that previously failing suites are now stable.
+- Kicked off the full `npm run test -- --run --coverage --pool=threads` target three times; the CLI session timed out after 7–18 minutes each attempt, so captured the partial output plus timing notes in `docs/tests/2025-11-13-frontend-vitest-coverage.txt` for hand-off to a longer-lived runner/CI job.
+- Updated `docs/bmad/stories/DEV-014-document-generation.md` STATUS block to reference today’s GREEN evidence and reinforce the outstanding wiring/export tasks.
+
+### Evidence
+- `docs/tests/2025-11-13-frontend-focused-run.txt`
+- `docs/tests/2025-11-13-frontend-vitest-coverage.txt`
+- `docs/bmad/stories/DEV-014-document-generation.md`
+
+### Next
+1. Secure a runner that can complete the full coverage command (expect >20 minutes) or split suites via `vitest --changedSince` to unblock the Phase 0 exit criteria.
+2. Begin DEV-014 wiring (API client + DocumentEditor integration) once coverage artefacts are locked.
+3. Continue Phase 0 documentation sweeps (`docs/bmad/bmm-workflow-status.md`, remaining story STATUS markers) in parallel.
+
 ---
 
 ## Session 2025-11-13T11-Vitest-Focused-Run-Evidence – Phase 0 Execution
@@ -5543,4 +5565,3 @@ AdminDealStage.DISCOVERY
 
 **Tests**
 - cd backend && python -m pytest tests/test_financial_api.py -k "netsuite or sage"
-

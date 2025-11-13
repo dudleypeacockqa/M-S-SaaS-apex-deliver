@@ -14,7 +14,7 @@ from app.models.event import (
     EventRegistration,
     EventSession,
     EventAnalytics,
-    EventLocationType,
+    EventType,
     EventStatus,
     RegistrationStatus,
 )
@@ -60,7 +60,7 @@ def sample_event(db_session, sample_organization, sample_user):
         description="A test event",
         start_date=datetime.now() + timedelta(days=30),
         end_date=datetime.now() + timedelta(days=31),
-        location_type=EventLocationType.VIRTUAL,
+        event_type=EventType.VIRTUAL,
         location="https://zoom.us/test",
         capacity=100,
         organization_id=sample_organization.id,
@@ -83,7 +83,7 @@ class TestEventModel:
             description="Annual M&A conference",
             start_date=datetime.now() + timedelta(days=60),
             end_date=datetime.now() + timedelta(days=61),
-            location_type=EventLocationType.IN_PERSON,
+            event_type=EventType.IN_PERSON,
             location="London, UK",
             capacity=500,
             organization_id=sample_organization.id,
@@ -105,7 +105,7 @@ class TestEventModel:
             name="Test Event",
             start_date=datetime.now() + timedelta(days=30),
             end_date=datetime.now() + timedelta(days=31),
-            location_type=EventLocationType.VIRTUAL,
+            event_type=EventType.VIRTUAL,
             organization_id=None,  # Missing organization
             created_by_user_id=sample_user.id,
         )
@@ -120,7 +120,7 @@ class TestEventModel:
             name="Virtual Event",
             start_date=datetime.now() + timedelta(days=30),
             end_date=datetime.now() + timedelta(days=31),
-            location_type=EventLocationType.VIRTUAL,
+            event_type=EventType.VIRTUAL,
             location="https://zoom.us/test",
             organization_id=sample_organization.id,
             created_by_user_id=sample_user.id,
@@ -130,7 +130,7 @@ class TestEventModel:
             name="In-Person Event",
             start_date=datetime.now() + timedelta(days=30),
             end_date=datetime.now() + timedelta(days=31),
-            location_type=EventLocationType.IN_PERSON,
+            event_type=EventType.IN_PERSON,
             location="London, UK",
             organization_id=sample_organization.id,
             created_by_user_id=sample_user.id,
@@ -138,8 +138,8 @@ class TestEventModel:
         db_session.add_all([virtual_event, in_person_event])
         db_session.commit()
 
-        assert virtual_event.location_type == "virtual"
-        assert in_person_event.location_type == "in_person"
+        assert virtual_event.event_type == EventType.VIRTUAL
+        assert in_person_event.event_type == EventType.IN_PERSON
 
 
 class TestEventTicketModel:
@@ -152,10 +152,13 @@ class TestEventTicketModel:
             event_id=sample_event.id,
             name="Early Bird",
             description="Early bird pricing",
-            price_gbp=5000,  # £50.00 in pence
+            price=50.00,
+            currency="GBP",
             quantity_available=50,
             sale_start_date=datetime.now(),
             sale_end_date=datetime.now() + timedelta(days=14),
+            organization_id=sample_event.organization_id,
+            created_by_user_id=sample_event.created_by_user_id,
         )
         db_session.add(ticket)
         db_session.commit()
@@ -163,7 +166,7 @@ class TestEventTicketModel:
 
         assert ticket.id is not None
         assert ticket.event_id == sample_event.id
-        assert ticket.price_gbp == 5000
+        assert ticket.price == 50.00
 
     def test_ticket_requires_event(self, db_session):
         """Test that ticket requires event_id"""
@@ -171,7 +174,10 @@ class TestEventTicketModel:
             id=str(uuid4()),
             event_id=None,  # Missing event
             name="Test Ticket",
-            price_gbp=5000,
+            price=50.00,
+            currency="GBP",
+            organization_id=str(uuid4()),
+            created_by_user_id=str(uuid4()),
         )
         db_session.add(ticket)
         with pytest.raises(Exception):
@@ -186,10 +192,12 @@ class TestEventRegistrationModel:
         registration = EventRegistration(
             id=str(uuid4()),
             event_id=sample_event.id,
-            user_id=sample_user.id,
+            attendee_name="Test User",
+            attendee_email="test@example.com",
             ticket_id=None,  # Free event
             status=RegistrationStatus.CONFIRMED,
-            registered_at=datetime.now(),
+            organization_id=sample_event.organization_id,
+            registered_by_user_id=sample_user.id,
         )
         db_session.add(registration)
         db_session.commit()
@@ -197,7 +205,7 @@ class TestEventRegistrationModel:
 
         assert registration.id is not None
         assert registration.event_id == sample_event.id
-        assert registration.user_id == sample_user.id
+        assert registration.registered_by_user_id == sample_user.id
         assert registration.status == "confirmed"
 
     def test_registration_requires_event_and_user(self, db_session):
@@ -205,8 +213,10 @@ class TestEventRegistrationModel:
         registration = EventRegistration(
             id=str(uuid4()),
             event_id=None,  # Missing event
-            user_id=None,  # Missing user
+            attendee_name="Test User",
+            attendee_email="test@example.com",
             status=RegistrationStatus.CONFIRMED,
+            organization_id=str(uuid4()),
         )
         db_session.add(registration)
         with pytest.raises(Exception):
@@ -227,6 +237,8 @@ class TestEventSessionModel:
             end_time=datetime.now() + timedelta(days=30, hours=10),
             location="Main Hall",
             capacity=200,
+            organization_id=sample_event.organization_id,
+            created_by_user_id=sample_event.created_by_user_id,
         )
         db_session.add(session)
         db_session.commit()
@@ -244,6 +256,8 @@ class TestEventSessionModel:
             name="Test Session",
             start_time=datetime.now(),
             end_time=datetime.now() + timedelta(hours=1),
+            organization_id=str(uuid4()),
+            created_by_user_id=str(uuid4()),
         )
         db_session.add(session)
         with pytest.raises(Exception):
@@ -259,9 +273,9 @@ class TestEventAnalyticsModel:
             id=str(uuid4()),
             event_id=sample_event.id,
             total_registrations=50,
-            total_revenue_gbp=250000,  # £2,500.00 in pence
-            attendance_rate=0.85,  # 85%
-            recorded_at=datetime.now(),
+            total_revenue=2500.00,
+            currency="GBP",
+            organization_id=sample_event.organization_id,
         )
         db_session.add(analytics)
         db_session.commit()
@@ -270,5 +284,5 @@ class TestEventAnalyticsModel:
         assert analytics.id is not None
         assert analytics.event_id == sample_event.id
         assert analytics.total_registrations == 50
-        assert analytics.attendance_rate == 0.85
+        assert analytics.total_revenue == 2500.00
 

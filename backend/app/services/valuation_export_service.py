@@ -46,7 +46,7 @@ class ValuationExportService:
     """Service for exporting valuations to PDF and Excel formats."""
 
     @staticmethod
-    def export_to_pdf(
+    async def export_to_pdf(
         db,
         valuation_id: str,
         organization_id: str,
@@ -114,7 +114,7 @@ class ValuationExportService:
 
         # Save file
         file_stream = io.BytesIO(pdf_bytes)
-        file_path = storage_service.save_file(
+        file_path = await storage_service.save_file(
             file_key=file_key,
             file_stream=file_stream,
             organization_id=organization_id,
@@ -133,7 +133,7 @@ class ValuationExportService:
         }
 
     @staticmethod
-    def export_to_excel(
+    async def export_to_excel(
         db,
         valuation_id: str,
         organization_id: str,
@@ -262,7 +262,7 @@ class ValuationExportService:
 
         # Save file
         file_stream = io.BytesIO(excel_bytes)
-        file_path = storage_service.save_file(
+        file_path = await storage_service.save_file(
             file_key=file_key,
             file_stream=file_stream,
             organization_id=organization_id,
@@ -443,7 +443,7 @@ class ValuationExportService:
         return buffer.read()
 
     @staticmethod
-    def process_export_task(
+    async def process_export_task(
         export_log_id: str,
         db,
     ) -> Dict[str, Any]:
@@ -471,14 +471,16 @@ class ValuationExportService:
 
             # Generate export based on type
             if export_log.export_type == 'pdf':
-                result = ValuationExportService.export_to_pdf(
+                result = await ValuationExportService.export_to_pdf(
+                    db=db,
                     valuation_id=export_log.valuation_id,
                     organization_id=export_log.organization_id,
                     export_format=export_log.export_format,
                     scenario_id=export_log.scenario_id,
                 )
             elif export_log.export_type == 'excel':
-                result = ValuationExportService.export_to_excel(
+                result = await ValuationExportService.export_to_excel(
+                    db=db,
                     valuation_id=export_log.valuation_id,
                     organization_id=export_log.organization_id,
                     export_format=export_log.export_format,

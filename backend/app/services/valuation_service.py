@@ -986,10 +986,18 @@ def trigger_export_task(
             ).order_by(ValuationExportLog.exported_at.desc()).first()
             
             if export_log:
-                # Process export
-                result = ValuationExportService.process_export_task(
-                    export_log_id=export_log.id,
-                    db=db,
+                # Process export (async, but called from sync context)
+                import asyncio
+                try:
+                    loop = asyncio.get_event_loop()
+                except RuntimeError:
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                result = loop.run_until_complete(
+                    ValuationExportService.process_export_task(
+                        export_log_id=export_log.id,
+                        db=db,
+                    )
                 )
                 return {
                     "task_id": task_id,

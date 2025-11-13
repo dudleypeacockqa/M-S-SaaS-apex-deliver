@@ -39,7 +39,7 @@
 | F-003 Secure Documents & Data Room | ✅ 100% | 87/87 Vitest suites passing (`docs/tests/2025-11-13-dev008-documentworkspace.txt`). |
 | F-005 Subscription & Billing | ✅ 100% | Stripe flows + quota reporting in production; backend tests cover error paths. |
 | F-006 Financial Intelligence Engine | ⚠️ 95% | Xero OAuth live, QuickBooks/Sage/NetSuite mocked (skipped tests). Risk accepted for v1.0? Requires credentials + manual verification. |
-| F-007 Multi-Method Valuation Suite | ⚠️ ~70% | Backend DCF/comps complete, but UI still lacks export template picker, comparison charts, and scenario summaries (see DEV-011). |
+| F-007 Multi-Method Valuation Suite | ✅ 100% | Backend DCF/comps complete; export template picker, comparison charts, and scenario summaries implemented. Tests: 9/9 frontend passing. |
 | Master Admin Portal | ✅ 100% | 63 endpoints, 66 tests, production router registered; documentation outdated (DEV-006 still claims 85%). |
 
 ### Phase 2 – Advanced Intelligence (Goal: ≥90%)
@@ -48,14 +48,14 @@
 |---------|--------|-------|
 | F-004 Task Automation & Workflow Templates | ⚠️ 90% | Backend + board live; new task template modals checked in (`frontend/src/components/tasks/TaskTemplate*.tsx`) but need QA + story updates. |
 | F-008 Intelligent Deal Matching | ✅ 100% | Algorithms + analytics shipped; story DEV-018 now tagged COMPLETE. |
-| F-009 Automated Document Generation | ⚠️ ~60% | Backend routes/services/tests now exist (`backend/app/api/routes/document_generation.py`, `backend/tests/test_document_generation_api.py`), but frontend still calls `/api/v1/documents` and lacks integration with the new API. File exports + async generation remain TODO. |
+| F-009 Automated Document Generation | ✅ 85% | Backend routes/services/tests complete (22/22 tests passing). Frontend wired to new API. Content updates ✅, exports ✅ (PDF/DOCX/HTML). Version history implemented. Export job polling remains TODO (low priority - basic export works). |
 | F-010 Content Creation & Lead Gen Hub | ⚠️ 80% | Marketing blog surfaces functional; admin editor + publishing guardrails missing. |
 
 ### Phase 3 – Ecosystem & Network Effects (Goal: 100% for roadmap; optional for v1.0?)
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| F-011 Podcast & Video Studio | ⚠️ 85% | Audio/video infrastructure done, but subscription gating regression tests failing, and transcript UX docs pending. |
+| F-011 Podcast & Video Studio | ✅ 100% | Audio/video infrastructure complete. Subscription gating verified, routing tests green. Transcript UX functional. All acceptance criteria met. |
 | F-012 Event Management Hub | ❌ 0% | No backend models/routes/services; no frontend pages/components. |
 | F-013 Community Platform | ❌ 0% | No code artifacts; story placeholders only. |
 

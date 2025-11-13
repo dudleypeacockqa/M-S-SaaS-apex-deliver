@@ -431,18 +431,57 @@ def get_export_status(
     if log_entry is None:
         _error(status.HTTP_404_NOT_FOUND, "EXPORT_NOT_FOUND", "Export task not found")
     return log_entry
-@router.get("/{valuation_id}/scenarios/summary", response_model=ScenarioSummaryResponse)
-def get_scenario_summary(
+
+
+@router.get("/{valuation_id}/exports/download/{file_key}")
+async def download_valuation_export(
     deal_id: str,
     valuation_id: str,
+    file_key: str,
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
+    """Download an exported valuation file (PDF/Excel)."""
+    from app.services.storage_service import get_storage_service
+    from app.models.valuation import ValuationExportLog
+    from fastapi.responses import FileResponse
+    
     _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
     _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
-    summary = valuation_service.calculate_scenario_summary(
-        db=db,
-        valuation_id=valuation_id,
-        organization_id=current_user.organization_id,
+    
+    # Verify export log exists and belongs to user's organization
+    export_log = db.query(ValuationExportLog).filter(
+        ValuationExportLog.valuation_id == valuation_id,
+        ValuationExportLog.organization_id == current_user.organization_id,
+        ValuationExportLog.status == 'completed',
+    ).first()
+    
+    if not export_log:
+        _error(status.HTTP_404_NOT_FOUND, "EXPORT_NOT_FOUND", "Export not found or not completed")
+    
+    # Get file from storage
+    storage_service = get_storage_service()
+    try:
+        file_path = await storage_service.get_file_path(
+            file_key=file_key,
+            organization_id=current_user.organization_id,
+        )
+    except FileNotFoundError:
+        _error(status.HTTP_404_NOT_FOUND, "FILE_NOT_FOUND", "Export file not found in storage")
+    
+    # Determine content type
+    if export_log.export_type == 'pdf':
+        media_type = 'application/pdf'
+        filename = f"valuation-{valuation_id}.pdf"
+    elif export_log.export_type == 'excel':
+        media_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        filename = f"valuation-{valuation_id}.xlsx"
+    else:
+        media_type = 'application/octet-stream'
+        filename = f"valuation-{valuation_id}"
+    
+    return FileResponse(
+        path=str(file_path),
+        media_type=media_type,
+        filename=filename,
     )
-    return summary
