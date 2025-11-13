@@ -1073,9 +1073,21 @@ const podcastTranscribeHandler = http.post(
   },
 )
 
+const podcastUsageHandler = http.get(`${API_BASE_URL}/api/podcasts/usage`, () => {
+  return HttpResponse.json({
+    monthly_minutes_used: 25,
+    monthly_minutes_limit: 100,
+    transcription_minutes_used: 15,
+    transcription_minutes_limit: 50,
+    storage_gb_used: 2.5,
+    storage_gb_limit: 10,
+  })
+})
+
 const podcastHandlers = [
   podcastFeatureHandler,
   podcastQuotaHandler,
+  podcastUsageHandler,
   podcastEpisodesHandler,
   podcastTranscribeHandler,
 ]

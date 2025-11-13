@@ -1508,8 +1508,9 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
       <SectionCard title="Generate Report">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Export Format</label>
+            <label htmlFor="export-format" className="block text-sm font-medium text-gray-700">Export Format</label>
             <select
+              id="export-format"
               value={exportType}
               onChange={(event) => setExportType(event.target.value as 'pdf' | 'excel')}
               className="mt-1 w-48 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
@@ -1520,8 +1521,9 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Export Template</label>
+            <label htmlFor="export-template" className="block text-sm font-medium text-gray-700">Export Template</label>
             <select
+              id="export-template"
               value={exportFormat ?? ''}
               onChange={(event) => setExportFormat(event.target.value || null)}
               className="mt-1 w-64 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
