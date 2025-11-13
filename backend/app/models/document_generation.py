@@ -25,6 +25,13 @@ class DocumentStatus(str, enum.Enum):
     FINALIZED = "finalized"
     SENT = "sent"
 
+class DocumentExportStatus(str, enum.Enum):
+    """Document export job status"""
+    QUEUED = "queued"
+    PROCESSING = "processing"
+    READY = "ready"
+    FAILED = "failed"
+
 
 class DocumentTemplate(Base):
     """Document template for automated generation"""

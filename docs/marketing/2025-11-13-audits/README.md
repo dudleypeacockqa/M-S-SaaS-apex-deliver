@@ -2,7 +2,7 @@
 
 **Date**: 2025-11-13  
 **Task**: Phase 0 T3 - Lighthouse/Axe CI Evidence  
-**Status**: 🚧 IN PROGRESS – Axe rerun completed 2025-11-13T11:30Z (0 violations); Lighthouse rerun blocked on Windows (Chrome temp EPERM). Pending Linux/macOS rerun per completion plan.
+**Status**: 🚧 IN PROGRESS – Axe rerun completed 2025-11-13T11:30Z (0 violations); Lighthouse reruns still blocked (Windows EPERM + Linux Chromium ECONNREFUSED). Need CI/mac execution per plan.
 
 ## Evidence Summary
 
@@ -15,12 +15,15 @@
 - **Test URL**: http://localhost:4173/
 - **Notes**: Run via Windows headless Chrome with `npx axe`; matches prior evidence in `docs/testing/axe-report.json`
 
-### Performance Audit ⚠️ BLOCKED (Windows EPERM)
-- **Tool**: Lighthouse 11.7.0
-- **Attempt**: `npx lighthouse http://localhost:4173 --output html,json`
-- **Log**: `docs/marketing/2025-11-13-audits/lighthouse-run.log`
-- **Failure**: `EPERM, Permission denied` when Chrome launcher cleans Windows temp profile (`tmp/lighthouse.*`). Known Windows limitation previously documented.
-- **Next Action**: Re-run on Linux/macOS runner (CI workflow `.github/workflows/accessibility-audit.yml`) or adjust script to run entirely inside WSL with Chromium so `curl`/Chrome share the same network namespace.
+### Performance Audit ⚠️ BLOCKED (Windows + Linux attempts)
+- **Tools**: Lighthouse 12.8.2 CLI, Chromium (snap) on WSL
+- **Attempt 1 (Windows)**: `npx lighthouse http://localhost:4173 --output html,json`
+  - **Log**: `docs/marketing/2025-11-13-audits/lighthouse-run.log`
+  - **Failure**: `EPERM, Permission denied` when Chrome launcher deletes `%TEMP%\lighthouse.*` (Windows sandbox limitation)
+- **Attempt 2 (Linux / WSL)**: `env PATH="/usr/bin:/usr/local/bin" lighthouse https://ma-saas-platform.onrender.com --chrome-path=/usr/bin/chromium-browser --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"`
+  - **Log**: `docs/marketing/2025-11-13-audits/lighthouse-run-linux.log`
+  - **Failure**: Chromium launches but DevTools socket immediately refuses connections (`connect ECONNREFUSED 127.0.0.1:<port>`). Likely due to snap sandbox + WSL networking; needs a native Linux/mac host or CI runner.
+- **Next Action**: Execute `.github/workflows/accessibility-audit.yml` on CI or rerun locally on macOS/Linux hardware with Chrome 20.x.
 
 ### Quality Thresholds
 - **Performance**: ≥90% (target: ≥95%)
@@ -34,6 +37,7 @@
 - `docs/marketing/2025-11-13-audits/axe-report.json` - Latest Axe rerun evidence (0 violations)
 - `docs/marketing/2025-11-13-audits/axe-run.log` - CLI log for Axe rerun
 - `docs/marketing/2025-11-13-audits/lighthouse-run.log` - Windows EPERM failure log for Lighthouse rerun
+- `docs/marketing/2025-11-13-audits/lighthouse-run-linux.log` - Linux Node 20 + Chromium ECONNREFUSED log
 - `docs/testing/axe-report.json` - Prior Axe evidence (still valid)
 - `docs/testing/TEST-RUN-SUMMARY-2025-11-13.md` - Complete test run summary
 - `scripts/run_local_audits.sh` - Automated audit script (macOS/Linux)
@@ -43,7 +47,7 @@
 
 1. ✅ Infrastructure verified and documented
 2. ✅ Axe rerun completed with 0 violations (see `axe-report.json`)
-3. ⏳ Execute Lighthouse rerun on Linux/macOS (blocked on Windows) and archive output under `docs/marketing/2025-11-13-audits/`
+3. 🚧 Linux Lighthouse attempt (Node 20 + Chromium) still failing (DevTools ECONNREFUSED). Need macOS/CI rerun or Linux VM outside WSL.
 4. ⏳ Production audits will run automatically on next push to `main` via GitHub Actions
 5. ⏳ Reports will be archived in `docs/marketing/lighthouse-reports-YYYY-MM-DD/`
 6. ✅ MARK-002 story updated with evidence links
