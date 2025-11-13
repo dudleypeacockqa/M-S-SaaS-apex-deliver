@@ -18,7 +18,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
-from app.db.base import Base
+from app.db.base import Base, GUID
 
 
 class PostStatus(str, enum.Enum):
@@ -73,7 +73,7 @@ class Post(Base):
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     organization_id = Column(String(36), nullable=False, index=True)
-    author_user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    author_user_id = Column(GUID, ForeignKey("users.id"), nullable=False, index=True)
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
     category = Column(Enum(PostCategory, native_enum=False, length=32), default=PostCategory.general, nullable=False)
@@ -115,7 +115,7 @@ class Comment(Base):
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     post_id = Column(String(36), ForeignKey("community_posts.id"), nullable=False, index=True)
-    author_user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    author_user_id = Column(GUID, ForeignKey("users.id"), nullable=False, index=True)
     content = Column(Text, nullable=False)
     parent_comment_id = Column(String(36), ForeignKey("community_comments.id"), nullable=True, index=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
@@ -154,7 +154,7 @@ class Reaction(Base):
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     target_type = Column(Enum(TargetType, native_enum=False, length=32), nullable=False)
     target_id = Column(String(36), nullable=False, index=True)
-    user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    user_id = Column(GUID, ForeignKey("users.id"), nullable=False, index=True)
     reaction_type = Column(Enum(ReactionType, native_enum=False, length=32), nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
@@ -174,8 +174,8 @@ class Follow(Base):
     __tablename__ = "community_follows"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    follower_user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
-    following_user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    follower_user_id = Column(GUID, ForeignKey("users.id"), nullable=False, index=True)
+    following_user_id = Column(GUID, ForeignKey("users.id"), nullable=False, index=True)
     organization_id = Column(String(36), nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
@@ -199,7 +199,7 @@ class ModerationAction(Base):
     target_type = Column(Enum(TargetType, native_enum=False, length=32), nullable=False)
     target_id = Column(String(36), nullable=False, index=True)
     action_type = Column(Enum(ModerationActionType, native_enum=False, length=32), nullable=False)
-    moderator_user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    moderator_user_id = Column(GUID, ForeignKey("users.id"), nullable=False, index=True)
     reason = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 

@@ -1,0 +1,44 @@
+======================================================================
+RENDER DEPLOYMENT STATUS CHECK
+======================================================================
+Service ID: srv-d3ii9qk9c44c73aqsli0
+
+Found 5 recent deployments:
+
+Deploy ID: dep-d4b0ufmnat6s738iucr0
+Status: build_in_progress
+Commit: c86bc1af
+Message: docs: Release v1.0.0 - M&A SaaS Platform Production Release
+...
+Created: 2025-11-13T17:02:58.003723Z
+Finished: N/A
+----------------------------------------------------------------------
+Deploy ID: dep-d4b0u1enat6s738iu9gg
+Status: canceled
+Commit: c86bc1af
+Message: docs: Release v1.0.0 - M&A SaaS Platform Production Release
+...
+Created: 2025-11-13T17:02:06.277759Z
+Finished: 2025-11-13T17:03:05.641657Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4b0tpre5dus73bkutsg
+Status: update_failed
+Commit: 57c7042e
+Message: fix(migration): guard documentstatus backfill (BMAD)...
+Created: 2025-11-13T17:01:34.432566Z
+Finished: 2025-11-13T17:02:48.435069Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4b0p5g7ffvc73fb4lg0
+Status: update_failed
+Commit: 05b35fc5
+Message: feat(platform): document service improvements, workflow comp...
+Created: 2025-11-13T16:51:37.142909Z
+Finished: 2025-11-13T16:54:54.562782Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4b0p32li9vc73agvtgg
+Status: update_failed
+Commit: 05b35fc5
+Message: feat(platform): document service improvements, workflow comp...
+Created: 2025-11-13T16:51:28.360121Z
+Finished: 2025-11-13T16:53:18.668308Z
+----------------------------------------------------------------------

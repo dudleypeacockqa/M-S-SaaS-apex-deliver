@@ -1,9 +1,9 @@
 import { useMemo, useState, useEffect, useRef, ChangeEvent, FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { ValuationComparisonChart } from './components/ValuationComparisonChart'
 import { ValuationExportPicker, type ExportTemplate } from './components/ValuationExportPicker'
+import { useRecharts } from '@/hooks/useRecharts'
 import {
   listValuations,
   listScenarios,
@@ -1307,23 +1307,31 @@ const ScenariosView = ({ dealId, valuationId }: { dealId: string; valuationId: s
         </SectionCard>
       )}
 
-      {hasScenarios && scenarios && scenarios.length > 0 && (
-        <SectionCard title="Scenario Comparison">
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={scenarios.map(s => ({
-              name: s.name,
-              'Enterprise Value': s.enterprise_value ? s.enterprise_value / 1000000 : 0
-            }))}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis label={{ value: 'Enterprise Value (£M)', angle: -90, position: 'insideLeft' }} />
-              <Tooltip formatter={(value: number) => [`£${value.toFixed(2)}M`, 'Enterprise Value']} />
-              <Legend />
-              <Bar dataKey="Enterprise Value" fill="#4f46e5" />
-            </BarChart>
-          </ResponsiveContainer>
-        </SectionCard>
-      )}
+{hasScenarios && scenarios && scenarios.length > 0 && (
+  <SectionCard title="Scenario Comparison">
+    {recharts ? (
+      <recharts.ResponsiveContainer width="100%" height={300}>
+        <recharts.BarChart
+          data={scenarios.map((s) => ({
+            name: s.name,
+            'Enterprise Value': s.enterprise_value ? s.enterprise_value / 1_000_000 : 0,
+          }))}
+        >
+          <recharts.CartesianGrid strokeDasharray="3 3" />
+          <recharts.XAxis dataKey="name" />
+          <recharts.YAxis label={{ value: 'Enterprise Value (£M)', angle: -90, position: 'insideLeft' }} />
+          <recharts.Tooltip formatter={(value: number) => [`£${value.toFixed(2)}M`, 'Enterprise Value']} />
+          <recharts.Legend />
+          <recharts.Bar dataKey="Enterprise Value" fill="#4f46e5" />
+        </recharts.BarChart>
+      </recharts.ResponsiveContainer>
+    ) : (
+      <div className="flex h-64 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-500">
+        Loading scenario chart…
+      </div>
+    )}
+  </SectionCard>
+)}
 
       <SectionCard title="Scenario Details">
         {hasScenarios ? (
@@ -1650,8 +1658,6 @@ export const ValuationSuite = () => {
     </section>
   )
 }
-
-
 
 
 

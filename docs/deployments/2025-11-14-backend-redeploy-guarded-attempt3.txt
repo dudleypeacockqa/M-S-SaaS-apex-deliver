@@ -1,0 +1,11 @@
+======================================================================
+RENDER BACKEND DEPLOYMENT TRIGGER
+======================================================================
+Service ID: srv-d3ii9qk9c44c73aqsli0
+API Key: rnd_o...NAqM
+Payload: {"clearCache": "clear"}
+
+[INFO] Triggering manual deployment...
+[SUCCESS] Render response status: 202
+Full response body:
+{}

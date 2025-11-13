@@ -7,6 +7,13 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ValuationComparisonChart } from '../components/ValuationComparisonChart'
 
+vi.mock('@/hooks/useRecharts', () => {
+  const recharts = require('recharts')
+  return {
+    useRecharts: () => recharts,
+  }
+})
+
 describe('ValuationComparisonChart', () => {
   const mockData = {
     dcf: {
@@ -72,4 +79,3 @@ describe('ValuationComparisonChart', () => {
     expect(equityButton).toBeInTheDocument()
   })
 })
-

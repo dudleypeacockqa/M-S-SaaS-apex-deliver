@@ -25,6 +25,13 @@ vi.mock('../../../services/api/valuations', () => ({
   createScenario: vi.fn(),
 }))
 
+vi.mock('@/hooks/useRecharts', () => {
+  const recharts = require('recharts')
+  return {
+    useRecharts: () => recharts,
+  }
+})
+
 const renderSuite = (initialEntry = '/deals/deal-123/valuations/val-001') => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -505,6 +512,5 @@ describe('ValuationSuite RED tests', () => {
     expect(await screen.findByText('£15,000,000')).toBeInTheDocument()
   })
 })
-
 
 

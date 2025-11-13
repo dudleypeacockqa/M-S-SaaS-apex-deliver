@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { useRecharts } from '@/hooks/useRecharts'
 
 export interface ValuationMethodData {
   enterpriseValue: number
@@ -22,6 +22,7 @@ interface ValuationComparisonChartProps {
 
 export const ValuationComparisonChart: React.FC<ValuationComparisonChartProps> = ({ data }) => {
   const [viewMode, setViewMode] = useState<'enterprise' | 'equity'>('enterprise')
+  const recharts = useRecharts()
 
   // Prepare chart data
   const chartData = [
@@ -88,30 +89,36 @@ export const ValuationComparisonChart: React.FC<ValuationComparisonChartProps> =
       </div>
 
       {chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="method" />
-            <YAxis
-              tickFormatter={(value) => {
-                if (value >= 1000000) {
-                  return `£${(value / 1000000).toFixed(1)}M`
-                }
-                return `£${(value / 1000).toFixed(0)}K`
-              }}
-            />
-            <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
-              labelFormatter={(label) => `${label} Methodology`}
-            />
-            <Legend />
-            <Bar
-              dataKey={viewMode === 'enterprise' ? 'enterpriseValue' : 'equityValue'}
-              fill="#4F46E5"
-              name={viewMode === 'enterprise' ? 'Enterprise Value' : 'Equity Value'}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+        recharts ? (
+          <recharts.ResponsiveContainer width="100%" height={300}>
+            <recharts.BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <recharts.CartesianGrid strokeDasharray="3 3" />
+              <recharts.XAxis dataKey="method" />
+              <recharts.YAxis
+                tickFormatter={(value) => {
+                  if (value >= 1000000) {
+                    return `£${(value / 1000000).toFixed(1)}M`
+                  }
+                  return `£${(value / 1000).toFixed(0)}K`
+                }}
+              />
+              <recharts.Tooltip
+                formatter={(value: number) => formatCurrency(value)}
+                labelFormatter={(label) => `${label} Methodology`}
+              />
+              <recharts.Legend />
+              <recharts.Bar
+                dataKey={viewMode === 'enterprise' ? 'enterpriseValue' : 'equityValue'}
+                fill="#4F46E5"
+                name={viewMode === 'enterprise' ? 'Enterprise Value' : 'Equity Value'}
+              />
+            </recharts.BarChart>
+          </recharts.ResponsiveContainer>
+        ) : (
+          <div className="flex h-64 items-center justify-center rounded-lg border border-gray-200 bg-gray-50">
+            <p className="text-sm text-gray-500">Loading chart…</p>
+          </div>
+        )
       ) : (
         <div className="flex items-center justify-center h-64 rounded-lg border border-gray-200 bg-gray-50">
           <p className="text-sm text-gray-500">No valuation data available for comparison</p>

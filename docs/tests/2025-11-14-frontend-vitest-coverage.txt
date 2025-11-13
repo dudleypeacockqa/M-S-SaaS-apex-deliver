@@ -1,0 +1,16 @@
+Frontend Vitest Coverage Summary — 2025-11-13 17:13:56 UTC
+
+Chunks Executed:
+- 2025-11-14-frontend-chunk1.log
+- 2025-11-14-frontend-chunk2.log
+- 2025-11-14-frontend-chunk3.log
+- 2025-11-14-frontend-chunk4.log
+- 2025-11-14-frontend-chunk5.log
+- 2025-11-14-frontend-chunk6.log
+
+Coverage (aggregated from frontend/coverage/chunks/chunk*.lcov):
+- Lines: 8610/15342 (56.12%)
+- Functions: 2208/4710 (46.88%)
+- Branches: 5298/10656 (49.72%)
+
+Source: Combined LCOV report at frontend/coverage/lcov.info.

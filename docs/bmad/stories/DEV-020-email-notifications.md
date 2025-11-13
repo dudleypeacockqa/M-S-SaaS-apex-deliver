@@ -8,7 +8,7 @@
 **Estimated Effort**: 4-6 days (TDD)
 **Methodology**: BMAD v6-alpha + TDD
 
-> 2025-11-15 Update: Event registration confirmations implemented via SendGrid (`backend/app/services/event_notification_service.py`). Reminder & preference flows remain outstanding.
+> 2025-11-15 Update: Event registration confirmations implemented via SendGrid (`backend/app/services/event_notification_service.py`). Reminder scheduler and dashboard preferences UI now live (`frontend/src/pages/dashboard/Settings.tsx`).
 
 ---
 

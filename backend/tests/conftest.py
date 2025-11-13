@@ -281,9 +281,11 @@ def create_organization(db_session) -> Callable[..., Organization]:
         name: str | None = None,
         subscription_tier: str = "starter",
     ) -> Organization:
-        slug = (name or f"org-{uuid4().hex[:8]}").lower().replace(" ", "-")
+        base_name = name or f"Organization {uuid4().hex[:6]}"
+        slug_base = base_name.lower().replace(" ", "-")
+        slug = f"{slug_base}-{uuid4().hex[:6]}"
         org = Organization(
-            name=name or f"Organization {uuid4().hex[:6]}",
+            name=base_name,
             slug=slug,
             subscription_tier=subscription_tier,
         )
