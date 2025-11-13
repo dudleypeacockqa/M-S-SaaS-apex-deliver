@@ -63,7 +63,7 @@ mkdir -p "$REPORT_DIR"
 cd frontend
 
 echo -e "${YELLOW}Step 1: Installing dependencies...${NC}"
-npm install --silent
+npm install --include=dev --silent
 
 echo -e "${YELLOW}Step 2: Building frontend for preview...${NC}"
 npm run build

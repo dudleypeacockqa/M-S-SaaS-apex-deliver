@@ -54,7 +54,7 @@ Push-Location frontend
 
 try {
     Write-Host "Step 1: Installing dependencies..." -ForegroundColor Yellow
-    npm install --silent
+    npm install --include=dev --silent
 
     Write-Host "Step 2: Building frontend for preview..." -ForegroundColor Yellow
     npm run build
