@@ -617,3 +617,30 @@ def test_create_event_requires_authentication(client: TestClient):
     response = client.post("/api/events/", json=event_data)
 
     assert response.status_code == 401, f"Expected 401, got {response.status_code}"
+
+
+# ============================================================================
+# Authentication Fixture (autouse for all tests except auth-checking tests)
+# ============================================================================
+
+@pytest.fixture(autouse=True)
+def setup_auth(request, solo_user):
+    """Automatically setup authentication for all Event API tests except auth-checking tests."""
+    # Skip auto-auth for tests that explicitly check authentication requirements
+    if 'requires_authentication' in request.node.name:
+        yield None
+        return
+    
+    from app.api.dependencies.auth import get_current_user
+    from app.main import app
+    
+    # Override the dependency to return our test solo user
+    def override_get_current_user():
+        return solo_user
+    
+    app.dependency_overrides[get_current_user] = override_get_current_user
+    
+    yield
+    
+    # Clean up override after test
+    app.dependency_overrides.pop(get_current_user, None)

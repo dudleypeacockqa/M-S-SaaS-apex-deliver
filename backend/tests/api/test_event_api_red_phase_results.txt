@@ -1,0 +1,63 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\User\AppData\Local\Programs\Python\Python311\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 25 items
+
+tests\api\test_event_api.py::test_create_event_returns_201 FAILED        [  4%]
+tests\api\test_event_api.py::test_create_event_wrong_organization_returns_403 PASSED [  8%]
+tests\api\test_event_api.py::test_list_events_returns_200 FAILED         [ 12%]
+tests\api\test_event_api.py::test_list_events_with_status_filter PASSED  [ 16%]
+tests\api\test_event_api.py::test_get_event_returns_200 FAILED           [ 20%]
+tests\api\test_event_api.py::test_get_event_not_found_returns_404 PASSED [ 24%]
+tests\api\test_event_api.py::test_update_event_returns_200 FAILED        [ 28%]
+tests\api\test_event_api.py::test_delete_event_returns_204 FAILED        [ 32%]
+tests\api\test_event_api.py::test_create_event_session_returns_201 FAILED [ 36%]
+tests\api\test_event_api.py::test_list_event_sessions_returns_200 FAILED [ 40%]
+tests\api\test_event_api.py::test_update_event_session_returns_200 FAILED [ 44%]
+tests\api\test_event_api.py::test_delete_event_session_returns_204 FAILED [ 48%]
+tests\api\test_event_api.py::test_create_event_ticket_returns_201 FAILED [ 52%]
+tests\api\test_event_api.py::test_list_event_tickets_returns_200 FAILED  [ 56%]
+tests\api\test_event_api.py::test_update_event_ticket_returns_200 FAILED [ 60%]
+tests\api\test_event_api.py::test_delete_event_ticket_returns_204 FAILED [ 64%]
+tests\api\test_event_api.py::test_create_event_registration_returns_201 FAILED [ 68%]
+tests\api\test_event_api.py::test_list_event_registrations_returns_200 FAILED [ 72%]
+tests\api\test_event_api.py::test_update_event_registration_returns_200 FAILED [ 76%]
+tests\api\test_event_api.py::test_delete_event_registration_returns_204 FAILED [ 80%]
+tests\api\test_event_api.py::test_get_event_analytics_returns_200 FAILED [ 84%]
+tests\api\test_event_api.py::test_export_registrations_csv_returns_200 FAILED [ 88%]
+tests\api\test_event_api.py::test_export_registrations_empty_event_returns_200 FAILED [ 92%]
+tests\api\test_event_api.py::test_list_events_requires_authentication PASSED [ 96%]
+tests\api\test_event_api.py::test_create_event_requires_authentication PASSED [100%]
+
+============================== warnings summary ===============================
+backend/tests/api/test_event_api.py: 25 warnings
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests\api\test_event_api.py::test_create_event_returns_201 - Assertion...
+FAILED tests\api\test_event_api.py::test_list_events_returns_200 - AssertionE...
+FAILED tests\api\test_event_api.py::test_get_event_returns_200 - AssertionErr...
+FAILED tests\api\test_event_api.py::test_update_event_returns_200 - Assertion...
+FAILED tests\api\test_event_api.py::test_delete_event_returns_204 - Assertion...
+FAILED tests\api\test_event_api.py::test_create_event_session_returns_201 - A...
+FAILED tests\api\test_event_api.py::test_list_event_sessions_returns_200 - As...
+FAILED tests\api\test_event_api.py::test_update_event_session_returns_200 - A...
+FAILED tests\api\test_event_api.py::test_delete_event_session_returns_204 - A...
+FAILED tests\api\test_event_api.py::test_create_event_ticket_returns_201 - As...
+FAILED tests\api\test_event_api.py::test_list_event_tickets_returns_200 - Ass...
+FAILED tests\api\test_event_api.py::test_update_event_ticket_returns_200 - As...
+FAILED tests\api\test_event_api.py::test_delete_event_ticket_returns_204 - As...
+FAILED tests\api\test_event_api.py::test_create_event_registration_returns_201
+FAILED tests\api\test_event_api.py::test_list_event_registrations_returns_200
+FAILED tests\api\test_event_api.py::test_update_event_registration_returns_200
+FAILED tests\api\test_event_api.py::test_delete_event_registration_returns_204
+FAILED tests\api\test_event_api.py::test_get_event_analytics_returns_200 - As...
+FAILED tests\api\test_event_api.py::test_export_registrations_csv_returns_200
+FAILED tests\api\test_event_api.py::test_export_registrations_empty_event_returns_200
+================== 20 failed, 5 passed, 25 warnings in 5.52s ==================
