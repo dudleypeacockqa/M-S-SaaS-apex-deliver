@@ -5,6 +5,7 @@ Focus: ValueError paths, edge cases, permission errors
 """
 from __future__ import annotations
 
+import os
 import uuid
 import pytest
 from fastapi import HTTPException, status
@@ -14,6 +15,18 @@ from app.models.deal import Deal, DealStage
 from app.models.document import Document, Folder
 from app.models.user import User, UserRole
 from app.services import document_service
+
+
+@pytest.fixture(autouse=True)
+def override_storage(tmp_path):
+    """Ensure uploads use a temporary directory during tests."""
+    os.environ["STORAGE_PATH"] = str(tmp_path)
+
+    from app.services import storage_service as storage_module
+
+    storage_module._storage_service = storage_module.LocalStorageService(base_path=tmp_path)  # type: ignore[attr-defined]
+    yield
+    storage_module._storage_service = None  # type: ignore[attr-defined]
 
 
 def test_delete_folder_with_documents_raises_value_error(

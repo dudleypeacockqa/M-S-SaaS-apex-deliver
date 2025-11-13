@@ -33,11 +33,15 @@ export class APIError extends Error {
 /**
  * Fetch options with optional body
  */
+type ResponseType = 'json' | 'blob' | 'arrayBuffer' | 'text'
+
 interface FetchOptions {
   method?: string
   headers?: HeadersInit
   body?: any
   timeout?: number
+  contentType?: string | null
+  responseType?: ResponseType
 }
 
 /**
@@ -71,7 +75,7 @@ async function getClerkToken(): Promise<string | null> {
 /**
  * Build authorization headers with Clerk JWT token
  */
-export async function getAuthHeaders(contentType: string = 'application/json'): Promise<HeadersInit> {
+export async function getAuthHeaders(contentType: string | null = 'application/json'): Promise<HeadersInit> {
   const headers: HeadersInit = {}
 
   const token = await getClerkToken()
@@ -90,14 +94,27 @@ export async function getAuthHeaders(contentType: string = 'application/json'): 
 /**
  * Execute a fetch request with automatic token injection and error handling
  */
-async function fetchWithAuth<T>(
-  endpoint: string,
-  options: FetchOptions = {}
-): Promise<T> {
-  const { method = 'GET', body, timeout = 30000 } = options
+async function fetchWithAuth<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
+  const {
+    method = 'GET',
+    body,
+    timeout = 30000,
+    contentType,
+    responseType = 'json',
+    headers: customHeaders,
+  } = options
 
-  // Build headers with Clerk token
-  const headers = await getAuthHeaders('application/json')
+  const resolvedContentType = contentType === undefined ? 'application/json' : contentType
+
+  // Build headers with Clerk token and merge any custom overrides
+  const headers = new Headers(await getAuthHeaders(resolvedContentType))
+
+  if (customHeaders) {
+    const overrides = new Headers(customHeaders)
+    overrides.forEach((value, key) => {
+      headers.set(key, value)
+    })
+  }
 
   // Build full URL
   const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`
@@ -107,10 +124,26 @@ async function fetchWithAuth<T>(
   const timeoutId = setTimeout(() => controller.abort(), timeout)
 
   try {
+    const isFormData = typeof FormData !== 'undefined' && body instanceof FormData
+    const isBlob = typeof Blob !== 'undefined' && body instanceof Blob
+    const isArrayBuffer = typeof ArrayBuffer !== 'undefined' && body instanceof ArrayBuffer
+
+    const shouldSerializeBody =
+      body !== undefined &&
+      body !== null &&
+      typeof body === 'object' &&
+      !isFormData &&
+      !isBlob &&
+      !isArrayBuffer &&
+      (resolvedContentType ?? '').includes('application/json')
+
+    const serializedBody =
+      body === undefined || body === null ? undefined : shouldSerializeBody ? JSON.stringify(body) : body
+
     const response = await fetch(url, {
       method,
       headers,
-      body: body ? JSON.stringify(body) : undefined,
+      body: serializedBody,
       signal: controller.signal,
     })
 
@@ -137,9 +170,18 @@ async function fetchWithAuth<T>(
       return {} as T
     }
 
-    // Parse JSON response
-    const data = await response.json()
-    return data as T
+    // Parse response based on requested format
+    switch (responseType) {
+      case 'blob':
+        return (await response.blob()) as T
+      case 'arrayBuffer':
+        return (await response.arrayBuffer()) as T
+      case 'text':
+        return (await response.text()) as T
+      case 'json':
+      default:
+        return (await response.json()) as T
+    }
   } catch (error) {
     clearTimeout(timeoutId)
 

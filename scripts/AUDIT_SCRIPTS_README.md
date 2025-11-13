@@ -89,6 +89,29 @@ export AUDIT_WAIT_SECONDS="60"
 
 ## Troubleshooting
 
+### WSL: "Cannot find module 'C:\usr\bin\npm'" or "UtilBindVsockAnyPort"
+
+**Problem**: WSL is trying to use Windows Node.js via interop, but interop is broken.
+
+**Solution**: Install native Linux Node.js in WSL
+
+```bash
+# Quick fix (5 minutes)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Verify it works
+which node  # Should show /usr/bin/node (NOT /mnt/c/ or /usr/local/bin)
+npm --version
+```
+
+**Full guide**: See [scripts/INSTALL_NODE_WSL.md](INSTALL_NODE_WSL.md)
+
+**Alternative**: Just use PowerShell scripts instead (already working!)
+```powershell
+.\scripts\run_audits.ps1  # No WSL needed
+```
+
 ### "Server failed to start within X seconds"
 
 **Solution**: Increase wait time or check if port 4173 is already in use

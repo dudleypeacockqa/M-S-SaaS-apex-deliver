@@ -206,7 +206,7 @@ class TestDocumentTemplateEndpoints:
 
         assert response.status_code == 200
         data = response.json()
-        assert data["id"] == template.id
+        assert data["id"] == str(template.id)
         assert data["name"] == "Test Template"
 
         app.dependency_overrides.pop(get_current_user, None)
@@ -529,7 +529,7 @@ class TestGeneratedDocumentEndpoints:
 
         assert response.status_code == 200
         data = response.json()
-        assert data["id"] == document.id
+        assert data["id"] == str(document.id)
         assert data["generated_content"] == "Test Generated Content"
         assert data["variable_values"]["name"] == "Test"
 

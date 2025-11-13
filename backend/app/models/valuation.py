@@ -14,7 +14,7 @@ from typing import Optional
 from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import relationship
 
-from app.db.base import Base
+from app.db.base import Base, GUID
 
 
 class ValuationModel(Base):
@@ -211,7 +211,7 @@ class ValuationExportLog(Base):
     export_type = Column(String(20), nullable=False)  # 'pdf' or 'excel'
     export_format = Column(String(50), nullable=True)  # 'summary', 'detailed', 'full_model'
     file_size_bytes = Column(Integer, nullable=True)
-    document_id = Column(String(36), ForeignKey("documents.id"), nullable=True)  # Link to document room
+    document_id = Column(GUID, ForeignKey("documents.id"), nullable=True)  # Link to document room
     scenario_id = Column(String(36), ForeignKey("valuation_scenarios.id", ondelete="SET NULL"), nullable=True)
     task_id = Column(String(64), nullable=True, unique=True)
     status = Column(String(20), nullable=False, server_default="queued")

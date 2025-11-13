@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, act, waitFor, cleanup, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import DocumentWorkspace from './DocumentWorkspace'
+import DocumentWorkspace, { type DocumentWorkspaceProps } from './DocumentWorkspace'
 
 const folderTreeSpy = vi.fn()
 const documentListSpy = vi.fn()
@@ -135,7 +135,7 @@ vi.mock('../../hooks/useDocumentUploads', () => ({
 
 let queryClient: QueryClient
 
-const renderWorkspace = () => {
+const renderWorkspace = (props?: Partial<DocumentWorkspaceProps>) => {
   queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false, gcTime: 0, staleTime: 0 },
@@ -145,7 +145,7 @@ const renderWorkspace = () => {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <DocumentWorkspace dealId="deal-abc" />
+      <DocumentWorkspace dealId="deal-abc" {...props} />
     </QueryClientProvider>
   )
 }
@@ -185,6 +185,36 @@ describe('DocumentWorkspace', () => {
     expect(screen.getByTestId('folder-pane')).toBeInTheDocument()
     expect(screen.getByTestId('document-pane')).toBeInTheDocument()
     expect(screen.getByTestId('upload-pane')).toBeInTheDocument()
+  })
+
+  it('forwards onDocumentsLoaded to the underlying DocumentList', () => {
+    const onDocumentsLoaded = vi.fn()
+    renderWorkspace({ onDocumentsLoaded })
+
+    const props = documentListSpy.mock.calls.at(-1)?.[0]
+    expect(props.onDocumentsLoaded).toBeTypeOf('function')
+
+    const mockDocuments = [{ id: 'doc-123', name: 'Report.pdf' }]
+    act(() => {
+      props.onDocumentsLoaded?.(mockDocuments)
+    })
+
+    expect(onDocumentsLoaded).toHaveBeenCalledWith(mockDocuments)
+  })
+
+  it('forwards onError to the DocumentList error boundary', () => {
+    const onError = vi.fn()
+    renderWorkspace({ onError })
+
+    const props = documentListSpy.mock.calls.at(-1)?.[0]
+    expect(props.onError).toBeTypeOf('function')
+
+    const err = new Error('Load failed')
+    act(() => {
+      props.onError?.(err)
+    })
+
+    expect(onError).toHaveBeenCalledWith(err)
   })
 
   it('updates DocumentList filter when FolderTree selection changes', () => {

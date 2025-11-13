@@ -48,115 +48,39 @@ export const DataRoom: React.FC = () => {
         </p>
       </header>
 
-      <div className="grid gap-6 md:grid-cols-[260px,1fr]">
-        <aside className="space-y-3">
-          <button
-            type="button"
-            onClick={() => handleFolderSelect(null)}
-            className={`w-full rounded-md px-3 py-2 text-sm text-left ${
-              selectedFolderId === null
-                ? 'bg-indigo-50 font-semibold text-indigo-700'
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            All documents
-          </button>
-          <FolderTree
-            dealId={dealId}
-            selectedFolderId={selectedFolderId}
-            onFolderSelect={handleFolderSelect}
-          />
-        </aside>
+      {error && !entitlementGate && (
+        <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-600">
+          {error}
+        </div>
+      )}
 
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={uploading}
-            >
-              Upload document
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              className="hidden"
-              accept={ALLOWED_FILE_TYPES.join(',')}
-              onChange={handleFileUpload}
-            />
-            {uploading && (
-              <span className="text-sm text-slate-500" role="status">
-                {uploadMessage ?? 'Uploading...'}
-              </span>
-            )}
-          </div>
-
-          {error && (
-            <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-600">
-              {error}
-            </div>
+      {entitlementGate ? (
+        <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-6">
+          <h2 className="text-base font-semibold text-indigo-900">Access restricted</h2>
+          <p className="mt-2 text-sm text-indigo-800">{entitlementGate.message}</p>
+          {entitlementGate.requiredTierLabel && (
+            <p className="mt-1 text-xs font-medium text-indigo-700">
+              Required tier: {entitlementGate.requiredTierLabel}
+            </p>
           )}
-
-          {entitlementGate ? (
-            <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-6">
-              <h2 className="text-base font-semibold text-indigo-900">Access restricted</h2>
-              <p className="mt-2 text-sm text-indigo-800">{entitlementGate.message}</p>
-              {entitlementGate.requiredTierLabel && (
-                <p className="mt-1 text-xs font-medium text-indigo-700">
-                  Required tier: {entitlementGate.requiredTierLabel}
-                </p>
-              )}
-              {entitlementGate.upgradeUrl && (
-                <a
-                  className="mt-3 inline-flex items-center text-sm font-medium text-indigo-700 underline"
-                  href={entitlementGate.upgradeUrl}
-                >
-                  View pricing plans
-                </a>
-              )}
-            </div>
-          ) : (
-            <>
-              <DocumentList
-                dealId={dealId}
-                folderId={selectedFolderId}
-                onSelectionChange={handleSelectionChange}
-                onError={handleDocumentError}
-                onDocumentsLoaded={handleDocumentsLoaded}
-                resetSelectionSignal={selectionResetSignal}
-                onManagePermissions={handleManagePermissions}
-              />
-
-              {selectedDocuments.length > 0 && (
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <BulkActions
-                    dealId={dealId}
-                    selectedDocuments={selectedDocuments}
-                    onClearSelection={handleClearSelection}
-                    onRefresh={invalidateDocuments}
-                  />
-                  {selectedDocuments.length === 1 && (
-                    <button
-                      type="button"
-                      className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-                      onClick={() => handleManagePermissions(selectedDocuments[0])}
-                    >
-                      Manage access
-                    </button>
-                  )}
-                </div>
-              )}
-            </>
+          {entitlementGate.upgradeUrl && (
+            <a
+              className="mt-3 inline-flex items-center text-sm font-medium text-indigo-700 underline"
+              href={entitlementGate.upgradeUrl}
+            >
+              View pricing plans
+            </a>
           )}
         </div>
-      </div>
-
-      <PermissionModal
-        documentId={permissionDocumentId ?? ''}
-        isOpen={isPermissionModalOpen && permissionDocumentId !== null}
-        onClose={handlePermissionModalClose}
-      />
+      ) : (
+        <div className="rounded-2xl border border-slate-200 bg-white/60 p-2 shadow-sm">
+          <DocumentWorkspace
+            dealId={dealId}
+            onDocumentsLoaded={handleDocumentsLoaded}
+            onError={handleDocumentError}
+          />
+        </div>
+      )}
     </section>
   )
 }

@@ -1,0 +1,90 @@
+
+> ma-saas-frontend@2.0.0 build
+> vite build
+
+[36mvite v7.2.2 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 2850 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                                    [39m[1m[2m  5.95 kB[22m[1m[22m[2m │ gzip:   2.12 kB[22m
+[2mdist/[22m[35massets/index-CEk-duGv.css                     [39m[1m[2m 77.09 kB[22m[1m[22m[2m │ gzip:  11.98 kB[22m
+[2mdist/[22m[36massets/x-yFamy1rl.js                          [39m[1m[2m  0.17 kB[22m[1m[22m[2m │ gzip:   0.16 kB[22m
+[2mdist/[22m[36massets/clock-DMis2Bly.js                      [39m[1m[2m  0.18 kB[22m[1m[22m[2m │ gzip:   0.17 kB[22m
+[2mdist/[22m[36massets/arrow-left-DIfMj-wT.js                 [39m[1m[2m  0.18 kB[22m[1m[22m[2m │ gzip:   0.17 kB[22m
+[2mdist/[22m[36massets/chevron-right-HB5a8xom.js              [39m[1m[2m  0.22 kB[22m[1m[22m[2m │ gzip:   0.19 kB[22m
+[2mdist/[22m[36massets/mail-Cecfn86z.js                       [39m[1m[2m  0.23 kB[22m[1m[22m[2m │ gzip:   0.21 kB[22m
+[2mdist/[22m[36massets/ellipsis-vertical-DVNbvdmH.js          [39m[1m[2m  0.24 kB[22m[1m[22m[2m │ gzip:   0.18 kB[22m
+[2mdist/[22m[36massets/circle-alert-DfVoyE5G.js               [39m[1m[2m  0.26 kB[22m[1m[22m[2m │ gzip:   0.20 kB[22m
+[2mdist/[22m[36massets/funnel-BbT9EF2l.js                     [39m[1m[2m  0.26 kB[22m[1m[22m[2m │ gzip:   0.22 kB[22m
+[2mdist/[22m[36massets/external-link-CodAjUxh.js              [39m[1m[2m  0.26 kB[22m[1m[22m[2m │ gzip:   0.21 kB[22m
+[2mdist/[22m[36massets/eye-Bsf47Q2c.js                        [39m[1m[2m  0.26 kB[22m[1m[22m[2m │ gzip:   0.21 kB[22m
+[2mdist/[22m[36massets/calendar-Cd9h21Vz.js                   [39m[1m[2m  0.27 kB[22m[1m[22m[2m │ gzip:   0.21 kB[22m
+[2mdist/[22m[36massets/users-Dkj_yFJt.js                      [39m[1m[2m  0.32 kB[22m[1m[22m[2m │ gzip:   0.24 kB[22m
+[2mdist/[22m[36massets/personSchema-C7wTGQL6.js               [39m[1m[2m  0.35 kB[22m[1m[22m[2m │ gzip:   0.23 kB[22m
+[2mdist/[22m[36massets/circle-x-pk-C3CFE.js                   [39m[1m[2m  0.36 kB[22m[1m[22m[2m │ gzip:   0.26 kB[22m
+[2mdist/[22m[36massets/api-C7xGwfpS.js                        [39m[1m[2m  0.37 kB[22m[1m[22m[2m │ gzip:   0.27 kB[22m
+[2mdist/[22m[36massets/file-text-D2qnyu-1.js                  [39m[1m[2m  0.40 kB[22m[1m[22m[2m │ gzip:   0.26 kB[22m
+[2mdist/[22m[36massets/Badge-DXJFQ_SB.js                      [39m[1m[2m  0.49 kB[22m[1m[22m[2m │ gzip:   0.32 kB[22m
+[2mdist/[22m[36massets/trash-2-ClzTBUN5.js                    [39m[1m[2m  0.53 kB[22m[1m[22m[2m │ gzip:   0.32 kB[22m
+[2mdist/[22m[36massets/billingService-0Y9hAoo8.js             [39m[1m[2m  0.69 kB[22m[1m[22m[2m │ gzip:   0.36 kB[22m
+[2mdist/[22m[36massets/SignUpPage-DMPtLHtI.js                 [39m[1m[2m  0.77 kB[22m[1m[22m[2m │ gzip:   0.47 kB[22m
+[2mdist/[22m[36massets/admin-4UjYA4qd.js                      [39m[1m[2m  1.11 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
+[2mdist/[22m[36massets/createLucideIcon-BMya6XuC.js           [39m[1m[2m  1.18 kB[22m[1m[22m[2m │ gzip:   0.70 kB[22m
+[2mdist/[22m[36massets/deals-USOl1pXN.js                      [39m[1m[2m  1.23 kB[22m[1m[22m[2m │ gzip:   0.57 kB[22m
+[2mdist/[22m[36massets/useProspects-B_ktzVI4.js               [39m[1m[2m  1.27 kB[22m[1m[22m[2m │ gzip:   0.58 kB[22m
+[2mdist/[22m[36massets/organizationSchema-B8tda4O_.js         [39m[1m[2m  1.29 kB[22m[1m[22m[2m │ gzip:   0.70 kB[22m
+[2mdist/[22m[36massets/FeatureNotAvailable-DWxh92k7.js        [39m[1m[2m  1.56 kB[22m[1m[22m[2m │ gzip:   0.72 kB[22m
+[2mdist/[22m[36massets/CheckoutSuccess-MOr1CcNP.js            [39m[1m[2m  1.57 kB[22m[1m[22m[2m │ gzip:   0.70 kB[22m
+[2mdist/[22m[36massets/CheckoutCancel-D-WtDOG3.js             [39m[1m[2m  1.68 kB[22m[1m[22m[2m │ gzip:   0.79 kB[22m
+[2mdist/[22m[36massets/SignInPage-BNqToPyl.js                 [39m[1m[2m  2.60 kB[22m[1m[22m[2m │ gzip:   1.00 kB[22m
+[2mdist/[22m[36massets/CTASection-BBZySQDz.js                 [39m[1m[2m  2.80 kB[22m[1m[22m[2m │ gzip:   0.97 kB[22m
+[2mdist/[22m[36massets/useScores-A8sLX7kr.js                  [39m[1m[2m  3.13 kB[22m[1m[22m[2m │ gzip:   1.40 kB[22m
+[2mdist/[22m[36massets/BlogListingPage-C2hvQhk-.js            [39m[1m[2m  4.72 kB[22m[1m[22m[2m │ gzip:   1.83 kB[22m
+[2mdist/[22m[36massets/PodcastPage-BVw5xwEr.js                [39m[1m[2m  4.89 kB[22m[1m[22m[2m │ gzip:   1.66 kB[22m
+[2mdist/[22m[36massets/TeamPage-Cevj0sVs.js                   [39m[1m[2m  4.89 kB[22m[1m[22m[2m │ gzip:   1.96 kB[22m
+[2mdist/[22m[36massets/DocumentRoomPage-B_epuF9u.js           [39m[1m[2m  5.47 kB[22m[1m[22m[2m │ gzip:   2.03 kB[22m
+[2mdist/[22m[36massets/DealPipeline-CCsYYEOz.js               [39m[1m[2m  5.84 kB[22m[1m[22m[2m │ gzip:   1.87 kB[22m
+[2mdist/[22m[36massets/AdminDashboard-B1RpGdd5.js             [39m[1m[2m  6.60 kB[22m[1m[22m[2m │ gzip:   1.64 kB[22m
+[2mdist/[22m[36massets/FinancialDashboard-eqBQUxWC.js         [39m[1m[2m  6.65 kB[22m[1m[22m[2m │ gzip:   1.89 kB[22m
+[2mdist/[22m[36massets/masterAdmin-DXjV7ZwY.js                [39m[1m[2m  6.68 kB[22m[1m[22m[2m │ gzip:   1.70 kB[22m
+[2mdist/[22m[36massets/MasterAdminDashboard-DjjfysvH.js       [39m[1m[2m  6.81 kB[22m[1m[22m[2m │ gzip:   2.24 kB[22m
+[2mdist/[22m[36massets/BookTrial-BsqpfuUc.js                  [39m[1m[2m  7.01 kB[22m[1m[22m[2m │ gzip:   2.17 kB[22m
+[2mdist/[22m[36massets/NewDealPage-61lfXBg1.js                [39m[1m[2m  7.03 kB[22m[1m[22m[2m │ gzip:   2.00 kB[22m
+[2mdist/[22m[36massets/SystemHealth-Bs0jS5Fa.js               [39m[1m[2m  7.31 kB[22m[1m[22m[2m │ gzip:   1.66 kB[22m
+[2mdist/[22m[36massets/OrganizationManagement-DevoPjCf.js     [39m[1m[2m  7.67 kB[22m[1m[22m[2m │ gzip:   2.09 kB[22m
+[2mdist/[22m[36massets/LeadCapture-Dc6Ke2Ki.js                [39m[1m[2m  7.69 kB[22m[1m[22m[2m │ gzip:   2.31 kB[22m
+[2mdist/[22m[36massets/ContactPage-nR0TjdnV.js                [39m[1m[2m  9.01 kB[22m[1m[22m[2m │ gzip:   2.61 kB[22m
+[2mdist/[22m[36massets/FourStageCyclePage-CjStjGKa.js         [39m[1m[2m  9.10 kB[22m[1m[22m[2m │ gzip:   3.19 kB[22m
+[2mdist/[22m[36massets/SecurityPage-BJKjOUe4.js               [39m[1m[2m  9.23 kB[22m[1m[22m[2m │ gzip:   3.13 kB[22m
+[2mdist/[22m[36massets/SalesCollateral-CdJhU18I.js            [39m[1m[2m  9.39 kB[22m[1m[22m[2m │ gzip:   2.79 kB[22m
+[2mdist/[22m[36massets/AboutPage-CrRaW3Op.js                  [39m[1m[2m  9.59 kB[22m[1m[22m[2m │ gzip:   3.06 kB[22m
+[2mdist/[22m[36massets/CookiePolicy-CapaMZEk.js               [39m[1m[2m  9.84 kB[22m[1m[22m[2m │ gzip:   2.57 kB[22m
+[2mdist/[22m[36massets/TermsOfService-BjWPfrZ2.js             [39m[1m[2m 10.68 kB[22m[1m[22m[2m │ gzip:   3.42 kB[22m
+[2mdist/[22m[36massets/DashboardPage-CmsyxoOM.js              [39m[1m[2m 10.68 kB[22m[1m[22m[2m │ gzip:   3.33 kB[22m
+[2mdist/[22m[36massets/CaseStudiesPage-DywChSl7.js            [39m[1m[2m 11.90 kB[22m[1m[22m[2m │ gzip:   3.94 kB[22m
+[2mdist/[22m[36massets/FAQPage-CYDM8SGV.js                    [39m[1m[2m 12.03 kB[22m[1m[22m[2m │ gzip:   4.94 kB[22m
+[2mdist/[22m[36massets/CapLiquifyFPAPage-DBrSdMZL.js          [39m[1m[2m 12.11 kB[22m[1m[22m[2m │ gzip:   3.57 kB[22m
+[2mdist/[22m[36massets/PrivacyPolicy-W1Qs0KXq.js              [39m[1m[2m 13.80 kB[22m[1m[22m[2m │ gzip:   3.59 kB[22m
+[2mdist/[22m[36massets/SalesPromotionPricingPage-BAzBA5Dy.js  [39m[1m[2m 14.79 kB[22m[1m[22m[2m │ gzip:   3.92 kB[22m
+[2mdist/[22m[36massets/DealDetails-DdMvMDPw.js                [39m[1m[2m 15.13 kB[22m[1m[22m[2m │ gzip:   3.15 kB[22m
+[2mdist/[22m[36massets/UserManagement-8EI4XCku.js             [39m[1m[2m 15.98 kB[22m[1m[22m[2m │ gzip:   4.05 kB[22m
+[2mdist/[22m[36massets/BillingDashboard-D0Mi6dce.js           [39m[1m[2m 16.46 kB[22m[1m[22m[2m │ gzip:   4.28 kB[22m
+[2mdist/[22m[36massets/FeaturesPage-v3yrvVrd.js               [39m[1m[2m 17.40 kB[22m[1m[22m[2m │ gzip:   3.37 kB[22m
+[2mdist/[22m[36massets/SEO-x5C0GJqG.js                        [39m[1m[2m 18.03 kB[22m[1m[22m[2m │ gzip:   5.92 kB[22m
+[2mdist/[22m[36massets/ActivityTracker-D0bBsP9B.js            [39m[1m[2m 21.05 kB[22m[1m[22m[2m │ gzip:   5.45 kB[22m
+[2mdist/[22m[36massets/ContentStudio-BiXqz8YL.js              [39m[1m[2m 25.83 kB[22m[1m[22m[2m │ gzip:   4.78 kB[22m
+[2mdist/[22m[36massets/DocumentEditor-DeGHGcql.js             [39m[1m[2m 26.38 kB[22m[1m[22m[2m │ gzip:   7.19 kB[22m
+[2mdist/[22m[36massets/PricingPage-B6zCb9wW.js                [39m[1m[2m 26.66 kB[22m[1m[22m[2m │ gzip:   5.45 kB[22m
+[2mdist/[22m[36massets/ProspectPipeline-Bt6MQn1v.js           [39m[1m[2m 31.11 kB[22m[1m[22m[2m │ gzip:   7.06 kB[22m
+[2mdist/[22m[36massets/EnhancedLandingPage-D63SS7ks.js        [39m[1m[2m 31.14 kB[22m[1m[22m[2m │ gzip:   8.16 kB[22m
+[2mdist/[22m[36massets/UploadPanel-Crivzbey.js                [39m[1m[2m 33.98 kB[22m[1m[22m[2m │ gzip:   9.93 kB[22m
+[2mdist/[22m[36massets/DataRoom-CCSZR8T3.js                   [39m[1m[2m 34.84 kB[22m[1m[22m[2m │ gzip:   9.39 kB[22m
+[2mdist/[22m[36massets/CampaignManager-C4EAV_Wb.js            [39m[1m[2m 35.77 kB[22m[1m[22m[2m │ gzip:   7.84 kB[22m
+[2mdist/[22m[36massets/react-vendor-D-ILqsGw.js               [39m[1m[2m 44.35 kB[22m[1m[22m[2m │ gzip:  15.94 kB[22m
+[2mdist/[22m[36massets/index-DPXVHJHM.js                      [39m[1m[2m 46.02 kB[22m[1m[22m[2m │ gzip:  10.31 kB[22m
+[2mdist/[22m[36massets/clerk-vendor-Bh948gjy.js               [39m[1m[2m 90.46 kB[22m[1m[22m[2m │ gzip:  25.12 kB[22m
+[2mdist/[22m[36massets/BlogPostPage-2qNL5Nh9.js               [39m[1m[2m124.08 kB[22m[1m[22m[2m │ gzip:  38.52 kB[22m
+[2mdist/[22m[36massets/ValuationSuite-CqoPk_Pq.js             [39m[1m[2m375.20 kB[22m[1m[22m[2m │ gzip: 106.99 kB[22m
+[2mdist/[22m[36massets/index-BkyOxlr9.js                      [39m[1m[2m377.75 kB[22m[1m[22m[2m │ gzip: 111.60 kB[22m
+[32m✓ built in 25.07s[39m

@@ -265,11 +265,8 @@ export async function getEventAnalytics(eventId: string): Promise<EventAnalytics
 
 // Event Export
 export async function exportEventRegistrations(eventId: string): Promise<Blob> {
-  const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${BASE_PATH}/${eventId}/registrations/export`, {
-    headers: await import('./client').then(m => m.getAuthHeaders('')),
+  return apiClient.get<Blob>(`${BASE_PATH}/${eventId}/registrations/export`, {
+    responseType: 'blob',
+    contentType: null,
   })
-  if (!response.ok) {
-    throw new Error(`Failed to export registrations: ${response.statusText}`)
-  }
-  return response.blob()
 }

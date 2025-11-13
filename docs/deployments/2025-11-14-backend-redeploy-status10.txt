@@ -1,0 +1,42 @@
+======================================================================
+RENDER DEPLOYMENT STATUS CHECK
+======================================================================
+Service ID: srv-d3ii9qk9c44c73aqsli0
+
+Found 5 recent deployments:
+
+Deploy ID: dep-d4au3u2dbo4c73cahl0g
+Status: update_failed
+Commit: ccdbeec3
+Message: feat(platform): final verification, coverage, frontend enhan...
+Created: 2025-11-13T13:49:47.094642Z
+Finished: 2025-11-13T13:51:03.70103Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4au3tmmcj7s73dbm8sg
+Status: canceled
+Commit: ccdbeec3
+Message: feat(platform): final verification, coverage, frontend enhan...
+Created: 2025-11-13T13:49:45.158551Z
+Finished: 2025-11-13T13:49:49.362098Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4au1407ffvc73famdag
+Status: update_failed
+Commit: 0defb18d
+Message: feat(platform): final updates - models, frontend, test resul...
+Created: 2025-11-13T13:43:46.644411Z
+Finished: 2025-11-13T13:46:06.398984Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4au10juibrs73d0i0p0
+Status: update_failed
+Commit: 0defb18d
+Message: feat(platform): final updates - models, frontend, test resul...
+Created: 2025-11-13T13:43:33.584571Z
+Finished: 2025-11-13T13:44:36.006602Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4attrmnat6s738id67g
+Status: update_failed
+Commit: 5dfdcd47
+Message: feat(backend): finalize document generation model and add ex...
+Created: 2025-11-13T13:36:48.113374Z
+Finished: 2025-11-13T13:39:31.281951Z
+----------------------------------------------------------------------

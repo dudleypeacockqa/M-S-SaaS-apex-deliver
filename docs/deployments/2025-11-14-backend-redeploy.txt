@@ -106,3 +106,11 @@ Result: No change (Render API still only lists the 2025-11-13 failures). Continu
 2025-11-13T12:51:45.844362Z – Status Poll #9
 Command: RENDER_API_KEY=<.env> python3 check_render_status.py (log: docs/deployments/2025-11-14-backend-redeploy-status9.txt)
 Result: Still only historical failures; no record of the API-triggered redeploy yet.
+
+2025-11-13T14:09:08.683324+00:00 – Status Poll #10
+Command: RENDER_API_KEY=<.env> python3 check_render_status.py (log: docs/deployments/2025-11-14-backend-redeploy-status10.txt)
+Result: Render still only returns update_failed deploys (latest dep-d4au3u2dbo4c73cahl0g @ commit ccdbeec3). Waiting for a successful redeploy log entry.
+
+2025-11-13T14:10:18.997385+00:00 – Status Poll #11
+Command: RENDER_API_KEY=<.env> python3 check_render_status.py (log: docs/deployments/2025-11-14-backend-redeploy-status11.txt)
+Result: Still seeing only update_failed deploys (latest dep-d4au3u2dbo4c73cahl0g). Awaiting successful redeploy entry.
