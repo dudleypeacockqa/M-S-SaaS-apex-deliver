@@ -26,24 +26,26 @@ describe('EnhancedLandingPage', () => {
 
   it('renders EnhancedHeroSection', async () => {
     await renderLandingPage();
-    expect(screen.getByText(/CapLiquify FP&A/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/13-week cash visibility and working capital clarity in 5 minutes/i)
+      screen.getByRole('heading', {
+        level: 1,
+        name: /From Deal Flow to Cash Flow/i,
+      }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Start Your Free 14-Day Trial/i)).toBeInTheDocument();
+    expect(screen.getByText(/ApexDeliver, powered by CapLiquify/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Start Your Free 14-Day Trial/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Schedule a Demo/i).length).toBeGreaterThan(0);
   });
 
   it('surfaces hero proof points for CapLiquify and ApexDeliver', async () => {
     await renderLandingPage();
-    const statLabels = [
-      /13-week cash forecast/i,
-      /70% lower ops cost/i,
-      /500\+ finance leaders/i,
-      /95% accuracy/i,
-    ];
-    statLabels.forEach((label) => {
-      expect(screen.getByText(label)).toBeInTheDocument();
-    });
+    expect(
+      screen.getByText(
+        /Trusted by dealmakers, finance leaders, and private equity firms worldwide/i,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/20\+ years of experience/i)).toBeInTheDocument();
+    expect(screen.getByText(/230\+ successful business transformations/i)).toBeInTheDocument();
   });
 
   it('renders How It Works section', async () => {

@@ -1,20 +1,20 @@
-from starlette.testclient import TestClient
+#!/usr/bin/env python3
+"""Debug script to check registered routes."""
 from app.main import app
 
-client = TestClient(app)
-
-# List all routes
-print("All registered routes:")
+print("All registered routes:\n")
 for route in app.routes:
     if hasattr(route, 'path') and hasattr(route, 'methods'):
         methods = ', '.join(route.methods) if route.methods else 'N/A'
-        print(f"  {methods:10} {route.path}")
+        print(f"{route.path:50s} {methods}")
+    elif hasattr(route, 'path'):
+        print(f"{route.path:50s} [no methods]")
 
-# Test the specific endpoint
-print("\nTesting /api/master-admin/scores/today:")
-response = client.get('/api/master-admin/scores/today', headers={'Authorization': 'Bearer mock_admin_token'})
-print(f"Status: {response.status_code}")
-if response.status_code == 404:
-    print(f"Not Found: {response.text}")
-else:
-    print(f"Response: {response.json()}")
+print("\n\nDocument-related routes:")
+doc_routes = [r for r in app.routes if hasattr(r, 'path') and 'document' in r.path.lower()]
+for route in doc_routes:
+    methods = ', '.join(route.methods) if hasattr(route, 'methods') and route.methods else 'N/A'
+    print(f"{route.path:50s} {methods}")
+
+print(f"\nTotal routes: {len(app.routes)}")
+print(f"Document routes: {len(doc_routes)}")

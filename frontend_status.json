@@ -1,0 +1,62 @@
+[
+    {
+        "cursor": "en1EaJ_IXVZwdGJpcG5iYzczZTcybmUw",
+        "service": {
+            "autoDeploy": "yes",
+            "autoDeployTrigger": "commit",
+            "branch": "main",
+            "createdAt": "2025-10-07T14:00:22.598097Z",
+            "dashboardUrl": "https://dashboard.render.com/web/srv-d3ihptbipnbc73e72ne0",
+            "environmentId": "evm-d3ihov8dl3ps73d83kcg",
+            "id": "srv-d3ihptbipnbc73e72ne0",
+            "name": "ma-saas-platform",
+            "notifyOnFail": "default",
+            "ownerId": "tea-d38mt58gjchc73d6og9g",
+            "repo": "https://github.com/dudleypeacockqa/M-S-SaaS-apex-deliver",
+            "rootDir": "frontend",
+            "serviceDetails": {
+                "buildPlan": "starter",
+                "cache": {
+                    "profile": "no-cache"
+                },
+                "env": "node",
+                "envSpecificDetails": {
+                    "buildCommand": "NODE_ENV=development npm ci && npx vite build",
+                    "startCommand": "npx serve -s dist -l $PORT"
+                },
+                "healthCheckPath": "/",
+                "ipAllowList": [
+                    {
+                        "cidrBlock": "0.0.0.0/0",
+                        "description": "everywhere"
+                    }
+                ],
+                "maintenanceMode": {
+                    "enabled": false,
+                    "uri": ""
+                },
+                "numInstances": 1,
+                "openPorts": [
+                    {
+                        "port": 10000,
+                        "protocol": "TCP"
+                    }
+                ],
+                "plan": "starter",
+                "previews": {
+                    "generation": "off"
+                },
+                "pullRequestPreviewsEnabled": "no",
+                "region": "frankfurt",
+                "runtime": "node",
+                "sshAddress": "srv-d3ihptbipnbc73e72ne0@ssh.frankfurt.render.com",
+                "url": "https://ma-saas-platform.onrender.com"
+            },
+            "slug": "ma-saas-platform",
+            "suspended": "not_suspended",
+            "suspenders": [],
+            "type": "web_service",
+            "updatedAt": "2025-11-13T05:18:06.516882Z"
+        }
+    }
+]

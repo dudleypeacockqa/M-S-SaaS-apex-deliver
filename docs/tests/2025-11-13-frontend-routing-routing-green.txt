@@ -1,0 +1,7 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --pool=threads src/tests/routing.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+

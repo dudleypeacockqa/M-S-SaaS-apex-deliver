@@ -1,0 +1,22 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --pool=threads src/components/deals/CreateDealModal.test.tsx src/pages/marketing/EnhancedLandingPage.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+ [32m✓[39m src/pages/marketing/EnhancedLandingPage.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 2834[2mms[22m[39m
+     [33m[2m✓[22m[39m renders Pricing Teaser section [33m 340[2mms[22m[39m
+ [32m✓[39m src/components/deals/CreateDealModal.test.tsx [2m([22m[2m29 tests[22m[2m)[22m[33m 5502[2mms[22m[39m
+       [33m[2m✓[22m[39m should not show errors when all required fields are filled [33m 633[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onCreate when form is submitted with valid data [33m 1258[2mms[22m[39m
+       [33m[2m✓[22m[39m should call onSuccess after successful creation [33m 489[2mms[22m[39m
+       [33m[2m✓[22m[39m should close modal after successful creation [33m 454[2mms[22m[39m
+       [33m[2m✓[22m[39m should disable submit button while submitting [33m 449[2mms[22m[39m
+       [33m[2m✓[22m[39m should trap focus within modal [33m 361[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m47 passed[39m[22m[90m (47)[39m
+[2m   Start at [22m 06:12:02
+[2m   Duration [22m 9.67s[2m (transform 618ms, setup 1.58s, collect 1.10s, tests 8.34s, environment 3.20s, prepare 81ms)[22m
+

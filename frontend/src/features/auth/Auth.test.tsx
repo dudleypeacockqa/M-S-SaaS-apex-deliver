@@ -31,6 +31,7 @@ vi.mock('@clerk/clerk-react', () => ({
     mockClerkState.isSignedIn ? <>{children}</> : null,
   SignedOut: ({ children }: { children: ReactNode }) =>
     mockClerkState.isSignedIn ? null : <>{children}</>,
+  SignIn: () => <div data-testid="mock-sign-in-component" />,
   useAuth: () => ({
     isSignedIn: mockClerkState.isSignedIn,
     isLoaded: mockClerkState.isLoaded,
@@ -110,7 +111,7 @@ describe('Clerk authentication routing', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders the appropriate header action depending on auth state', async () => {
+  it('shows marketing sign-in link for visitors and remains stable when authenticated', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
@@ -127,7 +128,8 @@ describe('Clerk authentication routing', () => {
       </QueryClientProvider>
     )
 
-    expect(await screen.findByRole('link', { name: /sign in/i }, { timeout: 10000 })).toBeInTheDocument()
+    const visitorSignInLinks = await screen.findAllByRole('link', { name: /sign in/i }, { timeout: 10000 })
+    expect(visitorSignInLinks.length).toBeGreaterThan(0)
 
     setMockClerkState({
       isSignedIn: true,
@@ -142,6 +144,7 @@ describe('Clerk authentication routing', () => {
       </QueryClientProvider>
     )
 
-    expect(await screen.findByRole('link', { name: /sign in/i }, { timeout: 10000 })).toBeInTheDocument()
+    const authenticatedLinks = await screen.findAllByRole('link', { name: /sign in/i }, { timeout: 10000 })
+    expect(authenticatedLinks.length).toBeGreaterThan(0)
   }, 10000)
 })

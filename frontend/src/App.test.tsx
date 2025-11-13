@@ -79,8 +79,8 @@ describe("AppRoutes", () => {
 
     // The new landing page has rebranded hero heading
     expect(await screen.findByRole("heading", { name: /from deal flow to cash flow/i }, { timeout: 20000 })).toBeInTheDocument()
-    // Marketing nav has regular links, not Clerk's SignInButton
-    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
+    // Marketing nav has multiple "Sign In" links (desktop + mobile)
+    expect(screen.getAllByRole("link", { name: /sign in/i }).length).toBeGreaterThan(0)
     // Multiple "Start Your Free" CTA buttons/links exist
     const ctaLinks = screen.getAllByRole("link", { name: /start your free/i })
     expect(ctaLinks.length).toBeGreaterThan(0)
@@ -109,7 +109,7 @@ describe("AppRoutes", () => {
      ).toBeInTheDocument()
    }, 20000)
 
-  it("updates the header to show the user menu for authenticated users", async () => {
+  it("keeps marketing sign-in actions visible even when authenticated", async () => {
      setMockClerkState({
        isSignedIn: true,
        user: { firstName: "Jamie" },
@@ -117,10 +117,10 @@ describe("AppRoutes", () => {
 
      renderApp(["/"])
 
-     // Landing page shows rebranded hero heading
-     expect(await screen.findByRole("heading", { name: /from deal flow to cash flow/i }, { timeout: 10000 })).toBeInTheDocument()
-     // Marketing pages show sign-in link even when authenticated (marketing layout)
-     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument()
+    // Landing page shows rebranded hero heading
+    expect(await screen.findByRole("heading", { name: /from deal flow to cash flow/i }, { timeout: 10000 })).toBeInTheDocument()
+    const authenticatedLinks = await screen.findAllByRole("link", { name: /sign in/i }, { timeout: 10000 })
+    expect(authenticatedLinks.length).toBeGreaterThan(0)
   }, 10000)
 
   it("routes to financial dashboard for authenticated users", async () => {

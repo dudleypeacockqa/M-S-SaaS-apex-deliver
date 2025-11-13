@@ -1,0 +1,27 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --pool=threads src/tests/routing.test.tsx src/features/auth/Auth.test.tsx src/App.test.tsx src/tests/integration/PodcastStudioRouting.test.tsx src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+ [32m✓[39m src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 524[2mms[22m[39m
+     [33m[2m✓[22m[39m shows a friendly outage message when the blog API fails [33m 515[2mms[22m[39m
+ [31m❯[39m src/tests/integration/PodcastStudioRouting.test.tsx [2m([22m[2m4 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 3009[2mms[22m[39m
+     [33m[2m✓[22m[39m redirects visitors to sign-in when unauthenticated [33m 406[2mms[22m[39m
+[31m     [31m×[31m renders transcript details when user is signed in and feature enabled[39m[33m 1040[2mms[22m[39m
+[31m     [31m×[31m shows transcription upgrade prompt when API denies access[39m[33m 1489[2mms[22m[39m
+[31m     [31m×[31m displays quota warning when approaching limit[39m[32m 70[2mms[22m[39m
+ [32m✓[39m src/features/auth/Auth.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 3301[2mms[22m[39m
+     [33m[2m✓[22m[39m redirects unauthenticated users from /dashboard to /sign-in [33m 435[2mms[22m[39m
+     [33m[2m✓[22m[39m shows dashboard content when the user is authenticated [33m 373[2mms[22m[39m
+     [33m[2m✓[22m[39m shows marketing sign-in link for visitors and remains stable when authenticated [33m 2481[2mms[22m[39m
+ [32m✓[39m src/App.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 3883[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the home route with sign-in actions for visitors [33m 3040[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps marketing sign-in actions visible even when authenticated [33m 442[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m10 passed[39m[22m[90m (13)[39m
+[2m   Start at [22m 06:11:03
+[2m   Duration [22m 11.38s[2m (transform 2.74s, setup 5.74s, collect 1.48s, tests 10.72s, environment 10.79s, prepare 239ms)[22m
+

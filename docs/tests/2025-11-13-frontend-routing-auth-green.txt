@@ -1,0 +1,16 @@
+
+> ma-saas-frontend@2.0.0 test
+> vitest run --run --pool=threads src/features/auth/Auth.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.8 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+ [32m✓[39m src/features/auth/Auth.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1575[2mms[22m[39m
+     [33m[2m✓[22m[39m redirects unauthenticated users from /dashboard to /sign-in [33m 312[2mms[22m[39m
+     [33m[2m✓[22m[39m shows marketing sign-in link for visitors and remains stable when authenticated [33m 999[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m 05:56:43
+[2m   Duration [22m 5.38s[2m (transform 600ms, setup 704ms, collect 178ms, tests 1.58s, environment 2.44s, prepare 23ms)[22m
+

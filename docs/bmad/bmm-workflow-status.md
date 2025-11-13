@@ -1,4 +1,4 @@
-# BMM Workflow Status (Reopened 2025-11-12T14:15Z | Updated 2025-11-13T10:30Z)
+# BMM Workflow Status (Reopened 2025-11-12T14:15Z | Updated 2025-11-13T05:55Z)
 
 ## Project Configuration
 
@@ -11,30 +11,30 @@ WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.y
 
 ## Current State
 
-CURRENT_PHASE: 6-Complete
-CURRENT_WORKFLOW: production-launch
-CURRENT_AGENT: autonomous (Claude Code)
+CURRENT_PHASE: 4-Implementation
+CURRENT_WORKFLOW: dev-story-execution
+CURRENT_AGENT: autonomous (Codex)
 PHASE_1_COMPLETE: true
 PHASE_2_COMPLETE: true
-PHASE_3_COMPLETE: true
-PHASE_4_COMPLETE: true
-PHASE_5_COMPLETE: true
-PHASE_6_COMPLETE: false (95-98% complete, in progress)
+PHASE_3_COMPLETE: partial (Phase 3 features pending)
+PHASE_4_COMPLETE: false (Document Generation wiring + new roadmap features outstanding)
+PHASE_5_COMPLETE: false
+PHASE_6_COMPLETE: false
 
 ## Current Story Status
 
-STORY_ID: MARK-002-enhanced-website-phases-3-10
+STORY_ID: DEV-014-document-generation
 STORY_STATUS: IN_PROGRESS
-STORY_RESULT: Emerald palette contrast sweep & case studies shipped; redeploy triggered and verified (10/10 checks), but production audits still cannot confirm palette due to tooling limits.
-BLOCKERS: CDN likely still serving cached assets and local Windows sandbox blocks headless Chrome (Lighthouse `EPERM`/`NO_FCP`, axe `ERR_ADDRESS_INVALID`). Need remote runner or CDN purge before audits can complete.
+STORY_RESULT: Frontend editor + AI tooling complete; new backend `/api/document-generation` routes/services/tests landed, but SPA still targets legacy `/api/v1/documents` endpoints and exports lack queued generation support.
+BLOCKERS: Need wiring plan, async export job handling, and Vitest integration tests before the story can close. Requires coordination with DocumentEditor maintainers + backend service team.
 
 ## Next Action
 
-NEXT_ACTION: Purge CDN / confirm new build live, then run production axe + Lighthouse from macOS or CI runner and archive artefacts.
-NEXT_COMMAND: (remote) scripts/run_lighthouse_audits.sh production
-NEXT_AGENT: marketing-qa
-PRIORITY: P1
-RATIONALE: Palette + redeploy complete; only external audit artefacts blocking story closure.
+NEXT_ACTION: Finalize Document Generation wiring (frontend hitting `/api/document-generation`, export job queue, async status polling) via strict TDD loops.
+NEXT_COMMAND: `npm run test -- --run --pool=threads src/pages/documents/DocumentEditor.integration.test.tsx`
+NEXT_AGENT: full-stack
+PRIORITY: P0
+RATIONALE: F-009 is the only partially built Phase 2 feature; bringing it to 100% unblocks release planning.
 
 ## Completed This Session
 

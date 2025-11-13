@@ -54,6 +54,9 @@ export default defineConfig({
     deps: {
       inline: ['react-router', 'react-router-dom'],
     },
+    exclude: [
+      'node_modules.before-vitest/**',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],

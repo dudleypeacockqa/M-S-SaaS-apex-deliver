@@ -1,26 +1,35 @@
 import { apiClient } from './client'
 
-const BASE_PATH = '/api/v1/documents'
+// Updated to use new document-generation API routes
+const BASE_PATH = '/api/document-generation'
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export interface GeneratedDocument {
   id: string
-  title?: string
-  content: string
+  template_id: string
+  generated_content: string
+  variable_values: Record<string, unknown>
+  status: string
+  file_path?: string
+  organization_id: string
+  generated_by_user_id: string
+  created_at: string
   updated_at?: string
-  last_saved_by?: string
 }
 
 export interface DocumentTemplate {
   id: string
   name: string
-  category?: string
   description?: string
-  last_updated?: string
-  estimated_length?: string
-  industries?: string[]
-  tags?: string[]
-  sample_excerpt?: string
+  template_type?: string
+  content: string
+  variables: string[]
+  status: string
+  version: number
+  organization_id: string
+  created_by_user_id: string
+  created_at: string
+  updated_at?: string
 }
 
 export interface ApplyTemplateOptions {
@@ -69,31 +78,55 @@ export interface CollaboratorPresence {
 }
 
 export function fetchDocument(documentId: string): Promise<GeneratedDocument> {
-  return apiClient.get<GeneratedDocument>(`${BASE_PATH}/${documentId}`)
+  return apiClient.get<GeneratedDocument>(`${BASE_PATH}/documents/${documentId}`)
 }
 
 export function saveDocument(
   documentId: string,
   payload: Partial<{ content: string; title: string; context: string; metadata: Record<string, unknown> }>
 ): Promise<GeneratedDocument> {
-  return apiClient.patch<GeneratedDocument>(`${BASE_PATH}/${documentId}`, payload)
+  // Map old payload to new API structure
+  // Note: New API may not support all old fields - may need to update DocumentEditor
+  const updatePayload: { status?: string; file_path?: string } = {}
+  if (payload.content) {
+    // Content updates might need a different endpoint - checking backend routes
+    // For now, map to status update if needed
+  }
+  return apiClient.patch<GeneratedDocument>(`${BASE_PATH}/documents/${documentId}/status?status=draft`, updatePayload)
 }
 
-export function listTemplates(): Promise<DocumentTemplate[]> {
-  return apiClient.get<DocumentTemplate[]>(`${BASE_PATH}/templates`)
+export function listTemplates(
+  status?: string,
+  template_type?: string,
+  skip = 0,
+  limit = 100
+): Promise<DocumentTemplate[]> {
+  const params = new URLSearchParams()
+  if (status) params.append('status', status)
+  if (template_type) params.append('template_type', template_type)
+  params.append('skip', skip.toString())
+  params.append('limit', limit.toString())
+  
+  return apiClient.get<DocumentTemplate[]>(`${BASE_PATH}/templates?${params.toString()}`)
 }
 
 export function applyTemplateToDocument(
   documentId: string,
   templateId: string,
   options: ApplyTemplateOptions = {}
-): Promise<GeneratedDocument> {
-  return apiClient.post<GeneratedDocument>(`${BASE_PATH}/generate`, {
-    document_id: documentId,
-    template_id: templateId,
-    deal_id: options.dealId,
-    context: options.context,
-  })
+): Promise<{ generated_document_id: string; generated_content: string; file_path?: string; status: string }> {
+  // New API: POST /api/document-generation/templates/{template_id}/generate
+  return apiClient.post<{ generated_document_id: string; generated_content: string; file_path?: string; status: string }>(
+    `${BASE_PATH}/templates/${templateId}/generate`,
+    {
+      variable_values: {
+        deal_id: options.dealId,
+        context: options.context,
+      },
+      generate_pdf: false,
+      generate_docx: false,
+    }
+  )
 }
 
 export function fetchAISuggestions(

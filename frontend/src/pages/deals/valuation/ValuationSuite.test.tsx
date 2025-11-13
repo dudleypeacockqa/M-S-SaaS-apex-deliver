@@ -55,6 +55,22 @@ describe('ValuationSuite RED tests', () => {
       enterprise_value_range: { min: null, max: null, median: null },
       equity_value_range: { min: null, max: null, median: null },
     })
+    // Default mock for export status polling
+    vi.mocked(valuationApi.getExportStatus).mockResolvedValue({
+      id: 'export-1',
+      valuation_id: 'val-001',
+      organization_id: 'org-1',
+      export_type: 'pdf',
+      export_format: 'summary',
+      status: 'queued',
+      task_id: 'task-1',
+      scenario_id: null,
+      download_url: null,
+      file_size_bytes: null,
+      exported_by: 'user-1',
+      exported_at: '2025-01-01T00:00:00Z',
+      completed_at: null,
+    })
   })
 
   it('renders valuation layout shell', async () => {

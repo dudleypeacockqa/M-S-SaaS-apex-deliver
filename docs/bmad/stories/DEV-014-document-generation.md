@@ -1,9 +1,9 @@
 # DEV-014 – Document Generation Frontend
 
-**STATUS: 🔄 IN PROGRESS** (2025-11-13 - Frontend 100%, backend APIs 0% - models exist but no router/service)
+**STATUS: 🔄 IN PROGRESS** (2025-11-13 – Frontend UI complete, backend CRUD/render API now exists under `/api/document-generation`, but the SPA still targets legacy `/api/v1/documents` endpoints. Export jobs + async status polling remain TODO.)
 
 ## Status
-- **Completion:** 15% (frontend UI exists but backend APIs missing)
+- **Completion:** ~60% (frontend UI + tests complete; backend routes/services/tests landed in `backend/app/api/routes/document_generation.py`, but wiring + export jobs still outstanding)
 - **Scope:** Frontend document editor with AI assistance, template management, exports, and version history
 - **Owner:** Frontend platform team
 
@@ -30,6 +30,7 @@
 - All tests pass locally via `npm run test -- DocumentEditor.test.tsx`.
 
 ## Follow-ups
+- Wire `frontend/src/services/api/documentGeneration.ts` to the new backend routes and update DocumentEditor to use the `/api/document-generation` contract.
+- Implement queued export job handling (PDF/DOCX generation + polling/status endpoints) and surface progress inside DocumentEditor.
 - Hook collaborative editing socket events once backend channel contracts are finalised.
-- Extend exporter with queued job polling when backend introduces long-running renders.
 - Capture screenshot walkthrough for the next release-notes bundle.

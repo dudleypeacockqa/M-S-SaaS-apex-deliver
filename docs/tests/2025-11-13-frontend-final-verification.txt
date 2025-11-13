@@ -5165,3 +5165,3412 @@ If this is a long-running test, pass a timeout value as the last argument or con
  [32m✓[39m src/utils/dateFormat.test.ts[2m > [22mformatDate[2m > [22mreturns empty string for invalid values[32m 1[2mms[22m[39m
  [32m✓[39m src/utils/dateFormat.test.ts[2m > [22mformatDate[2m > [22msupports overriding format options and locale[32m 2[2mms[22m[39m
  [32m✓[39m src/pages/marketing/BlogPost.test.tsx[2m > [22mBlogPost page[2m > [22mlinks related articles using their slug[33m 369[2mms[22m[39m
+
+<--- Last few GCs --->
+
+[97116:0000013C1F6F5000]  3089755 ms: Scavenge (during sweeping) 4090.5 (4095.2) -> 4088.7 (4095.2) MB, pooled: 0.0 MB, 15.62 / 0.00 ms (average mu = 0.381, current mu = 0.377) allocation failure; 
+[97116:0000013C1F6F5000]  3091642 ms: Mark-Compact (reduce) 4093.5 (4098.2) -> 4089.0 (4092.5) MB, pooled: 0.0 MB, 1280.84 / 0.00 ms (+ 389.5 ms in 77 steps since start of marking, biggest step 6.4 ms, walltime since start of marking 1887 ms) (average mu 
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FF6EF7F8B26 node::OnFatalError+1318
+ 2: 00007FF6F03953D7 v8::Function::NewInstance+423
+ 3: 00007FF6F01A3837 EVP_PKEY_asn1_set_get_priv_key+463031
+ 4: 00007FF6F01A7747 EVP_PKEY_asn1_set_get_priv_key+479175
+ 5: 00007FF6F01B9338 v8::internal::StrongRootAllocatorBase::deallocate_impl+19160
+ 6: 00007FF6F01B8B6B v8::internal::StrongRootAllocatorBase::deallocate_impl+17163
+ 7: 00007FF6F177AB6D v8::base::DiyFp::Multiply+10628957
+ 8: 00007FF6F01A1168 EVP_PKEY_asn1_set_get_priv_key+453096
+ 9: 00007FF6F01BED60 X509_STORE_set_cleanup+5616
+10: 00007FF6F01BDA5E X509_STORE_set_cleanup+750
+11: 00007FF6F01CAF5E SSL_CTX_set_cookie_generate_cb+19214
+12: 00007FF6F01E2798 SSL_CTX_set_cookie_generate_cb+115528
+13: 00007FF6F01DE570 SSL_CTX_set_cookie_generate_cb+98592
+14: 00007FF6F023652A v8::base::CPU::has_sse41+36922
+15: 00007FF6F0235C3C v8::base::CPU::has_sse41+34636
+16: 00007FF6F0231BB7 v8::base::CPU::has_sse41+18119
+17: 00007FF6F02319CF v8::base::CPU::has_sse41+17631
+18: 00007FF6F03586A5 v8::internal::ThreadIsolation::LookupJumpTableAllocations+452341
+19: 0000013C57E3B43A 
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m node_modules.before-vitest/registry-auth-token/test/auth-token.test.js[2m [ node_modules.before-vitest/registry-auth-token/test/auth-token.test.js ][22m
+[31m[1mError[22m: Cannot find module 'mocha'
+Require stack:
+- C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\frontend\node_modules.before-vitest\registry-auth-token\test\auth-token.test.js[39m
+[36m [2m❯[22m node_modules.before-vitest/registry-auth-token/test/auth-token.test.js:[2m3:13[22m[39m
+    [90m  1| [39m[35mvar[39m fs [33m=[39m [34mrequire[39m([32m'fs'[39m)
+    [90m  2| [39m[35mvar[39m path [33m=[39m [34mrequire[39m([32m'path'[39m)
+    [90m  3| [39m[35mvar[39m mocha [33m=[39m [34mrequire[39m([32m'mocha'[39m)
+    [90m   | [39m            [31m^[39m
+    [90m  4| [39m[35mvar[39m assert [33m=[39m [34mrequire[39m([32m'assert'[39m)
+    [90m  5| [39m[35mvar[39m requireUncached [33m=[39m [34mrequire[39m([32m'require-uncached'[39m)
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ code: 'MODULE_NOT_FOUND', requireStack: [ 'C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\frontend\node_modules.before-vitest\registry-auth-token\test\auth-token.test.js' ] }[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m node_modules.before-vitest/registry-auth-token/test/registry-url.test.js[2m [ node_modules.before-vitest/registry-auth-token/test/registry-url.test.js ][22m
+[31m[1mError[22m: Cannot find module 'mocha'
+Require stack:
+- C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\frontend\node_modules.before-vitest\registry-auth-token\test\registry-url.test.js[39m
+[36m [2m❯[22m node_modules.before-vitest/registry-auth-token/test/registry-url.test.js:[2m3:13[22m[39m
+    [90m  1| [39m[35mvar[39m fs [33m=[39m [34mrequire[39m([32m'fs'[39m)
+    [90m  2| [39m[35mvar[39m path [33m=[39m [34mrequire[39m([32m'path'[39m)
+    [90m  3| [39m[35mvar[39m mocha [33m=[39m [34mrequire[39m([32m'mocha'[39m)
+    [90m   | [39m            [31m^[39m
+    [90m  4| [39m[35mvar[39m assert [33m=[39m [34mrequire[39m([32m'assert'[39m)
+    [90m  5| [39m[35mvar[39m requireUncached [33m=[39m [34mrequire[39m([32m'require-uncached'[39m)
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ code: 'MODULE_NOT_FOUND', requireStack: [ 'C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\frontend\node_modules.before-vitest\registry-auth-token\test\registry-url.test.js' ] }[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m node_modules.before-vitest/style-to-js/src/index.test.ts[2m [ node_modules.before-vitest/style-to-js/src/index.test.ts ][22m
+[31m[1mError[22m: Cannot find module '.'
+Require stack:
+- C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\frontend\node_modules.before-vitest\style-to-js\src\index.test.ts[39m
+[36m [2m❯[22m node_modules.before-vitest/style-to-js/src/index.test.ts:[2m1:20[22m[39m
+    [90m  1| [39m[35mimport[39m styleToJS [33m=[39m [34mrequire[39m([32m'.'[39m)[33m;[39m
+    [90m   | [39m                   [31m^[39m
+    [90m  2| [39m
+    [90m  3| [39m[34mit[39m([32m'exposes itself as default'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ code: 'MODULE_NOT_FOUND', requireStack: [ 'C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\frontend\node_modules.before-vitest\style-to-js\src\index.test.ts' ] }[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯[22m[39m
+
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 14 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/App.test.tsx[2m > [22mAppRoutes[2m > [22mrenders the home route with sign-in actions for visitors
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the role "link" and name `/sign in/i`
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"text-gray-700 hover:text-indigo-900 font-medium transition-colors"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/sign-in"[39m
+[36m>[39m
+  [0mSign In[0m
+[36m</a>[39m
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"block w-full text-center py-2 text-gray-700 hover:text-indigo-900 font-medium"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/sign-in"[39m
+[36m>[39m
+  [0mSign In[0m
+[36m</a>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen flex flex-col"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-indigo-900 focus:shadow-lg"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0mSkip to main content[0m
+      [36m</a>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary"[39m
+        [33mclass[39m=[32m"bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-between items-center h-16"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"ApexDeliver home"[39m
+                [33mclass[39m=[32m"flex items-center space-x-2"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-2xl font-bold bg-gradient-to-r from-indigo-900 to-purple-900 bg-clip-text text-transparent"[39m
+                [36m>[39m
+                  [0mApexDeliver[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-sm font-semibold text-emerald-700"[39m
+                [36m>[39m
+                  [0m+ CapLiquify[0m
+                [36m</span>[39m
+              [36m</a>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hidden lg:flex items-center space-x-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"products-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"products-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mProducts[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"solutions-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"solutions-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mSolutions[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"resources-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"resources-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mResources[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"company-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"company-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mCompany[0m
+                  [...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/App.test.tsx:[2m83:19[22m[39m
+    [90m 81| [39m    expect(await screen.findByRole("heading", { name: /from deal flow …
+    [90m 82| [39m    [90m// Marketing nav has regular links, not Clerk's SignInButton[39m
+    [90m 83| [39m    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDo…
+    [90m   | [39m                  [31m^[39m
+    [90m 84| [39m    [90m// Multiple "Start Your Free" CTA buttons/links exist[39m
+    [90m 85| [39m    const ctaLinks = screen.getAllByRole("link", { name: /start your f…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/App.test.tsx[2m > [22mAppRoutes[2m > [22mupdates the header to show the user menu for authenticated users
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the role "link" and name `/sign in/i`
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"text-gray-700 hover:text-indigo-900 font-medium transition-colors"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/sign-in"[39m
+[36m>[39m
+  [0mSign In[0m
+[36m</a>[39m
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"block w-full text-center py-2 text-gray-700 hover:text-indigo-900 font-medium"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/sign-in"[39m
+[36m>[39m
+  [0mSign In[0m
+[36m</a>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen flex flex-col"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-indigo-900 focus:shadow-lg"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0mSkip to main content[0m
+      [36m</a>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary"[39m
+        [33mclass[39m=[32m"bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-between items-center h-16"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"ApexDeliver home"[39m
+                [33mclass[39m=[32m"flex items-center space-x-2"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-2xl font-bold bg-gradient-to-r from-indigo-900 to-purple-900 bg-clip-text text-transparent"[39m
+                [36m>[39m
+                  [0mApexDeliver[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-sm font-semibold text-emerald-700"[39m
+                [36m>[39m
+                  [0m+ CapLiquify[0m
+                [36m</span>[39m
+              [36m</a>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hidden lg:flex items-center space-x-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"products-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"products-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mProducts[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"solutions-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"solutions-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mSolutions[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"resources-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"resources-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mResources[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"company-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"company-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mCompany[0m
+                  [...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/App.test.tsx:[2m123:20[22m[39m
+    [90m121| [39m     expect(await screen.findByRole("heading", { name: /from deal flow…
+    [90m122| [39m     // Marketing pages show sign-in link even when authenticated (mar…
+    [90m123| [39m     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheD…
+    [90m   | [39m                   [31m^[39m
+    [90m124| [39m  }[33m,[39m [34m10000[39m)
+    [90m125| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/features/auth/Auth.test.tsx[2m > [22mClerk authentication routing[2m > [22mredirects unauthenticated users from /dashboard to /sign-in
+[31m[1mTestingLibraryElementError[22m: Unable to find role="heading" and name `/sign in to apexdeliver/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div />[31m
+[36m</body>[31m
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div />[31m
+[36m</body>[31m[39m
+[90m [2m❯[22m waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m src/features/auth/Auth.test.tsx:[2m77:20[22m[39m
+    [90m 75| [39m    [90m// Wait for lazy-loaded SignInPage to render[39m
+    [90m 76| [39m    [34mexpect[39m(
+    [90m 77| [39m      [35mawait[39m screen[33m.[39m[34mfindByRole[39m([32m'heading'[39m[33m,[39m {
+    [90m   | [39m                   [31m^[39m
+    [90m 78| [39m        name[33m:[39m [36m/sign in to apexdeliver/i[39m[33m,[39m
+    [90m 79| [39m      }[33m,[39m { timeout[33m:[39m [34m3000[39m })
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/features/auth/Auth.test.tsx[2m > [22mClerk authentication routing[2m > [22mrenders the appropriate header action depending on auth state
+[31m[1mError[22m: Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+[36m [2m❯[22m src/features/auth/Auth.test.tsx:[2m113:3[22m[39m
+    [90m111| [39m  })
+    [90m112| [39m
+    [90m113| [39m  it('renders the appropriate header action depending on auth state', …
+    [90m   | [39m  [31m^[39m
+    [90m114| [39m    [35mconst[39m queryClient [33m=[39m [35mnew[39m [33mQueryClient[39m({
+    [90m115| [39m      defaultOptions[33m:[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/deals/CreateDealModal.test.tsx[2m > [22mCreateDealModal[2m > [22mForm Validation[2m > [22mshould show error for negative deal size
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: /deal size must be positive/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"[39m
+      [33mdata-testid[39m=[32m"modal-backdrop"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-labelledby[39m=[32m"modal-title"[39m
+        [33maria-modal[39m=[32m"true"[39m
+        [33mclass[39m=[32m"bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"[39m
+        [33mrole[39m=[32m"dialog"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center justify-between p-6 border-b border-gray-200"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-2xl font-semibold text-gray-900"[39m
+            [33mid[39m=[32m"modal-title"[39m
+          [36m>[39m
+            [0mCreate New Deal[0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Close modal"[39m
+            [33mclass[39m=[32m"text-gray-400 hover:text-gray-600 transition-colors"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x h-6 w-6"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<form[39m
+          [33mclass[39m=[32m"p-6 space-y-6"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+              [33mfor[39m=[32m"name"[39m
+            [36m>[39m
+              [0mDeal Name [0m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-red-500"[39m
+              [36m>[39m
+                [0m*[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<input[39m
+              [33maria-label[39m=[32m"Deal name"[39m
+              [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"[39m
+              [33mid[39m=[32m"name"[39m
+              [33mname[39m=[32m"name"[39m
+              [33mplaceholder[39m=[32m"e.g., Acme Corp Acquisition"[39m
+              [33mtype[39m=[32m"text"[39m
+              [33mvalue[39m=[32m"1000"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+              [33mfor[39m=[32m"target_company"[39m
+            [36m>[39m
+              [0mTarget Company [0m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-red-500"[39m
+              [36m>[39m
+                [0m*[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<input[39m
+              [33maria-label[39m=[32m"Target company"[39m
+              [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"[39m
+              [33mid[39m=[32m"target_company"[39m
+              [33mname[39m=[32m"target_company"[39m
+              [33mplaceholder[39m=[32m"e.g., Acme Corporation Ltd"[39m
+              [33mtype[39m=[32m"text"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+              [33mfor[39m=[32m"industry"[39m
+            [36m>[39m
+              [0mIndustry[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33maria-label[39m=[32m"Industry"[39m
+              [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+              [33mid[39m=[32m"industry"[39m
+              [33mname[39m=[32m"industry"[39m
+              [33mplaceholder[39m=[32m"e.g., Technology, Healthcare, Finance"[39m
+              [33mtype[39m=[32m"text"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-2 gap-4"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"deal_size"[39m
+              [36m>[39m
+                [0mDeal Size[0m
+              [36m</label>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Deal size"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"[39m
+                [33mid[39m=[32m"deal_size"[39m
+                [33mname[39m=[32m"deal_size"[39m
+                [33mplaceholder[39m=[32m"1000000"[39m
+                [33mstep[39m=[32m"1000"[39m
+                [33mtype[39m=[32m"number"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"currency"[39m
+              [36m>[39m
+                [0mCurrency[0m
+              [36m</label>[39m
+              [36m<select[39m
+                [33maria-label[39m=[32m"Currency"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+                [33mid[39m=[32m"currency"[39m
+                [33mname[39m=[32m"currency"[39m
+              [36m>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"GBP"[39m
+                [36m>[39m
+                  [0m£ GBP[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"USD"[39m
+                [36m>[39m
+                  [0m$ USD[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"EUR"[39m
+                [36m>[39m
+                  [0m€ EUR[0m
+                [36m</option>[39m
+              [36m</select>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+              [33mfor[39m=[32m"stage"[39m
+            [36m>[39m
+              [0mStage[0m
+            [36m</label>[39m
+            [36m<select[39m
+              [33maria-label[39m=[32m"Stage"[39m
+              [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+              [33mid[39m=[32m"stage"[39m
+              [33mname[39m=[32m"stage"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"sourcing"[39m
+              [36m>[39m
+                [0mSourcing[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"evaluation"[39m
+              [36m>[39m
+                [0mEvaluation[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"due_diligence"[39m
+              [36m>[39m
+                [0mDue Diligence[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"negotiation"[39m
+              [36m>[39m
+                [0mNegotiation[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"closing"[39m
+              [36m>[39m
+                [0mClosing[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+              [33mfor[39m=[32m"description"[39m
+            [36m>[39m
+              [0mDescription[0m
+            [36m</label>[39m
+            [36m<textarea[39m
+              [33maria-label[39m=[32m"Description"[39m
+              [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+              [33mid[39m=[32m"description"[39m
+              [33mname[39m=[32m"description"[39m
+              [33mplaceholder[39m=[32m"Add any additional notes or context about this deal..."[39m
+              [33mrows[39m=[32m"4"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-end gap-3 pt-4 border-t border-gray-200"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mCancel[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"[39m
+              [33mtype[39m=[32m"submit"[39m
+            [36m>[39m
+              [0mCreate Deal[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</form>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"[39m
+        [33mdata-testid[39m=[32m"modal-backdrop"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"modal-title"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"[39m
+          [33mrole[39m=[32m"dialog"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center justify-between p-6 border-b border-gray-200"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"text-2xl font-semibold text-gray-900"[39m
+              [33mid[39m=[32m"modal-title"[39m
+            [36m>[39m
+              [0mCreate New Deal[0m
+            [36m</h2>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Close modal"[39m
+              [33mclass[39m=[32m"text-gray-400 hover:text-gray-600 transition-colors"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-x h-6 w-6"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<form[39m
+            [33mclass[39m=[32m"p-6 space-y-6"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"name"[39m
+              [36m>[39m
+                [0mDeal Name [0m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-red-500"[39m
+                [36m>[39m
+                  [0m*[0m
+                [36m</span>[39m
+              [36m</label>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Deal name"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"[39m
+                [33mid[39m=[32m"name"[39m
+                [33mname[39m=[32m"name"[39m
+                [33mplaceholder[39m=[32m"e.g., Acme Corp Acquisition"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m"1000"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"target_company"[39m
+              [36m>[39m
+                [0mTarget Company [0m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-red-500"[39m
+                [36m>[39m
+                  [0m*[0m
+                [36m</span>[39m
+              [36m</label>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Target company"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"[39m
+                [33mid[39m=[32m"target_company"[39m
+                [33mname[39m=[32m"target_company"[39m
+                [33mplaceholder[39m=[32m"e.g., Acme Corporation Ltd"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"industry"[39m
+              [36m>[39m
+                [0mIndustry[0m
+              [36m</label>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Industry"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+                [33mid[39m=[32m"industry"[39m
+                [33mname[39m=[32m"industry"[39m
+                [33mplaceholder[39m=[32m"e.g., Technology, Healthcare, Finance"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"grid grid-cols-2 gap-4"[39m
+            [36m>[39m
+              [36m<div>[39m
+                [36m<label[39m
+                  [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                  [33mfor[39m=[32m"deal_size"[39m
+                [36m>[39m
+                  [0mDeal Size[0m
+                [36m</label>[39m
+                [36m<input[39m
+                  [33maria-label[39m=[32m"Deal size"[39m
+                  [33mclass[39m=[32m"w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"[39m
+                  [33mid[39m=[32m"deal_size"[39m
+                  [33mname[39m=[32m"deal_size"[39m
+                  [33mplaceholder[39m=[32m"1000000"[39m
+                  [33mstep[39m=[32m"1000"[39m
+                  [33mtype[39m=[32m"number"[39m
+                  [33mvalue[39m=[32m""[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<div>[39m
+                [36m<label[39m
+                  [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                  [33mfor[39m=[32m"currency"[39m
+                [36m>[39m
+                  [0mCurrency[0m
+                [36m</label>[39m
+                [36m<select[39m
+                  [33maria-label[39m=[32m"Currency"[39m
+                  [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+                  [33mid[39m=[32m"currency"[39m
+                  [33mname[39m=[32m"currency"[39m
+                [36m>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"GBP"[39m
+                  [36m>[39m
+                    [0m£ GBP[0m
+                  [36m</option>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"USD"[39m
+                  [36m>[39m
+                    [0m$ USD[0m
+                  [36m</option>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"EUR"[39m
+                  [36m>[39m
+                    [0m€ EUR[0m
+                  [36m</option>[39m
+                [36m</select>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"stage"[39m
+              [36m>[39m
+                [0mStage[0m
+              [36m</label>[39m
+              [36m<select[39m
+                [33maria-label[39m=[32m"Stage"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+                [33mid[39m=[32m"stage"[39m
+                [33mname[39m=[32m"stage"[39m
+              [36m>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"sourcing"[39m
+                [36m>[39m
+                  [0mSourcing[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"evaluation"[39m
+                [36m>[39m
+                  [0mEvaluation[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"due_diligence"[39m
+                [36m>[39m
+                  [0mDue Diligence[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"negotiation"[39m
+                [36m>[39m
+                  [0mNegotiation[0m
+                [36m</option>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m"closing"[39m
+                [36m>[39m
+                  [0mClosing[0m
+                [36m</option>[39m
+              [36m</select>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<label[39m
+                [33mclass[39m=[32m"block text-sm font-medium text-gray-700 mb-1"[39m
+                [33mfor[39m=[32m"description"[39m
+              [36m>[39m
+                [0mDescription[0m
+              [36m</label>[39m
+              [36m<textarea[39m
+                [33maria-label[39m=[32m"Description"[39m
+                [33mclass[39m=[32m"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"[39m
+                [33mid[39m=[32m"description"[39m
+                [33mname[39m=[32m"description"[39m
+                [33mplaceholder[39m=[32m"Add any additional notes or context about this deal..."[39m
+                [33mrows[39m=[32m"4"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center justify-end gap-3 pt-4 border-t border-gray-200"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mCancel[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"[39m
+                [33mtype[39m=[32m"submit"[39m
+              [36m>[39m
+                [0mCreate Deal[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</form>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+[90m [2m❯[22m Proxy.waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[36m [2m❯[22m src/components/deals/CreateDealModal.test.tsx:[2m175:13[22m[39m
+    [90m173| [39m      [35mawait[39m user[33m.[39m[34mtab[39m() [90m// Trigger blur event to validate[39m
+    [90m174| [39m
+    [90m175| [39m      [35mawait[39m [34mwaitFor[39m(() [33m=>[39m {
+    [90m   | [39m            [31m^[39m
+    [90m176| [39m        expect(screen.getByText(/deal size must be positive/i)).toBeIn…
+    [90m177| [39m      })
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/pages/marketing/EnhancedLandingPage.test.tsx[2m > [22mEnhancedLandingPage[2m > [22mrenders EnhancedHeroSection
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the text: /CapLiquify FP&A/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<a[39m
+  [33mclass[39m=[32m"block py-2 text-sm text-gray-600 hover:text-indigo-900"[39m
+  [33mdata-discover[39m=[32m"true"[39m
+  [33mhref[39m=[32m"/capliquify-fpa"[39m
+[36m>[39m
+  [0mCapLiquify FP&A[0m
+[36m</a>[39m
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"text-xl font-bold text-gray-900 mb-3"[39m
+  [33mid[39m=[32m"capliquify-fp&a-engine-heading"[39m
+[36m>[39m
+  [0mCapLiquify FP&A Engine[0m
+[36m</h3>[39m
+
+Ignored nodes: comments, script, style
+[36m<p[39m
+  [33mclass[39m=[32m"text-xl text-gray-700 max-w-3xl mx-auto"[39m
+[36m>[39m
+  [0mWhether you're a solo dealmaker, a growing firm, or a large enterprise, we have a plan that fits your needs. Start with our powerful CapLiquify FP&A tools and expand to the full ApexDeliver M&A platform as you grow. All plans start with a risk-free 14-day trial.[0m
+[36m</p>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen flex flex-col"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-indigo-900 focus:shadow-lg"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0mSkip to main content[0m
+      [36m</a>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary"[39m
+        [33mclass[39m=[32m"bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-between items-center h-16"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"ApexDeliver home"[39m
+                [33mclass[39m=[32m"flex items-center space-x-2"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-2xl font-bold bg-gradient-to-r from-indigo-900 to-purple-900 bg-clip-text text-transparent"[39m
+                [36m>[39m
+                  [0mApexDeliver[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-sm font-semibold text-emerald-700"[39m
+                [36m>[39m
+                  [0m+ CapLiquify[0m
+                [36m</span>[39m
+              [36m</a>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hidden lg:flex items-center space-x-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"products-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"products-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mProducts[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"solutions-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"solutions-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mSolutions[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"resources-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"resources-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mResources[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"company-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"company-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mCompany[0m
+                  [...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/pages/marketing/EnhancedLandingPage.test.tsx:[2m29:19[22m[39m
+    [90m 27| [39m  [34mit[39m([32m'renders EnhancedHeroSection'[39m[33m,[39m [35masync[39m () [33m=>[39m {
+    [90m 28| [39m    [35mawait[39m [34mrenderLandingPage[39m()[33m;[39m
+    [90m 29| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([36m/CapLiquify FP&A/i[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m 30| [39m    [34mexpect[39m(
+    [90m 31| [39m      screen.getByText(/13-week cash visibility and working capital cl…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/pages/marketing/EnhancedLandingPage.test.tsx[2m > [22mEnhancedLandingPage[2m > [22msurfaces hero proof points for CapLiquify and ApexDeliver
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the text: /13-week cash forecast/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"text-2xl font-bold text-gray-900"[39m
+[36m>[39m
+  [0m13-Week Cash Forecast[0m
+[36m</h3>[39m
+
+Ignored nodes: comments, script, style
+[36m<p[39m
+  [33mclass[39m=[32m"text-gray-700 leading-relaxed"[39m
+[36m>[39m
+  [0mGain immediate control over your cash flow and pricing strategy. Use our 13-week cash forecasting, working capital optimization, and advanced pricing engine to stabilize financials and drive profitability from day one. Perfect for post-merger integration or as a standalone FP&A powerhouse.[0m
+[36m</p>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen flex flex-col"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-indigo-900 focus:shadow-lg"[39m
+        [33mhref[39m=[32m"#main-content"[39m
+      [36m>[39m
+        [0mSkip to main content[0m
+      [36m</a>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary"[39m
+        [33mclass[39m=[32m"bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-between items-center h-16"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex items-center"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33maria-label[39m=[32m"ApexDeliver home"[39m
+                [33mclass[39m=[32m"flex items-center space-x-2"[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-2xl font-bold bg-gradient-to-r from-indigo-900 to-purple-900 bg-clip-text text-transparent"[39m
+                [36m>[39m
+                  [0mApexDeliver[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-sm font-semibold text-emerald-700"[39m
+                [36m>[39m
+                  [0m+ CapLiquify[0m
+                [36m</span>[39m
+              [36m</a>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"hidden lg:flex items-center space-x-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"products-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"products-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mProducts[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"solutions-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"solutions-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mSolutions[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"resources-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"resources-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mResources[0m
+                  [36m<svg[39m
+                    [33mclass[39m=[32m"w-4 h-4 transition-transform "[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M19 9l-7 7-7-7"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"relative"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-controls[39m=[32m"company-dropdown"[39m
+                  [33maria-expanded[39m=[32m"false"[39m
+                  [33maria-haspopup[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"px-4 py-2 text-gray-700 hover:text-indigo-900 font-medium transition-colors rounded-md hover:bg-gray-50 flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"[39m
+                  [33mid[39m=[32m"company-dropdown-trigger"[39m
+                [36m>[39m
+                  [0mCompany[0m
+                  [...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/pages/marketing/EnhancedLandingPage.test.tsx:[2m45:21[22m[39m
+    [90m 43| [39m    ][33m;[39m
+    [90m 44| [39m    statLabels[33m.[39m[34mforEach[39m((label) [33m=>[39m {
+    [90m 45| [39m      [34mexpect[39m(screen[33m.[39m[34mgetByText[39m(label))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m   | [39m                    [31m^[39m
+    [90m 46| [39m    })[33m;[39m
+    [90m 47| [39m  })[33m;[39m
+[90m [2m❯[22m src/pages/marketing/EnhancedLandingPage.test.tsx:[2m44:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/tests/integration/PodcastStudioRouting.test.tsx[2m > [22mIntegration: podcast studio routing[2m > [22mredirects visitors to sign-in when unauthenticated
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find role="heading" and name `/sign in to apexdeliver/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mstyle[39m=[32m"min-height: 100vh; background-color: rgb(248, 250, 252); color: rgb(15, 23, 42);"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mstyle[39m=[32m"border-bottom: 1px solid rgb(226, 232, 240); background-color: rgb(255, 255, 255);"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/"[39m
+            [33mstyle[39m=[32m"font-weight: 700; font-size: 1.25rem; color: rgb(49, 46, 129); text-decoration: none;"[39m
+          [36m>[39m
+            [0mApexDeliver[0m
+          [36m</a>[39m
+          [36m<nav[39m
+            [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/"[39m
+              [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+            [36m>[39m
+              [0mHome[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/dashboard"[39m
+              [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+            [36m>[39m
+              [0mDashboard[0m
+            [36m</a>[39m
+          [36m</nav>[39m
+          [36m<div[39m
+            [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mdata-testid[39m=[32m"sign-in-button"[39m
+            [36m>[39m
+              [0mSign In[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mstyle[39m=[32m"color: rgb(49, 46, 129); background: none; border: medium; font-weight: 600; cursor: pointer; text-decoration: underline;"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mCreate account[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 2rem 1rem;"[39m
+      [36m/>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mstyle[39m=[32m"min-height: 100vh; background-color: rgb(248, 250, 252); color: rgb(15, 23, 42);"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mstyle[39m=[32m"border-bottom: 1px solid rgb(226, 232, 240); background-color: rgb(255, 255, 255);"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/"[39m
+            [33mstyle[39m=[32m"font-weight: 700; font-size: 1.25rem; color: rgb(49, 46, 129); text-decoration: none;"[39m
+          [36m>[39m
+            [0mApexDeliver[0m
+          [36m</a>[39m
+          [36m<nav[39m
+            [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/"[39m
+              [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+            [36m>[39m
+              [0mHome[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/dashboard"[39m
+              [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+            [36m>[39m
+              [0mDashboard[0m
+            [36m</a>[39m
+          [36m</nav>[39m
+          [36m<div[39m
+            [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mdata-testid[39m=[32m"sign-in-button"[39m
+            [36m>[39m
+              [0mSign In[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mstyle[39m=[32m"color: rgb(49, 46, 129); background: none; border: medium; font-weight: 600; cursor: pointer; text-decoration: underline;"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mCreate account[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 2rem 1rem;"[39m
+      [36m/>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m src/tests/integration/PodcastStudioRouting.test.tsx:[2m84:20[22m[39m
+    [90m 82| [39m
+    [90m 83| [39m    [34mexpect[39m(
+    [90m 84| [39m      await screen.findByRole('heading', { name: /sign in to apexdeliv…
+    [90m   | [39m                   [31m^[39m
+    [90m 85| [39m    )[33m.[39m[34mtoBeInTheDocument[39m()
+    [90m 86| [39m  })
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/tests/integration/PodcastStudioRouting.test.tsx[2m > [22mIntegration: podcast studio routing[2m > [22mrenders transcript details when user is signed in and feature enabled
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: /market update/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mstyle[39m=[32m"min-height: 100vh; background-color: rgb(248, 250, 252); color: rgb(15, 23, 42);"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mstyle[39m=[32m"border-bottom: 1px solid rgb(226, 232, 240); background-color: rgb(255, 255, 255);"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/"[39m
+            [33mstyle[39m=[32m"font-weight: 700; font-size: 1.25rem; color: rgb(49, 46, 129); text-decoration: none;"[39m
+          [36m>[39m
+            [0mApexDeliver[0m
+          [36m</a>[39m
+          [36m<nav[39m
+            [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/"[39m
+              [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+            [36m>[39m
+              [0mHome[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/dashboard"[39m
+              [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+            [36m>[39m
+              [0mDashboard[0m
+            [36m</a>[39m
+          [36m</nav>[39m
+          [36m<div[39m
+            [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mstyle[39m=[32m"color: rgb(31, 41, 55); font-weight: 600;"[39m
+            [36m>[39m
+              [0mTaylor[0m
+            [36m</span>[39m
+            [36m<div[39m
+              [33mdata-testid[39m=[32m"user-menu"[39m
+            [36m>[39m
+              [0mUser Menu[0m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 2rem 1rem;"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex justify-center items-center min-h-screen"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mstyle[39m=[32m"min-height: 100vh; background-color: rgb(248, 250, 252); color: rgb(15, 23, 42);"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mstyle[39m=[32m"border-bottom: 1px solid rgb(226, 232, 240); background-color: rgb(255, 255, 255);"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/"[39m
+              [33mstyle[39m=[32m"font-weight: 700; font-size: 1.25rem; color: rgb(49, 46, 129); text-decoration: none;"[39m
+            [36m>[39m
+              [0mApexDeliver[0m
+            [36m</a>[39m
+            [36m<nav[39m
+              [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+                [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+              [36m>[39m
+                [0mHome[0m
+              [36m</a>[39m
+              [36m<a[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/dashboard"[39m
+                [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+              [36m>[39m
+                [0mDashboard[0m
+              [36m</a>[39m
+            [36m</nav>[39m
+            [36m<div[39m
+              [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mstyle[39m=[32m"color: rgb(31, 41, 55); font-weight: 600;"[39m
+              [36m>[39m
+                [0mTaylor[0m
+              [36m</span>[39m
+              [36m<div[39m
+                [33mdata-testid[39m=[32m"user-menu"[39m
+              [36m>[39m
+                [0mUser Menu[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</header>[39m
+        [36m<main[39m
+          [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 2rem 1rem;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-center items-center min-h-screen"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</main>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+[90m [2m❯[22m Proxy.waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[36m [2m❯[22m src/tests/integration/PodcastStudioRouting.test.tsx:[2m116:11[22m[39m
+    [90m114| [39m    [34mrender[39m([33m<[39m[33mApp[39m [33m/[39m[33m>[39m)
+    [90m115| [39m
+    [90m116| [39m    await waitFor(() => expect(screen.getByText(/market update/i)).toB…
+    [90m   | [39m          [31m^[39m
+    [90m117| [39m    await waitFor(() => expect(screen.getByText(/transcript ready/i)).…
+    [90m118| [39m    expect(screen.getByRole('link', { name: /download transcript \(txt…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/tests/integration/PodcastStudioRouting.test.tsx[2m > [22mIntegration: podcast studio routing[2m > [22mshows transcription upgrade prompt when API denies access
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: /upgrade episode/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mstyle[39m=[32m"min-height: 100vh; background-color: rgb(248, 250, 252); color: rgb(15, 23, 42);"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mstyle[39m=[32m"border-bottom: 1px solid rgb(226, 232, 240); background-color: rgb(255, 255, 255);"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/"[39m
+            [33mstyle[39m=[32m"font-weight: 700; font-size: 1.25rem; color: rgb(49, 46, 129); text-decoration: none;"[39m
+          [36m>[39m
+            [0mApexDeliver[0m
+          [36m</a>[39m
+          [36m<nav[39m
+            [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/"[39m
+              [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+            [36m>[39m
+              [0mHome[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/dashboard"[39m
+              [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+            [36m>[39m
+              [0mDashboard[0m
+            [36m</a>[39m
+          [36m</nav>[39m
+          [36m<div[39m
+            [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mstyle[39m=[32m"color: rgb(31, 41, 55); font-weight: 600;"[39m
+            [36m>[39m
+              [0mTaylor[0m
+            [36m</span>[39m
+            [36m<div[39m
+              [33mdata-testid[39m=[32m"user-menu"[39m
+            [36m>[39m
+              [0mUser Menu[0m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 2rem 1rem;"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex justify-center items-center min-h-screen"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mstyle[39m=[32m"min-height: 100vh; background-color: rgb(248, 250, 252); color: rgb(15, 23, 42);"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mstyle[39m=[32m"border-bottom: 1px solid rgb(226, 232, 240); background-color: rgb(255, 255, 255);"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/"[39m
+              [33mstyle[39m=[32m"font-weight: 700; font-size: 1.25rem; color: rgb(49, 46, 129); text-decoration: none;"[39m
+            [36m>[39m
+              [0mApexDeliver[0m
+            [36m</a>[39m
+            [36m<nav[39m
+              [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+                [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+              [36m>[39m
+                [0mHome[0m
+              [36m</a>[39m
+              [36m<a[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/dashboard"[39m
+                [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+              [36m>[39m
+                [0mDashboard[0m
+              [36m</a>[39m
+            [36m</nav>[39m
+            [36m<div[39m
+              [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mstyle[39m=[32m"color: rgb(31, 41, 55); font-weight: 600;"[39m
+              [36m>[39m
+                [0mTaylor[0m
+              [36m</span>[39m
+              [36m<div[39m
+                [33mdata-testid[39m=[32m"user-menu"[39m
+              [36m>[39m
+                [0mUser Menu[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</header>[39m
+        [36m<main[39m
+          [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 2rem 1rem;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-center items-center min-h-screen"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</main>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+[90m [2m❯[22m Proxy.waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[36m [2m❯[22m src/tests/integration/PodcastStudioRouting.test.tsx:[2m162:11[22m[39m
+    [90m160| [39m    [34mrender[39m([33m<[39m[33mApp[39m [33m/[39m[33m>[39m)
+    [90m161| [39m
+    [90m162| [39m    await waitFor(() => expect(screen.getByText(/upgrade episode/i)).t…
+    [90m   | [39m          [31m^[39m
+    [90m163| [39m    [34mexpect[39m(
+    [90m164| [39m      [35mawait[39m screen[33m.[39m[34mfindByText[39m([36m/premium unlocks automated transcripts/i[39m)
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/tests/integration/PodcastStudioRouting.test.tsx[2m > [22mIntegration: podcast studio routing[2m > [22mdisplays quota warning when approaching limit
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: /plan usage/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mstyle[39m=[32m"min-height: 100vh; background-color: rgb(248, 250, 252); color: rgb(15, 23, 42);"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mstyle[39m=[32m"border-bottom: 1px solid rgb(226, 232, 240); background-color: rgb(255, 255, 255);"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/"[39m
+            [33mstyle[39m=[32m"font-weight: 700; font-size: 1.25rem; color: rgb(49, 46, 129); text-decoration: none;"[39m
+          [36m>[39m
+            [0mApexDeliver[0m
+          [36m</a>[39m
+          [36m<nav[39m
+            [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/"[39m
+              [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+            [36m>[39m
+              [0mHome[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/dashboard"[39m
+              [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+            [36m>[39m
+              [0mDashboard[0m
+            [36m</a>[39m
+          [36m</nav>[39m
+          [36m<div[39m
+            [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mstyle[39m=[32m"color: rgb(31, 41, 55); font-weight: 600;"[39m
+            [36m>[39m
+              [0mTaylor[0m
+            [36m</span>[39m
+            [36m<div[39m
+              [33mdata-testid[39m=[32m"user-menu"[39m
+            [36m>[39m
+              [0mUser Menu[0m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 2rem 1rem;"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex justify-center items-center min-h-screen"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mstyle[39m=[32m"min-height: 100vh; background-color: rgb(248, 250, 252); color: rgb(15, 23, 42);"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mstyle[39m=[32m"border-bottom: 1px solid rgb(226, 232, 240); background-color: rgb(255, 255, 255);"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mdata-discover[39m=[32m"true"[39m
+              [33mhref[39m=[32m"/"[39m
+              [33mstyle[39m=[32m"font-weight: 700; font-size: 1.25rem; color: rgb(49, 46, 129); text-decoration: none;"[39m
+            [36m>[39m
+              [0mApexDeliver[0m
+            [36m</a>[39m
+            [36m<nav[39m
+              [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+            [36m>[39m
+              [36m<a[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/"[39m
+                [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+              [36m>[39m
+                [0mHome[0m
+              [36m</a>[39m
+              [36m<a[39m
+                [33mdata-discover[39m=[32m"true"[39m
+                [33mhref[39m=[32m"/dashboard"[39m
+                [33mstyle[39m=[32m"color: rgb(71, 85, 105); text-decoration: none; font-weight: 500;"[39m
+              [36m>[39m
+                [0mDashboard[0m
+              [36m</a>[39m
+            [36m</nav>[39m
+            [36m<div[39m
+              [33mstyle[39m=[32m"display: flex; align-items: center; gap: 0.75rem;"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mstyle[39m=[32m"color: rgb(31, 41, 55); font-weight: 600;"[39m
+              [36m>[39m
+                [0mTaylor[0m
+              [36m</span>[39m
+              [36m<div[39m
+                [33mdata-testid[39m=[32m"user-menu"[39m
+              [36m>[39m
+                [0mUser Menu[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</header>[39m
+        [36m<main[39m
+          [33mstyle[39m=[32m"max-width: 960px; margin: 0px auto; padding: 2rem 1rem;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex justify-center items-center min-h-screen"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</main>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+[90m [2m❯[22m Proxy.waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[36m [2m❯[22m src/tests/integration/PodcastStudioRouting.test.tsx:[2m180:11[22m[39m
+    [90m178| [39m    [34mrender[39m([33m<[39m[33mApp[39m [33m/[39m[33m>[39m)
+    [90m179| [39m
+    [90m180| [39m    await waitFor(() => expect(screen.getByText(/plan usage/i)).toBeIn…
+    [90m   | [39m          [31m^[39m
+    [90m181| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([36m/8 \/ 10 episodes/i[39m))[33m.[39m[34mtoBeInTheDocument[39m()
+    [90m182| [39m    expect(screen.getByText(/80% of your monthly quota/i)).toBeInTheDo…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mdisplays export template selector with PDF, DOCX, and HTML options
+[31m[1mTestingLibraryElementError[22m[39m: Found a label with the text of: /export format/i, however no form control was found associated to that label. Make sure you're using the "for" attribute or "aria-labelledby" attribute correctly.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"min-h-screen bg-gray-50 pb-12"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mx-auto max-w-6xl px-6 py-10"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex flex-col gap-4 border-b border-gray-200 pb-6 md:flex-row md:items-center md:justify-between"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm uppercase tracking-wide text-indigo-600"[39m
+            [36m>[39m
+              [0mValuation Suite[0m
+            [36m</p>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"text-3xl font-bold text-gray-900"[39m
+            [36m>[39m
+              [0mDeal Valuation Workspace[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"mt-2 text-sm text-gray-600"[39m
+            [36m>[39m
+              [0mManage DCF, comparable companies, precedent transactions, and scenario analysis in one workspace.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</header>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"Valuation suite sections"[39m
+          [33mclass[39m=[32m"mt-6 flex flex-wrap gap-3"[39m
+          [33mrole[39m=[32m"tablist"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mSummary[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mComparables[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mPrecedents[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mScenarios[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"true"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-indigo-600 text-white"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mExports[0m
+          [36m</button>[39m
+        [36m</nav>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"mt-6 space-y-6"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-6"[39m
+          [36m>[39m
+            [36m<section[39m
+              [33mclass[39m=[32m"rounded-lg border border-gray-200 bg-white shadow-sm"[39m
+            [36m>[39m
+              [36m<header[39m
+                [33mclass[39m=[32m"border-b border-gray-200 px-6 py-4"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                [36m>[39m
+                  [0mGenerate Report[0m
+                [36m</h2>[39m
+              [36m</header>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"px-6 py-4"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"space-y-4"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"block text-sm font-medium text-gray-700"[39m
+                    [36m>[39m
+                      [0mExport Type[0m
+                    [36m</label>[39m
+                    [36m<select[39m
+                      [33mclass[39m=[32m"mt-1 w-48 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"[39m
+                    [36m>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"pdf"[39m
+                      [36m>[39m
+                        [0mPDF Report[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"excel"[39m
+                      [36m>[39m
+                        [0mExcel Workbook[0m
+                      [36m</option>[39m
+                    [36m</select>[39m
+                  [36m</div>[39m
+                  [36m<div>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"block text-sm font-medium text-gray-700"[39m
+                    [36m>[39m
+                      [0mExport Format[0m
+                    [36m</label>[39m
+                    [36m<select[39m
+                      [33mclass[39m=[32m"mt-1 w-64 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"[39m
+                    [36m>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"summary"[39m
+                      [36m>[39m
+                        [0mExecutive Summary[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"detailed"[39m
+                      [36m>[39m
+                        [0mDetailed Model[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"full_model"[39m
+                      [36m>[39m
+                        [0mFull Model[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m""[39m
+                      [36m>[39m
+                        [0mCustom / Not specified[0m
+                      [36m</option>[39m
+                    [36m</select>[39m
+                  [36m</div>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0mQueue Export[0m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</section>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+      [36m</div>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"min-h-screen bg-gray-50 pb-12"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mx-auto max-w-6xl px-6 py-10"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex flex-col gap-4 border-b border-gray-200 pb-6 md:flex-row md:items-center md:justify-between"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm uppercase tracking-wide text-indigo-600"[39m
+            [36m>[39m
+              [0mValuation Suite[0m
+            [36m</p>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"text-3xl font-bold text-gray-900"[39m
+            [36m>[39m
+              [0mDeal Valuation Workspace[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"mt-2 text-sm text-gray-600"[39m
+            [36m>[39m
+              [0mManage DCF, comparable companies, precedent transactions, and scenario analysis in one workspace.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</header>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"Valuation suite sections"[39m
+          [33mclass[39m=[32m"mt-6 flex flex-wrap gap-3"[39m
+          [33mrole[39m=[32m"tablist"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mSummary[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mComparables[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mPrecedents[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mScenarios[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"true"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-indigo-600 text-white"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mExports[0m
+          [36m</button>[39m
+        [36m</nav>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"mt-6 space-y-6"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-6"[39m
+          [36m>[39m
+            [36m<section[39m
+              [33mclass[39m=[32m"rounded-lg border border-gray-200 bg-white shadow-sm"[39m
+            [36m>[39m
+              [36m<header[39m
+                [33mclass[39m=[32m"border-b border-gray-200 px-6 py-4"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                [36m>[39m
+                  [0mGenerate Report[0m
+                [36m</h2>[39m
+              [36m</header>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"px-6 py-4"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"space-y-4"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"block text-sm font-medium text-gray-700"[39m
+                    [36m>[39m
+                      [0mExport Type[0m
+                    [36m</label>[39m
+                    [36m<select[39m
+                      [33mclass[39m=[32m"mt-1 w-48 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"[39m
+                    [36m>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"pdf"[39m
+                      [36m>[39m
+                        [0mPDF Report[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"excel"[39m
+                      [36m>[39m
+                        [0mExcel Workbook[0m
+                      [36m</option>[39m
+                    [36m</select>[39m
+                  [36m</div>[39m
+                  [36m<div>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"block text-sm font-medium text-gray-700"[39m
+                    [36m>[39m
+                      [0mExport Format[0m
+                    [36m</label>[39m
+                    [36m<select[39m
+                      [33mclass[39m=[32m"mt-1 w-64 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"[39m
+                    [36m>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"summary"[39m
+                      [36m>[39m
+                        [0mExecutive Summary[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"detailed"[39m
+                      [36m>[39m
+                        [0mDetailed Model[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"full_model"[39m
+                      [36m>[39m
+                        [0mFull Model[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m""[39m
+                      [36m>[39m
+                        [0mCustom / Not specified[0m
+                      [36m</option>[39m
+                    [36m</select>[39m
+                  [36m</div>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0mQueue Export[0m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</section>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+      [36m</div>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m src/pages/deals/valuation/ValuationSuite.test.tsx:[2m338:25[22m[39m
+    [90m336| [39m    [35mawait[39m user[33m.[39m[34mclick[39m(screen[33m.[39m[34mgetByRole[39m([32m'tab'[39m[33m,[39m { name[33m:[39m [36m/exports/i[39m }))
+    [90m337| [39m
+    [90m338| [39m    [90m// Template selector should be visible[39m
+    [90m   | [39m                        [31m^[39m
+    [90m339| [39m    expect(await screen.findByLabelText(/export format/i)).toBeInTheDo…
+    [90m340| [39m    expect(await screen.findByLabelText(/export template/i)).toBeInThe…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mallows selecting export template (executive summary, detailed, custom)
+[31m[1mTestingLibraryElementError[22m[39m: Found a label with the text of: /export format/i, however no form control was found associated to that label. Make sure you're using the "for" attribute or "aria-labelledby" attribute correctly.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"min-h-screen bg-gray-50 pb-12"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mx-auto max-w-6xl px-6 py-10"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex flex-col gap-4 border-b border-gray-200 pb-6 md:flex-row md:items-center md:justify-between"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm uppercase tracking-wide text-indigo-600"[39m
+            [36m>[39m
+              [0mValuation Suite[0m
+            [36m</p>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"text-3xl font-bold text-gray-900"[39m
+            [36m>[39m
+              [0mDeal Valuation Workspace[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"mt-2 text-sm text-gray-600"[39m
+            [36m>[39m
+              [0mManage DCF, comparable companies, precedent transactions, and scenario analysis in one workspace.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</header>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"Valuation suite sections"[39m
+          [33mclass[39m=[32m"mt-6 flex flex-wrap gap-3"[39m
+          [33mrole[39m=[32m"tablist"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mSummary[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mComparables[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mPrecedents[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mScenarios[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"true"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-indigo-600 text-white"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mExports[0m
+          [36m</button>[39m
+        [36m</nav>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"mt-6 space-y-6"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-6"[39m
+          [36m>[39m
+            [36m<section[39m
+              [33mclass[39m=[32m"rounded-lg border border-gray-200 bg-white shadow-sm"[39m
+            [36m>[39m
+              [36m<header[39m
+                [33mclass[39m=[32m"border-b border-gray-200 px-6 py-4"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                [36m>[39m
+                  [0mGenerate Report[0m
+                [36m</h2>[39m
+              [36m</header>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"px-6 py-4"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"space-y-4"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"block text-sm font-medium text-gray-700"[39m
+                    [36m>[39m
+                      [0mExport Type[0m
+                    [36m</label>[39m
+                    [36m<select[39m
+                      [33mclass[39m=[32m"mt-1 w-48 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"[39m
+                    [36m>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"pdf"[39m
+                      [36m>[39m
+                        [0mPDF Report[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"excel"[39m
+                      [36m>[39m
+                        [0mExcel Workbook[0m
+                      [36m</option>[39m
+                    [36m</select>[39m
+                  [36m</div>[39m
+                  [36m<div>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"block text-sm font-medium text-gray-700"[39m
+                    [36m>[39m
+                      [0mExport Format[0m
+                    [36m</label>[39m
+                    [36m<select[39m
+                      [33mclass[39m=[32m"mt-1 w-64 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"[39m
+                    [36m>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"summary"[39m
+                      [36m>[39m
+                        [0mExecutive Summary[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"detailed"[39m
+                      [36m>[39m
+                        [0mDetailed Model[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"full_model"[39m
+                      [36m>[39m
+                        [0mFull Model[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m""[39m
+                      [36m>[39m
+                        [0mCustom / Not specified[0m
+                      [36m</option>[39m
+                    [36m</select>[39m
+                  [36m</div>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0mQueue Export[0m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</section>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+      [36m</div>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"min-h-screen bg-gray-50 pb-12"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mx-auto max-w-6xl px-6 py-10"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex flex-col gap-4 border-b border-gray-200 pb-6 md:flex-row md:items-center md:justify-between"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm uppercase tracking-wide text-indigo-600"[39m
+            [36m>[39m
+              [0mValuation Suite[0m
+            [36m</p>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"text-3xl font-bold text-gray-900"[39m
+            [36m>[39m
+              [0mDeal Valuation Workspace[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"mt-2 text-sm text-gray-600"[39m
+            [36m>[39m
+              [0mManage DCF, comparable companies, precedent transactions, and scenario analysis in one workspace.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</header>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"Valuation suite sections"[39m
+          [33mclass[39m=[32m"mt-6 flex flex-wrap gap-3"[39m
+          [33mrole[39m=[32m"tablist"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mSummary[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mComparables[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mPrecedents[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mScenarios[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"true"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-indigo-600 text-white"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mExports[0m
+          [36m</button>[39m
+        [36m</nav>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"mt-6 space-y-6"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-6"[39m
+          [36m>[39m
+            [36m<section[39m
+              [33mclass[39m=[32m"rounded-lg border border-gray-200 bg-white shadow-sm"[39m
+            [36m>[39m
+              [36m<header[39m
+                [33mclass[39m=[32m"border-b border-gray-200 px-6 py-4"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                [36m>[39m
+                  [0mGenerate Report[0m
+                [36m</h2>[39m
+              [36m</header>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"px-6 py-4"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"space-y-4"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"block text-sm font-medium text-gray-700"[39m
+                    [36m>[39m
+                      [0mExport Type[0m
+                    [36m</label>[39m
+                    [36m<select[39m
+                      [33mclass[39m=[32m"mt-1 w-48 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"[39m
+                    [36m>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"pdf"[39m
+                      [36m>[39m
+                        [0mPDF Report[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"excel"[39m
+                      [36m>[39m
+                        [0mExcel Workbook[0m
+                      [36m</option>[39m
+                    [36m</select>[39m
+                  [36m</div>[39m
+                  [36m<div>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"block text-sm font-medium text-gray-700"[39m
+                    [36m>[39m
+                      [0mExport Format[0m
+                    [36m</label>[39m
+                    [36m<select[39m
+                      [33mclass[39m=[32m"mt-1 w-64 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"[39m
+                    [36m>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"summary"[39m
+                      [36m>[39m
+                        [0mExecutive Summary[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"detailed"[39m
+                      [36m>[39m
+                        [0mDetailed Model[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"full_model"[39m
+                      [36m>[39m
+                        [0mFull Model[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m""[39m
+                      [36m>[39m
+                        [0mCustom / Not specified[0m
+                      [36m</option>[39m
+                    [36m</select>[39m
+                  [36m</div>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0mQueue Export[0m
+                  [36m</button>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</section>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+      [36m</div>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m src/pages/deals/valuation/ValuationSuite.test.tsx:[2m362:39[22m[39m
+    [90m361| [39m
+    [90m362| [39m    [90m// Select DOCX format[39m
+    [90m363| [39m    [35mconst[39m formatSelect [33m=[39m [35mawait[39m screen[33m.[39m[34mfindByLabelText[39m([36m/export format/i[39m)
+    [90m   | [39m  [31m^[39m
+    [90m364| [39m    [35mawait[39m user[33m.[39m[34mselectOptions[39m(formatSelect[33m,[39m [32m'excel'[39m)
+    [90m365| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/pages/deals/valuation/ValuationSuite.test.tsx[2m > [22mValuationSuite RED tests[2m > [22mdisplays scenario comparison chart with multiple scenarios
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: /scenario comparison/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"min-h-screen bg-gray-50 pb-12"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mx-auto max-w-6xl px-6 py-10"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"flex flex-col gap-4 border-b border-gray-200 pb-6 md:flex-row md:items-center md:justify-between"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm uppercase tracking-wide text-indigo-600"[39m
+            [36m>[39m
+              [0mValuation Suite[0m
+            [36m</p>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"text-3xl font-bold text-gray-900"[39m
+            [36m>[39m
+              [0mDeal Valuation Workspace[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"mt-2 text-sm text-gray-600"[39m
+            [36m>[39m
+              [0mManage DCF, comparable companies, precedent transactions, and scenario analysis in one workspace.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</header>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"Valuation suite sections"[39m
+          [33mclass[39m=[32m"mt-6 flex flex-wrap gap-3"[39m
+          [33mrole[39m=[32m"tablist"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mSummary[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mComparables[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mPrecedents[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"true"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-indigo-600 text-white"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mScenarios[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-selected[39m=[32m"false"[39m
+            [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+            [33mrole[39m=[32m"tab"[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mExports[0m
+          [36m</button>[39m
+        [36m</nav>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"mt-6 space-y-6"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-6"[39m
+          [36m>[39m
+            [36m<section[39m
+              [33mclass[39m=[32m"rounded-lg border border-gray-200 bg-white shadow-sm"[39m
+            [36m>[39m
+              [36m<header[39m
+                [33mclass[39m=[32m"border-b border-gray-200 px-6 py-4"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                [36m>[39m
+                  [0mScenario Management[0m
+                [36m</h2>[39m
+              [36m</header>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"px-6 py-4"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"space-y-4"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex flex-col gap-3 md:flex-row md:items-center md:justify-between"[39m
+                  [36m>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-sm text-gray-600"[39m
+                    [36m>[39m
+                      [0mModel alternative forecasts, sensitivities, and downside cases to stress-test valuations.[0m
+                    [36m</p>[39m
+                    [36m<button[39m
+                      [33mclass[39m=[32m"inline-flex items-center rounded-md border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 transition-colors hover:bg-indigo-100"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [0mAdd Scenario[0m
+                    [36m</button>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</section>[39m
+            [36m<section[39m
+              [33mclass[39m=[32m"rounded-lg border border-gray-200 bg-white shadow-sm"[39m
+            [36m>[39m
+              [36m<header[39m
+                [33mclass[39m=[32m"border-b border-gray-200 px-6 py-4"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                [36m>[39m
+                  [0mEnterprise Value Range[0m
+                [36m</h2>[39m
+              [36m</header>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"px-6 py-4"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-1 gap-4 md:grid-cols-3"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"rounded-lg border border-gray-200 p-4 text-center"[39m
+                  [36m>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                    [36m>[39m
+                      [0mMin[0m
+                    [36m</p>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                    [36m>[39m
+                      [0mN/A[0m
+                    [36m</p>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"rounded-lg border border-gray-200 p-4 text-center"[39m
+                  [36m>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                    [36m>[39m
+                      [0mMedian[0m
+                    [36m</p>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                    [36m>[39m
+                      [0mN/A[0m
+                    [36m</p>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"rounded-lg border border-gray-200 p-4 text-center"[39m
+                  [36m>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                    [36m>[39m
+                      [0mMax[0m
+                    [36m</p>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                    [36m>[39m
+                      [0mN/A[0m
+                    [36m</p>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</section>[39m
+            [36m<section[39m
+              [33mclass[39m=[32m"rounded-lg border border-gray-200 bg-white shadow-sm"[39m
+            [36m>[39m
+              [36m<header[39m
+                [33mclass[39m=[32m"border-b border-gray-200 px-6 py-4"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                [36m>[39m
+                  [0mScenario Details[0m
+                [36m</h2>[39m
+              [36m</header>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"px-6 py-4"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-1 gap-4"[39m
+                [36m>[39m
+                  [36m<article[39m
+                    [33mclass[39m=[32m"rounded-lg border border-gray-200 p-4"[39m
+                  [36m>[39m
+                    [36m<header[39m
+                      [33mclass[39m=[32m"flex items-center justify-between"[39m
+                    [36m>[39m
+                      [36m<h3[39m
+                        [33mclass[39m=[32m"text-base font-semibold text-gray-900"[39m
+                      [36m>[39m
+                        [0mBase Case[0m
+                      [36m</h3>[39m
+                      [36m<span[39m
+                        [33mclass[39m=[32m"text-xs uppercase tracking-wide text-gray-500"[39m
+                      [36m>[39m
+                        [0m£10,500,000[0m
+                      [36m</span>[39m
+                    [36m</header>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"mt-2 text-sm text-gray-600"[39m
+                    [36m>[39m
+                      [0mBaseline assumptions[0m
+                    [36m</p>[39m
+                    [36m<details[39m
+                      [33mclass[39m=[32m"mt-3 rounded-lg border border-gray-200 p-3"[39m
+                    [36m>[39m
+                      [36m<summary[39m
+                        [33mclass[39m=[32m"cursor-pointer text-sm font-medium text-gray-900"[39m
+                      [36m>[39m
+                        [0mAssumptions[0m
+                      [36m</summary>[39m
+                      [36m<pre[39m
+                        [33mclass[39m=[32m"mt-2 whitespace-pre-wrap text-xs text-gray-600"[39m
+                      [36m>[39m
+                        [0m{}[0m
+                      [36m</pre>[39m
+                    [36m</details>[39m
+                  [36m</article>[39m
+                  [36m<article[39m
+                    [33mclass[39m=[32m"rounded-lg border border-gray-200 p-4"[39m
+                  [36m>[39m
+                    [36m<header[39m
+                      [33mclass[39m=[32m"flex items-center justify-between"[39m
+                    [36m>[39m
+                      [36m<h3[39m
+                        [33mclass[39m=[32m"text-base font-semibold text-gray-900"[39m
+                      [36m>[39m
+                        [0mUpside Case[0m
+                      [36m</h3>[39m
+                      [36m<span[39m
+                        [33mclass[39m=[32m"text-xs uppercase tracking-wide text-gray-500"[39m
+                      [36m>[39m
+                        [0m£12,500,000[0m
+                      [36m</span>[39m
+                    [36m</header>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"mt-2 text-sm text-gray-600"[39m
+                    [36m>[39m
+                      [0mOptimistic growth[0m
+                    [36m</p>[39m
+                    [36m<details[39m
+                      [33mclass[39m=[32m"mt-3 rounded-lg border border-gray-200 p-3"[39m
+                    [36m>[39m
+                      [36m<summary[39m
+                        [33mclass[39m=[32m"cursor-pointer text-sm font-medium text-gray-900"[39m
+                      [36m>[39m
+                        [0mAssumptions[0m
+                      [36m</summary>[39m
+                      [36m<pre[39m
+                        [33mclass[39m=[32m"mt-2 whitespace-pre-wrap text-xs text-gray-600"[39m
+                      [36m>[39m
+                        [0m{
+  "revenue_growth": 0.18
+}[0m
+                      [36m</pre>[39m
+                    [36m</details>[39m
+                  [36m</article>[39m
+                  [36m<article[39m
+                    [33mclass[39m=[32m"rounded-lg border border-gray-200 p-4"[39m
+                  [36m>[39m
+                    [36m<header[39m
+                      [33mclass[39m=[32m"flex items-center justify-between"[39m
+                    [36m>[39m
+                      [36m<h3[39m
+                        [33mclass[39m=[32m"text-base font-semibold text-gray-900"[39m
+                      [36m>[39m
+                        [0mDownside Case[0m
+                      [36m</h3>[39m
+                      [36m<span[39m
+                        [33mclass[39m=[32m"text-xs uppercase tracking-wide text-gray-500"[39m
+                      [36m>[39m
+                        [0m£9,000,000[0m
+                      [36m</span>[39m
+                    [36m</header>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"mt-2 text-sm text-gray-600"[39m
+                    [36m>[39m
+                      [0mConservative assumptions[0m
+                    [36m</p>[39m
+                    [36m<details[39m
+                      [33mclass[39m=[32m"mt-3 rounded-lg border border-gray-200 p-3"[39m
+                    [36m>[39m
+                      [36m<summary[39m
+                        [33mclass[39m=[32m"cursor-pointer text-sm font-medium text-gray-900"[39m
+                      [36m>[39m
+                        [0mAssumptions[0m
+                      [36m</summary>[39m
+                      [36m<pre[39m
+                        [33mclass[39m=[32m"mt-2 whitespace-pre-wrap text-xs text-gray-600"[39m
+                      [36m>[39m
+                        [0m{
+  "revenue_growth": 0.08
+}[0m
+                      [36m</pre>[39m
+                    [36m</details>[39m
+                  [36m</article>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</section>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+      [36m</div>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"min-h-screen bg-gray-50 pb-12"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto max-w-6xl px-6 py-10"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex flex-col gap-4 border-b border-gray-200 pb-6 md:flex-row md:items-center md:justify-between"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-sm uppercase tracking-wide text-indigo-600"[39m
+              [36m>[39m
+                [0mValuation Suite[0m
+              [36m</p>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"text-3xl font-bold text-gray-900"[39m
+              [36m>[39m
+                [0mDeal Valuation Workspace[0m
+              [36m</h1>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-2 text-sm text-gray-600"[39m
+              [36m>[39m
+                [0mManage DCF, comparable companies, precedent transactions, and scenario analysis in one workspace.[0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</header>[39m
+          [36m<nav[39m
+            [33maria-label[39m=[32m"Valuation suite sections"[39m
+            [33mclass[39m=[32m"mt-6 flex flex-wrap gap-3"[39m
+            [33mrole[39m=[32m"tablist"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-selected[39m=[32m"false"[39m
+              [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+              [33mrole[39m=[32m"tab"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSummary[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-selected[39m=[32m"false"[39m
+              [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+              [33mrole[39m=[32m"tab"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mComparables[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-selected[39m=[32m"false"[39m
+              [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+              [33mrole[39m=[32m"tab"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mPrecedents[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-selected[39m=[32m"true"[39m
+              [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-indigo-600 text-white"[39m
+              [33mrole[39m=[32m"tab"[39m
+              [33mtabindex[39m=[32m"0"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mScenarios[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-selected[39m=[32m"false"[39m
+              [33mclass[39m=[32m"rounded-md px-4 py-2 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"[39m
+              [33mrole[39m=[32m"tab"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mExports[0m
+            [36m</button>[39m
+          [36m</nav>[39m
+          [36m<section[39m
+            [33mclass[39m=[32m"mt-6 space-y-6"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-6"[39m
+            [36m>[39m
+              [36m<section[39m
+                [33mclass[39m=[32m"rounded-lg border border-gray-200 bg-white shadow-sm"[39m
+              [36m>[39m
+                [36m<header[39m
+                  [33mclass[39m=[32m"border-b border-gray-200 px-6 py-4"[39m
+                [36m>[39m
+                  [36m<h2[39m
+                    [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                  [36m>[39m
+                    [0mScenario Management[0m
+                  [36m</h2>[39m
+                [36m</header>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"px-6 py-4"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"space-y-4"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex flex-col gap-3 md:flex-row md:items-center md:justify-between"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-sm text-gray-600"[39m
+                      [36m>[39m
+                        [0mModel alternative forecasts, sensitivities, and downside cases to stress-test valuations.[0m
+                      [36m</p>[39m
+                      [36m<button[39m
+                        [33mclass[39m=[32m"inline-flex items-center rounded-md border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 transition-colors hover:bg-indigo-100"[39m
+                        [33mtype[39m=[32m"button"[39m
+                      [36m>[39m
+                        [0mAdd Scenario[0m
+                      [36m</button>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</section>[39m
+              [36m<section[39m
+                [33mclass[39m=[32m"rounded-lg border border-gray-200 bg-white shadow-sm"[39m
+              [36m>[39m
+                [36m<header[39m
+                  [33mclass[39m=[32m"border-b border-gray-200 px-6 py-4"[39m
+                [36m>[39m
+                  [36m<h2[39m
+                    [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                  [36m>[39m
+                    [0mEnterprise Value Range[0m
+                  [36m</h2>[39m
+                [36m</header>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"px-6 py-4"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"grid grid-cols-1 gap-4 md:grid-cols-3"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"rounded-lg border border-gray-200 p-4 text-center"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                      [36m>[39m
+                        [0mMin[0m
+                      [36m</p>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                      [36m>[39m
+                        [0mN/A[0m
+                      [36m</p>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"rounded-lg border border-gray-200 p-4 text-center"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                      [36m>[39m
+                        [0mMedian[0m
+                      [36m</p>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                      [36m>[39m
+                        [0mN/A[0m
+                      [36m</p>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"rounded-lg border border-gray-200 p-4 text-center"[39m
+                    [36m>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-sm text-gray-500"[39m
+                      [36m>[39m
+                        [0mMax[0m
+                      [36m</p>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                      [36m>[39m
+                        [0mN/A[0m
+                      [36m</p>[39m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</section>[39m
+              [36m<section[39m
+                [33mclass[39m=[32m"rounded-lg border border-gray-200 bg-white shadow-sm"[39m
+              [36m>[39m
+                [36m<header[39m
+                  [33mclass[39m=[32m"border-b border-gray-200 px-6 py-4"[39m
+                [36m>[39m
+                  [36m<h2[39m
+                    [33mclass[39m=[32m"text-lg font-semibold text-gray-900"[39m
+                  [36m>[39m
+                    [0mScenario Details[0m
+                  [36m</h2>[39m
+                [36m</header>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"px-6 py-4"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"grid grid-cols-1 gap-4"[39m
+                  [36m>[39m
+                    [36m<article[39m
+                      [33mclass[39m=[32m"rounded-lg border border-gray-200 p-4"[39m
+                    [36m>[39m
+                      [36m<header[39m
+                        [33mclass[39m=[32m"flex items-center justify-between"[39m
+                      [36m>[39m
+                        [36m<h3[39m
+                          [33mclass[39m=[32m"text-base font-semibold text-gray-900"[39m
+                        [36m>[39m
+                          [0mBase Case[0m
+                        [36m</h3>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"text-xs uppercase tracking-wide text-gray-500"[39m
+                        [36m>[39m
+                          [0m£10,500,000[0m
+                        [36m</span>[39m
+                      [36m</header>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"mt-2 text-sm text-gray-600"[39m
+                      [36m>[39m
+                        [0mBaseline assumptions[0m
+                      [36m</p>[39m
+                      [36m<details[39m
+                        [33mclass[39m=[32m"mt-3 rounded-lg border border-gray-200 p-3"[39m
+                      [36m>[39m
+                        [36m<summary[39m
+                          [33mclass[39m=[32m"cursor-pointer text-sm font-medium text-gray-900"[39m
+                        [36m>[39m
+                          [0mAssumptions[0m
+                        [36m</summary>[39m
+                        [36m<pre[39m
+                          [33mclass[39m=[32m"mt-2 whitespace-pre-wrap text-xs text-gray-600"[39m
+                        [36m>[39m
+                          [0m{}[0m
+                        [36m</pre>[39m
+                      [36m</details>[39m
+                    [36m</article>[39m
+                    [36m<article[39m
+                      [33mclass[39m=[32m"rounded-lg border border-gray-200 p-4"[39m
+                    [36m>[39m
+                      [36m<header[39m
+                        [33mclass[39m=[32m"flex items-center justify-between"[39m
+                      [36m>[39m
+                        [36m<h3[39m
+                          [33mclass[39m=[32m"text-base font-semibold text-gray-900"[39m
+                        [36m>[39m
+                          [0mUpside Case[0m
+                        [36m</h3>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"text-xs uppercase tracking-wide text-gray-500"[39m
+                        [36m>[39m
+                          [0m£12,500,000[0m
+                        [36m</span>[39m
+                      [36m</header>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"mt-2 text-sm text-gray-600"[39m
+                      [36m>[39m
+                        [0mOptimistic growth[0m
+                      [36m</p>[39m
+                      [36m<details[39m
+                        [33mclass[39m=[32m"mt-3 rounded-lg border border-gray-200 p-3"[39m
+                      [36m>[39m
+                        [36m<summary[39m
+                          [33mclass[39m=[32m"cursor-pointer text-sm font-medium text-gray-900"[39m
+                        [36m>[39m
+                          [0mAssumptions[0m
+                        [36m</summary>[39m
+                        [36m<pre[39m
+                          [33mclass[39m=[32m"mt-2 whitespace-pre-wrap text-xs text-gray-600"[39m
+                        [36m>[39m
+                          [0m{
+  "revenue_growth": 0.18
+}[0m
+                        [36m</pre>[39m
+                      [36m</details>[39m
+                    [36m</article>[39m
+                    [36m<article[39m
+                      [33mclass[39m=[32m"rounded-lg border border-gray-200 p-4"[39m
+                    [36m>[39m
+                      [36m<header[39m
+                        [33mclass[39m=[32m"flex items-center justify-between"[39m
+                      [36m>[39m
+                        [36m<h3[39m
+                          [33mclass[39m=[32m"text-base font-semibold text-gray-900"[39m
+                        [36m>[39m
+                          [0mDownside Case[0m
+                        [36m</h3>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"text-xs uppercase tracking-wide text-gray-500"[39m
+                        [36m>[39m
+                          [0m£9,000,000[0m
+                        [36m</span>[39m
+                      [36m</header>[39m
+                      [36m<p[39m
+                        [33mclass[39m=[32m"mt-2 text-sm text-gray-600"[39m
+                      [36m>[39m
+                        [0mConservative assumptions[0m
+                      [36m</p>[39m
+                      [36m<details[39m
+                        [33mclass[39m=[32m"mt-3 rounded-lg border border-gray-200 p-3"[39m
+                      [36m>[39m
+                        [36m<summary[39m
+                          [33mclass[39m=[32m"cursor-pointer text-sm font-medium text-gray-900"[39m
+                        [36m>[39m
+                          [0mAssumptions[0m
+                        [36m</summary>[39m
+                        [36m<pre[39m
+                          [33mclass[39m=[32m"mt-2 whitespace-pre-wrap text-xs text-gray-600"[39m
+                        [36m>[39m
+                          [0m{
+  "revenue_growth": 0.08
+}[0m
+                        [36m</pre>[39m
+                      [36m</details>[39m
+                    [36m</article>[39m
+                  [36m</div>[39m
+                [36m</div>[39m
+              [36m</section>[39m
+            [36m</div>[39m
+          [36m</section>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+[90m [2m❯[22m Proxy.waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[36m [2m❯[22m src/pages/deals/valuation/ValuationSuite.test.tsx:[2m398:11[22m[39m
+    [90m396| [39m    })
+    [90m397| [39m
+    [90m398| [39m    [90m// Chart should display all three scenarios[39m
+    [90m   | [39m          [31m^[39m
+    [90m399| [39m    expect(screen.getAllByText(/base case/i).length).toBeGreaterThanOr…
+    [90m400| [39m    expect(screen.getAllByText(/upside case/i).length).toBeGreaterThan…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/17]⎯[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Errors [49m[22m[31m⎯⎯⎯⎯⎯⎯[39m
+[31m[1m
+Vitest caught 4 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.[22m[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mInternalError[22m: [MSW] Cannot bypass a request when using the "error" strategy for the "onUnhandledRequest" option.[39m
+[90m [2m❯[22m applyStrategy node_modules/msw/lib/core/utils/request/onUnhandledRequest.mjs:[2m21:15[22m[39m
+[90m [2m❯[22m onUnhandledRequest node_modules/msw/lib/core/utils/request/onUnhandledRequest.mjs:[2m50:5[22m[39m
+[90m [2m❯[22m handleRequest node_modules/msw/lib/core/utils/handleRequest.mjs:[2m29:11[22m[39m
+[90m [2m❯[22m _Emitter.<anonymous> node_modules/msw/lib/node/index.mjs:[2m41:26[22m[39m
+[90m [2m❯[22m emitAsync node_modules/@mswjs/interceptors/lib/node/chunk-R6T7CL5E.mjs:[2m13:5[22m[39m
+[90m [2m❯[22m node_modules/@mswjs/interceptors/lib/node/chunk-R6T7CL5E.mjs:[2m127:5[22m[39m
+[90m [2m❯[22m until node_modules/@open-draft/until/lib/index.mjs:[2m4:18[22m[39m
+[90m [2m❯[22m handleRequest node_modules/@mswjs/interceptors/lib/node/chunk-R6T7CL5E.mjs:[2m121:18[22m[39m
+[90m [2m❯[22m XMLHttpRequestController.xhrRequestController.onRequest node_modules/@mswjs/interceptors/lib/node/chunk-5V3SIIW2.mjs:[2m776:9[22m[39m
+
+[31mThis error originated in "[1msrc/tests/integration/PodcastStudioRouting.test.tsx[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1mrenders transcript details when user is signed in and feature enabled[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mInternalError[22m: [MSW] Cannot bypass a request when using the "error" strategy for the "onUnhandledRequest" option.[39m
+[90m [2m❯[22m applyStrategy node_modules/msw/lib/core/utils/request/onUnhandledRequest.mjs:[2m21:15[22m[39m
+[90m [2m❯[22m onUnhandledRequest node_modules/msw/lib/core/utils/request/onUnhandledRequest.mjs:[2m50:5[22m[39m
+[90m [2m❯[22m processTicksAndRejections node:internal/process/task_queues:[2m103:5[22m[39m
+[90m [2m❯[22m handleRequest node_modules/msw/lib/core/utils/handleRequest.mjs:[2m29:5[22m[39m
+[90m [2m❯[22m _Emitter.<anonymous> node_modules/msw/lib/node/index.mjs:[2m41:26[22m[39m
+[90m [2m❯[22m emitAsync node_modules/@mswjs/interceptors/lib/node/chunk-R6T7CL5E.mjs:[2m13:5[22m[39m
+[90m [2m❯[22m node_modules/@mswjs/interceptors/lib/node/chunk-R6T7CL5E.mjs:[2m127:5[22m[39m
+[90m [2m❯[22m until node_modules/@open-draft/until/lib/index.mjs:[2m4:18[22m[39m
+[90m [2m❯[22m handleRequest node_modules/@mswjs/interceptors/lib/node/chunk-R6T7CL5E.mjs:[2m121:18[22m[39m
+[90m [2m❯[22m _ClientRequestInterceptor.onRequest node_modules/@mswjs/interceptors/lib/node/chunk-5UGIB6OX.mjs:[2m1003:7[22m[39m
+
+[31mThis error originated in "[1msrc/tests/integration/PodcastStudioRouting.test.tsx[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1mrenders transcript details when user is signed in and feature enabled[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+
+[31m⎯⎯⎯⎯⎯[39m[1m[41m Uncaught Exception [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: [vitest] No "SignIn" export is defined on the "@clerk/clerk-react" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+vi.mock(import("@clerk/clerk-react"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+[90m [2m❯[22m VitestMocker.createError node_modules/vitest/dist/chunks/startModuleRunner.BOmUtLIO.js:[2m307:17[22m[39m
+[90m [2m❯[22m Object.get node_modules/vitest/dist/chunks/startModuleRunner.BOmUtLIO.js:[2m362:16[22m[39m
+[36m [2m❯[22m SignInPage src/pages/SignInPage.tsx:[2m44:16[22m[39m
+    [90m 42| [39m          <div className="rounded-2xl bg-white p-6 shadow-xl ring-1 ri…
+    [90m 43| [39m            [33m<[39m[33mSignedOut[39m[33m>[39m
+    [90m 44| [39m              [33m<[39m[33mSignIn[39m
+    [90m   | [39m               [31m^[39m
+    [90m 45| [39m                [33mrouting[39m[33m=[39m[32m"path"[39m
+    [90m 46| [39m                [33mpath[39m[33m=[39m[32m"/sign-in"[39m
+[90m [2m❯[22m Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:[2m25904:20[22m[39m
+[90m [2m❯[22m renderWithHooks node_modules/react-dom/cjs/react-dom-client.development.js:[2m7662:22[22m[39m
+[90m [2m❯[22m updateFunctionComponent node_modules/react-dom/cjs/react-dom-client.development.js:[2m10166:19[22m[39m
+[90m [2m❯[22m beginWork node_modules/react-dom/cjs/react-dom-client.development.js:[2m11727:35[22m[39m
+[90m [2m❯[22m runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:[2m874:13[22m[39m
+[90m [2m❯[22m performUnitOfWork node_modules/react-dom/cjs/react-dom-client.development.js:[2m17641:22[22m[39m
+[90m [2m❯[22m workLoopSync node_modules/react-dom/cjs/react-dom-client.development.js:[2m17469:41[22m[39m
+
+[31mThis error originated in "[1msrc/features/auth/Auth.test.tsx[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1mredirects unauthenticated users from /dashboard to /sign-in[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Error [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: [vitest-pool]: Worker forks emitted error.[39m
+[90m [2m❯[22m EventEmitter.<anonymous> node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m7233:22[22m[39m
+[90m [2m❯[22m EventEmitter.emit node:events:[2m508:28[22m[39m
+[90m [2m❯[22m ChildProcess.emitUnexpectedExit node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m6782:22[22m[39m
+[90m [2m❯[22m ChildProcess.emit node:events:[2m508:28[22m[39m
+[90m [2m❯[22m Process.ChildProcess._handle.onexit node:internal/child_process:[2m293:12[22m[39m
+
+[31m[1mCaused by: Error[22m: Worker exited unexpectedly[39m
+[90m [2m❯[22m ChildProcess.emitUnexpectedExit node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:[2m6781:33[22m[39m
+[90m [2m❯[22m ChildProcess.emit node:events:[2m508:28[22m[39m
+[90m [2m❯[22m Process.ChildProcess._handle.onexit node:internal/child_process:[2m293:12[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39m
+
+
+[2m Test Files [22m [1m[31m9 failed[39m[22m[2m | [22m[1m[32m149 passed[39m[22m[90m (159)[39m
+[2m      Tests [22m [1m[31m14 failed[39m[22m[2m | [22m[1m[32m1621 passed[39m[22m[90m (1647)[39m
+[2m     Errors [22m [1m[31m4 errors[39m[22m
+[2m   Start at [22m 04:52:18
+[2m   Duration [22m 3102.83s[2m (transform 57.46s, setup 163.70s, collect 78.78s, tests 296.61s, environment 388.06s, prepare 18.53s)[22m
+
+error during close Error: [vitest-pool-runner]: Timeout waiting for worker to respond
+    at Timeout.<anonymous> (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/vitest/dist/chunks/cli-api.BQ-bjcRi.js:6798:58)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)

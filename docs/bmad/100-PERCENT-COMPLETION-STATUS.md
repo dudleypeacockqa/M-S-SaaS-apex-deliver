@@ -1,731 +1,164 @@
-# M&A Intelligence Platform - 100% Completion Status Report
+# M&A Intelligence Platform – Honest 100% Completion Status (2025-11-13T05:45Z)
 
-**Report Generated**: 2025-11-13T03:30Z (Comprehensive Research Update)
-**Project**: M&A Intelligence Platform (ApexDeliver)
-**Current Commit**: main @ 667b41d
-**Methodology**: BMAD v6-alpha + strict TDD
-**Audited By**: Claude Code (comprehensive codebase analysis via Plan agent)
+**Repository**: `main` (local HEAD fc92c395)  
+**Audited Artifacts**: full codebase, BMAD stories, test logs under `docs/tests/`, deployment evidence under `docs/deployments/`, new accessibility assets under `docs/testing/`
 
 ---
 
 ## Executive Summary
 
-**ACTUAL COMPLETION: 98-99%** (Production-Ready)
-
-**Previous Assessment Was Significantly Underestimated**: The earlier 76% estimate was inaccurate. Comprehensive codebase analysis reveals the platform is nearly complete and fully operational in production.
-
-**Critical Finding**: The project has **ONE major feature gap** (Document Generation backend) and minor polish items. All foundational features are production-ready with comprehensive test coverage.
-
-**Production Status**:
-- **Backend**: 814/814 tests passing (84% coverage, exceeds 80% target)
-- **Frontend**: ~1,490/1,502 tests passing (98% pass rate, 85%+ coverage)
-- **Deployment**: Both services LIVE and responding HTTP 200
-- **Smoke Tests**: 10/10 passing
-- **User Flows**: All core workflows operational
-
-**Time to 100%**: **20-24 hours** of focused work
-- **P0 Critical**: 13 hours (Document Generation backend, test fixes, deployment sync)
-- **P1 Polish**: 10 hours (documentation, audits, valuation UI, podcast tests)
-
-**Decision Point**: Platform is **ready for v1.0 launch** after P0 completion. P2 features (Event Hub F-012, Community F-013) are deferred to post-v1.0.
+- **Actual roadmap completion sits at ~76%**. Phase 1 core tenants are production-ready, Phase 2 advanced intelligence is partially delivered, and Phase 3 ecosystem features (Event Hub, Community Platform) have not started. The previous “98-99%” estimate ignored these missing capabilities.
+- **Platform quality is strong but not yet green**: backend test suite is fully passing (`docs/tests/2025-11-13-backend-full-suite-final.txt`), while the latest Vitest runs (`docs/tests/2025-11-13-frontend-final-verification.txt`) still report deterministic failures across routing, subscription gating, and valuation export mocks.
+- **Documentation + governance remain a blocker**: only ~12/42 BMAD stories expose a `STATUS:` marker. Critical stories such as DEV-006 (Master Admin), DEV-014 (Document Generation integration), and MARK-005–008 still rely on prose instead of definitive status headers.
+- **Deployment state is partially stale**: production Render services are healthy, but the backend has not successfully deployed commits newer than `5b85557` (`docs/deployments/2025-11-13-backend-deploy-status.json` shows repeated `update_failed`). Marketing Lighthouse audits are now scripted (`docs/testing/`), yet we lack production run artefacts due to Windows headless Chrome limits.
+- **Path to 100%** requires four fronts: finish Document Generation (API wiring + exports), ship Event Hub (F-012) and Community Platform (F-013), stabilize the frontend suite + documentation, and produce verifiable deployment/audit evidence.
 
 ---
 
-## Honest Completion Percentages (Updated)
+## Evidence Snapshot
 
-| Scope Slice | Previous Estimate | **Actual** | Evidence | Gap Analysis |
-|-------------|-------------------|------------|----------|--------------|
-| **Phase 1 - Foundational Core** | 93% | **95%** | Backend: 63 Master Admin endpoints, all CRUD operations complete. Frontend: All core workflows functional. Tests: 814/814 backend passing. | Only gap: Valuation Suite frontend polish (export templates, charts). Backend 100% complete. |
-| **Phase 2 - Advanced Intelligence** | 58% | **78%** | Task Automation ✅ 100%, Deal Matching ✅ 100%, Content Hub ✅ 95%, Document Generation 🔴 15% | **ONLY major gap**: Document Generation backend (models exist, routes/service not implemented). Frontend 100% complete. |
-| **Phase 3 - Ecosystem / Network** | 30% | **28%** | Podcast Studio 85% (backend 100%, frontend 90%, 4 gating tests failing). Event Hub 0%, Community 0% | Event Hub and Community Platform deferred to post-v1.0. Not blocking launch. |
-| **Marketing Website** | 95% | **95%** | 19+ pages verified with tests. Palette complete, 0 accessibility violations locally. | Need Lighthouse/axe production audit artifacts. Local environment blocked. |
-| **Documentation / BMAD stories** | ~5% | **17%** | 7/42 stories have STATUS markers. Master Admin, Deal Matching, Financial Intelligence, Task Automation all marked ✅ | **35 story files need STATUS headers**. This is main documentation debt. |
-| **Overall Platform** | 76% | **98-99%** | Production operational. All Phase 1 features working. 3/4 Phase 2 features complete. Tests: 2,304/2,316 passing (99.5%). | Path to 100%: Document Generation backend (8h) + test fixes (3h) + docs (4h) + deployment (2h) |
-
----
-
-## Feature Completion Matrix (All 13 Features - Detailed)
-
-### Phase 1: Foundational Core (Target: 100% for v1.0)
-
-#### F-001: User & Organization Management
-**Status**: ✅ **100% COMPLETE**
-
-| Component | Implementation | Tests | Evidence |
-|-----------|----------------|-------|----------|
-| Multi-tenant architecture | ✅ Complete | ✅ 57/57 | backend/app/models/ (Organization, User models with organization_id FK on all tables) |
-| Clerk authentication | ✅ Complete | ✅ 57/57 | backend/app/api/routes/auth.py (JWT validation, webhook sync) |
-| RBAC implementation | ✅ Complete | ✅ 22/22 | backend/app/core/rbac.py (role-based permissions, resource-level access) |
-| Master Admin Portal | ✅ **100%** | ✅ 66/66 | backend/app/api/routes/master_admin.py (63 endpoints), frontend/src/pages/master-admin/ (7 pages) |
-
-**Evidence**:
-- DEV-002 (Auth workflows) - Marked ✅ COMPLETE
-- DEV-004 (Clerk sync) - Marked ✅ COMPLETE
-- DEV-005 (RBAC) - Marked ✅ COMPLETE
-- DEV-006 (Master Admin) - Actually 100% (docs show 85%, outdated)
-
-**Gap**: None
+| Dimension | Current Status | Evidence |
+|-----------|----------------|----------|
+| Backend quality | ✅ 814/814 tests passing, 84% coverage | `docs/tests/2025-11-13-backend-full-suite-final.txt`
+| Frontend quality | ⚠️ ~12 failing suites (routing, podcast gating, valuation export, marketing pages) | `docs/tests/2025-11-13-frontend-final-verification.txt`
+| Accessibility | ✅ Axe 0 violations (local) | `docs/testing/axe-report.json`, `docs/testing/TEST-RUN-SUMMARY-2025-11-13.md`
+| Deployments | ⚠️ Backend stuck on 5b85557, latest deploy attempts fail; frontend live on dbcc7b8 | `docs/deployments/2025-11-13-backend-deploy-status.json`, `docs/deployments/2025-11-13-smoke-tests-1843.txt`
+| BMAD stories | ⚠️ ~30 stories lack STATUS markers | `docs/bmad/stories/` audit log in `docs/bmad/BMAD_PROGRESS_TRACKER.md`
+| Missing features | ❌ Event Hub (F-012), Community Platform (F-013) still 0%; Document Generation backend not wired to frontend | File search (no `event_*` modules under backend/frontend), `frontend/src/services/api/documentGeneration.ts` hitting `/api/v1/documents` vs new `/api/document-generation` routes
 
 ---
 
-#### F-002: Deal Flow & Pipeline Management
-**Status**: ✅ **100% COMPLETE**
+## Feature Readiness by Phase
 
-| Component | Implementation | Tests | Evidence |
-|-----------|----------------|-------|----------|
-| Kanban board | ✅ Complete | ✅ 48/50 | frontend/src/pages/deals/DealPipeline.tsx (react-beautiful-dnd integration) |
-| Custom pipeline stages | ✅ Complete | ✅ Integrated | backend/app/models/deal.py (flexible stage definitions) |
-| Deal CRUD operations | ✅ Complete | ✅ 48/50 | backend/app/api/routes/deals.py (full REST API) |
-| Team collaboration | ✅ Complete | ✅ Integrated | Activity feeds, comments, notifications all working |
+### Phase 1 – Foundational Core (Goal: 100%)
 
-**Evidence**:
-- DEV-007 (Deal pipeline CRUD) - Needs STATUS header but actually complete
-- frontend/src/pages/deals/DealDetails.tsx - 48/50 tests passing (96%)
-- backend tests: All deal service tests passing
+| Feature | Status | Notes |
+|---------|--------|-------|
+| F-001 User & Organization Mgmt | ✅ 100% | Auth + RBAC complete; tests in `backend/tests/test_auth_*`; Clerk sync documented in DEV-004. |
+| F-002 Deal Flow & Pipeline | ✅ 100% | Drag/drop board, details, analytics all green. |
+| F-003 Secure Documents & Data Room | ✅ 100% | 87/87 Vitest suites passing (`docs/tests/2025-11-13-dev008-documentworkspace.txt`). |
+| F-005 Subscription & Billing | ✅ 100% | Stripe flows + quota reporting in production; backend tests cover error paths. |
+| F-006 Financial Intelligence Engine | ⚠️ 95% | Xero OAuth live, QuickBooks/Sage/NetSuite mocked (skipped tests). Risk accepted for v1.0? Requires credentials + manual verification. |
+| F-007 Multi-Method Valuation Suite | ⚠️ ~70% | Backend DCF/comps complete, but UI still lacks export template picker, comparison charts, and scenario summaries (see DEV-011). |
+| Master Admin Portal | ✅ 100% | 63 endpoints, 66 tests, production router registered; documentation outdated (DEV-006 still claims 85%). |
 
-**Gap**: 2 minor test failures (CreateDealModal negative validation)
+### Phase 2 – Advanced Intelligence (Goal: ≥90%)
 
----
+| Feature | Status | Notes |
+|---------|--------|-------|
+| F-004 Task Automation & Workflow Templates | ⚠️ 90% | Backend + board live; new task template modals checked in (`frontend/src/components/tasks/TaskTemplate*.tsx`) but need QA + story updates. |
+| F-008 Intelligent Deal Matching | ✅ 100% | Algorithms + analytics shipped; story DEV-018 now tagged COMPLETE. |
+| F-009 Automated Document Generation | ⚠️ ~60% | Backend routes/services/tests now exist (`backend/app/api/routes/document_generation.py`, `backend/tests/test_document_generation_api.py`), but frontend still calls `/api/v1/documents` and lacks integration with the new API. File exports + async generation remain TODO. |
+| F-010 Content Creation & Lead Gen Hub | ⚠️ 80% | Marketing blog surfaces functional; admin editor + publishing guardrails missing. |
 
-#### F-003: Secure Document & Data Room
-**Status**: ✅ **100% COMPLETE**
+### Phase 3 – Ecosystem & Network Effects (Goal: 100% for roadmap; optional for v1.0?)
 
-| Component | Implementation | Tests | Evidence |
-|-----------|----------------|-------|----------|
-| File upload/download | ✅ Complete | ✅ 87/87 | backend/app/services/document_service.py (S3/R2 integration) |
-| Folder hierarchy | ✅ Complete | ✅ 87/87 | frontend/src/components/documents/FolderTree.tsx (lazy loading, drag-drop) |
-| Access permissions | ✅ Complete | ✅ 87/87 | Permission modal with role toggles, org-level + resource-level |
-| Version control | ✅ Complete | ✅ Integrated | Document version tracking in database |
-
-**Evidence**:
-- DEV-008 (Document room) - Marked ✅ COMPLETE (2025-11-12)
-- docs/tests/2025-11-13-dev008-documentworkspace.txt - 87/87 tests passing
-- frontend/src/components/documents/* - Full suite green
-
-**Gap**: None
+| Feature | Status | Notes |
+|---------|--------|-------|
+| F-011 Podcast & Video Studio | ⚠️ 85% | Audio/video infrastructure done, but subscription gating regression tests failing, and transcript UX docs pending. |
+| F-012 Event Management Hub | ❌ 0% | No backend models/routes/services; no frontend pages/components. |
+| F-013 Community Platform | ❌ 0% | No code artifacts; story placeholders only. |
 
 ---
 
-#### F-005: Subscription & Billing
-**Status**: ✅ **100% COMPLETE**
+## Testing & Quality Details
 
-| Component | Implementation | Tests | Evidence |
-|-----------|----------------|-------|----------|
-| Stripe integration | ✅ Complete | ✅ 127/127 | backend/app/services/stripe_service.py (payments, subscriptions) |
-| 4 subscription tiers | ✅ Complete | ✅ 127/127 | Starter £279, Professional £598, Premium £1,598, Enterprise £custom |
-| Webhook handling | ✅ Complete | ✅ 127/127 | backend/app/api/routes/webhooks.py (signature verification, event processing) |
-| Billing portal | ✅ Complete | ✅ Integrated | frontend/src/pages/billing/ (subscription management, invoices) |
+### Backend
+- Command: `python -m pytest --cov=backend/app` (see `docs/tests/2025-11-13-backend-full-suite-final.txt`).
+- Highlights: 814 pass / 77 intentional skips; Alembic head `f867c7e3d51c` confirmed via `backend/venv/Scripts/python.exe -m alembic current`.
+- Risk: OAuth integrations (QuickBooks/Sage/NetSuite) are still mocked, so enterprise finance coverage is partial.
 
-**Evidence**:
-- DEV-009 (Subscription billing) - Needs STATUS header but actually complete
-- DEV-011 (Subscription billing alt) - Needs STATUS header but actually complete
-- backend tests: 127/127 subscription tests passing
+### Frontend
+- Latest full run: `docs/tests/2025-11-13-frontend-final-verification.txt` (Vitest verbose output). Deterministic failures include:
+  1. **Routing + Auth** (`src/tests/routing.test.tsx`, `src/features/auth/Auth.test.tsx`, `src/App.test.tsx`) – Clerk mock/pool issues.
+  2. **PodcastStudioRouting** – feature flag & subscription tier gating expectations failing post-refactor.
+  3. **Valuation export mock** – missing `getExportStatus` in mocked service (failure near line ~970).
+  4. **Marketing contract tests** – blog listing/network failure mocks deliberately unhandled.
+- Action: Run focused suites with `--pool=threads` (already green for DocumentQuestionsPanel + CreateDealModal) and fix the outstanding mocks, then re-run with `--coverage` to regenerate `docs/tests/2025-11-13-frontend-vitest-coverage.txt`.
 
-**Gap**: None
-
----
-
-#### F-006: Financial Intelligence Engine
-**Status**: ✅ **95% COMPLETE** (Xero live, others mocked)
-
-| Component | Implementation | Tests | Evidence |
-|-----------|----------------|-------|----------|
-| Xero OAuth integration | ✅ **LIVE** | ✅ 74/75 | backend/app/services/xero_oauth_service.py (OAuth 2.0 flow operational) |
-| QuickBooks integration | 🔄 Mocked | ⚠️ Skipped | backend tests skip due to missing credentials (documented) |
-| Sage integration | 🔄 Mocked | ⚠️ Skipped | backend tests skip due to missing credentials (documented) |
-| NetSuite integration | 🔄 Mocked | ⚠️ Skipped | backend tests skip due to missing credentials (documented) |
-| 47+ financial ratios | ✅ Complete | ✅ 15/15 | backend/app/services/financial_ratio_calculator.py (all ratios implemented) |
-| AI narratives (GPT-4) | ✅ Complete | ✅ Integrated | backend/app/services/financial_narrative_service.py |
-| Deal Readiness Score | ✅ Complete | ✅ Integrated | Composite scoring algorithm operational |
-
-**Evidence**:
-- DEV-010 (Financial Intelligence) - Marked ✅ 100% COMPLETE
-- backend tests: 74/75 financial tests passing (99%)
-- Xero OAuth workflow tested and verified
-
-**Gap**: Other accounting integrations mocked (acceptable for v1.0, real credentials needed for production)
+### Accessibility & Performance
+- New scripts & docs shipped under `docs/testing/` with automated `run_local_audits.sh` and perfect Axe score (0 violations). Lighthouse CI config exists but still needs macOS/Linux execution to avoid Windows `NO_FCP` errors.
 
 ---
 
-#### F-007: Multi-Method Valuation Suite
-**Status**: 🔄 **70% COMPLETE** (Backend 100%, Frontend 70%)
+## Documentation & Story Audit
 
-| Component | Implementation | Tests | Evidence |
-|-----------|----------------|-------|----------|
-| DCF valuation (backend) | ✅ Complete | ✅ 58/58 | backend/app/services/valuation_service.py (full DCF implementation) |
-| Comparables analysis (backend) | ✅ Complete | ✅ 58/58 | Comp selection, multiple adjustment, harmonic mean |
-| Precedent transactions (backend) | ✅ Complete | ✅ 58/58 | Transaction sourcing, valuation multiples |
-| Sensitivity analysis (backend) | ✅ Complete | ✅ 58/58 | Monte Carlo simulation, scenario analysis |
-| Frontend UI (base) | ✅ Complete | ✅ 14/14 | frontend/src/pages/deals/valuation/ValuationSuite.tsx |
-| **Export templates** | ❌ **Missing** | ❌ Not tested | Need UI for Executive Summary, Full Report, Board Presentation formats |
-| **Comparison charts** | ❌ **Missing** | ❌ Not tested | Need Recharts integration for DCF vs Comps vs Precedent visualization |
-| **Scenario UI** | ❌ **Missing** | ❌ Not tested | Need side-by-side Base/Optimistic/Pessimistic comparison table |
-
-**Evidence**:
-- DEV-011 (Valuation suite) - Marked 🔄 IN PROGRESS (90% complete in docs, actual 70%)
-- backend/app/api/routes/valuation.py - 58/58 tests passing (100% backend)
-- frontend/src/pages/deals/valuation/ValuationSuite.tsx - 14/14 base tests passing
-
-**Gap**: Frontend polish (export templates, charts, scenario table) - Estimated 4 hours to complete
+- Only ~12 stories carry explicit `STATUS:` headers (`docs/bmad/stories/DEV-003-protected-routing.md`, `DEV-004-backend-clerk-sync.md`, etc.). Approximately 30 files (DEV-002, DEV-006 summaries, MARK-001, MARK-005–008, OPS-004/005, etc.) still lack markers and up-to-date evidence even though the underlying work is complete.
+- `docs/bmad/BMAD_PROGRESS_TRACKER.md` now records two hygiene sessions, but the tracker and stories themselves still disagree (e.g., DEV-014 header still declares “backend 0%” even after the new API landed).
+- `docs/bmad/bmm-workflow-status.md` lists the workflow as “Phase 6 Complete” despite open gaps; must be rolled back to an execution state that matches reality.
 
 ---
 
-### Phase 2: Advanced Intelligence (Target: 90% for v1.0)
+## Deployments & Audits
 
-#### F-004: Task Management & Workflow Automation
-**Status**: ✅ **100% COMPLETE**
-
-| Component | Implementation | Tests | Evidence |
-|-----------|----------------|-------|----------|
-| Task CRUD | ✅ Complete | ✅ 9/9 | backend/app/api/routes/tasks.py |
-| Kanban board | ✅ Complete | ✅ 9/9 | frontend/src/pages/tasks/TaskBoard.tsx (drag-drop, filtering) |
-| Task templates (backend) | ✅ Complete | ✅ Integrated | backend database has pipeline_templates table |
-| **Template UI** | 🔄 Basic | ⚠️ Polish pending | Template CRUD modals exist but could use UX polish (P2 nice-to-have) |
-
-**Evidence**:
-- DEV-012 (Task automation) - Marked ✅ COMPLETE (2025-11-12)
-- frontend/src/pages/tasks/TaskBoard.tsx - 9/9 tests passing
-- backend task service tests all passing
-
-**Gap**: Template UI polish (deferred to P2, not blocking)
+- **Backend**: last successful deploy ID `dep-d4actdofdonc73edtq70` (commit 5b85557). Recent attempts (`dep-d4ad8lffte5s739g5gug` and others) failed with `update_failed`. Entry-point script was simplified, but no verified deployment artefact exists afterward.
+- **Frontend**: deployment succeeds and smoke tests (`docs/deployments/2025-11-13-smoke-tests-1843.txt`) confirm HTTP 200s for key pages.
+- **Audits**: Local axe run stored (`docs/testing/axe-report.json`). Lighthouse HTML/JSON exist but were generated locally with `NO_FCP`; need rerun on Linux/CI and reference in MARK-002 story.
 
 ---
 
-#### F-008: Intelligent Deal Matching
-**Status**: ✅ **100% COMPLETE**
+## Gap Radar (Ordered by Criticality)
 
-| Component | Implementation | Tests | Evidence |
-|-----------|----------------|-------|----------|
-| Claude-powered matching | ✅ Complete | ✅ 48/48 | backend/app/services/deal_matching_service.py (Anthropic Claude 3 integration) |
-| Match scoring | ✅ Complete | ✅ 48/48 | Confidence scores, ranking algorithm |
-| Introduction requests | ✅ Complete | ✅ 17/17 | frontend/src/pages/deals/MatchingWorkspace.tsx (request flow, approval workflow) |
-| **Explainability overlays** | 🔄 Basic | ⚠️ Polish pending | Basic match reasons shown, advanced Claude prompt logs deferred (P2 nice-to-have) |
+| # | Gap | Impact | Est. Effort |
+|---|-----|--------|-------------|
+| 1 | **Frontend Vitest stabilization** | Blocks CI gate and true 100% readiness | 6-8 hrs (fix mocks, rerun coverage) |
+| 2 | **Document Generation integration** | F-009 incomplete: frontend still hits legacy `/api/v1/documents`, exports lack queueing | 10-14 hrs (wire new API, add export job handling, end-to-end tests) |
+| 3 | **Event Management Hub (F-012)** | Entire feature missing | 3-4 weeks (backend models/routes/services + React UI + tests) |
+| 4 | **Community Platform (F-013)** | Entire feature missing | 3-4 weeks |
+| 5 | **Valuation Suite UI polish** | Phase 1 sign-off requires export templates + charts | 1-2 days |
+| 6 | **Documentation hygiene** | 30+ BMAD stories + workflow status inaccurate | 1 day |
+| 7 | **Deployment verification + audits** | Backend not redeployed, Lighthouse evidence missing | 0.5-1 day |
 
-**Evidence**:
-- DEV-018 (Deal matching) - Marked ✅ COMPLETE (with evidence links)
-- backend tests: 48/48 deal matching tests passing
-- frontend tests: 17/17 matching workspace tests passing
-
-**Gap**: Explainability overlays (deferred to P2, not blocking)
+*Note:* Building F-012 and F-013 dominates the remaining roadmap effort. If “100% completion” targets the original PRD (16+ features), plan for ~6-8 additional weeks of engineering after the polish items.
 
 ---
 
-#### F-009: Automated Document Generation
-**Status**: 🔴 **15% COMPLETE** (Frontend 100%, Backend 0%)
+## Path to 100% (Recommended Plan)
 
-**THIS IS THE ONLY MAJOR FEATURE GAP PREVENTING 100%**
+1. **Phase 0 – Stabilize & Document (2-3 days)**
+   - Fix Vitest regressions; capture new logs + coverage artefacts.
+   - Update all BMAD stories with `STATUS` markers and evidence links; align `bmm-workflow-status.md` with the execution state.
+   - Rerun Lighthouse/axe on macOS/Linux or CI and archive under `docs/marketing/`.
+   - Redeploy backend (Render) and capture 10/10 smoke tests + updated `latest-deploy.json`.
 
-| Component | Implementation | Tests | Evidence |
-|-----------|----------------|-------|----------|
-| **Backend models** | ✅ Complete | ⚠️ Untested | backend/app/models/document_generation.py exists |
-| **Backend service** | ❌ **STUB ONLY** | ❌ **Not implemented** | backend/app/services/document_generation_service.py has 1 TODO, no methods |
-| **Backend routes** | ❌ **STUB ONLY** | ❌ **Not implemented** | backend/app/api/routes/document_generation.py has imports only, no endpoints |
-| **Backend tests** | ❌ **Missing** | ❌ **0 tests** | backend/tests/test_document_generation_api.py exists but minimal |
-| Frontend DocumentEditor | ✅ Complete | ✅ 9/9 | frontend/src/pages/documents/DocumentEditor.tsx (rich text editor, variable insertion) |
-| Frontend API integration | ✅ Complete | ⚠️ Calls non-existent endpoints | frontend/src/services/api/documentGeneration.ts calls /api/v1/documents endpoints that don't exist |
+2. **Phase 1 – Complete In-Flight Features (1-2 weeks)**
+   - Finish Document Generation wiring (frontend ↔ new API; file exports; async polling). Add integration tests in both stacks.
+   - Polish Valuation Suite exports + charts; close DEV-011 story.
+   - Finalize Podcast subscription gating + transcript UX (close DEV-016).
 
-**Evidence**:
-- DEV-014 (Document generation) - Marked 🔄 IN PROGRESS (Frontend 100%, Backend 0%)
-- frontend/src/pages/documents/DocumentEditor.tsx - 9/9 tests passing
-- backend/app/api/routes/document_generation.py - File exists but empty (only imports)
-- backend/app/services/document_generation_service.py - File exists with 1 TODO comment
+3. **Phase 2 – Deliver Remaining Roadmap Features (6-8 weeks)**
+   - **F-012 Event Hub**: models (Event, Session, Registration), FastAPI routes (`/events`), services, React dashboards (listing, creation, attendee management), tests.
+   - **F-013 Community Platform**: social models (Post, Comment, Reaction, Follow), feed APIs, moderation, React feed/profile pages, tests.
 
-**Required Work** (6-8 hours):
-1. Implement `DocumentGenerationService`:
-   - `generate_document(template_id, deal_id, variables)` method
-   - Template variable substitution logic
-   - PDF generation using reportlab
-   - DOCX generation using python-docx
-   - Integration with Deal/Document models
-
-2. Complete routes in `document_generation.py`:
-   - POST /api/document-generation/generate
-   - GET /api/document-generation/templates
-   - POST /api/document-generation/templates
-   - GET /api/document-generation/templates/{id}
-
-3. Write pytest suite (target: 20+ tests):
-   - Template CRUD operations
-   - Document generation flow
-   - PDF export functionality
-   - DOCX export functionality
-   - Integration with frontend
-
-4. Register router in backend/app/api/__init__.py
-
-**Gap**: This is the ONLY major backend feature gap. Estimated 6-8 hours to complete.
+4. **Phase 3 – Release & Handoff (2-3 days)**
+   - Run full backend + frontend suites, lint, type checks, accessibility/perf audits.
+   - Update BMAD trackers, completion reports, release notes, and deployment evidence.
+   - Tag v1.0.0 with verified commit; prepare PR/ops checklist.
 
 ---
 
-#### F-010: Content Creation & Lead Generation Hub
-**Status**: ✅ **95% COMPLETE**
+## Immediate Next Actions (P0 Stack)
 
-| Component | Implementation | Tests | Evidence |
-|-----------|----------------|-------|----------|
-| Blog posts (backend) | ✅ Complete | ✅ Fixed | backend/app/api/routes/blog.py (CRUD operations, 500 error fixed per DEV-019) |
-| Blog posts (frontend) | ✅ Complete | ✅ 63/67 | frontend/src/pages/marketing/BlogPage.tsx (listing, detail, pagination) |
-| Case studies | ✅ Complete | ✅ Integrated | frontend/src/pages/marketing/CaseStudiesPage.tsx (grid, filters) |
-| Newsletter subscription | ✅ Complete | ✅ Integrated | Email capture, Mailchimp/SendGrid integration ready |
-| **Rich text CMS editor** | 🔄 Basic | ⚠️ Polish pending | Admin can create posts but lacks advanced WYSIWYG (P2 nice-to-have) |
+1. **Vitest T0/T1** – Continue focused runs (`DocumentQuestionsPanel`, `CreateDealModal`, routing/auth suites) and then full `npm run test -- --run --coverage --pool=threads`; archive to `docs/tests/2025-11-13-frontend-full-suite.txt`. (✅ 2025-11-13: `vitest.config.ts` excludes `node_modules.before-vitest/**`; `RootLayout` exposes `data-testid="user-menu"`, unblocking `src/App.test.tsx`; marketing hero assertions updated in `EnhancedLandingPage.test.tsx` to reflect current copy.)
+2. **Story Hygiene Sweep** – Add STATUS markers + evidence links for DEV-002, DEV-006, DEV-007, MARK-001, MARK-005-008, OPS-004/005, etc.; log progress in `docs/bmad/BMAD_PROGRESS_TRACKER.md`.
+3. **Document Generation Wiring Plan** – Update DEV-014 to reflect backend progress, draft integration TDD plan (mock contract tests, end-to-end service tests).
+4. **Deployment Fix** – Investigate Render logs referenced in `docs/deployments/2025-11-13-backend-deploy-status.json`, rerun Alembic upgrade (already green locally), and trigger manual deploy with new entrypoint; capture outcome.
+5. **Accessibility/Lighthouse CI** – Execute `scripts/run_local_audits.sh` on macOS/CI and store results under `docs/marketing/2025-11-13-audits/` so MARK-002 can close.
 
-**Evidence**:
-- MARK-006 (Blog system) - Needs STATUS header but noted ✅ COMPLETE in content
-- DEV-019 (Blog API 500 fix) - Marked ✅ COMPLETE
-- frontend marketing pages: 63/67 tests passing (94%)
-
-**Gap**: Rich text CMS editor polish (deferred to P2, not blocking)
+Once the above are green, move to Phase 1 feature completion tasks.
 
 ---
 
-### Phase 3: Ecosystem & Network Effects (Target: 30% for v1.0, defer rest)
+## Appendix A – Document Generation Reality Check
 
-#### F-011: Podcast & Video Production Studio
-**Status**: 🔄 **85% COMPLETE** (Backend 100%, Frontend 90%, Tests 96%)
+- `backend/app/api/routes/document_generation.py` + `backend/tests/test_document_generation_api.py` prove backend CRUD/generation APIs now exist.
+- `frontend/src/services/api/documentGeneration.ts` still targets `/api/v1/documents` endpoints and is not wired to the new routes; DocumentEditor uses legacy payloads. Integration + export job handling remain undone.
+- DEV-014 story must be updated to reflect the new backend work and the remaining integration scope.
 
-| Component | Implementation | Tests | Evidence |
-|-----------|----------------|-------|----------|
-| Audio transcription (Whisper) | ✅ Complete | ✅ 95/95 | backend/app/services/transcription_service.py (OpenAI Whisper integration) |
-| Podcast CRUD | ✅ Complete | ✅ 95/95 | backend/app/api/routes/podcasts.py (episodes, series, metadata) |
-| YouTube publisher | ✅ Complete | ✅ Integrated | frontend/src/components/podcast/YouTubePublisher.tsx (OAuth flow operational) |
-| Live streaming (backend) | ✅ Complete | ✅ 95/95 | backend streaming API ready |
-| **Subscription gating (frontend)** | 🔄 Implemented | ❌ **4/4 tests failing** | PodcastStudioRouting.test.tsx failing due to Clerk mock state issues |
-| Live streaming (frontend) | ✅ Complete | ⚠️ Gated | frontend/src/pages/podcast/LiveStreamStudio.tsx (Enterprise tier only) |
+## Appendix B – Missing Event & Community Implementations
 
-**Evidence**:
-- DEV-016 (Podcast studio) - Marked 🔄 IN PROGRESS (85% complete, gating tests pending)
-- backend tests: 95/95 podcast tests passing (100%)
-- frontend tests: 29/29 PodcastStudio.tsx passing, 0/4 PodcastStudioRouting.test.tsx passing
-- YouTube OAuth: Verified working
-
-**Gap**: 4 failing routing tests (subscription tier gating) - Estimated 2 hours to fix
-
-**Failing Tests**:
-1. "redirects non-premium users from audio studio"
-2. "redirects non-premium users from video studio"
-3. "redirects non-enterprise users from livestream studio"
-4. "allows premium users to access audio studio"
-
-**Root Cause**: Clerk mock state not properly setting subscription tier in test environment
+- `find frontend/src -maxdepth 2 -type d -iname '*event*'` and a backend search for `event_service` confirm there are **no** event or community modules. F-012/F-013 are still blank slates and must be scheduled explicitly.
 
 ---
 
-#### F-012: Event Management Hub
-**Status**: ❌ **0% COMPLETE** (Deferred to post-v1.0)
-
-**Required Work** (15-20 hours, deferred):
-- Models: Event, EventSession, EventRegistration
-- Backend: /api/events router with CRUD + registration flows
-- Frontend: EventDashboard.tsx, event creation, ticketing, attendance analytics
-- Tests: Full pytest + Vitest coverage
-
-**Evidence**: No files exist under backend/app/services/event_* or frontend/src/pages/events/
-
-**Gap**: Entire feature (not blocking v1.0 launch)
-
----
-
-#### F-013: Professional Community Platform
-**Status**: ❌ **0% COMPLETE** (Deferred to post-v1.0)
-
-**Required Work** (15-20 hours, deferred):
-- Models: CommunityPost, Comment, Reaction
-- Backend: /api/community router, feed ranking, moderation hooks
-- Frontend: Feed.tsx, CreatePost.tsx, UserProfile.tsx
-- Tests: Full pytest + Vitest coverage
-
-**Evidence**: No files exist under backend/app/services/community_* or frontend/src/pages/community/
-
-**Gap**: Entire feature (not blocking v1.0 launch)
-
----
-
-## Verified Test & Deployment Evidence (Updated)
-
-| Area | Result | Evidence | Pass Rate |
-|------|--------|----------|-----------|
-| **Backend test suite** | ✅ **814 passed / 77 skipped / 84% coverage** | docs/tests/2025-11-13-backend-full-suite-final.txt | **100%** (814/814 executed) |
-| **Frontend test suite** | 🔄 **~1,490 passed / 12 failed** | Multiple artifacts (frontend-test-final, msw-fixed, focused) | **98%** (1,490/1,502) |
-| **Document Room suite** | ✅ **87/87 passing** | docs/tests/2025-11-13-dev008-documentworkspace.txt | **100%** |
-| **Production smoke tests** | ✅ **10/10 passing** | docs/deployments/2025-11-13-smoke-tests-1843.txt | **100%** |
-| **Render deployment status** | ✅ **Both services LIVE** | latest-deploy.json, verified 2025-11-13T03:28Z | Backend: 5b85557, Frontend: dbcc7b8 |
-| **Overall test health** | ✅ **2,304/2,316 passing** | Combined backend + frontend | **99.5%** |
-
-### Frontend Test Failures (12 total - All Minor)
-
-**By File**:
-1. `PodcastStudioRouting.test.tsx`: 0/4 passing (subscription gating)
-2. `Auth.test.tsx`: 1/3 passing (redirect, auth state)
-3. `EnhancedLandingPage.test.tsx`: 16/18 passing (hero section props)
-4. `App.test.tsx`: 3/5 passing (sign-in actions, user menu)
-5. `CreateDealModal.test.tsx`: 28/29 passing (negative validation)
-6. `routing.test.tsx`: 3/4 passing (visitor render)
-7. `CapLiquifyFPAPage.test.tsx`: 7/8 passing (badge rendering)
-
-**Root Causes**:
-1. MSW server syntax errors (recently fixed per docs/tests/2025-11-13-frontend-msw-fixed.txt)
-2. Clerk mock state inconsistencies in routing tests
-3. Component prop mismatches after refactoring
-
-**Impact**: All services functional despite test failures. Tests are validation only, not blocking production.
-
----
-
-## Gap Radar (Ordered by Urgency - Updated)
-
-### P0 Critical Gaps (MUST Complete for 100%)
-
-**1. Document Generation Backend Implementation** 🔴 **BLOCKER**
-- **Impact**: Only major feature gap preventing 100% completion
-- **Effort**: 6-8 hours
-- **Work Required**:
-  - Implement DocumentGenerationService (template substitution, PDF/DOCX export)
-  - Complete 4 REST API endpoints in document_generation.py routes
-  - Write 20+ pytest tests
-  - Register router in backend/app/api/__init__.py
-- **Current State**: Models exist, routes/service stubbed with no implementation
-- **Frontend Impact**: DocumentEditor calls non-existent endpoints
-
-**2. Frontend Test Stabilization** ⚠️ **HIGH PRIORITY**
-- **Impact**: Need 100% pass rate for confidence, currently 98%
-- **Effort**: 3 hours
-- **Work Required**:
-  - Fix 4 podcast gating tests (Clerk mock state)
-  - Fix 2 auth tests (redirect, header state)
-  - Fix 2 marketing tests (EnhancedHeroSection props)
-  - Fix 4 other minor tests (routing, CreateDealModal, badge)
-- **Current State**: 12/1,502 tests failing (0.8% failure rate)
-- **Services Impact**: None - all services functional
-
-**3. Backend Deployment Reconciliation** ⚠️ **MEDIUM PRIORITY**
-- **Impact**: Latest commits not deployed but service healthy
-- **Effort**: 2 hours
-- **Work Required**:
-  - Verify Alembic migration state (alembic current)
-  - Check DATABASE_URL in Render environment
-  - Redeploy backend to commit 667b41d (or latest)
-  - Run smoke tests (10/10 target)
-  - Update latest-deploy.json
-- **Current State**: Backend LIVE on 5b85557 (2 commits behind), frontend LIVE on dbcc7b8
-- **Production Impact**: None - service stable and operational
-
-### P1 Important Gaps (Should Complete for Polish)
-
-**4. BMAD Story STATUS Markers** 📝 **DOCUMENTATION DEBT**
-- **Impact**: Documentation compliance for audit trail
-- **Effort**: 2 hours
-- **Work Required**:
-  - Add STATUS headers to 35 story files (7/42 currently have them)
-  - Batch 1: 10 actually-complete stories (Master Admin, Deal Pipeline, Billing, etc.)
-  - Batch 2: 15 DEV stories need audit first
-  - Batch 3: 10 ops/meta stories
-  - Link evidence artifacts (test logs, deployment logs)
-  - Update BMAD_PROGRESS_TRACKER.md
-- **Current State**: Only 17% compliance (7/42 files)
-
-**5. Marketing Audit Evidence** 📊 **VERIFICATION GAP**
-- **Impact**: Cannot close MARK-002 without evidence
-- **Effort**: 2 hours
-- **Work Required**:
-  - Run Lighthouse from CI/CD or online tool (local Windows blocked)
-  - Capture reports for 5 key pages (/, /pricing, /features, /blog, /contact)
-  - Run axe-core accessibility audit
-  - Save to docs/marketing/audits/2025-11-13/
-  - Update MARK-002 with evidence links
-- **Current State**: Local audits show 0 violations, palette verified, need production artifacts
-
-**6. Valuation Suite Frontend Polish** 🎨 **LAST 30% OF F-007**
-- **Impact**: Complete Phase 1 feature to 100%
-- **Effort**: 4 hours
-- **Work Required**:
-  - Export template selection UI (ValuationExportModal.tsx) - 1.5h
-  - Comparison charts using Recharts (ValuationComparison.tsx) - 1.5h
-  - Scenario comparison table (ScenarioTable.tsx) - 1h
-  - Write 20+ new tests
-- **Current State**: Backend 100%, frontend base 70%, tests 14/14 base passing
-
-**7. Podcast Studio Gating Tests** 🎙️ **FINAL 15% OF F-011**
-- **Impact**: Complete Phase 3 feature to 100%
-- **Effort**: 2 hours
-- **Work Required**:
-  - Fix Clerk mock state in PodcastStudioRouting.test.tsx
-  - Ensure MSW handlers return correct subscription data for each tier
-  - Verify redirect logic for Starter/Professional/Premium/Enterprise tiers
-- **Current State**: Backend 100%, frontend 90%, 0/4 routing tests passing
-
-### P2 Optional Gaps (Nice-to-Have, Post-v1.0)
-
-**8. Task Automation Template UI**
-- **Effort**: 3-4 hours (deferred)
-- **Work**: Template CRUD modals, publish/clone flows
-
-**9. Deal Matching Explainability Overlays**
-- **Effort**: 3-4 hours (deferred)
-- **Work**: Claude prompt logs overlay, confidence tooltips
-
-**10. Event Management Hub (F-012)**
-- **Effort**: 15-20 hours (deferred to Phase 3)
-- **Work**: Full stack implementation
-
-**11. Community Platform (F-013)**
-- **Effort**: 15-20 hours (deferred to Phase 3)
-- **Work**: Full stack implementation
-
----
-
-## Completion Paths & Effort (Updated)
-
-| Path | Includes | Effort Estimate | Exit Criteria | Recommendation |
-|------|----------|-----------------|---------------|----------------|
-| **Path A: Production v1.0 ("100% of committed features")** | Fix 12 frontend tests, implement Document Generation backend, add story STATUS markers, capture marketing audits, redeploy backend, verify 10/10 smoke tests | **20-24 hours** (P0: 13h, P1: 10h) | ✅ All Phase 1+2 features (F-001 to F-010) at 90%+, ✅ 2,316/2,316 tests passing, ✅ All 42 stories marked, ✅ Production deployed, ✅ Marketing audits captured, ✅ v1.0 tag | **RECOMMENDED** - Achieves true 100% of committed roadmap |
-| **Path B: Minimum Viable v1.0 ("Polish & prove current features")** | Fix 12 frontend tests, add story STATUS markers, capture marketing audits, redeploy backend (skip Document Generation, defer to v1.1) | **13 hours** (P0-lite: 7h, P1: 6h) | ✅ All existing features polished and tested, ✅ Documentation complete, ✅ Marketing audits captured, ✅ Deployed | Acceptable but leaves F-009 incomplete |
-| **Path C: Full Roadmap ("100% of original PRD vision")** | Path A + Valuation polish (4h) + Podcast gating tests (2h) + Event Hub (15-20h) + Community Platform (15-20h) + CMS editor (3-4h) | **60-70 hours** (6-8 weeks) | ✅ All 13 features at 100% including F-012, F-013, ✅ Coverage maintained ≥80/85, ✅ New domains deployed | Deferred to post-v1.0 (not blocking launch) |
-
-**Recommendation**: **Path A** - Achieves true 100% of committed features for v1.0 launch in 20-24 hours of focused work.
-
----
-
-## Immediate Next Moves (P0 Stack - Updated)
-
-**Current Session**: Planning documents update
-- ✅ SESSION-2025-11-13-100PCT-COMPLETION-PLAN.md - COMPLETE
-- 🔄 100-PERCENT-COMPLETION-STATUS.md - IN PROGRESS ← **YOU ARE HERE**
-
-**Next Action After Planning**:
-
-1. **Backend Deployment Reconciliation** (2 hours)
-   - Verify Alembic state: `alembic current` in production
-   - Check DATABASE_URL format in Render environment variables
-   - Redeploy backend to 667b41d (or latest) via Render API
-   - Monitor deployment logs for success/failure patterns
-   - Run smoke tests (10/10 target)
-   - Update latest-deploy.json with verified production state
-
-2. **Frontend Test Stabilization** (3 hours)
-   - Fix PodcastStudioRouting.test.tsx (4 failures) - 1h
-   - Fix Auth.test.tsx (2 failures) - 30min
-   - Fix EnhancedLandingPage.test.tsx (2 failures) - 30min
-   - Fix remaining 5 tests (routing, App, CreateDealModal, badge) - 1h
-   - Run full suite: `npm run test -- --run --coverage --pool=threads`
-   - Capture artifact: docs/tests/2025-11-13-frontend-full-suite-FINAL.txt
-   - Target: 1,502/1,502 passing (100% pass rate)
-
-3. **Document Generation Backend Implementation** (6-8 hours) 🔴 **CRITICAL**
-   - Day 1: Implement DocumentGenerationService (4h)
-     - Template variable substitution logic
-     - PDF generation using reportlab
-     - DOCX generation using python-docx
-     - Integration with Deal/Document models
-   - Day 2: Complete routes and tests (4h)
-     - Implement 4 REST API endpoints in document_generation.py
-     - Write 20+ pytest tests (template CRUD, generation, export)
-     - Register router in backend/app/api/__init__.py
-     - Verify integration with frontend DocumentEditor
-   - Target: 834/834 backend tests passing (814 + 20 new)
-
-4. **BMAD Story STATUS Markers** (2 hours)
-   - Batch 1: Update 10 actually-complete stories (STATUS: ✅ COMPLETE)
-   - Batch 2: Audit and update 15 DEV stories
-   - Batch 3: Update 10 ops/meta stories
-   - Link evidence artifacts (test logs, deployment logs)
-   - Update BMAD_PROGRESS_TRACKER.md with session notes
-   - Target: 42/42 stories with STATUS headers (100% compliance)
-
-5. **Marketing Audit Evidence** (2 hours)
-   - Run Lighthouse from GitHub Actions or web.dev/measure
-   - Capture reports for 5 pages (/, /pricing, /features, /blog, /contact)
-   - Run axe-core accessibility audit
-   - Save to docs/marketing/audits/2025-11-13/
-   - Update MARK-002-enhanced-website-completion.md
-   - Mark MARK-002 as ✅ COMPLETE
-
-6. **Final Verification & Documentation** (3 hours)
-   - Run full backend suite: `pytest --cov=app` (834/834 target)
-   - Run full frontend suite: `npm run test -- --run --coverage` (1,502/1,502 target)
-   - Verify deployments (both services to latest commits)
-   - Run smoke tests (10/10 target)
-   - Update latest-deploy.json with final state
-   - Update BMAD_PROGRESS_TRACKER.md with "100% COMPLETE" status
-   - Create PROJECT-COMPLETION-CERTIFICATE.md (optional)
-
-**Total P0 Time**: 13 hours (Backend deploy 2h + Frontend tests 3h + Document Generation 8h)
-**Total P0+P1 Time**: 20-24 hours (P0 13h + Story markers 2h + Marketing audits 2h + Final verification 3h)
-
----
-
-## Deployment Evidence (Current State)
-
-**Backend Service** (srv-d3ii9qk9c44c73aqsli0):
-- **Current Commit**: 5b85557 (2025-11-12T18:15:23Z)
-- **Status**: LIVE ✅
-- **Health**: HTTP 200
-- **Recent Deploy Attempts**: 441ab6e, dbcc7b8, 86b36c1, 52387be all failed (update_failed)
-- **Pattern**: Failures for commits with frontend-only changes (no backend code)
-- **Action Needed**: Redeploy to 667b41d after verifying Alembic state
-
-**Frontend Service** (srv-d3ihptbipnbc73e72ne0):
-- **Current Commit**: dbcc7b8 (2025-11-12T18:55:02Z)
-- **Status**: LIVE ✅
-- **Health**: HTTP 200
-- **Last Deploy**: Auto-deployed successfully 2025-11-13
-- **Action Needed**: None (auto-deploys on push to main)
-
-**Production Health**:
-- Smoke Tests: 10/10 passing (docs/deployments/2025-11-13-smoke-tests-1843.txt)
-- Backend endpoints: All responding
-- Frontend pages: All loading
-- Authentication: Working
-- Subscriptions: Working
-- Both services: 100% operational
-
----
-
-## Appendix A: Marketing Website Reality Check (Updated)
-
-**Current State**:
-- ✅ 19+ production pages under frontend/src/pages/marketing/* with paired tests
-- ✅ Palette normalization complete (Session MKT-Contrast)
-- ✅ Case study grid shipped
-- ✅ 0 accessibility violations (locally verified with axe-core)
-- ✅ SEO utilities: Canonical tags, structured data (frontend/src/utils/schemas/*)
-- ✅ Blog system: CRUD operational, 500 error fixed (DEV-019)
-
-**Pending**:
-- ⏳ Lighthouse audit reports from production URL (local Windows environment blocked)
-- ⏳ axe-core production verification
-- ⏳ CDN cache verification
-- ⏳ Production SEO verification (canonical tags on live site)
-
-**Action**: Run Lighthouse from GitHub Actions or web.dev/measure (2 hours)
-
----
-
-## Appendix B: Master Admin Portal Snapshot (Updated)
-
-**Backend** (100% Complete):
-- ✅ 63 routes defined in backend/app/api/routes/master_admin.py
-- ✅ 13 models in backend/app/models/master_admin.py
-- ✅ Comprehensive schemas in backend/app/schemas/master_admin.py
-- ✅ Service layer fully implemented
-- ✅ 66/66 tests passing (backend test suite)
-- ✅ Router registered in production
-
-**Frontend** (100% Complete):
-- ✅ 7 pages under frontend/src/pages/master-admin/:
-  - Dashboard (overview, metrics, charts)
-  - Activity (stream, filters, exports)
-  - Prospect (lead management, scoring)
-  - Campaign (marketing campaigns, analytics)
-  - Content (content library, publishing)
-  - LeadCapture (forms, landing pages)
-  - SalesCollateral (document library, versioning)
-- ✅ Supporting components under frontend/src/components/master-admin/
-- ✅ Tests: All passing (frontend test suite)
-- ✅ Feature flag: VITE_ENABLE_MASTER_ADMIN guards release
-
-**Documentation Status**:
-- ⚠️ DEV-006-BACKEND-COMPLETION.md shows "85% complete" (OUTDATED)
-- ✅ Actual state: 100% complete (63 endpoints, 66 tests, all workflows functional)
-- 📝 Action: Update DEV-006 story with STATUS: ✅ COMPLETE
-
----
-
-## Appendix C: Test Coverage Breakdown by Module
-
-### Backend Coverage (84% overall)
-
-**Perfect Coverage (100%)**:
-```
-Financial ratios:        15/15 (100%)
-API middleware:          14/14 (100%)
-Audio chunking:          17/17 (100%)
-Auth helpers:            22/22 (100%)
-Billing endpoints:       16/16 (100%)
-Clerk auth:              57/57 (100%)
-Deal matching:           48/48 (100%)
-Master admin:            66/66 (100%)
-Podcast features:        95/95 (100%)
-Subscriptions:          127/127 (100%)
-Valuation suite:         58/58 (100%)
-```
-
-**Good Coverage (80-99%)**:
-```
-Financial services:      74/75 (99%)
-Document services:       All passing (98%+)
-Task services:           All passing (95%+)
-```
-
-**Intentionally Skipped** (77 total):
-```
-boto3 S3/R2 storage:     18 skipped (optional dependency)
-Sage credentials:         8 skipped (production credentials needed)
-Xero credentials:         8 skipped (production credentials needed)
-Stripe webhook mocks:     4 skipped (complex integration)
-SQLite FK constraints:    3 skipped (PostgreSQL-specific)
-```
-
-### Frontend Coverage (85%+ overall)
-
-**Perfect Coverage (100%)**:
-```
-Document components:     87/87 (100%)
-Valuation suite:         14/14 (100%)
-Task management:          9/9 (100%)
-Podcast Studio:          29/29 (100%)
-```
-
-**Excellent Coverage (95-99%)**:
-```
-Deal components:         48/50 (96%)
-Marketing pages:         63/67 (94%)
-```
-
-**Test Failures** (12 total, 0.8% failure rate):
-```
-Podcast routing:          0/4 (gating tests)
-Auth tests:              1/3 (redirect, state)
-Marketing tests:        16/18 (hero props)
-App tests:               3/5 (sign-in, menu)
-CreateDealModal:        28/29 (validation)
-Routing tests:           3/4 (visitor)
-FPA page:                7/8 (badge)
-```
-
-**Overall Health**: 2,304/2,316 tests passing (99.5% pass rate)
-
----
-
-## Final Assessment & Recommendation
-
-**Actual Completion**: **98-99%** (NOT 76%)
-
-**Production Readiness**: ✅ **READY FOR v1.0 LAUNCH AFTER P0 COMPLETION**
-
-**Critical Path to 100%**:
-1. Document Generation backend implementation (8 hours) 🔴 **ONLY MAJOR GAP**
-2. Frontend test fixes (3 hours)
-3. Backend deployment reconciliation (2 hours)
-4. Story STATUS markers (2 hours)
-5. Marketing audit evidence (2 hours)
-6. Final verification (3 hours)
-
-**Total Time**: 20-24 hours
-
-**Recommended Path**: **Path A - Production v1.0**
-- All committed features (F-001 to F-010) at 90%+
-- All tests passing (2,316/2,316)
-- All documentation complete (42/42 stories marked)
-- Production deployed and verified
-- Marketing audits captured
-
-**F-012 and F-013 Status**: Deferred to post-v1.0 (not blocking launch)
-
-**Next Immediate Action**: Complete planning document update, then begin P0 work starting with backend deployment reconciliation.
-
----
-
-**Document Status**: ✅ COMPREHENSIVE RESEARCH COMPLETE
-**Last Updated**: 2025-11-13T03:30Z
-**Next Update**: After P0 completion (estimated 2025-11-16)
-**Owner**: BMAD v6-alpha workflow
-**Approvals**: User approved execution plan
+**Conclusion**: The platform is production-operational but still ~24% short of the original roadmap. This status report supersedes earlier “98-99% complete” claims and should serve as the baseline for the renewed completion plan.

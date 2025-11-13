@@ -76,7 +76,7 @@ export const RootLayout = () => {
               <span style={{ color: "#1f2937", fontWeight: 600 }}>
                 {user?.firstName ?? "Account"}
               </span>
-              <UserButton />
+              <UserButton data-testid="user-menu" />
             </SignedIn>
           </div>
         </div>

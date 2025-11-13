@@ -1,0 +1,32 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\User\AppData\Local\Programs\Python\Python311\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 15 items
+
+tests\test_document_generation_api.py::TestDocumentTemplateEndpoints::test_create_template PASSED [  6%]
+tests\test_document_generation_api.py::TestDocumentTemplateEndpoints::test_create_template_forbidden_other_org PASSED [ 13%]
+tests\test_document_generation_api.py::TestDocumentTemplateEndpoints::test_list_templates PASSED [ 20%]
+tests\test_document_generation_api.py::TestDocumentTemplateEndpoints::test_list_templates_with_filters PASSED [ 26%]
+tests\test_document_generation_api.py::TestDocumentTemplateEndpoints::test_get_template PASSED [ 33%]
+tests\test_document_generation_api.py::TestDocumentTemplateEndpoints::test_get_template_not_found PASSED [ 40%]
+tests\test_document_generation_api.py::TestDocumentTemplateEndpoints::test_update_template PASSED [ 46%]
+tests\test_document_generation_api.py::TestDocumentTemplateEndpoints::test_delete_template PASSED [ 53%]
+tests\test_document_generation_api.py::TestDocumentGenerationEndpoints::test_generate_document PASSED [ 60%]
+tests\test_document_generation_api.py::TestDocumentGenerationEndpoints::test_generate_document_missing_variables PASSED [ 66%]
+tests\test_document_generation_api.py::TestDocumentGenerationEndpoints::test_generate_document_template_not_found PASSED [ 73%]
+tests\test_document_generation_api.py::TestGeneratedDocumentEndpoints::test_list_generated_documents PASSED [ 80%]
+tests\test_document_generation_api.py::TestGeneratedDocumentEndpoints::test_get_generated_document PASSED [ 86%]
+tests\test_document_generation_api.py::TestGeneratedDocumentEndpoints::test_update_document_status PASSED [ 93%]
+tests\test_document_generation_api.py::TestTemplateRenderingService::test_complex_template_rendering PASSED [100%]
+
+============================== warnings summary ===============================
+backend/tests/test_document_generation_api.py: 15 warnings
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 15 passed, 15 warnings in 2.39s =======================

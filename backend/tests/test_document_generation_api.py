@@ -71,7 +71,7 @@ class TestDocumentTemplateEndpoints:
         template_data = {
             "name": "Test Template",
             "content": "Content",
-            "organization_id": "other-org-456",  # Different org
+            "organization_id": "00000000-0000-0000-0000-000000000456",  # Different org (valid UUID format)
             "created_by_user_id": user.id,
             "variables": [],
         }

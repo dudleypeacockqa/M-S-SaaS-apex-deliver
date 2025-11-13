@@ -21,7 +21,7 @@ from app.schemas.document_generation import (
 from app.services.document_generation_service import DocumentGenerationService
 
 
-router = APIRouter(prefix="/api/document-generation", tags=["document-generation"])
+router = APIRouter(prefix="/document-generation", tags=["document-generation"])
 
 
 # ============================================================================
