@@ -59,6 +59,8 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({
 
   autoSaveDelayMs = AUTO_SAVE_DELAY_MS,
 
+  exportPollIntervalMs,
+
 }) => {
 
   const queryClient = useQueryClient()
