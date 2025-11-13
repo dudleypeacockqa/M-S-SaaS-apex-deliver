@@ -1,48 +1,46 @@
 {
   "backend_deploy": {
     "commit": {
-      "id": "52387be",
-      "message": "deploy: frontend 6936c85 live, backend stable, 10/10 smoke tests passing",
-      "createdAt": "2025-11-12T18:39:13Z"
-    },
-    "status": "deploying",
-    "trigger": "api",
-    "deploy_id": "dep-d4adakp5pdvs73e53v4g",
-    "startedAt": "2025-11-12T18:43:34Z"
-  },
-  "frontend_deploy": {
-    "commit": {
-      "id": "6936c85",
-      "message": "feat(documents): add document Q&A, share links, and comprehensive status updates",
-      "createdAt": "2025-11-12T18:28:03Z"
+      "id": "5b85557",
+      "message": "docs(bmad): Session 2025-11-13-MAP-REBUILD-001 complete - Master Admin backend foundation",
+      "createdAt": "2025-11-12T18:09:58Z"
     },
     "status": "live",
     "trigger": "api",
-    "deployedAt": "2025-11-12T18:33:29Z"
+    "deployedAt": "2025-11-12T18:18:32.718376Z"
   },
-  "last_verified_at": "2025-11-12T18:43:00Z",
+  "frontend_deploy": {
+    "commit": {
+      "id": "dbcc7b8",
+      "message": "test: add podcast studio routing tests and update marketing/test configs",
+      "createdAt": "2025-11-12T18:53:32Z"
+    },
+    "status": "live",
+    "trigger": "new_commit",
+    "deployedAt": "2025-11-12T18:55:02.670568Z"
+  },
+  "last_verified_at": "2025-11-13T03:28:37Z",
   "verification_logs": [
-    "docs/deployments/2025-11-13-smoke-tests-1843.txt",
-    "docs/deployments/2025-11-13-smoke-tests-final.txt"
+    "docs/deployments/2025-11-13T18-55-smoke-tests.txt"
   ],
   "health_status": {
     "backend": {
       "url": "https://ma-saas-backend.onrender.com",
       "status": "live",
       "http_code": 200,
-      "last_check": "2025-11-12T18:43:00Z"
+      "last_check": "2025-11-13T03:28:37Z"
     },
     "frontend": {
       "url": "https://100daysandbeyond.com",
       "status": "live",
       "http_code": 200,
-      "last_check": "2025-11-12T18:43:00Z"
+      "last_check": "2025-11-13T03:28:37Z"
     },
     "smoke_tests": {
-      "passed": 10,
+      "passed": 2,
       "failed": 0,
-      "last_run": "2025-11-12T18:43:00Z"
+      "last_run": "2025-11-13T03:28:37Z"
     }
   },
-  "notes": "Session 2025-11-13: 100% Completion Assessment Complete. Frontend live on 6936c85, backend deploying to 52387be. All smoke tests passing. Comprehensive codebase audit performed: 76% overall completion (13/16 features), Phase 1 93% complete, Master Admin 100% complete, Marketing 95% complete. Test coverage: Backend 84%, Frontend 85%+. Ready for v1.0 release after 1-2 weeks final polish."
+  "notes": "Session 2025-11-13T: Commit dbcc7b8 pushed successfully. Frontend auto-deployed to dbcc7b8. Backend remains stable on 5b85557 (recent backend deploy attempts failed, but service is healthy). Production 100% operational."
 }
