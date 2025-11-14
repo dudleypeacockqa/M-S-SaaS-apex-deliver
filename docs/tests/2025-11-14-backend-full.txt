@@ -1,3 +1,108 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-4.1.0
+asyncio: mode=Mode.STRICT
+collected 1286 items
+
+tests\test_additional_ratios.py ...............                          [  1%]
+tests\test_api_middleware.py ...............                             [  2%]
+tests\test_audio_chunking_service.py .................                   [  3%]
+tests\test_auth_dependencies_edge_cases.py ...............               [  4%]
+tests\test_auth_helpers.py .....................                         [  6%]
+tests\test_billing_endpoints.py ................                         [  7%]
+tests\test_billing_simple.py ...                                         [  7%]
+tests\test_blog_api_errors.py .......                                    [  8%]
+tests\test_clerk_auth_complete.py ..........................             [ 10%]
+tests\test_community_api.py ......................                       [ 12%]
+tests\test_community_models.py .............                             [ 13%]
+tests\test_community_service.py .............................            [ 15%]
+tests\test_dashboard_api.py ......                                       [ 15%]
+tests\test_database_infrastructure.py ............                       [ 16%]
+tests\test_database_reset.py ..                                          [ 17%]
+tests\test_deal_endpoints.py .........................                   [ 18%]
+tests\test_deal_matching_api.py ................                         [ 20%]
+tests\test_deal_matching_models.py ........                              [ 20%]
+tests\test_deal_matching_service.py ...............                      [ 22%]
+tests\test_document_ai_and_versions.py .....                             [ 22%]
+tests\test_document_endpoints.py ............F.......................... [ 25%]
+...                                                                      [ 25%]
+tests\test_document_export_jobs_api.py ...                               [ 25%]
+tests\test_document_generation_api.py ...................                [ 27%]
+tests\test_document_generation_api_errors.py ............                [ 28%]
+tests\test_document_generation_models.py ..........                      [ 29%]
+tests\test_document_service.py ....                                      [ 29%]
+tests\test_document_service_error_paths.py .......                       [ 29%]
+tests\test_email_service.py .......                                      [ 30%]
+tests\test_entitlement.py ...........................................    [ 33%]
+tests\test_entitlement_service_complete.py ..................            [ 35%]
+tests\test_event_models.py ...........                                   [ 36%]
+tests\test_event_notification_service.py ..                              [ 36%]
+tests\test_event_payment_api.py .......                                  [ 36%]
+tests\test_event_payment_service.py ..........                           [ 37%]
+tests\test_event_reminder_service.py ..                                  [ 37%]
+tests\test_event_service.py ..............                               [ 38%]
+tests\test_events_api_errors.py .......                                  [ 39%]
+tests\test_financial_api.py ..................................           [ 41%]
+tests\test_financial_api_errors.py ........                              [ 42%]
+tests\test_financial_models_sync.py ..........                           [ 43%]
+tests\test_financial_narrative_service.py ...........                    [ 44%]
+tests\test_financial_ratios.py ...........................               [ 46%]
+tests\test_financial_xero_integration.py s                               [ 46%]
+tests\test_invite_service.py ................                            [ 47%]
+tests\test_isolation_guards.py ....                                      [ 47%]
+tests\test_marketing_api_errors.py .........                             [ 48%]
+tests\test_master_admin_api.py .............                             [ 49%]
+tests\test_master_admin_models.py .....ss..........ss..s.                [ 51%]
+tests\test_models_financial_connection.py ......                         [ 51%]
+tests\test_netsuite_integration.py ssssssssss                            [ 52%]
+tests\test_notification_service.py ...............                       [ 53%]
+tests\test_notifications_api.py ......                                   [ 54%]
+tests\test_organization_service.py .....                                 [ 54%]
+tests\test_path_safety.py ....                                           [ 55%]
+tests\test_pipeline_template_api.py ...                                  [ 55%]
+tests\test_pipeline_template_api_errors.py .......                       [ 55%]
+tests\test_pipeline_template_schemas.py ....                             [ 56%]
+tests\test_podcast_api.py .............................................. [ 59%]
+........                                                                 [ 60%]
+tests\test_podcast_service.py ...........                                [ 61%]
+tests\test_quickbooks_integration.py sssssssss                           [ 61%]
+tests\test_quota_service.py .............................                [ 64%]
+tests\test_rbac.py ..........                                            [ 64%]
+tests\test_rbac_audit_service.py .......F                                [ 65%]
+tests\test_rbac_imports.py ..                                            [ 65%]
+tests\test_s3_storage_service.py .....................                   [ 67%]
+tests\test_sage_integration.py sssssssss                                 [ 68%]
+tests\test_security_utils.py ...........                                 [ 68%]
+tests\test_storage_factory.py .....                                      [ 69%]
+tests\test_subscription.py .................                             [ 70%]
+tests\test_subscription_core.py ..............                           [ 71%]
+tests\test_subscription_error_paths.py ............ssss....              [ 73%]
+tests\test_subscription_model.py .............                           [ 74%]
+tests\test_subscription_service_edge_cases.py .......................... [ 76%]
+..                                                                       [ 76%]
+tests\test_task_automation.py .....                                      [ 76%]
+tests\test_task_crud.py .....E.                                          [ 77%]
+tests\test_tasks_api_complete.py ...E...........                         [ 78%]
+tests\test_thumbnail_service.py ................                         [ 79%]
+tests\test_valuation_api.py ..E...........E.......E                      [ 81%]
+tests\test_valuation_api_errors.py .............                         [ 82%]
+tests\test_valuation_crud.py ..E.....E..........                         [ 83%]
+tests\test_valuation_export_service.py ssss                              [ 83%]
+tests\test_valuation_service.py .................................        [ 86%]
+tests\test_xero_integration.py sssssssss                                 [ 87%]
+tests\test_xero_oauth_service.py ...........                             [ 87%]
+tests\test_youtube_service.py ...                                        [ 88%]
+tests\api\test_blog.py ................                                  [ 89%]
+tests\api\test_blog_api.py ......                                        [ 89%]
+tests\api\test_document_sharing.py ........                              [ 90%]
+tests\api\test_event_api.py ..........................                   [ 92%]
+tests\api\test_marketing.py ....                                         [ 92%]
+tests\master_admin\test_models.py ............................           [ 95%]
+tests\master_admin\test_schemas.py ..................................... [ 97%]
+.                                                                        [ 97%]
+tests\services\test_rbac_permissions.py .........sss..s                  [ 99%]
 C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\inorout.py:521: CoverageWarning: Module backend/app was never imported. (module-not-imported); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-module-not-imported
   self.warn(f"Module {pkg} was never imported.", slug="module-not-imported")
 C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\control.py:946: CoverageWarning: No data was collected. (no-data-collected); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-no-data-collected
@@ -5,41 +110,1514 @@ C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-package
 C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\pytest_cov\plugin.py:312: CovReportWarning: Failed to generate report: No data to report.
 
   warnings.warn(CovReportWarning(message))
-============================= test session starts =============================
-platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0
-rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
-configfile: pytest.ini
-plugins: anyio-3.7.1, asyncio-0.21.1, cov-4.1.0
-asyncio: mode=Mode.STRICT
-collected 1177 items / 1 error
-WARNING: Failed to generate report: No data to report.
+tests\test_migrations\test_user_foreign_keys.py ...sss.....              [100%]WARNING: Failed to generate report: No data to report.
+
 
 
 =================================== ERRORS ====================================
-_____________ ERROR collecting backend/tests/test_podcast_api.py ______________
-venv\Lib\site-packages\_pytest\python.py:617: in _importtestmodule
-    mod = import_path(self.path, mode=importmode, root=self.config.rootpath)
-venv\Lib\site-packages\_pytest\pathlib.py:567: in import_path
-    importlib.import_module(module_name)
-C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-<frozen importlib._bootstrap>:1204: in _gcd_import
-    ???
-<frozen importlib._bootstrap>:1176: in _find_and_load
-    ???
-<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
-    ???
-<frozen importlib._bootstrap>:690: in _load_unlocked
-    ???
-venv\Lib\site-packages\_pytest\assertion\rewrite.py:177: in exec_module
-    source_stat, co = _rewrite_test(fn, self.config)
-venv\Lib\site-packages\_pytest\assertion\rewrite.py:359: in _rewrite_test
-    tree = ast.parse(source, filename=strfn)
-C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\ast.py:50: in parse
-    return compile(source, filename, mode, flags,
-E     File "C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_podcast_api.py", line 306
-E       def test_usage_endpoint_reports_unlimited_for_premium(
-E   SyntaxError: expected 'except' or 'finally' block
+_________ ERROR at teardown of test_starter_tier_cannot_create_tasks __________
+
+engine = Engine(sqlite+pysqlite:///:memory:)
+
+    @pytest.fixture()
+    def client(engine) -> Iterator[TestClient]:
+        """Return a FastAPI TestClient with database dependency override."""
+    
+        SessionTesting = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+    
+        def _get_db_override():
+            db = SessionTesting()
+            try:
+                yield db
+            finally:
+                db.close()
+    
+        app.dependency_overrides[get_db] = _get_db_override
+        try:
+>           with TestClient(app) as test_client:
+
+tests\conftest.py:282: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+venv\Lib\site-packages\starlette\testclient.py:756: in __exit__
+    self.exit_stack.close()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:609: in close
+    self.__exit__(None, None, None)
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:601: in __exit__
+    raise exc_details[1]
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:586: in __exit__
+    if cb(*exc_details):
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:144: in __exit__
+    next(self.gen)
+venv\Lib\site-packages\anyio\from_thread.py:500: in start_blocking_portal
+    run_future.result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\thread.py:58: in run
+    result = self.fn(*self.args, **self.kwargs)
+venv\Lib\site-packages\anyio\_core\_eventloop.py:68: in run
+    return asynclib.run(func, *args, **backend_options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <PyTracer at 0x1ad72854e10: 0 data points in 0 files>
+frame = <frame at 0x000001AD6F4F0C80, file 'C:\\Projects\\ma-saas-platform\\M-S-SaaS-apex-deliver\\backend\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py', line 204, code run>
+event = 'return', arg = None, lineno = None
+
+    def _trace(
+        self,
+        frame: FrameType,
+        event: str,
+        arg: Any,  # pylint: disable=unused-argument
+        lineno: TLineNo | None = None,  # pylint: disable=unused-argument
+    ) -> TTraceFn | None:
+        """The trace function passed to sys.settrace."""
+    
+        if THIS_FILE in frame.f_code.co_filename:
+            return None
+    
+        # f = frame; code = f.f_code
+        # self.log(":", f"{code.co_filename} {f.f_lineno} {code.co_name}()", event)
+    
+        if self.stopped and sys.gettrace() == self._cached_bound_method_trace:  # pylint: disable=comparison-with-callable
+            # The PyTrace.stop() method has been called, possibly by another
+            # thread, let's deactivate ourselves now.
+            if 0:
+                f = frame  # type: ignore[unreachable]
+                self.log("---\nX", f.f_code.co_filename, f.f_lineno)
+                while f:
+                    self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
+                    f = f.f_back
+            sys.settrace(None)
+            try:
+                self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+                    self.data_stack.pop()
+                )
+            except IndexError:
+                self.log(
+                    "Empty stack!",
+                    frame.f_code.co_filename,
+                    frame.f_lineno,
+                    frame.f_code.co_name,
+                )
+            return None
+    
+        # if event != "call" and frame.f_code.co_filename != self.cur_file_name:
+        #     self.log("---\n*", frame.f_code.co_filename, self.cur_file_name, frame.f_lineno)
+    
+        if event == "call":
+            # Should we start a new context?
+            if self.should_start_context and self.context is None:
+                context_maybe = self.should_start_context(frame)  # pylint: disable=not-callable
+                if context_maybe is not None:
+                    self.context = context_maybe
+                    started_context = True
+                    assert self.switch_context is not None
+                    self.switch_context(self.context)  # pylint: disable=not-callable
+                else:
+                    started_context = False
+            else:
+                started_context = False
+            self.started_context = started_context
+    
+            # Entering a new frame.  Decide if we should trace in this file.
+            self._activity = True
+            self.data_stack.append(
+                (
+                    self.cur_file_data,
+                    self.cur_file_name,
+                    self.last_line,
+                    started_context,
+                ),
+            )
+    
+            # Improve tracing performance: when calling a function, both caller
+            # and callee are often within the same file. if that's the case, we
+            # don't have to re-check whether to trace the corresponding
+            # function (which is a little bit expensive since it involves
+            # dictionary lookups). This optimization is only correct if we
+            # didn't start a context.
+            filename = frame.f_code.co_filename
+            if filename != self.cur_file_name or started_context:
+                self.cur_file_name = filename
+                disp = self.should_trace_cache.get(filename)
+                if disp is None:
+                    disp = self.should_trace(filename, frame)
+                    self.should_trace_cache[filename] = disp
+    
+                self.cur_file_data = None
+                if disp.trace:
+                    tracename = disp.source_filename
+                    assert tracename is not None
+                    self.lock_data()
+                    try:
+                        if tracename not in self.data:
+                            self.data[tracename] = set()
+                    finally:
+                        self.unlock_data()
+                    self.cur_file_data = self.data[tracename]
+                else:
+                    frame.f_trace_lines = False
+            elif not self.cur_file_data:
+                frame.f_trace_lines = False
+    
+            # The call event is really a "start frame" event, and happens for
+            # function calls and re-entering generators.  The f_lasti field is
+            # -1 for calls, and a real offset for generators.  Use <0 as the
+            # line number for calls, and the real line number for generators.
+            if RESUME is not None:
+                # The current opcode is guaranteed to be RESUME. The argument
+                # determines what kind of resume it is.
+                oparg = frame.f_code.co_code[frame.f_lasti + 1]
+                real_call = (oparg == 0)  # fmt: skip
+            else:
+                real_call = (getattr(frame, "f_lasti", -1) < 0)  # fmt: skip
+            if real_call:
+                self.last_line = -frame.f_code.co_firstlineno
+            else:
+                self.last_line = frame.f_lineno
+    
+        elif event == "line":
+            # Record an executed line.
+            if self.cur_file_data is not None:
+                flineno: TLineNo = frame.f_lineno
+    
+                if self.trace_arcs:
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, flineno))
+                else:
+                    cast(set_TLineNo, self.cur_file_data).add(flineno)
+                self.last_line = flineno
+    
+        elif event == "return":
+            if self.trace_arcs and self.cur_file_data:
+                # Record an arc leaving the function, but beware that a
+                # "return" event might just mean yielding from a generator.
+                code = frame.f_code.co_code
+                lasti = frame.f_lasti
+                if RESUME is not None:
+                    if len(code) == lasti + 2:
+                        # A return from the end of a code object is a real return.
+                        real_return = True
+                    else:
+                        # It is a real return if we aren't going to resume next.
+                        if env.PYBEHAVIOR.lasti_is_yield:
+                            lasti += 2
+                        real_return = code[lasti] != RESUME
+                else:
+                    if code[lasti] == RETURN_VALUE:
+                        real_return = True
+                    elif code[lasti] == YIELD_VALUE:
+                        real_return = False
+                    elif len(code) <= lasti + YIELD_FROM_OFFSET:
+                        real_return = True
+                    elif code[lasti + YIELD_FROM_OFFSET] == YIELD_FROM:
+                        real_return = False
+                    else:
+                        real_return = True
+                if real_return:
+                    first = frame.f_code.co_firstlineno
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, -first))
+    
+            # Leaving this function, pop the filename stack.
+            self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+>               self.data_stack.pop()
+            )
+E           IndexError: pop from empty list
+
+venv\Lib\site-packages\coverage\pytracer.py:302: IndexError
+_ ERROR at teardown of TestTaskTemplatesAPI.test_create_template_requires_growth_role _
+
+engine = Engine(sqlite+pysqlite:///:memory:)
+
+    @pytest.fixture()
+    def client(engine) -> Iterator[TestClient]:
+        """Return a FastAPI TestClient with database dependency override."""
+    
+        SessionTesting = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+    
+        def _get_db_override():
+            db = SessionTesting()
+            try:
+                yield db
+            finally:
+                db.close()
+    
+        app.dependency_overrides[get_db] = _get_db_override
+        try:
+>           with TestClient(app) as test_client:
+
+tests\conftest.py:282: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+venv\Lib\site-packages\starlette\testclient.py:756: in __exit__
+    self.exit_stack.close()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:609: in close
+    self.__exit__(None, None, None)
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:601: in __exit__
+    raise exc_details[1]
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:586: in __exit__
+    if cb(*exc_details):
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:144: in __exit__
+    next(self.gen)
+venv\Lib\site-packages\anyio\from_thread.py:500: in start_blocking_portal
+    run_future.result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\thread.py:58: in run
+    result = self.fn(*self.args, **self.kwargs)
+venv\Lib\site-packages\anyio\_core\_eventloop.py:68: in run
+    return asynclib.run(func, *args, **backend_options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <PyTracer at 0x1ad72b25390: 0 data points in 0 files>
+frame = <frame at 0x000001AD72B635A0, file 'C:\\Projects\\ma-saas-platform\\M-S-SaaS-apex-deliver\\backend\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py', line 204, code run>
+event = 'return', arg = None, lineno = None
+
+    def _trace(
+        self,
+        frame: FrameType,
+        event: str,
+        arg: Any,  # pylint: disable=unused-argument
+        lineno: TLineNo | None = None,  # pylint: disable=unused-argument
+    ) -> TTraceFn | None:
+        """The trace function passed to sys.settrace."""
+    
+        if THIS_FILE in frame.f_code.co_filename:
+            return None
+    
+        # f = frame; code = f.f_code
+        # self.log(":", f"{code.co_filename} {f.f_lineno} {code.co_name}()", event)
+    
+        if self.stopped and sys.gettrace() == self._cached_bound_method_trace:  # pylint: disable=comparison-with-callable
+            # The PyTrace.stop() method has been called, possibly by another
+            # thread, let's deactivate ourselves now.
+            if 0:
+                f = frame  # type: ignore[unreachable]
+                self.log("---\nX", f.f_code.co_filename, f.f_lineno)
+                while f:
+                    self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
+                    f = f.f_back
+            sys.settrace(None)
+            try:
+                self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+                    self.data_stack.pop()
+                )
+            except IndexError:
+                self.log(
+                    "Empty stack!",
+                    frame.f_code.co_filename,
+                    frame.f_lineno,
+                    frame.f_code.co_name,
+                )
+            return None
+    
+        # if event != "call" and frame.f_code.co_filename != self.cur_file_name:
+        #     self.log("---\n*", frame.f_code.co_filename, self.cur_file_name, frame.f_lineno)
+    
+        if event == "call":
+            # Should we start a new context?
+            if self.should_start_context and self.context is None:
+                context_maybe = self.should_start_context(frame)  # pylint: disable=not-callable
+                if context_maybe is not None:
+                    self.context = context_maybe
+                    started_context = True
+                    assert self.switch_context is not None
+                    self.switch_context(self.context)  # pylint: disable=not-callable
+                else:
+                    started_context = False
+            else:
+                started_context = False
+            self.started_context = started_context
+    
+            # Entering a new frame.  Decide if we should trace in this file.
+            self._activity = True
+            self.data_stack.append(
+                (
+                    self.cur_file_data,
+                    self.cur_file_name,
+                    self.last_line,
+                    started_context,
+                ),
+            )
+    
+            # Improve tracing performance: when calling a function, both caller
+            # and callee are often within the same file. if that's the case, we
+            # don't have to re-check whether to trace the corresponding
+            # function (which is a little bit expensive since it involves
+            # dictionary lookups). This optimization is only correct if we
+            # didn't start a context.
+            filename = frame.f_code.co_filename
+            if filename != self.cur_file_name or started_context:
+                self.cur_file_name = filename
+                disp = self.should_trace_cache.get(filename)
+                if disp is None:
+                    disp = self.should_trace(filename, frame)
+                    self.should_trace_cache[filename] = disp
+    
+                self.cur_file_data = None
+                if disp.trace:
+                    tracename = disp.source_filename
+                    assert tracename is not None
+                    self.lock_data()
+                    try:
+                        if tracename not in self.data:
+                            self.data[tracename] = set()
+                    finally:
+                        self.unlock_data()
+                    self.cur_file_data = self.data[tracename]
+                else:
+                    frame.f_trace_lines = False
+            elif not self.cur_file_data:
+                frame.f_trace_lines = False
+    
+            # The call event is really a "start frame" event, and happens for
+            # function calls and re-entering generators.  The f_lasti field is
+            # -1 for calls, and a real offset for generators.  Use <0 as the
+            # line number for calls, and the real line number for generators.
+            if RESUME is not None:
+                # The current opcode is guaranteed to be RESUME. The argument
+                # determines what kind of resume it is.
+                oparg = frame.f_code.co_code[frame.f_lasti + 1]
+                real_call = (oparg == 0)  # fmt: skip
+            else:
+                real_call = (getattr(frame, "f_lasti", -1) < 0)  # fmt: skip
+            if real_call:
+                self.last_line = -frame.f_code.co_firstlineno
+            else:
+                self.last_line = frame.f_lineno
+    
+        elif event == "line":
+            # Record an executed line.
+            if self.cur_file_data is not None:
+                flineno: TLineNo = frame.f_lineno
+    
+                if self.trace_arcs:
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, flineno))
+                else:
+                    cast(set_TLineNo, self.cur_file_data).add(flineno)
+                self.last_line = flineno
+    
+        elif event == "return":
+            if self.trace_arcs and self.cur_file_data:
+                # Record an arc leaving the function, but beware that a
+                # "return" event might just mean yielding from a generator.
+                code = frame.f_code.co_code
+                lasti = frame.f_lasti
+                if RESUME is not None:
+                    if len(code) == lasti + 2:
+                        # A return from the end of a code object is a real return.
+                        real_return = True
+                    else:
+                        # It is a real return if we aren't going to resume next.
+                        if env.PYBEHAVIOR.lasti_is_yield:
+                            lasti += 2
+                        real_return = code[lasti] != RESUME
+                else:
+                    if code[lasti] == RETURN_VALUE:
+                        real_return = True
+                    elif code[lasti] == YIELD_VALUE:
+                        real_return = False
+                    elif len(code) <= lasti + YIELD_FROM_OFFSET:
+                        real_return = True
+                    elif code[lasti + YIELD_FROM_OFFSET] == YIELD_FROM:
+                        real_return = False
+                    else:
+                        real_return = True
+                if real_return:
+                    first = frame.f_code.co_firstlineno
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, -first))
+    
+            # Leaving this function, pop the filename stack.
+            self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+>               self.data_stack.pop()
+            )
+E           IndexError: pop from empty list
+
+venv\Lib\site-packages\coverage\pytracer.py:302: IndexError
+_____ ERROR at teardown of TestValuationApi.test_solo_user_gets_forbidden _____
+
+engine = Engine(sqlite+pysqlite:///:memory:)
+
+    @pytest.fixture()
+    def client(engine) -> Iterator[TestClient]:
+        """Return a FastAPI TestClient with database dependency override."""
+    
+        SessionTesting = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+    
+        def _get_db_override():
+            db = SessionTesting()
+            try:
+                yield db
+            finally:
+                db.close()
+    
+        app.dependency_overrides[get_db] = _get_db_override
+        try:
+>           with TestClient(app) as test_client:
+
+tests\conftest.py:282: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+venv\Lib\site-packages\starlette\testclient.py:756: in __exit__
+    self.exit_stack.close()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:609: in close
+    self.__exit__(None, None, None)
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:601: in __exit__
+    raise exc_details[1]
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:586: in __exit__
+    if cb(*exc_details):
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:144: in __exit__
+    next(self.gen)
+venv\Lib\site-packages\anyio\from_thread.py:500: in start_blocking_portal
+    run_future.result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\thread.py:58: in run
+    result = self.fn(*self.args, **self.kwargs)
+venv\Lib\site-packages\anyio\_core\_eventloop.py:68: in run
+    return asynclib.run(func, *args, **backend_options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <PyTracer at 0x1ad70405bd0: 0 data points in 0 files>
+frame = <frame at 0x000001AD6E8251C0, file 'C:\\Projects\\ma-saas-platform\\M-S-SaaS-apex-deliver\\backend\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py', line 204, code run>
+event = 'return', arg = None, lineno = None
+
+    def _trace(
+        self,
+        frame: FrameType,
+        event: str,
+        arg: Any,  # pylint: disable=unused-argument
+        lineno: TLineNo | None = None,  # pylint: disable=unused-argument
+    ) -> TTraceFn | None:
+        """The trace function passed to sys.settrace."""
+    
+        if THIS_FILE in frame.f_code.co_filename:
+            return None
+    
+        # f = frame; code = f.f_code
+        # self.log(":", f"{code.co_filename} {f.f_lineno} {code.co_name}()", event)
+    
+        if self.stopped and sys.gettrace() == self._cached_bound_method_trace:  # pylint: disable=comparison-with-callable
+            # The PyTrace.stop() method has been called, possibly by another
+            # thread, let's deactivate ourselves now.
+            if 0:
+                f = frame  # type: ignore[unreachable]
+                self.log("---\nX", f.f_code.co_filename, f.f_lineno)
+                while f:
+                    self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
+                    f = f.f_back
+            sys.settrace(None)
+            try:
+                self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+                    self.data_stack.pop()
+                )
+            except IndexError:
+                self.log(
+                    "Empty stack!",
+                    frame.f_code.co_filename,
+                    frame.f_lineno,
+                    frame.f_code.co_name,
+                )
+            return None
+    
+        # if event != "call" and frame.f_code.co_filename != self.cur_file_name:
+        #     self.log("---\n*", frame.f_code.co_filename, self.cur_file_name, frame.f_lineno)
+    
+        if event == "call":
+            # Should we start a new context?
+            if self.should_start_context and self.context is None:
+                context_maybe = self.should_start_context(frame)  # pylint: disable=not-callable
+                if context_maybe is not None:
+                    self.context = context_maybe
+                    started_context = True
+                    assert self.switch_context is not None
+                    self.switch_context(self.context)  # pylint: disable=not-callable
+                else:
+                    started_context = False
+            else:
+                started_context = False
+            self.started_context = started_context
+    
+            # Entering a new frame.  Decide if we should trace in this file.
+            self._activity = True
+            self.data_stack.append(
+                (
+                    self.cur_file_data,
+                    self.cur_file_name,
+                    self.last_line,
+                    started_context,
+                ),
+            )
+    
+            # Improve tracing performance: when calling a function, both caller
+            # and callee are often within the same file. if that's the case, we
+            # don't have to re-check whether to trace the corresponding
+            # function (which is a little bit expensive since it involves
+            # dictionary lookups). This optimization is only correct if we
+            # didn't start a context.
+            filename = frame.f_code.co_filename
+            if filename != self.cur_file_name or started_context:
+                self.cur_file_name = filename
+                disp = self.should_trace_cache.get(filename)
+                if disp is None:
+                    disp = self.should_trace(filename, frame)
+                    self.should_trace_cache[filename] = disp
+    
+                self.cur_file_data = None
+                if disp.trace:
+                    tracename = disp.source_filename
+                    assert tracename is not None
+                    self.lock_data()
+                    try:
+                        if tracename not in self.data:
+                            self.data[tracename] = set()
+                    finally:
+                        self.unlock_data()
+                    self.cur_file_data = self.data[tracename]
+                else:
+                    frame.f_trace_lines = False
+            elif not self.cur_file_data:
+                frame.f_trace_lines = False
+    
+            # The call event is really a "start frame" event, and happens for
+            # function calls and re-entering generators.  The f_lasti field is
+            # -1 for calls, and a real offset for generators.  Use <0 as the
+            # line number for calls, and the real line number for generators.
+            if RESUME is not None:
+                # The current opcode is guaranteed to be RESUME. The argument
+                # determines what kind of resume it is.
+                oparg = frame.f_code.co_code[frame.f_lasti + 1]
+                real_call = (oparg == 0)  # fmt: skip
+            else:
+                real_call = (getattr(frame, "f_lasti", -1) < 0)  # fmt: skip
+            if real_call:
+                self.last_line = -frame.f_code.co_firstlineno
+            else:
+                self.last_line = frame.f_lineno
+    
+        elif event == "line":
+            # Record an executed line.
+            if self.cur_file_data is not None:
+                flineno: TLineNo = frame.f_lineno
+    
+                if self.trace_arcs:
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, flineno))
+                else:
+                    cast(set_TLineNo, self.cur_file_data).add(flineno)
+                self.last_line = flineno
+    
+        elif event == "return":
+            if self.trace_arcs and self.cur_file_data:
+                # Record an arc leaving the function, but beware that a
+                # "return" event might just mean yielding from a generator.
+                code = frame.f_code.co_code
+                lasti = frame.f_lasti
+                if RESUME is not None:
+                    if len(code) == lasti + 2:
+                        # A return from the end of a code object is a real return.
+                        real_return = True
+                    else:
+                        # It is a real return if we aren't going to resume next.
+                        if env.PYBEHAVIOR.lasti_is_yield:
+                            lasti += 2
+                        real_return = code[lasti] != RESUME
+                else:
+                    if code[lasti] == RETURN_VALUE:
+                        real_return = True
+                    elif code[lasti] == YIELD_VALUE:
+                        real_return = False
+                    elif len(code) <= lasti + YIELD_FROM_OFFSET:
+                        real_return = True
+                    elif code[lasti + YIELD_FROM_OFFSET] == YIELD_FROM:
+                        real_return = False
+                    else:
+                        real_return = True
+                if real_return:
+                    first = frame.f_code.co_firstlineno
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, -first))
+    
+            # Leaving this function, pop the filename stack.
+            self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+>               self.data_stack.pop()
+            )
+E           IndexError: pop from empty list
+
+venv\Lib\site-packages\coverage\pytracer.py:302: IndexError
+_ ERROR at teardown of TestValuationApi.test_generate_export_forbidden_for_solo _
+
+engine = Engine(sqlite+pysqlite:///:memory:)
+
+    @pytest.fixture()
+    def client(engine) -> Iterator[TestClient]:
+        """Return a FastAPI TestClient with database dependency override."""
+    
+        SessionTesting = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+    
+        def _get_db_override():
+            db = SessionTesting()
+            try:
+                yield db
+            finally:
+                db.close()
+    
+        app.dependency_overrides[get_db] = _get_db_override
+        try:
+>           with TestClient(app) as test_client:
+
+tests\conftest.py:282: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+venv\Lib\site-packages\starlette\testclient.py:756: in __exit__
+    self.exit_stack.close()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:609: in close
+    self.__exit__(None, None, None)
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:601: in __exit__
+    raise exc_details[1]
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:586: in __exit__
+    if cb(*exc_details):
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:144: in __exit__
+    next(self.gen)
+venv\Lib\site-packages\anyio\from_thread.py:500: in start_blocking_portal
+    run_future.result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\thread.py:58: in run
+    result = self.fn(*self.args, **self.kwargs)
+venv\Lib\site-packages\anyio\_core\_eventloop.py:68: in run
+    return asynclib.run(func, *args, **backend_options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <PyTracer at 0x1ad70ceead0: 0 data points in 0 files>
+frame = <frame at 0x000001AD72CEBCA0, file 'C:\\Projects\\ma-saas-platform\\M-S-SaaS-apex-deliver\\backend\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py', line 204, code run>
+event = 'return', arg = None, lineno = None
+
+    def _trace(
+        self,
+        frame: FrameType,
+        event: str,
+        arg: Any,  # pylint: disable=unused-argument
+        lineno: TLineNo | None = None,  # pylint: disable=unused-argument
+    ) -> TTraceFn | None:
+        """The trace function passed to sys.settrace."""
+    
+        if THIS_FILE in frame.f_code.co_filename:
+            return None
+    
+        # f = frame; code = f.f_code
+        # self.log(":", f"{code.co_filename} {f.f_lineno} {code.co_name}()", event)
+    
+        if self.stopped and sys.gettrace() == self._cached_bound_method_trace:  # pylint: disable=comparison-with-callable
+            # The PyTrace.stop() method has been called, possibly by another
+            # thread, let's deactivate ourselves now.
+            if 0:
+                f = frame  # type: ignore[unreachable]
+                self.log("---\nX", f.f_code.co_filename, f.f_lineno)
+                while f:
+                    self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
+                    f = f.f_back
+            sys.settrace(None)
+            try:
+                self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+                    self.data_stack.pop()
+                )
+            except IndexError:
+                self.log(
+                    "Empty stack!",
+                    frame.f_code.co_filename,
+                    frame.f_lineno,
+                    frame.f_code.co_name,
+                )
+            return None
+    
+        # if event != "call" and frame.f_code.co_filename != self.cur_file_name:
+        #     self.log("---\n*", frame.f_code.co_filename, self.cur_file_name, frame.f_lineno)
+    
+        if event == "call":
+            # Should we start a new context?
+            if self.should_start_context and self.context is None:
+                context_maybe = self.should_start_context(frame)  # pylint: disable=not-callable
+                if context_maybe is not None:
+                    self.context = context_maybe
+                    started_context = True
+                    assert self.switch_context is not None
+                    self.switch_context(self.context)  # pylint: disable=not-callable
+                else:
+                    started_context = False
+            else:
+                started_context = False
+            self.started_context = started_context
+    
+            # Entering a new frame.  Decide if we should trace in this file.
+            self._activity = True
+            self.data_stack.append(
+                (
+                    self.cur_file_data,
+                    self.cur_file_name,
+                    self.last_line,
+                    started_context,
+                ),
+            )
+    
+            # Improve tracing performance: when calling a function, both caller
+            # and callee are often within the same file. if that's the case, we
+            # don't have to re-check whether to trace the corresponding
+            # function (which is a little bit expensive since it involves
+            # dictionary lookups). This optimization is only correct if we
+            # didn't start a context.
+            filename = frame.f_code.co_filename
+            if filename != self.cur_file_name or started_context:
+                self.cur_file_name = filename
+                disp = self.should_trace_cache.get(filename)
+                if disp is None:
+                    disp = self.should_trace(filename, frame)
+                    self.should_trace_cache[filename] = disp
+    
+                self.cur_file_data = None
+                if disp.trace:
+                    tracename = disp.source_filename
+                    assert tracename is not None
+                    self.lock_data()
+                    try:
+                        if tracename not in self.data:
+                            self.data[tracename] = set()
+                    finally:
+                        self.unlock_data()
+                    self.cur_file_data = self.data[tracename]
+                else:
+                    frame.f_trace_lines = False
+            elif not self.cur_file_data:
+                frame.f_trace_lines = False
+    
+            # The call event is really a "start frame" event, and happens for
+            # function calls and re-entering generators.  The f_lasti field is
+            # -1 for calls, and a real offset for generators.  Use <0 as the
+            # line number for calls, and the real line number for generators.
+            if RESUME is not None:
+                # The current opcode is guaranteed to be RESUME. The argument
+                # determines what kind of resume it is.
+                oparg = frame.f_code.co_code[frame.f_lasti + 1]
+                real_call = (oparg == 0)  # fmt: skip
+            else:
+                real_call = (getattr(frame, "f_lasti", -1) < 0)  # fmt: skip
+            if real_call:
+                self.last_line = -frame.f_code.co_firstlineno
+            else:
+                self.last_line = frame.f_lineno
+    
+        elif event == "line":
+            # Record an executed line.
+            if self.cur_file_data is not None:
+                flineno: TLineNo = frame.f_lineno
+    
+                if self.trace_arcs:
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, flineno))
+                else:
+                    cast(set_TLineNo, self.cur_file_data).add(flineno)
+                self.last_line = flineno
+    
+        elif event == "return":
+            if self.trace_arcs and self.cur_file_data:
+                # Record an arc leaving the function, but beware that a
+                # "return" event might just mean yielding from a generator.
+                code = frame.f_code.co_code
+                lasti = frame.f_lasti
+                if RESUME is not None:
+                    if len(code) == lasti + 2:
+                        # A return from the end of a code object is a real return.
+                        real_return = True
+                    else:
+                        # It is a real return if we aren't going to resume next.
+                        if env.PYBEHAVIOR.lasti_is_yield:
+                            lasti += 2
+                        real_return = code[lasti] != RESUME
+                else:
+                    if code[lasti] == RETURN_VALUE:
+                        real_return = True
+                    elif code[lasti] == YIELD_VALUE:
+                        real_return = False
+                    elif len(code) <= lasti + YIELD_FROM_OFFSET:
+                        real_return = True
+                    elif code[lasti + YIELD_FROM_OFFSET] == YIELD_FROM:
+                        real_return = False
+                    else:
+                        real_return = True
+                if real_return:
+                    first = frame.f_code.co_firstlineno
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, -first))
+    
+            # Leaving this function, pop the filename stack.
+            self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+>               self.data_stack.pop()
+            )
+E           IndexError: pop from empty list
+
+venv\Lib\site-packages\coverage\pytracer.py:302: IndexError
+_ ERROR at teardown of TestValuationApi.test_get_scenario_summary_forbidden_for_solo_tier _
+
+engine = Engine(sqlite+pysqlite:///:memory:)
+
+    @pytest.fixture()
+    def client(engine) -> Iterator[TestClient]:
+        """Return a FastAPI TestClient with database dependency override."""
+    
+        SessionTesting = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+    
+        def _get_db_override():
+            db = SessionTesting()
+            try:
+                yield db
+            finally:
+                db.close()
+    
+        app.dependency_overrides[get_db] = _get_db_override
+        try:
+>           with TestClient(app) as test_client:
+
+tests\conftest.py:282: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+venv\Lib\site-packages\starlette\testclient.py:756: in __exit__
+    self.exit_stack.close()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:609: in close
+    self.__exit__(None, None, None)
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:601: in __exit__
+    raise exc_details[1]
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:586: in __exit__
+    if cb(*exc_details):
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:144: in __exit__
+    next(self.gen)
+venv\Lib\site-packages\anyio\from_thread.py:500: in start_blocking_portal
+    run_future.result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\thread.py:58: in run
+    result = self.fn(*self.args, **self.kwargs)
+venv\Lib\site-packages\anyio\_core\_eventloop.py:68: in run
+    return asynclib.run(func, *args, **backend_options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <PyTracer at 0x1ad72593250: 0 data points in 0 files>
+frame = <frame at 0x000001AD72CEB840, file 'C:\\Projects\\ma-saas-platform\\M-S-SaaS-apex-deliver\\backend\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py', line 204, code run>
+event = 'return', arg = None, lineno = None
+
+    def _trace(
+        self,
+        frame: FrameType,
+        event: str,
+        arg: Any,  # pylint: disable=unused-argument
+        lineno: TLineNo | None = None,  # pylint: disable=unused-argument
+    ) -> TTraceFn | None:
+        """The trace function passed to sys.settrace."""
+    
+        if THIS_FILE in frame.f_code.co_filename:
+            return None
+    
+        # f = frame; code = f.f_code
+        # self.log(":", f"{code.co_filename} {f.f_lineno} {code.co_name}()", event)
+    
+        if self.stopped and sys.gettrace() == self._cached_bound_method_trace:  # pylint: disable=comparison-with-callable
+            # The PyTrace.stop() method has been called, possibly by another
+            # thread, let's deactivate ourselves now.
+            if 0:
+                f = frame  # type: ignore[unreachable]
+                self.log("---\nX", f.f_code.co_filename, f.f_lineno)
+                while f:
+                    self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
+                    f = f.f_back
+            sys.settrace(None)
+            try:
+                self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+                    self.data_stack.pop()
+                )
+            except IndexError:
+                self.log(
+                    "Empty stack!",
+                    frame.f_code.co_filename,
+                    frame.f_lineno,
+                    frame.f_code.co_name,
+                )
+            return None
+    
+        # if event != "call" and frame.f_code.co_filename != self.cur_file_name:
+        #     self.log("---\n*", frame.f_code.co_filename, self.cur_file_name, frame.f_lineno)
+    
+        if event == "call":
+            # Should we start a new context?
+            if self.should_start_context and self.context is None:
+                context_maybe = self.should_start_context(frame)  # pylint: disable=not-callable
+                if context_maybe is not None:
+                    self.context = context_maybe
+                    started_context = True
+                    assert self.switch_context is not None
+                    self.switch_context(self.context)  # pylint: disable=not-callable
+                else:
+                    started_context = False
+            else:
+                started_context = False
+            self.started_context = started_context
+    
+            # Entering a new frame.  Decide if we should trace in this file.
+            self._activity = True
+            self.data_stack.append(
+                (
+                    self.cur_file_data,
+                    self.cur_file_name,
+                    self.last_line,
+                    started_context,
+                ),
+            )
+    
+            # Improve tracing performance: when calling a function, both caller
+            # and callee are often within the same file. if that's the case, we
+            # don't have to re-check whether to trace the corresponding
+            # function (which is a little bit expensive since it involves
+            # dictionary lookups). This optimization is only correct if we
+            # didn't start a context.
+            filename = frame.f_code.co_filename
+            if filename != self.cur_file_name or started_context:
+                self.cur_file_name = filename
+                disp = self.should_trace_cache.get(filename)
+                if disp is None:
+                    disp = self.should_trace(filename, frame)
+                    self.should_trace_cache[filename] = disp
+    
+                self.cur_file_data = None
+                if disp.trace:
+                    tracename = disp.source_filename
+                    assert tracename is not None
+                    self.lock_data()
+                    try:
+                        if tracename not in self.data:
+                            self.data[tracename] = set()
+                    finally:
+                        self.unlock_data()
+                    self.cur_file_data = self.data[tracename]
+                else:
+                    frame.f_trace_lines = False
+            elif not self.cur_file_data:
+                frame.f_trace_lines = False
+    
+            # The call event is really a "start frame" event, and happens for
+            # function calls and re-entering generators.  The f_lasti field is
+            # -1 for calls, and a real offset for generators.  Use <0 as the
+            # line number for calls, and the real line number for generators.
+            if RESUME is not None:
+                # The current opcode is guaranteed to be RESUME. The argument
+                # determines what kind of resume it is.
+                oparg = frame.f_code.co_code[frame.f_lasti + 1]
+                real_call = (oparg == 0)  # fmt: skip
+            else:
+                real_call = (getattr(frame, "f_lasti", -1) < 0)  # fmt: skip
+            if real_call:
+                self.last_line = -frame.f_code.co_firstlineno
+            else:
+                self.last_line = frame.f_lineno
+    
+        elif event == "line":
+            # Record an executed line.
+            if self.cur_file_data is not None:
+                flineno: TLineNo = frame.f_lineno
+    
+                if self.trace_arcs:
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, flineno))
+                else:
+                    cast(set_TLineNo, self.cur_file_data).add(flineno)
+                self.last_line = flineno
+    
+        elif event == "return":
+            if self.trace_arcs and self.cur_file_data:
+                # Record an arc leaving the function, but beware that a
+                # "return" event might just mean yielding from a generator.
+                code = frame.f_code.co_code
+                lasti = frame.f_lasti
+                if RESUME is not None:
+                    if len(code) == lasti + 2:
+                        # A return from the end of a code object is a real return.
+                        real_return = True
+                    else:
+                        # It is a real return if we aren't going to resume next.
+                        if env.PYBEHAVIOR.lasti_is_yield:
+                            lasti += 2
+                        real_return = code[lasti] != RESUME
+                else:
+                    if code[lasti] == RETURN_VALUE:
+                        real_return = True
+                    elif code[lasti] == YIELD_VALUE:
+                        real_return = False
+                    elif len(code) <= lasti + YIELD_FROM_OFFSET:
+                        real_return = True
+                    elif code[lasti + YIELD_FROM_OFFSET] == YIELD_FROM:
+                        real_return = False
+                    else:
+                        real_return = True
+                if real_return:
+                    first = frame.f_code.co_firstlineno
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, -first))
+    
+            # Leaving this function, pop the filename stack.
+            self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+>               self.data_stack.pop()
+            )
+E           IndexError: pop from empty list
+
+venv\Lib\site-packages\coverage\pytracer.py:302: IndexError
+_ ERROR at teardown of TestValuationCrudApi.test_create_valuation_requires_growth_tier _
+
+engine = Engine(sqlite+pysqlite:///:memory:)
+
+    @pytest.fixture()
+    def client(engine) -> Iterator[TestClient]:
+        """Return a FastAPI TestClient with database dependency override."""
+    
+        SessionTesting = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+    
+        def _get_db_override():
+            db = SessionTesting()
+            try:
+                yield db
+            finally:
+                db.close()
+    
+        app.dependency_overrides[get_db] = _get_db_override
+        try:
+>           with TestClient(app) as test_client:
+
+tests\conftest.py:282: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+venv\Lib\site-packages\starlette\testclient.py:756: in __exit__
+    self.exit_stack.close()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:609: in close
+    self.__exit__(None, None, None)
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:601: in __exit__
+    raise exc_details[1]
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:586: in __exit__
+    if cb(*exc_details):
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:144: in __exit__
+    next(self.gen)
+venv\Lib\site-packages\anyio\from_thread.py:500: in start_blocking_portal
+    run_future.result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\thread.py:58: in run
+    result = self.fn(*self.args, **self.kwargs)
+venv\Lib\site-packages\anyio\_core\_eventloop.py:68: in run
+    return asynclib.run(func, *args, **backend_options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <PyTracer at 0x1ad72651210: 0 data points in 0 files>
+frame = <frame at 0x000001AD71D22EA0, file 'C:\\Projects\\ma-saas-platform\\M-S-SaaS-apex-deliver\\backend\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py', line 204, code run>
+event = 'return', arg = None, lineno = None
+
+    def _trace(
+        self,
+        frame: FrameType,
+        event: str,
+        arg: Any,  # pylint: disable=unused-argument
+        lineno: TLineNo | None = None,  # pylint: disable=unused-argument
+    ) -> TTraceFn | None:
+        """The trace function passed to sys.settrace."""
+    
+        if THIS_FILE in frame.f_code.co_filename:
+            return None
+    
+        # f = frame; code = f.f_code
+        # self.log(":", f"{code.co_filename} {f.f_lineno} {code.co_name}()", event)
+    
+        if self.stopped and sys.gettrace() == self._cached_bound_method_trace:  # pylint: disable=comparison-with-callable
+            # The PyTrace.stop() method has been called, possibly by another
+            # thread, let's deactivate ourselves now.
+            if 0:
+                f = frame  # type: ignore[unreachable]
+                self.log("---\nX", f.f_code.co_filename, f.f_lineno)
+                while f:
+                    self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
+                    f = f.f_back
+            sys.settrace(None)
+            try:
+                self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+                    self.data_stack.pop()
+                )
+            except IndexError:
+                self.log(
+                    "Empty stack!",
+                    frame.f_code.co_filename,
+                    frame.f_lineno,
+                    frame.f_code.co_name,
+                )
+            return None
+    
+        # if event != "call" and frame.f_code.co_filename != self.cur_file_name:
+        #     self.log("---\n*", frame.f_code.co_filename, self.cur_file_name, frame.f_lineno)
+    
+        if event == "call":
+            # Should we start a new context?
+            if self.should_start_context and self.context is None:
+                context_maybe = self.should_start_context(frame)  # pylint: disable=not-callable
+                if context_maybe is not None:
+                    self.context = context_maybe
+                    started_context = True
+                    assert self.switch_context is not None
+                    self.switch_context(self.context)  # pylint: disable=not-callable
+                else:
+                    started_context = False
+            else:
+                started_context = False
+            self.started_context = started_context
+    
+            # Entering a new frame.  Decide if we should trace in this file.
+            self._activity = True
+            self.data_stack.append(
+                (
+                    self.cur_file_data,
+                    self.cur_file_name,
+                    self.last_line,
+                    started_context,
+                ),
+            )
+    
+            # Improve tracing performance: when calling a function, both caller
+            # and callee are often within the same file. if that's the case, we
+            # don't have to re-check whether to trace the corresponding
+            # function (which is a little bit expensive since it involves
+            # dictionary lookups). This optimization is only correct if we
+            # didn't start a context.
+            filename = frame.f_code.co_filename
+            if filename != self.cur_file_name or started_context:
+                self.cur_file_name = filename
+                disp = self.should_trace_cache.get(filename)
+                if disp is None:
+                    disp = self.should_trace(filename, frame)
+                    self.should_trace_cache[filename] = disp
+    
+                self.cur_file_data = None
+                if disp.trace:
+                    tracename = disp.source_filename
+                    assert tracename is not None
+                    self.lock_data()
+                    try:
+                        if tracename not in self.data:
+                            self.data[tracename] = set()
+                    finally:
+                        self.unlock_data()
+                    self.cur_file_data = self.data[tracename]
+                else:
+                    frame.f_trace_lines = False
+            elif not self.cur_file_data:
+                frame.f_trace_lines = False
+    
+            # The call event is really a "start frame" event, and happens for
+            # function calls and re-entering generators.  The f_lasti field is
+            # -1 for calls, and a real offset for generators.  Use <0 as the
+            # line number for calls, and the real line number for generators.
+            if RESUME is not None:
+                # The current opcode is guaranteed to be RESUME. The argument
+                # determines what kind of resume it is.
+                oparg = frame.f_code.co_code[frame.f_lasti + 1]
+                real_call = (oparg == 0)  # fmt: skip
+            else:
+                real_call = (getattr(frame, "f_lasti", -1) < 0)  # fmt: skip
+            if real_call:
+                self.last_line = -frame.f_code.co_firstlineno
+            else:
+                self.last_line = frame.f_lineno
+    
+        elif event == "line":
+            # Record an executed line.
+            if self.cur_file_data is not None:
+                flineno: TLineNo = frame.f_lineno
+    
+                if self.trace_arcs:
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, flineno))
+                else:
+                    cast(set_TLineNo, self.cur_file_data).add(flineno)
+                self.last_line = flineno
+    
+        elif event == "return":
+            if self.trace_arcs and self.cur_file_data:
+                # Record an arc leaving the function, but beware that a
+                # "return" event might just mean yielding from a generator.
+                code = frame.f_code.co_code
+                lasti = frame.f_lasti
+                if RESUME is not None:
+                    if len(code) == lasti + 2:
+                        # A return from the end of a code object is a real return.
+                        real_return = True
+                    else:
+                        # It is a real return if we aren't going to resume next.
+                        if env.PYBEHAVIOR.lasti_is_yield:
+                            lasti += 2
+                        real_return = code[lasti] != RESUME
+                else:
+                    if code[lasti] == RETURN_VALUE:
+                        real_return = True
+                    elif code[lasti] == YIELD_VALUE:
+                        real_return = False
+                    elif len(code) <= lasti + YIELD_FROM_OFFSET:
+                        real_return = True
+                    elif code[lasti + YIELD_FROM_OFFSET] == YIELD_FROM:
+                        real_return = False
+                    else:
+                        real_return = True
+                if real_return:
+                    first = frame.f_code.co_firstlineno
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, -first))
+    
+            # Leaving this function, pop the filename stack.
+            self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+>               self.data_stack.pop()
+            )
+E           IndexError: pop from empty list
+
+venv\Lib\site-packages\coverage\pytracer.py:302: IndexError
+_ ERROR at teardown of TestValuationCrudApi.test_create_scenario_requires_growth_tier _
+
+engine = Engine(sqlite+pysqlite:///:memory:)
+
+    @pytest.fixture()
+    def client(engine) -> Iterator[TestClient]:
+        """Return a FastAPI TestClient with database dependency override."""
+    
+        SessionTesting = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
+    
+        def _get_db_override():
+            db = SessionTesting()
+            try:
+                yield db
+            finally:
+                db.close()
+    
+        app.dependency_overrides[get_db] = _get_db_override
+        try:
+>           with TestClient(app) as test_client:
+
+tests\conftest.py:282: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+venv\Lib\site-packages\starlette\testclient.py:756: in __exit__
+    self.exit_stack.close()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:609: in close
+    self.__exit__(None, None, None)
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:601: in __exit__
+    raise exc_details[1]
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:586: in __exit__
+    if cb(*exc_details):
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\contextlib.py:144: in __exit__
+    next(self.gen)
+venv\Lib\site-packages\anyio\from_thread.py:500: in start_blocking_portal
+    run_future.result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\thread.py:58: in run
+    result = self.fn(*self.args, **self.kwargs)
+venv\Lib\site-packages\anyio\_core\_eventloop.py:68: in run
+    return asynclib.run(func, *args, **backend_options)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <PyTracer at 0x1ad716c5d90: 0 data points in 0 files>
+frame = <frame at 0x000001AD6C98A7A0, file 'C:\\Projects\\ma-saas-platform\\M-S-SaaS-apex-deliver\\backend\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py', line 204, code run>
+event = 'return', arg = None, lineno = None
+
+    def _trace(
+        self,
+        frame: FrameType,
+        event: str,
+        arg: Any,  # pylint: disable=unused-argument
+        lineno: TLineNo | None = None,  # pylint: disable=unused-argument
+    ) -> TTraceFn | None:
+        """The trace function passed to sys.settrace."""
+    
+        if THIS_FILE in frame.f_code.co_filename:
+            return None
+    
+        # f = frame; code = f.f_code
+        # self.log(":", f"{code.co_filename} {f.f_lineno} {code.co_name}()", event)
+    
+        if self.stopped and sys.gettrace() == self._cached_bound_method_trace:  # pylint: disable=comparison-with-callable
+            # The PyTrace.stop() method has been called, possibly by another
+            # thread, let's deactivate ourselves now.
+            if 0:
+                f = frame  # type: ignore[unreachable]
+                self.log("---\nX", f.f_code.co_filename, f.f_lineno)
+                while f:
+                    self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
+                    f = f.f_back
+            sys.settrace(None)
+            try:
+                self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+                    self.data_stack.pop()
+                )
+            except IndexError:
+                self.log(
+                    "Empty stack!",
+                    frame.f_code.co_filename,
+                    frame.f_lineno,
+                    frame.f_code.co_name,
+                )
+            return None
+    
+        # if event != "call" and frame.f_code.co_filename != self.cur_file_name:
+        #     self.log("---\n*", frame.f_code.co_filename, self.cur_file_name, frame.f_lineno)
+    
+        if event == "call":
+            # Should we start a new context?
+            if self.should_start_context and self.context is None:
+                context_maybe = self.should_start_context(frame)  # pylint: disable=not-callable
+                if context_maybe is not None:
+                    self.context = context_maybe
+                    started_context = True
+                    assert self.switch_context is not None
+                    self.switch_context(self.context)  # pylint: disable=not-callable
+                else:
+                    started_context = False
+            else:
+                started_context = False
+            self.started_context = started_context
+    
+            # Entering a new frame.  Decide if we should trace in this file.
+            self._activity = True
+            self.data_stack.append(
+                (
+                    self.cur_file_data,
+                    self.cur_file_name,
+                    self.last_line,
+                    started_context,
+                ),
+            )
+    
+            # Improve tracing performance: when calling a function, both caller
+            # and callee are often within the same file. if that's the case, we
+            # don't have to re-check whether to trace the corresponding
+            # function (which is a little bit expensive since it involves
+            # dictionary lookups). This optimization is only correct if we
+            # didn't start a context.
+            filename = frame.f_code.co_filename
+            if filename != self.cur_file_name or started_context:
+                self.cur_file_name = filename
+                disp = self.should_trace_cache.get(filename)
+                if disp is None:
+                    disp = self.should_trace(filename, frame)
+                    self.should_trace_cache[filename] = disp
+    
+                self.cur_file_data = None
+                if disp.trace:
+                    tracename = disp.source_filename
+                    assert tracename is not None
+                    self.lock_data()
+                    try:
+                        if tracename not in self.data:
+                            self.data[tracename] = set()
+                    finally:
+                        self.unlock_data()
+                    self.cur_file_data = self.data[tracename]
+                else:
+                    frame.f_trace_lines = False
+            elif not self.cur_file_data:
+                frame.f_trace_lines = False
+    
+            # The call event is really a "start frame" event, and happens for
+            # function calls and re-entering generators.  The f_lasti field is
+            # -1 for calls, and a real offset for generators.  Use <0 as the
+            # line number for calls, and the real line number for generators.
+            if RESUME is not None:
+                # The current opcode is guaranteed to be RESUME. The argument
+                # determines what kind of resume it is.
+                oparg = frame.f_code.co_code[frame.f_lasti + 1]
+                real_call = (oparg == 0)  # fmt: skip
+            else:
+                real_call = (getattr(frame, "f_lasti", -1) < 0)  # fmt: skip
+            if real_call:
+                self.last_line = -frame.f_code.co_firstlineno
+            else:
+                self.last_line = frame.f_lineno
+    
+        elif event == "line":
+            # Record an executed line.
+            if self.cur_file_data is not None:
+                flineno: TLineNo = frame.f_lineno
+    
+                if self.trace_arcs:
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, flineno))
+                else:
+                    cast(set_TLineNo, self.cur_file_data).add(flineno)
+                self.last_line = flineno
+    
+        elif event == "return":
+            if self.trace_arcs and self.cur_file_data:
+                # Record an arc leaving the function, but beware that a
+                # "return" event might just mean yielding from a generator.
+                code = frame.f_code.co_code
+                lasti = frame.f_lasti
+                if RESUME is not None:
+                    if len(code) == lasti + 2:
+                        # A return from the end of a code object is a real return.
+                        real_return = True
+                    else:
+                        # It is a real return if we aren't going to resume next.
+                        if env.PYBEHAVIOR.lasti_is_yield:
+                            lasti += 2
+                        real_return = code[lasti] != RESUME
+                else:
+                    if code[lasti] == RETURN_VALUE:
+                        real_return = True
+                    elif code[lasti] == YIELD_VALUE:
+                        real_return = False
+                    elif len(code) <= lasti + YIELD_FROM_OFFSET:
+                        real_return = True
+                    elif code[lasti + YIELD_FROM_OFFSET] == YIELD_FROM:
+                        real_return = False
+                    else:
+                        real_return = True
+                if real_return:
+                    first = frame.f_code.co_firstlineno
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, -first))
+    
+            # Leaving this function, pop the filename stack.
+            self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+>               self.data_stack.pop()
+            )
+E           IndexError: pop from empty list
+
+venv\Lib\site-packages\coverage\pytracer.py:302: IndexError
+================================== FAILURES ===================================
+_____________________ test_folder_requires_authentication _____________________
+
+client = <starlette.testclient.TestClient object at 0x000001AD6F496A50>
+seeded_deal = Deal(id=7f35df7d-f495-4236-9d83-9dcc279d517d, name='Secure Deal', stage='sourcing')
+
+    def test_folder_requires_authentication(client, db_session, create_organization, create_user):
+        """Folder creation should be rejected when no auth headers are provided."""
+        org = create_organization(name="Unauth Org")
+        owner = create_user(email="owner@unauth.org", organization_id=str(org.id))
+        deal = Deal(
+            id=str(uuid4()),
+            name="Auth Deal",
+            target_company="Auth Target",
+            organization_id=str(org.id),
+            owner_id=str(owner.id),
+            stage=DealStage.sourcing,
+>       )
+E       assert 201 in [401, 403]
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests\test_document_endpoints.py:412: AssertionError
+__ TestRBACAuditService.test_log_claim_mismatch_handles_empty_claim_snapshot __
+
+self = <test_rbac_audit_service.TestRBACAuditService object at 0x000001AD6AD21150>
+db_session = <sqlalchemy.orm.session.Session object at 0x000001AD721A7190>
+create_user = <function create_user.<locals>._create_user at 0x000001AD722D71A0>
+
+>   ???
+E   assert None is not None
+E    +  where None = <app.models.rbac_audit_log.RBACAuditLog object at 0x000001AD722F3F90>.claim_snapshot
+
+tests\test_rbac_audit_service.py:222: AssertionError
 ============================== warnings summary ===============================
 venv\Lib\site-packages\coverage\core.py:93
   C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\core.py:93: CoverageWarning: Couldn't import C tracer: No module named 'coverage.tracer' (no-ctracer); see https://coverage.readthedocs.io/en/7.11.0/messages.html#warning-no-ctracer
@@ -202,11 +1780,153 @@ tests\test_xero_integration.py:284
   C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:284: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
     @pytest.mark.integration
 
+backend/tests/test_billing_endpoints.py: 16 warnings
+backend/tests/test_billing_simple.py: 3 warnings
+backend/tests/test_blog_api_errors.py: 7 warnings
+backend/tests/test_clerk_auth_complete.py: 26 warnings
+backend/tests/test_community_api.py: 22 warnings
+backend/tests/test_dashboard_api.py: 6 warnings
+backend/tests/test_deal_endpoints.py: 25 warnings
+backend/tests/test_deal_matching_api.py: 16 warnings
+backend/tests/test_document_ai_and_versions.py: 5 warnings
+backend/tests/test_document_endpoints.py: 42 warnings
+backend/tests/test_document_export_jobs_api.py: 3 warnings
+backend/tests/test_document_generation_api.py: 19 warnings
+backend/tests/test_document_generation_api_errors.py: 12 warnings
+backend/tests/test_event_payment_api.py: 7 warnings
+backend/tests/test_events_api_errors.py: 7 warnings
+backend/tests/test_financial_api.py: 34 warnings
+backend/tests/test_financial_api_errors.py: 8 warnings
+backend/tests/test_marketing_api_errors.py: 9 warnings
+backend/tests/test_master_admin_api.py: 13 warnings
+backend/tests/test_notifications_api.py: 6 warnings
+backend/tests/test_pipeline_template_api.py: 3 warnings
+backend/tests/test_pipeline_template_api_errors.py: 7 warnings
+backend/tests/test_podcast_api.py: 54 warnings
+backend/tests/test_subscription_error_paths.py: 16 warnings
+backend/tests/test_task_crud.py: 6 warnings
+backend/tests/test_tasks_api_complete.py: 14 warnings
+backend/tests/test_valuation_api.py: 20 warnings
+backend/tests/test_valuation_api_errors.py: 13 warnings
+backend/tests/test_valuation_crud.py: 8 warnings
+backend/tests/api/test_blog.py: 16 warnings
+backend/tests/api/test_blog_api.py: 6 warnings
+backend/tests/api/test_document_sharing.py: 8 warnings
+backend/tests/api/test_event_api.py: 26 warnings
+backend/tests/api/test_marketing.py: 4 warnings
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+backend/tests/test_clerk_auth_complete.py: 24 warnings
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\httpx\_content.py:202: DeprecationWarning: Use 'content=<...>' to upload raw bytes/text content.
+    warnings.warn(message, DeprecationWarning)
+
+backend/tests/test_document_endpoints.py::test_bulk_download_documents
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\_pytest\threadexception.py:73: PytestUnhandledThreadExceptionWarning: Exception in thread ThreadPoolExecutor-162_0
+  
+  Traceback (most recent call last):
+    File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+      self.run()
+    File "C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py", line 302, in _trace
+      self.data_stack.pop()
+  IndexError: pop from empty list
+  
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
+backend/tests/api/test_event_api.py::test_export_registrations_csv_returns_200
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\_pytest\threadexception.py:73: PytestUnhandledThreadExceptionWarning: Exception in thread ThreadPoolExecutor-478_0
+  
+  Traceback (most recent call last):
+    File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+      self.run()
+    File "C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py", line 302, in _trace
+      self.data_stack.pop()
+  IndexError: pop from empty list
+  
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
+backend/tests/api/test_event_api.py::test_export_registrations_empty_event_returns_200
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\_pytest\threadexception.py:73: PytestUnhandledThreadExceptionWarning: Exception in thread ThreadPoolExecutor-479_0
+  
+  Traceback (most recent call last):
+    File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+      self.run()
+    File "C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\coverage\pytracer.py", line 302, in _trace
+      self.data_stack.pop()
+  IndexError: pop from empty list
+  
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 
 ---------- coverage: platform win32, python 3.11.9-final-0 -----------
 
 =========================== short test summary info ===========================
-ERROR tests\test_podcast_api.py
-!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
-======================== 44 warnings, 1 error in 5.01s ========================
+SKIPPED [1] tests\test_financial_xero_integration.py:9: To be implemented in ratio engine phase
+SKIPPED [1] tests\test_master_admin_models.py:134: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:148: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:335: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:348: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:405: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_netsuite_integration.py:30: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:42: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:59: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:97: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:114: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:132: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:153: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:209: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:229: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:249: Requires real NetSuite sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_quickbooks_integration.py:29: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:49: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:66: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:104: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:121: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:143: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:164: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:219: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:238: Requires real QuickBooks sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_sage_integration.py:28: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:40: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:57: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:95: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:112: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:130: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:151: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:206: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:226: Requires real Sage sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_subscription_error_paths.py:373: Stripe module imported inside function - mocking complex, error handling already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:397: Stripe module imported inside function - mocking complex, error handling already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:425: Stripe module imported inside function - mocking complex, event routing already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:468: Stripe module imported inside function - mocking complex, exception handling already verified in code
+SKIPPED [1] tests\test_valuation_export_service.py:47: TDD RED phase - awaiting ValuationExportService implementation (DEV-011 Phase 5)
+SKIPPED [1] tests\test_valuation_export_service.py:67: TDD RED phase - awaiting ValuationExportService implementation (DEV-011 Phase 5)
+SKIPPED [1] tests\test_valuation_export_service.py:86: TDD RED phase - awaiting ValuationExportService implementation (DEV-011 Phase 5)
+SKIPPED [1] tests\test_valuation_export_service.py:118: TDD RED phase - awaiting ValuationExportService implementation (DEV-011 Phase 5)
+SKIPPED [1] tests\test_xero_integration.py:30: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:47: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:63: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:104: Requires real Xero sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_xero_integration.py:136: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:153: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:175: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:196: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:284: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\services\test_rbac_permissions.py:223: Auth dependency integration test - requires auth.py mocking
+SKIPPED [1] tests\services\test_rbac_permissions.py:234: Auth dependency integration test - requires auth.py mocking
+SKIPPED [1] tests\services\test_rbac_permissions.py:238: Auth dependency integration test - requires FastAPI request context
+SKIPPED [1] tests\services\test_rbac_permissions.py:269: Entitlement service test - covered in test_entitlement.py
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:150: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:167: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:189: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+ERROR tests\test_task_crud.py::test_starter_tier_cannot_create_tasks - IndexE...
+ERROR tests\test_tasks_api_complete.py::TestTaskTemplatesAPI::test_create_template_requires_growth_role
+ERROR tests\test_valuation_api.py::TestValuationApi::test_solo_user_gets_forbidden
+ERROR tests\test_valuation_api.py::TestValuationApi::test_generate_export_forbidden_for_solo
+ERROR tests\test_valuation_api.py::TestValuationApi::test_get_scenario_summary_forbidden_for_solo_tier
+ERROR tests\test_valuation_crud.py::TestValuationCrudApi::test_create_valuation_requires_growth_tier
+ERROR tests\test_valuation_crud.py::TestValuationCrudApi::test_create_scenario_requires_growth_tier
+FAILED tests\test_document_endpoints.py::test_folder_requires_authentication
+FAILED tests\test_rbac_audit_service.py::TestRBACAuditService::test_log_claim_mismatch_handles_empty_claim_snapshot
+= 2 failed, 1226 passed, 58 skipped, 558 warnings, 7 errors in 841.11s (0:14:01) =

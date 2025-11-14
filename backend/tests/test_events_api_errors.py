@@ -4,6 +4,7 @@ TDD: RED → GREEN → REFACTOR
 Feature: Multi-tenant isolation and error handling for event endpoints
 """
 import pytest
+from datetime import datetime, timezone
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -51,7 +52,7 @@ class TestEventsAPIErrorPaths:
         
         try:
             update_data = {
-                "title": "Updated Event",
+                "name": "Updated Event",
                 "description": "Updated description",
             }
             
@@ -104,9 +105,11 @@ class TestEventsAPIErrorPaths:
         # Create event in org2
         event = Event(
             organization_id=str(org2.id),
-            title="Org 2 Event",
+            name="Org 2 Event",
             description="Event in org2",
-            created_by=user2.id,
+            created_by_user_id=user2.id,
+            start_date=datetime.now(timezone.utc),
+            end_date=datetime.now(timezone.utc),
         )
         db_session.add(event)
         db_session.commit()
@@ -142,9 +145,11 @@ class TestEventsAPIErrorPaths:
         # Create event in org2
         event = Event(
             organization_id=str(org2.id),
-            title="Org 2 Event",
+            name="Org 2 Event",
             description="Event in org2",
-            created_by=user2.id,
+            created_by_user_id=user2.id,
+            start_date=datetime.now(timezone.utc),
+            end_date=datetime.now(timezone.utc),
         )
         db_session.add(event)
         db_session.commit()
@@ -155,7 +160,7 @@ class TestEventsAPIErrorPaths:
         
         try:
             update_data = {
-                "title": "Hacked Event",
+                "name": "Hacked Event",
             }
             
             response = client.put(
@@ -185,9 +190,11 @@ class TestEventsAPIErrorPaths:
         # Create event in org2
         event = Event(
             organization_id=str(org2.id),
-            title="Org 2 Event",
+            name="Org 2 Event",
             description="Event in org2",
-            created_by=user2.id,
+            created_by_user_id=user2.id,
+            start_date=datetime.now(timezone.utc),
+            end_date=datetime.now(timezone.utc),
         )
         db_session.add(event)
         db_session.commit()
@@ -221,17 +228,22 @@ class TestEventsAPIErrorPaths:
         user2 = create_user(email="user2@example.com", organization_id=str(org2.id))
         
         # Create events in both orgs
+        now = datetime.now(timezone.utc)
         event1 = Event(
             organization_id=str(org1.id),
             name="Org 1 Event",
             description="Event in org1",
             created_by_user_id=user1.id,
+            start_date=now,
+            end_date=now,
         )
         event2 = Event(
             organization_id=str(org2.id),
             name="Org 2 Event",
             description="Event in org2",
             created_by_user_id=user2.id,
+            start_date=now,
+            end_date=now,
         )
         db_session.add_all([event1, event2])
         db_session.commit()

@@ -398,15 +398,23 @@ def test_delete_non_empty_folder_fails(client, auth_context, seeded_deal):
         cleanup()
 
 
-def test_folder_requires_authentication(client, seeded_deal):
-    """Test that folder endpoints require authentication."""
-    # Ensure no auth override is active
-    from app.api.dependencies.auth import get_current_user
-
-    # Clear any existing overrides
+def test_folder_requires_authentication(client, db_session, create_organization, create_user):
+    """Folder creation should be rejected when no auth headers are provided."""
+    org = create_organization(name="Unauth Org")
+    owner = create_user(email="owner@unauth.org", organization_id=str(org.id))
+    deal = Deal(
+        id=str(uuid4()),
+        name="Auth Deal",
+        target_company="Auth Target",
+        organization_id=str(org.id),
+        owner_id=str(owner.id),
+        stage=DealStage.sourcing,
+    )
+    db_session.add(deal)
+    db_session.commit()
 
     response = client.post(
-        f"/api/deals/{seeded_deal.id}/folders",
+        f"/api/deals/{deal.id}/folders",
         json={"name": "Unauthorized"},
     )
     assert response.status_code in [401, 403]
