@@ -37,18 +37,18 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def _drop_index_if_exists(index_name: str, table_name: str, schema: str = 'public') -> None:
     """Drop index if it exists to keep migration idempotent on prod."""
-    # Use _table_exists which handles failed transactions
     if not _table_exists(table_name, schema):
         return
     try:
-        bind = op.get_bind()
-        inspector = inspect(bind)
+        inspector = inspect(op.get_bind())
         existing = inspector.get_indexes(table_name, schema=schema)
-        if any(idx['name'] == index_name for idx in existing):
-            _original_drop_index(index_name, table_name=table_name)
     except (ProgrammingError, NoSuchTableError, InternalError):
-        # Table doesn't exist, index doesn't exist, or transaction failed - skip
-        pass
+        return
+    if any(idx['name'] == index_name for idx in existing):
+        try:
+            _original_drop_index(index_name, table_name=table_name)
+        except (ProgrammingError, NoSuchTableError, InternalError):
+            pass
 
 
 def _drop_table_if_exists(table_name: str, schema: str = 'public') -> None:
@@ -64,7 +64,11 @@ def _drop_table_if_exists(table_name: str, schema: str = 'public') -> None:
 
 
 def _table_exists(table_name: str, schema: str = 'public') -> bool:
-    """Check table existence safely, even if the previous statement failed."""
+    """Check table existence safely, even if the previous statement failed.
+    
+    NOTE: This function should NOT be used in failed transaction state.
+    Use _safe_* wrappers instead which catch errors directly.
+    """
     try:
         bind = op.get_bind()
         inspector = inspect(bind)
