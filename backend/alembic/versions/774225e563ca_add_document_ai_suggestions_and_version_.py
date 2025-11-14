@@ -1046,9 +1046,13 @@ def upgrade() -> None:
                existing_type=sa.INTEGER(),
                server_default=None,
                existing_nullable=False)
-    op.add_column('deal_matches', sa.Column('organization_id', sa.String(length=36), nullable=False if True else False))
-    op.create_index(op.f('ix_deal_matches_organization_id'), 'deal_matches', ['organization_id'], unique=False)
-    op.create_foreign_key(None, 'deal_matches', 'organizations', ['organization_id'], ['id'], ondelete='CASCADE')
+    if _table_exists('deal_matches'):
+        try:
+            op.add_column('deal_matches', sa.Column('organization_id', sa.String(length=36), nullable=False if True else False))
+            op.create_index(op.f('ix_deal_matches_organization_id'), 'deal_matches', ['organization_id'], unique=False)
+            op.create_foreign_key(None, 'deal_matches', 'organizations', ['organization_id'], ['id'], ondelete='CASCADE')
+        except ProgrammingError:
+            pass
     op.alter_column('document_questions', 'status',
                existing_type=sa.VARCHAR(length=20),
                server_default=None,
@@ -1264,9 +1268,13 @@ def downgrade() -> None:
                existing_type=sa.VARCHAR(length=20),
                server_default=sa.text("'open'::character varying"),
                existing_nullable=False)
-    op.drop_constraint(None, 'deal_matches', type_='foreignkey')
-    op.drop_index(op.f('ix_deal_matches_organization_id'), table_name='deal_matches')
-    op.drop_column('deal_matches', 'organization_id')
+    if _table_exists('deal_matches'):
+        try:
+            op.drop_constraint(None, 'deal_matches', type_='foreignkey')
+            op.drop_index(op.f('ix_deal_matches_organization_id'), table_name='deal_matches')
+            op.drop_column('deal_matches', 'organization_id')
+        except ProgrammingError:
+            pass
     op.alter_column('blog_posts', 'read_time_minutes',
                existing_type=sa.INTEGER(),
                server_default=sa.text('10'),
