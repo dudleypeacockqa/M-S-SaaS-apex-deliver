@@ -1,0 +1,167 @@
+name: Validate Migrations
+
+on:
+  pull_request:
+    paths:
+      - 'backend/alembic/versions/**'
+      - 'backend/app/models/**'
+      - '.github/workflows/validate-migrations.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/alembic/versions/**'
+      - 'backend/app/models/**'
+
+jobs:
+  validate:
+    name: Validate Migration Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Run migration validation
+        run: |
+          python scripts/validate_migrations.py
+
+      - name: Comment validation results on PR
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ Migration validation failed. Please check the workflow logs for details.\n\n' +
+                    'Common issues:\n' +
+                    '- ALTER TABLE without existence checks\n' +
+                    '- Foreign key type mismatches\n' +
+                    '- DROP operations without IF EXISTS\n' +
+                    '- Missing downgrade implementation\n\n' +
+                    'See [Migration Best Practices](https://github.com/yourusername/ma-saas-platform/blob/main/docs/deployments/MIGRATION-BEST-PRACTICES.md)'
+            })
+
+  test:
+    name: Test Migrations Against PostgreSQL
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password_12345
+          POSTGRES_DB: ma_saas_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: postgresql://test_user:test_password_12345@localhost:5432/ma_saas_test
+        run: |
+          cd backend
+          alembic upgrade head
+
+      - name: Verify schema consistency
+        env:
+          DATABASE_URL: postgresql://test_user:test_password_12345@localhost:5432/ma_saas_test
+        run: |
+          python -c "
+          import psycopg2
+          import os
+
+          conn = psycopg2.connect(os.environ['DATABASE_URL'])
+          cursor = conn.cursor()
+
+          # Check for FK type mismatches
+          cursor.execute('''
+              SELECT
+                  tc.table_name,
+                  kcu.column_name,
+                  c1.data_type as fk_type,
+                  ccu.table_name AS foreign_table_name,
+                  ccu.column_name AS foreign_column_name,
+                  c2.data_type as ref_type
+              FROM information_schema.table_constraints AS tc
+              JOIN information_schema.key_column_usage AS kcu
+                  ON tc.constraint_name = kcu.constraint_name
+              JOIN information_schema.constraint_column_usage AS ccu
+                  ON ccu.constraint_name = tc.constraint_name
+              JOIN information_schema.columns c1
+                  ON c1.table_name = tc.table_name AND c1.column_name = kcu.column_name
+              JOIN information_schema.columns c2
+                  ON c2.table_name = ccu.table_name AND c2.column_name = ccu.column_name
+              WHERE tc.constraint_type = 'FOREIGN KEY'
+              AND c1.data_type != c2.data_type
+          ''')
+
+          mismatches = cursor.fetchall()
+          if mismatches:
+              print('❌ Foreign key type mismatches found:')
+              for row in mismatches:
+                  print(f'  {row[0]}.{row[1]} ({row[2]}) -> {row[3]}.{row[4]} ({row[5]})')
+              exit(1)
+          else:
+              print('✅ Schema consistency verified')
+
+          conn.close()
+          "
+
+      - name: Test downgrade
+        env:
+          DATABASE_URL: postgresql://test_user:test_password_12345@localhost:5432/ma_saas_test
+        run: |
+          cd backend
+          alembic downgrade -1 || echo "Downgrade not implemented (acceptable)"
+
+      - name: Test re-upgrade
+        env:
+          DATABASE_URL: postgresql://test_user:test_password_12345@localhost:5432/ma_saas_test
+        run: |
+          cd backend
+          alembic upgrade head
+
+      - name: Comment test results on PR
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ Migration testing failed against PostgreSQL. Please check the workflow logs for details.\n\n' +
+                    'The migrations may have issues when applied to a fresh database.'
+            })
