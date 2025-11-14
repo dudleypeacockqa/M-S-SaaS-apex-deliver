@@ -6,16 +6,15 @@ from datetime import datetime, timezone
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock, MagicMock, patch, ANY
 
-from app.services.quota_service import QuotaExceededError
-from app.schemas.podcast import PodcastQuotaSummary
-from app.services.entitlement_service import FeatureNotFoundError
-
+import pytest
 from fastapi import status
 
-from app.main import app
 from app.api.dependencies.auth import get_current_user
 from app.core.subscription import SubscriptionTier
 from app.models.user import UserRole
+from app.schemas.podcast import PodcastQuotaSummary
+from app.services.entitlement_service import FeatureNotFoundError
+from app.services.quota_service import QuotaExceededError
 
 EPISODE_PAYLOAD = {
     "title": "Professional Tier Episode",
@@ -27,14 +26,6 @@ EPISODE_PAYLOAD = {
 }
 
 
-def _override_user(user):
-    app.dependency_overrides[get_current_user] = lambda: user
-
-
-def _clear_override():
-    app.dependency_overrides.pop(get_current_user, None)
-
-
 class TestPodcastEpisodeCreation:
     """Ensure podcast creation honours subscription entitlements and quotas."""
 
@@ -43,34 +34,32 @@ class TestPodcastEpisodeCreation:
         client,
         create_user,
         create_organization,
+        dependency_overrides,
     ) -> None:
         org = create_organization(subscription_tier="starter")
         starter_user = create_user(role=UserRole.solo, organization_id=org.id)
         starter_user.subscription_tier = SubscriptionTier.STARTER.value
 
-        _override_user(starter_user)
-        try:
-            with patch(
-                "app.api.dependencies.auth.check_feature_access",
-                new_callable=AsyncMock,
-            ) as mock_feature, patch(
-                "app.api.dependencies.auth.get_required_tier"
-            ) as mock_required, patch(
-                "app.api.dependencies.auth.get_feature_upgrade_message"
-            ) as mock_message:
-                mock_feature.return_value = False
-                mock_required.return_value = SubscriptionTier.PROFESSIONAL
-                mock_message.return_value = (
-                    "Upgrade to Professional tier to unlock audio podcasting."
-                )
+        dependency_overrides(get_current_user, lambda: starter_user)
+        with patch(
+            "app.api.dependencies.auth.check_feature_access",
+            new_callable=AsyncMock,
+        ) as mock_feature, patch(
+            "app.api.dependencies.auth.get_required_tier"
+        ) as mock_required, patch(
+            "app.api.dependencies.auth.get_feature_upgrade_message"
+        ) as mock_message:
+            mock_feature.return_value = False
+            mock_required.return_value = SubscriptionTier.PROFESSIONAL
+            mock_message.return_value = (
+                "Upgrade to Professional tier to unlock audio podcasting."
+            )
 
-                response = client.post("/api/podcasts/episodes", json=EPISODE_PAYLOAD)
+            response = client.post("/api/podcasts/episodes", json=EPISODE_PAYLOAD)
 
-            assert response.status_code == status.HTTP_403_FORBIDDEN
-            assert response.headers["X-Required-Tier"] == "professional"
-            assert "Upgrade" in response.json()["detail"]
-        finally:
-            _clear_override()
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.headers["X-Required-Tier"] == "professional"
+        assert "Upgrade" in response.json()["detail"]
 
     def test_quota_service_passes_db_session(
         self,
@@ -2289,4 +2278,3 @@ class TestThumbnailGeneration:
             assert response.status_code == status.HTTP_403_FORBIDDEN
         finally:
             _clear_override()
-

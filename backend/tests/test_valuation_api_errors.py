@@ -49,6 +49,7 @@ class TestValuationAPIErrorPaths:
         create_organization,
         create_user,
         auth_headers_growth,
+        dependency_overrides,
     ):
         """Test GET /deals/{deal_id}/valuations returns 404 when deal belongs to another org."""
         deal1, owner1, org1 = create_deal_for_org()
@@ -56,8 +57,7 @@ class TestValuationAPIErrorPaths:
         user2 = create_user(email="other@example.com", organization_id=str(org2.id), role="growth")
         
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user2
+        dependency_overrides(get_current_user, lambda: user2)
         
         # Try to list valuations for deal from org1
         response = client.get(
@@ -69,8 +69,6 @@ class TestValuationAPIErrorPaths:
         detail = response.json()["detail"]
         assert detail["code"] == "DEAL_NOT_FOUND"
         
-        app.dependency_overrides.pop(get_current_user, None)
-    
     def test_get_valuation_not_found(
         self,
         client: TestClient,

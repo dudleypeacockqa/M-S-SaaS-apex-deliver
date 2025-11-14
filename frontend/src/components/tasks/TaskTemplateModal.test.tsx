@@ -49,7 +49,7 @@ describe('TaskTemplateModal', () => {
       wrapper: createWrapper(),
     });
 
-    const addTaskButton = screen.getByRole('button', { name: /add task/i });
+    const addTaskButton = screen.getByRole('button', { name: /add new task to template/i });
     await user.click(addTaskButton);
 
     expect(screen.getByLabelText(/task title/i)).toBeInTheDocument();
@@ -107,7 +107,7 @@ describe('TaskTemplateModal', () => {
     await user.type(descInput, 'Standard DD tasks');
 
     // Add a task
-    const addTaskButton = screen.getByRole('button', { name: /add task/i });
+    const addTaskButton = screen.getByRole('button', { name: /add new task to template/i });
     await user.click(addTaskButton);
 
     const taskTitleInput = await screen.findByLabelText(/task title/i);

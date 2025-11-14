@@ -8,8 +8,18 @@ from unittest.mock import Mock, patch
 
 from fastapi.testclient import TestClient
 
+from app.api.dependencies.auth import get_current_user
 from app.models.user_notification_preferences import UserNotificationPreferences
 from app.models.user import User
+
+dependency_overrides = None
+
+
+@pytest.fixture(autouse=True)
+def _bind_dependency_overrides_fixture(dependency_overrides):
+    globals()["dependency_overrides"] = dependency_overrides
+    yield
+    globals()["dependency_overrides"] = None
 
 
 class TestNotificationPreferencesAPI:
@@ -25,9 +35,7 @@ class TestNotificationPreferencesAPI:
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
         
         response = client.get("/api/notifications/preferences")
         
@@ -44,7 +52,6 @@ class TestNotificationPreferencesAPI:
         assert data["system_updates"] is True
         assert data["security_alerts"] is True
         
-        app.dependency_overrides.pop(get_current_user, None)
     
     def test_get_preferences_returns_user_preferences(
         self,
@@ -72,9 +79,7 @@ class TestNotificationPreferencesAPI:
         db_session.add(prefs)
         db_session.commit()
         
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
         
         response = client.get("/api/notifications/preferences")
         
@@ -91,7 +96,6 @@ class TestNotificationPreferencesAPI:
         assert data["system_updates"] is False
         assert data["security_alerts"] is True
         
-        app.dependency_overrides.pop(get_current_user, None)
     
     def test_update_preferences_creates_new_preferences(
         self,
@@ -104,9 +108,7 @@ class TestNotificationPreferencesAPI:
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
         
         update_data = {
             "email_enabled": False,
@@ -134,7 +136,6 @@ class TestNotificationPreferencesAPI:
         assert prefs.email_enabled is False
         assert prefs.event_reminders is False
         
-        app.dependency_overrides.pop(get_current_user, None)
     
     def test_update_preferences_updates_existing_preferences(
         self,
@@ -162,9 +163,7 @@ class TestNotificationPreferencesAPI:
         db_session.add(prefs)
         db_session.commit()
         
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
         
         update_data = {
             "email_enabled": False,
@@ -189,7 +188,6 @@ class TestNotificationPreferencesAPI:
         assert prefs.event_reminders is False
         assert prefs.event_ticket_confirmation is True
         
-        app.dependency_overrides.pop(get_current_user, None)
     
     def test_update_preferences_partial_update(
         self,
@@ -217,9 +215,7 @@ class TestNotificationPreferencesAPI:
         db_session.add(prefs)
         db_session.commit()
         
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
         
         # Only update one field
         update_data = {
@@ -238,7 +234,6 @@ class TestNotificationPreferencesAPI:
         assert data["event_reminders"] is True
         assert data["community_mentions"] is False
         
-        app.dependency_overrides.pop(get_current_user, None)
     
     def test_update_preferences_all_fields(
         self,
@@ -251,9 +246,7 @@ class TestNotificationPreferencesAPI:
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
         
         update_data = {
             "email_enabled": False,
@@ -281,5 +274,4 @@ class TestNotificationPreferencesAPI:
         assert data["system_updates"] is False
         assert data["security_alerts"] is False
         
-        app.dependency_overrides.pop(get_current_user, None)
 

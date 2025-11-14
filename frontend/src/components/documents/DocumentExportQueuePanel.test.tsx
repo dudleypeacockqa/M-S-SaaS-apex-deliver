@@ -122,7 +122,9 @@ describe('DocumentExportQueuePanel', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/task id task-existing/i)).toBeInTheDocument()
-      expect(screen.getByText(/processing/i)).toBeInTheDocument()
+      // Check for status badge with "Processing" text (more specific)
+      const statusBadge = screen.getByTestId('export-status-task-existing')
+      expect(statusBadge).toHaveTextContent(/processing/i)
     })
   })
 })

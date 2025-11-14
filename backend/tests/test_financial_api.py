@@ -4,21 +4,34 @@ Testing the /financial API endpoints
 """
 
 import pytest
+from contextlib import contextmanager
 from unittest.mock import Mock, patch
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from app.main import app
 from app.api.dependencies.auth import get_current_user
 from app.models.financial_connection import FinancialConnection
 from app.models.financial_narrative import FinancialNarrative
 
+dependency_overrides = None
+
+
+@pytest.fixture(autouse=True)
+def _bind_dependency_overrides_fixture(dependency_overrides):
+    globals()["dependency_overrides"] = dependency_overrides
+    yield
+    globals()["dependency_overrides"] = None
+
+
+@contextmanager
+def override_current_user(user):
+    dependency_overrides(get_current_user, lambda: user)
+    yield
+
 
 def test_calculate_financial_ratios_endpoint(client, test_deal, solo_user):
     """Test POST /deals/{id}/financial/calculate-ratios endpoint"""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         financial_data = {
             "current_assets": 100000,
             "current_liabilities": 50000,
@@ -60,8 +73,7 @@ def test_calculate_financial_ratios_endpoint(client, test_deal, solo_user):
         assert data["net_profit_margin"] == 10.0  # 50k / 500k * 100
         assert data["return_on_equity"] == 20.0  # 50k / 250k * 100
         assert data["debt_to_equity"] == 0.8  # 200k / 250k
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_calculate_ratios_requires_authentication(client, test_deal):
@@ -76,9 +88,7 @@ def test_calculate_ratios_requires_authentication(client, test_deal):
 
 def test_calculate_ratios_deal_not_found(client, solo_user):
     """Test 404 when deal doesn't exist"""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.post(
             "/api/deals/nonexistent-deal-id/financial/calculate-ratios",
             json={"revenue": 100000},
@@ -86,15 +96,12 @@ def test_calculate_ratios_deal_not_found(client, solo_user):
 
         assert response.status_code == 404
         assert "not found" in response.json()["detail"].lower()
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_calculate_ratios_with_partial_data(client, test_deal, solo_user):
     """Test that calculation works with partial data"""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         financial_data = {
             "revenue": 500000,
             "cogs": 300000,
@@ -118,15 +125,12 @@ def test_calculate_ratios_with_partial_data(client, test_deal, solo_user):
         # Ratios that need missing data should be None
         assert data["current_ratio"] is None  # Missing current assets/liabilities
         assert data["return_on_assets"] is None  # Missing total assets
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_get_financial_connections_endpoint_returns_empty_list_when_no_connections(client, test_deal, solo_user):
     """Test GET /deals/{id}/financial/connections endpoint returns empty list when no connections exist."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.get(
             f"/api/deals/{test_deal.id}/financial/connections",
         )
@@ -136,13 +140,11 @@ def test_get_financial_connections_endpoint_returns_empty_list_when_no_connectio
 
         assert isinstance(data, list)
         assert len(data) == 0
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_get_financial_connections_endpoint_returns_connections(client, test_deal, db_session, solo_user):
     """Test financial connections endpoint returns persisted connections."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
 
     connection = FinancialConnection(
         id="conn-qbo-1",
@@ -158,7 +160,7 @@ def test_get_financial_connections_endpoint_returns_connections(client, test_dea
     db_session.add(connection)
     db_session.commit()
 
-    try:
+    with override_current_user(solo_user):
         response = client.get(
             f"/api/deals/{test_deal.id}/financial/connections",
         )
@@ -169,38 +171,31 @@ def test_get_financial_connections_endpoint_returns_connections(client, test_dea
         assert len(data) == 1
         assert data[0]["platform"] == "quickbooks"
         assert data[0]["platform_organization_name"] == "QuickBooks Demo Co"
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_get_financial_ratios_not_found(client, test_deal, solo_user):
     """Test GET /deals/{id}/financial/ratios returns 404 when no ratios exist"""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.get(
             f"/api/deals/{test_deal.id}/financial/ratios",
         )
 
         assert response.status_code == 404
         assert "calculated" in response.json()["detail"].lower()
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_get_financial_narrative_not_found(client, test_deal, solo_user):
     """Test GET /deals/{id}/financial/narrative returns 404 when no narrative exists"""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.get(
             f"/api/deals/{test_deal.id}/financial/narrative",
         )
 
         assert response.status_code == 404
         assert "generated" in response.json()["detail"].lower()
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 # ============================================================================
@@ -210,9 +205,7 @@ def test_get_financial_narrative_not_found(client, test_deal, solo_user):
 # Test POST /deals/{deal_id}/financial/connect/xero
 def test_connect_xero_initiates_oauth_flow(client, test_deal, solo_user):
     """Test that connecting Xero initiates OAuth flow and returns authorization URL."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         with patch('app.api.routes.financial.initiate_xero_oauth') as mock_initiate:
             mock_initiate.return_value = {
                 "authorization_url": "https://login.xero.com/identity/connect/authorize?...",
@@ -228,31 +221,25 @@ def test_connect_xero_initiates_oauth_flow(client, test_deal, solo_user):
             assert "authorization_url" in data
             assert "state" in data
             assert data["authorization_url"].startswith("https://login.xero.com")
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_connect_xero_with_invalid_deal(client, solo_user):
     """Test connecting Xero with non-existent deal returns 404."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.post(
             "/api/deals/nonexistent-deal-id/financial/connect/xero",
         )
 
         assert response.status_code == 404
         assert "not found" in response.json()["detail"].lower()
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 # Test GET /deals/{deal_id}/financial/connect/xero/callback
 def test_xero_oauth_callback_success(client, test_deal, solo_user):
     """Test successful Xero OAuth callback creates connection."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         with patch('app.api.routes.financial.handle_xero_callback') as mock_callback:
             # Mock connection object with required attributes
             mock_connection = Mock()
@@ -275,31 +262,25 @@ def test_xero_oauth_callback_success(client, test_deal, solo_user):
             data = response.json()
             assert data["platform"] == "xero"
             assert data["connection_status"] == "active"
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_xero_oauth_callback_missing_code(client, test_deal, solo_user):
     """Test Xero callback without code parameter returns 422 (validation error)."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.get(
             f"/api/deals/{test_deal.id}/financial/connect/xero/callback",
         )
 
         # FastAPI returns 422 for missing required query parameters (validation error)
         assert response.status_code == 422
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 # Test POST /deals/{deal_id}/financial/sync
 def test_sync_financial_data_success(client, test_deal, db_session, solo_user):
     """Test manual financial data sync from Xero."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         # Create connection
         connection = FinancialConnection(
             id="conn-api-2",
@@ -326,30 +307,24 @@ def test_sync_financial_data_success(client, test_deal, db_session, solo_user):
             data = response.json()
             assert data["success"] is True
             assert data["statements_synced"] == 1
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_sync_financial_data_no_connection(client, test_deal, solo_user):
     """Test syncing without connection returns 404."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.post(
             f"/api/deals/{test_deal.id}/financial/sync",
         )
 
         assert response.status_code == 404
         assert "connection" in response.json()["detail"].lower()
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_connect_quickbooks_initiates_oauth_flow(client, test_deal, solo_user):
     """QuickBooks connection initiates OAuth flow."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         with patch('app.api.routes.financial.initiate_quickbooks_oauth') as mock_initiate:
             mock_initiate.return_value = {
                 "authorization_url": "https://appcenter.intuit.com/connect/oauth2?client_id=real",
@@ -364,28 +339,22 @@ def test_connect_quickbooks_initiates_oauth_flow(client, test_deal, solo_user):
             data = response.json()
             assert data["authorization_url"].startswith("https://appcenter.intuit.com")
             assert data["state"] == "state-token"
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_connect_quickbooks_with_invalid_deal(client, solo_user):
     """Connecting QuickBooks with invalid deal returns 404."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.post(
             "/api/deals/invalid-id/financial/connect/quickbooks",
         )
 
         assert response.status_code == 404
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_quickbooks_oauth_callback_success(client, test_deal, solo_user):
     """QuickBooks callback returns FinancialConnection response."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
     mock_connection = Mock()
     mock_connection.id = "conn-qbo-2"
     mock_connection.deal_id = test_deal.id
@@ -397,7 +366,7 @@ def test_quickbooks_oauth_callback_success(client, test_deal, solo_user):
     mock_connection.last_sync_status = None
     mock_connection.created_at = datetime.utcnow()
 
-    try:
+    with override_current_user(solo_user):
         with patch('app.api.routes.financial.handle_quickbooks_callback') as mock_callback:
             mock_callback.return_value = mock_connection
 
@@ -415,28 +384,22 @@ def test_quickbooks_oauth_callback_success(client, test_deal, solo_user):
             assert data["platform"] == "quickbooks"
             assert data["connection_status"] == "active"
             assert data["platform_organization_name"] == "QuickBooks Demo Co"
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_quickbooks_oauth_callback_missing_params(client, test_deal, solo_user):
     """QuickBooks callback requires code/state/realm_id."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.get(
             f"/api/deals/{test_deal.id}/financial/connect/quickbooks/callback",
         )
 
         assert response.status_code == 422
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_sync_quickbooks_financial_data_success(client, test_deal, db_session, solo_user):
     """Synchronise QuickBooks statements successfully."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
     connection = FinancialConnection(
         id="conn-qbo-sync",
         deal_id=test_deal.id,
@@ -450,7 +413,7 @@ def test_sync_quickbooks_financial_data_success(client, test_deal, db_session, s
     db_session.add(connection)
     db_session.commit()
 
-    try:
+    with override_current_user(solo_user):
         with patch('app.api.routes.financial.fetch_quickbooks_statements') as mock_fetch:
             mock_statement = Mock()
             mock_statement.id = "stmt-qbo-1"
@@ -465,29 +428,23 @@ def test_sync_quickbooks_financial_data_success(client, test_deal, db_session, s
             assert data["success"] is True
             assert data["statements_synced"] == 1
             assert data["platform"] == "quickbooks"
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_sync_quickbooks_financial_data_no_connection(client, test_deal, solo_user):
     """Attempting QuickBooks sync without connection returns 404."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.post(
             f"/api/deals/{test_deal.id}/financial/sync/quickbooks",
         )
 
         assert response.status_code == 404
         assert "quickbooks" in response.json()["detail"].lower()
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_quickbooks_connection_status(client, test_deal, db_session, solo_user):
     """QuickBooks status endpoint returns connection information."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
     connection = FinancialConnection(
         id="conn-qbo-status",
         deal_id=test_deal.id,
@@ -502,7 +459,7 @@ def test_quickbooks_connection_status(client, test_deal, db_session, solo_user):
     db_session.add(connection)
     db_session.commit()
 
-    try:
+    with override_current_user(solo_user):
         response = client.get(
             f"/api/deals/{test_deal.id}/financial/connect/quickbooks/status",
         )
@@ -512,14 +469,11 @@ def test_quickbooks_connection_status(client, test_deal, db_session, solo_user):
         assert data["connected"] is True
         assert data["platform"] == "quickbooks"
         assert data["platform_organization_name"] == "QuickBooks Demo Co"
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_disconnect_quickbooks_connection(client, test_deal, db_session, solo_user):
     """Disconnect QuickBooks removes connection."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
     connection = FinancialConnection(
         id="conn-qbo-delete",
         deal_id=test_deal.id,
@@ -533,7 +487,7 @@ def test_disconnect_quickbooks_connection(client, test_deal, db_session, solo_us
     db_session.add(connection)
     db_session.commit()
 
-    try:
+    with override_current_user(solo_user):
         response = client.delete(
             f"/api/deals/{test_deal.id}/financial/connect/quickbooks",
         )
@@ -543,16 +497,13 @@ def test_disconnect_quickbooks_connection(client, test_deal, db_session, solo_us
 
         remaining = db_session.query(FinancialConnection).filter_by(id="conn-qbo-delete").first()
         assert remaining is None
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 
 def test_connect_netsuite_initiates_oauth_flow(client, test_deal, solo_user):
     """NetSuite connection should return an authorization URL."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         with patch('app.api.routes.financial.initiate_netsuite_oauth') as mock_initiate:
             mock_initiate.return_value = {
                 "authorization_url": "https://system.netsuite.com/oauth2/v1/authorize?client_id=real",
@@ -567,28 +518,22 @@ def test_connect_netsuite_initiates_oauth_flow(client, test_deal, solo_user):
             data = response.json()
             assert data["authorization_url"].startswith("https://system.netsuite.com")
             assert data["state"] == "netsuite-state-token"
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_connect_netsuite_with_invalid_deal(client, solo_user):
     """NetSuite connection for unknown deal returns 404."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.post(
             "/api/deals/invalid-id/financial/connect/netsuite",
         )
 
         assert response.status_code == 404
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_netsuite_oauth_callback_success(client, test_deal, solo_user):
     """NetSuite callback should return a financial connection response."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
     mock_connection = Mock()
     mock_connection.id = "conn-ns-1"
     mock_connection.deal_id = test_deal.id
@@ -600,7 +545,7 @@ def test_netsuite_oauth_callback_success(client, test_deal, solo_user):
     mock_connection.last_sync_status = None
     mock_connection.created_at = datetime.utcnow()
 
-    try:
+    with override_current_user(solo_user):
         with patch('app.api.routes.financial.handle_netsuite_callback') as mock_callback:
             mock_callback.return_value = mock_connection
 
@@ -617,14 +562,11 @@ def test_netsuite_oauth_callback_success(client, test_deal, solo_user):
             assert data["platform"] == "netsuite"
             assert data["connection_status"] == "active"
             assert data["platform_organization_name"] == "NetSuite Demo"
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_sync_netsuite_financial_data_success(client, test_deal, db_session, solo_user):
     """NetSuite sync endpoint should import statements and report success."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
     connection = FinancialConnection(
         id="conn-ns-sync",
         deal_id=test_deal.id,
@@ -638,7 +580,7 @@ def test_sync_netsuite_financial_data_success(client, test_deal, db_session, sol
     db_session.add(connection)
     db_session.commit()
 
-    try:
+    with override_current_user(solo_user):
         with patch('app.api.routes.financial.import_netsuite_financial_data') as mock_import:
             mock_statement = Mock()
             mock_statement.id = "stmt-ns-1"
@@ -655,30 +597,24 @@ def test_sync_netsuite_financial_data_success(client, test_deal, db_session, sol
             assert data["success"] is True
             assert data["platform"] == "netsuite"
             assert data["statement_id"] == "stmt-ns-1"
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_sync_netsuite_financial_data_no_connection(client, test_deal, solo_user):
     """NetSuite sync without a connection returns 404."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.post(
             f"/api/deals/{test_deal.id}/financial/sync/netsuite",
         )
 
         assert response.status_code == 404
         assert "netsuite" in response.json()["detail"].lower()
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_connect_sage_initiates_oauth_flow(client, test_deal, solo_user):
     """Sage connection should return an authorization URL."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         with patch('app.api.routes.financial.initiate_sage_oauth') as mock_initiate:
             mock_initiate.return_value = {
                 "authorization_url": "https://www.sageone.com/oauth2/auth/central?client_id=real",
@@ -693,28 +629,22 @@ def test_connect_sage_initiates_oauth_flow(client, test_deal, solo_user):
             data = response.json()
             assert data["authorization_url"].startswith("https://www.sageone.com")
             assert data["state"] == "sage-state-token"
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_connect_sage_with_invalid_deal(client, solo_user):
     """Sage connection for unknown deal returns 404."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.post(
             "/api/deals/invalid-id/financial/connect/sage",
         )
 
         assert response.status_code == 404
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_sage_oauth_callback_success(client, test_deal, solo_user):
     """Sage callback should return a financial connection response."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
     mock_connection = Mock()
     mock_connection.id = "conn-sage-1"
     mock_connection.deal_id = test_deal.id
@@ -726,7 +656,7 @@ def test_sage_oauth_callback_success(client, test_deal, solo_user):
     mock_connection.last_sync_status = None
     mock_connection.created_at = datetime.utcnow()
 
-    try:
+    with override_current_user(solo_user):
         with patch('app.api.routes.financial.handle_sage_callback') as mock_callback:
             mock_callback.return_value = mock_connection
 
@@ -743,14 +673,11 @@ def test_sage_oauth_callback_success(client, test_deal, solo_user):
             assert data["platform"] == "sage"
             assert data["connection_status"] == "active"
             assert data["platform_organization_name"] == "Sage Demo"
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_sync_sage_financial_data_success(client, test_deal, db_session, solo_user):
     """Sage sync endpoint should import statements and report success."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
     connection = FinancialConnection(
         id="conn-sage-sync",
         deal_id=test_deal.id,
@@ -764,7 +691,7 @@ def test_sync_sage_financial_data_success(client, test_deal, db_session, solo_us
     db_session.add(connection)
     db_session.commit()
 
-    try:
+    with override_current_user(solo_user):
         with patch('app.api.routes.financial.fetch_sage_statements') as mock_fetch:
             mock_statement = Mock()
             mock_statement.id = "stmt-sage-1"
@@ -781,31 +708,25 @@ def test_sync_sage_financial_data_success(client, test_deal, db_session, solo_us
             assert data["success"] is True
             assert data["platform"] == "sage"
             assert data["statements_synced"] == 1
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_sync_sage_financial_data_no_connection(client, test_deal, solo_user):
     """Sage sync without a connection returns 404."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.post(
             f"/api/deals/{test_deal.id}/financial/sync/sage",
         )
 
         assert response.status_code == 404
         assert "sage" in response.json()["detail"].lower()
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 # Test GET /deals/{deal_id}/financial/readiness-score
 def test_get_readiness_score_success(client, test_deal, db_session, solo_user):
     """Test retrieving Deal Readiness Score."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         narrative = FinancialNarrative(
             id="narr-api-1",
             deal_id=test_deal.id,
@@ -833,20 +754,16 @@ def test_get_readiness_score_success(client, test_deal, db_session, solo_user):
         assert data["financial_health_score"] == 35.0
         assert data["growth_trajectory_score"] == 18.5
         assert data["risk_assessment_score"] == 7.0
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+
 
 
 def test_get_readiness_score_no_narrative(client, test_deal, solo_user):
     """Test getting readiness score when no narrative exists returns 404."""
-    app.dependency_overrides[get_current_user] = lambda: solo_user
-
-    try:
+    with override_current_user(solo_user):
         response = client.get(
             f"/api/deals/{test_deal.id}/financial/readiness-score",
         )
 
         assert response.status_code == 404
         assert "narrative" in response.json()["detail"].lower()
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+

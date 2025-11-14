@@ -6,7 +6,6 @@ from uuid import uuid4
 import pytest
 from fastapi import status
 from app.api.dependencies.auth import get_current_user
-from app.main import app
 
 from app.models.valuation import (
     ValuationModel,
@@ -176,7 +175,7 @@ class TestValuationCrudApi:
 
 
 class TestValuationAccessControl:
-    def test_cannot_access_other_org_deal(self, client, create_deal_for_org, auth_headers_growth, valuation_payload, create_organization, create_user):
+    def test_cannot_access_other_org_deal(self, client, create_deal_for_org, auth_headers_growth, valuation_payload, create_organization, create_user, dependency_overrides):
         deal, _, _ = create_deal_for_org()
         create_resp = client.post(
             f"/api/deals/{deal.id}/valuations",
@@ -188,18 +187,12 @@ class TestValuationAccessControl:
         other_org = create_organization(subscription_tier="growth")
         other_user = create_user(role="growth", organization_id=other_org.id)
 
-        app_original = app.dependency_overrides.get(get_current_user)
-        app.dependency_overrides[get_current_user] = lambda: other_user
+        dependency_overrides(get_current_user, lambda: other_user)
 
         response = client.get(
             f"/api/deals/{deal.id}/valuations/{valuation_id}",
             headers={"Authorization": "Bearer mock_growth_token"},
         )
-
-        if app_original is not None:
-            app.dependency_overrides[get_current_user] = app_original
-        else:
-            app.dependency_overrides.pop(get_current_user, None)
 
         assert response.status_code in {status.HTTP_403_FORBIDDEN, status.HTTP_404_NOT_FOUND}
 

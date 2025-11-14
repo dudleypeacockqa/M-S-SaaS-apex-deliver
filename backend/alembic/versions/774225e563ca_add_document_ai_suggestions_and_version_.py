@@ -10,7 +10,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy import inspect
-from sqlalchemy.exc import NoSuchTableError
+from sqlalchemy.exc import NoSuchTableError, ProgrammingError
 ORGANIZATION_ID_TYPE = sa.String(length=36)
 USER_ID_TYPE = sa.String(length=36)
 GENERATED_DOCUMENT_ID_TYPE = sa.String(length=36)
@@ -45,6 +45,12 @@ def _drop_table_if_exists(table_name: str, schema: str = 'public') -> None:
     inspector = inspect(bind)
     if inspector.has_table(table_name, schema=schema):
         op.drop_table(table_name)
+
+
+def _table_exists(table_name: str, schema: str = 'public') -> bool:
+    bind = op.get_bind()
+    inspector = inspect(bind)
+    return inspector.has_table(table_name, schema=schema)
 
 
 def upgrade() -> None:
@@ -682,19 +688,23 @@ def upgrade() -> None:
     _drop_index_if_exists('ix_contact_messages_email', 'contact_messages')
     _drop_index_if_exists('ix_contact_messages_id', 'contact_messages')
     _drop_table_if_exists('contact_messages')
-    op.alter_column('admin_activities', 'amount',
-               existing_type=sa.INTEGER(),
-               server_default=None,
-               existing_nullable=True)
-    op.alter_column('admin_activities', 'created_at',
-               existing_type=postgresql.TIMESTAMP(),
-               server_default=None,
-               existing_nullable=False)
-    op.alter_column('admin_activities', 'updated_at',
-               existing_type=postgresql.TIMESTAMP(),
-               server_default=None,
-               existing_nullable=False)
-    op.create_index(op.f('ix_admin_activities_id'), 'admin_activities', ['id'], unique=False)
+    if _table_exists('admin_activities'):
+        try:
+            op.alter_column('admin_activities', 'amount',
+                       existing_type=sa.INTEGER(),
+                       server_default=None,
+                       existing_nullable=True)
+            op.alter_column('admin_activities', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(),
+                       server_default=None,
+                       existing_nullable=False)
+            op.alter_column('admin_activities', 'updated_at',
+                       existing_type=postgresql.TIMESTAMP(),
+                       server_default=None,
+                       existing_nullable=False)
+            op.create_index(op.f('ix_admin_activities_id'), 'admin_activities', ['id'], unique=False)
+        except ProgrammingError:
+            pass
     op.alter_column('admin_campaign_recipients', 'sent',
                existing_type=sa.BOOLEAN(),
                server_default=None,
