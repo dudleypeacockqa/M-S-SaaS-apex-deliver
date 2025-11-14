@@ -5,7 +5,7 @@ Revises: b354d12d1e7d
 Create Date: 2025-11-13 10:14:13.253911
 
 """
-from typing import Sequence, Union
+from typing import Optional, Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
@@ -61,6 +61,112 @@ def _table_exists(table_name: str, schema: str = 'public') -> bool:
     bind = op.get_bind()
     inspector = inspect(bind)
     return inspector.has_table(table_name, schema=schema)
+
+
+def _safe_alter_column(table_name: str, column_name: str, *args, **kwargs):
+    schema = kwargs.get('schema') or 'public'
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_alter_column(table_name, column_name, *args, **kwargs)
+    except (ProgrammingError, NoSuchTableError):
+        pass
+
+
+def _safe_create_index(index_name: str, table_name: Optional[str], columns, **kwargs):
+    schema = kwargs.get('schema') or 'public'
+    if table_name and not _table_exists(table_name, schema):
+        return
+    try:
+        _original_create_index(index_name, table_name, columns, **kwargs)
+    except (ProgrammingError, NoSuchTableError):
+        pass
+
+
+def _safe_drop_index(index_name: str, table_name: Optional[str] = None, **kwargs):
+    schema = kwargs.get('schema') or 'public'
+    if table_name and not _table_exists(table_name, schema):
+        return
+    try:
+        _original_drop_index(index_name, table_name=table_name, **kwargs)
+    except (ProgrammingError, NoSuchTableError):
+        pass
+
+
+def _safe_add_column(table_name: str, column, **kwargs):
+    schema = kwargs.get('schema') or 'public'
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_add_column(table_name, column, **kwargs)
+    except (ProgrammingError, NoSuchTableError):
+        pass
+
+
+def _safe_drop_column(table_name: str, column_name: str, **kwargs):
+    schema = kwargs.get('schema') or 'public'
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_drop_column(table_name, column_name, **kwargs)
+    except (ProgrammingError, NoSuchTableError):
+        pass
+
+
+def _safe_drop_constraint(constraint_name: str, table_name: str, **kwargs):
+    schema = kwargs.get('schema') or 'public'
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_drop_constraint(constraint_name, table_name, **kwargs)
+    except (ProgrammingError, NoSuchTableError):
+        pass
+
+
+def _safe_create_foreign_key(constraint_name: str, source_table: str, referent_table: str,
+                             local_cols, remote_cols, **kwargs):
+    source_schema = kwargs.get('source_schema') or kwargs.get('schema') or 'public'
+    referent_schema = kwargs.get('referent_schema') or 'public'
+    if not _table_exists(source_table, source_schema):
+        return
+    if not _table_exists(referent_table, referent_schema):
+        return
+    try:
+        _original_create_foreign_key(constraint_name, source_table, referent_table,
+                                     local_cols, remote_cols, **kwargs)
+    except (ProgrammingError, NoSuchTableError):
+        pass
+
+
+def _safe_create_unique_constraint(constraint_name: str, table_name: str, columns, **kwargs):
+    schema = kwargs.get('schema') or 'public'
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_create_unique_constraint(constraint_name, table_name, columns, **kwargs)
+    except (ProgrammingError, NoSuchTableError):
+        pass
+
+
+def _safe_drop_table(table_name: str, *args, **kwargs):
+    schema = kwargs.get('schema') or 'public'
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_drop_table(table_name, *args, **kwargs)
+    except (ProgrammingError, NoSuchTableError):
+        pass
+
+
+op.alter_column = _safe_alter_column
+op.create_index = _safe_create_index
+op.drop_index = _safe_drop_index
+op.add_column = _safe_add_column
+op.drop_column = _safe_drop_column
+op.drop_constraint = _safe_drop_constraint
+op.create_foreign_key = _safe_create_foreign_key
+op.create_unique_constraint = _safe_create_unique_constraint
+op.drop_table = _safe_drop_table
 
 
 def _column_exists(table_name: str, column_name: str, schema: str = 'public') -> bool:
@@ -1133,38 +1239,42 @@ def upgrade() -> None:
             _drop_index_if_exists('idx_document_templates_template_type', 'document_templates')
         except ProgrammingError:
             pass
-    op.alter_column('generated_documents', 'id',
-               existing_type=sa.VARCHAR(length=36),
-               type_=sa.String(length=36),
-               existing_nullable=False)
-    op.alter_column('generated_documents', 'template_id',
-               existing_type=sa.VARCHAR(length=36),
-               type_=sa.String(length=36),
-               existing_nullable=False)
-    op.alter_column('generated_documents', 'variable_values',
-               existing_type=postgresql.JSON(astext_type=sa.Text()),
-               server_default=None,
-               nullable=True)
-    op.alter_column('generated_documents', 'status',
-               existing_type=postgresql.ENUM('draft', 'generated', 'finalized', 'sent', name='documentstatus'),
-               server_default=None,
-               existing_nullable=False)
-    op.alter_column('generated_documents', 'organization_id',
-               existing_type=sa.VARCHAR(length=36),
-               type_=sa.String(length=36),
-               existing_nullable=False)
-    op.alter_column('generated_documents', 'generated_by_user_id',
-               existing_type=sa.VARCHAR(),
-               type_=sa.String(length=36),
-               existing_nullable=False)
-    op.alter_column('generated_documents', 'created_at',
-               existing_type=postgresql.TIMESTAMP(timezone=True),
-               server_default=None,
-               nullable=True)
-    op.drop_index('idx_generated_documents_created_at', table_name='generated_documents')
-    op.drop_index('idx_generated_documents_organization_id', table_name='generated_documents')
-    op.drop_index('idx_generated_documents_status', table_name='generated_documents')
-    op.drop_index('idx_generated_documents_template_id', table_name='generated_documents')
+    if _table_exists('generated_documents'):
+        try:
+            op.alter_column('generated_documents', 'id',
+                       existing_type=sa.VARCHAR(length=36),
+                       type_=sa.String(length=36),
+                       existing_nullable=False)
+            op.alter_column('generated_documents', 'template_id',
+                       existing_type=sa.VARCHAR(length=36),
+                       type_=sa.String(length=36),
+                       existing_nullable=False)
+            op.alter_column('generated_documents', 'variable_values',
+                       existing_type=postgresql.JSON(astext_type=sa.Text()),
+                       server_default=None,
+                       nullable=True)
+            op.alter_column('generated_documents', 'status',
+                       existing_type=postgresql.ENUM('draft', 'generated', 'finalized', 'sent', name='documentstatus'),
+                       server_default=None,
+                       existing_nullable=False)
+            op.alter_column('generated_documents', 'organization_id',
+                       existing_type=sa.VARCHAR(length=36),
+                       type_=sa.String(length=36),
+                       existing_nullable=False)
+            op.alter_column('generated_documents', 'generated_by_user_id',
+                       existing_type=sa.VARCHAR(),
+                       type_=sa.String(length=36),
+                       existing_nullable=False)
+            op.alter_column('generated_documents', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(timezone=True),
+                       server_default=None,
+                       nullable=True)
+            _drop_index_if_exists('idx_generated_documents_created_at', 'generated_documents')
+            _drop_index_if_exists('idx_generated_documents_organization_id', 'generated_documents')
+            _drop_index_if_exists('idx_generated_documents_status', 'generated_documents')
+            _drop_index_if_exists('idx_generated_documents_template_id', 'generated_documents')
+        except ProgrammingError:
+            pass
     op.alter_column('pipeline_template_stages', 'created_at',
                existing_type=postgresql.TIMESTAMP(timezone=True),
                server_default=None,
