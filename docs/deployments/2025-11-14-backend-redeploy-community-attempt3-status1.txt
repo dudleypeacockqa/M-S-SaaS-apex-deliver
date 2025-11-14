@@ -1,0 +1,42 @@
+======================================================================
+RENDER DEPLOYMENT STATUS CHECK
+======================================================================
+Service ID: srv-d3ii9qk9c44c73aqsli0
+
+Found 5 recent deployments:
+
+Deploy ID: dep-d4b1jt6nat6s738j2a40
+Status: build_in_progress
+Commit: bf54e357
+Message: fix(migration): add document_templates and generated_documen...
+Created: 2025-11-13T17:48:37.494254Z
+Finished: N/A
+----------------------------------------------------------------------
+Deploy ID: dep-d4b1irg7ffvc73fb9940
+Status: update_failed
+Commit: bf54e357
+Message: fix(migration): add document_templates and generated_documen...
+Created: 2025-11-13T17:46:24.682824Z
+Finished: 2025-11-13T17:49:05.064214Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4b1iqffte5s73apav10
+Status: update_failed
+Commit: bf54e357
+Message: fix(migration): add document_templates and generated_documen...
+Created: 2025-11-13T17:46:22.155585Z
+Finished: 2025-11-13T17:47:31.705081Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4b1g36nat6s738j1p70
+Status: update_failed
+Commit: 0c8adae6
+Message: fix(backend): event payment service improvements + complete ...
+Created: 2025-11-13T17:40:29.85677Z
+Finished: 2025-11-13T17:43:20.568553Z
+----------------------------------------------------------------------
+Deploy ID: dep-d4b1fuo7ffvc73fb8prg
+Status: update_failed
+Commit: 0c8adae6
+Message: fix(backend): event payment service improvements + complete ...
+Created: 2025-11-13T17:40:15.430425Z
+Finished: 2025-11-13T17:41:46.995966Z
+----------------------------------------------------------------------

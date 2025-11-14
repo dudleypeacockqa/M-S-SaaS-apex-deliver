@@ -16,7 +16,7 @@ from app.core.database import get_db
 from app.models.user import User
 from app.services import event_payment_service as payment_service
 
-router = APIRouter(prefix="/api", tags=["event-payments"])
+router = APIRouter(tags=["event-payments"])
 
 
 @router.post("/events/{event_id}/tickets/purchase")
@@ -146,27 +146,11 @@ async def get_receipt(
     }
     """
     try:
-        result = await payment_service.get_receipt(
+        return await payment_service.get_receipt(
             db=db,
             payment_id=payment_id,
+            user_id=current_user.id,
         )
-        
-        # Verify user owns this payment
-        from app.models.event_payment import EventPayment
-        payment = db.get(EventPayment, payment_id)
-        if not payment:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Payment not found"
-            )
-        
-        if payment.user_id != current_user.id:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Access denied"
-            )
-        
-        return result
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():

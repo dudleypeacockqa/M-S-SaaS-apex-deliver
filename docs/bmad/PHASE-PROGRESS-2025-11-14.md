@@ -40,12 +40,12 @@
 ## Remaining Work
 
 ### Phase 1: Event Hub (Remaining)
-- [ ] Event Hub backend tests verification (Phase 1.1)
-- [ ] Event Hub frontend component tests expansion
-- [ ] Email notifications for registrations (backend + frontend)
+- [x] Event Hub backend tests verification (Phase 1.1) — see `docs/tests/2025-11-14-backend-event-hub.txt` (46 tests passing, coverage includes payment/notification flow)
+- [x] Event Hub frontend component tests expansion — see `docs/tests/2025-11-14-frontend-event-hub.log` (EventCreator/Dashboard/Details suites green with coverage)
+- [x] Email notifications for registrations (backend + frontend) — registration API queues SendGrid payloads via `send_registration_confirmation_email`; exercised by `tests/test_event_notification_service.py` + routed tests in the same backend log
 
 ### Phase 2: Community Platform (Remaining)
-- [ ] Community Platform frontend verification (components exist, may need polish)
+- [x] Community Platform frontend verification — `docs/tests/2025-11-14-frontend-community.log` + `...-community-components.log`
 
 ### Phase 3: Test Suite Stabilization
 - [ ] Fix mock state reset
