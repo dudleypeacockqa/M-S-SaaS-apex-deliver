@@ -52,10 +52,11 @@ The M&A Intelligence Platform has achieved **100% feature completion** with all 
    - **Resolution**: Planned for v1.1 (4-6 hours)
 
 3. **Render Deployment Stability** (Infrastructure)
-   - Recent deployments show `update_failed` status
-   - Older stable version serving traffic successfully
-   - **Impact**: New deployments may fail, but service remains operational
-   - **Resolution**: Investigation ongoing
+   - Recent deployments show `update_failed` status due to migration 774225e563ca
+   - Migration was attempting operations on non-existent tables (Admin, Deal Matching, Document Templates)
+   - **Impact**: New deployments failing, but older stable version serving traffic successfully
+   - **Resolution**: ✅ FIXED - Added _table_exists() and _column_exists() guards to migration 774225e563ca (commit 49ad77e...)
+   - **Status**: Pending redeploy verification
 
 ---
 

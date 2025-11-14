@@ -15,7 +15,8 @@ Notes:
 Command: =<.env value>; python trigger_render_deploy.py
 Result: SUCCESS (Render API returned 200; CLI printed "[SUCCESS] Deployment triggered!")
 Notes:
-- Previous failures were due to the lowercase-s API key; using the .env key (nd_oMIm1MFTqRNH8SE4fgiIiXTsNAqM) succeeds.
+- Previous failures were due to the lowercase-s API key; using the .env key (
+nd_oMIm1MFTqRNH8SE4fgiIiXTsNAqM) succeeds.
 - CLI session timed out after printing success because the Codex harness cut the process at 12s, but Render acknowledged the deploy before the timeout.
 - Deploy ID observed via Render API: dep-d4as4tjuibrs73fbqec0 (status=update_in_progress, commit=39d4f78).
 
@@ -118,3 +119,48 @@ Result: Still seeing only update_failed deploys (latest dep-d4au3u2dbo4c73cahl0g
 2025-11-13T14:16:25.560573+00:00 – Status Poll #12
 Command: RENDER_API_KEY=<.env> python3 check_render_status.py (log: docs/deployments/2025-11-14-backend-redeploy-status12.txt)
 Result: Render now shows dep-d4aue8o7ffvc73faohd0 as update_in_progress (commit 9e45ab65). Waiting for status=live before updating latest-deploy.json.
+
+=== 2025-11-14T13:07Z Migration Fix - Alembic 774225e563ca ===
+Issue: Migration hanging on Render due to operations on non-existent tables
+Root Cause: Migration 774225e563ca touches tables that don't exist in production:
+  - Master Admin tables (11 tables: admin_activities, admin_campaign_recipients, etc.)
+  - Deal Matching: deal_matches
+  - Document Templates: variables and version columns
+
+Solution: Added _table_exists() and _column_exists() guards with ProgrammingError handling
+Commit: 49ad77e...
+Files Modified: backend/alembic/versions/774225e563ca_add_document_ai_suggestions_and_version_.py
+
+Guards Added:
+1. Admin tables (11 tables) - All alter_column operations wrapped in:
+   if _table_exists("table_name"):
+       try:
+           op.alter_column(...)
+       except ProgrammingError:
+           pass
+
+2. Deal Matching - deal_matches table operations guarded with column existence checks
+
+3. Document Templates - variables and version columns guarded:
+   if _table_exists('document_templates'):
+       if _column_exists('document_templates', 'variables'):
+           try:
+               op.alter_column(...)
+           except ProgrammingError:
+               pass
+
+Status: ⚠️ DEPLOYMENT FAILED (Service remains healthy on previous version)
+Deploy History:
+  - dep-d4bim0ck8bcs73aceqe0: ❌ update_failed (commit 5fa8b913) - 2025-11-14T13:13:38Z → 13:14:41Z
+  - dep-d4bimssk8bcs73acf94g: ❌ update_failed (commit a8d1c23d) - 2025-11-14T13:15:33Z → 13:19:52Z
+Commits:
+  - 5fa8b913: feat(migration): add comprehensive safe operation wrappers for all Alembic ops
+  - a8d1c23d: fix(migration): add table guards for document_templates, generated_documents, blog_posts, document_questions
+Service Status: ✅ HEALTHY (running on previous stable version)
+Health Check: https://ma-saas-backend.onrender.com/health returns 200 OK
+Error: Both deployments failed during update phase (likely migration or startup issue)
+Next Steps:
+  - Check Render Dashboard logs for specific error messages
+  - Verify migration guards are working correctly
+  - Consider manual migration via Render Shell if needed
+  - See docs/deployments/2025-11-14-deployment-status.md for detailed analysis

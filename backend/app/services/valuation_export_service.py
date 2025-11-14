@@ -36,6 +36,22 @@ try:
     REPORTLAB_AVAILABLE = True
 except ImportError:
     REPORTLAB_AVAILABLE = False
+    # Define stubs for type hints when not available
+    letter = None  # type: ignore
+    A4 = None  # type: ignore
+    getSampleStyleSheet = None  # type: ignore
+    ParagraphStyle = None  # type: ignore
+    inch = None  # type: ignore
+    SimpleDocTemplate = None  # type: ignore
+    Paragraph = None  # type: ignore
+    Spacer = None  # type: ignore
+    PageBreak = None  # type: ignore
+    Table = None  # type: ignore
+    TableStyle = None  # type: ignore
+    TA_LEFT = None  # type: ignore
+    TA_CENTER = None  # type: ignore
+    TA_RIGHT = None  # type: ignore
+    colors = None  # type: ignore
 
 from app.services.valuation_service import get_valuation, list_comparable_companies, list_precedent_transactions, list_scenarios
 from app.services.storage_service import get_storage_service
@@ -122,7 +138,7 @@ class ValuationExportService:
 
         # Construct download URL
         settings = get_settings()
-        api_base_url = settings.api_base_url or "https://ma-saas-backend.onrender.com"
+        api_base_url = getattr(settings, 'api_base_url', None) or "https://ma-saas-backend.onrender.com"
         download_url = f"{api_base_url}/api/deals/{valuation.deal_id}/valuations/{valuation_id}/exports/download/{file_key}"
 
         return {
@@ -190,7 +206,7 @@ class ValuationExportService:
                     float(valuation.equity_value),
                     float(valuation.net_debt),
                     valuation.shares_outstanding,
-                    float(valuation.equity_value / Decimal(valuation.shares_outstanding)) if valuation.shares_outstanding else 0,
+                    float(valuation.equity_value) / float(valuation.shares_outstanding) if valuation.shares_outstanding else 0,
                     float(valuation.discount_rate),
                     float(valuation.terminal_growth_rate),
                     valuation.forecast_years,
@@ -270,7 +286,7 @@ class ValuationExportService:
 
         # Construct download URL
         settings = get_settings()
-        api_base_url = settings.api_base_url or "https://ma-saas-backend.onrender.com"
+        api_base_url = getattr(settings, 'api_base_url', None) or "https://ma-saas-backend.onrender.com"
         download_url = f"{api_base_url}/api/deals/{valuation.deal_id}/valuations/{valuation_id}/exports/download/{file_key}"
 
         return {
@@ -356,7 +372,7 @@ class ValuationExportService:
                 </tr>
                 <tr>
                     <td class="metric">Implied Share Price</td>
-                    <td>${float(valuation.equity_value / Decimal(valuation.shares_outstanding)):,.2f}</td>
+                    <td>${float(valuation.equity_value) / float(valuation.shares_outstanding):,.2f}</td>
                 </tr>
                 <tr>
                     <td class="metric">Discount Rate</td>
@@ -396,6 +412,13 @@ class ValuationExportService:
         """Generate PDF using reportlab (fallback if weasyprint not available)."""
         if not REPORTLAB_AVAILABLE:
             raise ImportError("reportlab is not installed")
+        
+        # Import here to ensure availability (in case REPORTLAB_AVAILABLE was set incorrectly)
+        from reportlab.lib.pagesizes import letter
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+        from reportlab.lib.enums import TA_CENTER
+        from reportlab.lib import colors
         
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=letter)
