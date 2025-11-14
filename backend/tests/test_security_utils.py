@@ -45,12 +45,12 @@ class TestVerifyWebhookSignature:
         payload = b"test payload"
         secret = "test_secret_key"
         
-        # Generate expected signature
+        # Generate expected signature (function expects just the hex digest, not "sha256=" prefix)
         expected = hmac.new(secret.encode(), payload, hashlib.sha256).hexdigest()
         
         with patch("app.core.security.settings.clerk_webhook_secret", secret):
-            # Should not raise
-            verify_webhook_signature(f"sha256={expected}", payload)
+            # Should not raise - function compares hexdigest directly
+            verify_webhook_signature(expected, payload)
     
     def test_verify_webhook_signature_invalid(self):
         """Test verify_webhook_signature with invalid signature."""

@@ -1,0 +1,39 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\User\AppData\Local\Programs\Python\Python311\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 13 items
+
+tests\test_valuation_api_errors.py::TestValuationAPIErrorPaths::test_list_valuations_deal_not_found PASSED [  7%]
+tests\test_valuation_api_errors.py::TestValuationAPIErrorPaths::test_list_valuations_deal_from_other_org PASSED [ 15%]
+tests\test_valuation_api_errors.py::TestValuationAPIErrorPaths::test_get_valuation_not_found PASSED [ 23%]
+tests\test_valuation_api_errors.py::TestValuationAPIErrorPaths::test_get_valuation_deal_mismatch PASSED [ 30%]
+tests\test_valuation_api_errors.py::TestValuationAPIErrorPaths::test_update_valuation_not_found PASSED [ 38%]
+tests\test_valuation_api_errors.py::TestValuationAPIErrorPaths::test_delete_valuation_not_found PASSED [ 46%]
+tests\test_valuation_api_errors.py::TestValuationAPIErrorPaths::test_add_comparable_valuation_not_found PASSED [ 53%]
+tests\test_valuation_api_errors.py::TestValuationAPIErrorPaths::test_list_exports_valuation_not_found PASSED [ 61%]
+tests\test_valuation_api_errors.py::TestValuationAPIErrorPaths::test_get_export_status_not_found PASSED [ 69%]
+tests\test_valuation_api_errors.py::TestValuationAPIErrorPaths::test_monte_carlo_invalid_parameters PASSED [ 76%]
+tests\test_valuation_api_errors.py::TestValuationAPISummaryEndpoints::test_get_comparable_summary PASSED [ 84%]
+tests\test_valuation_api_errors.py::TestValuationAPISummaryEndpoints::test_get_transaction_summary PASSED [ 92%]
+tests\test_valuation_api_errors.py::TestValuationAPISummaryEndpoints::test_get_valuation_summary PASSED [100%]
+
+============================== warnings summary ===============================
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.8/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+backend/tests/test_valuation_api_errors.py: 13 warnings
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 13 passed, 19 warnings in 2.87s =======================

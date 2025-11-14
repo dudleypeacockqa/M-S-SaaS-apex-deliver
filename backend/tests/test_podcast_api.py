@@ -239,36 +239,35 @@ class TestPodcastUsageEndpoint:
         dependency_overrides(get_current_user, lambda: professional_user)
         expected_period = datetime.now(timezone.utc).strftime("%Y-%m")
 
-        try:
-            with patch(
-                "app.api.dependencies.auth.check_feature_access",
-                new_callable=AsyncMock,
-            ) as mock_feature, patch(
-                "app.api.routes.podcasts.subscription.get_organization_tier",
-                new_callable=AsyncMock,
-            ) as mock_tier, patch(
-                "app.api.routes.podcasts.get_quota_summary",
-                new_callable=AsyncMock,
-            ) as mock_summary:
-                mock_tier.return_value = SubscriptionTier.PROFESSIONAL
-                mock_feature.return_value = True
-                mock_summary.return_value = PodcastQuotaSummary(
-                    tier=SubscriptionTier.PROFESSIONAL.value,
-                    limit=10,
-                    remaining=7,
-                    used=3,
-                    is_unlimited=False,
-                    period=expected_period,
-                    tier_label="Professional",
-                    quota_state="normal",
-                    warning_status=None,
-                    warning_message=None,
-                    upgrade_required=False,
-                    upgrade_message=None,
-                    upgrade_cta_url=None,
-                )
+        with patch(
+            "app.api.dependencies.auth.check_feature_access",
+            new_callable=AsyncMock,
+        ) as mock_feature, patch(
+            "app.api.routes.podcasts.subscription.get_organization_tier",
+            new_callable=AsyncMock,
+        ) as mock_tier, patch(
+            "app.api.routes.podcasts.get_quota_summary",
+            new_callable=AsyncMock,
+        ) as mock_summary:
+            mock_tier.return_value = SubscriptionTier.PROFESSIONAL
+            mock_feature.return_value = True
+            mock_summary.return_value = PodcastQuotaSummary(
+                tier=SubscriptionTier.PROFESSIONAL.value,
+                limit=10,
+                remaining=7,
+                used=3,
+                is_unlimited=False,
+                period=expected_period,
+                tier_label="Professional",
+                quota_state="normal",
+                warning_status=None,
+                warning_message=None,
+                upgrade_required=False,
+                upgrade_message=None,
+                upgrade_cta_url=None,
+            )
 
-                response = client.get("/api/podcasts/usage")
+            response = client.get("/api/podcasts/usage")
 
             assert response.status_code == status.HTTP_200_OK
             mock_summary.assert_awaited_once()
@@ -430,34 +429,33 @@ class TestPodcastUsageEndpoint:
         dependency_overrides(get_current_user, lambda: user)
         expected_period = datetime.now(timezone.utc).strftime("%Y-%m")
 
-        try:
-            with patch(
-                "app.api.dependencies.auth.check_feature_access",
-                new_callable=AsyncMock,
-            ) as mock_feature, patch(
-                "app.api.routes.podcasts.subscription.get_organization_tier",
-                new_callable=AsyncMock,
-            ) as mock_tier, patch(
-                "app.api.routes.podcasts.get_quota_summary",
-                new_callable=AsyncMock,
-            ) as mock_summary:
-                mock_feature.return_value = True
-                mock_tier.return_value = SubscriptionTier.PROFESSIONAL
-                mock_summary.return_value = PodcastQuotaSummary(
-                    tier=SubscriptionTier.PROFESSIONAL.value,
-                    limit=10,
-                    remaining=2,
-                    used=8,
-                    is_unlimited=False,
-                    period=expected_period,
-                    tier_label="Professional",
-                    quota_state="warning",
-                    warning_status="warning",
-                    warning_message="80% of monthly quota used (8/10). 2 episodes remaining this month.",
-                    upgrade_required=False,
-                    upgrade_message=None,
-                    upgrade_cta_url=None,
-                )
+        with patch(
+            "app.api.dependencies.auth.check_feature_access",
+            new_callable=AsyncMock,
+        ) as mock_feature, patch(
+            "app.api.routes.podcasts.subscription.get_organization_tier",
+            new_callable=AsyncMock,
+        ) as mock_tier, patch(
+            "app.api.routes.podcasts.get_quota_summary",
+            new_callable=AsyncMock,
+        ) as mock_summary:
+            mock_feature.return_value = True
+            mock_tier.return_value = SubscriptionTier.PROFESSIONAL
+            mock_summary.return_value = PodcastQuotaSummary(
+                tier=SubscriptionTier.PROFESSIONAL.value,
+                limit=10,
+                remaining=2,
+                used=8,
+                is_unlimited=False,
+                period=expected_period,
+                tier_label="Professional",
+                quota_state="warning",
+                warning_status="warning",
+                warning_message="80% of monthly quota used (8/10). 2 episodes remaining this month.",
+                upgrade_required=False,
+                upgrade_message=None,
+                upgrade_cta_url=None,
+            )
 
                 response = client.get("/api/podcasts/usage")
 

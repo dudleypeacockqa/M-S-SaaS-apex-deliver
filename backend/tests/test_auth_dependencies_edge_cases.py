@@ -4,7 +4,7 @@ TDD: RED → GREEN → REFACTOR
 Feature: Complete coverage for auth.py dependency helper functions
 """
 import pytest
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch, Mock, MagicMock, AsyncMock
 from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 
