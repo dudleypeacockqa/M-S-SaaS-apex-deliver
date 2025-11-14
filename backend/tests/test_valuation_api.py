@@ -94,7 +94,7 @@ class TestValuationApi:
 
         assert delete_resp.status_code == status.HTTP_204_NO_CONTENT
 
-    def test_cannot_access_other_org_valuation(self, client, create_deal_for_org, auth_headers_growth, create_organization, create_user):
+    def test_cannot_access_other_org_valuation(self, client, create_deal_for_org, auth_headers_growth, create_organization, create_user, dependency_overrides):
         deal, _, _ = create_deal_for_org()
         create_resp = _create_valuation(client, deal.id, auth_headers_growth, VALUATION_PAYLOAD)
         valuation_id = create_resp.json()["id"]
@@ -104,19 +104,12 @@ class TestValuationApi:
         other_user = create_user(role="growth", organization_id=other_org.id)
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-
-        def override_user():
-            return other_user
-
-        app.dependency_overrides[get_current_user] = override_user
+        dependency_overrides(get_current_user, lambda: other_user)
 
         response = client.get(
             f"/api/deals/{deal.id}/valuations/{valuation_id}",
             headers={"Authorization": "Bearer mock_growth_token"},
         )
-
-        app.dependency_overrides.pop(get_current_user, None)
 
         assert response.status_code in {status.HTTP_403_FORBIDDEN, status.HTTP_404_NOT_FOUND}
 
@@ -309,19 +302,19 @@ class TestValuationApi:
         create_deal_for_org,
         solo_user,
         growth_user,
+        dependency_overrides,
     ):
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
 
         deal, _, _ = create_deal_for_org()
 
         # Create valuation as growth user
-        app.dependency_overrides[get_current_user] = lambda: growth_user
+        dependency_overrides(get_current_user, lambda: growth_user)
         create_resp = _create_valuation(client, deal.id, {"Authorization": "Bearer growth"}, VALUATION_PAYLOAD)
         valuation_id = create_resp.json()["id"]
 
         # Try to export as solo user (should fail)
-        app.dependency_overrides[get_current_user] = lambda: solo_user
+        dependency_overrides(get_current_user, lambda: solo_user)
         response = client.post(
             f"/api/deals/{deal.id}/valuations/{valuation_id}/exports",
             json={"export_type": "pdf"},
@@ -329,9 +322,6 @@ class TestValuationApi:
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-
-        # Cleanup
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_generate_export_rejects_foreign_scenario(
         self,

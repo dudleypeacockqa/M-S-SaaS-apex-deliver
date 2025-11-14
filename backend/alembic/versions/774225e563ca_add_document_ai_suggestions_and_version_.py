@@ -9,6 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy import inspect
 ORGANIZATION_ID_TYPE = sa.String(length=36)
 USER_ID_TYPE = sa.String(length=36)
 GENERATED_DOCUMENT_ID_TYPE = sa.String(length=36)
@@ -21,6 +22,15 @@ revision: str = '774225e563ca'
 down_revision: Union[str, None] = 'b354d12d1e7d'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
+
+
+def _drop_index_if_exists(index_name: str, table_name: str, schema: str = 'public') -> None:
+    """Drop index if it exists to keep migration idempotent on prod."""
+    bind = op.get_bind()
+    inspector = inspect(bind)
+    existing = inspector.get_indexes(table_name, schema=schema)
+    if any(idx['name'] == index_name for idx in existing):
+        op.drop_index(index_name, table_name=table_name)
 
 
 def upgrade() -> None:
@@ -654,9 +664,9 @@ def upgrade() -> None:
     op.create_index('idx_share_links_org_id', 'document_share_links', ['organization_id'], unique=False)
     op.create_index('idx_share_links_token', 'document_share_links', ['share_token'], unique=False)
     op.create_index(op.f('ix_document_share_links_share_token'), 'document_share_links', ['share_token'], unique=True)
-    op.drop_index('ix_contact_messages_created_at', table_name='contact_messages')
-    op.drop_index('ix_contact_messages_email', table_name='contact_messages')
-    op.drop_index('ix_contact_messages_id', table_name='contact_messages')
+    _drop_index_if_exists('ix_contact_messages_created_at', 'contact_messages')
+    _drop_index_if_exists('ix_contact_messages_email', 'contact_messages')
+    _drop_index_if_exists('ix_contact_messages_id', 'contact_messages')
     op.drop_table('contact_messages')
     op.alter_column('admin_activities', 'amount',
                existing_type=sa.INTEGER(),
