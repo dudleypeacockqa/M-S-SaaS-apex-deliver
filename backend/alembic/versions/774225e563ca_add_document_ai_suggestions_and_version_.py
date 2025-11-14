@@ -49,13 +49,33 @@ def _table_exists(table_name: str, schema: str = None) -> bool:
     """Check if table exists, returning False on any error.
 
     DEFENSIVE: Check before attempting operations to avoid transaction abort.
+    Uses multiple fallback methods to check table existence.
     """
+    schema = schema or 'public'
+    
+    # Method 1: Try using inspector (fastest, but may fail in aborted transaction)
     try:
         inspector = _inspector()
-        if inspector is None:
-            return False
-        return inspector.has_table(table_name, schema=schema or 'public')
+        if inspector is not None:
+            return inspector.has_table(table_name, schema=schema)
     except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass  # Fall through to raw SQL method
+    
+    # Method 2: Try raw SQL query (works even in aborted transaction)
+    try:
+        bind = op.get_bind()
+        result = bind.execute(
+            sa.text(
+                "SELECT EXISTS ("
+                "SELECT 1 FROM information_schema.tables "
+                "WHERE table_schema = :schema AND table_name = :table_name"
+                ")"
+            ),
+            {"schema": schema, "table_name": table_name}
+        ).scalar()
+        return bool(result)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        # If all methods fail, assume table doesn't exist to skip operation
         return False
 
 
@@ -905,274 +925,229 @@ def upgrade() -> None:
     _drop_index_if_exists('ix_contact_messages_email', 'contact_messages')
     _drop_index_if_exists('ix_contact_messages_id', 'contact_messages')
     _drop_table_if_exists('contact_messages')
-    try:
-        op.alter_column('admin_activities', 'amount',
-                   existing_type=sa.INTEGER(),
-                   server_default=None,
-                   existing_nullable=True)
-        op.alter_column('admin_activities', 'created_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.alter_column('admin_activities', 'updated_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_activities_id'), 'admin_activities', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_campaign_recipients', 'sent',
-                   existing_type=sa.BOOLEAN(),
-                   server_default=None,
-                   existing_nullable=True)
-        op.alter_column('admin_campaign_recipients', 'opened',
-                   existing_type=sa.BOOLEAN(),
-                   server_default=None,
-                   existing_nullable=True)
-        op.alter_column('admin_campaign_recipients', 'clicked',
-                   existing_type=sa.BOOLEAN(),
-                   server_default=None,
-                   existing_nullable=True)
-        op.alter_column('admin_campaign_recipients', 'bounced',
-                   existing_type=sa.BOOLEAN(),
-                   server_default=None,
-                   existing_nullable=True)
-        op.create_index(op.f('ix_admin_campaign_recipients_id'), 'admin_campaign_recipients', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_campaigns', 'status',
-           existing_type=postgresql.ENUM('draft', 'scheduled', 'sending', 'sent', 'paused', 'cancelled', name='campaignstatus'),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_campaigns', 'total_recipients',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_campaigns', 'sent_count',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_campaigns', 'opened_count',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_campaigns', 'clicked_count',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_campaigns', 'created_at',
-           existing_type=postgresql.TIMESTAMP(),
-           server_default=None,
-           existing_nullable=False)
-        op.alter_column('admin_campaigns', 'updated_at',
-           existing_type=postgresql.TIMESTAMP(),
-           server_default=None,
-           existing_nullable=False)
-        op.create_index(op.f('ix_admin_campaigns_id'), 'admin_campaigns', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_collateral', 'created_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.alter_column('admin_collateral', 'updated_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_collateral_id'), 'admin_collateral', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_collateral_usage', 'used_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_collateral_usage_id'), 'admin_collateral_usage', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_content_pieces', 'status',
-           existing_type=postgresql.ENUM('idea', 'scripting', 'recording', 'editing', 'ready', 'published', name='contentstatus'),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_content_pieces', 'views_count',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_content_pieces', 'created_at',
-           existing_type=postgresql.TIMESTAMP(),
-           server_default=None,
-           existing_nullable=False)
-        op.alter_column('admin_content_pieces', 'updated_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_content_pieces_id'), 'admin_content_pieces', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_content_scripts', 'created_at',
-           existing_type=postgresql.TIMESTAMP(),
-           server_default=None,
-           existing_nullable=False)
-        op.alter_column('admin_content_scripts', 'updated_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_content_scripts_id'), 'admin_content_scripts', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_deals', 'stage',
-           existing_type=postgresql.ENUM('discovery', 'qualification', 'proposal', 'negotiation', 'closing', 'won', 'lost', name='admindealstage'),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_deals', 'probability',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_deals', 'created_at',
-           existing_type=postgresql.TIMESTAMP(),
-           server_default=None,
-           existing_nullable=False)
-        op.alter_column('admin_deals', 'updated_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_deals_id'), 'admin_deals', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_focus_sessions', 'duration_minutes',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_focus_sessions', 'completed',
-           existing_type=sa.BOOLEAN(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_focus_sessions', 'interrupted',
-           existing_type=sa.BOOLEAN(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_focus_sessions', 'created_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_focus_sessions_id'), 'admin_focus_sessions', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_goals', 'target_discoveries',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_goals', 'target_emails',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_goals', 'target_videos',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_goals', 'target_calls',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_goals', 'created_at',
-           existing_type=postgresql.TIMESTAMP(),
-           server_default=None,
-           existing_nullable=False)
-        op.alter_column('admin_goals', 'updated_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_goals_id'), 'admin_goals', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_lead_captures', 'synced_to_ghl',
-           existing_type=sa.BOOLEAN(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_lead_captures', 'created_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_lead_captures_id'), 'admin_lead_captures', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_meetings', 'duration_minutes',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_meetings', 'created_at',
-           existing_type=postgresql.TIMESTAMP(),
-           server_default=None,
-           existing_nullable=False)
-        op.alter_column('admin_meetings', 'updated_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_meetings_id'), 'admin_meetings', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_nudges', 'priority',
-           existing_type=postgresql.ENUM('low', 'normal', 'high', 'urgent', name='nudgepriority'),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_nudges', 'read',
-           existing_type=sa.BOOLEAN(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_nudges', 'created_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_nudges_id'), 'admin_nudges', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_prospects', 'status',
-           existing_type=postgresql.ENUM('new', 'qualified', 'engaged', 'proposal', 'negotiation', 'closed_won', 'closed_lost', name='prospectstatus'),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_prospects', 'created_at',
-           existing_type=postgresql.TIMESTAMP(),
-           server_default=None,
-           existing_nullable=False)
-        op.alter_column('admin_prospects', 'updated_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_prospects_id'), 'admin_prospects', ['id'], unique=False)
-    except ProgrammingError:
-        pass
-    try:
-        op.alter_column('admin_scores', 'streak_days',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_scores', 'activities_count',
-           existing_type=sa.INTEGER(),
-           server_default=None,
-           existing_nullable=True)
-        op.alter_column('admin_scores', 'created_at',
-           existing_type=postgresql.TIMESTAMP(),
-           server_default=None,
-           existing_nullable=False)
-        op.alter_column('admin_scores', 'updated_at',
-                   existing_type=postgresql.TIMESTAMP(),
-                   server_default=None,
-                   existing_nullable=False)
-        op.create_index(op.f('ix_admin_scores_id'), 'admin_scores', ['id'], unique=False)
-    except ProgrammingError:
-        pass
+    _safe_alter_column('admin_activities', 'amount',
+               existing_type=sa.INTEGER(),
+               server_default=None,
+               existing_nullable=True)
+    _safe_alter_column('admin_activities', 'created_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_alter_column('admin_activities', 'updated_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_activities_id'), 'admin_activities', ['id'], unique=False)
+    _safe_alter_column('admin_campaign_recipients', 'sent',
+               existing_type=sa.BOOLEAN(),
+               server_default=None,
+               existing_nullable=True)
+    _safe_alter_column('admin_campaign_recipients', 'opened',
+               existing_type=sa.BOOLEAN(),
+               server_default=None,
+               existing_nullable=True)
+    _safe_alter_column('admin_campaign_recipients', 'clicked',
+               existing_type=sa.BOOLEAN(),
+               server_default=None,
+               existing_nullable=True)
+    _safe_alter_column('admin_campaign_recipients', 'bounced',
+               existing_type=sa.BOOLEAN(),
+               server_default=None,
+               existing_nullable=True)
+    _safe_create_index(op.f('ix_admin_campaign_recipients_id'), 'admin_campaign_recipients', ['id'], unique=False)
+    _safe_alter_column('admin_campaigns', 'status',
+       existing_type=postgresql.ENUM('draft', 'scheduled', 'sending', 'sent', 'paused', 'cancelled', name='campaignstatus'),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_campaigns', 'total_recipients',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_campaigns', 'sent_count',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_campaigns', 'opened_count',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_campaigns', 'clicked_count',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_campaigns', 'created_at',
+       existing_type=postgresql.TIMESTAMP(),
+       server_default=None,
+       existing_nullable=False)
+    _safe_alter_column('admin_campaigns', 'updated_at',
+       existing_type=postgresql.TIMESTAMP(),
+       server_default=None,
+       existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_campaigns_id'), 'admin_campaigns', ['id'], unique=False)
+    _safe_alter_column('admin_collateral', 'created_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_alter_column('admin_collateral', 'updated_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_collateral_id'), 'admin_collateral', ['id'], unique=False)
+    _safe_alter_column('admin_collateral_usage', 'used_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_collateral_usage_id'), 'admin_collateral_usage', ['id'], unique=False)
+    _safe_alter_column('admin_content_pieces', 'status',
+       existing_type=postgresql.ENUM('idea', 'scripting', 'recording', 'editing', 'ready', 'published', name='contentstatus'),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_content_pieces', 'views_count',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_content_pieces', 'created_at',
+       existing_type=postgresql.TIMESTAMP(),
+       server_default=None,
+       existing_nullable=False)
+    _safe_alter_column('admin_content_pieces', 'updated_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_content_pieces_id'), 'admin_content_pieces', ['id'], unique=False)
+    _safe_alter_column('admin_content_scripts', 'created_at',
+       existing_type=postgresql.TIMESTAMP(),
+       server_default=None,
+       existing_nullable=False)
+    _safe_alter_column('admin_content_scripts', 'updated_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_content_scripts_id'), 'admin_content_scripts', ['id'], unique=False)
+    _safe_alter_column('admin_deals', 'stage',
+       existing_type=postgresql.ENUM('discovery', 'qualification', 'proposal', 'negotiation', 'closing', 'won', 'lost', name='admindealstage'),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_deals', 'probability',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_deals', 'created_at',
+       existing_type=postgresql.TIMESTAMP(),
+       server_default=None,
+       existing_nullable=False)
+    _safe_alter_column('admin_deals', 'updated_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_deals_id'), 'admin_deals', ['id'], unique=False)
+    _safe_alter_column('admin_focus_sessions', 'duration_minutes',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_focus_sessions', 'completed',
+       existing_type=sa.BOOLEAN(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_focus_sessions', 'interrupted',
+       existing_type=sa.BOOLEAN(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_focus_sessions', 'created_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_focus_sessions_id'), 'admin_focus_sessions', ['id'], unique=False)
+    _safe_alter_column('admin_goals', 'target_discoveries',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_goals', 'target_emails',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_goals', 'target_videos',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_goals', 'target_calls',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_goals', 'created_at',
+       existing_type=postgresql.TIMESTAMP(),
+       server_default=None,
+       existing_nullable=False)
+    _safe_alter_column('admin_goals', 'updated_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_goals_id'), 'admin_goals', ['id'], unique=False)
+    _safe_alter_column('admin_lead_captures', 'synced_to_ghl',
+       existing_type=sa.BOOLEAN(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_lead_captures', 'created_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_lead_captures_id'), 'admin_lead_captures', ['id'], unique=False)
+    _safe_alter_column('admin_meetings', 'duration_minutes',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_meetings', 'created_at',
+       existing_type=postgresql.TIMESTAMP(),
+       server_default=None,
+       existing_nullable=False)
+    _safe_alter_column('admin_meetings', 'updated_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_meetings_id'), 'admin_meetings', ['id'], unique=False)
+    _safe_alter_column('admin_nudges', 'priority',
+       existing_type=postgresql.ENUM('low', 'normal', 'high', 'urgent', name='nudgepriority'),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_nudges', 'read',
+       existing_type=sa.BOOLEAN(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_nudges', 'created_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_nudges_id'), 'admin_nudges', ['id'], unique=False)
+    _safe_alter_column('admin_prospects', 'status',
+       existing_type=postgresql.ENUM('new', 'qualified', 'engaged', 'proposal', 'negotiation', 'closed_won', 'closed_lost', name='prospectstatus'),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_prospects', 'created_at',
+       existing_type=postgresql.TIMESTAMP(),
+       server_default=None,
+       existing_nullable=False)
+    _safe_alter_column('admin_prospects', 'updated_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_prospects_id'), 'admin_prospects', ['id'], unique=False)
+    _safe_alter_column('admin_scores', 'streak_days',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_scores', 'activities_count',
+       existing_type=sa.INTEGER(),
+       server_default=None,
+       existing_nullable=True)
+    _safe_alter_column('admin_scores', 'created_at',
+       existing_type=postgresql.TIMESTAMP(),
+       server_default=None,
+       existing_nullable=False)
+    _safe_alter_column('admin_scores', 'updated_at',
+               existing_type=postgresql.TIMESTAMP(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_create_index(op.f('ix_admin_scores_id'), 'admin_scores', ['id'], unique=False)
     # blog_posts table (may not exist in all environments)
     _safe_alter_column('blog_posts', 'author',
                existing_type=sa.VARCHAR(length=100),
@@ -1194,21 +1169,11 @@ def upgrade() -> None:
                existing_type=sa.INTEGER(),
                server_default=None,
                existing_nullable=False)
-    try:
-        # Check if column already exists before adding
-        bind = op.get_bind()
-        inspector = inspect(bind)
-        try:
-            columns = [col['name'] for col in inspector.get_columns('deal_matches')]
-            if 'organization_id' not in columns:
-                op.add_column('deal_matches', sa.Column('organization_id', sa.String(length=36), nullable=False))
-                op.create_index(op.f('ix_deal_matches_organization_id'), 'deal_matches', ['organization_id'], unique=False)
-                op.create_foreign_key(None, 'deal_matches', 'organizations', ['organization_id'], ['id'], ondelete='CASCADE')
-        except (ProgrammingError, NoSuchTableError, InternalError):
-            # Table might have been dropped between check and operation
-            pass
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        pass
+    # deal_matches table - add organization_id if table exists and column doesn't exist
+    if _table_exists('deal_matches') and not _column_exists('deal_matches', 'organization_id'):
+        _safe_add_column('deal_matches', sa.Column('organization_id', sa.String(length=36), nullable=False))
+        _safe_create_index(op.f('ix_deal_matches_organization_id'), 'deal_matches', ['organization_id'], unique=False)
+        _safe_create_foreign_key(None, 'deal_matches', 'organizations', ['organization_id'], ['id'], ondelete='CASCADE')
     # document_questions table (may not exist in all environments)
     _safe_alter_column('document_questions', 'status',
                existing_type=sa.VARCHAR(length=20),
