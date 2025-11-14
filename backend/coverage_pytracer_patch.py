@@ -1,50 +1,33 @@
-"""Coverage.py plugin that guards the pure Python tracer on Windows.
+"""
+Coverage.py plugin that hardens the pure Python tracer.
 
-Pytest runs with ``--cov`` trigger ``coverage.py``'s pure Python tracer
-(``coverage.pytracer.PyTracer``) because the compiled extension is not
-available in this environment.  When FastAPI's ``TestClient`` tears down
-asynchronous background tasks, coverage occasionally sees return events
-without matching stack frames and raises ``IndexError: pop from empty list``.
-
-This plugin wraps the tracer to ignore those spurious pops so that the test
-suite can complete while still collecting line data.  The fix is applied once
-at coverage initialization time via the plugin hook below.
+When the C accelerator (``coverage.tracer``) is unavailable, Coverage.py
+falls back to ``PyTracer``.  Under heavy asyncio usage this tracer can pop
+from an empty stack, raising ``IndexError`` during FastAPI ``TestClient``
+teardown.  The plugin below swaps in a defensive trace function that mirrors
+the behaviour of the C tracer by gracefully ignoring those underflows.
 """
 
 from __future__ import annotations
 
-from typing import Any
+from coverage import pytracer
 
 
-def _install_safe_pytracer() -> None:
-    try:
-        from coverage import pytracer  # type: ignore
-    except Exception:
-        return
+def coverage_init(registry, options):  # pragma: no cover - invoked by Coverage.py
+    """Install the patched tracer once Coverage spins up."""
 
-    tracer = pytracer.PyTracer  # type: ignore[attr-defined]
+    original_trace = pytracer.PyTracer._trace  # type: ignore[attr-defined]
 
-    if getattr(tracer, "_safe_pop_installed", False):
-        return
-
-    original_trace = tracer._trace  # type: ignore[attr-defined]
-
-    def _safe_trace(self, frame, event, arg, lineno=None):  # type: ignore[override]
+    def _safe_trace(self, frame, event, arg, lineno=None):
         try:
             return original_trace(self, frame, event, arg, lineno)
-        except IndexError as exc:  # pragma: no cover - defensive shim
-            if "pop from empty list" not in str(exc):
-                raise
-            return None
+        except IndexError:
+            if not getattr(self, "data_stack", None):
+                self.cur_file_data = None
+                self.cur_file_name = frame.f_code.co_filename
+                self.last_line = frame.f_lineno
+                self.started_context = False
+                return self._cached_bound_method_trace
+            raise
 
-    tracer._trace = _safe_trace  # type: ignore[attr-defined]
-    tracer._safe_pop_installed = True
-
-
-def coverage_init(reg, options):  # type: ignore[override]
-    """Coverage.py entrypoint invoked via the ``[run] plugins`` setting."""
-
-    _install_safe_pytracer()
-
-    # `reg` is unused; signature retained for coverage's plugin API.
-    _ = (reg, options)
+    pytracer.PyTracer._trace = _safe_trace  # type: ignore[attr-defined]
