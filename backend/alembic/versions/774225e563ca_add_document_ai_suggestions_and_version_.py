@@ -1155,26 +1155,30 @@ def upgrade() -> None:
             op.create_index(op.f('ix_admin_scores_id'), 'admin_scores', ['id'], unique=False)
         except ProgrammingError:
             pass
-    op.alter_column('blog_posts', 'author',
-               existing_type=sa.VARCHAR(length=100),
-               server_default=None,
-               existing_nullable=False)
-    op.alter_column('blog_posts', 'published',
-               existing_type=sa.BOOLEAN(),
-               server_default=None,
-               existing_nullable=False)
-    op.alter_column('blog_posts', 'created_at',
-               existing_type=postgresql.TIMESTAMP(),
-               server_default=None,
-               existing_nullable=False)
-    op.alter_column('blog_posts', 'updated_at',
-               existing_type=postgresql.TIMESTAMP(),
-               server_default=None,
-               existing_nullable=False)
-    op.alter_column('blog_posts', 'read_time_minutes',
-               existing_type=sa.INTEGER(),
-               server_default=None,
-               existing_nullable=False)
+    if _table_exists('blog_posts'):
+        try:
+            op.alter_column('blog_posts', 'author',
+                       existing_type=sa.VARCHAR(length=100),
+                       server_default=None,
+                       existing_nullable=False)
+            op.alter_column('blog_posts', 'published',
+                       existing_type=sa.BOOLEAN(),
+                       server_default=None,
+                       existing_nullable=False)
+            op.alter_column('blog_posts', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(),
+                       server_default=None,
+                       existing_nullable=False)
+            op.alter_column('blog_posts', 'updated_at',
+                       existing_type=postgresql.TIMESTAMP(),
+                       server_default=None,
+                       existing_nullable=False)
+            op.alter_column('blog_posts', 'read_time_minutes',
+                       existing_type=sa.INTEGER(),
+                       server_default=None,
+                       existing_nullable=False)
+        except ProgrammingError:
+            pass
     if _table_exists('deal_matches'):
         try:
             # Check if column already exists before adding
@@ -1191,10 +1195,14 @@ def upgrade() -> None:
                 pass
         except (ProgrammingError, NoSuchTableError):
             pass
-    op.alter_column('document_questions', 'status',
-               existing_type=sa.VARCHAR(length=20),
-               server_default=None,
-               existing_nullable=False)
+    if _table_exists('document_questions'):
+        try:
+            op.alter_column('document_questions', 'status',
+                       existing_type=sa.VARCHAR(length=20),
+                       server_default=None,
+                       existing_nullable=False)
+        except ProgrammingError:
+            pass
     if _table_exists('document_templates'):
         try:
             op.alter_column('document_templates', 'id',
@@ -1354,82 +1362,94 @@ def downgrade() -> None:
                existing_type=postgresql.TIMESTAMP(timezone=True),
                server_default=sa.text('CURRENT_TIMESTAMP'),
                existing_nullable=False)
-    op.create_index('idx_generated_documents_template_id', 'generated_documents', ['template_id'], unique=False)
-    op.create_index('idx_generated_documents_status', 'generated_documents', ['status'], unique=False)
-    op.create_index('idx_generated_documents_organization_id', 'generated_documents', ['organization_id'], unique=False)
-    op.create_index('idx_generated_documents_created_at', 'generated_documents', ['created_at'], unique=False)
-    op.alter_column('generated_documents', 'created_at',
-               existing_type=postgresql.TIMESTAMP(timezone=True),
-               server_default=sa.text('now()'),
-               nullable=False)
-    op.alter_column('generated_documents', 'generated_by_user_id',
-               existing_type=sa.String(length=36),
-               type_=sa.VARCHAR(),
-               existing_nullable=False)
-    op.alter_column('generated_documents', 'organization_id',
-               existing_type=sa.String(length=36),
-               type_=sa.VARCHAR(length=36),
-               existing_nullable=False)
-    op.alter_column('generated_documents', 'status',
-               existing_type=postgresql.ENUM('draft', 'generated', 'finalized', 'sent', name='documentstatus'),
-               server_default=sa.text("'generated'::documentstatus"),
-               existing_nullable=False)
-    op.alter_column('generated_documents', 'variable_values',
-               existing_type=postgresql.JSON(astext_type=sa.Text()),
-               server_default=sa.text("'{}'::json"),
-               nullable=False)
-    op.alter_column('generated_documents', 'template_id',
-               existing_type=sa.String(length=36),
-               type_=sa.VARCHAR(length=36),
-               existing_nullable=False)
-    op.alter_column('generated_documents', 'id',
-               existing_type=sa.String(length=36),
-               type_=sa.VARCHAR(length=36),
-               existing_nullable=False)
-    op.create_index('idx_document_templates_template_type', 'document_templates', ['template_type'], unique=False)
-    op.create_index('idx_document_templates_status', 'document_templates', ['status'], unique=False)
-    op.create_index('idx_document_templates_organization_id', 'document_templates', ['organization_id'], unique=False)
-    op.create_index('idx_document_templates_created_at', 'document_templates', ['created_at'], unique=False)
-    op.alter_column('document_templates', 'created_at',
-               existing_type=postgresql.TIMESTAMP(timezone=True),
-               server_default=sa.text('now()'),
-               nullable=False)
-    op.alter_column('document_templates', 'created_by_user_id',
-               existing_type=sa.String(length=36),
-               type_=sa.VARCHAR(),
-               existing_nullable=False)
-    op.alter_column('document_templates', 'organization_id',
-               existing_type=sa.String(length=36),
-               type_=sa.VARCHAR(length=36),
-               existing_nullable=False)
-    if _column_exists('document_templates', 'version'):
+    if _table_exists('generated_documents'):
         try:
-            op.alter_column('document_templates', 'version',
-                       existing_type=sa.INTEGER(),
-                       server_default=sa.text('1'),
+            op.create_index('idx_generated_documents_template_id', 'generated_documents', ['template_id'], unique=False)
+            op.create_index('idx_generated_documents_status', 'generated_documents', ['status'], unique=False)
+            op.create_index('idx_generated_documents_organization_id', 'generated_documents', ['organization_id'], unique=False)
+            op.create_index('idx_generated_documents_created_at', 'generated_documents', ['created_at'], unique=False)
+            op.alter_column('generated_documents', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(timezone=True),
+                       server_default=sa.text('now()'),
                        nullable=False)
-        except (ProgrammingError, NoSuchTableError):
-            pass
-    op.alter_column('document_templates', 'status',
-               existing_type=postgresql.ENUM('DRAFT', 'ACTIVE', 'ARCHIVED', name='templatestatus'),
-               server_default=sa.text("'ACTIVE'::templatestatus"),
-               existing_nullable=False)
-    if _column_exists('document_templates', 'variables'):
-        try:
-            op.alter_column('document_templates', 'variables',
+            op.alter_column('generated_documents', 'generated_by_user_id',
+                       existing_type=sa.String(length=36),
+                       type_=sa.VARCHAR(),
+                       existing_nullable=False)
+            op.alter_column('generated_documents', 'organization_id',
+                       existing_type=sa.String(length=36),
+                       type_=sa.VARCHAR(length=36),
+                       existing_nullable=False)
+            op.alter_column('generated_documents', 'status',
+                       existing_type=postgresql.ENUM('draft', 'generated', 'finalized', 'sent', name='documentstatus'),
+                       server_default=sa.text("'generated'::documentstatus"),
+                       existing_nullable=False)
+            op.alter_column('generated_documents', 'variable_values',
                        existing_type=postgresql.JSON(astext_type=sa.Text()),
-                       server_default=sa.text("'[]'::json"),
+                       server_default=sa.text("'{}'::json"),
                        nullable=False)
-        except (ProgrammingError, NoSuchTableError):
+            op.alter_column('generated_documents', 'template_id',
+                       existing_type=sa.String(length=36),
+                       type_=sa.VARCHAR(length=36),
+                       existing_nullable=False)
+            op.alter_column('generated_documents', 'id',
+                       existing_type=sa.String(length=36),
+                       type_=sa.VARCHAR(length=36),
+                       existing_nullable=False)
+        except ProgrammingError:
             pass
-    op.alter_column('document_templates', 'id',
-               existing_type=sa.String(length=36),
-               type_=sa.VARCHAR(length=36),
-               existing_nullable=False)
-    op.alter_column('document_questions', 'status',
-               existing_type=sa.VARCHAR(length=20),
-               server_default=sa.text("'open'::character varying"),
-               existing_nullable=False)
+    if _table_exists('document_templates'):
+        try:
+            op.create_index('idx_document_templates_template_type', 'document_templates', ['template_type'], unique=False)
+            op.create_index('idx_document_templates_status', 'document_templates', ['status'], unique=False)
+            op.create_index('idx_document_templates_organization_id', 'document_templates', ['organization_id'], unique=False)
+            op.create_index('idx_document_templates_created_at', 'document_templates', ['created_at'], unique=False)
+            op.alter_column('document_templates', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(timezone=True),
+                       server_default=sa.text('now()'),
+                       nullable=False)
+            op.alter_column('document_templates', 'created_by_user_id',
+                       existing_type=sa.String(length=36),
+                       type_=sa.VARCHAR(),
+                       existing_nullable=False)
+            op.alter_column('document_templates', 'organization_id',
+                       existing_type=sa.String(length=36),
+                       type_=sa.VARCHAR(length=36),
+                       existing_nullable=False)
+            if _column_exists('document_templates', 'version'):
+                try:
+                    op.alter_column('document_templates', 'version',
+                               existing_type=sa.INTEGER(),
+                               server_default=sa.text('1'),
+                               nullable=False)
+                except (ProgrammingError, NoSuchTableError):
+                    pass
+            op.alter_column('document_templates', 'status',
+                       existing_type=postgresql.ENUM('DRAFT', 'ACTIVE', 'ARCHIVED', name='templatestatus'),
+                       server_default=sa.text("'ACTIVE'::templatestatus"),
+                       existing_nullable=False)
+            if _column_exists('document_templates', 'variables'):
+                try:
+                    op.alter_column('document_templates', 'variables',
+                               existing_type=postgresql.JSON(astext_type=sa.Text()),
+                               server_default=sa.text("'[]'::json"),
+                               nullable=False)
+                except (ProgrammingError, NoSuchTableError):
+                    pass
+            op.alter_column('document_templates', 'id',
+                       existing_type=sa.String(length=36),
+                       type_=sa.VARCHAR(length=36),
+                       existing_nullable=False)
+        except ProgrammingError:
+            pass
+    if _table_exists('document_questions'):
+        try:
+            op.alter_column('document_questions', 'status',
+                       existing_type=sa.VARCHAR(length=20),
+                       server_default=sa.text("'open'::character varying"),
+                       existing_nullable=False)
+        except ProgrammingError:
+            pass
     if _table_exists('deal_matches'):
         try:
             # Check if column exists before dropping
@@ -1451,26 +1471,30 @@ def downgrade() -> None:
                 pass
         except (ProgrammingError, NoSuchTableError):
             pass
-    op.alter_column('blog_posts', 'read_time_minutes',
-               existing_type=sa.INTEGER(),
-               server_default=sa.text('10'),
-               existing_nullable=False)
-    op.alter_column('blog_posts', 'updated_at',
-               existing_type=postgresql.TIMESTAMP(),
-               server_default=sa.text('now()'),
-               existing_nullable=False)
-    op.alter_column('blog_posts', 'created_at',
-               existing_type=postgresql.TIMESTAMP(),
-               server_default=sa.text('now()'),
-               existing_nullable=False)
-    op.alter_column('blog_posts', 'published',
-               existing_type=sa.BOOLEAN(),
-               server_default=sa.text('false'),
-               existing_nullable=False)
-    op.alter_column('blog_posts', 'author',
-               existing_type=sa.VARCHAR(length=100),
-               server_default=sa.text("'Dudley Peacock'::character varying"),
-               existing_nullable=False)
+    if _table_exists('blog_posts'):
+        try:
+            op.alter_column('blog_posts', 'read_time_minutes',
+                       existing_type=sa.INTEGER(),
+                       server_default=sa.text('10'),
+                       existing_nullable=False)
+            op.alter_column('blog_posts', 'updated_at',
+                       existing_type=postgresql.TIMESTAMP(),
+                       server_default=sa.text('now()'),
+                       existing_nullable=False)
+            op.alter_column('blog_posts', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(),
+                       server_default=sa.text('now()'),
+                       existing_nullable=False)
+            op.alter_column('blog_posts', 'published',
+                       existing_type=sa.BOOLEAN(),
+                       server_default=sa.text('false'),
+                       existing_nullable=False)
+            op.alter_column('blog_posts', 'author',
+                       existing_type=sa.VARCHAR(length=100),
+                       server_default=sa.text("'Dudley Peacock'::character varying"),
+                       existing_nullable=False)
+        except ProgrammingError:
+            pass
     if _table_exists('admin_scores'):
         try:
             op.drop_index(op.f('ix_admin_scores_id'), table_name='admin_scores')
