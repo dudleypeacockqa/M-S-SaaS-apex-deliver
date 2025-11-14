@@ -1247,63 +1247,46 @@ def upgrade() -> None:
     _drop_index_if_exists('idx_generated_documents_status', 'generated_documents')
     _drop_index_if_exists('idx_generated_documents_template_id', 'generated_documents')
     # pipeline_template_stages table (Pipeline Management module - may not exist in production)
-    # Remove if _table_exists guard - let _safe_* methods handle missing tables
-    try:
-        _safe_alter_column('pipeline_template_stages', 'created_at',
-                   existing_type=postgresql.TIMESTAMP(timezone=True),
-                   server_default=None,
-                   existing_nullable=False)
-        _safe_alter_column('pipeline_template_stages', 'updated_at',
-                   existing_type=postgresql.TIMESTAMP(timezone=True),
-                   server_default=None,
-                   existing_nullable=False)
-        _safe_drop_index('ix_pipeline_template_stages_order', 'pipeline_template_stages')
-        _safe_drop_index('ix_pipeline_template_stages_template', 'pipeline_template_stages')
-        _safe_create_index(op.f('ix_pipeline_template_stages_template_id'), 'pipeline_template_stages', ['template_id'], unique=False)
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        pass
+    _safe_alter_column('pipeline_template_stages', 'created_at',
+               existing_type=postgresql.TIMESTAMP(timezone=True),
+               server_default=None,
+               existing_nullable=False)
+    _safe_alter_column('pipeline_template_stages', 'updated_at',
+               existing_type=postgresql.TIMESTAMP(timezone=True),
+               server_default=None,
+               existing_nullable=False)
+    _safe_drop_index('ix_pipeline_template_stages_order', 'pipeline_template_stages')
+    _safe_drop_index('ix_pipeline_template_stages_template', 'pipeline_template_stages')
+    _safe_create_index(op.f('ix_pipeline_template_stages_template_id'), 'pipeline_template_stages', ['template_id'], unique=False)
     # pipeline_templates table (Pipeline Management module - may not exist in production)
-    # Remove if _table_exists guard - let _safe_* methods handle missing tables
-    try:
-        _safe_alter_column('pipeline_templates', 'is_default',
-                   existing_type=sa.BOOLEAN(),
-                   server_default=None,
-                   existing_nullable=False)
-        _safe_alter_column('pipeline_templates', 'created_at',
-                   existing_type=postgresql.TIMESTAMP(timezone=True),
-                   server_default=None,
-                   existing_nullable=False)
-        _safe_alter_column('pipeline_templates', 'updated_at',
-                   existing_type=postgresql.TIMESTAMP(timezone=True),
-                   server_default=None,
-                   existing_nullable=False)
-        _safe_drop_index('ix_pipeline_templates_org_default', 'pipeline_templates')
-        _safe_create_index('idx_pipeline_templates_org_default', 'pipeline_templates', ['organization_id', 'is_default'], unique=False)
-        _safe_create_index(op.f('ix_pipeline_templates_organization_id'), 'pipeline_templates', ['organization_id'], unique=False)
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        pass
+    _safe_alter_column('pipeline_templates', 'is_default',
+               existing_type=sa.BOOLEAN(),
+               server_default=None,
+               existing_nullable=False)
+    _safe_alter_column('pipeline_templates', 'created_at',
+               existing_type=postgresql.TIMESTAMP(timezone=True),
+               server_default=None,
+               existing_nullable=False)
+    _safe_alter_column('pipeline_templates', 'updated_at',
+               existing_type=postgresql.TIMESTAMP(timezone=True),
+               server_default=None,
+               existing_nullable=False)
+    _safe_drop_index('ix_pipeline_templates_org_default', 'pipeline_templates')
+    _safe_create_index('idx_pipeline_templates_org_default', 'pipeline_templates', ['organization_id', 'is_default'], unique=False)
+    _safe_create_index(op.f('ix_pipeline_templates_organization_id'), 'pipeline_templates', ['organization_id'], unique=False)
     # rbac_audit_logs table (Master Admin module - may not exist in production)
-    # Remove if _table_exists guard - let _safe_* methods handle missing tables
-    try:
-        _safe_alter_column('rbac_audit_logs', 'created_at',
-                   existing_type=postgresql.TIMESTAMP(timezone=True),
-                   server_default=None,
-                   existing_nullable=False)
-        _safe_drop_index('ix_rbac_audit_logs_action', 'rbac_audit_logs')
-        _safe_drop_index('ix_rbac_audit_logs_actor', 'rbac_audit_logs')
-        _safe_drop_index('ix_rbac_audit_logs_org', 'rbac_audit_logs')
-        _safe_drop_index('ix_rbac_audit_logs_target', 'rbac_audit_logs')
-        _safe_create_index(op.f('ix_rbac_audit_logs_organization_id'), 'rbac_audit_logs', ['organization_id'], unique=False)
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        pass
-
+    _safe_alter_column('rbac_audit_logs', 'created_at',
+               existing_type=postgresql.TIMESTAMP(timezone=True),
+               server_default=None,
+               existing_nullable=False)
+    _safe_drop_index('ix_rbac_audit_logs_action', 'rbac_audit_logs')
+    _safe_drop_index('ix_rbac_audit_logs_actor', 'rbac_audit_logs')
+    _safe_drop_index('ix_rbac_audit_logs_org', 'rbac_audit_logs')
+    _safe_drop_index('ix_rbac_audit_logs_target', 'rbac_audit_logs')
+    _safe_create_index(op.f('ix_rbac_audit_logs_organization_id'), 'rbac_audit_logs', ['organization_id'], unique=False)
     # valuation_export_logs table (Valuation Suite module - may not exist in production)
-    # Remove if _table_exists guard - let _safe_* methods handle missing tables
-    try:
-        _safe_drop_index('ix_valuation_export_logs_task_id', 'valuation_export_logs')
-        _safe_create_unique_constraint(None, 'valuation_export_logs', ['task_id'])
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        pass
+    _safe_drop_index('ix_valuation_export_logs_task_id', 'valuation_export_logs')
+    _safe_create_unique_constraint(None, 'valuation_export_logs', ['task_id'])
     # ### end Alembic commands ###
 
 
