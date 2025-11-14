@@ -1,0 +1,17 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\User\AppData\Local\Programs\Python\Python311\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 6 items
+
+tests\test_notifications_api.py::TestNotificationPreferencesAPI::test_get_preferences_returns_defaults_when_none_exist PASSED [ 16%]
+tests\test_notifications_api.py::TestNotificationPreferencesAPI::test_get_preferences_returns_user_preferences PASSED [ 33%]
+tests\test_notifications_api.py::TestNotificationPreferencesAPI::test_update_preferences_creates_new_preferences PASSED [ 50%]
+tests\test_notifications_api.py::TestNotificationPreferencesAPI::test_update_preferences_updates_existing_preferences PASSED [ 66%]
+tests\test_notifications_api.py::TestNotificationPreferencesAPI::test_update_preferences_partial_update PASSED [ 83%]
+tests\test_notifications_api.py::TestNotificationPreferencesAPI::test_update_preferences_all_fields PASSED [100%]
+
+======================= 6 passed, 12 warnings in 1.79s ========================

@@ -51,6 +51,7 @@ class TestNotificationPreferencesAPI:
         create_user,
         create_organization,
         db_session,
+        dependency_overrides,
     ):
         """Test GET /preferences returns user's saved preferences."""
         org = create_organization(name="Test Org")
@@ -95,6 +96,7 @@ class TestNotificationPreferencesAPI:
         create_user,
         create_organization,
         db_session,
+        dependency_overrides,
     ):
         """Test PUT /preferences creates preferences if they don't exist."""
         org = create_organization(name="Test Org")
@@ -135,6 +137,7 @@ class TestNotificationPreferencesAPI:
         create_user,
         create_organization,
         db_session,
+        dependency_overrides,
     ):
         """Test PUT /preferences updates existing preferences."""
         org = create_organization(name="Test Org")
@@ -187,6 +190,7 @@ class TestNotificationPreferencesAPI:
         create_user,
         create_organization,
         db_session,
+        dependency_overrides,
     ):
         """Test PUT /preferences with partial update (only some fields)."""
         org = create_organization(name="Test Org")
@@ -233,6 +237,7 @@ class TestNotificationPreferencesAPI:
         create_user,
         create_organization,
         db_session,
+        dependency_overrides,
     ):
         """Test PUT /preferences with all fields updated."""
         org = create_organization(name="Test Org")

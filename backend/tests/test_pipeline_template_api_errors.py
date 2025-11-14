@@ -11,21 +11,6 @@ from sqlalchemy.orm import Session
 from app.api.dependencies.auth import get_current_user
 from app.models.pipeline_template import PipelineTemplate
 
-dependency_overrides = None
-
-
-@pytest.fixture(autouse=True)
-def _bind_dependency_overrides_fixture(dependency_overrides):
-    globals()["dependency_overrides"] = dependency_overrides
-    yield
-    globals()["dependency_overrides"] = None
-
-
-@contextmanager
-def override_current_user(user):
-    dependency_overrides(get_current_user, lambda: user)
-    yield
-
 
 class TestPipelineTemplateAPIErrorPaths:
     """Test error paths in pipeline template API endpoints for multi-tenant isolation"""

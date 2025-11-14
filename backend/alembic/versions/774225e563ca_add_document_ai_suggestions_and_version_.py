@@ -436,6 +436,61 @@ def upgrade() -> None:
                 END IF;
             END $$;
         """)
+
+        # Ensure documents.id and related FK columns use VARCHAR(36) before new tables reference them
+        op.execute("""
+            DO $$
+            DECLARE
+                col_type text;
+            BEGIN
+                SELECT t.typname INTO col_type
+                FROM pg_attribute a
+                JOIN pg_class c ON a.attrelid = c.oid
+                JOIN pg_type t ON a.atttypid = t.oid
+                WHERE c.relname = 'documents'
+                  AND c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
+                  AND a.attname = 'id'
+                  AND a.attnum > 0
+                  AND NOT a.attisdropped;
+
+                IF col_type = 'uuid' THEN
+                    -- Drop FK constraints referencing documents.id
+                    ALTER TABLE IF EXISTS document_activities DROP CONSTRAINT IF EXISTS document_activities_document_id_fkey;
+                    ALTER TABLE IF EXISTS document_approvals DROP CONSTRAINT IF EXISTS document_approvals_document_id_fkey;
+                    ALTER TABLE IF EXISTS document_comparisons DROP CONSTRAINT IF EXISTS document_comparisons_original_document_id_fkey;
+                    ALTER TABLE IF EXISTS document_comparisons DROP CONSTRAINT IF EXISTS document_comparisons_revised_document_id_fkey;
+                    ALTER TABLE IF EXISTS document_signatures DROP CONSTRAINT IF EXISTS document_signatures_document_id_fkey;
+                    ALTER TABLE IF EXISTS team_tasks DROP CONSTRAINT IF EXISTS team_tasks_document_id_fkey;
+                    ALTER TABLE IF EXISTS valuation_export_logs DROP CONSTRAINT IF EXISTS valuation_export_logs_document_id_fkey;
+                    ALTER TABLE IF EXISTS documents DROP CONSTRAINT IF EXISTS documents_parent_document_id_fkey;
+                    ALTER TABLE IF EXISTS document_questions DROP CONSTRAINT IF EXISTS document_questions_document_id_fkey;
+
+                    -- Convert referencing columns to VARCHAR(36)
+                    ALTER TABLE IF EXISTS document_activities ALTER COLUMN document_id TYPE VARCHAR(36) USING document_id::text;
+                    ALTER TABLE IF EXISTS document_approvals ALTER COLUMN document_id TYPE VARCHAR(36) USING document_id::text;
+                    ALTER TABLE IF EXISTS document_comparisons ALTER COLUMN original_document_id TYPE VARCHAR(36) USING original_document_id::text;
+                    ALTER TABLE IF EXISTS document_comparisons ALTER COLUMN revised_document_id TYPE VARCHAR(36) USING revised_document_id::text;
+                    ALTER TABLE IF EXISTS document_signatures ALTER COLUMN document_id TYPE VARCHAR(36) USING document_id::text;
+                    ALTER TABLE IF EXISTS team_tasks ALTER COLUMN document_id TYPE VARCHAR(36) USING document_id::text;
+                    ALTER TABLE IF EXISTS valuation_export_logs ALTER COLUMN document_id TYPE VARCHAR(36) USING document_id::text;
+                    ALTER TABLE IF EXISTS document_questions ALTER COLUMN document_id TYPE VARCHAR(36) USING document_id::text;
+                    ALTER TABLE documents ALTER COLUMN parent_document_id TYPE VARCHAR(36) USING parent_document_id::text;
+
+                    -- Convert documents.id and recreate FKs
+                    ALTER TABLE documents ALTER COLUMN id TYPE VARCHAR(36) USING id::text;
+                    ALTER TABLE documents ADD CONSTRAINT documents_parent_document_id_fkey FOREIGN KEY (parent_document_id) REFERENCES documents(id);
+                    ALTER TABLE IF EXISTS document_activities ADD CONSTRAINT document_activities_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE;
+                    ALTER TABLE IF EXISTS document_approvals ADD CONSTRAINT document_approvals_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE;
+                    ALTER TABLE IF EXISTS document_comparisons ADD CONSTRAINT document_comparisons_original_document_id_fkey FOREIGN KEY (original_document_id) REFERENCES documents(id);
+                    ALTER TABLE IF EXISTS document_comparisons ADD CONSTRAINT document_comparisons_revised_document_id_fkey FOREIGN KEY (revised_document_id) REFERENCES documents(id);
+                    ALTER TABLE IF EXISTS document_signatures ADD CONSTRAINT document_signatures_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE;
+                    ALTER TABLE IF EXISTS team_tasks ADD CONSTRAINT team_tasks_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(id);
+                    ALTER TABLE IF EXISTS valuation_export_logs ADD CONSTRAINT valuation_export_logs_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(id);
+                    ALTER TABLE IF EXISTS document_questions ADD CONSTRAINT document_questions_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE;
+                END IF;
+            END;
+            $$;
+        """)
     
     # Always use VARCHAR(36) for user foreign keys (matching converted users.id type)
     # The conversion above ensures users.id is VARCHAR(36), so FKs must be VARCHAR(36) too
