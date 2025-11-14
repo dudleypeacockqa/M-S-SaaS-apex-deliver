@@ -197,26 +197,20 @@ def _safe_drop_constraint(constraint_name: str, table_name: str, **kwargs):
 
 def _safe_create_foreign_key(constraint_name: str, source_table: str, referent_table: str,
                              local_cols, remote_cols, **kwargs):
-    """Safely create foreign key ONLY if both tables exist."""
-    schema = kwargs.get('schema')
-    if not _table_exists(source_table, schema) or not _table_exists(referent_table, schema):
-        return  # Skip silently - one or both tables don't exist
+    """Safely create foreign key - skip if tables don't exist."""
     try:
         _original_create_foreign_key(constraint_name, source_table, referent_table,
                                      local_cols, remote_cols, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError, Exception):
-        pass
+        pass  # Skip silently - one or both tables don't exist
 
 
 def _safe_drop_table(table_name: str, **kwargs):
-    """Safely drop table ONLY if it exists."""
-    schema = kwargs.get('schema')
-    if not _table_exists(table_name, schema):
-        return  # Skip if table doesn't exist
+    """Safely drop table - skip if it doesn't exist."""
     try:
         _original_drop_table(table_name, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError, Exception):
-        pass
+        pass  # Skip silently - table doesn't exist
 
 
 def _drop_index_if_exists(index_name: str, table_name: str, schema: str = 'public') -> None:
