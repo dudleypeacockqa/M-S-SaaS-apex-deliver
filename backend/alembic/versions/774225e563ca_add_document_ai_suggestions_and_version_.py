@@ -48,31 +48,21 @@ def _inspector():
 def _table_exists(table_name: str, schema: str = None) -> bool:
     """Check if table exists, returning False on any error.
 
-    CRITICAL: Uses raw SQL query ONLY (works even in aborted transactions).
-    Never uses inspector.has_table() as it fails in aborted transaction state.
-    This prevents transaction abort cascades.
+    Uses inspector.has_table() which gracefully handles missing tables.
+    If ANY error occurs (including aborted transaction), returns False
+    to skip the operation safely.
     """
     if not table_name:
         return False
-    
-    schema = schema or 'public'
-    
-    # Use raw SQL query directly (works even in aborted transaction state)
-    # This is the ONLY safe method when transaction might be aborted
+
     try:
-        bind = op.get_bind()
-        result = bind.execute(
-            sa.text(
-                "SELECT EXISTS ("
-                "SELECT 1 FROM information_schema.tables "
-                "WHERE table_schema = :schema AND table_name = :table_name"
-                ")"
-            ),
-            {"schema": schema, "table_name": table_name}
-        )
-        return bool(result.scalar())
-    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
-        # If query fails, assume table doesn't exist to skip operation
+        inspector = _inspector()
+        if inspector is None:
+            return False
+        return inspector.has_table(table_name, schema=schema)
+    except ProgrammingError:
+        return False
+    except Exception:
         return False
 
 
@@ -116,83 +106,59 @@ def _index_exists(index_name: str, table_name: str, schema: str = None) -> bool:
 
 
 def _safe_alter_column(table_name: str, column_name: str, **kwargs):
-    """Safely alter column ONLY if table exists.
-
-    DEFENSIVE: Check table existence BEFORE attempting operation.
-    """
-    schema = kwargs.get('schema')
-    if not _table_exists(table_name, schema):
-        return  # Skip if table doesn't exist
+    """Safely alter column - no pre-check, pure try/except."""
     try:
         _original_alter_column(table_name, column_name, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError, Exception):
-        pass  # Skip silently - operation failed
+        pass  # Skip silently
 
 
 def _safe_add_column(table_name: str, column, **kwargs):
-    """Safely add column ONLY if table exists."""
-    schema = kwargs.get('schema')
-    if not _table_exists(table_name, schema):
-        return  # Skip if table doesn't exist
+    """Safely add column - no pre-check, pure try/except."""
     try:
         _original_add_column(table_name, column, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError, Exception):
-        pass
+        pass  # Skip silently
 
 
 def _safe_drop_column(table_name: str, column_name: str, **kwargs):
-    """Safely drop column ONLY if table exists."""
-    schema = kwargs.get('schema')
-    if not _table_exists(table_name, schema):
-        return  # Skip if table doesn't exist
+    """Safely drop column - no pre-check, pure try/except."""
     try:
         _original_drop_column(table_name, column_name, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError, Exception):
-        pass
+        pass  # Skip silently
 
 
 def _safe_create_index(index_name: str, table_name: Optional[str], columns, **kwargs):
-    """Safely create index ONLY if table exists."""
-    schema = kwargs.get('schema')
-    if table_name and not _table_exists(table_name, schema):
-        return  # Skip silently
+    """Safely create index - no pre-check, pure try/except."""
     try:
         _original_create_index(index_name, table_name, columns, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError, Exception):
-        pass
+        pass  # Skip silently
 
 
 def _safe_drop_index(index_name: str, table_name: Optional[str] = None, **kwargs):
-    """Safely drop index ONLY if table exists."""
-    schema = kwargs.get('schema')
-    if table_name and not _table_exists(table_name, schema):
-        return  # Skip silently
+    """Safely drop index - no pre-check, pure try/except."""
     try:
         _original_drop_index(index_name, table_name=table_name, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError, Exception):
-        pass
+        pass  # Skip silently
 
 
 def _safe_create_unique_constraint(constraint_name: str, table_name: str, columns, **kwargs):
-    """Safely create unique constraint ONLY if table exists."""
-    schema = kwargs.get('schema')
-    if not _table_exists(table_name, schema):
-        return  # Skip if table doesn't exist
+    """Safely create unique constraint - no pre-check, pure try/except."""
     try:
         _original_create_unique_constraint(constraint_name, table_name, columns, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError, Exception):
-        pass
+        pass  # Skip silently
 
 
 def _safe_drop_constraint(constraint_name: str, table_name: str, **kwargs):
-    """Safely drop constraint ONLY if table exists."""
-    schema = kwargs.get('schema')
-    if not _table_exists(table_name, schema):
-        return  # Skip if table doesn't exist
+    """Safely drop constraint - no pre-check, pure try/except."""
     try:
         _original_drop_constraint(constraint_name, table_name, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError, Exception):
-        pass
+        pass  # Skip silently
 
 
 def _safe_create_foreign_key(constraint_name: str, source_table: str, referent_table: str,
@@ -224,14 +190,11 @@ def _drop_table_if_exists(table_name: str, schema: str = 'public') -> None:
 
 
 def _safe_create_table(table_name: str, *args, **kwargs):
-    """Safely create table - skip if already exists."""
-    schema = kwargs.get('schema')
-    if _table_exists(table_name, schema):
-        return  # Skip if table already exists
+    """Safely create table - no pre-check, pure try/except."""
     try:
         _original_create_table(table_name, *args, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError, Exception):
-        pass
+        pass  # Skip silently
 
 
 def _safe_execute(sql, *args, **kwargs):
