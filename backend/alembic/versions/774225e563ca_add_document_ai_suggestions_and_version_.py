@@ -10,6 +10,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy import inspect
+from sqlalchemy.exc import NoSuchTableError
 ORGANIZATION_ID_TYPE = sa.String(length=36)
 USER_ID_TYPE = sa.String(length=36)
 GENERATED_DOCUMENT_ID_TYPE = sa.String(length=36)
@@ -28,7 +29,12 @@ def _drop_index_if_exists(index_name: str, table_name: str, schema: str = 'publi
     """Drop index if it exists to keep migration idempotent on prod."""
     bind = op.get_bind()
     inspector = inspect(bind)
-    existing = inspector.get_indexes(table_name, schema=schema)
+    if not inspector.has_table(table_name, schema=schema):
+        return
+    try:
+        existing = inspector.get_indexes(table_name, schema=schema)
+    except NoSuchTableError:
+        return
     if any(idx['name'] == index_name for idx in existing):
         op.drop_index(index_name, table_name=table_name)
 

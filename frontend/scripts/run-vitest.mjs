@@ -16,11 +16,42 @@ const normalizeWorkerCount = (value) => {
   return null
 }
 
+const sanitizeNodeOptions = () => {
+  const options = process.env.NODE_OPTIONS?.split(' ').filter(Boolean)
+  if (!options || options.length === 0) {
+    return
+  }
+
+  const sanitized = []
+  for (let i = 0; i < options.length; i += 1) {
+    const option = options[i]
+    if (option === '--localstorage-file') {
+      // Skip the flag and an optional value token to avoid Node warnings
+      if (options[i + 1] && !options[i + 1].startsWith('--')) {
+        i += 1
+      }
+      continue
+    }
+    if (option.startsWith('--localstorage-file=')) {
+      continue
+    }
+    sanitized.push(option)
+  }
+
+  if (sanitized.length === 0) {
+    delete process.env.NODE_OPTIONS
+  } else {
+    process.env.NODE_OPTIONS = sanitized.join(' ')
+  }
+}
+
 async function run() {
   const rawArgs = process.argv.slice(2)
   const passthroughArgs = []
   let workerOverride = process.env.VITEST_MAX_THREADS ?? null
   let singleWorker = false
+
+  sanitizeNodeOptions()
 
   for (let i = 0; i < rawArgs.length; i += 1) {
     const arg = rawArgs[i]

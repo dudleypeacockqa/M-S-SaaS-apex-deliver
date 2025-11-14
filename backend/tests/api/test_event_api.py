@@ -648,7 +648,7 @@ def test_create_event_requires_authentication(client: TestClient):
 # ============================================================================
 
 @pytest.fixture(autouse=True)
-def setup_auth(request, solo_user):
+def setup_auth(request, solo_user, dependency_overrides):
     """Automatically setup authentication for all Event API tests except auth-checking tests."""
     # Skip auto-auth for tests that explicitly check authentication requirements
     if 'requires_authentication' in request.node.name:
@@ -656,15 +656,6 @@ def setup_auth(request, solo_user):
         return
     
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
-    
-    # Override the dependency to return our test solo user
-    def override_get_current_user():
-        return solo_user
-    
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    dependency_overrides(get_current_user, lambda: solo_user)
     
     yield
-    
-    # Clean up override after test
-    app.dependency_overrides.pop(get_current_user, None)

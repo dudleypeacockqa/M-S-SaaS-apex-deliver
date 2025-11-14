@@ -8,6 +8,15 @@ from sqlalchemy.orm import Session
 
 from app.models.document_generation import DocumentTemplate, GeneratedDocument
 
+dependency_overrides = None
+
+
+@pytest.fixture(autouse=True)
+def _bind_dependency_overrides_fixture(dependency_overrides):
+    globals()["dependency_overrides"] = dependency_overrides
+    yield
+    globals()["dependency_overrides"] = None
+
 
 class TestDocumentTemplateEndpoints:
     """Test document template CRUD endpoints"""
@@ -24,8 +33,7 @@ class TestDocumentTemplateEndpoints:
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         template_data = {
             "name": "NDA Template",
@@ -52,7 +60,6 @@ class TestDocumentTemplateEndpoints:
         assert "id" in data
         assert "created_at" in data
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_create_template_forbidden_other_org(
         self,
@@ -65,8 +72,7 @@ class TestDocumentTemplateEndpoints:
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         template_data = {
             "name": "Test Template",
@@ -84,7 +90,6 @@ class TestDocumentTemplateEndpoints:
         assert response.status_code == 403
         assert "another organization" in response.json()["detail"]
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_list_templates(
         self,
@@ -115,8 +120,7 @@ class TestDocumentTemplateEndpoints:
         db_session.commit()
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         response = client.get("/api/document-generation/templates")
 
@@ -126,7 +130,6 @@ class TestDocumentTemplateEndpoints:
         assert any(t["name"] == "Template 1" for t in data)
         assert any(t["name"] == "Template 2" for t in data)
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_list_templates_with_filters(
         self,
@@ -160,8 +163,7 @@ class TestDocumentTemplateEndpoints:
         db_session.commit()
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         # Filter by status
         response = client.get("/api/document-generation/templates?status=active")
@@ -175,7 +177,6 @@ class TestDocumentTemplateEndpoints:
         data = response.json()
         assert all(t["template_type"] == "legal" for t in data if t["template_type"])
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_get_template(
         self,
@@ -199,8 +200,7 @@ class TestDocumentTemplateEndpoints:
         db_session.refresh(template)
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         response = client.get(f"/api/document-generation/templates/{template.id}")
 
@@ -209,7 +209,6 @@ class TestDocumentTemplateEndpoints:
         assert data["id"] == str(template.id)
         assert data["name"] == "Test Template"
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_get_template_not_found(
         self,
@@ -222,15 +221,13 @@ class TestDocumentTemplateEndpoints:
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         response = client.get("/api/document-generation/templates/nonexistent-id")
 
         assert response.status_code == 404
         assert "not found" in response.json()["detail"]
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_update_template(
         self,
@@ -254,8 +251,7 @@ class TestDocumentTemplateEndpoints:
         db_session.refresh(template)
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         update_data = {
             "name": "Updated Name",
@@ -273,7 +269,6 @@ class TestDocumentTemplateEndpoints:
         assert data["description"] == "Updated Description"
         assert data["content"] == "Original Content"  # Unchanged
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_delete_template(
         self,
@@ -297,8 +292,7 @@ class TestDocumentTemplateEndpoints:
         db_session.refresh(template)
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         response = client.delete(f"/api/document-generation/templates/{template.id}")
 
@@ -308,7 +302,6 @@ class TestDocumentTemplateEndpoints:
         db_session.refresh(template)
         assert template.status.value == "archived"
 
-        app.dependency_overrides.pop(get_current_user, None)
 
 
 class TestDocumentGenerationEndpoints:
@@ -338,8 +331,7 @@ class TestDocumentGenerationEndpoints:
         db_session.refresh(template)
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         # Generate document
         render_request = {
@@ -364,7 +356,6 @@ class TestDocumentGenerationEndpoints:
         assert "2025-11-13" in data["generated_content"]
         assert data["status"] == "generated"
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_generate_document_missing_variables(
         self,
@@ -389,8 +380,7 @@ class TestDocumentGenerationEndpoints:
         db_session.refresh(template)
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         # Missing 'code' variable
         render_request = {
@@ -408,7 +398,6 @@ class TestDocumentGenerationEndpoints:
         assert "Missing required variables" in response.json()["detail"]
         assert "code" in response.json()["detail"]
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_generate_document_template_not_found(
         self,
@@ -421,8 +410,7 @@ class TestDocumentGenerationEndpoints:
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         render_request = {
             "variable_values": {},
@@ -435,7 +423,6 @@ class TestDocumentGenerationEndpoints:
 
         assert response.status_code == 404
 
-        app.dependency_overrides.pop(get_current_user, None)
 
 
 class TestGeneratedDocumentEndpoints:
@@ -479,8 +466,7 @@ class TestGeneratedDocumentEndpoints:
         db_session.commit()
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         response = client.get("/api/document-generation/documents")
 
@@ -488,7 +474,6 @@ class TestGeneratedDocumentEndpoints:
         data = response.json()
         assert len(data) >= 2
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_get_generated_document(
         self,
@@ -522,8 +507,7 @@ class TestGeneratedDocumentEndpoints:
         db_session.refresh(document)
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         response = client.get(f"/api/document-generation/documents/{document.id}")
 
@@ -533,7 +517,6 @@ class TestGeneratedDocumentEndpoints:
         assert data["generated_content"] == "Test Generated Content"
         assert data["variable_values"]["name"] == "Test"
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_update_document_status(
         self,
@@ -567,8 +550,7 @@ class TestGeneratedDocumentEndpoints:
         db_session.refresh(document)
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         response = client.patch(
             f"/api/document-generation/documents/{document.id}/status?status=finalized",
@@ -578,7 +560,6 @@ class TestGeneratedDocumentEndpoints:
         data = response.json()
         assert data["status"] == "finalized"
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_update_document_content(
         self,
@@ -612,8 +593,7 @@ class TestGeneratedDocumentEndpoints:
         db_session.refresh(document)
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         update_data = {
             "generated_content": "Updated Content",
@@ -629,7 +609,6 @@ class TestGeneratedDocumentEndpoints:
         assert data["generated_content"] == "Updated Content"
         assert data["status"] == "draft"  # Status unchanged
 
-        app.dependency_overrides.pop(get_current_user, None)
 
 
 class TestTemplateRenderingService:
@@ -672,8 +651,7 @@ Buyer Signature: _________________
         db_session.refresh(template)
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         render_request = {
             "variable_values": {
@@ -701,7 +679,6 @@ Buyer Signature: _________________
         assert "123 Main St, London" in content
         assert "{{" not in content  # All variables replaced
 
-        app.dependency_overrides.pop(get_current_user, None)
 
 
 class TestDocumentExportEndpoints:
@@ -740,8 +717,7 @@ class TestDocumentExportEndpoints:
         db_session.refresh(document)
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         export_request = {
             "format": "application/pdf",
@@ -762,7 +738,6 @@ class TestDocumentExportEndpoints:
         assert "job_id" in data or "download_url" in data
         assert data.get("file_type") == "application/pdf" or data.get("status") in ["completed", "processing"]
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_export_document_as_docx(
         self,
@@ -797,8 +772,7 @@ class TestDocumentExportEndpoints:
         db_session.refresh(document)
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         export_request = {
             "format": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -815,7 +789,6 @@ class TestDocumentExportEndpoints:
         assert "job_id" in data or "download_url" in data
         assert data.get("file_type") == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" or data.get("status") in ["completed", "processing"]
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_export_document_not_found(
         self,
@@ -828,8 +801,7 @@ class TestDocumentExportEndpoints:
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user
 
         export_request = {
             "format": "application/pdf",
@@ -842,4 +814,3 @@ class TestDocumentExportEndpoints:
 
         assert response.status_code == 404
 
-        app.dependency_overrides.pop(get_current_user, None)
