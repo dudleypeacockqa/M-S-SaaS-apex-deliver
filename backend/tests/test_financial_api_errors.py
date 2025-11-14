@@ -4,11 +4,26 @@ TDD: RED → GREEN → REFACTOR
 Feature: Multi-tenant isolation and error handling for financial endpoints
 """
 import pytest
+from contextlib import contextmanager
 from fastapi.testclient import TestClient
 from fastapi import status
 
-from app.main import app
 from app.api.dependencies.auth import get_current_user
+
+dependency_overrides = None
+
+
+@pytest.fixture(autouse=True)
+def _bind_dependency_overrides_fixture(dependency_overrides):
+    globals()["dependency_overrides"] = dependency_overrides
+    yield
+    globals()["dependency_overrides"] = None
+
+
+@contextmanager
+def override_current_user(user):
+    dependency_overrides(get_current_user, lambda: user)
+    yield
 
 
 class TestFinancialAPIErrorPaths:
@@ -26,9 +41,7 @@ class TestFinancialAPIErrorPaths:
         org2 = create_organization(name="Other Org")
         user2 = create_user(email="other@example.com", organization_id=str(org2.id))
         
-        app.dependency_overrides[get_current_user] = lambda: user2
-        
-        try:
+        with override_current_user(user2):
             financial_data = {
                 "revenue": 500000,
                 "cogs": 300000,
@@ -42,8 +55,7 @@ class TestFinancialAPIErrorPaths:
             
             assert response.status_code == 403
             assert "organization" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_get_ratios_returns_403_when_deal_in_other_org(
         self,
@@ -57,17 +69,14 @@ class TestFinancialAPIErrorPaths:
         org2 = create_organization(name="Other Org")
         user2 = create_user(email="other@example.com", organization_id=str(org2.id))
         
-        app.dependency_overrides[get_current_user] = lambda: user2
-        
-        try:
+        with override_current_user(user2):
             response = client.get(
                 f"/api/deals/{deal1.id}/financial/ratios",
             )
             
             assert response.status_code == 403
             assert "organization" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_get_connections_returns_403_when_deal_in_other_org(
         self,
@@ -81,17 +90,14 @@ class TestFinancialAPIErrorPaths:
         org2 = create_organization(name="Other Org")
         user2 = create_user(email="other@example.com", organization_id=str(org2.id))
         
-        app.dependency_overrides[get_current_user] = lambda: user2
-        
-        try:
+        with override_current_user(user2):
             response = client.get(
                 f"/api/deals/{deal1.id}/financial/connections",
             )
             
             assert response.status_code == 403
             assert "organization" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_get_narrative_returns_403_when_deal_in_other_org(
         self,
@@ -105,17 +111,14 @@ class TestFinancialAPIErrorPaths:
         org2 = create_organization(name="Other Org")
         user2 = create_user(email="other@example.com", organization_id=str(org2.id))
         
-        app.dependency_overrides[get_current_user] = lambda: user2
-        
-        try:
+        with override_current_user(user2):
             response = client.get(
                 f"/api/deals/{deal1.id}/financial/narrative",
             )
             
             assert response.status_code == 403
             assert "organization" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_get_readiness_score_returns_403_when_deal_in_other_org(
         self,
@@ -129,17 +132,14 @@ class TestFinancialAPIErrorPaths:
         org2 = create_organization(name="Other Org")
         user2 = create_user(email="other@example.com", organization_id=str(org2.id))
         
-        app.dependency_overrides[get_current_user] = lambda: user2
-        
-        try:
+        with override_current_user(user2):
             response = client.get(
                 f"/api/deals/{deal1.id}/financial/readiness-score",
             )
             
             assert response.status_code == 403
             assert "organization" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_connect_xero_returns_403_when_deal_in_other_org(
         self,
@@ -153,17 +153,14 @@ class TestFinancialAPIErrorPaths:
         org2 = create_organization(name="Other Org")
         user2 = create_user(email="other@example.com", organization_id=str(org2.id))
         
-        app.dependency_overrides[get_current_user] = lambda: user2
-        
-        try:
+        with override_current_user(user2):
             response = client.post(
                 f"/api/deals/{deal1.id}/financial/connect/xero",
             )
             
             assert response.status_code == 403
             assert "organization" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_sync_financial_data_returns_403_when_deal_in_other_org(
         self,
@@ -177,17 +174,14 @@ class TestFinancialAPIErrorPaths:
         org2 = create_organization(name="Other Org")
         user2 = create_user(email="other@example.com", organization_id=str(org2.id))
         
-        app.dependency_overrides[get_current_user] = lambda: user2
-        
-        try:
+        with override_current_user(user2):
             response = client.post(
                 f"/api/deals/{deal1.id}/financial/sync",
             )
             
             assert response.status_code == 403
             assert "organization" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_disconnect_quickbooks_returns_403_when_deal_in_other_org(
         self,
@@ -201,15 +195,12 @@ class TestFinancialAPIErrorPaths:
         org2 = create_organization(name="Other Org")
         user2 = create_user(email="other@example.com", organization_id=str(org2.id))
         
-        app.dependency_overrides[get_current_user] = lambda: user2
-        
-        try:
+        with override_current_user(user2):
             response = client.delete(
                 f"/api/deals/{deal1.id}/financial/connect/quickbooks",
             )
             
             assert response.status_code == 403
             assert "organization" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
 

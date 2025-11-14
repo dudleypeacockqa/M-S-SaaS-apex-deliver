@@ -6,6 +6,8 @@ services:
     region: oregon
     buildCommand: "cd backend && pip install -r requirements.txt"
     startCommand: "cd backend && RENDER_PRESTART_RUN_MIGRATIONS=1 bash prestart.sh && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    healthCheckGracePeriod: 300
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0

@@ -134,7 +134,7 @@ def test_starter_tier_cannot_create_tasks(client, deal_context, auth_headers):
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_cannot_access_tasks_from_other_org(client, create_deal_for_org, auth_headers_growth, create_organization, create_user):
+def test_cannot_access_tasks_from_other_org(client, create_deal_for_org, auth_headers_growth, create_organization, create_user, dependency_overrides):
     deal, owner, _ = create_deal_for_org()
     create_resp = client.post(
         f"/api/api/deals/{deal.id}/tasks",
@@ -147,16 +147,12 @@ def test_cannot_access_tasks_from_other_org(client, create_deal_for_org, auth_he
     outsider = create_user(role=UserRole.growth, organization_id=str(other_org.id))
 
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
 
-    app.dependency_overrides[get_current_user] = lambda: outsider
-    try:
-        forbidden_resp = client.patch(
-            f"/api/api/deals/{deal.id}/tasks/{task_id}",
-            headers={"Authorization": "Bearer outsider"},
-            json={"status": "done"},
-        )
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+    dependency_overrides(get_current_user, lambda: outsider)
+    forbidden_resp = client.patch(
+        f"/api/api/deals/{deal.id}/tasks/{task_id}",
+        headers={"Authorization": "Bearer outsider"},
+        json={"status": "done"},
+    )
 
     assert forbidden_resp.status_code in {status.HTTP_403_FORBIDDEN, status.HTTP_404_NOT_FOUND}

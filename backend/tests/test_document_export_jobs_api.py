@@ -6,6 +6,7 @@ Feature: F-009 Automated Document Generation - Export Job Polling
 import pytest
 from sqlalchemy.orm import Session
 
+from app.api.dependencies.auth import get_current_user
 from app.models.document_generation import (
     DocumentTemplate,
     TemplateStatus,
@@ -14,6 +15,15 @@ from app.models.document_generation import (
     DocumentExportJob,
     DocumentExportStatus,
 )
+
+dependency_overrides = None
+
+
+@pytest.fixture(autouse=True)
+def _bind_dependency_overrides_fixture(dependency_overrides):
+    globals()["dependency_overrides"] = dependency_overrides
+    yield
+    globals()["dependency_overrides"] = None
 
 
 class TestDocumentExportJobEndpoints:
@@ -30,9 +40,7 @@ class TestDocumentExportJobEndpoints:
         org = create_organization(name="Export Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         # Create template first (required for foreign key)
         template = DocumentTemplate(
@@ -75,7 +83,6 @@ class TestDocumentExportJobEndpoints:
         assert data["status"] == "queued"
         assert data["format"] == "application/pdf"
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_get_export_job_status(
         self,
@@ -88,9 +95,7 @@ class TestDocumentExportJobEndpoints:
         org = create_organization(name="Export Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         # Create template first (required for foreign key)
         template = DocumentTemplate(
@@ -138,7 +143,6 @@ class TestDocumentExportJobEndpoints:
         assert data["status"] == "processing"
         assert data["format"] == "application/pdf"
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_list_export_jobs(
         self,
@@ -151,9 +155,7 @@ class TestDocumentExportJobEndpoints:
         org = create_organization(name="Export Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         # Create template first (required for foreign key)
         template = DocumentTemplate(
@@ -211,5 +213,4 @@ class TestDocumentExportJobEndpoints:
         assert "job-test-1" in job_ids
         assert "job-test-2" in job_ids
 
-        app.dependency_overrides.pop(get_current_user, None)
 

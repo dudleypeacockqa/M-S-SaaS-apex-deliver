@@ -6,6 +6,17 @@ Feature: Tenant dashboard metrics and summaries
 import pytest
 from fastapi.testclient import TestClient
 
+from app.api.dependencies.auth import get_current_user
+
+dependency_overrides = None
+
+
+@pytest.fixture(autouse=True)
+def _bind_dependency_overrides_fixture(dependency_overrides):
+    globals()["dependency_overrides"] = dependency_overrides
+    yield
+    globals()["dependency_overrides"] = None
+
 
 class TestDashboardAPI:
     """Test dashboard API endpoints"""
@@ -21,9 +32,7 @@ class TestDashboardAPI:
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
         
         response = client.get("/api/dashboard/summary", headers=auth_headers)
         
@@ -56,7 +65,6 @@ class TestDashboardAPI:
         assert data["deals"]["active"] == 0
         assert data["quick_stats"]["active_users"] == 1  # At least current user
         
-        app.dependency_overrides.pop(get_current_user, None)
     
     def test_get_recent_activity(
         self,
@@ -69,9 +77,7 @@ class TestDashboardAPI:
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
         
         response = client.get("/api/dashboard/recent-activity", headers=auth_headers)
         
@@ -86,7 +92,6 @@ class TestDashboardAPI:
         assert data["items"] == []
         assert data["total"] == 0
         
-        app.dependency_overrides.pop(get_current_user, None)
     
     def test_get_recent_activity_with_limit(
         self,
@@ -99,9 +104,7 @@ class TestDashboardAPI:
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
         
         response = client.get("/api/dashboard/recent-activity?limit=20", headers=auth_headers)
         
@@ -112,7 +115,6 @@ class TestDashboardAPI:
         assert "items" in data
         assert "total" in data
         
-        app.dependency_overrides.pop(get_current_user, None)
     
     def test_get_upcoming_tasks(
         self,
@@ -125,9 +127,7 @@ class TestDashboardAPI:
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
         
         response = client.get("/api/dashboard/tasks", headers=auth_headers)
         
@@ -142,7 +142,6 @@ class TestDashboardAPI:
         assert data["items"] == []
         assert data["total"] == 0
         
-        app.dependency_overrides.pop(get_current_user, None)
     
     def test_get_financial_insights(
         self,
@@ -155,9 +154,7 @@ class TestDashboardAPI:
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
         
         response = client.get("/api/dashboard/financial-insights", headers=auth_headers)
         
@@ -176,7 +173,6 @@ class TestDashboardAPI:
         assert data["deals_with_financials"] == 0
         assert data["insights"] == []
         
-        app.dependency_overrides.pop(get_current_user, None)
     
     def test_dashboard_endpoints_require_authentication(
         self,

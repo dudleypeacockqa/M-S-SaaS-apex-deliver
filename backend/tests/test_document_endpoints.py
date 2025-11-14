@@ -8,9 +8,19 @@ from uuid import uuid4
 import pytest
 from fastapi import status
 
+from app.api.dependencies.auth import get_current_user
 from app.models.deal import Deal, DealStage
 from app.models.document import Document, DocumentAccessLog
 from app.models.user import UserRole
+
+dependency_overrides = None
+
+
+@pytest.fixture(autouse=True)
+def _bind_dependency_overrides_fixture(dependency_overrides):
+    globals()["dependency_overrides"] = dependency_overrides
+    yield
+    globals()["dependency_overrides"] = None
 
 
 @pytest.fixture(autouse=True)
@@ -26,7 +36,7 @@ def override_storage(tmp_path):
 
 
 @pytest.fixture()
-def auth_context(create_user, create_organization):
+def auth_context(create_user, create_organization, dependency_overrides):
     """Provision a user + org, returning auth headers, cleanup callback, and org id."""
     org = create_organization(name="Doc Org")
     user = create_user(
@@ -35,15 +45,12 @@ def auth_context(create_user, create_organization):
         organization_id=str(org.id),
     )
 
-    from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     headers = {"Authorization": f"Bearer mock_token_{user.id}"}
 
     def cleanup():
-        app.dependency_overrides.pop(get_current_user, None)
+        return None
 
     return headers, cleanup, user, str(org.id)
 
@@ -395,10 +402,8 @@ def test_folder_requires_authentication(client, seeded_deal):
     """Test that folder endpoints require authentication."""
     # Ensure no auth override is active
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
 
     # Clear any existing overrides
-    app.dependency_overrides.pop(get_current_user, None)
 
     response = client.post(
         f"/api/deals/{seeded_deal.id}/folders",
@@ -428,9 +433,8 @@ def test_folder_organization_isolation(client, auth_context, seeded_deal, create
         )
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
 
-        app.dependency_overrides[get_current_user] = lambda: other_user
+        dependency_overrides(get_current_user, lambda: other_user)
         other_headers = {"Authorization": f"Bearer mock_token_{other_user.id}"}
 
         # Attempt to access folder from other org
@@ -828,9 +832,8 @@ def test_viewer_cannot_delete_document(client, auth_context, seeded_deal, create
         assert perm_resp.status_code == 201
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
 
-        app.dependency_overrides[get_current_user] = lambda: viewer
+        dependency_overrides(get_current_user, lambda: viewer)
         viewer_headers = {"Authorization": f"Bearer mock_token_{viewer.id}"}
 
         delete_resp = client.delete(
@@ -867,9 +870,8 @@ def test_viewer_can_download_document(client, auth_context, seeded_deal, create_
         )
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
 
-        app.dependency_overrides[get_current_user] = lambda: viewer
+        dependency_overrides(get_current_user, lambda: viewer)
         viewer_headers = {"Authorization": f"Bearer mock_token_{viewer.id}"}
 
         download_resp = client.post(
@@ -907,9 +909,8 @@ def test_editor_can_upload_with_folder_permission(client, auth_context, seeded_d
         assert perm_resp.status_code == 201
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
 
-        app.dependency_overrides[get_current_user] = lambda: editor
+        dependency_overrides(get_current_user, lambda: editor)
         editor_headers = {"Authorization": f"Bearer mock_token_{editor.id}"}
 
         upload_resp = client.post(
@@ -921,7 +922,7 @@ def test_editor_can_upload_with_folder_permission(client, auth_context, seeded_d
         assert upload_resp.json()["uploaded_by"] == str(editor.id)
 
         # Restore owner override for cleanup flows
-        app.dependency_overrides[get_current_user] = lambda: owner_user
+        dependency_overrides(get_current_user, lambda: owner_user)
     finally:
         cleanup()
 
@@ -935,7 +936,6 @@ def test_granting_folder_permission_creates_audit_log(
     """Granting folder access should append an audit entry for contained documents."""
     headers, cleanup, owner_user, org_id = auth_context
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
 
     try:
         folder_resp = client.post(
@@ -987,7 +987,6 @@ def test_revoking_folder_permission_creates_audit_log(
     """Revoking folder permission should append a permission_revoked entry."""
     headers, cleanup, owner_user, org_id = auth_context
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
 
     try:
         # Create folder and document
@@ -1034,7 +1033,7 @@ def test_revoking_folder_permission_creates_audit_log(
         actions = {entry["action"] for entry in logs_resp.json()}
         assert "permission_revoked" in actions
     finally:
-        app.dependency_overrides[get_current_user] = lambda: owner_user
+        dependency_overrides(get_current_user, lambda: owner_user)
         cleanup()
 
 
@@ -1047,7 +1046,6 @@ def test_revoking_document_permission_creates_audit_log(
     """Revoking document access should append a permission_revoked log entry."""
     headers, cleanup, owner_user, org_id = auth_context
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
 
     try:
         upload_resp = client.post(
@@ -1085,7 +1083,7 @@ def test_revoking_document_permission_creates_audit_log(
         actions = {entry["action"] for entry in logs_resp.json()}
         assert "permission_revoked" in actions
     finally:
-        app.dependency_overrides[get_current_user] = lambda: owner_user
+        dependency_overrides(get_current_user, lambda: owner_user)
         cleanup()
 
 
@@ -1113,9 +1111,8 @@ def test_editor_cannot_delete_others_document(client, auth_context, seeded_deal,
         )
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
 
-        app.dependency_overrides[get_current_user] = lambda: editor
+        dependency_overrides(get_current_user, lambda: editor)
         editor_headers = {"Authorization": f"Bearer mock_token_{editor.id}"}
 
         delete_resp = client.delete(
@@ -1125,7 +1122,7 @@ def test_editor_cannot_delete_others_document(client, auth_context, seeded_deal,
         assert delete_resp.status_code == 403
         assert "permission" in delete_resp.json()["detail"].lower()
 
-        app.dependency_overrides[get_current_user] = lambda: owner_user
+        dependency_overrides(get_current_user, lambda: owner_user)
     finally:
         cleanup()
 
@@ -1154,9 +1151,8 @@ def test_editor_can_delete_own_document(client, auth_context, seeded_deal, creat
         )
 
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
 
-        app.dependency_overrides[get_current_user] = lambda: editor
+        dependency_overrides(get_current_user, lambda: editor)
         editor_headers = {"Authorization": f"Bearer mock_token_{editor.id}"}
 
         upload_resp = client.post(
@@ -1173,7 +1169,7 @@ def test_editor_can_delete_own_document(client, auth_context, seeded_deal, creat
         )
         assert delete_resp.status_code == 204
 
-        app.dependency_overrides[get_current_user] = lambda: owner_user
+        dependency_overrides(get_current_user, lambda: owner_user)
     finally:
         cleanup()
 
@@ -1210,7 +1206,6 @@ def test_delete_document_requires_editor_permission(
     """View-only collaborators should be forbidden from deleting documents."""
     headers, cleanup, owner_user, org_id = auth_context
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
 
     try:
         upload_resp = client.post(
@@ -1223,7 +1218,7 @@ def test_delete_document_requires_editor_permission(
 
         viewer = create_user(email="viewer-permissions@example.com", organization_id=org_id)
 
-        app.dependency_overrides[get_current_user] = lambda: owner_user
+        dependency_overrides(get_current_user, lambda: owner_user)
         grant_resp = client.post(
             f"/api/deals/{seeded_deal.id}/documents/{document_id}/permissions",
             headers=headers,
@@ -1232,14 +1227,14 @@ def test_delete_document_requires_editor_permission(
         assert grant_resp.status_code == 201
 
         viewer_headers = {"Authorization": f"Bearer mock_token_{viewer.id}"}
-        app.dependency_overrides[get_current_user] = lambda: viewer
+        dependency_overrides(get_current_user, lambda: viewer)
         delete_resp = client.delete(
             f"/api/deals/{seeded_deal.id}/documents/{document_id}",
             headers=viewer_headers,
         )
         assert delete_resp.status_code == 403
     finally:
-        app.dependency_overrides[get_current_user] = lambda: owner_user
+        dependency_overrides(get_current_user, lambda: owner_user)
         cleanup()
 
 
@@ -1388,8 +1383,7 @@ def test_bulk_download_requires_permission(client, auth_context, seeded_deal, db
 
         # Override auth to use other user
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: other_user
+        dependency_overrides(get_current_user, lambda: other_user)
         other_headers = {"Authorization": f"Bearer mock_token_{other_user.id}"}
 
         # Try to bulk download - should fail for documents without permission
@@ -1493,8 +1487,7 @@ def test_bulk_delete_requires_owner_permission(client, auth_context, seeded_deal
 
         # Override auth to use editor
         from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: editor
+        dependency_overrides(get_current_user, lambda: editor)
         editor_headers = {"Authorization": f"Bearer mock_token_{editor.id}"}
 
         # Try to bulk delete - should fail (editors can only delete own documents)
@@ -1614,4 +1607,3 @@ def test_document_question_workflow(client, auth_context, seeded_deal):
         assert documents_body["items"][0]["question_count"] == 1
     finally:
         cleanup()
-

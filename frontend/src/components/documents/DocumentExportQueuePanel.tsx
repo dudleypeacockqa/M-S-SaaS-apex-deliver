@@ -27,6 +27,7 @@ export const DocumentExportQueuePanel: React.FC<DocumentExportQueuePanelProps> =
     exportJobs,
     queueExport,
     downloadExport,
+    cancelExport,
     clearExportError,
     clearExportNotice,
   } = useDocumentExportQueue(documentId, pollIntervalMs)
@@ -128,18 +129,56 @@ export const DocumentExportQueuePanel: React.FC<DocumentExportQueuePanelProps> =
                   </span>
                 </div>
 
-                {job.status === 'ready' && job.download_url ? (
-                  <button
-                    type="button"
-                    className="mt-3 inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
-                    onClick={() => downloadExport(job)}
-                  >
-                    Download export
-                  </button>
-                ) : null}
+                {/* Progress indicator for processing jobs */}
+                {job.status === 'processing' && (
+                  <div className="mt-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-slate-600">Processing export...</span>
+                      <span className="text-xs text-slate-500">
+                        Started {job.started_at ? new Date(job.started_at).toLocaleTimeString() : 'recently'}
+                      </span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div
+                        className="bg-amber-500 h-2 rounded-full transition-all duration-500 animate-pulse"
+                        style={{ width: '60%' }}
+                        role="progressbar"
+                        aria-valuenow={60}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                      />
+                    </div>
+                  </div>
+                )}
 
+                {/* Action buttons */}
+                <div className="mt-3 flex items-center gap-2">
+                  {job.status === 'ready' && job.download_url ? (
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                      onClick={() => downloadExport(job)}
+                    >
+                      Download export
+                    </button>
+                  ) : null}
+
+                  {(job.status === 'queued' || job.status === 'processing') && (
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                      onClick={() => cancelExport(job)}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+
+                {/* Error message */}
                 {job.status === 'failed' && job.failure_reason ? (
-                  <p className="mt-2 text-sm text-red-600">{job.failure_reason}</p>
+                  <div className="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2">
+                    <p className="text-sm text-red-700">{job.failure_reason}</p>
+                  </div>
                 ) : null}
               </li>
             ))}

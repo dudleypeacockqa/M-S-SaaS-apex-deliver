@@ -6,6 +6,7 @@ Feature: F-009 Automated Document Generation - AI Suggestions & Version History
 import pytest
 from sqlalchemy.orm import Session
 
+from app.api.dependencies.auth import get_current_user
 from app.models.document_generation import (
     DocumentTemplate,
     GeneratedDocument,
@@ -13,6 +14,15 @@ from app.models.document_generation import (
     DocumentVersion,
     SuggestionStatus,
 )
+
+dependency_overrides = None
+
+
+@pytest.fixture(autouse=True)
+def _bind_dependency_overrides_fixture(dependency_overrides):
+    globals()["dependency_overrides"] = dependency_overrides
+    yield
+    globals()["dependency_overrides"] = None
 
 
 class TestAISuggestionEndpoints:

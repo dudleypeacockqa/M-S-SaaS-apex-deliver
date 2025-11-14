@@ -68,6 +68,7 @@ export type UseDocumentExportQueueResult = {
   exportJobs: DocumentExportJob[]
   queueExport: (options: QueueOptions) => Promise<void>
   downloadExport: (job: DocumentExportJob) => Promise<void>
+  cancelExport: (job: DocumentExportJob) => Promise<void>
   clearExportNotice: () => void
   clearExportError: () => void
 }
@@ -109,26 +110,76 @@ export function useDocumentExportQueue(
 
   const pollJobStatus = useCallback(
     (taskId: string) => {
+      // Prevent duplicate pollers for the same task
       if (pollersRef.current[taskId]) {
         return
       }
 
+      let cancelled = false
+
       const poll = async () => {
+        // Check if cancelled before making request
+        if (cancelled) {
+          return
+        }
+
         try {
           const job = await getDocumentExportJob(documentId, taskId)
+          
+          // Check again after async operation
+          if (cancelled) {
+            return
+          }
+
           upsertJob(job)
+          
           if (isFinalStatus(job.status)) {
             clearJobPolling(taskId)
             return
           }
         } catch (error) {
+          // Check if cancelled before handling error
+          if (cancelled) {
+            return
+          }
+
           console.error('Failed to poll export job', error)
+          
+          // Update job with error state if possible
+          upsertJob({
+            task_id: taskId,
+            document_id: documentId,
+            format: 'unknown',
+            status: 'failed',
+            download_url: null,
+            failure_reason: 'Failed to check job status. Please refresh the page.',
+            queued_at: new Date().toISOString(),
+            completed_at: null,
+          } as DocumentExportJob)
+          
+          // Stop polling on persistent errors
+          clearJobPolling(taskId)
+          return
         }
 
-        pollersRef.current[taskId] = window.setTimeout(poll, pollIntervalMs)
+        // Only schedule next poll if not cancelled and not in final status
+        if (!cancelled) {
+          pollersRef.current[taskId] = window.setTimeout(() => {
+            // Clear the ref before polling to allow re-polling if needed
+            delete pollersRef.current[taskId]
+            void poll()
+          }, pollIntervalMs)
+        }
       }
 
-      poll()
+      // Start polling
+      void poll()
+
+      // Return cleanup function
+      return () => {
+        cancelled = true
+        clearJobPolling(taskId)
+      }
     },
     [clearJobPolling, documentId, pollIntervalMs, upsertJob],
   )
@@ -195,9 +246,29 @@ export function useDocumentExportQueue(
     [documentId, pollJobStatus, upsertJob],
   )
 
+  const cancelExport = useCallback(
+    async (job: DocumentExportJob) => {
+      // Stop polling for this job
+      clearJobPolling(job.task_id)
+      
+      // Update job status to cancelled (local state only)
+      // Note: Backend doesn't support cancellation yet, so this is UI-only
+      upsertJob({
+        ...job,
+        status: 'failed' as DocumentExportStatus,
+        failure_reason: 'Cancelled by user',
+        completed_at: new Date().toISOString(),
+      })
+      
+      setExportNotice(`Export cancelled: ${getFormatLabel(job.format)} • Task ID ${job.task_id}`)
+    },
+    [clearJobPolling, upsertJob],
+  )
+
   const downloadExport = useCallback(
     async (job: DocumentExportJob) => {
       if (!job.download_url) {
+        setExportError('Download URL not available. The export may still be processing.')
         return
       }
 
@@ -208,7 +279,7 @@ export function useDocumentExportQueue(
         const headers = await getAuthHeaders('')
         const response = await fetch(downloadUrl, { headers })
         if (!response.ok) {
-          throw new Error(response.statusText)
+          throw new Error(`Download failed: ${response.status} ${response.statusText}`)
         }
 
         const blob = await response.blob()
@@ -221,9 +292,12 @@ export function useDocumentExportQueue(
         window.setTimeout(() => {
           URL.revokeObjectURL(url)
         }, 100)
+        
+        setExportNotice(`Download started: ${getFormatLabel(job.format)}`)
       } catch (error) {
         console.error('Failed to download export', error)
-        setExportError('Failed to download export. Please try again from the queue.')
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        setExportError(`Failed to download export: ${errorMessage}. Please try again from the queue.`)
       }
     },
     [],
@@ -236,6 +310,7 @@ export function useDocumentExportQueue(
     exportJobs,
     queueExport,
     downloadExport,
+    cancelExport,
     clearExportNotice: () => setExportNotice(null),
     clearExportError: () => setExportError(null),
   }

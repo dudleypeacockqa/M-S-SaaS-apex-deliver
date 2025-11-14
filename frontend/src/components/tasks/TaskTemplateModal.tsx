@@ -36,17 +36,38 @@ const TaskTemplateModal: React.FC<TaskTemplateModalProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['taskTemplates', dealId] });
       onSuccess?.();
-      onClose();
-      // Reset form
-      setTemplateName('');
-      setTemplateDescription('');
-      setTasks([]);
-      setErrors({});
+      handleClose();
     },
     onError: (error) => {
-      setErrors({ name: error instanceof Error ? error.message : 'Failed to create template' });
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create template';
+      setErrors({ name: errorMessage });
+      // Scroll to top to show error
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     },
   });
+
+  const handleClose = () => {
+    // Reset form on close
+    setTemplateName('');
+    setTemplateDescription('');
+    setTasks([]);
+    setErrors({});
+    onClose();
+  };
+
+  // Handle escape key
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isPending) {
+        handleClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, isPending]);
 
   const handleAddTask = () => {
     setTasks([...tasks, { title: '', description: '', priority: '', stage_gate: '' }]);
@@ -104,10 +125,21 @@ const TaskTemplateModal: React.FC<TaskTemplateModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-2xl rounded-lg border border-gray-200 bg-white shadow-xl">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="template-modal-title"
+      onClick={(e) => {
+        // Close on backdrop click
+        if (e.target === e.currentTarget && !isPending) {
+          handleClose();
+        }
+      }}
+    >
+      <div className="w-full max-w-2xl rounded-lg border border-gray-200 bg-white shadow-xl max-h-[90vh] overflow-y-auto">
         <div className="border-b border-gray-200 px-6 py-4">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 id="template-modal-title" className="text-lg font-semibold text-gray-900">
             Create Task Template
           </h2>
         </div>
@@ -162,7 +194,8 @@ const TaskTemplateModal: React.FC<TaskTemplateModalProps> = ({
                 <button
                   type="button"
                   onClick={handleAddTask}
-                  className="text-sm text-indigo-600 hover:text-indigo-800"
+                  className="text-sm text-indigo-600 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1"
+                  aria-label="Add new task to template"
                 >
                   + Add Task
                 </button>
@@ -187,7 +220,8 @@ const TaskTemplateModal: React.FC<TaskTemplateModalProps> = ({
                       <button
                         type="button"
                         onClick={() => handleRemoveTask(index)}
-                        className="text-sm text-red-600 hover:text-red-800"
+                        className="text-sm text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded px-2 py-1"
+                        aria-label={`Remove task ${index + 1}`}
                       >
                         Remove
                       </button>
@@ -294,9 +328,10 @@ const TaskTemplateModal: React.FC<TaskTemplateModalProps> = ({
           <div className="mt-6 flex items-center justify-end gap-3 border-t border-gray-200 pt-4">
             <button
               type="button"
-              onClick={onClose}
-              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              onClick={handleClose}
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               disabled={isPending}
+              aria-label="Cancel template creation"
             >
               Cancel
             </button>
