@@ -10,7 +10,7 @@ from typing import Optional, Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy import inspect
-from sqlalchemy.exc import NoSuchTableError, ProgrammingError
+from sqlalchemy.exc import NoSuchTableError, ProgrammingError, InternalError
 ORGANIZATION_ID_TYPE = sa.String(length=36)
 USER_ID_TYPE = sa.String(length=36)
 GENERATED_DOCUMENT_ID_TYPE = sa.String(length=36)
@@ -58,13 +58,14 @@ def _drop_table_if_exists(table_name: str, schema: str = 'public') -> None:
 
 
 def _table_exists(table_name: str, schema: str = 'public') -> bool:
-    """Check if table exists, handling failed transaction state."""
+    """Check table existence safely, even if the previous statement failed."""
     try:
         bind = op.get_bind()
         inspector = inspect(bind)
         return inspector.has_table(table_name, schema=schema)
-    except (ProgrammingError, NoSuchTableError):
-        # Transaction may be in failed state, assume table doesn't exist
+    except (ProgrammingError, NoSuchTableError, InternalError):
+        # InternalError can wrap InFailedSqlTransaction from psycopg2
+        # If transaction is aborted, assume table doesn't exist to skip operation
         return False
 
 
@@ -75,8 +76,9 @@ def _safe_alter_column(table_name: str, column_name: str, *args, **kwargs):
         return
     try:
         _original_alter_column(table_name, column_name, *args, **kwargs)
-    except (ProgrammingError, NoSuchTableError):
+    except (ProgrammingError, NoSuchTableError, InternalError):
         # Table or column may have been dropped between check and operation
+        # InternalError can wrap InFailedSqlTransaction from psycopg2
         pass
 
 
@@ -86,7 +88,7 @@ def _safe_create_index(index_name: str, table_name: Optional[str], columns, **kw
         return
     try:
         _original_create_index(index_name, table_name, columns, **kwargs)
-    except (ProgrammingError, NoSuchTableError):
+    except (ProgrammingError, NoSuchTableError, InternalError):
         pass
 
 
@@ -96,7 +98,7 @@ def _safe_drop_index(index_name: str, table_name: Optional[str] = None, **kwargs
         return
     try:
         _original_drop_index(index_name, table_name=table_name, **kwargs)
-    except (ProgrammingError, NoSuchTableError):
+    except (ProgrammingError, NoSuchTableError, InternalError):
         pass
 
 
@@ -106,7 +108,7 @@ def _safe_add_column(table_name: str, column, **kwargs):
         return
     try:
         _original_add_column(table_name, column, **kwargs)
-    except (ProgrammingError, NoSuchTableError):
+    except (ProgrammingError, NoSuchTableError, InternalError):
         pass
 
 
@@ -116,7 +118,7 @@ def _safe_drop_column(table_name: str, column_name: str, **kwargs):
         return
     try:
         _original_drop_column(table_name, column_name, **kwargs)
-    except (ProgrammingError, NoSuchTableError):
+    except (ProgrammingError, NoSuchTableError, InternalError):
         pass
 
 
@@ -126,7 +128,7 @@ def _safe_drop_constraint(constraint_name: str, table_name: str, **kwargs):
         return
     try:
         _original_drop_constraint(constraint_name, table_name, **kwargs)
-    except (ProgrammingError, NoSuchTableError):
+    except (ProgrammingError, NoSuchTableError, InternalError):
         pass
 
 
@@ -141,7 +143,7 @@ def _safe_create_foreign_key(constraint_name: str, source_table: str, referent_t
     try:
         _original_create_foreign_key(constraint_name, source_table, referent_table,
                                      local_cols, remote_cols, **kwargs)
-    except (ProgrammingError, NoSuchTableError):
+    except (ProgrammingError, NoSuchTableError, InternalError):
         pass
 
 
@@ -151,7 +153,7 @@ def _safe_create_unique_constraint(constraint_name: str, table_name: str, column
         return
     try:
         _original_create_unique_constraint(constraint_name, table_name, columns, **kwargs)
-    except (ProgrammingError, NoSuchTableError):
+    except (ProgrammingError, NoSuchTableError, InternalError):
         pass
 
 
@@ -161,19 +163,17 @@ def _safe_drop_table(table_name: str, *args, **kwargs):
         return
     try:
         _original_drop_table(table_name, *args, **kwargs)
-    except (ProgrammingError, NoSuchTableError):
+    except (ProgrammingError, NoSuchTableError, InternalError):
         pass
 
 
-op.alter_column = _safe_alter_column
-op.create_index = _safe_create_index
-op.drop_index = _safe_drop_index
-op.add_column = _safe_add_column
-op.drop_column = _safe_drop_column
-op.drop_constraint = _safe_drop_constraint
-op.create_foreign_key = _safe_create_foreign_key
-op.create_unique_constraint = _safe_create_unique_constraint
-op.drop_table = _safe_drop_table
+# REMOVED: Monkey-patching op.* methods
+# Reason: Once PostgreSQL transaction fails, ALL subsequent _table_exists() checks fail
+# with "current transaction is aborted, commands ignored until end of transaction block"
+# This creates a cascade of failures.
+#
+# The safe wrappers are available but NOT auto-applied.
+# Use explicit if _table_exists() checks + try-except blocks instead.
 
 
 def _column_exists(table_name: str, column_name: str, schema: str = 'public') -> bool:
@@ -181,7 +181,7 @@ def _column_exists(table_name: str, column_name: str, schema: str = 'public') ->
     try:
         if not _table_exists(table_name, schema):
             return False
-    except (ProgrammingError, NoSuchTableError):
+    except (ProgrammingError, NoSuchTableError, InternalError):
         # Transaction may be in failed state, assume column doesn't exist
         return False
     try:
@@ -189,7 +189,7 @@ def _column_exists(table_name: str, column_name: str, schema: str = 'public') ->
         inspector = inspect(bind)
         columns = [col['name'] for col in inspector.get_columns(table_name, schema=schema)]
         return column_name in columns
-    except (ProgrammingError, NoSuchTableError):
+    except (ProgrammingError, NoSuchTableError, InternalError):
         # Column check failed, assume it doesn't exist
         return False
 
@@ -1204,10 +1204,10 @@ def upgrade() -> None:
                     op.add_column('deal_matches', sa.Column('organization_id', sa.String(length=36), nullable=False))
                     op.create_index(op.f('ix_deal_matches_organization_id'), 'deal_matches', ['organization_id'], unique=False)
                     op.create_foreign_key(None, 'deal_matches', 'organizations', ['organization_id'], ['id'], ondelete='CASCADE')
-            except (ProgrammingError, NoSuchTableError):
+            except (ProgrammingError, NoSuchTableError, InternalError):
                 # Table might have been dropped between check and operation
                 pass
-        except (ProgrammingError, NoSuchTableError):
+        except (ProgrammingError, NoSuchTableError, InternalError):
             pass
     # op.alter_column is already patched to use _safe_alter_column
     if _column_exists('document_questions', 'status'):
@@ -1477,10 +1477,10 @@ def downgrade() -> None:
                             break
                     op.drop_index(op.f('ix_deal_matches_organization_id'), table_name='deal_matches')
                     op.drop_column('deal_matches', 'organization_id')
-            except (ProgrammingError, NoSuchTableError):
+            except (ProgrammingError, NoSuchTableError, InternalError):
                 # Table might have been dropped between check and operation
                 pass
-        except (ProgrammingError, NoSuchTableError):
+        except (ProgrammingError, NoSuchTableError, InternalError):
             pass
     # op.alter_column is already patched to use _safe_alter_column
     if _column_exists('blog_posts', 'read_time_minutes'):
