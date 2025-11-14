@@ -15,7 +15,13 @@ from app.models.user import UserRole
 # ============================================================================
 
 
-def test_create_deal_success(client, create_user, create_organization, db_session):
+def test_create_deal_success(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """User can create a deal with all required fields."""
     org = create_organization(name="Deal Org")
     user = create_user(email="dealer@example.com", organization_id=str(org.id))
@@ -23,9 +29,7 @@ def test_create_deal_success(client, create_user, create_organization, db_sessio
 
     # Override auth dependency to return our test user
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     response = client.post(
         "/api/deals",
@@ -54,20 +58,20 @@ def test_create_deal_success(client, create_user, create_organization, db_sessio
     assert "id" in data
     assert "created_at" in data
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
 
-
-def test_create_deal_validation_errors(client, create_user, create_organization):
+def test_create_deal_validation_errors(
+    client,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Invalid inputs are rejected with validation errors."""
     org = create_organization(name="Deal Org")
     user = create_user(email="dealer@example.com", organization_id=str(org.id))
     token = f"Bearer mock_token_{user.id}"
 
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     # Missing required field: target_company
     response = client.post(
@@ -78,20 +82,20 @@ def test_create_deal_validation_errors(client, create_user, create_organization)
 
     assert response.status_code == 422  # Validation error
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
 
-
-def test_create_deal_sets_owner_and_org(client, create_user, create_organization):
+def test_create_deal_sets_owner_and_org(
+    client,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Deal is automatically associated with user's organization and set as owner."""
     org = create_organization(name="Auto Org")
     user = create_user(email="owner@example.com", organization_id=str(org.id))
     token = f"Bearer mock_token_{user.id}"
 
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     response = client.post(
         "/api/deals",
@@ -104,9 +108,6 @@ def test_create_deal_sets_owner_and_org(client, create_user, create_organization
     assert data["organization_id"] == str(org.id)
     assert data["owner_id"] == str(user.id)
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
 
 def test_create_deal_requires_auth(client):
     """Unauthenticated users cannot create deals."""
@@ -118,16 +119,19 @@ def test_create_deal_requires_auth(client):
     assert response.status_code == 401
 
 
-def test_create_deal_default_stage(client, create_user, create_organization):
+def test_create_deal_default_stage(
+    client,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Deal defaults to 'sourcing' stage if not specified."""
     org = create_organization(name="Default Org")
     user = create_user(email="default@example.com", organization_id=str(org.id))
     token = f"Bearer mock_token_{user.id}"
 
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     response = client.post(
         "/api/deals",
@@ -139,16 +143,19 @@ def test_create_deal_default_stage(client, create_user, create_organization):
     data = response.json()
     assert data["stage"] == "sourcing"
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
 
 # ============================================================================
 # LIST DEALS TESTS (7 tests)
 # ============================================================================
 
 
-def test_list_deals_returns_org_deals_only(client, create_user, create_organization, db_session):
+def test_list_deals_returns_org_deals_only(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """Users only see deals from their organization (multi-tenant isolation)."""
     org1 = create_organization(name="Org 1")
     org2 = create_organization(name="Org 2")
@@ -178,8 +185,7 @@ def test_list_deals_returns_org_deals_only(client, create_user, create_organizat
 
     # User 1 should only see their org's deal
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user1
+    dependency_overrides(get_current_user, lambda: user1)
 
     response = client.get("/api/deals", headers={"Authorization": "Bearer token1"})
 
@@ -188,11 +194,13 @@ def test_list_deals_returns_org_deals_only(client, create_user, create_organizat
     assert len(data["items"]) == 1
     assert data["items"][0]["name"] == "Org 1 Deal"
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_list_deals_pagination_works(client, create_user, create_organization, db_session):
+def test_list_deals_pagination_works(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """Pagination returns correct number of items."""
     org = create_organization(name="Pagination Org")
     user = create_user(email="paginate@example.com", organization_id=str(org.id))
@@ -213,8 +221,7 @@ def test_list_deals_pagination_works(client, create_user, create_organization, d
     db_session.commit()
 
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     # Request first 5
     response = client.get(
@@ -230,11 +237,13 @@ def test_list_deals_pagination_works(client, create_user, create_organization, d
     assert data["page"] == 1
     assert data["per_page"] == 5
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_list_deals_filter_by_stage(client, create_user, create_organization, db_session):
+def test_list_deals_filter_by_stage(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """Users can filter deals by stage."""
     org = create_organization(name="Filter Org")
     user = create_user(email="filter@example.com", organization_id=str(org.id))
@@ -261,8 +270,7 @@ def test_list_deals_filter_by_stage(client, create_user, create_organization, db
     db_session.commit()
 
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     # Filter by due_diligence stage
     response = client.get(
@@ -276,11 +284,15 @@ def test_list_deals_filter_by_stage(client, create_user, create_organization, db
     assert len(data["items"]) == 1
     assert data["items"][0]["stage"] == "due_diligence"
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
 
 
-def test_list_deals_search_by_name(client, create_user, create_organization, db_session):
+def test_list_deals_search_by_name(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """Users can search deals by name or target company."""
     org = create_organization(name="Search Org")
     user = create_user(email="search@example.com", organization_id=str(org.id))
@@ -306,8 +318,7 @@ def test_list_deals_search_by_name(client, create_user, create_organization, db_
     db_session.commit()
 
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     # Search for "Searchable"
     response = client.get(
@@ -321,11 +332,13 @@ def test_list_deals_search_by_name(client, create_user, create_organization, db_
     assert len(data["items"]) == 1
     assert "Searchable" in data["items"][0]["name"]
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_list_deals_sort_by_created_at(client, create_user, create_organization, db_session):
+def test_list_deals_sort_by_created_at(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """Deals can be sorted by created_at."""
     org = create_organization(name="Sort Org")
     user = create_user(email="sort@example.com", organization_id=str(org.id))
@@ -357,8 +370,7 @@ def test_list_deals_sort_by_created_at(client, create_user, create_organization,
     db_session.commit()
 
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     # Sort by created_at descending (newest first)
     response = client.get(
@@ -372,11 +384,13 @@ def test_list_deals_sort_by_created_at(client, create_user, create_organization,
     assert len(data["items"]) == 2
     assert data["items"][0]["name"] == "Second Deal"  # Newest first
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_list_deals_excludes_archived(client, create_user, create_organization, db_session):
+def test_list_deals_excludes_archived(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """Archived deals are hidden by default."""
     org = create_organization(name="Archive Org")
     user = create_user(email="archive@example.com", organization_id=str(org.id))
@@ -406,8 +420,7 @@ def test_list_deals_excludes_archived(client, create_user, create_organization, 
     db_session.commit()
 
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     # Default list should exclude archived
     response = client.get("/api/deals", headers={"Authorization": "Bearer token"})
@@ -417,8 +430,6 @@ def test_list_deals_excludes_archived(client, create_user, create_organization, 
     assert len(data["items"]) == 1
     assert data["items"][0]["name"] == "Active Deal"
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
 
 
 def test_list_deals_requires_auth(client):
@@ -432,7 +443,13 @@ def test_list_deals_requires_auth(client):
 # ============================================================================
 
 
-def test_get_deal_success(client, create_user, create_organization, db_session):
+def test_get_deal_success(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """User can retrieve deal details by ID."""
     org = create_organization(name="Get Org")
     user = create_user(email="getter@example.com", organization_id=str(org.id))
@@ -456,8 +473,7 @@ def test_get_deal_success(client, create_user, create_organization, db_session):
     db_session.refresh(deal)
 
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     response = client.get(f"/api/deals/{deal.id}", headers={"Authorization": "Bearer token"})
 
@@ -472,29 +488,32 @@ def test_get_deal_success(client, create_user, create_organization, db_session):
     assert data["stage"] == "evaluation"
     assert data["description"] == "Full details here"
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_get_deal_not_found(client, create_user, create_organization):
+def test_get_deal_not_found(
+    client,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Non-existent deal returns 404."""
     org = create_organization(name="404 Org")
     user = create_user(email="404@example.com", organization_id=str(org.id))
 
-    from app.main import app
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     response = client.get("/api/deals/nonexistent-id", headers={"Authorization": "Bearer token"})
 
     assert response.status_code == 404
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
 
 
-def test_get_deal_forbidden_other_org(client, create_user, create_organization, db_session):
+def test_get_deal_forbidden_other_org(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """User cannot view deals from other organizations (returns 404 to not leak info)."""
     org1 = create_organization(name="Org A")
     org2 = create_organization(name="Org B")
@@ -517,17 +536,13 @@ def test_get_deal_forbidden_other_org(client, create_user, create_organization, 
     db_session.refresh(deal)
 
     from app.api.dependencies.auth import get_current_user
-
-    # User 1 tries to access org 2's deal
-    app.dependency_overrides[get_current_user] = lambda: user1
+    dependency_overrides(get_current_user, lambda: user1)
 
     response = client.get(f"/api/deals/{deal.id}", headers={"Authorization": "Bearer token"})
 
     # Returns 404 to not leak information about deals in other orgs
     assert response.status_code == 404
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
 
 
 def test_get_deal_requires_auth(client):
@@ -541,7 +556,13 @@ def test_get_deal_requires_auth(client):
 # ============================================================================
 
 
-def test_update_deal_success(client, create_user, create_organization, db_session):
+def test_update_deal_success(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """User can update all deal fields."""
     org = create_organization(name="Update Org")
     user = create_user(email="updater@example.com", organization_id=str(org.id))
@@ -565,8 +586,7 @@ def test_update_deal_success(client, create_user, create_organization, db_sessio
     db_session.refresh(deal)
 
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     response = client.put(
         f"/api/deals/{deal.id}",
@@ -592,11 +612,13 @@ def test_update_deal_success(client, create_user, create_organization, db_sessio
     assert data["stage"] == "evaluation"
     assert data["description"] == "Updated description"
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_update_deal_stage_change(client, create_user, create_organization, db_session):
+def test_update_deal_stage_change(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """User can progress deal through pipeline stages."""
     org = create_organization(name="Stage Org")
     user = create_user(email="stager@example.com", organization_id=str(org.id))
@@ -616,8 +638,7 @@ def test_update_deal_stage_change(client, create_user, create_organization, db_s
     db_session.refresh(deal)
 
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     # Progress through stages
     for stage in ["evaluation", "due_diligence", "negotiation", "closing", "won"]:
@@ -629,11 +650,13 @@ def test_update_deal_stage_change(client, create_user, create_organization, db_s
         assert response.status_code == 200
         assert response.json()["stage"] == stage
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_update_deal_partial_update(client, create_user, create_organization, db_session):
+def test_update_deal_partial_update(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """Partial updates work (only specified fields are updated)."""
     org = create_organization(name="Partial Org")
     user = create_user(email="partial@example.com", organization_id=str(org.id))
@@ -654,8 +677,7 @@ def test_update_deal_partial_update(client, create_user, create_organization, db
     db_session.refresh(deal)
 
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     # Update only the name
     response = client.put(
@@ -670,11 +692,15 @@ def test_update_deal_partial_update(client, create_user, create_organization, db
     assert data["target_company"] == "Original Co"  # Unchanged
     assert data["industry"] == "Tech"  # Unchanged
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
 
 
-def test_update_deal_forbidden_other_org(client, create_user, create_organization, db_session):
+def test_update_deal_forbidden_other_org(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """User cannot update deals from other organizations."""
     org1 = create_organization(name="Org X")
     org2 = create_organization(name="Org Y")
@@ -697,9 +723,7 @@ def test_update_deal_forbidden_other_org(client, create_user, create_organizatio
     db_session.refresh(deal)
 
     from app.api.dependencies.auth import get_current_user
-
-    # User 1 tries to update org 2's deal
-    app.dependency_overrides[get_current_user] = lambda: user1
+    dependency_overrides(get_current_user, lambda: user1)
 
     response = client.put(
         f"/api/deals/{deal.id}",
@@ -709,11 +733,13 @@ def test_update_deal_forbidden_other_org(client, create_user, create_organizatio
 
     assert response.status_code == 403
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_update_deal_validation_errors(client, create_user, create_organization, db_session):
+def test_update_deal_validation_errors(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """Invalid update inputs are rejected."""
     org = create_organization(name="Validation Org")
     user = create_user(email="validator@example.com", organization_id=str(org.id))
@@ -733,8 +759,7 @@ def test_update_deal_validation_errors(client, create_user, create_organization,
     db_session.refresh(deal)
 
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     # Try to set invalid deal_size (negative)
     response = client.put(
@@ -745,8 +770,6 @@ def test_update_deal_validation_errors(client, create_user, create_organization,
 
     assert response.status_code == 422  # Validation error
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
 
 
 # ============================================================================
@@ -754,7 +777,13 @@ def test_update_deal_validation_errors(client, create_user, create_organization,
 # ============================================================================
 
 
-def test_archive_deal_success(client, create_user, create_organization, db_session):
+def test_archive_deal_success(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """User can archive a deal (soft delete)."""
     org = create_organization(name="Archive Org")
     user = create_user(email="archiver@example.com", organization_id=str(org.id))
@@ -774,8 +803,7 @@ def test_archive_deal_success(client, create_user, create_organization, db_sessi
     db_session.refresh(deal)
 
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     response = client.delete(f"/api/deals/{deal.id}", headers={"Authorization": "Bearer token"})
 
@@ -788,11 +816,13 @@ def test_archive_deal_success(client, create_user, create_organization, db_sessi
     assert deal.is_archived is True
     assert deal.archived_at is not None
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_archive_deal_forbidden_other_org(client, create_user, create_organization, db_session):
+def test_archive_deal_forbidden_other_org(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """User cannot archive deals from other organizations."""
     org1 = create_organization(name="Org P")
     org2 = create_organization(name="Org Q")
@@ -815,19 +845,19 @@ def test_archive_deal_forbidden_other_org(client, create_user, create_organizati
     db_session.refresh(deal)
 
     from app.api.dependencies.auth import get_current_user
-
-    # User 1 tries to archive org 2's deal
-    app.dependency_overrides[get_current_user] = lambda: user1
+    dependency_overrides(get_current_user, lambda: user1)
 
     response = client.delete(f"/api/deals/{deal.id}", headers={"Authorization": "Bearer token"})
 
     assert response.status_code == 403
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_unarchive_deal_success(client, create_user, create_organization, db_session):
+def test_unarchive_deal_success(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """User can restore an archived deal."""
     org = create_organization(name="Restore Org")
     user = create_user(email="restorer@example.com", organization_id=str(org.id))
@@ -850,8 +880,7 @@ def test_unarchive_deal_success(client, create_user, create_organization, db_ses
     db_session.refresh(deal)
 
     from app.api.dependencies.auth import get_current_user
-
-    app.dependency_overrides[get_current_user] = lambda: user
+    dependency_overrides(get_current_user, lambda: user)
 
     response = client.post(f"/api/deals/{deal.id}/restore", headers={"Authorization": "Bearer token"})
 
@@ -860,11 +889,13 @@ def test_unarchive_deal_success(client, create_user, create_organization, db_ses
     assert data["is_archived"] is False
     assert data["archived_at"] is None
 
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)
-
-
-def test_unarchive_deal_forbidden_other_org(client, create_user, create_organization, db_session):
+def test_unarchive_deal_forbidden_other_org(
+    client,
+    create_user,
+    create_organization,
+    db_session,
+    dependency_overrides,
+):
     """User cannot restore deals from other organizations."""
     org1 = create_organization(name="Org R")
     org2 = create_organization(name="Org S")
@@ -889,13 +920,8 @@ def test_unarchive_deal_forbidden_other_org(client, create_user, create_organiza
     db_session.refresh(deal)
 
     from app.api.dependencies.auth import get_current_user
-
-    # User 1 tries to restore org 2's deal
-    app.dependency_overrides[get_current_user] = lambda: user1
+    dependency_overrides(get_current_user, lambda: user1)
 
     response = client.post(f"/api/deals/{deal.id}/restore", headers={"Authorization": "Bearer token"})
 
     assert response.status_code == 403
-
-    # Cleanup
-    app.dependency_overrides.pop(get_current_user, None)

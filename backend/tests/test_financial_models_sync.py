@@ -50,6 +50,11 @@ def seed_org_user_deal(
         is_active=True,
     )
 
+    # Add org and user first, flush to ensure they're in DB before foreign key checks
+    session.add(org)
+    session.add(user)
+    session.flush()  # Flush so foreign keys can reference them
+    
     deal_data = {
         "id": deal_id,
         "organization_id": org.id,
@@ -60,8 +65,8 @@ def seed_org_user_deal(
     if deal_overrides:
         deal_data.update(deal_overrides)
     deal = Deal(**deal_data)
-
-    session.add_all([org, user, deal])
+    
+    session.add(deal)
     session.commit()
     return org, user, deal
 
@@ -347,8 +352,18 @@ def test_financial_narrative_version_control(db_session: Session):
 def test_complete_financial_data_chain(db_session: Session):
     """Test complete chain: Deal → Connection → Statement → Ratios → Narrative."""
     org = Organization(id="org-9", name="Org 9", slug="org-9-slug")
+    user = User(
+        id="user-9",
+        clerk_user_id="user-9-clerk",
+        email="user-9@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
     deal = Deal(id="deal-9", organization_id=org.id, name="Deal 9",
-                target_company="Target 9", owner_id="user-9")
+                target_company="Target 9", owner_id=user.id)
 
     connection = FinancialConnection(
         id="conn-9", deal_id=deal.id, organization_id=org.id,
@@ -373,7 +388,13 @@ def test_complete_financial_data_chain(db_session: Session):
         ai_model="gpt-4"
     )
 
-    db_session.add_all([org, deal, connection, statement, ratios, narrative])
+    # Add org and user first, flush before foreign key dependencies
+    db_session.add(org)
+    db_session.add(user)
+    db_session.flush()
+    
+    # Now add deal and financial data
+    db_session.add_all([deal, connection, statement, ratios, narrative])
     db_session.commit()
 
     # Verify all relationships
@@ -389,8 +410,18 @@ def test_complete_financial_data_chain(db_session: Session):
 def test_cascade_delete_all_financial_data(db_session: Session):
     """Test that deleting a deal cascades to all financial data."""
     org = Organization(id="org-10", name="Org 10", slug="org-10-slug")
+    user = User(
+        id="user-10",
+        clerk_user_id="user-10-clerk",
+        email="user-10@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
     deal = Deal(id="deal-10", organization_id=org.id, name="Deal 10",
-                target_company="Target 10", owner_id="user-10")
+                target_company="Target 10", owner_id=user.id)
 
     connection = FinancialConnection(
         id="conn-10", deal_id=deal.id, organization_id=org.id,
@@ -414,7 +445,13 @@ def test_cascade_delete_all_financial_data(db_session: Session):
         summary="Test", readiness_score=75.0, ai_model="gpt-4"
     )
 
-    db_session.add_all([org, deal, connection, statement, ratios, narrative])
+    # Add org and user first, flush before foreign key dependencies
+    db_session.add(org)
+    db_session.add(user)
+    db_session.flush()
+    
+    # Now add deal and financial data
+    db_session.add_all([deal, connection, statement, ratios, narrative])
     db_session.commit()
 
     # Delete deal

@@ -157,7 +157,8 @@ def test_create_comment(db_session, test_user_data: dict):
 
     assert comment.id is not None
     assert comment.post_id == post.id
-    assert comment.author_user_id == user.id
+    # GUID column returns UUID, but User.id is string, so compare as strings
+    assert str(comment.author_user_id) == str(user.id)
     assert comment.content == "This is a comment"
     assert comment.parent_comment_id is None
 
@@ -260,7 +261,8 @@ def test_create_reaction(db_session, test_user_data: dict):
     assert reaction.id is not None
     assert reaction.target_type == TargetType.post
     assert reaction.target_id == post.id
-    assert reaction.user_id == user.id
+    # GUID column returns UUID, but User.id is string, so compare as strings
+    assert str(reaction.user_id) == str(user.id)
     assert reaction.reaction_type == ReactionType.like
 
 
@@ -361,8 +363,9 @@ def test_create_follow(db_session, test_user_data: dict, test_user_data_2: dict)
     db_session.refresh(follow)
 
     assert follow.id is not None
-    assert follow.follower_user_id == user1.id
-    assert follow.following_user_id == user2.id
+    # GUID columns return UUID, but User.id is string, so compare as strings
+    assert str(follow.follower_user_id) == str(user1.id)
+    assert str(follow.following_user_id) == str(user2.id)
     assert isinstance(follow.created_at, datetime)
 
 
@@ -427,7 +430,8 @@ def test_create_moderation_action(db_session, test_user_data: dict):
     assert moderation.target_type == TargetType.post
     assert moderation.target_id == post.id
     assert moderation.action_type == ModerationActionType.flag
-    assert moderation.moderator_user_id == user.id
+    # GUID column returns UUID, but User.id is string, so compare as strings
+    assert str(moderation.moderator_user_id) == str(user.id)
     assert moderation.reason == "Inappropriate content"
 
 

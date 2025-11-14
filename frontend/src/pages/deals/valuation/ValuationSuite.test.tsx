@@ -1,3 +1,4 @@
+import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -26,9 +27,23 @@ vi.mock('../../../services/api/valuations', () => ({
 }))
 
 vi.mock('@/hooks/useRecharts', () => {
-  const recharts = require('recharts')
+  const ChartWrapper = ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="mock-chart">{children}</div>
+  )
+
+  const stub = {
+    ResponsiveContainer: ChartWrapper,
+    BarChart: ChartWrapper,
+    CartesianGrid: () => null,
+    XAxis: () => null,
+    YAxis: () => null,
+    Tooltip: () => null,
+    Legend: () => null,
+    Bar: () => null,
+  }
+
   return {
-    useRecharts: () => recharts,
+    useRecharts: () => stub,
   }
 })
 
@@ -512,5 +527,4 @@ describe('ValuationSuite RED tests', () => {
     expect(await screen.findByText('£15,000,000')).toBeInTheDocument()
   })
 })
-
 

@@ -7,11 +7,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ErrorBoundary } from "./components/common"
 import { LoadingSpinner } from "./components/common/LoadingSpinner"
 import { usePageAnalytics } from "./hooks/usePageAnalytics"
-import { PodcastStudio } from "./pages/podcast/PodcastStudio"
-import { EventDashboard } from "./pages/events/EventDashboard"
-import { EventCreator } from "./pages/events/EventCreator"
-import { EventDetails } from "./pages/events/EventDetails"
-import { CommunityFeed } from "./pages/community/CommunityFeed"
 
 const lazyNamed = <T extends ComponentType<any>>(
   importer: () => Promise<Record<string, unknown>>,
@@ -80,6 +75,12 @@ const DocumentEditor = lazyNamed(() => import("./pages/documents/DocumentEditor"
 const DocumentRoomPage = lazyNamed(() => import("./pages/deals/DocumentRoomPage"), "DocumentRoomPage")
 const FeatureNotAvailable = lazyNamed(() => import("./pages/FeatureNotAvailable"), "FeatureNotAvailable")
 const MasterAdminDashboard = lazyNamed(() => import("./pages/master-admin/MasterAdminDashboard"), "MasterAdminDashboard")
+// Lazy load heavy components for better code splitting
+const PodcastStudio = lazyNamed(() => import("./pages/podcast/PodcastStudio"), "PodcastStudio")
+const EventDashboard = lazyNamed(() => import("./pages/events/EventDashboard"), "EventDashboard")
+const EventCreator = lazyNamed(() => import("./pages/events/EventCreator"), "EventCreator")
+const EventDetails = lazyNamed(() => import("./pages/events/EventDetails"), "EventDetails")
+const CommunityFeed = lazyNamed(() => import("./pages/community/CommunityFeed"), "CommunityFeed")
 const ActivityTracker = lazyNamed(() => import("./pages/master-admin/ActivityTracker"), "ActivityTracker")
 const ProspectPipeline = lazyNamed(() => import("./pages/master-admin/ProspectPipeline"), "ProspectPipeline")
 const CampaignManager = lazyNamed(() => import("./pages/master-admin/CampaignManager"), "CampaignManager")
@@ -185,15 +186,15 @@ export const AppRoutes = () => {
         <Route path="deals/:dealId/financial" element={<SignedIn><FinancialDashboardRoute /></SignedIn>} />
 
         {/* Podcast Routes */}
-        <Route path="podcast-studio" element={<SignedIn><PodcastStudio /></SignedIn>} />
+        <Route path="podcast-studio" element={<SignedIn><Suspense fallback={<RouteLoader />}><PodcastStudio /></Suspense></SignedIn>} />
 
         {/* Event Routes */}
-        <Route path="events" element={<SignedIn><EventDashboard /></SignedIn>} />
-        <Route path="events/new" element={<SignedIn><EventCreator /></SignedIn>} />
-        <Route path="events/:eventId" element={<SignedIn><EventDetails /></SignedIn>} />
+        <Route path="events" element={<SignedIn><Suspense fallback={<RouteLoader />}><EventDashboard /></Suspense></SignedIn>} />
+        <Route path="events/new" element={<SignedIn><Suspense fallback={<RouteLoader />}><EventCreator /></Suspense></SignedIn>} />
+        <Route path="events/:eventId" element={<SignedIn><Suspense fallback={<RouteLoader />}><EventDetails /></Suspense></SignedIn>} />
 
         {/* Community Routes */}
-        <Route path="community" element={<SignedIn><CommunityFeed /></SignedIn>} />
+        <Route path="community" element={<SignedIn><Suspense fallback={<RouteLoader />}><CommunityFeed /></Suspense></SignedIn>} />
 
         {/* Billing & Subscription Routes */}
         <Route path="dashboard/billing" element={<SignedIn><BillingDashboard /></SignedIn>} />
@@ -209,7 +210,29 @@ export const AppRoutes = () => {
 }
 
 const App = () => {
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            // Cache data for 5 minutes by default
+            staleTime: 5 * 60 * 1000,
+            // Keep unused data in cache for 10 minutes
+            gcTime: 10 * 60 * 1000, // Previously cacheTime
+            // Retry failed requests once
+            retry: 1,
+            // Don't refetch on window focus for better performance
+            refetchOnWindowFocus: false,
+            // Refetch on reconnect
+            refetchOnReconnect: true,
+          },
+          mutations: {
+            // Retry failed mutations once
+            retry: 1,
+          },
+        },
+      })
+  )
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>

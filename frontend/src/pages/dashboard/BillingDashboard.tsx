@@ -63,7 +63,7 @@ export const BillingDashboard: React.FC = () => {
       setIsPortalLoading(true)
       setActionError(null)
       const { url } = await billingService.getCustomerPortalUrl()
-      window.location.assign(url)
+      window.open(url, '_self')
     } catch (err) {
       setActionError(err instanceof Error ? err.message : 'Failed to open billing portal')
     } finally {
@@ -181,7 +181,7 @@ export const BillingDashboard: React.FC = () => {
               onClick={() => void handleOpenPortal()}
               disabled={isPortalLoading}
             >
-              {isPortalLoading ? 'Opening…' : 'Update Payment Method'}
+              {isPortalLoading ? 'Opening payment portal' : 'Update Payment Method'}
             </button>
           </div>
         </article>

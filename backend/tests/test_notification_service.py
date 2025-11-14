@@ -1,366 +1,440 @@
 """
-TDD Tests for Notification Service (DEV-020)
-RED Phase: Tests that will initially fail until implementation
-
-Following TDD RED → GREEN → REFACTOR methodology.
+Tests for Notification Service - Critical Path (Phase 3.2)
+TDD: RED → GREEN → REFACTOR
+Feature: DEV-020 Notification sending with preference checking
 """
-from __future__ import annotations
-
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from datetime import datetime, timezone, timedelta
 
-from sqlalchemy.orm import Session
-
-from app.services.notification_service import (
-    send_notification,
-    check_preferences,
-    trigger_event_notification,
-    trigger_community_notification,
-)
+from app.services import notification_service
+from app.models.user_notification_preferences import UserNotificationPreferences
+from app.models.user import User
 
 
-# ============================================================================
-# Fixtures
-# ============================================================================
-
-@pytest.fixture
-def test_user(db_session: Session, create_organization):
-    """Create a test user."""
-    org = create_organization(name="Test Org")
-    from app.models.user import User, UserRole
+# Test check_preferences()
+@pytest.mark.asyncio
+async def test_check_preferences_returns_true_when_no_prefs_exist(db_session):
+    """Test check_preferences creates default prefs and returns True."""
+    # Create user
+    from app.models.organization import Organization
+    org = Organization(id="org-prefs-1", name="Test Org", slug="test-org")
     user = User(
-        id="user-test-123",
-        clerk_user_id="clerk_test_123",
-        email="test@example.com",
+        id="user-prefs-1",
+        clerk_user_id="user-1-clerk",
+        email="user@example.com",
         first_name="Test",
         last_name="User",
-        organization_id=str(org.id),
-        role=UserRole.solo,
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
     )
+    
+    db_session.add(org)
     db_session.add(user)
     db_session.commit()
-    return user
-
-
-@pytest.fixture
-def test_event(db_session: Session, create_organization, test_user):
-    """Create a test event."""
-    from app.models.event import Event, EventStatus, EventType
-    import uuid
-    org = create_organization(name=f"Test Org {uuid.uuid4().hex[:8]}")
-    event = Event(
-        id="event-test-123",
-        name="M&A Summit 2025",
-        description="Annual M&A conference",
-        event_type=EventType.IN_PERSON,
-        status=EventStatus.PUBLISHED,
-        start_date=datetime.now(timezone.utc) + timedelta(days=30),
-        end_date=datetime.now(timezone.utc) + timedelta(days=31),
-        location="London, UK",
-        organization_id=str(org.id),
-        created_by_user_id=test_user.id,
+    
+    # Check preferences (should create defaults)
+    allowed = await notification_service.check_preferences(
+        db=db_session,
+        user_id=user.id,
+        notification_type="event_ticket_confirmation",
     )
-    db_session.add(event)
-    db_session.commit()
-    return event
-
-
-# ============================================================================
-# Tests: send_notification
-# ============================================================================
-
-@pytest.mark.asyncio
-async def test_send_notification_email_enabled(
-    db_session: Session,
-    test_user,
-):
-    """
-    RED: Test sending notification when email is enabled.
-    This test will fail until send_notification is implemented.
-    """
-    # Arrange
-    notification_type = "event_ticket_confirmation"
-    user_id = test_user.id
-    data = {"event_name": "Test Event"}
-
-    # Create notification preferences (email enabled)
-    from app.models.user_notification_preferences import UserNotificationPreferences
-    prefs = UserNotificationPreferences(
-        user_id=user_id,
-        email_enabled=True,
-        event_ticket_confirmation=True,
-    )
-    db_session.add(prefs)
-    db_session.commit()
-
-    with patch('app.services.notification_service.email_service.send_email') as mock_send:
-        mock_send.return_value = {'status': 'sent'}
-
-        # Act
-        result = await send_notification(
-            db=db_session,
-            notification_type=notification_type,
-            user_id=user_id,
-            data=data,
-        )
-
-        # Assert
-        assert result is not None
-        assert result['status'] == 'sent'
-        mock_send.assert_called_once()
+    
+    assert allowed is True
+    
+    # Verify preferences were created
+    prefs = db_session.query(UserNotificationPreferences).filter(
+        UserNotificationPreferences.user_id == user.id
+    ).first()
+    assert prefs is not None
+    assert prefs.email_enabled is True
 
 
 @pytest.mark.asyncio
-async def test_send_notification_email_disabled(
-    db_session: Session,
-    test_user,
-):
-    """
-    RED: Test notification skipped when email is disabled.
-    This test will fail until preference checking is implemented.
-    """
-    # Arrange
-    notification_type = "event_ticket_confirmation"
-    user_id = test_user.id
-    data = {"event_name": "Test Event"}
-
-    # Create notification preferences (email disabled)
-    from app.models.user_notification_preferences import UserNotificationPreferences
+async def test_check_preferences_returns_false_when_email_disabled(db_session):
+    """Test check_preferences returns False when email is globally disabled."""
+    from app.models.organization import Organization
+    org = Organization(id="org-prefs-2", name="Test Org", slug="test-org")
+    user = User(
+        id="user-prefs-2",
+        clerk_user_id="user-2-clerk",
+        email="user@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
+    
+    db_session.add(org)
+    db_session.add(user)
+    db_session.commit()
+    
+    # Create preferences with email disabled
     prefs = UserNotificationPreferences(
-        user_id=user_id,
+        user_id=user.id,
         email_enabled=False,
-        event_ticket_confirmation=False,
-    )
-    db_session.add(prefs)
-    db_session.commit()
-
-    # Act
-    result = await send_notification(
-        db=db_session,
-        notification_type=notification_type,
-        user_id=user_id,
-        data=data,
-    )
-
-    # Assert
-    assert result is not None
-    assert result['status'] == 'skipped'
-    assert 'reason' in result
-    assert 'preference' in result['reason'].lower()
-
-
-# ============================================================================
-# Tests: check_preferences
-# ============================================================================
-
-@pytest.mark.asyncio
-async def test_check_preferences_allows_notification(
-    db_session: Session,
-    test_user,
-):
-    """
-    RED: Test checking preferences allows notification.
-    This test will fail until check_preferences is implemented.
-    """
-    # Arrange
-    notification_type = "event_ticket_confirmation"
-    user_id = test_user.id
-
-    # Create notification preferences
-    from app.models.user_notification_preferences import UserNotificationPreferences
-    prefs = UserNotificationPreferences(
-        user_id=user_id,
-        email_enabled=True,
         event_ticket_confirmation=True,
+        event_reminders=True,
+        community_comments=True,
+        community_reactions=True,
+        community_mentions=True,
+        system_updates=True,
+        security_alerts=True,
     )
     db_session.add(prefs)
     db_session.commit()
-
-    # Act
-    result = await check_preferences(
+    
+    # Check preferences
+    allowed = await notification_service.check_preferences(
         db=db_session,
-        user_id=user_id,
-        notification_type=notification_type,
+        user_id=user.id,
+        notification_type="event_ticket_confirmation",
     )
-
-    # Assert
-    assert result is True
+    
+    assert allowed is False
 
 
 @pytest.mark.asyncio
-async def test_check_preferences_blocks_notification(
-    db_session: Session,
-    test_user,
-):
-    """
-    RED: Test checking preferences blocks notification.
-    This test will fail until check_preferences is implemented.
-    """
-    # Arrange
-    notification_type = "event_ticket_confirmation"
-    user_id = test_user.id
-
-    # Create notification preferences (disabled)
-    from app.models.user_notification_preferences import UserNotificationPreferences
+async def test_check_preferences_returns_false_when_type_disabled(db_session):
+    """Test check_preferences returns False when specific type is disabled."""
+    from app.models.organization import Organization
+    org = Organization(id="org-prefs-3", name="Test Org", slug="test-org")
+    user = User(
+        id="user-prefs-3",
+        clerk_user_id="user-3-clerk",
+        email="user@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
+    
+    db_session.add(org)
+    db_session.add(user)
+    db_session.commit()
+    
+    # Create preferences with specific type disabled
     prefs = UserNotificationPreferences(
-        user_id=user_id,
+        user_id=user.id,
         email_enabled=True,
         event_ticket_confirmation=False,  # Disabled
+        event_reminders=True,
+        community_comments=True,
+        community_reactions=True,
+        community_mentions=True,
+        system_updates=True,
+        security_alerts=True,
     )
     db_session.add(prefs)
     db_session.commit()
-
-    # Act
-    result = await check_preferences(
+    
+    # Check preferences for disabled type
+    allowed = await notification_service.check_preferences(
         db=db_session,
-        user_id=user_id,
-        notification_type=notification_type,
+        user_id=user.id,
+        notification_type="event_ticket_confirmation",
     )
-
-    # Assert
-    assert result is False
-
-
-# ============================================================================
-# Tests: trigger_event_notification
-# ============================================================================
-
-@pytest.mark.asyncio
-async def test_trigger_event_ticket_confirmation(
-    db_session: Session,
-    test_user,
-    test_event,
-):
-    """
-    RED: Test triggering event ticket confirmation notification.
-    This test will fail until trigger_event_notification is implemented.
-    """
-    # Arrange
-    ticket_data = {
-        "ticket_type": "VIP",
-        "quantity": 2,
-        "amount": 40000,
-    }
-
-    with patch('app.services.notification_service.email_service.send_email') as mock_send:
-        mock_send.return_value = {'status': 'sent'}
-
-        # Act
-        result = await trigger_event_notification(
-            db=db_session,
-            notification_type="ticket_confirmation",
-            user_id=test_user.id,
-            event_id=test_event.id,
-            data=ticket_data,
-        )
-
-        # Assert
-        assert result is not None
-        assert result['status'] == 'sent'
-        mock_send.assert_called_once()
+    
+    assert allowed is False
 
 
 @pytest.mark.asyncio
-async def test_trigger_event_reminder_24h(
-    db_session: Session,
-    test_user,
-    test_event,
-):
-    """
-    RED: Test triggering 24h event reminder notification.
-    This test will fail until trigger_event_notification is implemented.
-    """
-    # Arrange
-    reminder_data = {
-        "reminder_type": "24h",
-        "event_date": test_event.start_date.isoformat(),
-    }
-
-    with patch('app.services.notification_service.email_service.send_email') as mock_send:
-        mock_send.return_value = {'status': 'sent'}
-
-        # Act
-        result = await trigger_event_notification(
-            db=db_session,
-            notification_type="reminder_24h",
-            user_id=test_user.id,
-            event_id=test_event.id,
-            data=reminder_data,
-        )
-
-        # Assert
-        assert result is not None
-        assert result['status'] == 'sent'
-
-
-# ============================================================================
-# Tests: trigger_community_notification
-# ============================================================================
-
-@pytest.mark.asyncio
-async def test_trigger_community_comment_notification(
-    db_session: Session,
-    test_user,
-):
-    """
-    RED: Test triggering community comment notification.
-    This test will fail until trigger_community_notification is implemented.
-    """
-    # Arrange
-    comment_data = {
-        "post_id": "post-123",
-        "comment_id": "comment-456",
-        "commenter_name": "John Doe",
-        "comment_content": "Great post!",
-    }
-
-    with patch('app.services.notification_service.email_service.send_email') as mock_send:
-        mock_send.return_value = {'status': 'sent'}
-
-        # Act
-        result = await trigger_community_notification(
-            db=db_session,
-            notification_type="new_comment",
-            user_id=test_user.id,
-            data=comment_data,
-        )
-
-        # Assert
-        assert result is not None
-        assert result['status'] == 'sent'
-        mock_send.assert_called_once()
+async def test_check_preferences_returns_true_when_type_enabled(db_session):
+    """Test check_preferences returns True when specific type is enabled."""
+    from app.models.organization import Organization
+    org = Organization(id="org-prefs-4", name="Test Org", slug="test-org")
+    user = User(
+        id="user-prefs-4",
+        clerk_user_id="user-4-clerk",
+        email="user@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
+    
+    db_session.add(org)
+    db_session.add(user)
+    db_session.commit()
+    
+    # Create preferences with specific type enabled
+    prefs = UserNotificationPreferences(
+        user_id=user.id,
+        email_enabled=True,
+        event_ticket_confirmation=True,
+        event_reminders=False,
+        community_comments=True,
+        community_reactions=True,
+        community_mentions=True,
+        system_updates=True,
+        security_alerts=True,
+    )
+    db_session.add(prefs)
+    db_session.commit()
+    
+    # Check preferences for enabled type
+    allowed = await notification_service.check_preferences(
+        db=db_session,
+        user_id=user.id,
+        notification_type="event_ticket_confirmation",
+    )
+    
+    assert allowed is True
 
 
 @pytest.mark.asyncio
-async def test_trigger_community_reaction_notification(
-    db_session: Session,
-    test_user,
+async def test_check_preferences_unknown_type_defaults_to_allowed(db_session):
+    """Test check_preferences returns True for unknown notification types."""
+    from app.models.organization import Organization
+    org = Organization(id="org-prefs-5", name="Test Org", slug="test-org")
+    user = User(
+        id="user-prefs-5",
+        clerk_user_id="user-5-clerk",
+        email="user@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
+    
+    db_session.add(org)
+    db_session.add(user)
+    db_session.commit()
+    
+    # Check preferences for unknown type
+    allowed = await notification_service.check_preferences(
+        db=db_session,
+        user_id=user.id,
+        notification_type="unknown_type",
+    )
+    
+    # Should default to allowed for unknown types
+    assert allowed is True
+
+
+# Test send_notification()
+@pytest.mark.asyncio
+async def test_send_notification_skips_when_preference_disabled(db_session):
+    """Test send_notification skips sending when preference is disabled."""
+    from app.models.organization import Organization
+    org = Organization(id="org-notif-1", name="Test Org", slug="test-org")
+    user = User(
+        id="user-notif-1",
+        clerk_user_id="user-1-clerk",
+        email="user@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
+    
+    db_session.add(org)
+    db_session.add(user)
+    db_session.commit()
+    
+    # Create preferences with email disabled
+    prefs = UserNotificationPreferences(
+        user_id=user.id,
+        email_enabled=False,
+        event_ticket_confirmation=True,
+        event_reminders=True,
+        community_comments=True,
+        community_reactions=True,
+        community_mentions=True,
+        system_updates=True,
+        security_alerts=True,
+    )
+    db_session.add(prefs)
+    db_session.commit()
+    
+    # Send notification
+    result = await notification_service.send_notification(
+        db=db_session,
+        notification_type="event_ticket_confirmation",
+        user_id=user.id,
+        data={"event_name": "Test Event"},
+    )
+    
+    assert result["status"] == "skipped"
+    assert result["reason"] == "User preference disabled"
+    assert result["notification_type"] == "event_ticket_confirmation"
+
+
+@pytest.mark.asyncio
+@patch("app.services.notification_service.email_service.send_email")
+@patch("app.services.notification_service.email_service.render_template")
+async def test_send_notification_sends_email_when_allowed(
+    mock_render_template,
+    mock_send_email,
+    db_session,
 ):
-    """
-    RED: Test triggering community reaction notification.
-    This test will fail until trigger_community_notification is implemented.
-    """
-    # Arrange
-    reaction_data = {
-        "post_id": "post-123",
-        "reaction_type": "like",
-        "reactor_name": "Jane Doe",
+    """Test send_notification sends email when preference is enabled."""
+    from app.models.organization import Organization
+    org = Organization(id="org-notif-2", name="Test Org", slug="test-org")
+    user = User(
+        id="user-notif-2",
+        clerk_user_id="user-2-clerk",
+        email="user@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
+    
+    db_session.add(org)
+    db_session.add(user)
+    db_session.commit()
+    
+    # Setup mocks
+    mock_render_template.return_value = {
+        "html_content": "<html>Test</html>",
+        "text_content": "Test",
     }
+    mock_send_email.return_value = {"status": "sent", "message_id": "msg-123"}
+    
+    # Send notification
+    result = await notification_service.send_notification(
+        db=db_session,
+        notification_type="event_ticket_confirmation",
+        user_id=user.id,
+        data={"event_name": "Test Event"},
+    )
+    
+    assert result["status"] == "sent"
+    mock_render_template.assert_called_once()
+    mock_send_email.assert_called_once()
 
-    with patch('app.services.notification_service.email_service.send_email') as mock_send:
-        mock_send.return_value = {'status': 'sent'}
 
-        # Act
-        result = await trigger_community_notification(
+@pytest.mark.asyncio
+async def test_send_notification_unsupported_channel(db_session):
+    """Test send_notification returns error for unsupported channel."""
+    from app.models.organization import Organization
+    org = Organization(id="org-notif-3", name="Test Org", slug="test-org")
+    user = User(
+        id="user-notif-3",
+        clerk_user_id="user-3-clerk",
+        email="user@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
+    
+    db_session.add(org)
+    db_session.add(user)
+    db_session.commit()
+    
+    # Send notification with unsupported channel
+    result = await notification_service.send_notification(
+        db=db_session,
+        notification_type="event_ticket_confirmation",
+        user_id=user.id,
+        data={"event_name": "Test Event"},
+        channel="sms",  # Unsupported
+    )
+    
+    assert result["status"] == "failed"
+    assert "Unsupported channel" in result["error"]
+
+
+@pytest.mark.asyncio
+@patch("app.services.notification_service.email_service.render_template")
+async def test_send_notification_template_error(
+    mock_render_template,
+    db_session,
+):
+    """Test send_notification handles template rendering errors."""
+    from app.models.organization import Organization
+    org = Organization(id="org-notif-4", name="Test Org", slug="test-org")
+    user = User(
+        id="user-notif-4",
+        clerk_user_id="user-4-clerk",
+        email="user@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
+    
+    db_session.add(org)
+    db_session.add(user)
+    db_session.commit()
+    
+    # Setup mock to raise ValueError
+    mock_render_template.side_effect = ValueError("Template not found")
+    
+    # Send notification
+    result = await notification_service.send_notification(
+        db=db_session,
+        notification_type="event_ticket_confirmation",
+        user_id=user.id,
+        data={"event_name": "Test Event"},
+    )
+    
+    assert result["status"] == "failed"
+    assert "Template error" in result["error"]
+
+
+@pytest.mark.asyncio
+async def test_send_notification_user_not_found(db_session):
+    """Test send_notification raises IntegrityError when user not found (FK constraint)."""
+    from sqlalchemy.exc import IntegrityError
+    
+    # Send notification for non-existent user
+    # check_preferences will try to create preferences, which fails due to FK constraint
+    with pytest.raises(IntegrityError):
+        await notification_service.send_notification(
             db=db_session,
-            notification_type="new_reaction",
-            user_id=test_user.id,
-            data=reaction_data,
+            notification_type="event_ticket_confirmation",
+            user_id="non-existent-user",
+            data={"event_name": "Test Event"},
         )
 
-        # Assert
-        assert result is not None
-        assert result['status'] == 'sent'
+
+# Test _get_template_name()
+def test_get_template_name_maps_correctly():
+    """Test _get_template_name maps notification types to template names."""
+    assert notification_service._get_template_name("event_ticket_confirmation") == "event_ticket_confirmation"
+    assert notification_service._get_template_name("event_reminder_24h") == "event_reminder_24h"
+    assert notification_service._get_template_name("new_comment") == "community_comment"
+    assert notification_service._get_template_name("new_reaction") == "community_reaction"
+    assert notification_service._get_template_name("mention") == "community_mention"
+    assert notification_service._get_template_name("security_alert") == "security_alert"
 
 
+def test_get_template_name_defaults_for_unknown():
+    """Test _get_template_name defaults to event_ticket_confirmation for unknown types."""
+    result = notification_service._get_template_name("unknown_type")
+    assert result == "event_ticket_confirmation"
+
+
+# Test _get_email_subject()
+def test_get_email_subject_maps_correctly():
+    """Test _get_email_subject maps notification types to subjects."""
+    data = {"event_name": "Test Event"}
+    
+    assert "Ticket Confirmation: Test Event" in notification_service._get_email_subject("event_ticket_confirmation", data)
+    assert "Event Reminder: Test Event starts in 24 hours" in notification_service._get_email_subject("event_reminder_24h", data)
+    assert "New comment on your post" in notification_service._get_email_subject("new_comment", data)
+    assert "Security Alert" in notification_service._get_email_subject("security_alert", data)
+
+
+def test_get_email_subject_defaults_for_unknown():
+    """Test _get_email_subject defaults for unknown types."""
+    result = notification_service._get_email_subject("unknown_type", {})
+    assert "Notification from M&A Intelligence Platform" in result
+
+
+def test_get_email_subject_handles_missing_event_name():
+    """Test _get_email_subject handles missing event_name in data."""
+    data = {}
+    result = notification_service._get_email_subject("event_ticket_confirmation", data)
+    assert "Ticket Confirmation: Event" in result

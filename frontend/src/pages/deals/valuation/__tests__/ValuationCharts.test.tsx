@@ -3,14 +3,29 @@
  * TDD: RED → GREEN → REFACTOR
  */
 
+import React from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ValuationComparisonChart } from '../components/ValuationComparisonChart'
 
 vi.mock('@/hooks/useRecharts', () => {
-  const recharts = require('recharts')
+  const ChartWrapper = ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="mock-chart">{children}</div>
+  )
+
+  const stub = {
+    ResponsiveContainer: ChartWrapper,
+    BarChart: ChartWrapper,
+    CartesianGrid: () => <div data-testid="mock-grid" />, 
+    XAxis: () => <div data-testid="mock-x" />, 
+    YAxis: () => <div data-testid="mock-y" />, 
+    Tooltip: () => null,
+    Legend: () => null,
+    Bar: () => <div data-testid="mock-bar" />, 
+  }
+
   return {
-    useRecharts: () => recharts,
+    useRecharts: () => stub,
   }
 })
 

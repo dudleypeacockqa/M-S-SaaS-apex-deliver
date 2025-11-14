@@ -306,6 +306,8 @@ def create_test_episode(
     created_by: str = "user-123",
 ) -> PodcastEpisode:
     """Create a seeded podcast episode for tests."""
+    # Ensure org and user exist first (required for FK constraints)
+    _ensure_org_and_user(db, organization_id=organization_id, user_id=created_by)
 
     episode = podcast_service.create_episode(
         db=db,
@@ -342,6 +344,7 @@ def _ensure_org_and_user(db: Session, *, organization_id: str, user_id: str) -> 
             subscription_tier="premium",
         )
         db.add(organization)
+        db.flush()  # Flush to get org.id before creating user
 
     user = db.get(User, user_id)
     if user is None:

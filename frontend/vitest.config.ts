@@ -33,6 +33,8 @@ const defaultThreadTarget = Math.max(1, Math.min(resolveWorkerCount(), 8))
 const threadCount = Math.max(1, Math.min(resolveWorkerCount(), resolveThreadOverride() ?? defaultThreadTarget))
 const singleThread = threadCount === 1
 
+const poolMode = (process.env.VITEST_POOL as 'forks' | 'threads' | 'vmThreads' | undefined) ?? 'vmThreads'
+
 const reactPluginModule = await import('@vitejs/plugin-react').catch(() => ({
   default: () => ({
     name: 'noop-react-plugin',
@@ -59,15 +61,69 @@ await fs.mkdir(coverageTempDir, { recursive: true }).catch(() => {
 export default defineConfig({
   plugins: [react()],
   ssr: {
-    noExternal: ['react-router', 'react-router-dom'],
+    noExternal: ['react-router', 'react-router-dom', '@reduxjs/toolkit', 'recharts'],
   },
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-      'is-potential-custom-element-name': path.resolve(__dirname, 'src/test/stubs/isPotentialCustomElementName.ts'),
-      'tr46': path.resolve(__dirname, 'src/test/stubs/tr46.ts'),
-      'react-router/dom': path.resolve(__dirname, 'src/test/shims/reactRouterDom.ts'),
-    },
+    alias: [
+      { find: '@', replacement: path.resolve(__dirname, 'src') },
+      {
+        find: 'is-potential-custom-element-name',
+        replacement: path.resolve(
+          __dirname,
+          'src/test/stubs/isPotentialCustomElementName.ts',
+        ),
+      },
+      { find: 'tr46', replacement: path.resolve(__dirname, 'src/test/stubs/tr46.ts') },
+      {
+        find: 'react-router/dom',
+        replacement: path.resolve(
+          __dirname,
+          'node_modules/react-router/dist/development/dom-export.mjs',
+        ),
+      },
+      {
+        find: 'react-router/dist/development/dom-export.js',
+        replacement: path.resolve(
+          __dirname,
+          'node_modules/react-router/dist/development/dom-export.mjs',
+        ),
+      },
+      {
+        find: 'react-router',
+        replacement: path.resolve(
+          __dirname,
+          'node_modules/react-router/dist/development/index.mjs',
+        ),
+      },
+      {
+        find: 'react-router/dist/development/index.js',
+        replacement: path.resolve(
+          __dirname,
+          'node_modules/react-router/dist/development/index.mjs',
+        ),
+      },
+      {
+        find: 'react-router-dom',
+        replacement: path.resolve(
+          __dirname,
+          'node_modules/react-router-dom/dist/index.mjs',
+        ),
+      },
+      {
+        find: 'react-router-dom/dist/index.js',
+        replacement: path.resolve(
+          __dirname,
+          'node_modules/react-router-dom/dist/index.mjs',
+        ),
+      },
+      {
+        find: '@reduxjs/toolkit',
+        replacement: path.resolve(
+          __dirname,
+          'node_modules/@reduxjs/toolkit/dist/redux-toolkit.modern.mjs',
+        ),
+      },
+    ],
   },
   test: {
     globals: true,
@@ -76,12 +132,18 @@ export default defineConfig({
     testTimeout: 90000,
     hookTimeout: 90000,
     teardownTimeout: 90000,
-    pool: 'forks',
+    pool: poolMode,
     poolOptions: {
       forks: {
         singleFork: true,
       },
       threads: {
+        singleThread,
+        isolate: false,
+        maxThreads: threadCount,
+        minThreads: 1,
+      },
+      vmThreads: {
         singleThread,
         isolate: false,
         maxThreads: threadCount,
@@ -97,11 +159,14 @@ export default defineConfig({
     },
     server: {
       deps: {
-        inline: ['react-router', 'react-router-dom'],
+        inline: ['react-router', 'react-router-dom', '@reduxjs/toolkit', 'recharts'],
       },
     },
     deps: {
-      inline: ['react-router', 'react-router-dom'],
+      inline: ['react-router', 'react-router-dom', '@reduxjs/toolkit', 'recharts'],
+      optimizer: {
+        enabled: false,
+      },
     },
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     exclude: [

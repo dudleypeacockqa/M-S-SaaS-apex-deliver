@@ -107,7 +107,7 @@ export const DocumentExporter: React.FC<DocumentExporterProps> = ({
           disabled={exporting}
           className="inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {exporting ? 'Queuing export…' : 'Queue export'}
+          {exporting ? 'Preparing exportâ€¦' : 'Download document'}
         </button>
       </form>
     </section>

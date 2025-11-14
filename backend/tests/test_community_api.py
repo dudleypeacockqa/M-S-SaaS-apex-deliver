@@ -41,7 +41,7 @@ from app.models.organization import Organization
 # ============================================================================
 
 @pytest.fixture(autouse=True)
-def setup_auth(solo_user, request):
+def setup_auth(solo_user, request, dependency_overrides):
     """Automatically set up authentication for all tests."""
     # Skip auth setup for tests that explicitly test authentication
     if 'requires_authentication' in request.node.name:
@@ -49,18 +49,9 @@ def setup_auth(solo_user, request):
         return
     
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
     
-    # Override the dependency to return our test solo user
-    def override_get_current_user():
-        return solo_user
-    
-    app.dependency_overrides[get_current_user] = override_get_current_user
-    
+    dependency_overrides(get_current_user, lambda: solo_user)
     yield
-    
-    # Clean up override after test
-    app.dependency_overrides.pop(get_current_user, None)
 
 
 @pytest.fixture

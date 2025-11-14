@@ -1,6 +1,6 @@
 import React from 'react'
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
-import { act, screen, waitFor } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { renderWithQueryClient } from '../../setupTests'
@@ -25,12 +25,7 @@ describe('DocumentExportQueuePanel', () => {
     vi.mocked(api.listDocumentExportJobs).mockResolvedValue([])
   })
 
-  afterEach(() => {
-    vi.useRealTimers()
-  })
-
   it('queues an export and polls until ready', async () => {
-    vi.useFakeTimers()
     const api = await apiPromise
 
     vi.mocked(api.queueDocumentExport).mockResolvedValueOnce({
@@ -59,21 +54,12 @@ describe('DocumentExportQueuePanel', () => {
       <DocumentExportQueuePanel documentId="doc-123" pollIntervalMs={50} />,
     )
 
-    const queueButton = await screen.findByRole('button', { name: /queue export/i })
+    const queueButton = screen.getByRole('button', { name: /download document/i })
     await userEvent.click(queueButton)
 
     await waitFor(() => expect(api.queueDocumentExport).toHaveBeenCalled())
-
-    await act(async () => {
-      vi.advanceTimersByTime(50)
-    })
-
     await waitFor(() => expect(api.getDocumentExportJob).toHaveBeenCalled())
-
-    await act(async () => {
-      vi.advanceTimersByTime(50)
-    })
-
+    await waitFor(() => expect(api.getDocumentExportJob).toHaveBeenCalledTimes(2))
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /download export/i })).toBeInTheDocument()
     })
@@ -94,7 +80,7 @@ describe('DocumentExportQueuePanel', () => {
 
     renderWithQueryClient(<DocumentExportQueuePanel documentId="doc-123" />)
 
-    const queueButton = await screen.findByRole('button', { name: /queue export/i })
+    const queueButton = screen.getByRole('button', { name: /download document/i })
     await userEvent.click(queueButton)
 
     await waitFor(
@@ -121,6 +107,16 @@ describe('DocumentExportQueuePanel', () => {
         completed_at: null,
       },
     ])
+    vi.mocked(api.getDocumentExportJob).mockResolvedValue({
+      task_id: 'task-existing',
+      document_id: 'doc-123',
+      format: 'text/html',
+      status: 'processing',
+      download_url: null,
+      failure_reason: null,
+      queued_at: '2025-11-14T10:00:00Z',
+      completed_at: null,
+    })
 
     renderWithQueryClient(<DocumentExportQueuePanel documentId="doc-123" />)
 

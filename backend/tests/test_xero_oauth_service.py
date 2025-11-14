@@ -25,19 +25,40 @@ from app.services.xero_oauth_service import (
 from app.models.financial_connection import FinancialConnection
 from app.models.deal import Deal
 from app.models.organization import Organization
+from app.models.user import User
+
+
+# ============================================================================
+# HELPER FUNCTIONS
+# ============================================================================
+
+def _create_org_user_deal(db_session, create_user, create_organization, org_name="Test Org", deal_id=None, user_id=None):
+    """Helper to create org, user, and deal with valid foreign keys."""
+    org = create_organization(name=org_name, subscription_tier="professional")
+    user = create_user(organization_id=org.id, role="solo", email=f"{org_name.lower().replace(' ', '_')}@example.com")
+    deal = Deal(
+        id=deal_id or f"deal-{org.id}",
+        organization_id=org.id,
+        name=f"Deal for {org_name}",
+        target_company="Target Company",
+        owner_id=user.id
+    )
+    db_session.add(deal)
+    db_session.commit()
+    return org, user, deal
 
 
 # ============================================================================
 # OAUTH FLOW TESTS
 # ============================================================================
 
-def test_initiate_xero_oauth_generates_authorization_url(db_session):
+def test_initiate_xero_oauth_generates_authorization_url(db_session, create_user, create_organization):
     """Test that initiating OAuth returns Xero authorization URL."""
-    # Arrange
-    org = Organization(id="org-1", name="Test Org", slug="test-org")
+    # Arrange - Create proper org, user, and deal with valid foreign keys
+    org = create_organization(name="Test Org", subscription_tier="professional")
+    user = create_user(organization_id=org.id, role="solo", email="test@example.com")
     deal = Deal(id="deal-1", organization_id=org.id, name="Test Deal",
-                target_company="Target", owner_id="user-1")
-    db_session.add(org)
+                target_company="Target", owner_id=user.id)
     db_session.add(deal)
     db_session.commit()
 
@@ -62,13 +83,13 @@ def test_initiate_xero_oauth_with_invalid_deal(db_session):
 
 
 @patch("app.services.xero_oauth_service.xero_client")
-def test_handle_xero_callback_success(mock_xero_client, db_session):
+def test_handle_xero_callback_success(mock_xero_client, db_session, create_user, create_organization):
     """Test successful OAuth callback creates connection with tokens."""
-    # Arrange
-    org = Organization(id="org-2", name="Org 2", slug="org-2")
+    # Arrange - Create proper org, user, and deal with valid foreign keys
+    org = create_organization(name="Org 2", subscription_tier="professional")
+    user = create_user(organization_id=org.id, role="solo", email="test2@example.com")
     deal = Deal(id="deal-2", organization_id=org.id, name="Deal 2",
-                target_company="Target 2", owner_id="user-2")
-    db_session.add(org)
+                target_company="Target 2", owner_id=user.id)
     db_session.add(deal)
     db_session.commit()
 
@@ -109,14 +130,9 @@ def test_handle_xero_callback_success(mock_xero_client, db_session):
 
 
 @patch("app.services.xero_oauth_service.xero_client")
-def test_handle_xero_callback_token_exchange_failure(mock_xero_client, db_session):
+def test_handle_xero_callback_token_exchange_failure(mock_xero_client, db_session, create_user, create_organization):
     """Test OAuth callback when Xero token exchange fails."""
-    org = Organization(id="org-3", name="Org 3", slug="org-3")
-    deal = Deal(id="deal-3", organization_id=org.id, name="Deal 3",
-                target_company="Target 3", owner_id="user-3")
-    db_session.add(org)
-    db_session.add(deal)
-    db_session.commit()
+    org, user, deal = _create_org_user_deal(db_session, create_user, create_organization, "Org 3", "deal-3")
 
     # Mock Xero API error
     mock_xero_client.exchange_code_for_token.side_effect = Exception("Invalid authorization code")
@@ -136,12 +152,10 @@ def test_handle_xero_callback_token_exchange_failure(mock_xero_client, db_sessio
 # ============================================================================
 
 @patch("app.services.xero_oauth_service.xero_client")
-def test_refresh_xero_token_success(mock_xero_client, db_session):
+def test_refresh_xero_token_success(mock_xero_client, db_session, create_user, create_organization):
     """Test successful token refresh updates connection."""
     # Arrange
-    org = Organization(id="org-4", name="Org 4", slug="org-4")
-    deal = Deal(id="deal-4", organization_id=org.id, name="Deal 4",
-                target_company="Target 4", owner_id="user-4")
+    org, user, deal = _create_org_user_deal(db_session, create_user, create_organization, "Org 4", "deal-4")
 
     # Create existing connection with expired token
     connection = FinancialConnection(
@@ -156,8 +170,6 @@ def test_refresh_xero_token_success(mock_xero_client, db_session):
         token_expires_at=datetime.now(timezone.utc) - timedelta(hours=1)  # Expired
     )
 
-    db_session.add(org)
-    db_session.add(deal)
     db_session.add(connection)
     db_session.commit()
 
@@ -181,11 +193,9 @@ def test_refresh_xero_token_success(mock_xero_client, db_session):
 
 
 @patch("app.services.xero_oauth_service.xero_client")
-def test_refresh_xero_token_when_refresh_fails(mock_xero_client, db_session):
+def test_refresh_xero_token_when_refresh_fails(mock_xero_client, db_session, create_user, create_organization):
     """Test token refresh failure marks connection as expired."""
-    org = Organization(id="org-5", name="Org 5", slug="org-5")
-    deal = Deal(id="deal-5", organization_id=org.id, name="Deal 5",
-                target_company="Target 5", owner_id="user-5")
+    org, user, deal = _create_org_user_deal(db_session, create_user, create_organization, "Org 5", "deal-5")
 
     connection = FinancialConnection(
         id="conn-2",
@@ -198,8 +208,6 @@ def test_refresh_xero_token_when_refresh_fails(mock_xero_client, db_session):
         connection_status="active"
     )
 
-    db_session.add(org)
-    db_session.add(deal)
     db_session.add(connection)
     db_session.commit()
 
@@ -220,11 +228,9 @@ def test_refresh_xero_token_when_refresh_fails(mock_xero_client, db_session):
 # ============================================================================
 
 @patch("app.services.xero_oauth_service.xero_client")
-def test_fetch_xero_statements_imports_balance_sheet(mock_xero_client, db_session):
+def test_fetch_xero_statements_imports_balance_sheet(mock_xero_client, db_session, create_user, create_organization):
     """Test fetching statements from Xero imports balance sheet data."""
-    org = Organization(id="org-6", name="Org 6", slug="org-6")
-    deal = Deal(id="deal-6", organization_id=org.id, name="Deal 6",
-                target_company="Target 6", owner_id="user-6")
+    org, user, deal = _create_org_user_deal(db_session, create_user, create_organization, "Org 6", "deal-6")
 
     connection = FinancialConnection(
         id="conn-3",
@@ -238,8 +244,6 @@ def test_fetch_xero_statements_imports_balance_sheet(mock_xero_client, db_sessio
         token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1)
     )
 
-    db_session.add(org)
-    db_session.add(deal)
     db_session.add(connection)
     db_session.commit()
 
@@ -297,11 +301,9 @@ def test_fetch_xero_statements_imports_balance_sheet(mock_xero_client, db_sessio
 
 
 @patch("app.services.xero_oauth_service.xero_client")
-def test_fetch_xero_statements_with_expired_token(mock_xero_client, db_session):
+def test_fetch_xero_statements_with_expired_token(mock_xero_client, db_session, create_user, create_organization):
     """Test fetching statements auto-refreshes expired token."""
-    org = Organization(id="org-7", name="Org 7", slug="org-7")
-    deal = Deal(id="deal-7", organization_id=org.id, name="Deal 7",
-                target_company="Target 7", owner_id="user-7")
+    org, user, deal = _create_org_user_deal(db_session, create_user, create_organization, "Org 7", "deal-7")
 
     connection = FinancialConnection(
         id="conn-4",
@@ -315,8 +317,6 @@ def test_fetch_xero_statements_with_expired_token(mock_xero_client, db_session):
         token_expires_at=datetime.now(timezone.utc) - timedelta(hours=1)  # Expired
     )
 
-    db_session.add(org)
-    db_session.add(deal)
     db_session.add(connection)
     db_session.commit()
 
@@ -344,11 +344,9 @@ def test_fetch_xero_statements_with_expired_token(mock_xero_client, db_session):
 # CONNECTION MANAGEMENT TESTS
 # ============================================================================
 
-def test_disconnect_xero_removes_connection(db_session):
+def test_disconnect_xero_removes_connection(db_session, create_user, create_organization):
     """Test disconnecting Xero deletes connection record."""
-    org = Organization(id="org-8", name="Org 8", slug="org-8")
-    deal = Deal(id="deal-8", organization_id=org.id, name="Deal 8",
-                target_company="Target 8", owner_id="user-8")
+    org, user, deal = _create_org_user_deal(db_session, create_user, create_organization, "Org 8", "deal-8")
 
     connection = FinancialConnection(
         id="conn-5",
@@ -361,8 +359,6 @@ def test_disconnect_xero_removes_connection(db_session):
         connection_status="active"
     )
 
-    db_session.add(org)
-    db_session.add(deal)
     db_session.add(connection)
     db_session.commit()
 
@@ -377,11 +373,9 @@ def test_disconnect_xero_removes_connection(db_session):
     assert result.scalar_one_or_none() is None
 
 
-def test_get_xero_connection_status_active(db_session):
+def test_get_xero_connection_status_active(db_session, create_user, create_organization):
     """Test getting connection status for active Xero connection."""
-    org = Organization(id="org-9", name="Org 9", slug="org-9")
-    deal = Deal(id="deal-9", organization_id=org.id, name="Deal 9",
-                target_company="Target 9", owner_id="user-9")
+    org, user, deal = _create_org_user_deal(db_session, create_user, create_organization, "Org 9", "deal-9")
 
     connection = FinancialConnection(
         id="conn-6",
@@ -396,8 +390,6 @@ def test_get_xero_connection_status_active(db_session):
         last_sync_at=datetime.now(timezone.utc) - timedelta(hours=2)
     )
 
-    db_session.add(org)
-    db_session.add(deal)
     db_session.add(connection)
     db_session.commit()
 
@@ -412,15 +404,9 @@ def test_get_xero_connection_status_active(db_session):
     assert "last_sync" in status
 
 
-def test_get_xero_connection_status_not_connected(db_session):
+def test_get_xero_connection_status_not_connected(db_session, create_user, create_organization):
     """Test getting connection status when no Xero connection exists."""
-    org = Organization(id="org-10", name="Org 10", slug="org-10")
-    deal = Deal(id="deal-10", organization_id=org.id, name="Deal 10",
-                target_company="Target 10", owner_id="user-10")
-
-    db_session.add(org)
-    db_session.add(deal)
-    db_session.commit()
+    org, user, deal = _create_org_user_deal(db_session, create_user, create_organization, "Org 10", "deal-10")
 
     # Act
     status = get_xero_connection_status(deal.id, db_session)

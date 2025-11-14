@@ -81,7 +81,8 @@ def test_create_post(db_session, test_org_user):
     assert post.category == PostCategory.general
     assert post.status == PostStatus.published
     assert post.organization_id == test_org_user.organization_id
-    assert post.author_user_id == str(test_org_user.id)
+    # GUID column returns UUID, but User.id is string in fixture, so compare as strings
+    assert str(post.author_user_id) == str(test_org_user.id)
 
 
 def test_get_post_by_id(db_session, test_org_user):
@@ -212,7 +213,8 @@ def test_create_comment(db_session, test_org_user):
     assert comment is not None
     assert comment.content == "Great post!"
     assert comment.post_id == post.id
-    assert comment.author_user_id == str(test_org_user.id)
+    # GUID column returns UUID, but User.id is string in fixture, so compare as strings
+    assert str(comment.author_user_id) == str(test_org_user.id)
 
 
 def test_create_comment_on_nonexistent_post(db_session, test_org_user):
@@ -347,8 +349,9 @@ def test_follow_user(db_session, test_org_user, test_org_user_2):
     follow = community_service.follow_user(follow_data, test_org_user, db_session)
 
     assert follow is not None
-    assert follow.follower_user_id == str(test_org_user.id)
-    assert follow.following_user_id == str(test_org_user_2.id)
+    # GUID columns return UUID, but User.id is string in fixture, so compare as strings
+    assert str(follow.follower_user_id) == str(test_org_user.id)
+    assert str(follow.following_user_id) == str(test_org_user_2.id)
 
 
 def test_follow_user_self(db_session, test_org_user):

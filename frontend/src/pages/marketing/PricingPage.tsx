@@ -15,7 +15,7 @@ export const PricingPage: React.FC = () => {
 
   const handleGetStarted = async (tierName: string) => {
     if (!isSignedIn) {
-      window.location.assign('/sign-in');
+      window.open('/sign-in', '_self');
       return;
     }
 

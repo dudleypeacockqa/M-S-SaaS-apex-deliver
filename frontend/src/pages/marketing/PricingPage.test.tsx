@@ -62,14 +62,12 @@ describe('PricingPage', () => {
   it('redirects unauthenticated users to sign-in when clicking Get Started', async () => {
     renderPricing();
     const user = userEvent.setup();
-    const originalAssign = window.location.assign;
-    const assignMock = vi.fn();
-    Object.defineProperty(window, 'location', { value: { assign: assignMock }, writable: true });
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
 
     await user.click(screen.getByTestId('pricing-cta-starter'));
 
-    expect(assignMock).toHaveBeenCalledWith('/sign-in');
-    Object.defineProperty(window, 'location', { value: { assign: originalAssign } });
+    expect(openSpy).toHaveBeenCalledWith('/sign-in', '_self');
+    openSpy.mockRestore();
   });
 
   it('calls redirectToCheckout for authenticated users selecting Starter', async () => {
@@ -77,14 +75,13 @@ describe('PricingPage', () => {
     renderPricing();
     const user = userEvent.setup();
 
-    const assignMock = vi.fn();
-    const originalAssign = window.location.assign;
-    Object.defineProperty(window, 'location', { value: { assign: assignMock }, writable: true });
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
 
     await user.click(screen.getByTestId('pricing-cta-starter'));
 
     expect(billingService.redirectToCheckout).toHaveBeenCalledWith('starter');
-    Object.defineProperty(window, 'location', { value: { assign: originalAssign } });
+    expect(openSpy).not.toHaveBeenCalled();
+    openSpy.mockRestore();
   });
 
   it('uses correct tier mapping for Professional plan', async () => {

@@ -1065,6 +1065,7 @@ const PrecedentsView = ({ dealId, valuationId }: { dealId: string; valuationId: 
 
 const ScenariosView = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
   const queryClient = useQueryClient()
+  const recharts = useRecharts()
   const { data: scenarios, isLoading } = useQuery({
     queryKey: ['valuations', dealId, valuationId, 'scenarios'],
     queryFn: () => listScenarios(dealId, valuationId),

@@ -7,6 +7,8 @@ import pytest
 from sqlalchemy.orm import Session
 
 from app.models.document_generation import (
+    DocumentTemplate,
+    TemplateStatus,
     GeneratedDocument,
     DocumentStatus,
     DocumentExportJob,
@@ -32,10 +34,22 @@ class TestDocumentExportJobEndpoints:
         from app.main import app
         app.dependency_overrides[get_current_user] = lambda: user
 
-        # Create a document first
+        # Create template first (required for foreign key)
+        template = DocumentTemplate(
+            id="template-123",
+            name="Test Template",
+            content="Test template content",
+            organization_id=str(org.id),
+            created_by_user_id=user.id,
+            status=TemplateStatus.ACTIVE,
+        )
+        db_session.add(template)
+        db_session.flush()
+
+        # Create a document
         document = GeneratedDocument(
             id="doc-export-test-123",
-            template_id="template-123",
+            template_id=template.id,
             generated_content="Test content",
             variable_values={},
             status=DocumentStatus.DRAFT,
@@ -78,10 +92,22 @@ class TestDocumentExportJobEndpoints:
         from app.main import app
         app.dependency_overrides[get_current_user] = lambda: user
 
+        # Create template first (required for foreign key)
+        template = DocumentTemplate(
+            id="template-456",
+            name="Test Template 2",
+            content="Test template content",
+            organization_id=str(org.id),
+            created_by_user_id=user.id,
+            status=TemplateStatus.ACTIVE,
+        )
+        db_session.add(template)
+        db_session.flush()
+
         # Create document and export job
         document = GeneratedDocument(
             id="doc-export-test-456",
-            template_id="template-123",
+            template_id=template.id,
             generated_content="Test content",
             variable_values={},
             status=DocumentStatus.DRAFT,
@@ -129,10 +155,22 @@ class TestDocumentExportJobEndpoints:
         from app.main import app
         app.dependency_overrides[get_current_user] = lambda: user
 
+        # Create template first (required for foreign key)
+        template = DocumentTemplate(
+            id="template-789",
+            name="Test Template 3",
+            content="Test template content",
+            organization_id=str(org.id),
+            created_by_user_id=user.id,
+            status=TemplateStatus.ACTIVE,
+        )
+        db_session.add(template)
+        db_session.flush()
+
         # Create document and multiple export jobs
         document = GeneratedDocument(
             id="doc-export-test-789",
-            template_id="template-123",
+            template_id=template.id,
             generated_content="Test content",
             variable_values={},
             status=DocumentStatus.DRAFT,

@@ -98,18 +98,15 @@ def test_initiate_purchase_success(
     test_event: Event,
     test_ticket: EventTicket,
     test_user: User,
+    dependency_overrides,
 ):
     """
     RED: Test initiating ticket purchase.
     This test will fail until the endpoint is implemented.
     """
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
 
-    # Override auth to use our test user
-    def override_get_current_user():
-        return test_user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    dependency_overrides(get_current_user, lambda: test_user)
 
     with patch('app.services.event_payment_service.create_checkout_session') as mock_create:
         mock_create.return_value = {
@@ -129,9 +126,6 @@ def test_initiate_purchase_success(
             headers={"Authorization": "Bearer test_token"},
         )
 
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
-
     # Assert
     assert response.status_code == 200
     data = response.json()
@@ -144,18 +138,15 @@ def test_initiate_purchase_success(
 def test_initiate_purchase_invalid_event(
     client: TestClient,
     test_user: User,
+    dependency_overrides,
 ):
     """
     RED: Test initiating purchase for non-existent event.
     This test will fail until error handling is implemented.
     """
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
 
-    # Override auth
-    def override_get_current_user():
-        return test_user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    dependency_overrides(get_current_user, lambda: test_user)
 
     # Act
     response = client.post(
@@ -167,9 +158,6 @@ def test_initiate_purchase_invalid_event(
         headers={"Authorization": "Bearer test_token"},
     )
 
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
-
     # Assert
     assert response.status_code == 404
     assert "Event not found" in response.json()['detail']
@@ -179,18 +167,15 @@ def test_initiate_purchase_invalid_ticket_type(
     client: TestClient,
     test_event: Event,
     test_user: User,
+    dependency_overrides,
 ):
     """
     RED: Test initiating purchase with invalid ticket type.
     This test will fail until validation is implemented.
     """
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
 
-    # Override auth
-    def override_get_current_user():
-        return test_user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    dependency_overrides(get_current_user, lambda: test_user)
 
     # Act
     response = client.post(
@@ -201,9 +186,6 @@ def test_initiate_purchase_invalid_ticket_type(
         },
         headers={"Authorization": "Bearer test_token"},
     )
-
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
 
     # Assert
     assert response.status_code == 400
@@ -294,18 +276,15 @@ def test_get_receipt_success(
     db_session,
     test_event: Event,
     test_user: User,
+    dependency_overrides,
 ):
     """
     RED: Test retrieving receipt for payment.
     This test will fail until the endpoint is implemented.
     """
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
 
-    # Override auth
-    def override_get_current_user():
-        return test_user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    dependency_overrides(get_current_user, lambda: test_user)
 
     payment_id = "payment_test_123"
 
@@ -328,9 +307,6 @@ def test_get_receipt_success(
             headers={"Authorization": "Bearer test_token"},
         )
 
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
-
     # Assert
     assert response.status_code == 200
     data = response.json()
@@ -343,27 +319,21 @@ def test_get_receipt_success(
 def test_get_receipt_not_found(
     client: TestClient,
     test_user: User,
+    dependency_overrides,
 ):
     """
     RED: Test retrieving receipt for non-existent payment.
     This test will fail until error handling is implemented.
     """
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
 
-    # Override auth
-    def override_get_current_user():
-        return test_user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    dependency_overrides(get_current_user, lambda: test_user)
 
     # Act
     response = client.get(
         "/api/payments/non-existent-id/receipt",
         headers={"Authorization": "Bearer test_token"},
     )
-
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
 
     # Assert
     assert response.status_code == 404

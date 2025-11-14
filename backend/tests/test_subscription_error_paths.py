@@ -104,7 +104,12 @@ def test_billing_dashboard_no_subscription(client: TestClient, auth_headers_solo
         assert "No subscription found" in response.json()["detail"]
 
 
-def test_billing_dashboard_with_subscription(client: TestClient, db_session: Session, solo_user: User):
+def test_billing_dashboard_with_subscription(
+    client: TestClient,
+    db_session: Session,
+    solo_user: User,
+    dependency_overrides,
+):
     """
     TDD RED: billing_dashboard should execute all query scalars (lines 95, 97, 103, 105, 111-112)
 
@@ -173,16 +178,8 @@ def test_billing_dashboard_with_subscription(client: TestClient, db_session: Ses
     db_session.commit()
 
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
-    def override_get_current_user():
-        return solo_user
-
-    app.dependency_overrides[get_current_user] = override_get_current_user
-    try:
-        response = client.get("/api/billing/billing-dashboard")
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+    dependency_overrides(get_current_user, lambda: solo_user)
+    response = client.get("/api/billing/billing-dashboard")
 
     assert response.status_code == 200
     data = response.json()
@@ -212,7 +209,12 @@ def test_billing_dashboard_with_subscription(client: TestClient, db_session: Ses
     assert isinstance(data["recent_invoices"], list)
 
 
-def test_billing_dashboard_zero_counts(client: TestClient, db_session: Session, solo_user: User):
+def test_billing_dashboard_zero_counts(
+    client: TestClient,
+    db_session: Session,
+    solo_user: User,
+    dependency_overrides,
+):
     """
     TDD RED: billing_dashboard should handle scalar() returning None (lines 95, 103, 111)
 
@@ -235,16 +237,8 @@ def test_billing_dashboard_zero_counts(client: TestClient, db_session: Session, 
     db_session.commit()
 
     from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
-    def override_get_current_user():
-        return solo_user
-
-    app.dependency_overrides[get_current_user] = override_get_current_user
-    try:
-        response = client.get("/api/billing/billing-dashboard")
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
+    dependency_overrides(get_current_user, lambda: solo_user)
+    response = client.get("/api/billing/billing-dashboard")
 
     assert response.status_code == 200
     data = response.json()
@@ -519,15 +513,15 @@ def test_stripe_webhook_routes_events(
     client: TestClient,
     db_session: Session,
     monkeypatch,
+    dependency_overrides,
 ):
     """A real webhook request should dispatch to the correct handler."""
     from app.db.session import get_db
-    from app.main import app
 
     def override_get_db():
         yield db_session
 
-    app.dependency_overrides[get_db] = override_get_db
+    dependency_overrides(get_db, override_get_db)
     monkeypatch.setenv("STRIPE_WEBHOOK_SECRET", "test_secret")
 
     called = {}
@@ -548,14 +542,11 @@ def test_stripe_webhook_routes_events(
 
     monkeypatch.setattr(stripe.Webhook, "construct_event", fake_construct_event)
 
-    try:
-        response = client.post(
-            "/api/billing/webhooks/stripe",
-            json={"payload": True},
-            headers={"stripe-signature": "sig_test"},
-        )
-    finally:
-        app.dependency_overrides.pop(get_db, None)
+    response = client.post(
+        "/api/billing/webhooks/stripe",
+        json={"payload": True},
+        headers={"stripe-signature": "sig_test"},
+    )
 
     assert response.status_code == 200
     assert called["handler"] == handler_name

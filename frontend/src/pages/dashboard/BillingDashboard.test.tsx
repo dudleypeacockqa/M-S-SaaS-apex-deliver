@@ -161,12 +161,7 @@ describe('BillingDashboard', () => {
         )
     )
 
-    const assignSpy = vi.fn()
-    const originalLocation = window.location
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: { assign: assignSpy } as Location,
-    })
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
 
     renderDashboard()
 
@@ -176,10 +171,10 @@ describe('BillingDashboard', () => {
     await screen.findByRole('button', { name: /Opening/i })
     await waitFor(() => {
       expect(billingService.billingService.getCustomerPortalUrl).toHaveBeenCalled()
-      expect(assignSpy).toHaveBeenCalledWith('https://billing.example.com/portal')
+      expect(openSpy).toHaveBeenCalledWith('https://billing.example.com/portal', '_self')
     })
 
-    Object.defineProperty(window, 'location', { configurable: true, value: originalLocation })
+    openSpy.mockRestore()
   })
 
   it('surfaces portal errors to the user', async () => {

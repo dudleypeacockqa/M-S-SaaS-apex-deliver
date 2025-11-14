@@ -5,15 +5,62 @@ import { fileURLToPath } from 'node:url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const projectRoot = path.resolve(__dirname, '..')
+const normalizeWorkerCount = (value) => {
+  if (!value) {
+    return null
+  }
+  const parsed = Number.parseInt(value, 10)
+  if (Number.isFinite(parsed) && parsed > 0) {
+    return String(parsed)
+  }
+  return null
+}
+
 async function run() {
-  const passthroughArgs = process.argv.slice(2)
+  const rawArgs = process.argv.slice(2)
+  const passthroughArgs = []
+  let workerOverride = process.env.VITEST_MAX_THREADS ?? null
+  let singleWorker = false
+
+  for (let i = 0; i < rawArgs.length; i += 1) {
+    const arg = rawArgs[i]
+    if (arg === '--single-worker' || arg === '--run-in-band') {
+      singleWorker = true
+      continue
+    }
+    if (arg === '--workers' || arg === '--max-workers') {
+      workerOverride = rawArgs[i + 1] ?? null
+      i += 1
+      continue
+    }
+    if (arg.startsWith('--workers=')) {
+      workerOverride = arg.split('=')[1]
+      continue
+    }
+    if (arg.startsWith('--max-workers=')) {
+      workerOverride = arg.split('=')[1]
+      continue
+    }
+    passthroughArgs.push(arg)
+  }
+
+  if (singleWorker) {
+    workerOverride = '1'
+  }
+
+  const normalizedWorkers = normalizeWorkerCount(workerOverride)
   const vitestEntrypoint = path.join(projectRoot, 'node_modules', 'vitest', 'vitest.mjs')
 
-  const nodeArgs = [
-    '--conditions=module-sync',
-    vitestEntrypoint,
-    ...passthroughArgs,
-  ]
+  if (!process.env.VITEST_POOL) {
+    process.env.VITEST_POOL = 'vmThreads'
+  }
+  if (normalizedWorkers) {
+    process.env.VITEST_MAX_THREADS = normalizedWorkers
+  } else if (!process.env.VITEST_MAX_THREADS) {
+    process.env.VITEST_MAX_THREADS = '4'
+  }
+
+  const nodeArgs = ['--conditions=module-sync', vitestEntrypoint, ...passthroughArgs]
 
   const child = spawn(process.execPath, nodeArgs, {
     stdio: 'inherit',

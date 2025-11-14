@@ -48,7 +48,7 @@
 - [x] Community Platform frontend verification — `docs/tests/2025-11-14-frontend-community.log` + `...-community-components.log`
 
 ### Phase 3: Test Suite Stabilization
-- [ ] Fix mock state reset
+- [x] Fix mock state reset — `docs/tests/2025-11-14-backend-test-isolation.txt` (test_isolation_guards proves DB + mock reset guards)
 - [ ] Fix dependency override cleanup
 - [ ] Verify full suite passes consistently
 

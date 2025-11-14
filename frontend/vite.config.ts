@@ -25,16 +25,41 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks: {
+        manualChunks: (id) => {
           // Core React dependencies
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          // Authentication
-          'clerk-vendor': ['@clerk/clerk-react'],
-          // Data fetching & state management
-          'react-query': ['@tanstack/react-query'],
-          // UI libraries (if using heavy UI components)
-          // Uncomment if you have these dependencies:
-          // 'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'react-vendor'
+            }
+            if (id.includes('@clerk')) {
+              return 'clerk-vendor'
+            }
+            if (id.includes('@tanstack/react-query')) {
+              return 'react-query'
+            }
+            // Chart libraries (often large)
+            if (id.includes('recharts') || id.includes('chart.js') || id.includes('d3')) {
+              return 'charts-vendor'
+            }
+            // Other vendor code
+            return 'vendor'
+          }
+          // Split valuation suite into its own chunk (large component)
+          if (id.includes('valuation/ValuationSuite')) {
+            return 'valuation-suite'
+          }
+          // Split podcast studio into its own chunk
+          if (id.includes('podcast/PodcastStudio')) {
+            return 'podcast-studio'
+          }
+          // Split event components into their own chunk
+          if (id.includes('events/')) {
+            return 'events'
+          }
+          // Split community into its own chunk
+          if (id.includes('community/')) {
+            return 'community'
+          }
         },
         // Optimize chunk file names for better caching
         chunkFileNames: (chunkInfo) => {

@@ -223,3 +223,34 @@ class DocumentVersionSummary(BaseModel):
     def serialize_uuid(self, value: Union[str, UUID]) -> str:
         """Convert UUID to string for JSON serialization"""
         return str(value) if value else None
+
+
+# ============================================================================
+# Export Job Schemas
+# ============================================================================
+
+class ExportJobCreate(BaseModel):
+    """Schema for creating an export job"""
+    format: str = Field(..., description="Export format: application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, text/html")
+    options: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Export options (margin, font_family, etc.)")
+
+
+class ExportJobResponse(BaseModel):
+    """Schema for export job responses"""
+    task_id: Union[str, UUID] = Field(..., description="Export job ID")
+    document_id: Union[str, UUID]
+    status: str = Field(..., description="Job status: queued, processing, ready, failed")
+    format: str
+    file_path: Optional[str] = None
+    download_url: Optional[str] = None
+    failure_reason: Optional[str] = None
+    queued_at: datetime
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer('task_id', 'document_id')
+    def serialize_uuid(self, value: Union[str, UUID]) -> str:
+        """Convert UUID to string for JSON serialization"""
+        return str(value) if value else None

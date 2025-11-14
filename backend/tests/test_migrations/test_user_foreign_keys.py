@@ -219,11 +219,24 @@ class TestForeignKeyIntegrity:
 
     def test_valid_user_references_succeed(self, db_session):
         """Positive test: Valid user references should work."""
-        # Create folder with valid user
+        # Create a valid deal first (Folder requires valid deal_id FK)
+        from app.models.deal import Deal, DealStage
+        deal = Deal(
+            id=str(uuid4()),
+            name="Test Deal",
+            target_company="Target Co",
+            organization_id=self.org.id,
+            owner_id=self.user.id,  # Valid user_id
+            stage=DealStage.sourcing
+        )
+        db_session.add(deal)
+        db_session.flush()  # Flush to get deal.id
+        
+        # Create folder with valid user and deal
         folder = Folder(
             id=str(uuid4()),
             name="Valid Folder",
-            deal_id=str(uuid4()),
+            deal_id=deal.id,  # Valid deal_id
             organization_id=self.org.id,
             created_by=self.user.id  # Valid user_id
         )

@@ -322,7 +322,14 @@ def follow_user(
             status_code=status.HTTP_409_CONFLICT,
             detail="Cannot follow yourself or already following this user",
         )
-    return created_follow
+    # Convert UUID fields to strings for Pydantic validation
+    return FollowResponse(
+        id=str(created_follow.id),
+        follower_user_id=str(created_follow.follower_user_id),
+        following_user_id=str(created_follow.following_user_id),
+        organization_id=str(created_follow.organization_id),
+        created_at=created_follow.created_at,
+    )
 
 
 @router.delete("/follow/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -375,7 +382,17 @@ def get_followers(
     Get list of users following this user.
     """
     followers = community_service.get_followers(user_id, db)
-    return followers
+    # Convert UUID fields to strings for Pydantic validation
+    return [
+        FollowResponse(
+            id=str(f.id),
+            follower_user_id=str(f.follower_user_id),
+            following_user_id=str(f.following_user_id),
+            organization_id=str(f.organization_id),
+            created_at=f.created_at,
+        )
+        for f in followers
+    ]
 
 
 @router.get("/follow/following/{user_id}", response_model=list[FollowResponse])
@@ -388,7 +405,17 @@ def get_following(
     Get list of users this user is following.
     """
     following = community_service.get_following(user_id, db)
-    return following
+    # Convert UUID fields to strings for Pydantic validation
+    return [
+        FollowResponse(
+            id=str(f.id),
+            follower_user_id=str(f.follower_user_id),
+            following_user_id=str(f.following_user_id),
+            organization_id=str(f.organization_id),
+            created_at=f.created_at,
+        )
+        for f in following
+    ]
 
 
 # ============================================================================

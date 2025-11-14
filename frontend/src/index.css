@@ -12,6 +12,9 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Optimize font rendering */
+  font-display: swap;
+  text-rendering: optimizeLegibility;
 }
 
 #root {

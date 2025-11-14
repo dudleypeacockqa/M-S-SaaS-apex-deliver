@@ -126,6 +126,28 @@ def _cleanup_dependency_overrides():
     app.dependency_overrides.clear()
 
 
+@pytest.fixture
+def dependency_overrides():
+    """
+    Helper fixture to register dependency overrides that are always cleaned up.
+
+    Usage:
+        def test_something(dependency_overrides):
+            dependency_overrides(get_current_user, lambda: fake_user)
+    """
+    applied: list[Callable[..., object]] = []
+
+    def _override(dependency: Callable[..., object], provider: Callable[..., object]) -> None:
+        app.dependency_overrides[dependency] = provider
+        applied.append(dependency)
+
+    try:
+        yield _override
+    finally:
+        for dependency in reversed(applied):
+            app.dependency_overrides.pop(dependency, None)
+
+
 @pytest.fixture(autouse=True)
 def _reset_database(engine):
     """Ensure a clean database state between tests."""

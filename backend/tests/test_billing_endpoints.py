@@ -9,19 +9,20 @@ from app.models.organization import Organization
 from app.models.subscription import Subscription, SubscriptionTier, SubscriptionStatus
 
 
-def test_create_checkout_session_success(client: TestClient, db_session, create_user, create_organization):
+def test_create_checkout_session_success(
+    client: TestClient,
+    db_session,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Test creating Stripe Checkout session for new subscription."""
-    from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
     # Arrange
     org = create_organization(name="Startup Co")
     user = create_user(email="founder@startup.co", organization_id=str(org.id), role=UserRole.solo)
 
-    # Override auth to use our test user
-    def override_get_current_user():
-        return user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: user)
 
     with patch('app.services.subscription_service.stripe.checkout.Session.create') as mock_checkout, \
          patch('app.services.subscription_service.stripe.Customer.create') as mock_customer:
@@ -40,9 +41,6 @@ def test_create_checkout_session_success(client: TestClient, db_session, create_
             json={"tier": "professional"},
             headers={"Authorization": "Bearer test_token"}
         )
-
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
 
     # Assert
     if response.status_code != 200:
@@ -83,11 +81,14 @@ def test_create_checkout_session_requires_auth(client: TestClient):
     assert response.status_code == 401
 
 
-def test_create_checkout_session_existing_subscription(client: TestClient, db_session, create_user, create_organization):
+def test_create_checkout_session_existing_subscription(
+    client: TestClient,
+    db_session,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Test creating checkout session when organization already has active subscription."""
-    from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
     org = create_organization(name="Existing Sub Org")
     user = create_user(email="user@existing.co", organization_id=str(org.id))
 
@@ -105,9 +106,8 @@ def test_create_checkout_session_existing_subscription(client: TestClient, db_se
     db_session.commit()
 
     # Override auth to use our test user
-    def override_get_current_user():
-        return user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: user)
 
     with patch('app.services.subscription_service.stripe.checkout.Session.create') as mock_checkout, \
          patch('app.services.subscription_service.stripe.Customer.create') as mock_customer:
@@ -126,25 +126,24 @@ def test_create_checkout_session_existing_subscription(client: TestClient, db_se
             headers={"Authorization": "Bearer test_token"}
         )
 
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
-
     # May either reject (400) or create upgrade session (200) - implementation dependent
     assert response.status_code in [200, 400]
 
 
-def test_create_checkout_session_with_trial(client: TestClient, db_session, create_user, create_organization):
+def test_create_checkout_session_with_trial(
+    client: TestClient,
+    db_session,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Test creating checkout session includes 14-day trial."""
-    from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
     org = create_organization(name="Trial Org")
     user = create_user(email="trial@example.com", organization_id=str(org.id))
 
     # Override auth to use our test user
-    def override_get_current_user():
-        return user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: user)
 
     with patch('app.services.subscription_service.stripe.checkout.Session.create') as mock_checkout, \
          patch('app.services.subscription_service.stripe.Customer.create') as mock_customer:
@@ -163,9 +162,6 @@ def test_create_checkout_session_with_trial(client: TestClient, db_session, crea
             headers={"Authorization": "Bearer test_token"}
         )
 
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
-
     assert response.status_code == 200
 
     # Verify trial period was set
@@ -173,18 +169,18 @@ def test_create_checkout_session_with_trial(client: TestClient, db_session, crea
     assert call_kwargs["subscription_data"]["trial_period_days"] == 14
 
 
-def test_get_customer_portal_success(client: TestClient, create_user, create_organization):
+def test_get_customer_portal_success(
+    client: TestClient,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Test retrieving Stripe billing portal URL."""
-    from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
     org = create_organization(name="Portal Org")
     user = create_user(email="portal@example.com", organization_id=str(org.id))
 
-    def override_get_current_user():
-        return user
-
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: user)
 
     with patch('app.services.subscription_service.create_billing_portal_session') as mock_portal:
         mock_portal.return_value = {"url": "https://billing.stripe.com/session/test"}
@@ -194,25 +190,23 @@ def test_get_customer_portal_success(client: TestClient, create_user, create_org
             headers={"Authorization": "Bearer test_token"},
         )
 
-    app.dependency_overrides.pop(get_current_user, None)
-
     assert response.status_code == 200
     assert response.json() == {"url": "https://billing.stripe.com/session/test"}
     mock_portal.assert_called_once()
 
 
-def test_get_customer_portal_handles_value_errors(client: TestClient, create_user, create_organization):
+def test_get_customer_portal_handles_value_errors(
+    client: TestClient,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Test billing portal endpoint returns 400 when service raises ValueError."""
-    from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
     org = create_organization(name="Portal Error Org")
     user = create_user(email="portal-error@example.com", organization_id=str(org.id))
 
-    def override_get_current_user():
-        return user
-
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: user)
 
     with patch('app.services.subscription_service.create_billing_portal_session') as mock_portal:
         mock_portal.side_effect = ValueError("No active subscription found")
@@ -222,17 +216,18 @@ def test_get_customer_portal_handles_value_errors(client: TestClient, create_use
             headers={"Authorization": "Bearer test_token"},
         )
 
-    app.dependency_overrides.pop(get_current_user, None)
-
     assert response.status_code == 400
     assert response.json()["detail"] == "No active subscription found"
 
 
-def test_get_subscription_success(client: TestClient, db_session, create_user, create_organization):
+def test_get_subscription_success(
+    client: TestClient,
+    db_session,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Test retrieving current subscription."""
-    from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
     org = create_organization(name="Sub Org")
     user = create_user(email="user@sub.org", organization_id=str(org.id))
 
@@ -252,17 +247,13 @@ def test_get_subscription_success(client: TestClient, db_session, create_user, c
     db_session.commit()
 
     # Override auth to use our test user
-    def override_get_current_user():
-        return user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: user)
 
     response = client.get(
         "/api/billing/me",
         headers={"Authorization": "Bearer test_token"}
     )
-
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
 
     assert response.status_code == 200
     data = response.json()
@@ -291,11 +282,14 @@ def test_get_subscription_requires_auth(client: TestClient):
     assert response.status_code == 401
 
 
-def test_update_subscription_tier_upgrade(client: TestClient, db_session, create_user, create_organization):
+def test_update_subscription_tier_upgrade(
+    client: TestClient,
+    db_session,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Test upgrading subscription tier."""
-    from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
     org = create_organization(name="Upgrade Org")
     user = create_user(email="user@upgrade.org", organization_id=str(org.id))
 
@@ -313,9 +307,8 @@ def test_update_subscription_tier_upgrade(client: TestClient, db_session, create
     db_session.commit()
 
     # Override auth to use our test user
-    def override_get_current_user():
-        return user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: user)
 
     with patch('app.services.subscription_service.stripe.Subscription.modify') as mock_stripe, \
          patch('app.services.subscription_service.stripe.Subscription.retrieve') as mock_retrieve:
@@ -335,9 +328,6 @@ def test_update_subscription_tier_upgrade(client: TestClient, db_session, create
             headers={"Authorization": "Bearer test_token"}
         )
 
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
-
     if response.status_code != 200:
         print(f"ERROR: {response.status_code}")
         print(f"Body: {response.text}")
@@ -346,11 +336,14 @@ def test_update_subscription_tier_upgrade(client: TestClient, db_session, create
     assert data["tier"] == "professional"
 
 
-def test_update_subscription_tier_downgrade(client: TestClient, db_session, create_user, create_organization):
+def test_update_subscription_tier_downgrade(
+    client: TestClient,
+    db_session,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Test downgrading subscription tier (at period end)."""
-    from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
     org = create_organization(name="Downgrade Org")
     user = create_user(email="user@downgrade.org", organization_id=str(org.id))
 
@@ -367,9 +360,8 @@ def test_update_subscription_tier_downgrade(client: TestClient, db_session, crea
     db_session.commit()
 
     # Override auth to use our test user
-    def override_get_current_user():
-        return user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: user)
 
     with patch('app.services.subscription_service.stripe.Subscription.modify') as mock_stripe, \
          patch('app.services.subscription_service.stripe.Subscription.retrieve') as mock_retrieve:
@@ -386,20 +378,20 @@ def test_update_subscription_tier_downgrade(client: TestClient, db_session, crea
             headers={"Authorization": "Bearer test_token"}
         )
 
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
-
     if response.status_code != 200:
         print(f"ERROR: {response.status_code}")
         print(f"Body: {response.text}")
     assert response.status_code == 200
 
 
-def test_cancel_subscription_at_period_end(client: TestClient, db_session, create_user, create_organization):
+def test_cancel_subscription_at_period_end(
+    client: TestClient,
+    db_session,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Test canceling subscription at end of billing period."""
-    from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
     org = create_organization(name="Cancel Org")
     user = create_user(email="user@cancel.org", organization_id=str(org.id))
 
@@ -416,9 +408,8 @@ def test_cancel_subscription_at_period_end(client: TestClient, db_session, creat
     db_session.commit()
 
     # Override auth to use our test user
-    def override_get_current_user():
-        return user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: user)
 
     with patch('app.services.subscription_service.stripe.Subscription.modify') as mock_stripe:
         mock_stripe.return_value = Mock(
@@ -432,19 +423,19 @@ def test_cancel_subscription_at_period_end(client: TestClient, db_session, creat
             headers={"Authorization": "Bearer test_token"}
         )
 
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
-
     assert response.status_code == 200
     data = response.json()
     assert data["cancel_at_period_end"] is True
 
 
-def test_cancel_subscription_immediately(client: TestClient, db_session, create_user, create_organization):
+def test_cancel_subscription_immediately(
+    client: TestClient,
+    db_session,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
     """Test canceling subscription immediately."""
-    from app.api.dependencies.auth import get_current_user
-    from app.main import app
-
     org = create_organization(name="Immediate Cancel Org")
     user = create_user(email="user@immediate.org", organization_id=str(org.id))
 
@@ -461,9 +452,8 @@ def test_cancel_subscription_immediately(client: TestClient, db_session, create_
     db_session.commit()
 
     # Override auth to use our test user
-    def override_get_current_user():
-        return user
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: user)
 
     with patch('app.services.subscription_service.stripe.Subscription.delete') as mock_stripe:
         mock_stripe.return_value = Mock(
@@ -476,9 +466,6 @@ def test_cancel_subscription_immediately(client: TestClient, db_session, create_
             json={"immediately": True},
             headers={"Authorization": "Bearer test_token"}
         )
-
-    # Clean up
-    app.dependency_overrides.pop(get_current_user, None)
 
     assert response.status_code == 200
     data = response.json()

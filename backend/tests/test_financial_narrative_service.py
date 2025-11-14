@@ -278,16 +278,30 @@ def test_calculate_readiness_score_moderate_deal():
 async def test_generate_financial_narrative_success(db_session):
     """Test successful narrative generation with mocked OpenAI."""
     # Create test data
+    from app.models.user import User
     org = Organization(id="org-narrative-1", name="Test Org", slug="test-org")
+    user = User(
+        id="user-1",
+        clerk_user_id="user-1-clerk",
+        email="user-1@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
     deal = Deal(
         id="deal-narrative-1",
         organization_id=org.id,
         name="Test Deal",
         target_company="Target Co",
-        owner_id="user-1"
+        owner_id=user.id
     )
 
+    # Add org and user first, flush before foreign key dependencies
     db_session.add(org)
+    db_session.add(user)
+    db_session.flush()
     db_session.add(deal)
     db_session.commit()
 
@@ -379,16 +393,30 @@ None identified
 async def test_generate_financial_narrative_returns_existing_by_default(db_session):
     """Test that generate_financial_narrative returns existing narrative without regenerate flag."""
     # Create test data
+    from app.models.user import User
     org = Organization(id="org-narrative-2", name="Test Org 2", slug="test-org-2")
+    user = User(
+        id="user-2",
+        clerk_user_id="user-2-clerk",
+        email="user-2@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
     deal = Deal(
         id="deal-narrative-2",
         organization_id=org.id,
         name="Test Deal 2",
         target_company="Target Co 2",
-        owner_id="user-2"
+        owner_id=user.id
     )
 
+    # Add org and user first, flush before foreign key dependencies
     db_session.add(org)
+    db_session.add(user)
+    db_session.flush()
     db_session.add(deal)
     db_session.commit()
 
@@ -427,16 +455,30 @@ async def test_generate_financial_narrative_returns_existing_by_default(db_sessi
 async def test_generate_financial_narrative_raises_error_when_no_data(db_session):
     """Test that generate_financial_narrative raises error when no financial data exists."""
     # Create deal without financial data
+    from app.models.user import User
     org = Organization(id="org-narrative-3", name="Test Org 3", slug="test-org-3")
+    user = User(
+        id="user-3",
+        clerk_user_id="user-3-clerk",
+        email="user-3@example.com",
+        first_name="Test",
+        last_name="User",
+        role="solo",
+        organization_id=org.id,
+        is_active=True,
+    )
     deal = Deal(
         id="deal-narrative-3",
         organization_id=org.id,
         name="Test Deal 3",
         target_company="Target Co 3",
-        owner_id="user-3"
+        owner_id=user.id
     )
 
+    # Add org and user first, flush before foreign key dependencies
     db_session.add(org)
+    db_session.add(user)
+    db_session.flush()
     db_session.add(deal)
     db_session.commit()
 
