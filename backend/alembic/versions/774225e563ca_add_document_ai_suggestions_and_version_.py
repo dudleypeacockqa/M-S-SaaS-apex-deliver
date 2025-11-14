@@ -18,6 +18,16 @@ ORGANIZATION_TYPE = sa.String(length=36)
 from sqlalchemy.dialects import postgresql
 from app.db.base import GUID
 
+_original_alter_column = op.alter_column
+_original_create_index = op.create_index
+_original_drop_index = op.drop_index
+_original_add_column = op.add_column
+_original_drop_column = op.drop_column
+_original_drop_constraint = op.drop_constraint
+_original_create_foreign_key = op.create_foreign_key
+_original_create_unique_constraint = op.create_unique_constraint
+_original_drop_table = op.drop_table
+
 # revision identifiers, used by Alembic.
 revision: str = '774225e563ca'
 down_revision: Union[str, None] = 'b354d12d1e7d'
@@ -51,6 +61,19 @@ def _table_exists(table_name: str, schema: str = 'public') -> bool:
     bind = op.get_bind()
     inspector = inspect(bind)
     return inspector.has_table(table_name, schema=schema)
+
+
+def _column_exists(table_name: str, column_name: str, schema: str = 'public') -> bool:
+    """Check if a column exists in a table."""
+    if not _table_exists(table_name, schema):
+        return False
+    try:
+        bind = op.get_bind()
+        inspector = inspect(bind)
+        columns = [col['name'] for col in inspector.get_columns(table_name, schema=schema)]
+        return column_name in columns
+    except (ProgrammingError, NoSuchTableError):
+        return False
 
 
 def upgrade() -> None:
@@ -1048,10 +1071,19 @@ def upgrade() -> None:
                existing_nullable=False)
     if _table_exists('deal_matches'):
         try:
-            op.add_column('deal_matches', sa.Column('organization_id', sa.String(length=36), nullable=False if True else False))
-            op.create_index(op.f('ix_deal_matches_organization_id'), 'deal_matches', ['organization_id'], unique=False)
-            op.create_foreign_key(None, 'deal_matches', 'organizations', ['organization_id'], ['id'], ondelete='CASCADE')
-        except ProgrammingError:
+            # Check if column already exists before adding
+            bind = op.get_bind()
+            inspector = inspect(bind)
+            try:
+                columns = [col['name'] for col in inspector.get_columns('deal_matches')]
+                if 'organization_id' not in columns:
+                    op.add_column('deal_matches', sa.Column('organization_id', sa.String(length=36), nullable=False))
+                    op.create_index(op.f('ix_deal_matches_organization_id'), 'deal_matches', ['organization_id'], unique=False)
+                    op.create_foreign_key(None, 'deal_matches', 'organizations', ['organization_id'], ['id'], ondelete='CASCADE')
+            except (ProgrammingError, NoSuchTableError):
+                # Table might have been dropped between check and operation
+                pass
+        except (ProgrammingError, NoSuchTableError):
             pass
     op.alter_column('document_questions', 'status',
                existing_type=sa.VARCHAR(length=20),
@@ -1061,18 +1093,26 @@ def upgrade() -> None:
                existing_type=sa.VARCHAR(length=36),
                type_=sa.String(length=36),
                existing_nullable=False)
-    op.alter_column('document_templates', 'variables',
-               existing_type=postgresql.JSON(astext_type=sa.Text()),
-               server_default=None,
-               nullable=True)
+    if _column_exists('document_templates', 'variables'):
+        try:
+            op.alter_column('document_templates', 'variables',
+                       existing_type=postgresql.JSON(astext_type=sa.Text()),
+                       server_default=None,
+                       nullable=True)
+        except (ProgrammingError, NoSuchTableError):
+            pass
     op.alter_column('document_templates', 'status',
                existing_type=postgresql.ENUM('DRAFT', 'ACTIVE', 'ARCHIVED', name='templatestatus'),
                server_default=None,
                existing_nullable=False)
-    op.alter_column('document_templates', 'version',
-               existing_type=sa.INTEGER(),
-               server_default=None,
-               nullable=True)
+    if _column_exists('document_templates', 'version'):
+        try:
+            op.alter_column('document_templates', 'version',
+                       existing_type=sa.INTEGER(),
+                       server_default=None,
+                       nullable=True)
+        except (ProgrammingError, NoSuchTableError):
+            pass
     op.alter_column('document_templates', 'organization_id',
                existing_type=sa.VARCHAR(length=36),
                type_=sa.String(length=36),
@@ -1248,18 +1288,26 @@ def downgrade() -> None:
                existing_type=sa.String(length=36),
                type_=sa.VARCHAR(length=36),
                existing_nullable=False)
-    op.alter_column('document_templates', 'version',
-               existing_type=sa.INTEGER(),
-               server_default=sa.text('1'),
-               nullable=False)
+    if _column_exists('document_templates', 'version'):
+        try:
+            op.alter_column('document_templates', 'version',
+                       existing_type=sa.INTEGER(),
+                       server_default=sa.text('1'),
+                       nullable=False)
+        except (ProgrammingError, NoSuchTableError):
+            pass
     op.alter_column('document_templates', 'status',
                existing_type=postgresql.ENUM('DRAFT', 'ACTIVE', 'ARCHIVED', name='templatestatus'),
                server_default=sa.text("'ACTIVE'::templatestatus"),
                existing_nullable=False)
-    op.alter_column('document_templates', 'variables',
-               existing_type=postgresql.JSON(astext_type=sa.Text()),
-               server_default=sa.text("'[]'::json"),
-               nullable=False)
+    if _column_exists('document_templates', 'variables'):
+        try:
+            op.alter_column('document_templates', 'variables',
+                       existing_type=postgresql.JSON(astext_type=sa.Text()),
+                       server_default=sa.text("'[]'::json"),
+                       nullable=False)
+        except (ProgrammingError, NoSuchTableError):
+            pass
     op.alter_column('document_templates', 'id',
                existing_type=sa.String(length=36),
                type_=sa.VARCHAR(length=36),
@@ -1270,10 +1318,24 @@ def downgrade() -> None:
                existing_nullable=False)
     if _table_exists('deal_matches'):
         try:
-            op.drop_constraint(None, 'deal_matches', type_='foreignkey')
-            op.drop_index(op.f('ix_deal_matches_organization_id'), table_name='deal_matches')
-            op.drop_column('deal_matches', 'organization_id')
-        except ProgrammingError:
+            # Check if column exists before dropping
+            bind = op.get_bind()
+            inspector = inspect(bind)
+            try:
+                columns = [col['name'] for col in inspector.get_columns('deal_matches')]
+                if 'organization_id' in columns:
+                    # Drop foreign key constraint first
+                    fks = inspector.get_foreign_keys('deal_matches')
+                    for fk in fks:
+                        if 'organization_id' in fk['constrained_columns']:
+                            op.drop_constraint(fk['name'], 'deal_matches', type_='foreignkey')
+                            break
+                    op.drop_index(op.f('ix_deal_matches_organization_id'), table_name='deal_matches')
+                    op.drop_column('deal_matches', 'organization_id')
+            except (ProgrammingError, NoSuchTableError):
+                # Table might have been dropped between check and operation
+                pass
+        except (ProgrammingError, NoSuchTableError):
             pass
     op.alter_column('blog_posts', 'read_time_minutes',
                existing_type=sa.INTEGER(),
