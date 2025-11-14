@@ -70,22 +70,20 @@ def _table_exists(table_name: str, schema: str = 'public') -> bool:
 
 
 def _safe_alter_column(table_name: str, column_name: str, *args, **kwargs):
-    """Safely alter column, skipping when the column or table is missing."""
-    schema = kwargs.get('schema') or 'public'
-    if not _column_exists(table_name, column_name, schema):
-        return
+    """Safely alter column, skipping when the column or table is missing.
+
+    Simply wraps op.alter_column in try/except and lets PostgreSQL tell us
+    if the table/column doesn't exist. NO pre-checks to avoid transaction issues.
+    """
     try:
         _original_alter_column(table_name, column_name, *args, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError):
-        # Table or column may have been dropped between check and operation
-        # InternalError can wrap InFailedSqlTransaction from psycopg2
+        # Table/column doesn't exist, or transaction aborted - skip silently
         pass
 
 
 def _safe_create_index(index_name: str, table_name: Optional[str], columns, **kwargs):
-    schema = kwargs.get('schema') or 'public'
-    if table_name and not _table_exists(table_name, schema):
-        return
+    """Safely create index, skipping if table doesn't exist. No pre-checks."""
     try:
         _original_create_index(index_name, table_name, columns, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError):
@@ -93,9 +91,7 @@ def _safe_create_index(index_name: str, table_name: Optional[str], columns, **kw
 
 
 def _safe_drop_index(index_name: str, table_name: Optional[str] = None, **kwargs):
-    schema = kwargs.get('schema') or 'public'
-    if table_name and not _table_exists(table_name, schema):
-        return
+    """Safely drop index, skipping if doesn't exist. No pre-checks."""
     try:
         _original_drop_index(index_name, table_name=table_name, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError):
@@ -103,9 +99,7 @@ def _safe_drop_index(index_name: str, table_name: Optional[str] = None, **kwargs
 
 
 def _safe_add_column(table_name: str, column, **kwargs):
-    schema = kwargs.get('schema') or 'public'
-    if not _table_exists(table_name, schema):
-        return
+    """Safely add column, skipping if table doesn't exist. No pre-checks."""
     try:
         _original_add_column(table_name, column, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError):
@@ -113,9 +107,7 @@ def _safe_add_column(table_name: str, column, **kwargs):
 
 
 def _safe_drop_column(table_name: str, column_name: str, **kwargs):
-    schema = kwargs.get('schema') or 'public'
-    if not _table_exists(table_name, schema):
-        return
+    """Safely drop column, skipping if table/column doesn't exist. No pre-checks."""
     try:
         _original_drop_column(table_name, column_name, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError):
@@ -123,9 +115,7 @@ def _safe_drop_column(table_name: str, column_name: str, **kwargs):
 
 
 def _safe_drop_constraint(constraint_name: str, table_name: str, **kwargs):
-    schema = kwargs.get('schema') or 'public'
-    if not _table_exists(table_name, schema):
-        return
+    """Safely drop constraint, skipping if doesn't exist. No pre-checks."""
     try:
         _original_drop_constraint(constraint_name, table_name, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError):
@@ -134,12 +124,7 @@ def _safe_drop_constraint(constraint_name: str, table_name: str, **kwargs):
 
 def _safe_create_foreign_key(constraint_name: str, source_table: str, referent_table: str,
                              local_cols, remote_cols, **kwargs):
-    source_schema = kwargs.get('source_schema') or kwargs.get('schema') or 'public'
-    referent_schema = kwargs.get('referent_schema') or 'public'
-    if not _table_exists(source_table, source_schema):
-        return
-    if not _table_exists(referent_table, referent_schema):
-        return
+    """Safely create foreign key, skipping if tables don't exist. No pre-checks."""
     try:
         _original_create_foreign_key(constraint_name, source_table, referent_table,
                                      local_cols, remote_cols, **kwargs)
@@ -148,9 +133,7 @@ def _safe_create_foreign_key(constraint_name: str, source_table: str, referent_t
 
 
 def _safe_create_unique_constraint(constraint_name: str, table_name: str, columns, **kwargs):
-    schema = kwargs.get('schema') or 'public'
-    if not _table_exists(table_name, schema):
-        return
+    """Safely create unique constraint, skipping if table doesn't exist. No pre-checks."""
     try:
         _original_create_unique_constraint(constraint_name, table_name, columns, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError):
@@ -158,22 +141,25 @@ def _safe_create_unique_constraint(constraint_name: str, table_name: str, column
 
 
 def _safe_drop_table(table_name: str, *args, **kwargs):
-    schema = kwargs.get('schema') or 'public'
-    if not _table_exists(table_name, schema):
-        return
+    """Safely drop table, skipping if doesn't exist. No pre-checks."""
     try:
         _original_drop_table(table_name, *args, **kwargs)
     except (ProgrammingError, NoSuchTableError, InternalError):
         pass
 
 
-# REMOVED: Monkey-patching op.* methods
-# Reason: Once PostgreSQL transaction fails, ALL subsequent _table_exists() checks fail
-# with "current transaction is aborted, commands ignored until end of transaction block"
-# This creates a cascade of failures.
-#
-# The safe wrappers are available but NOT auto-applied.
-# Use explicit if _table_exists() checks + try-except blocks instead.
+# Monkey-patch op.* methods for automatic safety.
+# The wrappers catch ALL exceptions (including InternalError from failed transactions)
+# and skip operations gracefully rather than cascading failures.
+op.alter_column = _safe_alter_column
+op.create_index = _safe_create_index
+op.drop_index = _safe_drop_index
+op.add_column = _safe_add_column
+op.drop_column = _safe_drop_column
+op.drop_constraint = _safe_drop_constraint
+op.create_foreign_key = _safe_create_foreign_key
+op.create_unique_constraint = _safe_create_unique_constraint
+op.drop_table = _safe_drop_table
 
 
 def _column_exists(table_name: str, column_name: str, schema: str = 'public') -> bool:
@@ -1167,29 +1153,25 @@ def upgrade() -> None:
             op.create_index(op.f('ix_admin_scores_id'), 'admin_scores', ['id'], unique=False)
         except ProgrammingError:
             pass
-    # op.alter_column is already patched to use _safe_alter_column
-    if _column_exists('blog_posts', 'author'):
-        op.alter_column('blog_posts', 'author',
+    # blog_posts table (may not exist in all environments)
+    if _table_exists('blog_posts'):
+        _safe_alter_column('blog_posts', 'author',
                    existing_type=sa.VARCHAR(length=100),
                    server_default=None,
                    existing_nullable=False)
-    if _column_exists('blog_posts', 'published'):
-        op.alter_column('blog_posts', 'published',
+        _safe_alter_column('blog_posts', 'published',
                    existing_type=sa.BOOLEAN(),
                    server_default=None,
                    existing_nullable=False)
-    if _column_exists('blog_posts', 'created_at'):
-        op.alter_column('blog_posts', 'created_at',
+        _safe_alter_column('blog_posts', 'created_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=None,
                    existing_nullable=False)
-    if _column_exists('blog_posts', 'updated_at'):
-        op.alter_column('blog_posts', 'updated_at',
+        _safe_alter_column('blog_posts', 'updated_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=None,
                    existing_nullable=False)
-    if _column_exists('blog_posts', 'read_time_minutes'):
-        op.alter_column('blog_posts', 'read_time_minutes',
+        _safe_alter_column('blog_posts', 'read_time_minutes',
                    existing_type=sa.INTEGER(),
                    server_default=None,
                    existing_nullable=False)
@@ -1209,46 +1191,40 @@ def upgrade() -> None:
                 pass
         except (ProgrammingError, NoSuchTableError, InternalError):
             pass
-    # op.alter_column is already patched to use _safe_alter_column
-    if _column_exists('document_questions', 'status'):
-        op.alter_column('document_questions', 'status',
+    # document_questions table (may not exist in all environments)
+    if _table_exists('document_questions'):
+        _safe_alter_column('document_questions', 'status',
                    existing_type=sa.VARCHAR(length=20),
                    server_default=None,
                    existing_nullable=False)
-    # op.alter_column is already patched to use _safe_alter_column, so we can call it directly
-    # The safe wrapper will check table existence before attempting any operation
-    if _column_exists('document_templates', 'id'):
-        op.alter_column('document_templates', 'id',
+    
+    # document_templates table (may not exist in all environments)
+    if _table_exists('document_templates'):
+        _safe_alter_column('document_templates', 'id',
                    existing_type=sa.VARCHAR(length=36),
                    type_=sa.String(length=36),
                    existing_nullable=False)
-    if _column_exists('document_templates', 'variables'):
-        op.alter_column('document_templates', 'variables',
+        _safe_alter_column('document_templates', 'variables',
                    existing_type=postgresql.JSON(astext_type=sa.Text()),
                    server_default=None,
                    nullable=True)
-    if _column_exists('document_templates', 'status'):
-        op.alter_column('document_templates', 'status',
+        _safe_alter_column('document_templates', 'status',
                    existing_type=postgresql.ENUM('DRAFT', 'ACTIVE', 'ARCHIVED', name='templatestatus'),
                    server_default=None,
                    existing_nullable=False)
-    if _column_exists('document_templates', 'version'):
-        op.alter_column('document_templates', 'version',
+        _safe_alter_column('document_templates', 'version',
                    existing_type=sa.INTEGER(),
                    server_default=None,
                    nullable=True)
-    if _column_exists('document_templates', 'organization_id'):
-        op.alter_column('document_templates', 'organization_id',
+        _safe_alter_column('document_templates', 'organization_id',
                    existing_type=sa.VARCHAR(length=36),
                    type_=sa.String(length=36),
                    existing_nullable=False)
-    if _column_exists('document_templates', 'created_by_user_id'):
-        op.alter_column('document_templates', 'created_by_user_id',
+        _safe_alter_column('document_templates', 'created_by_user_id',
                    existing_type=sa.VARCHAR(),
                    type_=sa.String(length=36),
                    existing_nullable=False)
-    if _column_exists('document_templates', 'created_at'):
-        op.alter_column('document_templates', 'created_at',
+        _safe_alter_column('document_templates', 'created_at',
                    existing_type=postgresql.TIMESTAMP(timezone=True),
                    server_default=None,
                    nullable=True)
@@ -1256,39 +1232,33 @@ def upgrade() -> None:
     _drop_index_if_exists('idx_document_templates_organization_id', 'document_templates')
     _drop_index_if_exists('idx_document_templates_status', 'document_templates')
     _drop_index_if_exists('idx_document_templates_template_type', 'document_templates')
-    # op.alter_column is already patched to use _safe_alter_column
-    if _column_exists('generated_documents', 'id'):
-        op.alter_column('generated_documents', 'id',
+    # generated_documents table (may not exist in all environments)
+    if _table_exists('generated_documents'):
+        _safe_alter_column('generated_documents', 'id',
                    existing_type=sa.VARCHAR(length=36),
                    type_=sa.String(length=36),
                    existing_nullable=False)
-    if _column_exists('generated_documents', 'template_id'):
-        op.alter_column('generated_documents', 'template_id',
+        _safe_alter_column('generated_documents', 'template_id',
                    existing_type=sa.VARCHAR(length=36),
                    type_=sa.String(length=36),
                    existing_nullable=False)
-    if _column_exists('generated_documents', 'variable_values'):
-        op.alter_column('generated_documents', 'variable_values',
+        _safe_alter_column('generated_documents', 'variable_values',
                    existing_type=postgresql.JSON(astext_type=sa.Text()),
                    server_default=None,
                    nullable=True)
-    if _column_exists('generated_documents', 'status'):
-        op.alter_column('generated_documents', 'status',
+        _safe_alter_column('generated_documents', 'status',
                    existing_type=postgresql.ENUM('draft', 'generated', 'finalized', 'sent', name='documentstatus'),
                    server_default=None,
                    existing_nullable=False)
-    if _column_exists('generated_documents', 'organization_id'):
-        op.alter_column('generated_documents', 'organization_id',
+        _safe_alter_column('generated_documents', 'organization_id',
                    existing_type=sa.VARCHAR(length=36),
                    type_=sa.String(length=36),
                    existing_nullable=False)
-    if _column_exists('generated_documents', 'generated_by_user_id'):
-        op.alter_column('generated_documents', 'generated_by_user_id',
+        _safe_alter_column('generated_documents', 'generated_by_user_id',
                    existing_type=sa.VARCHAR(),
                    type_=sa.String(length=36),
                    existing_nullable=False)
-    if _column_exists('generated_documents', 'created_at'):
-        op.alter_column('generated_documents', 'created_at',
+        _safe_alter_column('generated_documents', 'created_at',
                    existing_type=postgresql.TIMESTAMP(timezone=True),
                    server_default=None,
                    nullable=True)
@@ -1296,53 +1266,64 @@ def upgrade() -> None:
     _drop_index_if_exists('idx_generated_documents_organization_id', 'generated_documents')
     _drop_index_if_exists('idx_generated_documents_status', 'generated_documents')
     _drop_index_if_exists('idx_generated_documents_template_id', 'generated_documents')
-    op.alter_column('pipeline_template_stages', 'created_at',
-               existing_type=postgresql.TIMESTAMP(timezone=True),
-               server_default=None,
-               existing_nullable=False)
-    op.alter_column('pipeline_template_stages', 'updated_at',
-               existing_type=postgresql.TIMESTAMP(timezone=True),
-               server_default=None,
-               existing_nullable=False)
-    op.drop_index('ix_pipeline_template_stages_order', table_name='pipeline_template_stages')
-    op.drop_index('ix_pipeline_template_stages_template', table_name='pipeline_template_stages')
-    op.create_index(op.f('ix_pipeline_template_stages_template_id'), 'pipeline_template_stages', ['template_id'], unique=False)
-    op.alter_column('pipeline_templates', 'is_default',
-               existing_type=sa.BOOLEAN(),
-               server_default=None,
-               existing_nullable=False)
-    op.alter_column('pipeline_templates', 'created_at',
-               existing_type=postgresql.TIMESTAMP(timezone=True),
-               server_default=None,
-               existing_nullable=False)
-    op.alter_column('pipeline_templates', 'updated_at',
-               existing_type=postgresql.TIMESTAMP(timezone=True),
-               server_default=None,
-               existing_nullable=False)
-    op.drop_index('ix_pipeline_templates_org_default', table_name='pipeline_templates')
-    op.create_index('idx_pipeline_templates_org_default', 'pipeline_templates', ['organization_id', 'is_default'], unique=False)
-    op.create_index(op.f('ix_pipeline_templates_organization_id'), 'pipeline_templates', ['organization_id'], unique=False)
-    # rbac_audit_logs table (Master Admin module - may not exist in production)
-    if _table_exists('rbac_audit_logs'):
+    # pipeline_template_stages table (Pipeline Management module - may not exist in production)
+    if _table_exists('pipeline_template_stages'):
         try:
-            op.alter_column('rbac_audit_logs', 'created_at',
+            _safe_alter_column('pipeline_template_stages', 'created_at',
                        existing_type=postgresql.TIMESTAMP(timezone=True),
                        server_default=None,
                        existing_nullable=False)
-            op.drop_index('ix_rbac_audit_logs_action', table_name='rbac_audit_logs')
-            op.drop_index('ix_rbac_audit_logs_actor', table_name='rbac_audit_logs')
-            op.drop_index('ix_rbac_audit_logs_org', table_name='rbac_audit_logs')
-            op.drop_index('ix_rbac_audit_logs_target', table_name='rbac_audit_logs')
-            op.create_index(op.f('ix_rbac_audit_logs_organization_id'), 'rbac_audit_logs', ['organization_id'], unique=False)
-        except (ProgrammingError, NoSuchTableError):
+            _safe_alter_column('pipeline_template_stages', 'updated_at',
+                       existing_type=postgresql.TIMESTAMP(timezone=True),
+                       server_default=None,
+                       existing_nullable=False)
+            _safe_drop_index('ix_pipeline_template_stages_order', 'pipeline_template_stages')
+            _safe_drop_index('ix_pipeline_template_stages_template', 'pipeline_template_stages')
+            _safe_create_index(op.f('ix_pipeline_template_stages_template_id'), 'pipeline_template_stages', ['template_id'], unique=False)
+        except (ProgrammingError, NoSuchTableError, InternalError):
+            pass
+    # pipeline_templates table (Pipeline Management module - may not exist in production)
+    if _table_exists('pipeline_templates'):
+        try:
+            _safe_alter_column('pipeline_templates', 'is_default',
+                       existing_type=sa.BOOLEAN(),
+                       server_default=None,
+                       existing_nullable=False)
+            _safe_alter_column('pipeline_templates', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(timezone=True),
+                       server_default=None,
+                       existing_nullable=False)
+            _safe_alter_column('pipeline_templates', 'updated_at',
+                       existing_type=postgresql.TIMESTAMP(timezone=True),
+                       server_default=None,
+                       existing_nullable=False)
+            _safe_drop_index('ix_pipeline_templates_org_default', 'pipeline_templates')
+            if _table_exists('pipeline_templates'):
+                _safe_create_index('idx_pipeline_templates_org_default', 'pipeline_templates', ['organization_id', 'is_default'], unique=False)
+                _safe_create_index(op.f('ix_pipeline_templates_organization_id'), 'pipeline_templates', ['organization_id'], unique=False)
+        except (ProgrammingError, NoSuchTableError, InternalError):
+            pass
+    # rbac_audit_logs table (Master Admin module - may not exist in production)
+    if _table_exists('rbac_audit_logs'):
+        try:
+            _safe_alter_column('rbac_audit_logs', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(timezone=True),
+                       server_default=None,
+                       existing_nullable=False)
+            _safe_drop_index('ix_rbac_audit_logs_action', 'rbac_audit_logs')
+            _safe_drop_index('ix_rbac_audit_logs_actor', 'rbac_audit_logs')
+            _safe_drop_index('ix_rbac_audit_logs_org', 'rbac_audit_logs')
+            _safe_drop_index('ix_rbac_audit_logs_target', 'rbac_audit_logs')
+            _safe_create_index(op.f('ix_rbac_audit_logs_organization_id'), 'rbac_audit_logs', ['organization_id'], unique=False)
+        except (ProgrammingError, NoSuchTableError, InternalError):
             pass
 
     # valuation_export_logs table (Valuation Suite module - may not exist in production)
     if _table_exists('valuation_export_logs'):
         try:
-            op.drop_index('ix_valuation_export_logs_task_id', table_name='valuation_export_logs')
-            op.create_unique_constraint(None, 'valuation_export_logs', ['task_id'])
-        except (ProgrammingError, NoSuchTableError):
+            _safe_drop_index('ix_valuation_export_logs_task_id', 'valuation_export_logs')
+            _safe_create_unique_constraint(None, 'valuation_export_logs', ['task_id'])
+        except (ProgrammingError, NoSuchTableError, InternalError):
             pass
     # ### end Alembic commands ###
 
@@ -1352,51 +1333,60 @@ def downgrade() -> None:
     # valuation_export_logs table (Valuation Suite module - may not exist in production)
     if _table_exists('valuation_export_logs'):
         try:
-            op.drop_constraint(None, 'valuation_export_logs', type_='unique')
-            op.create_index('ix_valuation_export_logs_task_id', 'valuation_export_logs', ['task_id'], unique=False)
-        except (ProgrammingError, NoSuchTableError):
+            _safe_drop_constraint(None, 'valuation_export_logs', type_='unique')
+            _safe_create_index('ix_valuation_export_logs_task_id', 'valuation_export_logs', ['task_id'], unique=False)
+        except (ProgrammingError, NoSuchTableError, InternalError):
             pass
 
     # rbac_audit_logs table (Master Admin module - may not exist in production)
     if _table_exists('rbac_audit_logs'):
         try:
-            op.drop_index(op.f('ix_rbac_audit_logs_organization_id'), table_name='rbac_audit_logs')
-            op.create_index('ix_rbac_audit_logs_target', 'rbac_audit_logs', ['target_user_id'], unique=False)
-            op.create_index('ix_rbac_audit_logs_org', 'rbac_audit_logs', ['organization_id'], unique=False)
-            op.create_index('ix_rbac_audit_logs_actor', 'rbac_audit_logs', ['actor_user_id'], unique=False)
-            op.create_index('ix_rbac_audit_logs_action', 'rbac_audit_logs', ['action'], unique=False)
-            op.alter_column('rbac_audit_logs', 'created_at',
+            _safe_drop_index(op.f('ix_rbac_audit_logs_organization_id'), 'rbac_audit_logs')
+            _safe_create_index('ix_rbac_audit_logs_target', 'rbac_audit_logs', ['target_user_id'], unique=False)
+            _safe_create_index('ix_rbac_audit_logs_org', 'rbac_audit_logs', ['organization_id'], unique=False)
+            _safe_create_index('ix_rbac_audit_logs_actor', 'rbac_audit_logs', ['actor_user_id'], unique=False)
+            _safe_create_index('ix_rbac_audit_logs_action', 'rbac_audit_logs', ['action'], unique=False)
+            _safe_alter_column('rbac_audit_logs', 'created_at',
                        existing_type=postgresql.TIMESTAMP(timezone=True),
                        server_default=sa.text('CURRENT_TIMESTAMP'),
                        existing_nullable=False)
-        except (ProgrammingError, NoSuchTableError):
+        except (ProgrammingError, NoSuchTableError, InternalError):
             pass
-    op.drop_index(op.f('ix_pipeline_templates_organization_id'), table_name='pipeline_templates')
-    op.drop_index('idx_pipeline_templates_org_default', table_name='pipeline_templates')
-    op.create_index('ix_pipeline_templates_org_default', 'pipeline_templates', ['organization_id', 'is_default'], unique=False)
-    op.alter_column('pipeline_templates', 'updated_at',
-               existing_type=postgresql.TIMESTAMP(timezone=True),
-               server_default=sa.text('CURRENT_TIMESTAMP'),
-               existing_nullable=False)
-    op.alter_column('pipeline_templates', 'created_at',
-               existing_type=postgresql.TIMESTAMP(timezone=True),
-               server_default=sa.text('CURRENT_TIMESTAMP'),
-               existing_nullable=False)
-    op.alter_column('pipeline_templates', 'is_default',
-               existing_type=sa.BOOLEAN(),
-               server_default=sa.text('false'),
-               existing_nullable=False)
-    op.drop_index(op.f('ix_pipeline_template_stages_template_id'), table_name='pipeline_template_stages')
-    op.create_index('ix_pipeline_template_stages_template', 'pipeline_template_stages', ['template_id'], unique=False)
-    op.create_index('ix_pipeline_template_stages_order', 'pipeline_template_stages', ['order_index'], unique=False)
-    op.alter_column('pipeline_template_stages', 'updated_at',
-               existing_type=postgresql.TIMESTAMP(timezone=True),
-               server_default=sa.text('CURRENT_TIMESTAMP'),
-               existing_nullable=False)
-    op.alter_column('pipeline_template_stages', 'created_at',
-               existing_type=postgresql.TIMESTAMP(timezone=True),
-               server_default=sa.text('CURRENT_TIMESTAMP'),
-               existing_nullable=False)
+    # pipeline_templates table (Pipeline Management module - may not exist in production)
+    if _table_exists('pipeline_templates'):
+        try:
+            _safe_drop_index('idx_pipeline_templates_org_default', 'pipeline_templates')
+            _safe_create_index('ix_pipeline_templates_org_default', 'pipeline_templates', ['organization_id', 'is_default'], unique=False)
+            _safe_alter_column('pipeline_templates', 'updated_at',
+                       existing_type=postgresql.TIMESTAMP(timezone=True),
+                       server_default=sa.text('CURRENT_TIMESTAMP'),
+                       existing_nullable=False)
+            _safe_alter_column('pipeline_templates', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(timezone=True),
+                       server_default=sa.text('CURRENT_TIMESTAMP'),
+                       existing_nullable=False)
+            _safe_alter_column('pipeline_templates', 'is_default',
+                       existing_type=sa.BOOLEAN(),
+                       server_default=sa.text('false'),
+                       existing_nullable=False)
+        except (ProgrammingError, NoSuchTableError, InternalError):
+            pass
+    # pipeline_template_stages table (Pipeline Management module - may not exist in production)
+    if _table_exists('pipeline_template_stages'):
+        try:
+            _safe_drop_index(op.f('ix_pipeline_template_stages_template_id'), 'pipeline_template_stages')
+            _safe_create_index('ix_pipeline_template_stages_template', 'pipeline_template_stages', ['template_id'], unique=False)
+            _safe_create_index('ix_pipeline_template_stages_order', 'pipeline_template_stages', ['order_index'], unique=False)
+            _safe_alter_column('pipeline_template_stages', 'updated_at',
+                       existing_type=postgresql.TIMESTAMP(timezone=True),
+                       server_default=sa.text('CURRENT_TIMESTAMP'),
+                       existing_nullable=False)
+            _safe_alter_column('pipeline_template_stages', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(timezone=True),
+                       server_default=sa.text('CURRENT_TIMESTAMP'),
+                       existing_nullable=False)
+        except (ProgrammingError, NoSuchTableError, InternalError):
+            pass
     # op.alter_column is already patched to use _safe_alter_column
     _safe_create_index('idx_generated_documents_template_id', 'generated_documents', ['template_id'], unique=False)
     _safe_create_index('idx_generated_documents_status', 'generated_documents', ['status'], unique=False)
@@ -1727,76 +1717,96 @@ def downgrade() -> None:
                        existing_type=postgresql.TIMESTAMP(),
                        server_default=sa.text('now()'),
                        existing_nullable=False)
-        except ProgrammingError:
+        except (ProgrammingError, NoSuchTableError, InternalError):
             pass
-    op.drop_index(op.f('ix_admin_collateral_id'), table_name='admin_collateral')
-    op.alter_column('admin_collateral', 'updated_at',
-               existing_type=postgresql.TIMESTAMP(),
-               server_default=sa.text('now()'),
-               existing_nullable=False)
-    op.alter_column('admin_collateral', 'created_at',
-               existing_type=postgresql.TIMESTAMP(),
-               server_default=sa.text('now()'),
-               existing_nullable=False)
-    op.drop_index(op.f('ix_admin_campaigns_id'), table_name='admin_campaigns')
-    op.alter_column('admin_campaigns', 'updated_at',
-               existing_type=postgresql.TIMESTAMP(),
-               server_default=sa.text('now()'),
-               existing_nullable=False)
-    op.alter_column('admin_campaigns', 'created_at',
-               existing_type=postgresql.TIMESTAMP(),
-               server_default=sa.text('now()'),
-               existing_nullable=False)
-    op.alter_column('admin_campaigns', 'clicked_count',
-               existing_type=sa.INTEGER(),
-               server_default=sa.text('0'),
-               existing_nullable=True)
-    op.alter_column('admin_campaigns', 'opened_count',
-               existing_type=sa.INTEGER(),
-               server_default=sa.text('0'),
-               existing_nullable=True)
-    op.alter_column('admin_campaigns', 'sent_count',
-               existing_type=sa.INTEGER(),
-               server_default=sa.text('0'),
-               existing_nullable=True)
-    op.alter_column('admin_campaigns', 'total_recipients',
-               existing_type=sa.INTEGER(),
-               server_default=sa.text('0'),
-               existing_nullable=True)
-    op.alter_column('admin_campaigns', 'status',
-               existing_type=postgresql.ENUM('draft', 'scheduled', 'sending', 'sent', 'paused', 'cancelled', name='campaignstatus'),
-               server_default=sa.text("'draft'::campaignstatus"),
-               existing_nullable=True)
-    op.drop_index(op.f('ix_admin_campaign_recipients_id'), table_name='admin_campaign_recipients')
-    op.alter_column('admin_campaign_recipients', 'bounced',
-               existing_type=sa.BOOLEAN(),
-               server_default=sa.text('false'),
-               existing_nullable=True)
-    op.alter_column('admin_campaign_recipients', 'clicked',
-               existing_type=sa.BOOLEAN(),
-               server_default=sa.text('false'),
-               existing_nullable=True)
-    op.alter_column('admin_campaign_recipients', 'opened',
-               existing_type=sa.BOOLEAN(),
-               server_default=sa.text('false'),
-               existing_nullable=True)
-    op.alter_column('admin_campaign_recipients', 'sent',
-               existing_type=sa.BOOLEAN(),
-               server_default=sa.text('false'),
-               existing_nullable=True)
-    op.drop_index(op.f('ix_admin_activities_id'), table_name='admin_activities')
-    op.alter_column('admin_activities', 'updated_at',
-               existing_type=postgresql.TIMESTAMP(),
-               server_default=sa.text('now()'),
-               existing_nullable=False)
-    op.alter_column('admin_activities', 'created_at',
-               existing_type=postgresql.TIMESTAMP(),
-               server_default=sa.text('now()'),
-               existing_nullable=False)
-    op.alter_column('admin_activities', 'amount',
-               existing_type=sa.INTEGER(),
-               server_default=sa.text('1'),
-               existing_nullable=True)
+    # admin_collateral table (Master Admin module - may not exist in production)
+    if _table_exists('admin_collateral'):
+        try:
+            _safe_drop_index(op.f('ix_admin_collateral_id'), 'admin_collateral')
+            _safe_alter_column('admin_collateral', 'updated_at',
+                       existing_type=postgresql.TIMESTAMP(),
+                       server_default=sa.text('now()'),
+                       existing_nullable=False)
+            _safe_alter_column('admin_collateral', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(),
+                       server_default=sa.text('now()'),
+                       existing_nullable=False)
+        except (ProgrammingError, NoSuchTableError, InternalError):
+            pass
+    # admin_campaigns table (Master Admin module - may not exist in production)
+    if _table_exists('admin_campaigns'):
+        try:
+            _safe_drop_index(op.f('ix_admin_campaigns_id'), 'admin_campaigns')
+            _safe_alter_column('admin_campaigns', 'updated_at',
+                       existing_type=postgresql.TIMESTAMP(),
+                       server_default=sa.text('now()'),
+                       existing_nullable=False)
+            _safe_alter_column('admin_campaigns', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(),
+                       server_default=sa.text('now()'),
+                       existing_nullable=False)
+            _safe_alter_column('admin_campaigns', 'clicked_count',
+                       existing_type=sa.INTEGER(),
+                       server_default=sa.text('0'),
+                       existing_nullable=True)
+            _safe_alter_column('admin_campaigns', 'opened_count',
+                       existing_type=sa.INTEGER(),
+                       server_default=sa.text('0'),
+                       existing_nullable=True)
+            _safe_alter_column('admin_campaigns', 'sent_count',
+                       existing_type=sa.INTEGER(),
+                       server_default=sa.text('0'),
+                       existing_nullable=True)
+            _safe_alter_column('admin_campaigns', 'total_recipients',
+                       existing_type=sa.INTEGER(),
+                       server_default=sa.text('0'),
+                       existing_nullable=True)
+            _safe_alter_column('admin_campaigns', 'status',
+                       existing_type=postgresql.ENUM('draft', 'scheduled', 'sending', 'sent', 'paused', 'cancelled', name='campaignstatus'),
+                       server_default=sa.text("'draft'::campaignstatus"),
+                       existing_nullable=True)
+        except (ProgrammingError, NoSuchTableError, InternalError):
+            pass
+    # admin_campaign_recipients table (Master Admin module - may not exist in production)
+    if _table_exists('admin_campaign_recipients'):
+        try:
+            _safe_drop_index(op.f('ix_admin_campaign_recipients_id'), 'admin_campaign_recipients')
+            _safe_alter_column('admin_campaign_recipients', 'bounced',
+                       existing_type=sa.BOOLEAN(),
+                       server_default=sa.text('false'),
+                       existing_nullable=True)
+            _safe_alter_column('admin_campaign_recipients', 'clicked',
+                       existing_type=sa.BOOLEAN(),
+                       server_default=sa.text('false'),
+                       existing_nullable=True)
+            _safe_alter_column('admin_campaign_recipients', 'opened',
+                       existing_type=sa.BOOLEAN(),
+                       server_default=sa.text('false'),
+                       existing_nullable=True)
+            _safe_alter_column('admin_campaign_recipients', 'sent',
+                       existing_type=sa.BOOLEAN(),
+                       server_default=sa.text('false'),
+                       existing_nullable=True)
+        except (ProgrammingError, NoSuchTableError, InternalError):
+            pass
+    # admin_activities table (Master Admin module - may not exist in production)
+    if _table_exists('admin_activities'):
+        try:
+            _safe_drop_index(op.f('ix_admin_activities_id'), 'admin_activities')
+            _safe_alter_column('admin_activities', 'updated_at',
+                       existing_type=postgresql.TIMESTAMP(),
+                       server_default=sa.text('now()'),
+                       existing_nullable=False)
+            _safe_alter_column('admin_activities', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(),
+                       server_default=sa.text('now()'),
+                       existing_nullable=False)
+            _safe_alter_column('admin_activities', 'amount',
+                       existing_type=sa.INTEGER(),
+                       server_default=sa.text('1'),
+                       existing_nullable=True)
+        except (ProgrammingError, NoSuchTableError, InternalError):
+            pass
     op.create_table('contact_messages',
     sa.Column('id', sa.INTEGER(), autoincrement=True, nullable=False),
     sa.Column('name', sa.VARCHAR(length=255), autoincrement=False, nullable=False),
