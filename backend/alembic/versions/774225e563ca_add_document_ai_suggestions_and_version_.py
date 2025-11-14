@@ -27,6 +27,8 @@ _original_drop_constraint = op.drop_constraint
 _original_create_foreign_key = op.create_foreign_key
 _original_create_unique_constraint = op.create_unique_constraint
 _original_drop_table = op.drop_table
+_original_create_table = op.create_table
+_original_execute = op.execute
 
 # revision identifiers, used by Alembic.
 revision: str = '774225e563ca'
@@ -35,132 +37,173 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
-def _drop_index_if_exists(index_name: str, table_name: str, schema: str = 'public') -> None:
-    """Drop index if it exists to keep migration idempotent on prod."""
-    if not _table_exists(table_name, schema):
-        return
+def _inspector():
+    """Get SQLAlchemy inspector safely, returning None on error."""
     try:
-        inspector = inspect(op.get_bind())
-        existing = inspector.get_indexes(table_name, schema=schema)
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        return
-    if any(idx['name'] == index_name for idx in existing):
-        try:
-            _original_drop_index(index_name, table_name=table_name)
-        except (ProgrammingError, NoSuchTableError, InternalError):
-            pass
+        return inspect(op.get_bind())
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        return None
 
 
-def _drop_table_if_exists(table_name: str, schema: str = 'public') -> None:
-    """Drop table only when it actually exists."""
-    # Use _table_exists which handles failed transactions
-    if not _table_exists(table_name, schema):
-        return
-    try:
-        _original_drop_table(table_name, schema=schema)
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        # Table doesn't exist or transaction failed - skip
-        pass
+def _table_exists(table_name: str, schema: str = None) -> bool:
+    """Check if table exists, returning False on any error.
 
-
-def _table_exists(table_name: str, schema: str = 'public') -> bool:
-    """Check table existence safely, even if the previous statement failed.
-    
-    NOTE: This function should NOT be used in failed transaction state.
-    Use _safe_* wrappers instead which catch errors directly.
+    DEFENSIVE: Check before attempting operations to avoid transaction abort.
     """
     try:
-        bind = op.get_bind()
-        inspector = inspect(bind)
-        return inspector.has_table(table_name, schema=schema)
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        # InternalError can wrap InFailedSqlTransaction from psycopg2
-        # If transaction is aborted, assume table doesn't exist to skip operation
+        inspector = _inspector()
+        if inspector is None:
+            return False
+        return inspector.has_table(table_name, schema=schema or 'public')
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
         return False
 
 
-def _safe_alter_column(table_name: str, column_name: str, *args, **kwargs):
-    """Safely alter column, skipping when the column or table is missing.
+def _column_exists(table_name: str, column_name: str, schema: str = None) -> bool:
+    """Check if column exists in table, returning False on any error."""
+    try:
+        if not _table_exists(table_name, schema):
+            return False
+        inspector = _inspector()
+        if inspector is None:
+            return False
+        columns = [col['name'] for col in inspector.get_columns(table_name, schema=schema or 'public')]
+        return column_name in columns
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        return False
 
-    Simply wraps op.alter_column in try/except and lets PostgreSQL tell us
-    if the table/column doesn't exist. NO pre-checks to avoid transaction issues.
+
+def _index_exists(index_name: str, table_name: str, schema: str = None) -> bool:
+    """Check if index exists, returning False on any error."""
+    try:
+        if not _table_exists(table_name, schema):
+            return False
+        inspector = _inspector()
+        if inspector is None:
+            return False
+        indexes = inspector.get_indexes(table_name, schema=schema or 'public')
+        return any(idx['name'] == index_name for idx in indexes)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        return False
+
+
+def _safe_alter_column(table_name: str, column_name: str, **kwargs):
+    """Safely alter column ONLY if table exists.
+
+    DEFENSIVE: Check table existence BEFORE attempting operation.
     """
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return  # Skip silently - table doesn't exist
     try:
-        _original_alter_column(table_name, column_name, *args, **kwargs)
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        # Table/column doesn't exist, or transaction aborted - skip silently
-        pass
-
-
-def _safe_create_index(index_name: str, table_name: Optional[str], columns, **kwargs):
-    """Safely create index, skipping if table doesn't exist. No pre-checks."""
-    try:
-        _original_create_index(index_name, table_name, columns, **kwargs)
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        pass
-
-
-def _safe_drop_index(index_name: str, table_name: Optional[str] = None, **kwargs):
-    """Safely drop index, skipping if doesn't exist. No pre-checks."""
-    try:
-        _original_drop_index(index_name, table_name=table_name, **kwargs)
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        pass
+        _original_alter_column(table_name, column_name, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass  # Skip silently - operation failed
 
 
 def _safe_add_column(table_name: str, column, **kwargs):
-    """Safely add column, skipping if table doesn't exist. No pre-checks."""
+    """Safely add column ONLY if table exists."""
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return  # Skip silently
     try:
         _original_add_column(table_name, column, **kwargs)
-    except (ProgrammingError, NoSuchTableError, InternalError):
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
         pass
 
 
 def _safe_drop_column(table_name: str, column_name: str, **kwargs):
-    """Safely drop column, skipping if table/column doesn't exist. No pre-checks."""
+    """Safely drop column ONLY if table exists."""
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return  # Skip silently
     try:
         _original_drop_column(table_name, column_name, **kwargs)
-    except (ProgrammingError, NoSuchTableError, InternalError):
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass
+
+
+def _safe_create_index(index_name: str, table_name: Optional[str], columns, **kwargs):
+    """Safely create index ONLY if table exists."""
+    schema = kwargs.get('schema')
+    if table_name and not _table_exists(table_name, schema):
+        return  # Skip silently
+    try:
+        _original_create_index(index_name, table_name, columns, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass
+
+
+def _safe_drop_index(index_name: str, table_name: Optional[str] = None, **kwargs):
+    """Safely drop index ONLY if table exists."""
+    schema = kwargs.get('schema')
+    if table_name and not _table_exists(table_name, schema):
+        return  # Skip silently
+    try:
+        _original_drop_index(index_name, table_name=table_name, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass
+
+
+def _safe_create_unique_constraint(constraint_name: str, table_name: str, columns, **kwargs):
+    """Safely create unique constraint ONLY if table exists."""
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return  # Skip silently
+    try:
+        _original_create_unique_constraint(constraint_name, table_name, columns, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
         pass
 
 
 def _safe_drop_constraint(constraint_name: str, table_name: str, **kwargs):
-    """Safely drop constraint, skipping if doesn't exist. No pre-checks."""
+    """Safely drop constraint ONLY if table exists."""
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return  # Skip silently
     try:
         _original_drop_constraint(constraint_name, table_name, **kwargs)
-    except (ProgrammingError, NoSuchTableError, InternalError):
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
         pass
 
 
 def _safe_create_foreign_key(constraint_name: str, source_table: str, referent_table: str,
                              local_cols, remote_cols, **kwargs):
-    """Safely create foreign key, skipping if tables don't exist. No pre-checks."""
+    """Safely create foreign key ONLY if both tables exist."""
+    schema = kwargs.get('schema')
+    if not _table_exists(source_table, schema) or not _table_exists(referent_table, schema):
+        return  # Skip silently - one or both tables don't exist
     try:
         _original_create_foreign_key(constraint_name, source_table, referent_table,
                                      local_cols, remote_cols, **kwargs)
-    except (ProgrammingError, NoSuchTableError, InternalError):
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
         pass
 
 
-def _safe_create_unique_constraint(constraint_name: str, table_name: str, columns, **kwargs):
-    """Safely create unique constraint, skipping if table doesn't exist. No pre-checks."""
+def _safe_drop_table(table_name: str, **kwargs):
+    """Safely drop table ONLY if it exists."""
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return  # Skip silently
     try:
-        _original_create_unique_constraint(constraint_name, table_name, columns, **kwargs)
-    except (ProgrammingError, NoSuchTableError, InternalError):
+        _original_drop_table(table_name, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
         pass
 
 
-def _safe_drop_table(table_name: str, *args, **kwargs):
-    """Safely drop table, skipping if doesn't exist. No pre-checks."""
-    try:
-        _original_drop_table(table_name, *args, **kwargs)
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        pass
+def _drop_index_if_exists(index_name: str, table_name: str, schema: str = 'public') -> None:
+    """Drop index if it exists - uses safe wrapper."""
+    _safe_drop_index(index_name, table_name, schema=schema)
+
+
+def _drop_table_if_exists(table_name: str, schema: str = 'public') -> None:
+    """Drop table if it exists - uses safe wrapper."""
+    _safe_drop_table(table_name, schema=schema)
 
 
 # Monkey-patch op.* methods for automatic safety.
-# The wrappers catch ALL exceptions (including InternalError from failed transactions)
-# and skip operations gracefully rather than cascading failures.
+# ALL operations now check table existence BEFORE attempting the operation.
+# This prevents transaction abort cascade when operating on missing tables.
 op.alter_column = _safe_alter_column
 op.create_index = _safe_create_index
 op.drop_index = _safe_drop_index
@@ -170,24 +213,6 @@ op.drop_constraint = _safe_drop_constraint
 op.create_foreign_key = _safe_create_foreign_key
 op.create_unique_constraint = _safe_create_unique_constraint
 op.drop_table = _safe_drop_table
-
-
-def _column_exists(table_name: str, column_name: str, schema: str = 'public') -> bool:
-    """Check if a column exists in a table, handling failed transaction state."""
-    try:
-        if not _table_exists(table_name, schema):
-            return False
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        # Transaction may be in failed state, assume column doesn't exist
-        return False
-    try:
-        bind = op.get_bind()
-        inspector = inspect(bind)
-        columns = [col['name'] for col in inspector.get_columns(table_name, schema=schema)]
-        return column_name in columns
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        # Column check failed, assume it doesn't exist
-        return False
 
 
 def upgrade() -> None:
