@@ -60,9 +60,7 @@ class TestAISuggestionEndpoints:
         db_session.commit()
         db_session.refresh(document)
 
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         request_data = {
             "context": "Business document",
@@ -82,7 +80,6 @@ class TestAISuggestionEndpoints:
             # OpenAI not available in test environment - skip
             pytest.skip("OpenAI not available in test environment")
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_accept_ai_suggestion(
         self,
@@ -127,9 +124,7 @@ class TestAISuggestionEndpoints:
         db_session.commit()
         db_session.refresh(suggestion)
 
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         response = client.post(
             f"/api/document-generation/documents/{document.id}/ai/suggestions/{suggestion.id}/accept",
@@ -139,7 +134,6 @@ class TestAISuggestionEndpoints:
         data = response.json()
         assert data["status"] == "accepted"
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_reject_ai_suggestion(
         self,
@@ -184,9 +178,7 @@ class TestAISuggestionEndpoints:
         db_session.commit()
         db_session.refresh(suggestion)
 
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         response = client.post(
             f"/api/document-generation/documents/{document.id}/ai/suggestions/{suggestion.id}/reject",
@@ -196,7 +188,6 @@ class TestAISuggestionEndpoints:
         data = response.json()
         assert data["status"] == "rejected"
 
-        app.dependency_overrides.pop(get_current_user, None)
 
 
 class TestVersionHistoryEndpoints:
@@ -250,9 +241,7 @@ class TestVersionHistoryEndpoints:
         db_session.add_all([version1, version2])
         db_session.commit()
 
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         response = client.get(
             f"/api/document-generation/documents/{document.id}/versions",
@@ -264,7 +253,6 @@ class TestVersionHistoryEndpoints:
         assert any(v["label"] == "v1.0" for v in data)
         assert any(v["label"] == "v2.0" for v in data)
 
-        app.dependency_overrides.pop(get_current_user, None)
 
     def test_restore_document_version(
         self,
@@ -307,9 +295,7 @@ class TestVersionHistoryEndpoints:
         db_session.commit()
         db_session.refresh(version)
 
-        from app.api.dependencies.auth import get_current_user
-        from app.main import app
-        app.dependency_overrides[get_current_user] = lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         response = client.post(
             f"/api/document-generation/documents/{document.id}/versions/{version.id}/restore",
@@ -319,5 +305,4 @@ class TestVersionHistoryEndpoints:
         data = response.json()
         assert data["generated_content"] == "Version 1 Content"
 
-        app.dependency_overrides.pop(get_current_user, None)
 
