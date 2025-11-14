@@ -33,7 +33,7 @@ class TestDocumentTemplateEndpoints:
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         template_data = {
             "name": "NDA Template",
@@ -72,7 +72,7 @@ class TestDocumentTemplateEndpoints:
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         template_data = {
             "name": "Test Template",
@@ -120,7 +120,7 @@ class TestDocumentTemplateEndpoints:
         db_session.commit()
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         response = client.get("/api/document-generation/templates")
 
@@ -163,7 +163,7 @@ class TestDocumentTemplateEndpoints:
         db_session.commit()
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         # Filter by status
         response = client.get("/api/document-generation/templates?status=active")
@@ -200,7 +200,7 @@ class TestDocumentTemplateEndpoints:
         db_session.refresh(template)
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         response = client.get(f"/api/document-generation/templates/{template.id}")
 
@@ -221,7 +221,7 @@ class TestDocumentTemplateEndpoints:
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         response = client.get("/api/document-generation/templates/nonexistent-id")
 
@@ -251,7 +251,7 @@ class TestDocumentTemplateEndpoints:
         db_session.refresh(template)
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         update_data = {
             "name": "Updated Name",
@@ -292,7 +292,7 @@ class TestDocumentTemplateEndpoints:
         db_session.refresh(template)
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         response = client.delete(f"/api/document-generation/templates/{template.id}")
 
@@ -331,7 +331,7 @@ class TestDocumentGenerationEndpoints:
         db_session.refresh(template)
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         # Generate document
         render_request = {
@@ -380,7 +380,7 @@ class TestDocumentGenerationEndpoints:
         db_session.refresh(template)
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         # Missing 'code' variable
         render_request = {
@@ -410,7 +410,7 @@ class TestDocumentGenerationEndpoints:
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         render_request = {
             "variable_values": {},
@@ -466,7 +466,7 @@ class TestGeneratedDocumentEndpoints:
         db_session.commit()
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         response = client.get("/api/document-generation/documents")
 
@@ -507,7 +507,7 @@ class TestGeneratedDocumentEndpoints:
         db_session.refresh(document)
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         response = client.get(f"/api/document-generation/documents/{document.id}")
 
@@ -550,7 +550,7 @@ class TestGeneratedDocumentEndpoints:
         db_session.refresh(document)
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         response = client.patch(
             f"/api/document-generation/documents/{document.id}/status?status=finalized",
@@ -593,7 +593,7 @@ class TestGeneratedDocumentEndpoints:
         db_session.refresh(document)
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         update_data = {
             "generated_content": "Updated Content",
@@ -651,7 +651,7 @@ Buyer Signature: _________________
         db_session.refresh(template)
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         render_request = {
             "variable_values": {
@@ -717,7 +717,7 @@ class TestDocumentExportEndpoints:
         db_session.refresh(document)
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         export_request = {
             "format": "application/pdf",
@@ -772,7 +772,7 @@ class TestDocumentExportEndpoints:
         db_session.refresh(document)
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         export_request = {
             "format": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -801,7 +801,7 @@ class TestDocumentExportEndpoints:
         user = create_user(email="user@example.com", organization_id=str(org.id))
 
         from app.api.dependencies.auth import get_current_user
-        dependency_overrides(get_current_user, lambda: user
+        dependency_overrides(get_current_user, lambda: user)
 
         export_request = {
             "format": "application/pdf",

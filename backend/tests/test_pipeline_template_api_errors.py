@@ -4,12 +4,27 @@ TDD: RED → GREEN → REFACTOR
 Feature: Multi-tenant isolation and error handling for pipeline template endpoints
 """
 import pytest
+from contextlib import contextmanager
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.models.pipeline_template import PipelineTemplate
-from app.main import app
 from app.api.dependencies.auth import get_current_user
+from app.models.pipeline_template import PipelineTemplate
+
+dependency_overrides = None
+
+
+@pytest.fixture(autouse=True)
+def _bind_dependency_overrides_fixture(dependency_overrides):
+    globals()["dependency_overrides"] = dependency_overrides
+    yield
+    globals()["dependency_overrides"] = None
+
+
+@contextmanager
+def override_current_user(user):
+    dependency_overrides(get_current_user, lambda: user)
+    yield
 
 
 class TestPipelineTemplateAPIErrorPaths:
@@ -25,17 +40,14 @@ class TestPipelineTemplateAPIErrorPaths:
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
-        app.dependency_overrides[get_current_user] = lambda: user
-        
-        try:
+        with override_current_user(user):
             response = client.get(
                 "/api/pipeline-templates/non-existent-template-id",
             )
             
             assert response.status_code == 404
             assert "not found" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_update_template_returns_404_when_not_found(
         self,
@@ -47,9 +59,7 @@ class TestPipelineTemplateAPIErrorPaths:
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
-        app.dependency_overrides[get_current_user] = lambda: user
-        
-        try:
+        with override_current_user(user):
             update_data = {
                 "name": "Updated Name",
                 "description": "Updated description",
@@ -64,8 +74,7 @@ class TestPipelineTemplateAPIErrorPaths:
             
             assert response.status_code == 404
             assert "not found" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_delete_template_returns_404_when_not_found(
         self,
@@ -77,17 +86,14 @@ class TestPipelineTemplateAPIErrorPaths:
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
-        app.dependency_overrides[get_current_user] = lambda: user
-        
-        try:
+        with override_current_user(user):
             response = client.delete(
                 "/api/pipeline-templates/non-existent-template-id",
             )
             
             assert response.status_code == 404
             assert "not found" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_get_template_returns_404_when_from_other_org(
         self,
@@ -114,17 +120,14 @@ class TestPipelineTemplateAPIErrorPaths:
         db_session.refresh(template)
         
         # Try to access from org1 user
-        app.dependency_overrides[get_current_user] = lambda: user1
-        
-        try:
+        with override_current_user(user1):
             response = client.get(
                 f"/api/pipeline-templates/{template.id}",
             )
             
             assert response.status_code == 404
             assert "not found" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_update_template_returns_404_when_from_other_org(
         self,
@@ -151,9 +154,7 @@ class TestPipelineTemplateAPIErrorPaths:
         db_session.refresh(template)
         
         # Try to update from org1 user
-        app.dependency_overrides[get_current_user] = lambda: user1
-        
-        try:
+        with override_current_user(user1):
             update_data = {
                 "name": "Hacked Name",
                 "description": "Hacked description",
@@ -168,8 +169,7 @@ class TestPipelineTemplateAPIErrorPaths:
             
             assert response.status_code == 404
             assert "not found" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_delete_template_returns_404_when_from_other_org(
         self,
@@ -196,17 +196,14 @@ class TestPipelineTemplateAPIErrorPaths:
         db_session.refresh(template)
         
         # Try to delete from org1 user
-        app.dependency_overrides[get_current_user] = lambda: user1
-        
-        try:
+        with override_current_user(user1):
             response = client.delete(
                 f"/api/pipeline-templates/{template.id}",
             )
             
             assert response.status_code == 404
             assert "not found" in response.json()["detail"].lower()
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
     
     def test_list_templates_only_shows_own_org(
         self,
@@ -237,9 +234,7 @@ class TestPipelineTemplateAPIErrorPaths:
         db_session.commit()
         
         # List from org1 user
-        app.dependency_overrides[get_current_user] = lambda: user1
-        
-        try:
+        with override_current_user(user1):
             response = client.get("/api/pipeline-templates")
             
             assert response.status_code == 200
@@ -247,6 +242,5 @@ class TestPipelineTemplateAPIErrorPaths:
             assert len(data) == 1
             assert data[0]["name"] == "Org 1 Template"
             assert data[0]["organization_id"] == str(org1.id)
-        finally:
-            app.dependency_overrides.pop(get_current_user, None)
+
 
