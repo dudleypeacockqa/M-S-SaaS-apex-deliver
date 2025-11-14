@@ -54,7 +54,7 @@ def _drop_table_if_exists(table_name: str, schema: str = 'public') -> None:
     bind = op.get_bind()
     inspector = inspect(bind)
     if inspector.has_table(table_name, schema=schema):
-        op.drop_table(table_name)
+        _original_drop_table(table_name, schema=schema)
 
 
 def _table_exists(table_name: str, schema: str = 'public') -> bool:
@@ -1089,46 +1089,50 @@ def upgrade() -> None:
                existing_type=sa.VARCHAR(length=20),
                server_default=None,
                existing_nullable=False)
-    op.alter_column('document_templates', 'id',
-               existing_type=sa.VARCHAR(length=36),
-               type_=sa.String(length=36),
-               existing_nullable=False)
-    if _column_exists('document_templates', 'variables'):
+    if _table_exists('document_templates'):
         try:
-            op.alter_column('document_templates', 'variables',
-                       existing_type=postgresql.JSON(astext_type=sa.Text()),
+            op.alter_column('document_templates', 'id',
+                       existing_type=sa.VARCHAR(length=36),
+                       type_=sa.String(length=36),
+                       existing_nullable=False)
+            if _column_exists('document_templates', 'variables'):
+                try:
+                    op.alter_column('document_templates', 'variables',
+                               existing_type=postgresql.JSON(astext_type=sa.Text()),
+                               server_default=None,
+                               nullable=True)
+                except (ProgrammingError, NoSuchTableError):
+                    pass
+            op.alter_column('document_templates', 'status',
+                       existing_type=postgresql.ENUM('DRAFT', 'ACTIVE', 'ARCHIVED', name='templatestatus'),
+                       server_default=None,
+                       existing_nullable=False)
+            if _column_exists('document_templates', 'version'):
+                try:
+                    op.alter_column('document_templates', 'version',
+                               existing_type=sa.INTEGER(),
+                               server_default=None,
+                               nullable=True)
+                except (ProgrammingError, NoSuchTableError):
+                    pass
+            op.alter_column('document_templates', 'organization_id',
+                       existing_type=sa.VARCHAR(length=36),
+                       type_=sa.String(length=36),
+                       existing_nullable=False)
+            op.alter_column('document_templates', 'created_by_user_id',
+                       existing_type=sa.VARCHAR(),
+                       type_=sa.String(length=36),
+                       existing_nullable=False)
+            op.alter_column('document_templates', 'created_at',
+                       existing_type=postgresql.TIMESTAMP(timezone=True),
                        server_default=None,
                        nullable=True)
-        except (ProgrammingError, NoSuchTableError):
+            _drop_index_if_exists('idx_document_templates_created_at', 'document_templates')
+            _drop_index_if_exists('idx_document_templates_organization_id', 'document_templates')
+            _drop_index_if_exists('idx_document_templates_status', 'document_templates')
+            _drop_index_if_exists('idx_document_templates_template_type', 'document_templates')
+        except ProgrammingError:
             pass
-    op.alter_column('document_templates', 'status',
-               existing_type=postgresql.ENUM('DRAFT', 'ACTIVE', 'ARCHIVED', name='templatestatus'),
-               server_default=None,
-               existing_nullable=False)
-    if _column_exists('document_templates', 'version'):
-        try:
-            op.alter_column('document_templates', 'version',
-                       existing_type=sa.INTEGER(),
-                       server_default=None,
-                       nullable=True)
-        except (ProgrammingError, NoSuchTableError):
-            pass
-    op.alter_column('document_templates', 'organization_id',
-               existing_type=sa.VARCHAR(length=36),
-               type_=sa.String(length=36),
-               existing_nullable=False)
-    op.alter_column('document_templates', 'created_by_user_id',
-               existing_type=sa.VARCHAR(),
-               type_=sa.String(length=36),
-               existing_nullable=False)
-    op.alter_column('document_templates', 'created_at',
-               existing_type=postgresql.TIMESTAMP(timezone=True),
-               server_default=None,
-               nullable=True)
-    op.drop_index('idx_document_templates_created_at', table_name='document_templates')
-    op.drop_index('idx_document_templates_organization_id', table_name='document_templates')
-    op.drop_index('idx_document_templates_status', table_name='document_templates')
-    op.drop_index('idx_document_templates_template_type', table_name='document_templates')
     op.alter_column('generated_documents', 'id',
                existing_type=sa.VARCHAR(length=36),
                type_=sa.String(length=36),
