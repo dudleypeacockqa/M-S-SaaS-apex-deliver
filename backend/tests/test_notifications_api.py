@@ -12,15 +12,6 @@ from app.api.dependencies.auth import get_current_user
 from app.models.user_notification_preferences import UserNotificationPreferences
 from app.models.user import User
 
-dependency_overrides = None
-
-
-@pytest.fixture(autouse=True)
-def _bind_dependency_overrides_fixture(dependency_overrides):
-    globals()["dependency_overrides"] = dependency_overrides
-    yield
-    globals()["dependency_overrides"] = None
-
 
 class TestNotificationPreferencesAPI:
     """Test notification preferences API endpoints"""
@@ -30,6 +21,7 @@ class TestNotificationPreferencesAPI:
         client: TestClient,
         create_user,
         create_organization,
+        dependency_overrides,
     ):
         """Test GET /preferences returns default preferences when user has none."""
         org = create_organization(name="Test Org")

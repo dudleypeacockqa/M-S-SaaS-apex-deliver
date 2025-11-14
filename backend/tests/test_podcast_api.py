@@ -317,47 +317,46 @@ class TestPodcastUsageEndpoint:
         dependency_overrides(get_current_user, lambda: premium_user)
         expected_period = datetime.now(timezone.utc).strftime("%Y-%m")
 
-        try:
-            with patch(
-                "app.api.dependencies.auth.check_feature_access",
-                new_callable=AsyncMock,
-            ) as mock_feature, patch(
-                "app.api.routes.podcasts.subscription.get_organization_tier",
-                new_callable=AsyncMock,
-            ) as mock_tier, patch(
-                "app.api.routes.podcasts.get_quota_summary",
-                new_callable=AsyncMock,
-            ) as mock_summary:
-                mock_tier.return_value = SubscriptionTier.PREMIUM
-                mock_feature.return_value = True
-                mock_summary.return_value = PodcastQuotaSummary(
-                    tier=SubscriptionTier.PREMIUM.value,
-                    limit=None,
-                    remaining=-1,
-                    used=5,
-                    is_unlimited=True,
-                    period=expected_period,
-                    tier_label="Premium",
-                    quota_state="unlimited",
-                    warning_status=None,
-                    warning_message=None,
-                    upgrade_required=False,
-                    upgrade_message=None,
-                    upgrade_cta_url=None,
-                )
+        with patch(
+            "app.api.dependencies.auth.check_feature_access",
+            new_callable=AsyncMock,
+        ) as mock_feature, patch(
+            "app.api.routes.podcasts.subscription.get_organization_tier",
+            new_callable=AsyncMock,
+        ) as mock_tier, patch(
+            "app.api.routes.podcasts.get_quota_summary",
+            new_callable=AsyncMock,
+        ) as mock_summary:
+            mock_tier.return_value = SubscriptionTier.PREMIUM
+            mock_feature.return_value = True
+            mock_summary.return_value = PodcastQuotaSummary(
+                tier=SubscriptionTier.PREMIUM.value,
+                limit=None,
+                remaining=-1,
+                used=5,
+                is_unlimited=True,
+                period=expected_period,
+                tier_label="Premium",
+                quota_state="unlimited",
+                warning_status=None,
+                warning_message=None,
+                upgrade_required=False,
+                upgrade_message=None,
+                upgrade_cta_url=None,
+            )
 
-                response = client.get("/api/podcasts/usage")
+            response = client.get("/api/podcasts/usage")
 
-            assert response.status_code == status.HTTP_200_OK
-            mock_summary.assert_awaited_once()
-            assert mock_summary.await_args.kwargs == {
-                "organization_id": premium_user.organization_id,
-                "tier": SubscriptionTier.PREMIUM,
-                "db": ANY,
-            }
+        assert response.status_code == status.HTTP_200_OK
+        mock_summary.assert_awaited_once()
+        assert mock_summary.await_args.kwargs == {
+            "organization_id": premium_user.organization_id,
+            "tier": SubscriptionTier.PREMIUM,
+            "db": ANY,
+        }
 
-            payload = response.json()
-            assert payload["period_start"] is None
+        payload = response.json()
+        assert payload["period_start"] is None
             assert payload["period_end"] is None
             assert payload["period_label"] is None
             assert payload == {
