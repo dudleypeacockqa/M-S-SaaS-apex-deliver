@@ -760,52 +760,60 @@ def upgrade() -> None:
             op.create_index(op.f('ix_admin_activities_id'), 'admin_activities', ['id'], unique=False)
         except ProgrammingError:
             pass
-    op.alter_column('admin_campaign_recipients', 'sent',
-               existing_type=sa.BOOLEAN(),
-               server_default=None,
-               existing_nullable=True)
-    op.alter_column('admin_campaign_recipients', 'opened',
-               existing_type=sa.BOOLEAN(),
-               server_default=None,
-               existing_nullable=True)
-    op.alter_column('admin_campaign_recipients', 'clicked',
-               existing_type=sa.BOOLEAN(),
-               server_default=None,
-               existing_nullable=True)
-    op.alter_column('admin_campaign_recipients', 'bounced',
-               existing_type=sa.BOOLEAN(),
-               server_default=None,
-               existing_nullable=True)
-    op.create_index(op.f('ix_admin_campaign_recipients_id'), 'admin_campaign_recipients', ['id'], unique=False)
-    op.alter_column('admin_campaigns', 'status',
+    if _table_exists('admin_campaign_recipients'):
+        try:
+            op.alter_column('admin_campaign_recipients', 'sent',
+                       existing_type=sa.BOOLEAN(),
+                       server_default=None,
+                       existing_nullable=True)
+            op.alter_column('admin_campaign_recipients', 'opened',
+                       existing_type=sa.BOOLEAN(),
+                       server_default=None,
+                       existing_nullable=True)
+            op.alter_column('admin_campaign_recipients', 'clicked',
+                       existing_type=sa.BOOLEAN(),
+                       server_default=None,
+                       existing_nullable=True)
+            op.alter_column('admin_campaign_recipients', 'bounced',
+                       existing_type=sa.BOOLEAN(),
+                       server_default=None,
+                       existing_nullable=True)
+            op.create_index(op.f('ix_admin_campaign_recipients_id'), 'admin_campaign_recipients', ['id'], unique=False)
+        except ProgrammingError:
+            pass
+    if _table_exists('admin_campaigns'):
+        try:
+            op.alter_column('admin_campaigns', 'status',
                existing_type=postgresql.ENUM('draft', 'scheduled', 'sending', 'sent', 'paused', 'cancelled', name='campaignstatus'),
                server_default=None,
                existing_nullable=True)
-    op.alter_column('admin_campaigns', 'total_recipients',
+            op.alter_column('admin_campaigns', 'total_recipients',
                existing_type=sa.INTEGER(),
                server_default=None,
                existing_nullable=True)
-    op.alter_column('admin_campaigns', 'sent_count',
+            op.alter_column('admin_campaigns', 'sent_count',
                existing_type=sa.INTEGER(),
                server_default=None,
                existing_nullable=True)
-    op.alter_column('admin_campaigns', 'opened_count',
+            op.alter_column('admin_campaigns', 'opened_count',
                existing_type=sa.INTEGER(),
                server_default=None,
                existing_nullable=True)
-    op.alter_column('admin_campaigns', 'clicked_count',
+            op.alter_column('admin_campaigns', 'clicked_count',
                existing_type=sa.INTEGER(),
                server_default=None,
                existing_nullable=True)
-    op.alter_column('admin_campaigns', 'created_at',
+            op.alter_column('admin_campaigns', 'created_at',
                existing_type=postgresql.TIMESTAMP(),
                server_default=None,
                existing_nullable=False)
-    op.alter_column('admin_campaigns', 'updated_at',
+            op.alter_column('admin_campaigns', 'updated_at',
                existing_type=postgresql.TIMESTAMP(),
                server_default=None,
                existing_nullable=False)
-    op.create_index(op.f('ix_admin_campaigns_id'), 'admin_campaigns', ['id'], unique=False)
+            op.create_index(op.f('ix_admin_campaigns_id'), 'admin_campaigns', ['id'], unique=False)
+        except ProgrammingError:
+            pass
     op.alter_column('admin_collateral', 'created_at',
                existing_type=postgresql.TIMESTAMP(),
                server_default=None,

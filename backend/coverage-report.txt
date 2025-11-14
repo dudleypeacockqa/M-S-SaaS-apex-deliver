@@ -1,0 +1,433 @@
+........................................................................ [  5%]
+........................................................................ [ 11%]
+........................................................................ [ 16%]
+........................................................................ [ 22%]
+........................................................................ [ 27%]
+........................................................................ [ 33%]
+........................................................................ [ 39%]
+........................................................................ [ 44%]
+....................s...............................................ss.. [ 50%]
+........ss..s.......ssssssssss.......................................... [ 55%]
+...................................................................sssss [ 61%]
+ssss.................................................sssssssssssssssssss [ 67%]
+sssssssssss............s..s...........................................ss [ 72%]
+ss...................................................................... [ 78%]
+..................................................................ssss.. [ 83%]
+...............................sssssssss................................ [ 89%]
+........................................................................ [ 95%]
+.............................................sss..s...sss.....           [100%]
+============================== warnings summary ===============================
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.8/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+tests\test_netsuite_integration.py:30
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:30: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:42
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:42: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:59
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:59: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:97
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:97: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:114
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:114: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:132
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:132: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:153
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:153: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:209
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:209: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:229
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:229: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_netsuite_integration.py:249
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_netsuite_integration.py:249: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:29
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:29: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:49
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:49: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:66
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:66: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:104
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:104: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:121
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:121: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:143
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:143: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:164
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:164: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:219
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:219: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_quickbooks_integration.py:238
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_quickbooks_integration.py:238: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:28
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:28: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:40
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:40: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:57
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:57: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:95
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:95: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:112
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:112: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:130
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:130: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:151
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:151: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:206
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:206: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_sage_integration.py:226
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_sage_integration.py:226: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:30
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:30: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:47
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:47: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:63
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:63: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:104
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:104: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:136
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:136: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:153
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:153: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:175
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:175: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:196
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:196: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\test_xero_integration.py:284
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\tests\test_xero_integration.py:284: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+backend/tests/test_billing_endpoints.py: 16 warnings
+backend/tests/test_billing_simple.py: 3 warnings
+backend/tests/test_blog_api_errors.py: 7 warnings
+backend/tests/test_clerk_auth_complete.py: 26 warnings
+backend/tests/test_community_api.py: 22 warnings
+backend/tests/test_dashboard_api.py: 6 warnings
+backend/tests/test_deal_endpoints.py: 25 warnings
+backend/tests/test_deal_matching_api.py: 16 warnings
+backend/tests/test_document_ai_and_versions.py: 5 warnings
+backend/tests/test_document_endpoints.py: 42 warnings
+backend/tests/test_document_export_jobs_api.py: 3 warnings
+backend/tests/test_document_generation_api.py: 19 warnings
+backend/tests/test_document_generation_api_errors.py: 12 warnings
+backend/tests/test_event_payment_api.py: 7 warnings
+backend/tests/test_events_api_errors.py: 7 warnings
+backend/tests/test_financial_api.py: 34 warnings
+backend/tests/test_financial_api_errors.py: 8 warnings
+backend/tests/test_marketing_api_errors.py: 9 warnings
+backend/tests/test_master_admin_api.py: 13 warnings
+backend/tests/test_notifications_api.py: 6 warnings
+backend/tests/test_pipeline_template_api.py: 3 warnings
+backend/tests/test_pipeline_template_api_errors.py: 7 warnings
+backend/tests/test_podcast_api.py: 54 warnings
+backend/tests/test_subscription_error_paths.py: 16 warnings
+backend/tests/test_task_crud.py: 6 warnings
+backend/tests/test_tasks_api_complete.py: 14 warnings
+backend/tests/test_valuation_api.py: 20 warnings
+backend/tests/test_valuation_api_errors.py: 13 warnings
+backend/tests/test_valuation_crud.py: 8 warnings
+backend/tests/api/test_blog.py: 16 warnings
+backend/tests/api/test_blog_api.py: 6 warnings
+backend/tests/api/test_document_sharing.py: 8 warnings
+backend/tests/api/test_event_api.py: 26 warnings
+backend/tests/api/test_marketing.py: 4 warnings
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+backend/tests/test_clerk_auth_complete.py: 24 warnings
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\httpx\_content.py:202: DeprecationWarning: Use 'content=<...>' to upload raw bytes/text content.
+    warnings.warn(message, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.11.9-final-0 _______________
+
+Name                                          Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------
+app\__init__.py                                   1      0   100%
+app\api\__init__.py                              26      0   100%
+app\api\dependencies\__init__.py                  0      0   100%
+app\api\dependencies\auth.py                    101      0   100%
+app\api\dependencies\rbac.py                      2      0   100%
+app\api\document_sharing.py                     121     10    92%   63, 124, 158, 191, 199, 203, 222, 251, 301, 336
+app\api\routes\__init__.py                        2      0   100%
+app\api\routes\auth.py                            9      0   100%
+app\api\routes\blog.py                           55      0   100%
+app\api\routes\community.py                     123     11    91%   142, 162, 187, 220-222, 240, 264, 284, 321, 346
+app\api\routes\dashboard.py                      25      0   100%
+app\api\routes\deal_matching.py                  77      5    94%   33, 138-139, 150-160
+app\api\routes\deals.py                          64     10    84%   113, 131-146, 171, 204
+app\api\routes\document_generation.py           255     50    80%   359, 378-401, 407, 433, 447-453, 471-520, 551, 564, 567, 595, 604, 629, 638, 713, 726, 841, 854
+app\api\routes\documents.py                     184     45    76%   75-76, 135, 157, 189, 253, 291, 378-406, 422-447, 468, 507, 526-527, 557-576, 591-609, 637, 670-690, 735, 815-826
+app\api\routes\event_payments.py                 49      5    90%   50, 56, 83, 120, 162
+app\api\routes\events.py                        209     44    79%   68-69, 182, 195-198, 216, 243, 253, 274, 283, 312, 325-328, 346, 373, 383, 404, 413, 443, 483-486, 505, 533, 543, 564, 573, 597, 606, 640, 700-724
+app\api\routes\financial.py                     220     30    86%   118, 177, 234, 298, 415, 424, 430, 487, 552, 582, 590, 596, 632, 638, 666, 672, 722, 766, 795, 803, 809, 844, 850, 921, 950, 958, 964, 999, 1005, 1076
+app\api\routes\marketing.py                      69     15    78%   58-101, 149-152, 198-201
+app\api\routes\master_admin.py                  379     37    90%   145, 187, 282, 304, 329, 437, 624, 644, 711, 732, 818, 838, 858, 882, 885, 893-894, 912, 937, 946, 971, 980, 1040, 1059, 1079, 1139-1145, 1160, 1180, 1267, 1287, 1307, 1392, 1412, 1433
+app\api\routes\notifications.py                  61      5    92%   129, 135, 137, 139, 141
+app\api\routes\pipeline_templates.py             34      0   100%
+app\api\routes\podcasts.py                      306     80    74%   51-135, 178-179, 184-189, 242, 327-329, 377, 449, 468, 509-515, 550, 557, 576, 635-641, 675, 699, 790, 833, 840, 906, 945-951, 1003-1004
+app\api\routes\subscriptions.py                 112      8    93%   81-82, 252-255, 270-271
+app\api\routes\tasks.py                          69      1    99%   271
+app\api\routes\valuation.py                     163     33    80%   59-64, 148-150, 183-185, 218-220, 445-483
+app\api\webhooks\__init__.py                      0      0   100%
+app\api\webhooks\clerk.py                        52      4    92%   20, 54-55, 61
+app\core\__init__.py                              0      0   100%
+app\core\config.py                               44      0   100%
+app\core\database.py                             30      0   100%
+app\core\security.py                             23      0   100%
+app\core\subscription.py                         52      0   100%
+app\db\__init__.py                                0      0   100%
+app\db\base.py                                   28      3    89%   21, 29, 37
+app\db\session.py                                 3      0   100%
+app\db\types.py                                  11      1    91%   22
+app\main.py                                      27      3    89%   26, 61, 71
+app\models\__init__.py                           24      0   100%
+app\models\blog_post.py                          25      1    96%   32
+app\models\community.py                          88      0   100%
+app\models\contact_message.py                    16      1    94%   23
+app\models\deal.py                               56      0   100%
+app\models\deal_match.py                         71      5    93%   56, 61, 100, 105, 133
+app\models\document.py                          130      6    95%   65, 132, 173, 208, 246, 281
+app\models\document_generation.py               111      4    96%   90, 126, 151, 181
+app\models\email_queue.py                        25      1    96%   44
+app\models\enums.py                              65      0   100%
+app\models\event.py                             137      5    96%   86, 127, 168, 211, 241
+app\models\event_payment.py                      44      2    95%   55, 77
+app\models\event_reminder.py                     22      0   100%
+app\models\financial_connection.py               27      1    96%   52
+app\models\financial_narrative.py                34      0   100%
+app\models\financial_ratio.py                    67      0   100%
+app\models\financial_statement.py                80      1    99%   134
+app\models\master_admin.py                      272      9    97%   235, 266, 303, 332, 373, 400, 437, 470, 494
+app\models\newsletter_subscription.py            12      1    92%   21
+app\models\organization.py                       19      0   100%
+app\models\pipeline_template.py                  30      0   100%
+app\models\podcast.py                            49      0   100%
+app\models\podcast_usage.py                      15      1    93%   36
+app\models\rbac_audit_log.py                     25      0   100%
+app\models\subscription.py                       53      0   100%
+app\models\task.py                               68      0   100%
+app\models\user.py                               43      0   100%
+app\models\user_notification_preferences.py      23      1    96%   46
+app\models\valuation.py                         120      0   100%
+app\schemas\__init__.py                           4      0   100%
+app\schemas\community.py                        131      1    99%   157
+app\schemas\deal.py                              40      0   100%
+app\schemas\deal_match.py                        68      0   100%
+app\schemas\document.py                         222      7    97%   19, 33, 155, 251, 253, 328, 342
+app\schemas\document_generation.py              145      1    99%   209
+app\schemas\event.py                            154      0   100%
+app\schemas\financial.py                         79      0   100%
+app\schemas\master_admin.py                     420      0   100%
+app\schemas\pipeline_template.py                 53      2    96%   34, 40
+app\schemas\podcast.py                           52      0   100%
+app\schemas\subscription.py                      91      0   100%
+app\schemas\task.py                              88      0   100%
+app\schemas\user.py                              33      0   100%
+app\schemas\valuation.py                        258      5    98%   31, 39, 204-206
+app\services\__init__.py                          7      0   100%
+app\services\audio_chunking_service.py          102     21    79%   130-133, 140-150, 182, 186-188, 268-269, 281-283
+app\services\community_service.py               167     12    93%   119, 121, 123, 190, 195, 248, 344, 437, 511-514
+app\services\deal_matching_service.py           161     14    91%   106, 116, 139, 141, 162, 178, 210, 266, 269, 276, 283, 288, 294, 309
+app\services\deal_service.py                     81     15    81%   99-100, 120-121, 158, 178-186, 203, 228
+app\services\document_ai_service.py             135     71    47%   15-17, 36, 42, 46, 50, 56-57, 104, 128-153, 180, 214, 240-276, 297-307, 339, 383-430
+app\services\document_export_service.py         115     88    23%   14-18, 24-26, 63-155, 183-243, 267-308
+app\services\document_generation_service.py     129      7    95%   140-142, 204, 259, 261, 336
+app\services\document_service.py                599    123    79%   81, 123, 139, 166-174, 194, 213, 243, 248, 258-297, 307, 396, 498, 588, 619, 679-708, 737-738, 800, 804, 809-818, 847, 851, 885, 934-936, 946-981, 990-1002, 1021, 1034-1036, 1071-1081, 1111, 1131, 1183, 1189, 1205-1206, 1261-1281, 1308, 1326, 1424, 1486, 1495, 1611, 1623-1625, 1630-1632, 1645-1649, 1660-1662, 1731-1733, 1752, 1788, 1836
+app\services\email_service.py                    72      5    93%   65, 100, 136, 154, 174
+app\services\entitlement_service.py              47      1    98%   202
+app\services\event_notification_service.py       51      7    86%   19, 24-25, 40-41, 120-121
+app\services\event_payment_service.py           167     38    77%   76, 94, 119, 164-170, 206, 256-257, 263-264, 267, 286, 393, 396-398, 401, 410-416, 419-424, 443-453
+app\services\event_reminder_service.py           60      8    87%   27, 35, 73-75, 79-81
+app\services\event_service.py                   247     41    83%   100, 122, 164, 195, 223, 248, 299, 327, 355, 376, 389, 399-407, 435, 467, 475, 496, 503-504, 527, 537-538, 559, 636-693
+app\services\financial_narrative_service.py     231     20    91%   40, 53-61, 227-228, 300-313, 328, 342, 352, 372, 381, 385
+app\services\financial_ratios.py                240     10    96%   248, 714, 728, 754, 801, 808, 815, 822, 829, 882
+app\services\invite_service.py                   31      0   100%
+app\services\master_admin_service.py            435     26    94%   145, 147, 149, 217, 219, 247, 249, 251, 257, 384, 668, 670-671, 963, 965, 1078, 1143, 1244, 1360, 1362, 1484, 1486, 1488, 1614, 1616-1617
+app\services\netsuite_oauth_service.py          138     95    31%   63, 75-85, 97-116, 133-150, 166-182, 206-278, 295, 299, 308, 316, 330-346, 352, 374-389, 415-449, 464-494, 514-547
+app\services\notification_service.py             61      8    87%   102, 259-275, 305
+app\services\organization_service.py             64      3    95%   35, 44, 69
+app\services\pipeline_template_service.py        39      0   100%
+app\services\podcast_service.py                 115     11    90%   16-18, 118, 131, 133, 135, 181, 197, 232, 312
+app\services\quickbooks_oauth_service.py        233    183    21%   24-28, 40-234, 252, 263, 273, 284, 298, 308-314, 320, 338-350, 381-441, 459-487, 504-557, 572-607, 622-686, 730
+app\services\quota_service.py                   165     13    92%   115, 128, 141, 168, 171, 176-187, 211, 259
+app\services\rbac_audit_service.py               20      0   100%
+app\services\s3_storage_service.py               95     95     0%   2-323
+app\services\sage_oauth_service.py              192    151    21%   42-50, 65-75, 87-100, 120-138, 158-170, 193-249, 267, 278, 287, 298, 311, 321-327, 348-360, 389-449, 467-495, 512-547, 562-597, 608-618, 632-646
+app\services\storage_service.py                  65     14    78%   138-142, 164, 186, 203-204, 224-227, 251-252
+app\services\subscription_service.py            142     22    85%   307-317, 330-341, 353-364, 376-379
+app\services\task_service.py                     35      2    94%   15-16
+app\services\task_template_service.py            61      5    92%   101-104, 112
+app\services\thumbnail_service.py                93     14    85%   108, 119-120, 147, 158, 174-176, 200, 229-231, 298-299
+app\services\user_service.py                     75      7    91%   50, 54, 86, 90, 100, 110, 116
+app\services\valuation_export_service.py        158    158     0%   8-509
+app\services\valuation_service.py               350     35    90%   192, 215, 373-374, 399, 420, 506, 511, 701, 717, 815, 840, 861, 867, 908, 921, 925, 931, 976-1015, 1037, 1073
+app\services\xero_oauth_service.py              206     71    66%   24-28, 42-187, 196, 205, 216, 224, 229-235, 241, 315, 324, 342-351, 395, 440, 470-471, 518-519, 552-554
+app\services\youtube_service.py                  57     15    74%   12, 85, 113-114, 121, 131, 146-162
+app\tasks\__init__.py                             2      0   100%
+app\tasks\task_automation.py                     25      0   100%
+app\utils\__init__.py                             0      0   100%
+app\utils\datetime.py                             4      0   100%
+---------------------------------------------------------------------------
+TOTAL                                         12047   1864    85%
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_financial_xero_integration.py:9: To be implemented in ratio engine phase
+SKIPPED [1] tests\test_master_admin_models.py:134: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:148: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:335: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:348: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:405: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_netsuite_integration.py:30: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:42: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:59: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:97: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:114: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:132: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:153: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:209: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:229: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:249: Requires real NetSuite sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_quickbooks_integration.py:29: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:49: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:66: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:104: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:121: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:143: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:164: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:219: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:238: Requires real QuickBooks sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_s3_storage_service.py:32: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:54: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:68: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:86: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:109: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:136: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:164: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:194: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:219: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:249: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:273: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:304: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:330: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:355: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:381: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:406: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:433: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:465: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:497: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:516: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_s3_storage_service.py:535: boto3 not installed (optional S3/R2 storage dependency)
+SKIPPED [1] tests\test_sage_integration.py:28: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:40: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:57: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:95: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:112: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:130: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:151: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:206: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:226: Requires real Sage sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_storage_factory.py:48: boto3 not installed - S3 storage optional
+SKIPPED [1] tests\test_storage_factory.py:116: boto3 not installed - S3 storage optional
+SKIPPED [1] tests\test_subscription_error_paths.py:373: Stripe module imported inside function - mocking complex, error handling already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:397: Stripe module imported inside function - mocking complex, error handling already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:425: Stripe module imported inside function - mocking complex, event routing already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:468: Stripe module imported inside function - mocking complex, exception handling already verified in code
+SKIPPED [1] tests\test_valuation_export_service.py:47: TDD RED phase - awaiting ValuationExportService implementation (DEV-011 Phase 5)
+SKIPPED [1] tests\test_valuation_export_service.py:67: TDD RED phase - awaiting ValuationExportService implementation (DEV-011 Phase 5)
+SKIPPED [1] tests\test_valuation_export_service.py:86: TDD RED phase - awaiting ValuationExportService implementation (DEV-011 Phase 5)
+SKIPPED [1] tests\test_valuation_export_service.py:118: TDD RED phase - awaiting ValuationExportService implementation (DEV-011 Phase 5)
+SKIPPED [1] tests\test_xero_integration.py:30: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:47: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:63: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:104: Requires real Xero sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_xero_integration.py:136: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:153: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:175: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:196: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:284: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\services\test_rbac_permissions.py:223: Auth dependency integration test - requires auth.py mocking
+SKIPPED [1] tests\services\test_rbac_permissions.py:234: Auth dependency integration test - requires auth.py mocking
+SKIPPED [1] tests\services\test_rbac_permissions.py:238: Auth dependency integration test - requires FastAPI request context
+SKIPPED [1] tests\services\test_rbac_permissions.py:269: Entitlement service test - covered in test_entitlement.py
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:150: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:167: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:189: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+1205 passed, 81 skipped, 554 warnings in 389.13s (0:06:29)
