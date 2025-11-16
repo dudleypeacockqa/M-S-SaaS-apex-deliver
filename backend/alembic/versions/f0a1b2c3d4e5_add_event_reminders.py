@@ -6,6 +6,8 @@ Create Date: 2025-11-15 15:30:00
 """
 from typing import Sequence, Union
 
+from app.db.base import GUID
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
