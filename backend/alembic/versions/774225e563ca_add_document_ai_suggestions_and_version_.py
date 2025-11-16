@@ -51,22 +51,14 @@ def _inspector():
 
 
 def _table_exists(table_name: str, schema: Optional[str] = None) -> bool:
-    """Check if table exists, returning False on any error."""
+    """Check if table exists via inspector; return False on any error."""
     if not table_name:
         return False
-    schema = schema or 'public'
     try:
-        bind = op.get_bind()
-        result = bind.execute(
-            sa.text(
-                'SELECT EXISTS ('
-                'SELECT 1 FROM information_schema.tables '
-                'WHERE table_schema = :schema AND table_name = :table_name'
-                ')'
-            ),
-            {'schema': schema, 'table_name': table_name},
-        ).scalar()
-        return bool(result)
+        insp = _inspector()
+        if not insp:
+            return False
+        return bool(insp.has_table(table_name, schema=schema))
     except SAFE_EXCEPTIONS:
         return False
     except Exception:
@@ -95,6 +87,17 @@ def _column_exists(table_name: str, column_name: str, schema: Optional[str] = No
     except SAFE_EXCEPTIONS:
         return False
     except Exception:
+        return False
+
+
+def _index_exists(index_name: str, table_name: str, schema: str | None = None) -> bool:
+    inspector = _inspector()
+    if inspector is None or not _table_exists(table_name, schema):
+        return False
+    try:
+        indexes = inspector.get_indexes(table_name, schema=schema or 'public')
+        return any(idx['name'] == index_name for idx in indexes)
+    except ProgrammingError:
         return False
 
 
@@ -266,16 +269,159 @@ def _safe_execute(sql, *args, **kwargs):
 
 
 def _drop_index_if_exists(index_name: str, table_name: str, schema: str = 'public') -> None:
-    """Best-effort index drop helper used later in the migration."""
     _safe_drop_index(index_name, table_name, schema=schema)
 
 
 def _drop_table_if_exists(table_name: str, schema: str = 'public') -> None:
-    """Best-effort table drop helper used later in the migration."""
     _safe_drop_table(table_name, schema=schema)
 
 
-# Monkey-patch op.* methods for automatic safety.
+def _inspector():
+    try:
+        return inspect(op.get_bind())
+    except ProgrammingError:
+        return None
+
+
+def _table_exists(table_name: str, schema: str | None = None) -> bool:
+    if not table_name:
+        return False
+    inspector = _inspector()
+    if inspector is None:
+        return False
+    try:
+        return inspector.has_table(table_name, schema=schema)
+    except ProgrammingError:
+        return False
+
+
+def _column_exists(table_name: str, column_name: str, schema: str | None = None) -> bool:
+    inspector = _inspector()
+    if inspector is None or not _table_exists(table_name, schema):
+        return False
+    try:
+        columns = inspector.get_columns(table_name, schema=schema or 'public')
+        return any(col['name'] == column_name for col in columns)
+    except ProgrammingError:
+        return False
+
+
+def _safe_create_table(table_name: str, *columns, **kwargs) -> None:
+    schema = kwargs.get('schema')
+    if _table_exists(table_name, schema):
+        return
+    try:
+        _original_create_table(table_name, *columns, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+def _safe_drop_table(table_name: str, *args, **kwargs) -> None:
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_drop_table(table_name, *args, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+def _safe_alter_column(table_name: str, column_name: str, *args, **kwargs) -> None:
+    schema = kwargs.get('schema')
+    if not _column_exists(table_name, column_name, schema):
+        return
+    try:
+        _original_alter_column(table_name, column_name, *args, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+def _safe_add_column(table_name: str, column, **kwargs) -> None:
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_add_column(table_name, column, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+def _safe_drop_column(table_name: str, column_name: str, **kwargs) -> None:
+    schema = kwargs.get('schema')
+    if not _column_exists(table_name, column_name, schema):
+        return
+    try:
+        _original_drop_column(table_name, column_name, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+def _safe_create_index(index_name: str, table_name: str | None, columns, **kwargs) -> None:
+    schema = kwargs.get('schema')
+    if table_name and not _table_exists(table_name, schema):
+        return
+    try:
+        _original_create_index(index_name, table_name, columns, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+def _safe_drop_index(index_name: str, table_name: str | None = None, **kwargs) -> None:
+    schema = kwargs.get('schema')
+    if table_name and not _table_exists(table_name, schema):
+        return
+    if table_name and not _index_exists(index_name, table_name, schema):
+        return
+    try:
+        _original_drop_index(index_name, table_name=table_name, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+def _safe_create_unique_constraint(constraint_name: str, table_name: str, columns, **kwargs) -> None:
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_create_unique_constraint(constraint_name, table_name, columns, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+def _safe_drop_constraint(constraint_name: str, table_name: str, **kwargs) -> None:
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_drop_constraint(constraint_name, table_name, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+def _safe_create_foreign_key(constraint_name: str, source_table: str, referent_table: str,
+                             local_cols, remote_cols, **kwargs) -> None:
+    source_schema = kwargs.get('source_schema') or kwargs.get('schema')
+    referent_schema = kwargs.get('referent_schema') or kwargs.get('schema')
+    if not _table_exists(source_table, source_schema):
+        return
+    if not _table_exists(referent_table, referent_schema):
+        return
+    try:
+        _original_create_foreign_key(constraint_name, source_table, referent_table,
+                                     local_cols, remote_cols, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+def _safe_execute(*args, **kwargs) -> None:
+    try:
+        _original_execute(*args, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+op.create_table = _safe_create_table
+op.drop_table = _safe_drop_table
 op.alter_column = _safe_alter_column
 op.add_column = _safe_add_column
 op.drop_column = _safe_drop_column
@@ -284,10 +430,7 @@ op.drop_index = _safe_drop_index
 op.create_unique_constraint = _safe_create_unique_constraint
 op.drop_constraint = _safe_drop_constraint
 op.create_foreign_key = _safe_create_foreign_key
-op.drop_table = _safe_drop_table
-op.create_table = _safe_create_table
 op.execute = _safe_execute
-
 def upgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
     # CRITICAL: Ensure users.id is VARCHAR(36) before creating foreign keys
@@ -303,7 +446,7 @@ def upgrade() -> None:
         if bind.dialect.name == 'postgresql':
             # Force conversion: Drop all FKs, convert users.id and FK columns, then proceed
             # Use information_schema which is more reliable than pg_type
-            op.execute("""
+            _safe_execute("""
                 DO $$
                 DECLARE
                     col_type text;
@@ -681,7 +824,7 @@ def upgrade() -> None:
     # DEFENSIVE: Only run documents UUID conversion if documents table exists
     if _table_exists('documents'):
         # Ensure documents.id and related FK columns use VARCHAR(36) before new tables reference them
-        op.execute("""
+        _safe_execute("""
             DO $$
             DECLARE
                 col_type text;
@@ -743,7 +886,7 @@ def upgrade() -> None:
     
     # Always use VARCHAR(36) for user foreign keys (matching converted users.id type)
     # The conversion above ensures users.id is VARCHAR(36), so FKs must be VARCHAR(36) too
-    op.create_table('community_follows',
+_safe_create_table('community_follows',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('follower_user_id', sa.String(length=36), nullable=False),
     sa.Column('following_user_id', sa.String(length=36), nullable=False),
@@ -753,14 +896,14 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['following_user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index('idx_community_follows_follower', 'community_follows', ['follower_user_id'], unique=False)
-    op.create_index('idx_community_follows_following', 'community_follows', ['following_user_id'], unique=False)
-    op.create_index('idx_community_follows_org', 'community_follows', ['organization_id'], unique=False)
-    op.create_index('idx_community_follows_unique', 'community_follows', ['follower_user_id', 'following_user_id'], unique=True)
-    op.create_index(op.f('ix_community_follows_follower_user_id'), 'community_follows', ['follower_user_id'], unique=False)
-    op.create_index(op.f('ix_community_follows_following_user_id'), 'community_follows', ['following_user_id'], unique=False)
-    op.create_index(op.f('ix_community_follows_organization_id'), 'community_follows', ['organization_id'], unique=False)
-    op.create_table('community_moderation_actions',
+_safe_create_index('idx_community_follows_follower', 'community_follows', ['follower_user_id'], unique=False)
+_safe_create_index('idx_community_follows_following', 'community_follows', ['following_user_id'], unique=False)
+_safe_create_index('idx_community_follows_org', 'community_follows', ['organization_id'], unique=False)
+_safe_create_index('idx_community_follows_unique', 'community_follows', ['follower_user_id', 'following_user_id'], unique=True)
+_safe_create_index(op.f('ix_community_follows_follower_user_id'), 'community_follows', ['follower_user_id'], unique=False)
+_safe_create_index(op.f('ix_community_follows_following_user_id'), 'community_follows', ['following_user_id'], unique=False)
+_safe_create_index(op.f('ix_community_follows_organization_id'), 'community_follows', ['organization_id'], unique=False)
+_safe_create_table('community_moderation_actions',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('target_type', sa.Enum('post', 'comment', name='targettype', native_enum=False, length=32), nullable=False),
     sa.Column('target_id', sa.String(length=36), nullable=False),
@@ -771,12 +914,12 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['moderator_user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index('idx_community_moderation_created', 'community_moderation_actions', ['created_at'], unique=False)
-    op.create_index('idx_community_moderation_moderator', 'community_moderation_actions', ['moderator_user_id'], unique=False)
-    op.create_index('idx_community_moderation_target', 'community_moderation_actions', ['target_type', 'target_id'], unique=False)
-    op.create_index(op.f('ix_community_moderation_actions_moderator_user_id'), 'community_moderation_actions', ['moderator_user_id'], unique=False)
-    op.create_index(op.f('ix_community_moderation_actions_target_id'), 'community_moderation_actions', ['target_id'], unique=False)
-    op.create_table('community_posts',
+_safe_create_index('idx_community_moderation_created', 'community_moderation_actions', ['created_at'], unique=False)
+_safe_create_index('idx_community_moderation_moderator', 'community_moderation_actions', ['moderator_user_id'], unique=False)
+_safe_create_index('idx_community_moderation_target', 'community_moderation_actions', ['target_type', 'target_id'], unique=False)
+_safe_create_index(op.f('ix_community_moderation_actions_moderator_user_id'), 'community_moderation_actions', ['moderator_user_id'], unique=False)
+_safe_create_index(op.f('ix_community_moderation_actions_target_id'), 'community_moderation_actions', ['target_id'], unique=False)
+_safe_create_table('community_posts',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('organization_id', sa.String(length=36), nullable=False),
     sa.Column('author_user_id', sa.String(length=36), nullable=False),
@@ -791,14 +934,14 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['author_user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index('idx_community_posts_author', 'community_posts', ['author_user_id'], unique=False)
-    op.create_index('idx_community_posts_category', 'community_posts', ['category'], unique=False)
-    op.create_index('idx_community_posts_created', 'community_posts', ['created_at'], unique=False)
-    op.create_index('idx_community_posts_org_id', 'community_posts', ['organization_id'], unique=False)
-    op.create_index('idx_community_posts_status', 'community_posts', ['status'], unique=False)
-    op.create_index(op.f('ix_community_posts_author_user_id'), 'community_posts', ['author_user_id'], unique=False)
-    op.create_index(op.f('ix_community_posts_organization_id'), 'community_posts', ['organization_id'], unique=False)
-    op.create_table('community_reactions',
+_safe_create_index('idx_community_posts_author', 'community_posts', ['author_user_id'], unique=False)
+_safe_create_index('idx_community_posts_category', 'community_posts', ['category'], unique=False)
+_safe_create_index('idx_community_posts_created', 'community_posts', ['created_at'], unique=False)
+_safe_create_index('idx_community_posts_org_id', 'community_posts', ['organization_id'], unique=False)
+_safe_create_index('idx_community_posts_status', 'community_posts', ['status'], unique=False)
+_safe_create_index(op.f('ix_community_posts_author_user_id'), 'community_posts', ['author_user_id'], unique=False)
+_safe_create_index(op.f('ix_community_posts_organization_id'), 'community_posts', ['organization_id'], unique=False)
+_safe_create_table('community_reactions',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('target_type', sa.Enum('post', 'comment', name='targettype', native_enum=False, length=32), nullable=False),
     sa.Column('target_id', sa.String(length=36), nullable=False),
@@ -808,12 +951,12 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index('idx_community_reactions_target', 'community_reactions', ['target_type', 'target_id'], unique=False)
-    op.create_index('idx_community_reactions_unique', 'community_reactions', ['target_type', 'target_id', 'user_id', 'reaction_type'], unique=True)
-    op.create_index('idx_community_reactions_user', 'community_reactions', ['user_id'], unique=False)
-    op.create_index(op.f('ix_community_reactions_target_id'), 'community_reactions', ['target_id'], unique=False)
-    op.create_index(op.f('ix_community_reactions_user_id'), 'community_reactions', ['user_id'], unique=False)
-    op.create_table('events',
+_safe_create_index('idx_community_reactions_target', 'community_reactions', ['target_type', 'target_id'], unique=False)
+_safe_create_index('idx_community_reactions_unique', 'community_reactions', ['target_type', 'target_id', 'user_id', 'reaction_type'], unique=True)
+_safe_create_index('idx_community_reactions_user', 'community_reactions', ['user_id'], unique=False)
+_safe_create_index(op.f('ix_community_reactions_target_id'), 'community_reactions', ['target_id'], unique=False)
+_safe_create_index(op.f('ix_community_reactions_user_id'), 'community_reactions', ['user_id'], unique=False)
+_safe_create_table('events',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
@@ -834,7 +977,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('community_comments',
+_safe_create_table('community_comments',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('post_id', sa.String(length=36), nullable=False),
     sa.Column('author_user_id', sa.String(length=36), nullable=False),
@@ -847,14 +990,14 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['post_id'], ['community_posts.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index('idx_community_comments_author', 'community_comments', ['author_user_id'], unique=False)
-    op.create_index('idx_community_comments_created', 'community_comments', ['created_at'], unique=False)
-    op.create_index('idx_community_comments_parent', 'community_comments', ['parent_comment_id'], unique=False)
-    op.create_index('idx_community_comments_post', 'community_comments', ['post_id'], unique=False)
-    op.create_index(op.f('ix_community_comments_author_user_id'), 'community_comments', ['author_user_id'], unique=False)
-    op.create_index(op.f('ix_community_comments_parent_comment_id'), 'community_comments', ['parent_comment_id'], unique=False)
-    op.create_index(op.f('ix_community_comments_post_id'), 'community_comments', ['post_id'], unique=False)
-    op.create_table('event_analytics',
+_safe_create_index('idx_community_comments_author', 'community_comments', ['author_user_id'], unique=False)
+_safe_create_index('idx_community_comments_created', 'community_comments', ['created_at'], unique=False)
+_safe_create_index('idx_community_comments_parent', 'community_comments', ['parent_comment_id'], unique=False)
+_safe_create_index('idx_community_comments_post', 'community_comments', ['post_id'], unique=False)
+_safe_create_index(op.f('ix_community_comments_author_user_id'), 'community_comments', ['author_user_id'], unique=False)
+_safe_create_index(op.f('ix_community_comments_parent_comment_id'), 'community_comments', ['parent_comment_id'], unique=False)
+_safe_create_index(op.f('ix_community_comments_post_id'), 'community_comments', ['post_id'], unique=False)
+_safe_create_table('event_analytics',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('event_id', sa.String(length=36), nullable=False),
     sa.Column('total_registrations', sa.Integer(), nullable=True),
@@ -868,7 +1011,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('event_sessions',
+_safe_create_table('event_sessions',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('event_id', sa.String(length=36), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
@@ -888,7 +1031,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('event_tickets',
+_safe_create_table('event_tickets',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('event_id', sa.String(length=36), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
@@ -908,7 +1051,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('document_ai_suggestions',
+_safe_create_table('document_ai_suggestions',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('document_id', sa.String(length=36), nullable=False),
     sa.Column('title', sa.String(), nullable=False),
@@ -925,7 +1068,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('document_versions',
+_safe_create_table('document_versions',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('document_id', sa.String(length=36), nullable=False),
     sa.Column('version_number', sa.Integer(), nullable=False),
@@ -939,7 +1082,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('event_registrations',
+_safe_create_table('event_registrations',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('event_id', sa.String(length=36), nullable=False),
     sa.Column('session_id', sa.String(length=36), nullable=True),
@@ -964,7 +1107,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['ticket_id'], ['event_tickets.id'], ondelete='SET NULL'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('document_share_links',
+_safe_create_table('document_share_links',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('document_id', sa.String(length=36), nullable=False),
     sa.Column('share_token', sa.String(length=64), nullable=False),
@@ -983,11 +1126,11 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index('idx_share_links_document_id', 'document_share_links', ['document_id'], unique=False)
-    op.create_index('idx_share_links_expires_at', 'document_share_links', ['expires_at'], unique=False)
-    op.create_index('idx_share_links_org_id', 'document_share_links', ['organization_id'], unique=False)
-    op.create_index('idx_share_links_token', 'document_share_links', ['share_token'], unique=False)
-    op.create_index(op.f('ix_document_share_links_share_token'), 'document_share_links', ['share_token'], unique=True)
+_safe_create_index('idx_share_links_document_id', 'document_share_links', ['document_id'], unique=False)
+_safe_create_index('idx_share_links_expires_at', 'document_share_links', ['expires_at'], unique=False)
+_safe_create_index('idx_share_links_org_id', 'document_share_links', ['organization_id'], unique=False)
+_safe_create_index('idx_share_links_token', 'document_share_links', ['share_token'], unique=False)
+_safe_create_index(op.f('ix_document_share_links_share_token'), 'document_share_links', ['share_token'], unique=True)
     _drop_index_if_exists('ix_contact_messages_created_at', 'contact_messages')
     _drop_index_if_exists('ix_contact_messages_email', 'contact_messages')
     _drop_index_if_exists('ix_contact_messages_id', 'contact_messages')
@@ -1422,37 +1565,37 @@ def downgrade() -> None:
     _safe_create_index('idx_generated_documents_organization_id', 'generated_documents', ['organization_id'], unique=False)
     _safe_create_index('idx_generated_documents_created_at', 'generated_documents', ['created_at'], unique=False)
     if _column_exists('generated_documents', 'created_at'):
-        op.alter_column('generated_documents', 'created_at',
+        _safe_alter_column('generated_documents', 'created_at',
                    existing_type=postgresql.TIMESTAMP(timezone=True),
                    server_default=sa.text('now()'),
                    nullable=False)
     if _column_exists('generated_documents', 'generated_by_user_id'):
-        op.alter_column('generated_documents', 'generated_by_user_id',
+        _safe_alter_column('generated_documents', 'generated_by_user_id',
                    existing_type=sa.String(length=36),
                    type_=sa.VARCHAR(),
                    existing_nullable=False)
     if _column_exists('generated_documents', 'organization_id'):
-        op.alter_column('generated_documents', 'organization_id',
+        _safe_alter_column('generated_documents', 'organization_id',
                    existing_type=sa.String(length=36),
                    type_=sa.VARCHAR(length=36),
                    existing_nullable=False)
     if _column_exists('generated_documents', 'status'):
-        op.alter_column('generated_documents', 'status',
+        _safe_alter_column('generated_documents', 'status',
                    existing_type=postgresql.ENUM('draft', 'generated', 'finalized', 'sent', name='documentstatus'),
                    server_default=sa.text("'generated'::documentstatus"),
                    existing_nullable=False)
     if _column_exists('generated_documents', 'variable_values'):
-        op.alter_column('generated_documents', 'variable_values',
+        _safe_alter_column('generated_documents', 'variable_values',
                    existing_type=postgresql.JSON(astext_type=sa.Text()),
                    server_default=sa.text("'{}'::json"),
                    nullable=False)
     if _column_exists('generated_documents', 'template_id'):
-        op.alter_column('generated_documents', 'template_id',
+        _safe_alter_column('generated_documents', 'template_id',
                    existing_type=sa.String(length=36),
                    type_=sa.VARCHAR(length=36),
                    existing_nullable=False)
     if _column_exists('generated_documents', 'id'):
-        op.alter_column('generated_documents', 'id',
+        _safe_alter_column('generated_documents', 'id',
                    existing_type=sa.String(length=36),
                    type_=sa.VARCHAR(length=36),
                    existing_nullable=False)
@@ -1462,43 +1605,43 @@ def downgrade() -> None:
     _safe_create_index('idx_document_templates_organization_id', 'document_templates', ['organization_id'], unique=False)
     _safe_create_index('idx_document_templates_created_at', 'document_templates', ['created_at'], unique=False)
     if _column_exists('document_templates', 'created_at'):
-        op.alter_column('document_templates', 'created_at',
+        _safe_alter_column('document_templates', 'created_at',
                    existing_type=postgresql.TIMESTAMP(timezone=True),
                    server_default=sa.text('now()'),
                    nullable=False)
     if _column_exists('document_templates', 'created_by_user_id'):
-        op.alter_column('document_templates', 'created_by_user_id',
+        _safe_alter_column('document_templates', 'created_by_user_id',
                    existing_type=sa.String(length=36),
                    type_=sa.VARCHAR(),
                    existing_nullable=False)
     if _column_exists('document_templates', 'organization_id'):
-        op.alter_column('document_templates', 'organization_id',
+        _safe_alter_column('document_templates', 'organization_id',
                    existing_type=sa.String(length=36),
                    type_=sa.VARCHAR(length=36),
                    existing_nullable=False)
     if _column_exists('document_templates', 'version'):
-        op.alter_column('document_templates', 'version',
+        _safe_alter_column('document_templates', 'version',
                    existing_type=sa.INTEGER(),
                    server_default=sa.text('1'),
                    nullable=False)
     if _column_exists('document_templates', 'status'):
-        op.alter_column('document_templates', 'status',
+        _safe_alter_column('document_templates', 'status',
                    existing_type=postgresql.ENUM('DRAFT', 'ACTIVE', 'ARCHIVED', name='templatestatus'),
                    server_default=sa.text("'ACTIVE'::templatestatus"),
                    existing_nullable=False)
     if _column_exists('document_templates', 'variables'):
-        op.alter_column('document_templates', 'variables',
+        _safe_alter_column('document_templates', 'variables',
                    existing_type=postgresql.JSON(astext_type=sa.Text()),
                    server_default=sa.text("'[]'::json"),
                    nullable=False)
     if _column_exists('document_templates', 'id'):
-        op.alter_column('document_templates', 'id',
+        _safe_alter_column('document_templates', 'id',
                    existing_type=sa.String(length=36),
                    type_=sa.VARCHAR(length=36),
                    existing_nullable=False)
     # op.alter_column is already patched to use _safe_alter_column
     if _column_exists('document_questions', 'status'):
-        op.alter_column('document_questions', 'status',
+        _safe_alter_column('document_questions', 'status',
                    existing_type=sa.VARCHAR(length=20),
                    server_default=sa.text("'open'::character varying"),
                    existing_nullable=False)
@@ -1513,10 +1656,10 @@ def downgrade() -> None:
                 fks = inspector.get_foreign_keys('deal_matches')
                 for fk in fks:
                     if 'organization_id' in fk['constrained_columns']:
-                        op.drop_constraint(fk['name'], 'deal_matches', type_='foreignkey')
+                        _safe_drop_constraint(fk['name'], 'deal_matches', type_='foreignkey')
                         break
-                op.drop_index(op.f('ix_deal_matches_organization_id'), table_name='deal_matches')
-                op.drop_column('deal_matches', 'organization_id')
+                _safe_drop_index(op.f('ix_deal_matches_organization_id'), 'deal_matches')
+                _safe_drop_column('deal_matches', 'organization_id')
         except (ProgrammingError, NoSuchTableError, InternalError):
             # Table might have been dropped between check and operation
             pass
@@ -1524,213 +1667,213 @@ def downgrade() -> None:
         pass
     # op.alter_column is already patched to use _safe_alter_column
     if _column_exists('blog_posts', 'read_time_minutes'):
-        op.alter_column('blog_posts', 'read_time_minutes',
+        _safe_alter_column('blog_posts', 'read_time_minutes',
                    existing_type=sa.INTEGER(),
                    server_default=sa.text('10'),
                    existing_nullable=False)
     if _column_exists('blog_posts', 'updated_at'):
-        op.alter_column('blog_posts', 'updated_at',
+        _safe_alter_column('blog_posts', 'updated_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
     if _column_exists('blog_posts', 'created_at'):
-        op.alter_column('blog_posts', 'created_at',
+        _safe_alter_column('blog_posts', 'created_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
     if _column_exists('blog_posts', 'published'):
-        op.alter_column('blog_posts', 'published',
+        _safe_alter_column('blog_posts', 'published',
                    existing_type=sa.BOOLEAN(),
                    server_default=sa.text('false'),
                    existing_nullable=False)
     if _column_exists('blog_posts', 'author'):
-        op.alter_column('blog_posts', 'author',
+        _safe_alter_column('blog_posts', 'author',
                    existing_type=sa.VARCHAR(length=100),
                    server_default=sa.text("'Dudley Peacock'::character varying"),
                    existing_nullable=False)
     try:
-        op.drop_index(op.f('ix_admin_scores_id'), table_name='admin_scores')
-        op.alter_column('admin_scores', 'updated_at',
+        _safe_drop_index(op.f('ix_admin_scores_id'), 'admin_scores')
+        _safe_alter_column('admin_scores', 'updated_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_scores', 'created_at',
+        _safe_alter_column('admin_scores', 'created_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_scores', 'activities_count',
+        _safe_alter_column('admin_scores', 'activities_count',
                    existing_type=sa.INTEGER(),
                    server_default=sa.text('0'),
                    existing_nullable=True)
-        op.alter_column('admin_scores', 'streak_days',
+        _safe_alter_column('admin_scores', 'streak_days',
                    existing_type=sa.INTEGER(),
                    server_default=sa.text('0'),
                    existing_nullable=True)
     except ProgrammingError:
         pass
     try:
-        op.drop_index(op.f('ix_admin_prospects_id'), table_name='admin_prospects')
-        op.alter_column('admin_prospects', 'updated_at',
+        _safe_drop_index(op.f('ix_admin_prospects_id'), 'admin_prospects')
+        _safe_alter_column('admin_prospects', 'updated_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_prospects', 'created_at',
+        _safe_alter_column('admin_prospects', 'created_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_prospects', 'status',
+        _safe_alter_column('admin_prospects', 'status',
                    existing_type=postgresql.ENUM('new', 'qualified', 'engaged', 'proposal', 'negotiation', 'closed_won', 'closed_lost', name='prospectstatus'),
                    server_default=sa.text("'new'::prospectstatus"),
                    existing_nullable=True)
     except ProgrammingError:
         pass
     try:
-        op.drop_index(op.f('ix_admin_nudges_id'), table_name='admin_nudges')
-        op.alter_column('admin_nudges', 'created_at',
+        _safe_drop_index(op.f('ix_admin_nudges_id'), 'admin_nudges')
+        _safe_alter_column('admin_nudges', 'created_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_nudges', 'read',
+        _safe_alter_column('admin_nudges', 'read',
                    existing_type=sa.BOOLEAN(),
                    server_default=sa.text('false'),
                    existing_nullable=True)
-        op.alter_column('admin_nudges', 'priority',
+        _safe_alter_column('admin_nudges', 'priority',
                    existing_type=postgresql.ENUM('low', 'normal', 'high', 'urgent', name='nudgepriority'),
                    server_default=sa.text("'normal'::nudgepriority"),
                    existing_nullable=True)
     except ProgrammingError:
         pass
     try:
-        op.drop_index(op.f('ix_admin_meetings_id'), table_name='admin_meetings')
-        op.alter_column('admin_meetings', 'updated_at',
+        _safe_drop_index(op.f('ix_admin_meetings_id'), 'admin_meetings')
+        _safe_alter_column('admin_meetings', 'updated_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_meetings', 'created_at',
+        _safe_alter_column('admin_meetings', 'created_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_meetings', 'duration_minutes',
+        _safe_alter_column('admin_meetings', 'duration_minutes',
                    existing_type=sa.INTEGER(),
                    server_default=sa.text('60'),
                    existing_nullable=True)
     except ProgrammingError:
         pass
     try:
-        op.drop_index(op.f('ix_admin_lead_captures_id'), table_name='admin_lead_captures')
-        op.alter_column('admin_lead_captures', 'created_at',
+        _safe_drop_index(op.f('ix_admin_lead_captures_id'), 'admin_lead_captures')
+        _safe_alter_column('admin_lead_captures', 'created_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_lead_captures', 'synced_to_ghl',
+        _safe_alter_column('admin_lead_captures', 'synced_to_ghl',
                    existing_type=sa.BOOLEAN(),
                    server_default=sa.text('false'),
                    existing_nullable=True)
     except ProgrammingError:
         pass
     try:
-        op.drop_index(op.f('ix_admin_goals_id'), table_name='admin_goals')
-        op.alter_column('admin_goals', 'updated_at',
+        _safe_drop_index(op.f('ix_admin_goals_id'), 'admin_goals')
+        _safe_alter_column('admin_goals', 'updated_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_goals', 'created_at',
+        _safe_alter_column('admin_goals', 'created_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_goals', 'target_calls',
+        _safe_alter_column('admin_goals', 'target_calls',
                    existing_type=sa.INTEGER(),
                    server_default=sa.text('0'),
                    existing_nullable=True)
-        op.alter_column('admin_goals', 'target_videos',
+        _safe_alter_column('admin_goals', 'target_videos',
                    existing_type=sa.INTEGER(),
                    server_default=sa.text('0'),
                    existing_nullable=True)
-        op.alter_column('admin_goals', 'target_emails',
+        _safe_alter_column('admin_goals', 'target_emails',
                    existing_type=sa.INTEGER(),
                    server_default=sa.text('0'),
                    existing_nullable=True)
-        op.alter_column('admin_goals', 'target_discoveries',
+        _safe_alter_column('admin_goals', 'target_discoveries',
                    existing_type=sa.INTEGER(),
                    server_default=sa.text('0'),
                    existing_nullable=True)
     except ProgrammingError:
         pass
     try:
-        op.drop_index(op.f('ix_admin_focus_sessions_id'), table_name='admin_focus_sessions')
-        op.alter_column('admin_focus_sessions', 'created_at',
+        _safe_drop_index(op.f('ix_admin_focus_sessions_id'), 'admin_focus_sessions')
+        _safe_alter_column('admin_focus_sessions', 'created_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_focus_sessions', 'interrupted',
+        _safe_alter_column('admin_focus_sessions', 'interrupted',
                    existing_type=sa.BOOLEAN(),
                    server_default=sa.text('false'),
                    existing_nullable=True)
-        op.alter_column('admin_focus_sessions', 'completed',
+        _safe_alter_column('admin_focus_sessions', 'completed',
                    existing_type=sa.BOOLEAN(),
                    server_default=sa.text('false'),
                    existing_nullable=True)
-        op.alter_column('admin_focus_sessions', 'duration_minutes',
+        _safe_alter_column('admin_focus_sessions', 'duration_minutes',
                    existing_type=sa.INTEGER(),
                    server_default=sa.text('50'),
                    existing_nullable=True)
     except ProgrammingError:
         pass
     try:
-        op.drop_index(op.f('ix_admin_deals_id'), table_name='admin_deals')
-        op.alter_column('admin_deals', 'updated_at',
+        _safe_drop_index(op.f('ix_admin_deals_id'), 'admin_deals')
+        _safe_alter_column('admin_deals', 'updated_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_deals', 'created_at',
+        _safe_alter_column('admin_deals', 'created_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_deals', 'probability',
+        _safe_alter_column('admin_deals', 'probability',
                    existing_type=sa.INTEGER(),
                    server_default=sa.text('0'),
                    existing_nullable=True)
-        op.alter_column('admin_deals', 'stage',
+        _safe_alter_column('admin_deals', 'stage',
                    existing_type=postgresql.ENUM('discovery', 'qualification', 'proposal', 'negotiation', 'closing', 'won', 'lost', name='admindealstage'),
                    server_default=sa.text("'discovery'::admindealstage"),
                    existing_nullable=True)
     except ProgrammingError:
         pass
     try:
-        op.drop_index(op.f('ix_admin_content_scripts_id'), table_name='admin_content_scripts')
-        op.alter_column('admin_content_scripts', 'updated_at',
+        _safe_drop_index(op.f('ix_admin_content_scripts_id'), 'admin_content_scripts')
+        _safe_alter_column('admin_content_scripts', 'updated_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_content_scripts', 'created_at',
+        _safe_alter_column('admin_content_scripts', 'created_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
     except ProgrammingError:
         pass
     try:
-        op.drop_index(op.f('ix_admin_content_pieces_id'), table_name='admin_content_pieces')
-        op.alter_column('admin_content_pieces', 'updated_at',
+        _safe_drop_index(op.f('ix_admin_content_pieces_id'), 'admin_content_pieces')
+        _safe_alter_column('admin_content_pieces', 'updated_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_content_pieces', 'created_at',
+        _safe_alter_column('admin_content_pieces', 'created_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
-        op.alter_column('admin_content_pieces', 'views_count',
+        _safe_alter_column('admin_content_pieces', 'views_count',
                    existing_type=sa.INTEGER(),
                    server_default=sa.text('0'),
                    existing_nullable=True)
-        op.alter_column('admin_content_pieces', 'status',
+        _safe_alter_column('admin_content_pieces', 'status',
                    existing_type=postgresql.ENUM('idea', 'scripting', 'recording', 'editing', 'ready', 'published', name='contentstatus'),
                    server_default=sa.text("'idea'::contentstatus"),
                    existing_nullable=True)
     except ProgrammingError:
         pass
     try:
-        op.drop_index(op.f('ix_admin_collateral_usage_id'), table_name='admin_collateral_usage')
-        op.alter_column('admin_collateral_usage', 'used_at',
+        _safe_drop_index(op.f('ix_admin_collateral_usage_id'), 'admin_collateral_usage')
+        _safe_alter_column('admin_collateral_usage', 'used_at',
                    existing_type=postgresql.TIMESTAMP(),
                    server_default=sa.text('now()'),
                    existing_nullable=False)
@@ -1820,7 +1963,7 @@ def downgrade() -> None:
                    existing_nullable=True)
     except (ProgrammingError, NoSuchTableError, InternalError):
         pass
-    op.create_table('contact_messages',
+_safe_create_table('contact_messages',
     sa.Column('id', sa.INTEGER(), autoincrement=True, nullable=False),
     sa.Column('name', sa.VARCHAR(length=255), autoincrement=False, nullable=False),
     sa.Column('email', sa.VARCHAR(length=255), autoincrement=False, nullable=False),
@@ -1831,56 +1974,56 @@ def downgrade() -> None:
     sa.Column('status', sa.VARCHAR(length=50), server_default=sa.text("'new'::character varying"), autoincrement=False, nullable=False),
     sa.PrimaryKeyConstraint('id', name='contact_messages_pkey')
     )
-    op.create_index('ix_contact_messages_id', 'contact_messages', ['id'], unique=False)
-    op.create_index('ix_contact_messages_email', 'contact_messages', ['email'], unique=False)
-    op.create_index('ix_contact_messages_created_at', 'contact_messages', ['created_at'], unique=False)
-    op.drop_index(op.f('ix_document_share_links_share_token'), table_name='document_share_links')
-    op.drop_index('idx_share_links_token', table_name='document_share_links')
-    op.drop_index('idx_share_links_org_id', table_name='document_share_links')
-    op.drop_index('idx_share_links_expires_at', table_name='document_share_links')
-    op.drop_index('idx_share_links_document_id', table_name='document_share_links')
-    op.drop_table('document_share_links')
-    op.drop_table('event_registrations')
-    op.drop_table('document_versions')
-    op.drop_table('document_ai_suggestions')
-    op.drop_table('event_tickets')
-    op.drop_table('event_sessions')
-    op.drop_table('event_analytics')
-    op.drop_index(op.f('ix_community_comments_post_id'), table_name='community_comments')
-    op.drop_index(op.f('ix_community_comments_parent_comment_id'), table_name='community_comments')
-    op.drop_index(op.f('ix_community_comments_author_user_id'), table_name='community_comments')
-    op.drop_index('idx_community_comments_post', table_name='community_comments')
-    op.drop_index('idx_community_comments_parent', table_name='community_comments')
-    op.drop_index('idx_community_comments_created', table_name='community_comments')
-    op.drop_index('idx_community_comments_author', table_name='community_comments')
-    op.drop_table('community_comments')
-    op.drop_table('events')
-    op.drop_index(op.f('ix_community_reactions_user_id'), table_name='community_reactions')
-    op.drop_index(op.f('ix_community_reactions_target_id'), table_name='community_reactions')
-    op.drop_index('idx_community_reactions_user', table_name='community_reactions')
-    op.drop_index('idx_community_reactions_unique', table_name='community_reactions')
-    op.drop_index('idx_community_reactions_target', table_name='community_reactions')
-    op.drop_table('community_reactions')
-    op.drop_index(op.f('ix_community_posts_organization_id'), table_name='community_posts')
-    op.drop_index(op.f('ix_community_posts_author_user_id'), table_name='community_posts')
-    op.drop_index('idx_community_posts_status', table_name='community_posts')
-    op.drop_index('idx_community_posts_org_id', table_name='community_posts')
-    op.drop_index('idx_community_posts_created', table_name='community_posts')
-    op.drop_index('idx_community_posts_category', table_name='community_posts')
-    op.drop_index('idx_community_posts_author', table_name='community_posts')
-    op.drop_table('community_posts')
-    op.drop_index(op.f('ix_community_moderation_actions_target_id'), table_name='community_moderation_actions')
-    op.drop_index(op.f('ix_community_moderation_actions_moderator_user_id'), table_name='community_moderation_actions')
-    op.drop_index('idx_community_moderation_target', table_name='community_moderation_actions')
-    op.drop_index('idx_community_moderation_moderator', table_name='community_moderation_actions')
-    op.drop_index('idx_community_moderation_created', table_name='community_moderation_actions')
-    op.drop_table('community_moderation_actions')
-    op.drop_index(op.f('ix_community_follows_organization_id'), table_name='community_follows')
-    op.drop_index(op.f('ix_community_follows_following_user_id'), table_name='community_follows')
-    op.drop_index(op.f('ix_community_follows_follower_user_id'), table_name='community_follows')
-    op.drop_index('idx_community_follows_unique', table_name='community_follows')
-    op.drop_index('idx_community_follows_org', table_name='community_follows')
-    op.drop_index('idx_community_follows_following', table_name='community_follows')
-    op.drop_index('idx_community_follows_follower', table_name='community_follows')
-    op.drop_table('community_follows')
+_safe_create_index('ix_contact_messages_id', 'contact_messages', ['id'], unique=False)
+_safe_create_index('ix_contact_messages_email', 'contact_messages', ['email'], unique=False)
+_safe_create_index('ix_contact_messages_created_at', 'contact_messages', ['created_at'], unique=False)
+    _safe_drop_index(op.f('ix_document_share_links_share_token'), 'document_share_links')
+    _safe_drop_index('idx_share_links_token', 'document_share_links')
+    _safe_drop_index('idx_share_links_org_id', 'document_share_links')
+    _safe_drop_index('idx_share_links_expires_at', 'document_share_links')
+    _safe_drop_index('idx_share_links_document_id', 'document_share_links')
+    _safe_drop_table('document_share_links')
+    _safe_drop_table('event_registrations')
+    _safe_drop_table('document_versions')
+    _safe_drop_table('document_ai_suggestions')
+    _safe_drop_table('event_tickets')
+    _safe_drop_table('event_sessions')
+    _safe_drop_table('event_analytics')
+        _safe_drop_index(op.f('ix_community_comments_post_id'), 'community_comments')
+        _safe_drop_index(op.f('ix_community_comments_parent_comment_id'), 'community_comments')
+        _safe_drop_index(op.f('ix_community_comments_author_user_id'), 'community_comments')
+        _safe_drop_index('idx_community_comments_post', 'community_comments')
+        _safe_drop_index('idx_community_comments_parent', 'community_comments')
+        _safe_drop_index('idx_community_comments_created', 'community_comments')
+        _safe_drop_index('idx_community_comments_author', 'community_comments')
+    _safe_drop_table('community_comments')
+    _safe_drop_table('events')
+        _safe_drop_index(op.f('ix_community_reactions_user_id'), 'community_reactions')
+        _safe_drop_index(op.f('ix_community_reactions_target_id'), 'community_reactions')
+        _safe_drop_index('idx_community_reactions_user', 'community_reactions')
+        _safe_drop_index('idx_community_reactions_unique', 'community_reactions')
+        _safe_drop_index('idx_community_reactions_target', 'community_reactions')
+    _safe_drop_table('community_reactions')
+        _safe_drop_index(op.f('ix_community_posts_organization_id'), 'community_posts')
+        _safe_drop_index(op.f('ix_community_posts_author_user_id'), 'community_posts')
+        _safe_drop_index('idx_community_posts_status', 'community_posts')
+        _safe_drop_index('idx_community_posts_org_id', 'community_posts')
+        _safe_drop_index('idx_community_posts_created', 'community_posts')
+        _safe_drop_index('idx_community_posts_category', 'community_posts')
+        _safe_drop_index('idx_community_posts_author', 'community_posts')
+    _safe_drop_table('community_posts')
+        _safe_drop_index(op.f('ix_community_moderation_actions_target_id'), 'community_moderation_actions')
+        _safe_drop_index(op.f('ix_community_moderation_actions_moderator_user_id'), 'community_moderation_actions')
+        _safe_drop_index('idx_community_moderation_target', 'community_moderation_actions')
+        _safe_drop_index('idx_community_moderation_moderator', 'community_moderation_actions')
+        _safe_drop_index('idx_community_moderation_created', 'community_moderation_actions')
+    _safe_drop_table('community_moderation_actions')
+        _safe_drop_index(op.f('ix_community_follows_organization_id'), 'community_follows')
+        _safe_drop_index(op.f('ix_community_follows_following_user_id'), 'community_follows')
+        _safe_drop_index(op.f('ix_community_follows_follower_user_id'), 'community_follows')
+        _safe_drop_index('idx_community_follows_unique', 'community_follows')
+        _safe_drop_index('idx_community_follows_org', 'community_follows')
+        _safe_drop_index('idx_community_follows_following', 'community_follows')
+        _safe_drop_index('idx_community_follows_follower', 'community_follows')
+    _safe_drop_table('community_follows')
     # ### end Alembic commands ###
