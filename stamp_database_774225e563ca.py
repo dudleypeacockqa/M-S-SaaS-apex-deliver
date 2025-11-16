@@ -1,123 +1,115 @@
 #!/usr/bin/env python3
 """
-Stamp the Render database to migration version 774225e563ca.
-
-This bypasses the aborted transaction issue by directly updating the
-alembic_version table to indicate that migration 774225e563ca has completed.
+Manually stamp the database with migration 774225e563ca
+This bypasses the aborted transaction issue by directly updating alembic_version
 """
-
-import os
 import sys
-import urllib.parse
 import psycopg2
-from psycopg2 import sql
 
-# Get DATABASE_URL from environment or use Render production URL
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL",
-    "postgresql://ma_saas_db_user:PASSWORD@HOST/ma_saas_db"
-)
+DATABASE_URL = "postgresql://ma_saas_user:iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform"
 
 def stamp_database():
-    """Stamp the database to version 774225e563ca."""
-    print("=" * 70)
-    print("ALEMBIC DATABASE STAMPING TOOL")
-    print("=" * 70)
-    print(f"Target version: 774225e563ca")
-    print()
-
-    # Parse DATABASE_URL to extract connection parameters
-    parsed = urllib.parse.urlparse(DATABASE_URL)
-
-    # Connection parameters
-    conn_params = {
-        'host': parsed.hostname,
-        'port': parsed.port or 5432,
-        'database': parsed.path[1:],  # Remove leading '/'
-        'user': parsed.username,
-        'password': parsed.password,
-        'sslmode': 'require'
-    }
-
-    print(f"Connecting to: {conn_params['host']}:{conn_params['port']}/{conn_params['database']}")
-    print(f"User: {conn_params['user']}")
-    print()
-
+    """Stamp the database with migration 774225e563ca"""
     try:
-        # Connect to database
-        print("[INFO] Establishing database connection...")
-        conn = psycopg2.connect(**conn_params)
-        conn.autocommit = True  # Use autocommit to avoid transaction issues
+        print("=" * 70)
+        print("MANUAL DATABASE STAMPING - Migration 774225e563ca")
+        print("=" * 70)
+        print(f"Target: dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com")
+        print("=" * 70)
+
+        # Connect with autocommit mode to avoid transaction issues
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn.autocommit = True
         cursor = conn.cursor()
 
-        # Step 1: Create alembic_version table if it doesn't exist
-        print("[INFO] Ensuring alembic_version table exists...")
+        print("\n[1/4] Checking if alembic_version table exists...")
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS alembic_version (
-                version_num VARCHAR(32) NOT NULL PRIMARY KEY
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables
+                WHERE table_schema = 'public'
+                AND table_name = 'alembic_version'
             );
         """)
-        print("[OK] alembic_version table ready")
+        table_exists = cursor.fetchone()[0]
 
-        # Step 2: Update or insert version
-        print("[INFO] Stamping database to version 774225e563ca...")
-        cursor.execute("""
-            WITH up AS (
-                UPDATE alembic_version
-                SET version_num='774225e563ca'
-                RETURNING 1
-            )
-            INSERT INTO alembic_version(version_num)
-            SELECT '774225e563ca'
-            WHERE NOT EXISTS (SELECT 1 FROM up);
-        """)
-        print("[OK] Database stamped successfully")
+        if not table_exists:
+            print("[WARNING] alembic_version table does not exist. Creating it...")
+            cursor.execute("""
+                CREATE TABLE alembic_version (
+                    version_num VARCHAR(32) NOT NULL PRIMARY KEY
+                );
+            """)
+            print("[OK] Created alembic_version table")
+        else:
+            print("[OK] alembic_version table exists")
 
-        # Step 3: Verify
-        print("[INFO] Verifying current version...")
+        print("\n[2/4] Checking current migration version...")
         cursor.execute("SELECT version_num FROM alembic_version;")
         result = cursor.fetchone()
 
-        if result and result[0] == '774225e563ca':
-            print(f"[SUCCESS] ✓ Current version: {result[0]}")
-            print()
-            print("=" * 70)
-            print("STAMPING COMPLETE")
-            print("=" * 70)
-            print()
-            print("Next steps:")
-            print("1. Redeploy the backend service on Render")
-            print("2. Alembic will now continue from version 774225e563ca")
-            print("3. Subsequent migrations (if any) will run normally")
-            print()
-            return 0
-        else:
-            print(f"[ERROR] Verification failed. Current version: {result[0] if result else 'None'}")
-            return 1
+        if result:
+            current_version = result[0]
+            print(f"[OK] Current version: {current_version}")
 
-    except psycopg2.Error as e:
-        print(f"[ERROR] Database error: {e}")
-        return 1
+            if current_version == '774225e563ca':
+                print("\n[INFO] Database is already at version 774225e563ca")
+                print("[SUCCESS] No action needed!")
+                return True
+            elif current_version > '774225e563ca':
+                print(f"\n[INFO] Database is at newer version: {current_version}")
+                print("[SUCCESS] No action needed!")
+                return True
+        else:
+            print("[INFO] No current version found (empty alembic_version table)")
+            current_version = None
+
+        print("\n[3/4] Updating alembic_version to 774225e563ca...")
+
+        if current_version:
+            # Update existing version
+            cursor.execute("""
+                UPDATE alembic_version
+                SET version_num = '774225e563ca';
+            """)
+            print("[OK] Updated version from {} to 774225e563ca".format(current_version))
+        else:
+            # Insert new version
+            cursor.execute("""
+                INSERT INTO alembic_version (version_num)
+                VALUES ('774225e563ca');
+            """)
+            print("[OK] Inserted version 774225e563ca")
+
+        print("\n[4/4] Verifying the update...")
+        cursor.execute("SELECT version_num FROM alembic_version;")
+        new_version = cursor.fetchone()[0]
+        print(f"[OK] Current version is now: {new_version}")
+
+        if new_version == '774225e563ca':
+            print("\n" + "=" * 70)
+            print("[SUCCESS] DATABASE STAMPED SUCCESSFULLY!")
+            print("=" * 70)
+            print("\nNext steps:")
+            print("1. Trigger a new backend redeploy on Render")
+            print("2. Alembic will skip migration 774225e563ca (already applied)")
+            print("3. Alembic will continue with subsequent migrations")
+            print("=" * 70)
+            return True
+        else:
+            print(f"\n[ERROR] Version mismatch. Expected 774225e563ca, got {new_version}")
+            return False
+
     except Exception as e:
-        print(f"[ERROR] Unexpected error: {e}")
-        return 1
+        print(f"\n[ERROR] Failed to stamp database: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
     finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals():
-            conn.close()
-            print("[INFO] Database connection closed")
+        cursor.close()
+        conn.close()
 
 if __name__ == "__main__":
-    # Check if DATABASE_URL is set
-    if DATABASE_URL == "postgresql://ma_saas_db_user:PASSWORD@HOST/ma_saas_db":
-        print("[ERROR] DATABASE_URL not set!")
-        print()
-        print("Please set DATABASE_URL environment variable:")
-        print('  export DATABASE_URL="postgresql://user:pass@host:port/dbname"')
-        print()
-        print("You can get this from Render dashboard:")
-        print("  Dashboard > Database > Connection > External Connection String")
+    if stamp_database():
+        sys.exit(0)
+    else:
         sys.exit(1)
-
-    sys.exit(stamp_database())
