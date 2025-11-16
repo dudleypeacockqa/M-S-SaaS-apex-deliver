@@ -42,7 +42,25 @@ def _get_pg_column_type(table_name: str, column_name: str) -> str:
     bind = op.get_bind()
     if not bind or bind.dialect.name != 'postgresql':
         return 'varchar'
-    
+
+    try:
+        result = bind.execute(
+            sa.text(
+                """
+                SELECT data_type
+                FROM information_schema.columns
+                WHERE table_schema = 'public'
+                  AND table_name = :table_name
+                  AND column_name = :column_name
+                """
+            ),
+            {"table_name": table_name, "column_name": column_name},
+        ).scalar()
+        if result:
+            return result.lower()
+    except Exception:
+        pass
+
     try:
         result = bind.execute(sa.text("""
             SELECT t.typname
@@ -56,7 +74,8 @@ def _get_pg_column_type(table_name: str, column_name: str) -> str:
             AND NOT a.attisdropped
         """), {"table_name": table_name, "column_name": column_name})
         pg_type = result.scalar()
-        return pg_type or 'varchar'
+        if pg_type:
+            return pg_type.lower()
     except Exception:
         return 'varchar'
 
