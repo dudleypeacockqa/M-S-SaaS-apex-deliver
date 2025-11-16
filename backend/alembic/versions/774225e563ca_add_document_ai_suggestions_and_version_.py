@@ -12,9 +12,6 @@ import sqlalchemy as sa
 from sqlalchemy import inspect
 from sqlalchemy.exc import NoSuchTableError, ProgrammingError, InternalError
 from sqlalchemy.dialects import postgresql
-from app.db.base import GUID
-
-from app.db.base import GUID
 
 # Import GUID from app.db.base
 # Note: During Alembic execution, app module may not be in path
