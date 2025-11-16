@@ -9,14 +9,15 @@ from typing import Optional, Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy import inspect
 from sqlalchemy.exc import NoSuchTableError, ProgrammingError, InternalError
+from sqlalchemy.dialects import postgresql
+
+from app.db.base import GUID
+
 ORGANIZATION_ID_TYPE = sa.String(length=36)
 USER_ID_TYPE = sa.String(length=36)
 GENERATED_DOCUMENT_ID_TYPE = sa.String(length=36)
 ORGANIZATION_TYPE = sa.String(length=36)
-from sqlalchemy.dialects import postgresql
-from app.db.base import GUID
 
 # revision identifiers, used by Alembic.
 revision = "774225e563ca"
@@ -24,70 +25,63 @@ down_revision = "b354d12d1e7d"
 branch_labels = None
 depends_on = None
 
-SAFE_EXCEPTIONS = (ProgrammingError, NoSuchTableError, InternalError)
-
 
 def _inspector():
-    """Return a SQLAlchemy inspector or None when unavailable."""
     try:
-        return inspect(op.get_bind())
-    except SAFE_EXCEPTIONS:
+        return sa.inspect(op.get_bind())
+    except ProgrammingError:
         return None
 
 
-def _table_exists(table_name: str, schema: Optional[str] = None) -> bool:
-    """Check if a table exists without raising transaction errors."""
-    if not table_name:
-        return False
+def _table_exists(table_name: str, schema: str | None = None) -> bool:
     inspector = _inspector()
-    if inspector is None:
+    if inspector is None or not table_name:
         return False
     try:
         return bool(inspector.has_table(table_name, schema=schema))
-    except SAFE_EXCEPTIONS:
+    except ProgrammingError:
         return False
 
 
-def _column_exists(table_name: str, column_name: str, schema: Optional[str] = None) -> bool:
-    """Check if a column exists on a table within the schema."""
-    schema = schema or 'public'
-    if not _table_exists(table_name, schema):
-        return False
+def _column_exists(table_name: str, column_name: str, schema: str | None = None) -> bool:
     inspector = _inspector()
-    if inspector is None:
+    if inspector is None or not _table_exists(table_name, schema):
         return False
     try:
-        columns = inspector.get_columns(table_name, schema=schema)
+        columns = inspector.get_columns(table_name, schema=schema or 'public')
         return any(col['name'] == column_name for col in columns)
-    except SAFE_EXCEPTIONS:
+    except ProgrammingError:
         return False
 
 
-def _index_exists(index_name: str, table_name: str, schema: Optional[str] = None) -> bool:
-    """Return True if the named index exists for the table."""
-    if not index_name or not table_name:
-        return False
-    if not _table_exists(table_name, schema):
-        return False
+def _index_exists(index_name: str, table_name: str, schema: str | None = None) -> bool:
     inspector = _inspector()
-    if inspector is None:
+    if inspector is None or not _table_exists(table_name, schema):
         return False
     try:
         indexes = inspector.get_indexes(table_name, schema=schema or 'public')
         return any(idx['name'] == index_name for idx in indexes)
-    except SAFE_EXCEPTIONS:
+    except ProgrammingError:
         return False
 
 
-def _safe_alter_column(table_name: str, column_name: str, **kwargs) -> None:
+def _safe_create_table(table_name: str, *columns, **kwargs) -> None:
+    schema = kwargs.get('schema')
+    if _table_exists(table_name, schema):
+        return
+    try:
+        op.create_table(table_name, *columns, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+def _safe_drop_table(table_name: str, *args, **kwargs) -> None:
     schema = kwargs.get('schema')
     if not _table_exists(table_name, schema):
         return
-    if not _column_exists(table_name, column_name, schema):
-        return
     try:
-        op.alter_column(table_name, column_name, **kwargs)
-    except SAFE_EXCEPTIONS:
+        op.drop_table(table_name, *args, **kwargs)
+    except ProgrammingError:
         pass
 
 
@@ -100,7 +94,7 @@ def _safe_add_column(table_name: str, column: sa.Column, **kwargs) -> None:
         return
     try:
         op.add_column(table_name, column, **kwargs)
-    except SAFE_EXCEPTIONS:
+    except ProgrammingError:
         pass
 
 
@@ -110,11 +104,21 @@ def _safe_drop_column(table_name: str, column_name: str, **kwargs) -> None:
         return
     try:
         op.drop_column(table_name, column_name, **kwargs)
-    except SAFE_EXCEPTIONS:
+    except ProgrammingError:
         pass
 
 
-def _safe_create_index(index_name: str, table_name: Optional[str], columns, **kwargs) -> None:
+def _safe_alter_column(table_name: str, column_name: str, **kwargs) -> None:
+    schema = kwargs.get('schema')
+    if not _column_exists(table_name, column_name, schema):
+        return
+    try:
+        op.alter_column(table_name, column_name, **kwargs)
+    except ProgrammingError:
+        pass
+
+
+def _safe_create_index(index_name: str, table_name: str | None, columns, **kwargs) -> None:
     schema = kwargs.get('schema')
     if table_name and not _table_exists(table_name, schema):
         return
@@ -122,11 +126,11 @@ def _safe_create_index(index_name: str, table_name: Optional[str], columns, **kw
         return
     try:
         op.create_index(index_name, table_name, columns, **kwargs)
-    except SAFE_EXCEPTIONS:
+    except ProgrammingError:
         pass
 
 
-def _safe_drop_index(index_name: str, table_name: Optional[str] = None, **kwargs) -> None:
+def _safe_drop_index(index_name: str, table_name: str | None = None, **kwargs) -> None:
     schema = kwargs.get('schema')
     if table_name and not _table_exists(table_name, schema):
         return
@@ -134,7 +138,7 @@ def _safe_drop_index(index_name: str, table_name: Optional[str] = None, **kwargs
         return
     try:
         op.drop_index(index_name, table_name=table_name, **kwargs)
-    except SAFE_EXCEPTIONS:
+    except ProgrammingError:
         pass
 
 
@@ -144,7 +148,7 @@ def _safe_create_unique_constraint(name: str, table_name: str, columns, **kwargs
         return
     try:
         op.create_unique_constraint(name, table_name, columns, **kwargs)
-    except SAFE_EXCEPTIONS:
+    except ProgrammingError:
         pass
 
 
@@ -154,7 +158,7 @@ def _safe_drop_constraint(name: str, table_name: str, **kwargs) -> None:
         return
     try:
         op.drop_constraint(name, table_name=table_name, **kwargs)
-    except SAFE_EXCEPTIONS:
+    except ProgrammingError:
         pass
 
 
@@ -168,34 +172,14 @@ def _safe_create_foreign_key(name: str, source_table: str, referent_table: str,
         return
     try:
         op.create_foreign_key(name, source_table, referent_table, local_cols, remote_cols, **kwargs)
-    except SAFE_EXCEPTIONS:
-        pass
-
-
-def _safe_create_table(table_name: str, *columns, **kwargs) -> None:
-    schema = kwargs.get('schema')
-    if _table_exists(table_name, schema):
-        return
-    try:
-        op.create_table(table_name, *columns, **kwargs)
-    except SAFE_EXCEPTIONS:
-        pass
-
-
-def _safe_drop_table(table_name: str, *args, **kwargs) -> None:
-    schema = kwargs.get('schema')
-    if not _table_exists(table_name, schema):
-        return
-    try:
-        op.drop_table(table_name, *args, **kwargs)
-    except SAFE_EXCEPTIONS:
+    except ProgrammingError:
         pass
 
 
 def _safe_execute(sql, *args, **kwargs) -> None:
     try:
         op.execute(sql, *args, **kwargs)
-    except SAFE_EXCEPTIONS:
+    except ProgrammingError:
         pass
 
 
@@ -1050,26 +1034,22 @@ def downgrade() -> None:
                    existing_type=sa.VARCHAR(length=20),
                    server_default=sa.text("'open'::character varying"),
                    existing_nullable=False)
-    try:
-        # Check if column exists before dropping
-        bind = op.get_bind()
-        inspector = sa.inspect(bind)
+    if _column_exists('deal_matches', 'organization_id'):
         try:
-            columns = [col['name'] for col in inspector.get_columns('deal_matches')]
-            if 'organization_id' in columns:
-                # Drop foreign key constraint first
+            inspector = inspect(op.get_bind())
+        except SAFE_EXCEPTIONS:
+            inspector = None
+        if inspector is not None:
+            try:
                 fks = inspector.get_foreign_keys('deal_matches')
-                for fk in fks:
-                    if 'organization_id' in fk['constrained_columns']:
-                        _safe_drop_constraint(fk['name'], 'deal_matches', type_='foreignkey')
-                        break
-                _safe_drop_index(op.f('ix_deal_matches_organization_id'), 'deal_matches')
-                _safe_drop_column('deal_matches', 'organization_id')
-        except (ProgrammingError, NoSuchTableError, InternalError):
-            # Table might have been dropped between check and operation
-            pass
-    except (ProgrammingError, NoSuchTableError, InternalError):
-        pass
+            except SAFE_EXCEPTIONS:
+                fks = []
+            for fk in fks:
+                if 'organization_id' in fk.get('constrained_columns', []):
+                    _safe_drop_constraint(fk['name'], 'deal_matches', type_='foreignkey')
+                    break
+            _safe_drop_index(op.f('ix_deal_matches_organization_id'), 'deal_matches')
+            _safe_drop_column('deal_matches', 'organization_id')
     # op.alter_column is already patched to use _safe_alter_column
     if _column_exists('blog_posts', 'read_time_minutes'):
         _safe_alter_column('blog_posts', 'read_time_minutes',
