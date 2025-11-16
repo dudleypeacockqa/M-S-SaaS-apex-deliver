@@ -67,6 +67,12 @@ def _index_exists(index_name: str, table_name: str, schema: str | None = None) -
 
 def _safe_create_table(table_name: str, *columns, **kwargs) -> None:
     schema = kwargs.get('schema')
+    required_tables = kwargs.pop('required_tables', None) or []
+    if isinstance(required_tables, str):
+        required_tables = [required_tables]
+    for dependency in required_tables:
+        if not _table_exists(dependency, schema):
+            return
     if _table_exists(table_name, schema):
         return
     try:
@@ -283,7 +289,8 @@ def upgrade() -> None:
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(['follower_user_id'], ['users.id'], ),
         sa.ForeignKeyConstraint(['following_user_id'], ['users.id'], ),
-        sa.PrimaryKeyConstraint('id')
+        sa.PrimaryKeyConstraint('id'),
+        required_tables=('users',)
     )
     _safe_create_index('idx_community_follows_follower', 'community_follows', ['follower_user_id'], unique=False)
     _safe_create_index('idx_community_follows_following', 'community_follows', ['following_user_id'], unique=False)
@@ -301,7 +308,8 @@ def upgrade() -> None:
     sa.Column('reason', sa.Text(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['moderator_user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    required_tables=('users',)
     )
     _safe_create_index('idx_community_moderation_created', 'community_moderation_actions', ['created_at'], unique=False)
     _safe_create_index('idx_community_moderation_moderator', 'community_moderation_actions', ['moderator_user_id'], unique=False)
@@ -321,7 +329,8 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['author_user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    required_tables=('users',)
     )
     _safe_create_index('idx_community_posts_author', 'community_posts', ['author_user_id'], unique=False)
     _safe_create_index('idx_community_posts_category', 'community_posts', ['category'], unique=False)
@@ -338,7 +347,8 @@ def upgrade() -> None:
     sa.Column('reaction_type', sa.Enum('like', 'love', 'insightful', 'celebrate', name='reactiontype', native_enum=False, length=32), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    required_tables=('users',)
     )
     _safe_create_index('idx_community_reactions_target', 'community_reactions', ['target_type', 'target_id'], unique=False)
     _safe_create_index('idx_community_reactions_unique', 'community_reactions', ['target_type', 'target_id', 'user_id', 'reaction_type'], unique=True)
@@ -364,7 +374,8 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    required_tables=('organizations',)
     )
     _safe_create_table('community_comments',
     sa.Column('id', sa.String(length=36), nullable=False),
@@ -377,7 +388,8 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['author_user_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['parent_comment_id'], ['community_comments.id'], ),
     sa.ForeignKeyConstraint(['post_id'], ['community_posts.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    required_tables=('community_posts', 'users')
     )
     _safe_create_index('idx_community_comments_author', 'community_comments', ['author_user_id'], unique=False)
     _safe_create_index('idx_community_comments_created', 'community_comments', ['created_at'], unique=False)
@@ -398,7 +410,8 @@ def upgrade() -> None:
     sa.Column('organization_id', sa.String(length=36), nullable=False),
     sa.ForeignKeyConstraint(['event_id'], ['events.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    required_tables=('events', 'organizations')
     )
     _safe_create_table('event_sessions',
     sa.Column('id', sa.String(length=36), nullable=False),
@@ -418,7 +431,8 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['event_id'], ['events.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    required_tables=('events', 'organizations')
     )
     _safe_create_table('event_tickets',
     sa.Column('id', sa.String(length=36), nullable=False),
@@ -438,7 +452,8 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['event_id'], ['events.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    required_tables=('events', 'organizations')
     )
     _safe_create_table('document_ai_suggestions',
     sa.Column('id', sa.String(length=36), nullable=False),
@@ -455,7 +470,8 @@ def upgrade() -> None:
     sa.Column('applied_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['document_id'], ['generated_documents.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    required_tables=('generated_documents', 'organizations')
     )
     _safe_create_table('document_versions',
     sa.Column('id', sa.String(length=36), nullable=False),
@@ -469,7 +485,8 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['document_id'], ['generated_documents.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    required_tables=('generated_documents', 'organizations')
     )
     _safe_create_table('event_registrations',
     sa.Column('id', sa.String(length=36), nullable=False),
@@ -494,7 +511,8 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.ForeignKeyConstraint(['session_id'], ['event_sessions.id'], ondelete='SET NULL'),
     sa.ForeignKeyConstraint(['ticket_id'], ['event_tickets.id'], ondelete='SET NULL'),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    required_tables=('events', 'event_sessions', 'event_tickets', 'organizations')
     )
     _safe_create_table('document_share_links',
     sa.Column('id', sa.String(length=36), nullable=False),
@@ -513,7 +531,8 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['created_by'], ['users.id'], ),
     sa.ForeignKeyConstraint(['document_id'], ['documents.id'], ),
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    required_tables=('documents', 'users', 'organizations')
     )
     _safe_create_index('idx_share_links_document_id', 'document_share_links', ['document_id'], unique=False)
     _safe_create_index('idx_share_links_expires_at', 'document_share_links', ['expires_at'], unique=False)
@@ -1035,10 +1054,7 @@ def downgrade() -> None:
                    server_default=sa.text("'open'::character varying"),
                    existing_nullable=False)
     if _column_exists('deal_matches', 'organization_id'):
-        try:
-            inspector = inspect(op.get_bind())
-        except SAFE_EXCEPTIONS:
-            inspector = None
+        inspector = _inspector()
         if inspector is not None:
             try:
                 fks = inspector.get_foreign_keys('deal_matches')
