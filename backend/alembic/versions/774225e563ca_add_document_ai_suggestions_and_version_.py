@@ -20,10 +20,10 @@ GENERATED_DOCUMENT_ID_TYPE = sa.String(length=36)
 ORGANIZATION_TYPE = sa.String(length=36)
 
 # revision identifiers, used by Alembic.
-revision: str = '774225e563ca'
-down_revision: Union[str, None] = 'b354d12d1e7d'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+revision = "774225e563ca"
+down_revision = "b354d12d1e7d"
+branch_labels = None
+depends_on = None
 
 
 def _inspector():
