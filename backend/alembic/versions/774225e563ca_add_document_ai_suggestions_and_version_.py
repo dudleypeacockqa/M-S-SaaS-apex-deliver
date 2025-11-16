@@ -19,10 +19,10 @@ from sqlalchemy.dialects import postgresql
 from app.db.base import GUID
 
 # revision identifiers, used by Alembic.
-revision: str = '774225e563ca'
-down_revision: Union[str, None] = 'b354d12d1e7d'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+revision = "774225e563ca"
+down_revision = "b354d12d1e7d"
+branch_labels = None
+depends_on = None
 
 SAFE_EXCEPTIONS = (ProgrammingError, NoSuchTableError, InternalError)
 
