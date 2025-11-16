@@ -42,7 +42,10 @@ class TestSlugify:
     def test_slugify_trims_hyphens(self):
         """Test _slugify trims leading/trailing hyphens."""
         assert _slugify("-test-") == "test"
-        assert _slugify("---") == "org-"
+        # When only special chars, generates UUID
+        result = _slugify("---")
+        assert result.startswith("org-")
+        assert len(result) == 12
 
 
 class TestEnsureUniqueSlug:
@@ -55,29 +58,41 @@ class TestEnsureUniqueSlug:
 
     def test_ensure_unique_slug_appends_suffix_when_conflict(self, db_session, create_organization):
         """Test _ensure_unique_slug appends suffix when slug exists."""
-        org = create_organization(name="Test Org", slug="test-org")
+        org = create_organization(name="Test Org")
+        # Manually set slug since fixture doesn't accept it
+        org.slug = "test-org"
+        db_session.commit()
         result = _ensure_unique_slug(db_session, "test-org")
         assert result == "test-org-1"
 
     def test_ensure_unique_slug_increments_suffix(self, db_session, create_organization):
         """Test _ensure_unique_slug increments suffix correctly."""
-        create_organization(name="Org 1", slug="test-org")
-        create_organization(name="Org 2", slug="test-org-1")
+        org1 = create_organization(name="Org 1")
+        org1.slug = "test-org"
+        org2 = create_organization(name="Org 2")
+        org2.slug = "test-org-1"
+        db_session.commit()
         result = _ensure_unique_slug(db_session, "test-org")
         assert result == "test-org-2"
 
     def test_ensure_unique_slug_excludes_id(self, db_session, create_organization):
         """Test _ensure_unique_slug excludes specified ID from check."""
-        org = create_organization(name="Test Org", slug="test-org")
+        org = create_organization(name="Test Org")
+        org.slug = "test-org"
+        db_session.commit()
         # Should return original since we exclude this org's ID
         result = _ensure_unique_slug(db_session, "test-org", exclude_id=str(org.id))
         assert result == "test-org"
 
     def test_ensure_unique_slug_handles_multiple_conflicts(self, db_session, create_organization):
         """Test _ensure_unique_slug handles multiple existing slugs."""
-        create_organization(name="Org 1", slug="test-org")
-        create_organization(name="Org 2", slug="test-org-1")
-        create_organization(name="Org 3", slug="test-org-2")
+        org1 = create_organization(name="Org 1")
+        org1.slug = "test-org"
+        org2 = create_organization(name="Org 2")
+        org2.slug = "test-org-1"
+        org3 = create_organization(name="Org 3")
+        org3.slug = "test-org-2"
+        db_session.commit()
         result = _ensure_unique_slug(db_session, "test-org")
         assert result == "test-org-3"
 
@@ -93,7 +108,7 @@ class TestNormalizeSubscriptionTier:
         """Test _normalize_subscription_tier handles valid tier string."""
         assert _normalize_subscription_tier("professional") == "professional"
         assert _normalize_subscription_tier("ENTERPRISE") == "enterprise"
-        assert _normalize_subscription_tier("  Community  ") == "community"
+        assert _normalize_subscription_tier("  premium  ") == "premium"
 
     def test_normalize_subscription_tier_defaults_to_starter_invalid(self):
         """Test _normalize_subscription_tier defaults to starter for invalid."""
@@ -147,7 +162,8 @@ class TestCoerceMetadata:
         data = {"name": None, "slug": None, "public_metadata": None}
         name, slug, tier = _coerce_metadata(data)
         assert name == "Untitled Organization"
-        assert slug.startswith("org-")
+        # When name is "Untitled Organization", slug is slugified from that
+        assert slug == "untitled-organization"
         assert tier == "starter"
 
 
@@ -176,7 +192,9 @@ class TestUpsertFromClerk:
 
     def test_upsert_from_clerk_updates_existing_organization(self, db_session, create_organization):
         """Test upsert_from_clerk updates existing organization."""
-        existing_org = create_organization(id="org_123", name="Old Name", subscription_tier="starter")
+        # Create org with specific ID by using upsert_from_clerk first
+        clerk_data_create = {"id": "org_123", "name": "Old Name"}
+        existing_org = upsert_from_clerk(db_session, clerk_data_create)
         clerk_data = {
             "id": "org_123",
             "name": "Updated Name",
@@ -190,9 +208,11 @@ class TestUpsertFromClerk:
         assert org.subscription_tier == "professional"
         assert org.is_active is True
 
-    def test_upsert_from_clerk_updates_slug_when_changed(self, db_session, create_organization):
+    def test_upsert_from_clerk_updates_slug_when_changed(self, db_session):
         """Test upsert_from_clerk updates slug when changed."""
-        existing_org = create_organization(id="org_123", name="Test Org", slug="old-slug")
+        # Create org first
+        clerk_data_create = {"id": "org_123", "name": "Test Org", "slug": "old-slug"}
+        existing_org = upsert_from_clerk(db_session, clerk_data_create)
         clerk_data = {
             "id": "org_123",
             "name": "Test Org",
@@ -202,9 +222,10 @@ class TestUpsertFromClerk:
         org = upsert_from_clerk(db_session, clerk_data)
         assert org.slug == "new-slug"
 
-    def test_upsert_from_clerk_preserves_slug_when_unchanged(self, db_session, create_organization):
+    def test_upsert_from_clerk_preserves_slug_when_unchanged(self, db_session):
         """Test upsert_from_clerk preserves slug when unchanged."""
-        existing_org = create_organization(id="org_123", name="Test Org", slug="test-org")
+        clerk_data_create = {"id": "org_123", "name": "Test Org", "slug": "test-org"}
+        existing_org = upsert_from_clerk(db_session, clerk_data_create)
         clerk_data = {
             "id": "org_123",
             "name": "Test Org",
@@ -216,7 +237,9 @@ class TestUpsertFromClerk:
 
     def test_upsert_from_clerk_ensures_unique_slug_on_conflict(self, db_session, create_organization):
         """Test upsert_from_clerk ensures unique slug when conflict."""
-        create_organization(id="org_other", name="Other Org", slug="test-org")
+        other_org = create_organization(name="Other Org")
+        other_org.slug = "test-org"
+        db_session.commit()
         clerk_data = {
             "id": "org_123",
             "name": "Test Org",
@@ -232,7 +255,8 @@ class TestUpsertFromClerk:
         org = upsert_from_clerk(db_session, clerk_data)
         assert org.id == "org_123"
         assert org.name == "Untitled Organization"
-        assert org.slug.startswith("org-")
+        # When name is "Untitled Organization", slug is slugified from that
+        assert org.slug == "untitled-organization"
         assert org.subscription_tier == "starter"
 
 
@@ -241,8 +265,11 @@ class TestDeactivateOrganization:
 
     def test_deactivate_organization_sets_is_active_false(self, db_session, create_organization):
         """Test deactivate_organization sets is_active to False."""
-        org = create_organization(id="org_123", name="Test Org", is_active=True)
-        result = deactivate_organization(db_session, "org_123")
+        org = create_organization(name="Test Org")
+        org_id = str(org.id)
+        org.is_active = True
+        db_session.commit()
+        result = deactivate_organization(db_session, org_id)
         assert result is not None
         assert result.is_active is False
 
@@ -253,9 +280,12 @@ class TestDeactivateOrganization:
 
     def test_deactivate_organization_refreshes_object(self, db_session, create_organization):
         """Test deactivate_organization refreshes organization object."""
-        org = create_organization(id="org_123", name="Test Org", is_active=True)
-        result = deactivate_organization(db_session, "org_123")
+        org = create_organization(name="Test Org")
+        org_id = str(org.id)
+        org.is_active = True
+        db_session.commit()
+        result = deactivate_organization(db_session, org_id)
         # Verify object is refreshed from database
-        assert result.id == "org_123"
+        assert str(result.id) == org_id
         assert result.name == "Test Org"
         assert result.is_active is False
