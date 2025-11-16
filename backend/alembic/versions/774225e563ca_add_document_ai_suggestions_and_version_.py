@@ -32,7 +32,7 @@ _original_execute = op.execute
 
 # revision identifiers, used by Alembic.
 revision: str = '774225e563ca'
-down_revision: Union[str, None] = 'b354d12d1e7d'
+down_revision: Union[str, None] = '65e4b4ef883d'  # Changed to depend on enum/table creation migration
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
