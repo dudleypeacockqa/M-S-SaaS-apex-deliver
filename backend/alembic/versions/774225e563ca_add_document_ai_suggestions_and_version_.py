@@ -276,150 +276,7 @@ def _drop_table_if_exists(table_name: str, schema: str = 'public') -> None:
     _safe_drop_table(table_name, schema=schema)
 
 
-def _inspector():
-    try:
-        return inspect(op.get_bind())
-    except ProgrammingError:
-        return None
-
-
-def _table_exists(table_name: str, schema: str | None = None) -> bool:
-    if not table_name:
-        return False
-    inspector = _inspector()
-    if inspector is None:
-        return False
-    try:
-        return inspector.has_table(table_name, schema=schema)
-    except ProgrammingError:
-        return False
-
-
-def _column_exists(table_name: str, column_name: str, schema: str | None = None) -> bool:
-    inspector = _inspector()
-    if inspector is None or not _table_exists(table_name, schema):
-        return False
-    try:
-        columns = inspector.get_columns(table_name, schema=schema or 'public')
-        return any(col['name'] == column_name for col in columns)
-    except ProgrammingError:
-        return False
-
-
-def _safe_create_table(table_name: str, *columns, **kwargs) -> None:
-    schema = kwargs.get('schema')
-    if _table_exists(table_name, schema):
-        return
-    try:
-        _original_create_table(table_name, *columns, **kwargs)
-    except ProgrammingError:
-        pass
-
-
-def _safe_drop_table(table_name: str, *args, **kwargs) -> None:
-    schema = kwargs.get('schema')
-    if not _table_exists(table_name, schema):
-        return
-    try:
-        _original_drop_table(table_name, *args, **kwargs)
-    except ProgrammingError:
-        pass
-
-
-def _safe_alter_column(table_name: str, column_name: str, *args, **kwargs) -> None:
-    schema = kwargs.get('schema')
-    if not _column_exists(table_name, column_name, schema):
-        return
-    try:
-        _original_alter_column(table_name, column_name, *args, **kwargs)
-    except ProgrammingError:
-        pass
-
-
-def _safe_add_column(table_name: str, column, **kwargs) -> None:
-    schema = kwargs.get('schema')
-    if not _table_exists(table_name, schema):
-        return
-    try:
-        _original_add_column(table_name, column, **kwargs)
-    except ProgrammingError:
-        pass
-
-
-def _safe_drop_column(table_name: str, column_name: str, **kwargs) -> None:
-    schema = kwargs.get('schema')
-    if not _column_exists(table_name, column_name, schema):
-        return
-    try:
-        _original_drop_column(table_name, column_name, **kwargs)
-    except ProgrammingError:
-        pass
-
-
-def _safe_create_index(index_name: str, table_name: str | None, columns, **kwargs) -> None:
-    schema = kwargs.get('schema')
-    if table_name and not _table_exists(table_name, schema):
-        return
-    try:
-        _original_create_index(index_name, table_name, columns, **kwargs)
-    except ProgrammingError:
-        pass
-
-
-def _safe_drop_index(index_name: str, table_name: str | None = None, **kwargs) -> None:
-    schema = kwargs.get('schema')
-    if table_name and not _table_exists(table_name, schema):
-        return
-    if table_name and not _index_exists(index_name, table_name, schema):
-        return
-    try:
-        _original_drop_index(index_name, table_name=table_name, **kwargs)
-    except ProgrammingError:
-        pass
-
-
-def _safe_create_unique_constraint(constraint_name: str, table_name: str, columns, **kwargs) -> None:
-    schema = kwargs.get('schema')
-    if not _table_exists(table_name, schema):
-        return
-    try:
-        _original_create_unique_constraint(constraint_name, table_name, columns, **kwargs)
-    except ProgrammingError:
-        pass
-
-
-def _safe_drop_constraint(constraint_name: str, table_name: str, **kwargs) -> None:
-    schema = kwargs.get('schema')
-    if not _table_exists(table_name, schema):
-        return
-    try:
-        _original_drop_constraint(constraint_name, table_name, **kwargs)
-    except ProgrammingError:
-        pass
-
-
-def _safe_create_foreign_key(constraint_name: str, source_table: str, referent_table: str,
-                             local_cols, remote_cols, **kwargs) -> None:
-    source_schema = kwargs.get('source_schema') or kwargs.get('schema')
-    referent_schema = kwargs.get('referent_schema') or kwargs.get('schema')
-    if not _table_exists(source_table, source_schema):
-        return
-    if not _table_exists(referent_table, referent_schema):
-        return
-    try:
-        _original_create_foreign_key(constraint_name, source_table, referent_table,
-                                     local_cols, remote_cols, **kwargs)
-    except ProgrammingError:
-        pass
-
-
-def _safe_execute(*args, **kwargs) -> None:
-    try:
-        _original_execute(*args, **kwargs)
-    except ProgrammingError:
-        pass
-
-
+# Monkey-patch all op.* methods to use safe wrappers
 op.create_table = _safe_create_table
 op.drop_table = _safe_drop_table
 op.alter_column = _safe_alter_column
@@ -438,19 +295,20 @@ def upgrade() -> None:
     # If it didn't, we MUST convert it here before creating new tables
 
     # DEFENSIVE: Only run UUID conversion if users table exists
-    if not _table_exists('users'):
-        # Users table doesn't exist - skip UUID conversion entirely
-        pass
-    else:
-        bind = op.get_bind()
-        if bind.dialect.name == 'postgresql':
-            # Force conversion: Drop all FKs, convert users.id and FK columns, then proceed
-            # Use information_schema which is more reliable than pg_type
-            _safe_execute("""
-                DO $$
-                DECLARE
-                    col_type text;
-                    fk_rec record;
+    try:
+        if not _table_exists('users'):
+            # Users table doesn't exist - skip UUID conversion entirely
+            pass
+        else:
+            bind = _safe_get_bind()
+            if bind and bind.dialect.name == 'postgresql':
+                # Force conversion: Drop all FKs, convert users.id and FK columns, then proceed
+                # Use information_schema which is more reliable than pg_type
+                _safe_execute("""
+                    DO $$
+                    DECLARE
+                        col_type text;
+                        fk_rec record;
                 BEGIN
                     -- Check if users.id is UUID using pg_type (more reliable)
                     BEGIN
@@ -819,13 +677,16 @@ def upgrade() -> None:
                     END;
                 END IF;
             END $$;
-            """)
+                """)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass
 
     # DEFENSIVE: Only run documents UUID conversion if documents table exists
-    if _table_exists('documents'):
-        # Ensure documents.id and related FK columns use VARCHAR(36) before new tables reference them
-        _safe_execute("""
-            DO $$
+    try:
+        if _table_exists('documents'):
+            # Ensure documents.id and related FK columns use VARCHAR(36) before new tables reference them
+            _safe_execute("""
+                DO $$
             DECLARE
                 col_type text;
             BEGIN
@@ -882,28 +743,30 @@ def upgrade() -> None:
                 END IF;
             END;
             $$;
-        """)
-    
+            """)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass
+
     # Always use VARCHAR(36) for user foreign keys (matching converted users.id type)
     # The conversion above ensures users.id is VARCHAR(36), so FKs must be VARCHAR(36) too
-_safe_create_table('community_follows',
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('follower_user_id', sa.String(length=36), nullable=False),
-    sa.Column('following_user_id', sa.String(length=36), nullable=False),
-    sa.Column('organization_id', sa.String(length=36), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.ForeignKeyConstraint(['follower_user_id'], ['users.id'], ),
-    sa.ForeignKeyConstraint(['following_user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    _safe_create_table('community_follows',
+        sa.Column('id', sa.String(length=36), nullable=False),
+        sa.Column('follower_user_id', sa.String(length=36), nullable=False),
+        sa.Column('following_user_id', sa.String(length=36), nullable=False),
+        sa.Column('organization_id', sa.String(length=36), nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.ForeignKeyConstraint(['follower_user_id'], ['users.id'], ),
+        sa.ForeignKeyConstraint(['following_user_id'], ['users.id'], ),
+        sa.PrimaryKeyConstraint('id')
     )
-_safe_create_index('idx_community_follows_follower', 'community_follows', ['follower_user_id'], unique=False)
-_safe_create_index('idx_community_follows_following', 'community_follows', ['following_user_id'], unique=False)
-_safe_create_index('idx_community_follows_org', 'community_follows', ['organization_id'], unique=False)
-_safe_create_index('idx_community_follows_unique', 'community_follows', ['follower_user_id', 'following_user_id'], unique=True)
-_safe_create_index(op.f('ix_community_follows_follower_user_id'), 'community_follows', ['follower_user_id'], unique=False)
-_safe_create_index(op.f('ix_community_follows_following_user_id'), 'community_follows', ['following_user_id'], unique=False)
-_safe_create_index(op.f('ix_community_follows_organization_id'), 'community_follows', ['organization_id'], unique=False)
-_safe_create_table('community_moderation_actions',
+    _safe_create_index('idx_community_follows_follower', 'community_follows', ['follower_user_id'], unique=False)
+    _safe_create_index('idx_community_follows_following', 'community_follows', ['following_user_id'], unique=False)
+    _safe_create_index('idx_community_follows_org', 'community_follows', ['organization_id'], unique=False)
+    _safe_create_index('idx_community_follows_unique', 'community_follows', ['follower_user_id', 'following_user_id'], unique=True)
+    _safe_create_index(op.f('ix_community_follows_follower_user_id'), 'community_follows', ['follower_user_id'], unique=False)
+    _safe_create_index(op.f('ix_community_follows_following_user_id'), 'community_follows', ['following_user_id'], unique=False)
+    _safe_create_index(op.f('ix_community_follows_organization_id'), 'community_follows', ['organization_id'], unique=False)
+    _safe_create_table('community_moderation_actions',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('target_type', sa.Enum('post', 'comment', name='targettype', native_enum=False, length=32), nullable=False),
     sa.Column('target_id', sa.String(length=36), nullable=False),
@@ -914,12 +777,12 @@ _safe_create_table('community_moderation_actions',
     sa.ForeignKeyConstraint(['moderator_user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-_safe_create_index('idx_community_moderation_created', 'community_moderation_actions', ['created_at'], unique=False)
-_safe_create_index('idx_community_moderation_moderator', 'community_moderation_actions', ['moderator_user_id'], unique=False)
-_safe_create_index('idx_community_moderation_target', 'community_moderation_actions', ['target_type', 'target_id'], unique=False)
-_safe_create_index(op.f('ix_community_moderation_actions_moderator_user_id'), 'community_moderation_actions', ['moderator_user_id'], unique=False)
-_safe_create_index(op.f('ix_community_moderation_actions_target_id'), 'community_moderation_actions', ['target_id'], unique=False)
-_safe_create_table('community_posts',
+    _safe_create_index('idx_community_moderation_created', 'community_moderation_actions', ['created_at'], unique=False)
+    _safe_create_index('idx_community_moderation_moderator', 'community_moderation_actions', ['moderator_user_id'], unique=False)
+    _safe_create_index('idx_community_moderation_target', 'community_moderation_actions', ['target_type', 'target_id'], unique=False)
+    _safe_create_index(op.f('ix_community_moderation_actions_moderator_user_id'), 'community_moderation_actions', ['moderator_user_id'], unique=False)
+    _safe_create_index(op.f('ix_community_moderation_actions_target_id'), 'community_moderation_actions', ['target_id'], unique=False)
+    _safe_create_table('community_posts',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('organization_id', sa.String(length=36), nullable=False),
     sa.Column('author_user_id', sa.String(length=36), nullable=False),
@@ -934,14 +797,14 @@ _safe_create_table('community_posts',
     sa.ForeignKeyConstraint(['author_user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-_safe_create_index('idx_community_posts_author', 'community_posts', ['author_user_id'], unique=False)
-_safe_create_index('idx_community_posts_category', 'community_posts', ['category'], unique=False)
-_safe_create_index('idx_community_posts_created', 'community_posts', ['created_at'], unique=False)
-_safe_create_index('idx_community_posts_org_id', 'community_posts', ['organization_id'], unique=False)
-_safe_create_index('idx_community_posts_status', 'community_posts', ['status'], unique=False)
-_safe_create_index(op.f('ix_community_posts_author_user_id'), 'community_posts', ['author_user_id'], unique=False)
-_safe_create_index(op.f('ix_community_posts_organization_id'), 'community_posts', ['organization_id'], unique=False)
-_safe_create_table('community_reactions',
+    _safe_create_index('idx_community_posts_author', 'community_posts', ['author_user_id'], unique=False)
+    _safe_create_index('idx_community_posts_category', 'community_posts', ['category'], unique=False)
+    _safe_create_index('idx_community_posts_created', 'community_posts', ['created_at'], unique=False)
+    _safe_create_index('idx_community_posts_org_id', 'community_posts', ['organization_id'], unique=False)
+    _safe_create_index('idx_community_posts_status', 'community_posts', ['status'], unique=False)
+    _safe_create_index(op.f('ix_community_posts_author_user_id'), 'community_posts', ['author_user_id'], unique=False)
+    _safe_create_index(op.f('ix_community_posts_organization_id'), 'community_posts', ['organization_id'], unique=False)
+    _safe_create_table('community_reactions',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('target_type', sa.Enum('post', 'comment', name='targettype', native_enum=False, length=32), nullable=False),
     sa.Column('target_id', sa.String(length=36), nullable=False),
@@ -951,12 +814,12 @@ _safe_create_table('community_reactions',
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-_safe_create_index('idx_community_reactions_target', 'community_reactions', ['target_type', 'target_id'], unique=False)
-_safe_create_index('idx_community_reactions_unique', 'community_reactions', ['target_type', 'target_id', 'user_id', 'reaction_type'], unique=True)
-_safe_create_index('idx_community_reactions_user', 'community_reactions', ['user_id'], unique=False)
-_safe_create_index(op.f('ix_community_reactions_target_id'), 'community_reactions', ['target_id'], unique=False)
-_safe_create_index(op.f('ix_community_reactions_user_id'), 'community_reactions', ['user_id'], unique=False)
-_safe_create_table('events',
+    _safe_create_index('idx_community_reactions_target', 'community_reactions', ['target_type', 'target_id'], unique=False)
+    _safe_create_index('idx_community_reactions_unique', 'community_reactions', ['target_type', 'target_id', 'user_id', 'reaction_type'], unique=True)
+    _safe_create_index('idx_community_reactions_user', 'community_reactions', ['user_id'], unique=False)
+    _safe_create_index(op.f('ix_community_reactions_target_id'), 'community_reactions', ['target_id'], unique=False)
+    _safe_create_index(op.f('ix_community_reactions_user_id'), 'community_reactions', ['user_id'], unique=False)
+    _safe_create_table('events',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
@@ -977,7 +840,7 @@ _safe_create_table('events',
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-_safe_create_table('community_comments',
+    _safe_create_table('community_comments',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('post_id', sa.String(length=36), nullable=False),
     sa.Column('author_user_id', sa.String(length=36), nullable=False),
@@ -990,14 +853,14 @@ _safe_create_table('community_comments',
     sa.ForeignKeyConstraint(['post_id'], ['community_posts.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-_safe_create_index('idx_community_comments_author', 'community_comments', ['author_user_id'], unique=False)
-_safe_create_index('idx_community_comments_created', 'community_comments', ['created_at'], unique=False)
-_safe_create_index('idx_community_comments_parent', 'community_comments', ['parent_comment_id'], unique=False)
-_safe_create_index('idx_community_comments_post', 'community_comments', ['post_id'], unique=False)
-_safe_create_index(op.f('ix_community_comments_author_user_id'), 'community_comments', ['author_user_id'], unique=False)
-_safe_create_index(op.f('ix_community_comments_parent_comment_id'), 'community_comments', ['parent_comment_id'], unique=False)
-_safe_create_index(op.f('ix_community_comments_post_id'), 'community_comments', ['post_id'], unique=False)
-_safe_create_table('event_analytics',
+    _safe_create_index('idx_community_comments_author', 'community_comments', ['author_user_id'], unique=False)
+    _safe_create_index('idx_community_comments_created', 'community_comments', ['created_at'], unique=False)
+    _safe_create_index('idx_community_comments_parent', 'community_comments', ['parent_comment_id'], unique=False)
+    _safe_create_index('idx_community_comments_post', 'community_comments', ['post_id'], unique=False)
+    _safe_create_index(op.f('ix_community_comments_author_user_id'), 'community_comments', ['author_user_id'], unique=False)
+    _safe_create_index(op.f('ix_community_comments_parent_comment_id'), 'community_comments', ['parent_comment_id'], unique=False)
+    _safe_create_index(op.f('ix_community_comments_post_id'), 'community_comments', ['post_id'], unique=False)
+    _safe_create_table('event_analytics',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('event_id', sa.String(length=36), nullable=False),
     sa.Column('total_registrations', sa.Integer(), nullable=True),
@@ -1011,7 +874,7 @@ _safe_create_table('event_analytics',
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-_safe_create_table('event_sessions',
+    _safe_create_table('event_sessions',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('event_id', sa.String(length=36), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
@@ -1031,7 +894,7 @@ _safe_create_table('event_sessions',
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-_safe_create_table('event_tickets',
+    _safe_create_table('event_tickets',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('event_id', sa.String(length=36), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
@@ -1051,7 +914,7 @@ _safe_create_table('event_tickets',
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-_safe_create_table('document_ai_suggestions',
+    _safe_create_table('document_ai_suggestions',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('document_id', sa.String(length=36), nullable=False),
     sa.Column('title', sa.String(), nullable=False),
@@ -1068,7 +931,7 @@ _safe_create_table('document_ai_suggestions',
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-_safe_create_table('document_versions',
+    _safe_create_table('document_versions',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('document_id', sa.String(length=36), nullable=False),
     sa.Column('version_number', sa.Integer(), nullable=False),
@@ -1082,7 +945,7 @@ _safe_create_table('document_versions',
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-_safe_create_table('event_registrations',
+    _safe_create_table('event_registrations',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('event_id', sa.String(length=36), nullable=False),
     sa.Column('session_id', sa.String(length=36), nullable=True),
@@ -1107,7 +970,7 @@ _safe_create_table('event_registrations',
     sa.ForeignKeyConstraint(['ticket_id'], ['event_tickets.id'], ondelete='SET NULL'),
     sa.PrimaryKeyConstraint('id')
     )
-_safe_create_table('document_share_links',
+    _safe_create_table('document_share_links',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('document_id', sa.String(length=36), nullable=False),
     sa.Column('share_token', sa.String(length=64), nullable=False),
@@ -1126,11 +989,11 @@ _safe_create_table('document_share_links',
     sa.ForeignKeyConstraint(['organization_id'], ['organizations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-_safe_create_index('idx_share_links_document_id', 'document_share_links', ['document_id'], unique=False)
-_safe_create_index('idx_share_links_expires_at', 'document_share_links', ['expires_at'], unique=False)
-_safe_create_index('idx_share_links_org_id', 'document_share_links', ['organization_id'], unique=False)
-_safe_create_index('idx_share_links_token', 'document_share_links', ['share_token'], unique=False)
-_safe_create_index(op.f('ix_document_share_links_share_token'), 'document_share_links', ['share_token'], unique=True)
+    _safe_create_index('idx_share_links_document_id', 'document_share_links', ['document_id'], unique=False)
+    _safe_create_index('idx_share_links_expires_at', 'document_share_links', ['expires_at'], unique=False)
+    _safe_create_index('idx_share_links_org_id', 'document_share_links', ['organization_id'], unique=False)
+    _safe_create_index('idx_share_links_token', 'document_share_links', ['share_token'], unique=False)
+    _safe_create_index(op.f('ix_document_share_links_share_token'), 'document_share_links', ['share_token'], unique=True)
     _drop_index_if_exists('ix_contact_messages_created_at', 'contact_messages')
     _drop_index_if_exists('ix_contact_messages_email', 'contact_messages')
     _drop_index_if_exists('ix_contact_messages_id', 'contact_messages')
@@ -1963,7 +1826,7 @@ def downgrade() -> None:
                    existing_nullable=True)
     except (ProgrammingError, NoSuchTableError, InternalError):
         pass
-_safe_create_table('contact_messages',
+    _safe_create_table('contact_messages',
     sa.Column('id', sa.INTEGER(), autoincrement=True, nullable=False),
     sa.Column('name', sa.VARCHAR(length=255), autoincrement=False, nullable=False),
     sa.Column('email', sa.VARCHAR(length=255), autoincrement=False, nullable=False),
@@ -1974,9 +1837,9 @@ _safe_create_table('contact_messages',
     sa.Column('status', sa.VARCHAR(length=50), server_default=sa.text("'new'::character varying"), autoincrement=False, nullable=False),
     sa.PrimaryKeyConstraint('id', name='contact_messages_pkey')
     )
-_safe_create_index('ix_contact_messages_id', 'contact_messages', ['id'], unique=False)
-_safe_create_index('ix_contact_messages_email', 'contact_messages', ['email'], unique=False)
-_safe_create_index('ix_contact_messages_created_at', 'contact_messages', ['created_at'], unique=False)
+    _safe_create_index('ix_contact_messages_id', 'contact_messages', ['id'], unique=False)
+    _safe_create_index('ix_contact_messages_email', 'contact_messages', ['email'], unique=False)
+    _safe_create_index('ix_contact_messages_created_at', 'contact_messages', ['created_at'], unique=False)
     _safe_drop_index(op.f('ix_document_share_links_share_token'), 'document_share_links')
     _safe_drop_index('idx_share_links_token', 'document_share_links')
     _safe_drop_index('idx_share_links_org_id', 'document_share_links')
