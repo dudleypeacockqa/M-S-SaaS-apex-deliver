@@ -8,10 +8,8 @@ from typing import Optional, Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy import inspect
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.exc import InternalError, ProgrammingError
-from app.db.base import GUID
 # revision identifiers, used by Alembic.
 revision: str = "f0a1b2c3d4e5"
 down_revision: Union[str, None] = "b354d12d1e7d"
@@ -22,62 +20,68 @@ depends_on: Union[str, Sequence[str], None] = None
 SAFE_EXCEPTIONS = (ProgrammingError, InternalError)
 
 
-def _inspector() -> Optional[sa.engine.reflection.Inspector]:
-    try:
-        return inspect(op.get_bind())
-    except SAFE_EXCEPTIONS:
-        return None
-
-
 def _table_exists(table_name: str, schema: str | None = None) -> bool:
+    """Check if table exists using raw SQL (works even in aborted transactions)."""
     if not table_name:
         return False
-    inspector = _inspector()
-    if inspector is None:
+    
+    schema = schema or 'public'
+    bind = op.get_bind()
+    if not bind or bind.dialect.name != 'postgresql':
         return False
+    
     try:
-        return bool(inspector.has_table(table_name, schema=schema))
-    except SAFE_EXCEPTIONS:
-        return False
-
-
-def _column_type(table_name: str, column_name: str) -> Optional[str]:
-    inspector = _inspector()
-    if inspector is None or not _table_exists(table_name):
-        return None
-    try:
-        columns = inspector.get_columns(table_name, schema='public')
-        for column in columns:
-            if column.get('name') == column_name:
-                col_type = column.get('type')
-                visit_name = getattr(col_type, '__visit_name__', '')
-                if isinstance(col_type, postgresql.UUID) or visit_name.lower() == 'uuid':
-                    return 'uuid'
-    except SAFE_EXCEPTIONS:
-        pass
-    try:
-        bind = op.get_bind()
         result = bind.execute(
             sa.text(
-                """
-                SELECT data_type
-                FROM information_schema.columns
-                WHERE table_schema = 'public'
-                  AND table_name = :table_name
-                  AND column_name = :column_name
-                """
+                "SELECT EXISTS ("
+                "SELECT 1 FROM information_schema.tables "
+                "WHERE table_schema = :schema AND table_name = :table_name"
+                ")"
             ),
-            {"table_name": table_name, "column_name": column_name},
-        ).scalar()
-        return result.lower() if result else None
+            {"schema": schema, "table_name": table_name}
+        )
+        return bool(result.scalar())
     except SAFE_EXCEPTIONS:
-        return None
+        return False
+    except Exception:
+        return False
+
+
+def _get_pg_column_type(table_name: str, column_name: str) -> str:
+    """Get the actual PostgreSQL type name for a column using raw SQL."""
+    if not _table_exists(table_name):
+        return 'varchar'
+    
+    bind = op.get_bind()
+    if not bind or bind.dialect.name != 'postgresql':
+        return 'varchar'
+    
+    try:
+        result = bind.execute(sa.text("""
+            SELECT t.typname
+            FROM pg_attribute a
+            JOIN pg_class c ON a.attrelid = c.oid
+            JOIN pg_type t ON a.atttypid = t.oid
+            WHERE c.relname = :table_name
+            AND c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
+            AND a.attname = :column_name
+            AND a.attnum > 0
+            AND NOT a.attisdropped
+        """), {"table_name": table_name, "column_name": column_name})
+        pg_type = result.scalar()
+        return pg_type or 'varchar'
+    except SAFE_EXCEPTIONS:
+        return 'varchar'
+    except Exception:
+        return 'varchar'
 
 
 def _match_fk_type(table_name: str, column_name: str) -> sa.types.TypeEngine:
     """Match the foreign key column type to the referenced column's actual PostgreSQL type."""
-    if _column_type(table_name, column_name) == 'uuid':
-        return GUID()
+    pg_type = _get_pg_column_type(table_name, column_name)
+    if pg_type == 'uuid':
+        return postgresql.UUID(as_uuid=False)
+    # Default to String(36) for varchar, text, or any other type
     return sa.String(length=36)
 
 
@@ -120,13 +124,18 @@ def _safe_drop_table(table_name: str):
 
 
 def upgrade() -> None:
+    """Create event_reminders table with type-safe foreign keys."""
     required_tables = ("events", "users", "organizations")
     if not all(_table_exists(table) for table in required_tables):
         return
 
-    event_id_type = postgresql.UUID(as_uuid=False)
-    user_id_type = postgresql.UUID(as_uuid=False)
-    organization_id_type = postgresql.UUID(as_uuid=False)
+    if _table_exists("event_reminders"):
+        return
+
+    # Detect actual column types in the database
+    event_id_type = _match_fk_type("events", "id")
+    user_id_type = _match_fk_type("users", "id")
+    organization_id_type = _match_fk_type("organizations", "id")
 
     _safe_create_table(
         "event_reminders",
