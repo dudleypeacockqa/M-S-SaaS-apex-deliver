@@ -124,9 +124,9 @@ def upgrade() -> None:
     if not all(_table_exists(table) for table in required_tables):
         return
 
-    event_id_type = _match_fk_type("events", "id")
-    user_id_type = _match_fk_type("users", "id")
-    organization_id_type = _match_fk_type("organizations", "id")
+    event_id_type = GUID()
+    user_id_type = GUID()
+    organization_id_type = GUID()
 
     _safe_create_table(
         "event_reminders",
