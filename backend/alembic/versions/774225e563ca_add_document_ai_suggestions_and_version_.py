@@ -1,11 +1,18 @@
 """add document AI suggestions and version history tables with GUID
 
 Revision ID: 774225e563ca
-Revises: b354d12d1e7d
+Revises: 65e4b4ef883d
 Create Date: 2025-11-13 10:14:13.253911
 
 """
-from typing import Sequence, Union
+
+# revision identifiers, used by Alembic.
+revision = "774225e563ca"
+down_revision = "65e4b4ef883d"
+branch_labels = None
+depends_on = None
+
+from typing import Optional, Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
@@ -18,12 +25,6 @@ ORGANIZATION_ID_TYPE = sa.String(length=36)
 USER_ID_TYPE = sa.String(length=36)
 GENERATED_DOCUMENT_ID_TYPE = sa.String(length=36)
 ORGANIZATION_TYPE = sa.String(length=36)
-
-# revision identifiers, used by Alembic.
-revision = '774225e563ca'
-down_revision = 'b354d12d1e7d'
-branch_labels = None
-depends_on = None
 
 
 def _inspector():
