@@ -61,6 +61,30 @@ def _column_exists(table_name: str, column_name: str, schema: Optional[str] = No
         return False
 
 
+def _column_type(table_name: str, column_name: str, schema: Optional[str] = None) -> Optional[str]:
+    """Return the lowercase data_type for a column or None."""
+    schema = schema or 'public'
+    if not _column_exists(table_name, column_name, schema):
+        return None
+    try:
+        bind = op.get_bind()
+        result = bind.execute(
+            sa.text(
+                """
+                SELECT data_type
+                FROM information_schema.columns
+                WHERE table_schema = :schema
+                  AND table_name = :table_name
+                  AND column_name = :column_name
+                """
+            ),
+            {'schema': schema, 'table_name': table_name, 'column_name': column_name},
+        ).scalar()
+        return result.lower() if result else None
+    except SAFE_EXCEPTIONS:
+        return None
+
+
 def _index_exists(index_name: str, table_name: str, schema: Optional[str] = None) -> bool:
     if not index_name or not table_name:
         return False
@@ -209,6 +233,89 @@ def _drop_index_if_exists(index_name: str, table_name: str, schema: str = 'publi
 def _drop_table_if_exists(table_name: str, schema: str = 'public') -> None:
     _safe_drop_table(table_name, schema=schema)
 
+
+def _convert_documents_uuid_columns() -> None:
+    """Convert documents.id (and related FKs) from UUID to VARCHAR safely."""
+    if not _table_exists('documents'):
+        return
+    col_type = _column_type('documents', 'id')
+    if col_type != 'uuid':
+        return
+
+    fk_constraints = [
+        ('document_activities', 'document_activities_document_id_fkey'),
+        ('document_approvals', 'document_approvals_document_id_fkey'),
+        ('document_comparisons', 'document_comparisons_original_document_id_fkey'),
+        ('document_comparisons', 'document_comparisons_revised_document_id_fkey'),
+        ('document_signatures', 'document_signatures_document_id_fkey'),
+        ('team_tasks', 'team_tasks_document_id_fkey'),
+        ('valuation_export_logs', 'valuation_export_logs_document_id_fkey'),
+        ('documents', 'documents_parent_document_id_fkey'),
+        ('document_questions', 'document_questions_document_id_fkey'),
+    ]
+    for table_name, constraint in fk_constraints:
+        if _table_exists(table_name):
+            _safe_execute(
+                sa.text(
+                    f"ALTER TABLE IF EXISTS {table_name} "
+                    f"DROP CONSTRAINT IF EXISTS {constraint}"
+                )
+            )
+
+    columns_to_convert = [
+        ('document_activities', 'document_id'),
+        ('document_approvals', 'document_id'),
+        ('document_comparisons', 'original_document_id'),
+        ('document_comparisons', 'revised_document_id'),
+        ('document_signatures', 'document_id'),
+        ('team_tasks', 'document_id'),
+        ('valuation_export_logs', 'document_id'),
+        ('document_questions', 'document_id'),
+    ]
+    for table_name, column in columns_to_convert:
+        if _column_exists(table_name, column):
+            _safe_execute(
+                sa.text(
+                    f"ALTER TABLE {table_name} ALTER COLUMN {column} "
+                    f"TYPE VARCHAR(36) USING {column}::text"
+                )
+            )
+
+    if _column_exists('documents', 'parent_document_id'):
+        _safe_execute(
+            sa.text(
+                "ALTER TABLE documents ALTER COLUMN parent_document_id "
+                "TYPE VARCHAR(36) USING parent_document_id::text"
+            )
+        )
+
+    _safe_execute(
+        sa.text(
+            "ALTER TABLE documents ALTER COLUMN id TYPE VARCHAR(36) USING id::text"
+        )
+    )
+
+    fk_creates = [
+        ('documents', 'documents_parent_document_id_fkey', 'parent_document_id', 'documents', 'id', ''),
+        ('document_activities', 'document_activities_document_id_fkey', 'document_id', 'documents', 'id', ' ON DELETE CASCADE'),
+        ('document_approvals', 'document_approvals_document_id_fkey', 'document_id', 'documents', 'id', ' ON DELETE CASCADE'),
+        ('document_comparisons', 'document_comparisons_original_document_id_fkey', 'original_document_id', 'documents', 'id', ''),
+        ('document_comparisons', 'document_comparisons_revised_document_id_fkey', 'revised_document_id', 'documents', 'id', ''),
+        ('document_signatures', 'document_signatures_document_id_fkey', 'document_id', 'documents', 'id', ' ON DELETE CASCADE'),
+        ('team_tasks', 'team_tasks_document_id_fkey', 'document_id', 'documents', 'id', ''),
+        ('valuation_export_logs', 'valuation_export_logs_document_id_fkey', 'document_id', 'documents', 'id', ''),
+        ('document_questions', 'document_questions_document_id_fkey', 'document_id', 'documents', 'id', ' ON DELETE CASCADE'),
+    ]
+    for table_name, constraint, local_col, remote_table, remote_col, options in fk_creates:
+        if _column_exists(table_name, local_col):
+            _safe_execute(
+                sa.text(
+                    f"ALTER TABLE IF EXISTS {table_name} "
+                    f"ADD CONSTRAINT {constraint} FOREIGN KEY ({local_col}) "
+                    f"REFERENCES {remote_table}({remote_col}){options}"
+                )
+            )
+
 def upgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
     # CRITICAL: UUID conversion logic REMOVED to prevent transaction aborts
@@ -226,71 +333,7 @@ def upgrade() -> None:
     # UUID conversion blocks (lines 451-912 in original) have been removed.
     # If UUID conversion is needed, it should be in a separate migration that runs
     # AFTER all tables are confirmed to exist.
-    # DEFENSIVE: Only run documents UUID conversion if documents table exists
-    try:
-        if _table_exists('documents'):
-            # Ensure documents.id and related FK columns use VARCHAR(36) before new tables reference them
-            _safe_execute("""
-                DO $$
-            DECLARE
-                col_type text;
-            BEGIN
-                SELECT t.typname INTO col_type
-                FROM pg_attribute a
-                JOIN pg_class c ON a.attrelid = c.oid
-                JOIN pg_type t ON a.atttypid = t.oid
-                WHERE c.relname = 'documents'
-                  AND c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
-                  AND a.attname = 'id'
-                  AND a.attnum > 0
-                  AND NOT a.attisdropped;
-
-                IF col_type = 'uuid' THEN
-                    BEGIN
-                        -- Drop FK constraints referencing documents.id
-                        ALTER TABLE IF EXISTS document_activities DROP CONSTRAINT IF EXISTS document_activities_document_id_fkey;
-                        ALTER TABLE IF EXISTS document_approvals DROP CONSTRAINT IF EXISTS document_approvals_document_id_fkey;
-                        ALTER TABLE IF EXISTS document_comparisons DROP CONSTRAINT IF EXISTS document_comparisons_original_document_id_fkey;
-                        ALTER TABLE IF EXISTS document_comparisons DROP CONSTRAINT IF EXISTS document_comparisons_revised_document_id_fkey;
-                        ALTER TABLE IF EXISTS document_signatures DROP CONSTRAINT IF EXISTS document_signatures_document_id_fkey;
-                        ALTER TABLE IF EXISTS team_tasks DROP CONSTRAINT IF EXISTS team_tasks_document_id_fkey;
-                        ALTER TABLE IF EXISTS valuation_export_logs DROP CONSTRAINT IF EXISTS valuation_export_logs_document_id_fkey;
-                        ALTER TABLE IF EXISTS documents DROP CONSTRAINT IF EXISTS documents_parent_document_id_fkey;
-                        ALTER TABLE IF EXISTS document_questions DROP CONSTRAINT IF EXISTS document_questions_document_id_fkey;
-
-                        -- Convert referencing columns to VARCHAR(36)
-                        ALTER TABLE IF EXISTS document_activities ALTER COLUMN document_id TYPE VARCHAR(36) USING document_id::text;
-                        ALTER TABLE IF EXISTS document_approvals ALTER COLUMN document_id TYPE VARCHAR(36) USING document_id::text;
-                        ALTER TABLE IF EXISTS document_comparisons ALTER COLUMN original_document_id TYPE VARCHAR(36) USING original_document_id::text;
-                        ALTER TABLE IF EXISTS document_comparisons ALTER COLUMN revised_document_id TYPE VARCHAR(36) USING revised_document_id::text;
-                        ALTER TABLE IF EXISTS document_signatures ALTER COLUMN document_id TYPE VARCHAR(36) USING document_id::text;
-                        ALTER TABLE IF EXISTS team_tasks ALTER COLUMN document_id TYPE VARCHAR(36) USING document_id::text;
-                        ALTER TABLE IF EXISTS valuation_export_logs ALTER COLUMN document_id TYPE VARCHAR(36) USING document_id::text;
-                        ALTER TABLE IF EXISTS document_questions ALTER COLUMN document_id TYPE VARCHAR(36) USING document_id::text;
-                        ALTER TABLE documents ALTER COLUMN parent_document_id TYPE VARCHAR(36) USING parent_document_id::text;
-
-                        -- Convert documents.id and recreate FKs
-                        ALTER TABLE documents ALTER COLUMN id TYPE VARCHAR(36) USING id::text;
-                        ALTER TABLE documents ADD CONSTRAINT documents_parent_document_id_fkey FOREIGN KEY (parent_document_id) REFERENCES documents(id);
-                        ALTER TABLE IF EXISTS document_activities ADD CONSTRAINT document_activities_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE;
-                        ALTER TABLE IF EXISTS document_approvals ADD CONSTRAINT document_approvals_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE;
-                        ALTER TABLE IF EXISTS document_comparisons ADD CONSTRAINT document_comparisons_original_document_id_fkey FOREIGN KEY (original_document_id) REFERENCES documents(id);
-                        ALTER TABLE IF EXISTS document_comparisons ADD CONSTRAINT document_comparisons_revised_document_id_fkey FOREIGN KEY (revised_document_id) REFERENCES documents(id);
-                        ALTER TABLE IF EXISTS document_signatures ADD CONSTRAINT document_signatures_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE;
-                        ALTER TABLE IF EXISTS team_tasks ADD CONSTRAINT team_tasks_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(id);
-                        ALTER TABLE IF EXISTS valuation_export_logs ADD CONSTRAINT valuation_export_logs_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(id);
-                        ALTER TABLE IF EXISTS document_questions ADD CONSTRAINT document_questions_document_id_fkey FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE;
-                    EXCEPTION
-                        WHEN OTHERS THEN
-                            RAISE NOTICE 'Failed to convert documents table UUID columns: %', SQLERRM;
-                            NULL;
-                    END;
-                END IF;
-            END;
-            $$;
-            """)
-    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
-        pass
+    _convert_documents_uuid_columns()
 
     # Always use VARCHAR(36) for user foreign keys (matching converted users.id type)
     # The conversion above ensures users.id is VARCHAR(36), so FKs must be VARCHAR(36) too
