@@ -18,8 +18,11 @@ ORGANIZATION_TYPE = sa.String(length=36)
 from sqlalchemy.dialects import postgresql
 from app.db.base import GUID
 
-SAFE_EXCEPTIONS = (ProgrammingError, NoSuchTableError, InternalError)
-
+# revision identifiers, used by Alembic.
+revision: str = '774225e563ca'
+down_revision: Union[str, None] = 'b354d12d1e7d'
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
 
 SAFE_EXCEPTIONS = (ProgrammingError, NoSuchTableError, InternalError)
 
