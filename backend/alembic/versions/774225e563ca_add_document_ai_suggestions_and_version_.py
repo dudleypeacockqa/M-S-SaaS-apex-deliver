@@ -12,12 +12,11 @@ import sqlalchemy as sa
 from sqlalchemy import inspect
 from sqlalchemy.exc import NoSuchTableError, ProgrammingError, InternalError
 from sqlalchemy.dialects import postgresql
-from app.db.base import GUID
 
-ORGANIZATION_ID_TYPE = postgresql.UUID(as_uuid=False)
-USER_ID_TYPE = postgresql.UUID(as_uuid=False)
-GENERATED_DOCUMENT_ID_TYPE = postgresql.UUID(as_uuid=False)
-ORGANIZATION_TYPE = postgresql.UUID(as_uuid=False)
+ORGANIZATION_ID_TYPE = GUID()
+USER_ID_TYPE = GUID()
+GENERATED_DOCUMENT_ID_TYPE = GUID()
+ORGANIZATION_TYPE = GUID()
 
 # revision identifiers, used by Alembic.
 revision = "774225e563ca"
