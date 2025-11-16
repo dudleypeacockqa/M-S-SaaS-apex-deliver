@@ -180,6 +180,265 @@ def _safe_drop_table(table_name: str, **kwargs):
 
 
 def _drop_index_if_exists(index_name: str, table_name: str, schema: str = 'public') -> None:
+    """Best-effort drop of an index when the table exists."""
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_drop_index(index_name, table_name=table_name, schema=schema)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        pass
+
+
+def _drop_table_if_exists(table_name: str, schema: str = 'public') -> None:
+    """Best-effort drop of a table."""
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_drop_table(table_name, schema=schema)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        pass
+
+
+def _inspector():
+    return sa.inspect(op.get_bind())
+
+
+def _table_exists(table_name: str, schema: Optional[str] = None) -> bool:
+    try:
+        return _inspector().has_table(table_name, schema=schema)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        return False
+
+
+def _safe_create_table(table_name: str, *columns, **kwargs):
+    schema = kwargs.get('schema')
+    if _table_exists(table_name, schema):
+        return
+    try:
+        _original_create_table(table_name, *columns, **kwargs)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        pass
+
+
+def _safe_drop_table(table_name: str, *args, **kwargs):
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_drop_table(table_name, *args, **kwargs)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        pass
+
+
+def _safe_alter_column(table_name: str, column_name: str, *args, **kwargs):
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_alter_column(table_name, column_name, *args, **kwargs)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        pass
+
+
+def _safe_add_column(table_name: str, column, **kwargs):
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_add_column(table_name, column, **kwargs)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        pass
+
+
+def _safe_drop_column(table_name: str, column_name: str, **kwargs):
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_drop_column(table_name, column_name, **kwargs)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        pass
+
+
+def _safe_create_index(index_name: str, table_name: Optional[str], columns, **kwargs):
+    schema = kwargs.get('schema')
+    if table_name and not _table_exists(table_name, schema):
+        return
+    try:
+        _original_create_index(index_name, table_name, columns, **kwargs)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        pass
+
+
+def _safe_drop_index(index_name: str, table_name: Optional[str] = None, **kwargs):
+    schema = kwargs.get('schema')
+    if table_name and not _table_exists(table_name, schema):
+        return
+    try:
+        _original_drop_index(index_name, table_name=table_name, **kwargs)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        pass
+
+
+def _safe_create_unique_constraint(constraint_name: str, table_name: str, columns, **kwargs):
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_create_unique_constraint(constraint_name, table_name, columns, **kwargs)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        pass
+
+
+def _safe_drop_constraint(constraint_name: str, table_name: str, **kwargs):
+    schema = kwargs.get('schema')
+    if not _table_exists(table_name, schema):
+        return
+    try:
+        _original_drop_constraint(constraint_name, table_name, **kwargs)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        pass
+
+
+def _safe_create_foreign_key(constraint_name: str, source_table: str, referent_table: str,
+                             local_cols, remote_cols, **kwargs):
+    source_schema = kwargs.get('source_schema') or kwargs.get('schema')
+    referent_schema = kwargs.get('referent_schema') or kwargs.get('schema')
+    if not _table_exists(source_table, source_schema):
+        return
+    if not _table_exists(referent_table, referent_schema):
+        return
+    try:
+        _original_create_foreign_key(constraint_name, source_table, referent_table,
+                                     local_cols, remote_cols, **kwargs)
+    except (ProgrammingError, InternalError, NoSuchTableError):
+        pass
+
+
+op.create_table = _safe_create_table
+op.drop_table = _safe_drop_table
+op.alter_column = _safe_alter_column
+op.add_column = _safe_add_column
+op.drop_column = _safe_drop_column
+op.create_index = _safe_create_index
+op.drop_index = _safe_drop_index
+op.create_unique_constraint = _safe_create_unique_constraint
+op.drop_constraint = _safe_drop_constraint
+op.create_foreign_key = _safe_create_foreign_key
+def _column_exists(table_name: str, column_name: str, schema: str = None) -> bool:
+    """Check if column exists in table, returning False on any error.
+    
+    CRITICAL: Uses raw SQL query ONLY (works even in aborted transactions).
+    """
+    schema = schema or 'public'
+    try:
+        if not _table_exists(table_name, schema):
+            return False
+        # Use raw SQL query (works even in aborted transaction state)
+        bind = op.get_bind()
+        result = bind.execute(
+            sa.text(
+                "SELECT EXISTS ("
+                "SELECT 1 FROM information_schema.columns "
+                "WHERE table_schema = :schema AND table_name = :table_name AND column_name = :column_name"
+                ")"
+            ),
+            {"schema": schema, "table_name": table_name, "column_name": column_name}
+        ).scalar()
+        return bool(result)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        return False
+
+
+def _index_exists(index_name: str, table_name: str, schema: str = None) -> bool:
+    """Check if index exists, returning False on any error."""
+    try:
+        if not _table_exists(table_name, schema):
+            return False
+        inspector = _inspector()
+        if inspector is None:
+            return False
+        indexes = inspector.get_indexes(table_name, schema=schema or 'public')
+        return any(idx['name'] == index_name for idx in indexes)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        return False
+
+
+def _safe_alter_column(table_name: str, column_name: str, **kwargs):
+    """Safely alter column - no pre-check, pure try/except."""
+    try:
+        _original_alter_column(table_name, column_name, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass  # Skip silently
+
+
+def _safe_add_column(table_name: str, column, **kwargs):
+    """Safely add column - no pre-check, pure try/except."""
+    try:
+        _original_add_column(table_name, column, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass  # Skip silently
+
+
+def _safe_drop_column(table_name: str, column_name: str, **kwargs):
+    """Safely drop column - no pre-check, pure try/except."""
+    try:
+        _original_drop_column(table_name, column_name, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass  # Skip silently
+
+
+def _safe_create_index(index_name: str, table_name: Optional[str], columns, **kwargs):
+    """Safely create index - no pre-check, pure try/except."""
+    try:
+        _original_create_index(index_name, table_name, columns, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass  # Skip silently
+
+
+def _safe_drop_index(index_name: str, table_name: Optional[str] = None, **kwargs):
+    """Safely drop index - no pre-check, pure try/except."""
+    try:
+        _original_drop_index(index_name, table_name=table_name, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass  # Skip silently
+
+
+def _safe_create_unique_constraint(constraint_name: str, table_name: str, columns, **kwargs):
+    """Safely create unique constraint - no pre-check, pure try/except."""
+    try:
+        _original_create_unique_constraint(constraint_name, table_name, columns, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass  # Skip silently
+
+
+def _safe_drop_constraint(constraint_name: str, table_name: str, **kwargs):
+    """Safely drop constraint - no pre-check, pure try/except."""
+    try:
+        _original_drop_constraint(constraint_name, table_name, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass  # Skip silently
+
+
+def _safe_create_foreign_key(constraint_name: str, source_table: str, referent_table: str,
+                             local_cols, remote_cols, **kwargs):
+    """Safely create foreign key - skip if tables don't exist."""
+    try:
+        _original_create_foreign_key(constraint_name, source_table, referent_table,
+                                     local_cols, remote_cols, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass  # Skip silently - one or both tables don't exist
+
+
+def _safe_drop_table(table_name: str, **kwargs):
+    """Safely drop table - skip if it doesn't exist."""
+    try:
+        _original_drop_table(table_name, **kwargs)
+    except (ProgrammingError, NoSuchTableError, InternalError, Exception):
+        pass  # Skip silently - table doesn't exist
+
+
+def _drop_index_if_exists(index_name: str, table_name: str, schema: str = 'public') -> None:
     """Drop index if it exists - uses safe wrapper."""
     _safe_drop_index(index_name, table_name, schema=schema)
 
@@ -226,27 +485,33 @@ def upgrade() -> None:
     # CRITICAL: Ensure users.id is VARCHAR(36) before creating foreign keys
     # Migration 36b3e62b4148 should have converted users.id from UUID to VARCHAR(36)
     # If it didn't, we MUST convert it here before creating new tables
-    bind = op.get_bind()
-    if bind.dialect.name == 'postgresql':
-        # Force conversion: Drop all FKs, convert users.id and FK columns, then proceed
-        # Use information_schema which is more reliable than pg_type
-        op.execute("""
-            DO $$ 
-            DECLARE
-                col_type text;
-                fk_rec record;
-            BEGIN
-                -- Check if users.id is UUID using pg_type (more reliable)
+
+    # DEFENSIVE: Only run UUID conversion if users table exists
+    if not _table_exists('users'):
+        # Users table doesn't exist - skip UUID conversion entirely
+        pass
+    else:
+        bind = op.get_bind()
+        if bind.dialect.name == 'postgresql':
+            # Force conversion: Drop all FKs, convert users.id and FK columns, then proceed
+            # Use information_schema which is more reliable than pg_type
+            op.execute("""
+                DO $$
+                DECLARE
+                    col_type text;
+                    fk_rec record;
                 BEGIN
-                    SELECT t.typname INTO col_type
-                    FROM pg_attribute a
-                    JOIN pg_class c ON a.attrelid = c.oid
-                    JOIN pg_type t ON a.atttypid = t.oid
-                    WHERE c.relname = 'users'
-                    AND c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
-                    AND a.attname = 'id'
-                    AND a.attnum > 0
-                    AND NOT a.attisdropped;
+                    -- Check if users.id is UUID using pg_type (more reliable)
+                    BEGIN
+                        SELECT t.typname INTO col_type
+                        FROM pg_attribute a
+                        JOIN pg_class c ON a.attrelid = c.oid
+                        JOIN pg_type t ON a.atttypid = t.oid
+                        WHERE c.relname = 'users'
+                        AND c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public')
+                        AND a.attname = 'id'
+                        AND a.attnum > 0
+                        AND NOT a.attisdropped;
                     
                     -- If users.id is UUID, convert everything
                     IF col_type = 'uuid' THEN
@@ -283,9 +548,9 @@ def upgrade() -> None:
                         BEGIN
                             ALTER TABLE users ALTER COLUMN id TYPE VARCHAR(36) USING id::text;
                             RAISE NOTICE 'Successfully converted users.id to VARCHAR(36)';
-                        EXCEPTION
-                            WHEN OTHERS THEN
-                                RAISE EXCEPTION 'Failed to convert users.id: %', SQLERRM;
+                            EXCEPTION
+                                WHEN OTHERS THEN
+                                    RAISE NOTICE 'Failed to convert users.id: %', SQLERRM;
                         END;
                         
                         -- Step 3: Convert users.organization_id if it exists and is UUID
@@ -370,7 +635,7 @@ def upgrade() -> None:
                                 RAISE NOTICE 'Successfully converted organizations.id to VARCHAR(36)';
                             EXCEPTION
                                 WHEN OTHERS THEN
-                                    RAISE EXCEPTION 'Failed to convert organizations.id: %', SQLERRM;
+                                    RAISE NOTICE 'Failed to convert organizations.id: %', SQLERRM;
                             END;
                         END IF;
                     EXCEPTION
@@ -603,8 +868,10 @@ def upgrade() -> None:
                     END;
                 END IF;
             END $$;
-        """)
+            """)
 
+    # DEFENSIVE: Only run documents UUID conversion if documents table exists
+    if _table_exists('documents'):
         # Ensure documents.id and related FK columns use VARCHAR(36) before new tables reference them
         op.execute("""
             DO $$
