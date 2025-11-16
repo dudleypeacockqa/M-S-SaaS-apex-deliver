@@ -12,11 +12,25 @@ import sqlalchemy as sa
 from sqlalchemy import inspect
 from sqlalchemy.exc import NoSuchTableError, ProgrammingError, InternalError
 from sqlalchemy.dialects import postgresql
+from app.db.base import GUID
 
-ORGANIZATION_ID_TYPE = GUID()
-USER_ID_TYPE = GUID()
-GENERATED_DOCUMENT_ID_TYPE = GUID()
-ORGANIZATION_TYPE = GUID()
+from app.db.base import GUID
+
+# Import GUID from app.db.base
+# Note: During Alembic execution, app module may not be in path
+# Use postgresql.UUID directly for PostgreSQL, String(36) as fallback
+try:
+    from app.db.base import GUID
+    ORGANIZATION_ID_TYPE = GUID()
+    USER_ID_TYPE = GUID()
+    GENERATED_DOCUMENT_ID_TYPE = GUID()
+    ORGANIZATION_TYPE = GUID()
+except (ImportError, ModuleNotFoundError):
+    # Fallback: use postgresql.UUID for PostgreSQL (matches GUID behavior)
+    ORGANIZATION_ID_TYPE = postgresql.UUID(as_uuid=False)
+    USER_ID_TYPE = postgresql.UUID(as_uuid=False)
+    GENERATED_DOCUMENT_ID_TYPE = postgresql.UUID(as_uuid=False)
+    ORGANIZATION_TYPE = postgresql.UUID(as_uuid=False)
 
 # revision identifiers, used by Alembic.
 revision = "774225e563ca"
