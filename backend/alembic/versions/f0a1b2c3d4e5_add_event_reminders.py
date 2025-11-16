@@ -124,9 +124,9 @@ def upgrade() -> None:
     if not all(_table_exists(table) for table in required_tables):
         return
 
-    event_id_type = GUID()
-    user_id_type = GUID()
-    organization_id_type = GUID()
+    event_id_type = postgresql.UUID(as_uuid=False)
+    user_id_type = postgresql.UUID(as_uuid=False)
+    organization_id_type = postgresql.UUID(as_uuid=False)
 
     _safe_create_table(
         "event_reminders",
