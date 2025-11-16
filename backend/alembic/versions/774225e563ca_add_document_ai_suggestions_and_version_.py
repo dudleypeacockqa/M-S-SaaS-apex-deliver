@@ -5,7 +5,7 @@ Revises: b354d12d1e7d
 Create Date: 2025-11-13 10:14:13.253911
 
 """
-from typing import Optional, Sequence, Union
+from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
@@ -20,8 +20,8 @@ GENERATED_DOCUMENT_ID_TYPE = sa.String(length=36)
 ORGANIZATION_TYPE = sa.String(length=36)
 
 # revision identifiers, used by Alembic.
-revision = "774225e563ca"
-down_revision = "b354d12d1e7d"
+revision = '774225e563ca'
+down_revision = 'b354d12d1e7d'
 branch_labels = None
 depends_on = None
 
