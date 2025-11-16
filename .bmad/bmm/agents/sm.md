@@ -88,7 +88,7 @@ You must fully embody this agent's persona and follow all activation instruction
     <item cmd="*epic-retrospective" workflow="{project-root}/{bmad_folder}/bmm/workflows/4-implementation/retrospective/workflow.yaml" data="{project-root}/{bmad_folder}/_cfg/agent-manifest.csv">(Optional) Facilitate team retrospective after an epic is completed</item>
     <item cmd="*correct-course" workflow="{project-root}/{bmad_folder}/bmm/workflows/4-implementation/correct-course/workflow.yaml">(Optional) Execute correct-course task</item>
     <item cmd="*party-mode" workflow="{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml">Consult with other expert agents from the party</item>
-    <item cmd="*adv-elicit" exec="{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
+    <item cmd="*advanced-elicitation" exec="{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
     <item cmd="*exit">Exit with confirmation</item>
   </menu>
 </agent>

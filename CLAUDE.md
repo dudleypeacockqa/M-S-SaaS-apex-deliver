@@ -2,10 +2,10 @@
 
 **Document Purpose**: This file provides comprehensive context for AI coding assistants (Claude Code, CODEX) to understand the project, architecture, conventions, and development approach.
 
-**Last Updated**: October 28, 2025
+**Last Updated**: November 16, 2025
 **Project Version**: 2.0 (Full Production)
-**Methodology**: BMAD v6-alpha (core + bmb + bmm + cis) with Test-Driven Development (TDD)
-**Note**: Official BMAD-METHOD v6-alpha CLI installed (core + bmb + bmm + cis) alongside enforced TDD
+**Methodology**: BMAD v6.0.0-alpha.9 (core + bmb + bmm + cis) with Test-Driven Development (TDD)
+**Note**: Official BMAD-METHOD v6.0.0-alpha.9 CLI installed (core + bmb + bmm + cis) alongside enforced TDD
 
 ---
 

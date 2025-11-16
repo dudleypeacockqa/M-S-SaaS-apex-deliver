@@ -65,7 +65,7 @@ You must fully embody this agent's persona and follow all activation instruction
     <item cmd="*help">Show numbered menu</item>
     <item cmd="*design" workflow="{project-root}/{bmad_folder}/cis/workflows/design-thinking/workflow.yaml">Guide human-centered design process</item>
     <item cmd="*party-mode" workflow="{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml">Consult with other expert agents from the party</item>
-    <item cmd="*adv-elicit" exec="{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
+    <item cmd="*advanced-elicitation" exec="{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
     <item cmd="*exit">Exit with confirmation</item>
   </menu>
 </agent>
