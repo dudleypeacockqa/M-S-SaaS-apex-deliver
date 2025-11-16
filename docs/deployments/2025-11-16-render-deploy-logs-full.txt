@@ -1,0 +1,37 @@
+Fetching latest deployment...
+
+Latest Deploy ID: dep-d4cnj0b5jgnc73ecjoc0
+Status: update_failed
+Commit: feat(migration): create community, events, and document AI tables
+
+======================================================================
+DEPLOY EVENTS (First Errors)
+======================================================================
+Traceback (most recent call last):
+  File "c:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\get_render_deploy_logs.py", line 74, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "c:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\get_render_deploy_logs.py", line 48, in main
+    events = api_request(events_url)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\get_render_deploy_logs.py", line 20, in api_request
+    with urllib.request.urlopen(req) as response:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\urllib\request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\urllib\request.py", line 525, in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\urllib\request.py", line 634, in http_response
+    response = self.parent.error(
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\urllib\request.py", line 563, in error
+    return self._call_chain(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\urllib\request.py", line 496, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\urllib\request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
