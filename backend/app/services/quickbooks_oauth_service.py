@@ -509,8 +509,13 @@ def fetch_quickbooks_statements(connection_id: str, db: Session) -> List[Financi
     if not connection:
         raise ValueError(f"Connection {connection_id} not found")
 
-    # Check if token is expired
-    if connection.token_expires_at < datetime.now():
+    # Check if token is expired (handle both timezone-aware and naive datetimes)
+    expires_at = connection.token_expires_at
+    if expires_at.tzinfo is None:
+        # If naive, assume UTC (for SQLite compatibility)
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+    if expires_at < datetime.now(timezone.utc):
         # Auto-refresh token
         connection = refresh_quickbooks_token(connection_id, db)
 
