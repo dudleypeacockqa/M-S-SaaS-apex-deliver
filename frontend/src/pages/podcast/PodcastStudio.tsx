@@ -672,9 +672,9 @@ function QuotaCard({ quota }: { quota: QuotaSummary }) {
     const end = new Date(quota.periodEnd);
 
     const formatDate = (date: Date) => {
-      const day = date.getDate();
-      const month = date.toLocaleDateString('en-US', { month: 'short' });
-      const year = date.getFullYear();
+      const day = date.getUTCDate();
+      const month = date.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+      const year = date.getUTCFullYear();
       return `${day} ${month} ${year}`;
     };
 
