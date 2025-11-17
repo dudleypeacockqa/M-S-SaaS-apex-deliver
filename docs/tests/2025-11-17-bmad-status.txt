@@ -1,0 +1,11 @@
+Command: npx bmad-method status
+Date: 2025-11-17T13:40Z
+
+BMad Installation Status:
+
+  Directory:      C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+  Version:        4.44.1
+  Installed:      01/11/2025
+  Type:           full
+  IDE Setup:      cursor, claude-code, codex
+  Total Files:    166

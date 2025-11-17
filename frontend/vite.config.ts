@@ -110,7 +110,7 @@ export default defineConfig({
           }
           // Core React dependencies
           if (id.includes('node_modules')) {
-            // Lucide React icons - DO NOT split, bundle with main to prevent initialization issues
+            // Lucide React icons - keep in the core React vendor chunk to avoid race conditions
             if (id.includes('lucide-react')) {
               return 'react-vendor'
             }
