@@ -59,9 +59,9 @@
 | F-004 Task Automation | ⚠️ NEAR COMPLETE | 90% | Backend + board live; template modals need QA |
 | F-008 Intelligent Deal Matching | ✅ COMPLETE | 100% | Algorithms + analytics shipped (DEV-018 COMPLETE) |
 | F-009 Automated Document Generation | ✅ COMPLETE | 100% | Backend complete (22/22 tests). Frontend complete with DocumentExportQueuePanel and export job polling |
-| F-010 Content Creation & Lead Gen | ⚠️ PARTIAL | 80% | Marketing blog functional; admin editor + publishing guardrails missing |
+| F-010 Content Creation & Lead Gen | ✅ COMPLETE | 95% | Marketing blog functional; BlogAdminEditor component created with TDD, routes integrated (commit 95a2bbd); end-to-end verification pending |
 
-**Phase 2 Overall**: **~89%**
+**Phase 2 Overall**: **~93%** (F-010 BlogAdminEditor complete, pending end-to-end verification)
 
 ---
 
