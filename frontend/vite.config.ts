@@ -46,6 +46,11 @@ export default defineConfig({
           }
           // Core React dependencies
           if (id.includes('node_modules')) {
+            // Lucide React icons - MUST be first to prevent being bundled with react
+            // Keep in separate chunk to prevent initialization issues
+            if (id.includes('lucide-react')) {
+              return 'lucide-vendor'
+            }
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'react-vendor'
             }
@@ -54,10 +59,6 @@ export default defineConfig({
             }
             if (id.includes('@tanstack/react-query')) {
               return 'react-query'
-            }
-            // Lucide React icons - keep in separate chunk to prevent initialization issues
-            if (id.includes('lucide-react')) {
-              return 'lucide-vendor'
             }
             // Chart libraries (often large)
             if (id.includes('recharts') || id.includes('chart.js') || id.includes('d3')) {

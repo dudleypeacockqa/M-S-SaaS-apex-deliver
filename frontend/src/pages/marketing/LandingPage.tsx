@@ -222,7 +222,7 @@ export const LandingPage: React.FC = () => {
                 width={1920}
                 height={1080}
                 className="w-full rounded-xl shadow-lg"
-                loading="lazy"
+                priority
               />
               <p className="text-sm text-gray-500 mt-4 text-center">Live dashboard mockup — 13-week cash runway, DS/DSO/DPO, and recommended actions.</p>
             </div>
