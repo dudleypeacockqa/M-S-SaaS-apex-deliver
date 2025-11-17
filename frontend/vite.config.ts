@@ -70,7 +70,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['lucide-react'],
     exclude: ['**/*.test.tsx', '**/*.test.ts', '**/*.spec.tsx', '**/*.spec.ts'],
   },
   server: {
