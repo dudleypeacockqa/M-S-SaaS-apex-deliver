@@ -439,7 +439,7 @@ def handle_netsuite_callback(
         access_token=token_response["access_token"],
         refresh_token=token_response["refresh_token"],
         token_expires_at=datetime.now(timezone.utc) + timedelta(seconds=token_response["expires_in"]),
-        status="active",
+        connection_status="active",
     )
 
     db.add(connection)
