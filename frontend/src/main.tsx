@@ -1,7 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { ClerkProvider } from "@clerk/clerk-react"
-import "./lib/icons"
 import App from "./App"
 import "./index.css"
 
