@@ -102,6 +102,40 @@ TEST_RESULTS:
 
 **Focus**: Promote failing tests into RED tickets, then drive GREEN fixes (auth dependency patch + DocumentWorkspace/BillingDashboard/LandingPage selectors) before updating README + deployment docs.
 
+
+## Session 2025-11-17T15-Test-Stabilization
+
+SESSION_ID: Session-2025-11-17T15-Test-Stabilization
+COMPLETED_WORK:
+- Refactored app.core.database.get_db into a dual-mode iterator so pytest can patch session factories while FastAPI still consumes a generator; reran the full backend suite (1,487 specs) with 0 failures and archived backend/tests/test-results-2025-11-17.txt.
+- Kept get_current_user signature aligned with FastAPI expectations after experimenting with optional Request injection so authentication edge-case tests remain portable.
+- Re-ran npm run test -- --run --coverage to capture 172 Vitest files / 1,743 specs all passing (frontend/test-results-2025-11-17.txt).
+
+FILES_MODIFIED:
+- backend/app/core/database.py
+- backend/tests/test_results-2025-11-17.txt
+- frontend/test-results-2025-11-17.txt
+
+TEST_RESULTS:
+- backend/venv/Scripts/python.exe -m pytest backend/tests
+- /mnt/c/Program Files/nodejs/npm run test -- --run --coverage
+
+**Focus**: With suites green, move to documentation/deployment evidence and external integration planning.
+
+## Session 2025-11-17T15-Deployment-Verify
+
+SESSION_ID: Session-2025-11-17T15-Deployment-Verify
+COMPLETED_WORK:
+- Ran backend/venv/Scripts/python.exe verify_deployment.py and stored the log at docs/deployments/2025-11-17-backend-verify.txt covering health, Alembic head, table integrity, and indexes.
+- Confirmed Render backend remains healthy; next run will include frontend smoke scripts once docs are updated.
+
+FILES_MODIFIED:
+- docs/deployments/2025-11-17-backend-verify.txt
+
+TEST_RESULTS:
+- backend/venv/Scripts/python.exe verify_deployment.py
+
+**Focus**: Align README/TODO/roadmap with the new verification log, then schedule Lighthouse/Axe reruns (blocker noted under marketing audits).
 ## Status Reset (2025-11-15)
 
 - Reviewed `README.md`, `TODO.md`, `docs/100-PERCENT-COMPLETION-ROADMAP.md`, and pinned BMAD artefacts; determined v1.0.0/v1.1.0 completion claims contradict open work.

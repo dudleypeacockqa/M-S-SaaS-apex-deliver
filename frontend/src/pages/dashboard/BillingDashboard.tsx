@@ -181,7 +181,7 @@ export const BillingDashboard: React.FC = () => {
               onClick={() => void handleOpenPortal()}
               disabled={isPortalLoading}
             >
-              {isPortalLoading ? 'Opening payment portal' : 'Update Payment Method'}
+              {isPortalLoading ? 'Opening customer portal' : 'Update Payment Method'}
             </button>
           </div>
         </article>

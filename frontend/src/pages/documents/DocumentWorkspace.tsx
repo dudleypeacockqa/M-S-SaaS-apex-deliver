@@ -95,6 +95,30 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
     }
   }, [])
 
+  // Show upload progress toast when uploads are in progress
+  useEffect(() => {
+    if (isUploading && uploadQueue.length > 0) {
+      const totalProgress = uploadQueue.reduce((sum, item) => sum + (item.progress || 0), 0)
+      const averageProgress = Math.round(totalProgress / uploadQueue.length)
+      const uploadingItems = uploadQueue.filter((item) => item.status === 'uploading')
+      
+      if (uploadingItems.length > 0) {
+        scheduleToast({
+          type: 'progress',
+          message: `Uploading ${uploadingItems.length} file${uploadingItems.length !== 1 ? 's' : ''}...`,
+          progress: {
+            value: averageProgress,
+            total: 100,
+            label: `Uploading ${uploadingItems.length} file${uploadingItems.length !== 1 ? 's' : ''}`,
+          },
+        })
+      }
+    } else if (!isUploading && uploadQueue.length === 0 && activeToast?.type === 'progress') {
+      // Clear progress toast when uploads complete
+      setActiveToast(null)
+    }
+  }, [isUploading, uploadQueue, activeToast, scheduleToast])
+
   const handleFolderSelect = (folderId: string | null) => {
     setSelectedFolderId(folderId)
   }

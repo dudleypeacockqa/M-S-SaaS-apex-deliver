@@ -1,22 +1,20 @@
 # 📋 M&S SaaS ApexDeliver + CapLiquify - BMAD-Compliant TODO
 
-> **⚠️ DOCUMENT SUPERSEDED**: This TODO reflects state as of 2025-11-01. For current tasks, see [docs/FINAL-COMPLETION-PLAN.md](docs/FINAL-COMPLETION-PLAN.md).
+> **⚠️ DOCUMENT SUPERSEDED**: Original checklist reflects 2025-11-01 state. Active guidance lives in [docs/FINAL-COMPLETION-PLAN.md](docs/FINAL-COMPLETION-PLAN.md).
 >
-> **Current State (2025-11-17)**:
-> - ✅ All 13 core features implemented and tested
-> - ✅ All 7 Master Admin features implemented and tested
-> - ✅ 100% test pass rate (3174/3174 tests passing)
-> - ✅ Production deployed and healthy
-> - ⏳ **Remaining**: Manual QA (4-6 hours) + Performance audits (2-3 hours) + Final sign-off
+> **Reality Check (2025-11-17)**:
+> - ✅ Backend pytest: 1,487 specs run (1,432 pass / 0 fail / 55 skipped — external OAuth/Postgres suites)
+> - ✅ Frontend Vitest: 1,743 specs pass with ~85% coverage (see frontend/test-results-2025-11-17.txt)
+> - ⏳ Remaining: Master Admin manual QA, deployment smoke logs (verify_deployment.py), Lighthouse/Axe reruns, documentation resets so nothing claims 100% without evidence.
 
 ---
 
-**Last Updated:** 2025-11-17 [99.2% Complete - Manual QA Pending]
+**Last Updated:** 2025-11-17 [78% Complete – Docs & Deploy evidence pending]
 **Historical Date:** 2025-11-01 [Session 2C Complete]
 **Methodology:** BMAD-METHOD v6 + TDD
-**Current Phase:** Phase 6 - Manual QA + Final Sign-Off
-**Test Coverage:** Backend 100% (1432/1432), Frontend 100% (1742/1742), Total: 3174/3174 ✅
-**Deployment:** Render (Both services LIVE and healthy)
+**Current Phase:** Sprint 1-B – Master Admin Frontend + Deploy Verification
+**Test Coverage:** Backend ~84% (1,487 specs, 55 skipped), Frontend ~85% (1,743 specs)
+**Deployment:** Render (services live; verification/log capture scheduled)
 
 ---
 

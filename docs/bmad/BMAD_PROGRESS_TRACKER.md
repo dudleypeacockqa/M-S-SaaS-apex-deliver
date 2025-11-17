@@ -56,6 +56,41 @@ Run the authoritative backend + frontend suites end-to-end, archive logs, and pi
 
 ---
 
+## Session 2025-11-17T15-Test-Stabilization – Suites Green
+
+**Status**: 🟢 GREEN – backend + frontend suites stable
+**Duration**: 1.5 hours
+**Priority**: P0 – unblock docs/deploy follow-ups
+**Version**: Sprint 1-B
+
+### Highlights
+- Refactored app.core.database.get_db into a dual-mode iterator so pytest + FastAPI share transactional sessions; reran full pytest (1,487 specs) with 0 failures.
+- Re-confirmed Vitest coverage run (172 files / 1,743 specs all passing).
+- Logged outcomes in docs/bmad/bmm-workflow-status.md and stored logs under backend/tests/test-results-2025-11-17.txt + frontend/test-results-2025-11-17.txt.
+
+### Next
+- Sync README/TODO/roadmap to the honest 78% status.
+- Capture deployment verification + smoke logs so documentation matches code.
+
+---
+
+## Session 2025-11-17T15-Deployment-Verify – Backend Checks Captured
+
+**Status**: 🟢 PASS – render backend verification complete
+**Duration**: 0.25 hours
+**Priority**: P1 – evidence for docs
+**Version**: Sprint 1-B
+
+### Highlights
+- Ran backend/venv/Scripts/python.exe verify_deployment.py and saved output to docs/deployments/2025-11-17-backend-verify.txt (health endpoint, Alembic head, table/index counts all pass).
+- Confirmed backend service remains healthy; frontend smoke + Lighthouse remain TODO once docs catch up.
+
+### Next
+- Reference the verification log in README/TODO/roadmap updates.
+- Schedule frontend smoke scripts and Lighthouse rerun (blocked on Windows runner).
+
+---
+
 ## Session 2025-11-17-V1.1-RELEASE-AND-OAUTH-TESTS – Production Release + Coverage Enhancement ✅
 
 **Status**: ✅ COMPLETE – v1.1.0 Released + 60 OAuth Tests Added
