@@ -1,11 +1,6 @@
 /**
- * Centralized icon exports to prevent Lucide React initialization issues in production builds
- *
- * Issue: Vite's code splitting was causing "Cannot set properties of undefined (setting 'Activity')"
- * Solution: Use direct named re-exports (NOT namespace imports) to maintain tree-shaking compatibility
+ * Centralized icon exports - use direct re-exports for tree-shaking
  */
-
-// Direct named re-exports - this pattern is compatible with Vite/Rollup tree-shaking
 export {
   Activity,
   AlertCircle,

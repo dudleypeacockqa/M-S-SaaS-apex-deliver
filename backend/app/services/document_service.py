@@ -5,7 +5,7 @@ import math
 import os
 from collections import defaultdict
 from datetime import datetime, timezone
-from typing import List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException, UploadFile, status
@@ -1355,6 +1355,7 @@ def log_document_access(
     action: str,
     ip_address: Optional[str] = None,
     user_agent: Optional[str] = None,
+    metadata: Optional[Dict[str, Any]] = None,
 ) -> DocumentAccessLogEntry:
     entry = _log_access(
         db,
@@ -1363,6 +1364,7 @@ def log_document_access(
         action=action,
         ip_address=ip_address,
         user_agent=user_agent,
+        metadata=metadata,
     )
     db.commit()
     db.refresh(entry)
@@ -1375,6 +1377,7 @@ def log_document_access(
         action=entry.action,
         ip_address=entry.ip_address,
         user_agent=entry.user_agent,
+        metadata=entry.metadata,
         created_at=entry.created_at,
     )
 
@@ -1387,6 +1390,7 @@ def _log_access(
     action: str,
     ip_address: Optional[str] = None,
     user_agent: Optional[str] = None,
+    metadata: Optional[Dict[str, Any]] = None,
 ) -> DocumentAccessLog:
     entry = DocumentAccessLog(
         id=str(uuid4()),
@@ -1397,6 +1401,7 @@ def _log_access(
         created_at=datetime.now(timezone.utc),
         ip_address=ip_address,
         user_agent=user_agent,
+        metadata=metadata,
     )
     db.add(entry)
     db.flush()

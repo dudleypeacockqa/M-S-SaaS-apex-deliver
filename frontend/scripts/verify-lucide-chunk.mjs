@@ -23,36 +23,31 @@ const run = async () => {
   await ensureFileExists(htmlPath)
   const html = await fs.readFile(htmlPath, 'utf8')
   if (html.includes('lucide-vendor')) {
-    fail('dist/index.html still references a lucide-vendor chunk - this causes blank screens!')
+    fail('dist/index.html still references a lucide-vendor chunk')
   }
 
   const assetsDir = path.join(distDir, 'assets')
   await ensureFileExists(assetsDir)
 
-  let lucideChunks = []
-  try {
-    const files = await fs.readdir(assetsDir, { withFileTypes: true })
-    for (const entry of files) {
+  const lucideChunks = []
+  const walk = async (dir) => {
+    const entries = await fs.readdir(dir, { withFileTypes: true })
+    for (const entry of entries) {
+      const entryPath = path.join(dir, entry.name)
       if (entry.isDirectory()) {
-        if (entry.name === 'js' || entry.name === 'assets') {
-          const nested = await fs.readdir(path.join(assetsDir, entry.name))
-          lucideChunks = lucideChunks.concat(
-            nested.filter((name) => name.includes('lucide-vendor')),
-          )
-        }
+        await walk(entryPath)
       } else if (entry.name.includes('lucide-vendor')) {
-        lucideChunks.push(entry.name)
+        lucideChunks.push(path.relative(distDir, entryPath))
       }
     }
-  } catch (error) {
-    fail(`Unable to inspect assets directory: ${error.message}`)
   }
+  await walk(assetsDir)
 
   if (lucideChunks.length > 0) {
-    fail(`Found lucide-specific chunks that will cause blank screens: ${lucideChunks.join(', ')}`)
+    fail(`Found lucide-vendor chunk(s): ${lucideChunks.join(', ')}`)
   }
 
-  console.log('✅ Lucide bundle verification passed: no lucide-vendor chunks detected (icons bundled with main)')
+  console.log('✅ Lucide bundle verification passed: no lucide-specific chunks detected')
 }
 
 run()

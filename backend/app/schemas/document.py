@@ -1,6 +1,6 @@
 """Document and folder Pydantic schemas."""
 from datetime import datetime
-from typing import List, Optional, Literal
+from typing import Any, Dict, List, Optional, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
@@ -182,9 +182,19 @@ class DocumentAccessLogEntry(BaseModel):
     action: str
     ip_address: Optional[str]
     user_agent: Optional[str]
+    metadata: Optional[Dict[str, Any]] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class DocumentAccessLogCreate(BaseModel):
+    """Schema for creating manual document audit events."""
+
+    action: str = Field(..., min_length=3, max_length=50)
+    metadata: Optional[Dict[str, Any]] = None
+    ip_address: Optional[str] = None
+    user_agent: Optional[str] = None
 
 
 class BulkDownloadRequest(BaseModel):

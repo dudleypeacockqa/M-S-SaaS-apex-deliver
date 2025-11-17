@@ -2,10 +2,6 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { ClerkProvider } from "@clerk/clerk-react"
 
-// CRITICAL: Import icons early to ensure lucide-react module executes before any component renders
-// This prevents "Cannot set properties of undefined (setting 'Activity')" errors
-import "./lib/icons"
-
 import App from "./App"
 import "./index.css"
 
@@ -136,29 +132,34 @@ window.addEventListener('unhandledrejection', (event) => {
   console.error('Unhandled promise rejection:', event.reason)
 })
 
-// Render React app synchronously - no async preloading needed
-const rootElement = document.getElementById("root")
-if (!rootElement) {
-  throw new Error("Root element not found. Make sure there's a <div id='root'></div> in your HTML.")
+const renderReactApp = () => {
+  const rootElement = document.getElementById("root")
+  if (!rootElement) {
+    throw new Error("Root element not found. Make sure there's a <div id='root'></div> in your HTML.")
+  }
+
+  try {
+    ReactDOM.createRoot(rootElement).render(
+      <React.StrictMode>
+        <Root />
+      </React.StrictMode>
+    )
+  } catch (error) {
+    console.error('Failed to render React app:', error)
+    rootElement.innerHTML = `
+      <div style="padding: 2rem; font-family: system-ui, sans-serif;">
+        <h1 style="color: #dc2626; margin-bottom: 1rem;">Render Error</h1>
+        <p style="color: #666; margin-bottom: 1rem;">Failed to render the React application.</p>
+        <pre style="background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; overflow: auto;">${error instanceof Error ? error.toString() : 'Unknown error'}</pre>
+        <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">Reload Page</button>
+      </div>
+    `
+  }
 }
 
-try {
-  ReactDOM.createRoot(rootElement).render(
-    <React.StrictMode>
-      <Root />
-    </React.StrictMode>
-  )
-} catch (error) {
-  console.error('Failed to render React app:', error)
-  rootElement.innerHTML = `
-    <div style="padding: 2rem; font-family: system-ui, sans-serif;">
-      <h1 style="color: #dc2626; margin-bottom: 1rem;">Render Error</h1>
-      <p style="color: #666; margin-bottom: 1rem;">Failed to render the React application.</p>
-      <pre style="background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; overflow: auto;">${error instanceof Error ? error.toString() : 'Unknown error'}</pre>
-      <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.25rem; cursor: pointer;">Reload Page</button>
-    </div>
-  `
-}
+// Render app immediately - NO async bootstrapping
+// Icons will be loaded on-demand by React components
+renderReactApp()
 
 if (import.meta.env.MODE !== "test" && "serviceWorker" in navigator) {
   window.addEventListener("load", () => {
