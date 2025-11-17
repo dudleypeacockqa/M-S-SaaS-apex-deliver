@@ -9,6 +9,51 @@ const buildId =
   process.env.VERCEL_GIT_COMMIT_SHA ||
   new Date().toISOString().replace(/[-:.TZ]/g, '')
 
+// Validate required environment variables at build time
+const validateBuildEnv = () => {
+  const isProduction = process.env.NODE_ENV === 'production'
+  const isTest = process.env.NODE_ENV === 'test' || process.env.MODE === 'test'
+  
+  // Only validate in production builds (not dev or test)
+  if (isProduction && !isTest) {
+    const requiredEnvVars = {
+      VITE_CLERK_PUBLISHABLE_KEY: process.env.VITE_CLERK_PUBLISHABLE_KEY,
+    }
+    
+    const missingVars: string[] = []
+    for (const [key, value] of Object.entries(requiredEnvVars)) {
+      if (!value || value.trim() === '') {
+        missingVars.push(key)
+      }
+    }
+    
+    if (missingVars.length > 0) {
+      const errorMessage = `
+╔════════════════════════════════════════════════════════════════╗
+║  BUILD ERROR: Missing Required Environment Variables          ║
+╚════════════════════════════════════════════════════════════════╝
+
+The following required environment variables are missing:
+${missingVars.map(v => `  - ${v}`).join('\n')}
+
+To fix this:
+1. Set the environment variables in your deployment platform (Render, Vercel, etc.)
+2. For Render: Go to your service → Environment tab → Add the variables
+3. Trigger a new deployment
+
+Without these variables, the application will show an error screen in production.
+
+Build aborted.
+`
+      console.error(errorMessage)
+      throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`)
+    }
+  }
+}
+
+// Validate before building
+validateBuildEnv()
+
 // https://vitejs.dev/config/
 export default defineConfig({
   define: {
@@ -59,9 +104,9 @@ export default defineConfig({
           }
           // Core React dependencies
           if (id.includes('node_modules')) {
-            // Lucide React icons - keep isolated to ensure deterministic initialization order
+            // Lucide React icons - DO NOT split, bundle with main to prevent initialization issues
             if (id.includes('lucide-react')) {
-              return 'lucide-vendor'
+              return undefined
             }
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'react-vendor'

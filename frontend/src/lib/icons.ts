@@ -2,75 +2,10 @@
  * Centralized icon exports to prevent Lucide React initialization issues in production builds
  *
  * Issue: Vite's code splitting was causing "Cannot set properties of undefined (setting 'Activity')"
- * Solution: Re-export all icons from a single module to ensure proper initialization order
+ * Solution: Use direct named re-exports (NOT namespace imports) to maintain tree-shaking compatibility
  */
 
-import * as LucideIcons from 'lucide-react'
-
-const {
-  Activity,
-  AlertCircle,
-  Archive,
-  ArrowLeft,
-  ArrowRight,
-  Bell,
-  Briefcase,
-  Building2,
-  Calendar,
-  CalendarIcon,
-  Check,
-  CheckCircle,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  Clock,
-  CreditCard,
-  DollarSign,
-  Download,
-  Edit2,
-  ExternalLink,
-  Eye,
-  FileText,
-  Filter,
-  Flame,
-  Home,
-  LayoutDashboard,
-  LayoutGrid,
-  Linkedin,
-  List,
-  Loader2,
-  Mail,
-  Menu,
-  Mic,
-  Moon,
-  MoreVertical,
-  MousePointer,
-  Newspaper,
-  Pause,
-  Phone,
-  Play,
-  Plus,
-  Search,
-  Send,
-  Settings,
-  SortAsc,
-  Square,
-  Sun,
-  Tag,
-  Target,
-  Trash2,
-  TrendingUp,
-  Twitter,
-  UploadCloud,
-  User,
-  Users,
-  X,
-  XCircle,
-  Youtube,
-  Zap,
-} = LucideIcons
-
+// Direct named re-exports - this pattern is compatible with Vite/Rollup tree-shaking
 export {
   Activity,
   AlertCircle,
@@ -133,6 +68,5 @@ export {
   XCircle,
   Youtube,
   Zap,
-}
-
-export type { LucideIcon } from 'lucide-react'
+  type LucideIcon,
+} from 'lucide-react'

@@ -8,9 +8,14 @@ Blank screens on Render deployment despite successful build.
 
 Missing `VITE_CLERK_PUBLISHABLE_KEY` environment variable in Render frontend service.
 
-The application gracefully degrades when Clerk key is missing:
-- In DEV mode: Shows console warning
+**Previous Behavior:**
+- In DEV mode: Shows console warning, renders without Clerk
 - In production: Silently renders without Clerk, causing blank screen if routes expect authentication
+
+**Current Behavior (After Fix):**
+- In DEV mode: Shows console warning, renders without Clerk (for testing)
+- In production: **Build fails** if key is missing (build-time validation)
+- If build succeeds but key is missing at runtime: Shows user-friendly error UI instead of blank screen
 
 ## Diagnosis
 
@@ -28,7 +33,7 @@ cat frontend/dist/index.html
 # ✅ Scripts loaded: /assets/index-E0yThnTk.js
 ```
 
-### Check main.tsx Logic (Lines 8-20)
+### Check main.tsx Logic
 ```typescript
 const publishableKey =
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ??
@@ -37,12 +42,18 @@ const publishableKey =
 if (!publishableKey) {
   if (import.meta.env.DEV) {
     console.warn("Missing VITE_CLERK_PUBLISHABLE_KEY...")  // Only in DEV!
+    return <App />  // Allow in dev for testing
   }
-  return <App />  // Renders without Clerk - causes blank screen
+  // In production: Show error UI instead of blank screen
+  return <ClerkKeyMissingError />
 }
 ```
 
-**Problem:** In production build, missing Clerk key causes silent failure.
+**Previous Problem:** In production build, missing Clerk key caused silent failure (blank screen).
+
+**Current Solution:** 
+- Build-time validation prevents builds without required env vars
+- Runtime error UI shows helpful message if key is missing
 
 ## Solution
 
@@ -99,16 +110,25 @@ git push origin main
    cd frontend && npm install && npm run build
    ✓ built in 12.65s
    ```
+   
+   **Note:** If `VITE_CLERK_PUBLISHABLE_KEY` is missing, the build will **fail** with a clear error message:
+   ```
+   BUILD ERROR: Missing Required Environment Variables
+   - VITE_CLERK_PUBLISHABLE_KEY
+   Build aborted.
+   ```
 
 2. **Check Environment Variables in Build:**
    - Render should show `VITE_CLERK_PUBLISHABLE_KEY` as `***` (hidden)
    - Should NOT be `undefined`
+   - Build should complete successfully
 
 3. **Test in Browser:**
    - Visit https://ma-saas-frontend.onrender.com
    - Open DevTools Console (F12)
    - Should see app render, NOT blank screen
    - Should see Clerk authentication UI
+   - If key is missing: You'll see a user-friendly error page with setup instructions (not a blank screen)
 
 ## Environment Variables Checklist
 
