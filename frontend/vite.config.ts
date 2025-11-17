@@ -67,6 +67,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      // Force lucide-react to always resolve to the pure ESM build so Vite/Rollup bundle it once
+      'lucide-react': path.resolve(
+        __dirname,
+        'node_modules/lucide-react/dist/esm/lucide-react.js',
+      ),
     },
     // Dedupe lucide-react to prevent multiple instances
     dedupe: ['lucide-react'],
@@ -103,9 +108,9 @@ export default defineConfig({
           }
           // Core React dependencies
           if (id.includes('node_modules')) {
-            // Lucide React icons - keep in their own chunk to guarantee deterministic init order
+            // Lucide React icons must ship with the main vendor chunk to avoid async init races
             if (id.includes('lucide-react')) {
-              return 'lucide-vendor'
+              return undefined
             }
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'react-vendor'

@@ -430,3 +430,23 @@ NEXT_COMMAND: cmd /c "cd frontend && npx vitest run src/pages/documents/Document
 NEXT_AGENT: dev
 PRIORITY: P0
 RATIONALE: With deployment evidence refreshed, we can advance to the feature backlog under BMAD TDD.
+---
+
+SESSION_ID: Session-2025-11-17T14-DEV008-RED
+COMPLETED_WORK:
+- Added new Vitest specs covering permission refresh behaviour and upload progress toast exposure in DocumentWorkspace.
+- Ran cmd /c "cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx"; logged RED output to docs/tests/2025-11-17-dev008-red-vitest.txt with 3 expected failures.
+
+FILES_MODIFIED:
+- frontend/src/pages/documents/DocumentWorkspace.test.tsx
+- docs/tests/2025-11-17-dev008-red-vitest.txt
+- docs/bmad/bmm-workflow-status.md (this update)
+
+TEST_RESULTS:
+- cmd /c "cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx" – FAIL (33 tests, 3 failing as intended)
+
+NEXT_ACTION: Implement DocumentWorkspace permission refresh + upload progress toast to satisfy the new RED specs
+NEXT_COMMAND: cmd /c "cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx"
+NEXT_AGENT: dev
+PRIORITY: P0
+RATIONALE: Closing these failures unblocks DEV-008 completion under BMAD/TDD.

@@ -1,0 +1,12 @@
+Vitest RED cycle - DocumentWorkspace (DEV-008) - 2025-11-17T14:18Z
+Command: cmd /c "cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx"
+
+Result: FAILED (33 tests, 3 failing)
+Failing specs:
+1. refreshes the document list after permissions change to reflect new access state (expected resetSelectionSignal to increment)
+2. refreshes the document list after permissions change to reflect new access state (duplicate invocation via rerender snapshot)
+3. surfaces a progress toast while uploads are running (no progressbar rendered)
+
+Console excerpts:
+[Audit] Permission changed: { documentId: 'doc-refresh', userId: 'user-123', permission: 'editor' }
+TestingLibraryError: Unable to find an accessible element with the role "progressbar" and name matching /uploading/i.

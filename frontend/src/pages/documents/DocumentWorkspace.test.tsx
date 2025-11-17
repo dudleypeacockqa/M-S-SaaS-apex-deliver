@@ -279,6 +279,60 @@ describe('DocumentWorkspace', () => {
     )
   })
 
+  it('refreshes the document list after permissions change to reflect new access state', async () => {
+    renderWorkspace()
+
+    const initialProps = documentListSpy.mock.calls.at(-1)?.[0]
+    const initialSignal = initialProps?.resetSelectionSignal ?? 0
+
+    act(() => {
+      initialProps?.onManagePermissions?.({
+        id: 'doc-refresh',
+        name: 'Quarterly Review.pdf',
+        auditTrail: [],
+      })
+    })
+
+    const modalProps = permissionModalSpy.mock.calls.at(-1)?.[0]
+    await act(async () => {
+      await modalProps.onPermissionChange?.({
+        documentId: 'doc-refresh',
+        userId: 'user-123',
+        permission: 'editor',
+      })
+    })
+
+    const latestProps = documentListSpy.mock.calls.at(-1)?.[0]
+    expect(latestProps?.resetSelectionSignal ?? 0).toBeGreaterThan(initialSignal)
+  })
+
+  it('refreshes the document list after permissions change to reflect new access state', async () => {
+    renderWorkspace()
+
+    const initialProps = documentListSpy.mock.calls.at(-1)?.[0]
+    const initialSignal = initialProps?.resetSelectionSignal ?? 0
+
+    act(() => {
+      initialProps?.onManagePermissions?.({
+        id: 'doc-refresh',
+        name: 'Quarterly Review.pdf',
+        auditTrail: [],
+      })
+    })
+
+    const modalProps = permissionModalSpy.mock.calls.at(-1)?.[0]
+    await act(async () => {
+      await modalProps.onPermissionChange?.({
+        documentId: 'doc-refresh',
+        userId: 'user-123',
+        permission: 'editor',
+      })
+    })
+
+    const latestProps = documentListSpy.mock.calls.at(-1)?.[0]
+    expect(latestProps?.resetSelectionSignal ?? 0).toBeGreaterThan(initialSignal)
+  })
+
   it('opens share link modal when share is requested', () => {
     renderWorkspace()
 
@@ -341,6 +395,27 @@ describe('DocumentWorkspace', () => {
 
     await waitFor(() => {
       expect(screen.queryByTestId('mock-question-panel')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Upload progress toast', () => {
+    it('surfaces a progress toast while uploads are running', () => {
+      uploadHookState.isUploading = true
+      uploadHookState.uploadQueue = [
+        {
+          id: 'upload-1',
+          name: 'Pitch Deck.pdf',
+          progress: 42,
+          status: 'uploading',
+          size: 512000,
+        },
+      ]
+
+      renderWorkspace()
+
+      const progressbar = screen.getByRole('progressbar', { name: /uploading/i })
+      expect(progressbar).toHaveAttribute('aria-valuenow', '42')
+      expect(progressbar).toHaveAttribute('aria-valuemax', '100')
     })
   })
 
