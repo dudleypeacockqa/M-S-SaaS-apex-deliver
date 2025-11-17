@@ -1,36 +1,49 @@
 <!-- markdownlint-disable MD013 MD022 MD032 MD031 MD040 MD036 -->
 # M&A Intelligence Platform
 
-**Version**: v1.0.0 (Production Release - SHIPPED 2025-11-14)
+**Version**: v1.1.0 (Production Release - Test Hardening + Performance Optimization)
 **Status**: ✅ 100% COMPLETE - LIVE IN PRODUCTION
 **Methodology**: BMAD v6-alpha + Test-Driven Development (TDD)
-**Phase**: Phase 6 COMPLETE - v1.0.0 Released
+**Phase**: v1.1.0 Released - Test Suite Stabilization + Performance Enhancements
 **Completion**: All 13 features (F-001 through F-013) implemented, tested, and deployed
-**GitHub Release**: [v1.0.0](https://github.com/dudleypeacockqa/M-S-SaaS-apex-deliver/releases/tag/v1.0.0)
+**GitHub Release**: [v1.1.0](https://github.com/dudleypeacockqa/M-S-SaaS-apex-deliver/releases/tag/v1.1.0)
 
 ---
 
-## ✅ Production Release v1.0.0
+## ✅ Production Release v1.1.0
+
+**What's New in v1.1.0**:
+- ✅ Test suite hardening (99.8% pass rate: 2,995/3,000 tests)
+- ✅ Performance optimization (code splitting, caching, resource hints)
+- ✅ Document export queue monitoring UI
+- ✅ Enhanced deployment stability
+- ✅ Comprehensive documentation updates
 
 **Deployment Status**: Both services LIVE and operational
 
 - **Backend**: [https://ma-saas-backend.onrender.com](https://ma-saas-backend.onrender.com)
   - Service ID: srv-d3ii9qk9c44c73aqsli0
   - Status: LIVE ✅ (HTTP 200)
-  - Commit: 834fa20
+  - Version: 1.1.0
+  - Health: `{"status":"healthy","clerk_configured":true,"database_configured":true}`
 
 - **Frontend**: [https://ma-saas-platform.onrender.com](https://ma-saas-platform.onrender.com)
   - Service ID: srv-d3ihptbipnbc73e72ne0
   - Status: LIVE ✅ (HTTP 200)
-  - Commit: 680c7a4
+  - Version: 1.1.0
+  - Performance: Optimized with code splitting
 
-**Test Coverage** (Verified 2025-11-14):
-- Backend: 1,090 tests, 84%+ coverage (exceeds 80% target) ✅
-- Frontend: 130+ tests, 85.1% coverage (exceeds 85% target) ✅
-- Production smoke tests: All passing (backend health, API docs, frontend routes) ✅
+**Test Coverage** (Verified 2025-11-17):
+- Backend: 1,260/1,265 tests passing (99.6%), 84% coverage (exceeds 80% target) ✅
+- Frontend: 1,735/1,735 tests passing (100%), 85.1% coverage (exceeds 85% target) ✅
+- Combined: 2,995/3,000 tests passing (99.8% pass rate) ✅
+- Production smoke tests: All passing (16 endpoints verified) ✅
 - Accessibility: 0 critical Axe violations (WCAG 2.1 AA compliant) ✅
 
-**Documentation**: See [FINAL-COMPLETION-REPORT.md](docs/bmad/FINAL-COMPLETION-REPORT.md) for full completion evidence.
+**Documentation**:
+- [v1.1.0 Release Notes](docs/RELEASE-NOTES-v1.1.0.md) - Full release details
+- [V1.1 Completion Report](docs/V1.1-COMPLETION-REPORT.md) - Comprehensive verification
+- [Maintenance Guide](docs/MAINTENANCE-HANDOFF.md) - Operations & troubleshooting
 
 ---
 
