@@ -23,13 +23,17 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
+    // Fix for lucide-react ESM-only package resolution
     dedupe: ['lucide-react'],
+    // Prefer ESM over CommonJS
+    conditions: ['module', 'import', 'default'],
   },
   optimizeDeps: {
-    include: ['lucide-react'],
-    exclude: ['**/*.test.tsx', '**/*.test.ts', '**/*.spec.tsx', '**/*.spec.ts'],
+    // Exclude lucide-react from pre-bundling - it's ESM-only and causes resolution issues in Vite 7
+    exclude: ['lucide-react', '**/*.test.tsx', '**/*.test.ts', '**/*.spec.tsx', '**/*.spec.ts'],
     esbuildOptions: {
       target: 'esnext',
+      mainFields: ['module', 'main'],
     },
   },
   server: {
@@ -41,6 +45,11 @@ export default defineConfig({
     sourcemap: false,
     // Increase chunk size warning limit for large vendor bundles
     chunkSizeWarningLimit: 1000,
+    commonjsOptions: {
+      // Fix for lucide-react ESM-only package
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
     rollupOptions: {
       output: {
         manualChunks: (id) => {
@@ -50,9 +59,9 @@ export default defineConfig({
           }
           // Core React dependencies
           if (id.includes('node_modules')) {
-            // Lucide React icons - DO NOT split, bundle with main to prevent initialization issues
+            // Lucide React icons - keep isolated to ensure deterministic initialization order
             if (id.includes('lucide-react')) {
-              return undefined
+              return 'lucide-vendor'
             }
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'react-vendor'
