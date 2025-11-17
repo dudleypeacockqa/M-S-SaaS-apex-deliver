@@ -23,10 +23,14 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
+    dedupe: ['lucide-react'],
   },
   optimizeDeps: {
     include: ['lucide-react'],
     exclude: ['**/*.test.tsx', '**/*.test.ts', '**/*.spec.tsx', '**/*.spec.ts'],
+    esbuildOptions: {
+      target: 'esnext',
+    },
   },
   server: {
     port: 5173,
