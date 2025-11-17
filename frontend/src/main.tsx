@@ -1,6 +1,8 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { ClerkProvider } from "@clerk/clerk-react"
+// CRITICAL: Import icons to initialize lucide-react module before React renders
+// eslint-disable-next-line
 import "./lib/icons"
 import App from "./App"
 import "./index.css"
