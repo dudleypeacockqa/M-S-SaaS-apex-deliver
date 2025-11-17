@@ -1,69 +1,12 @@
 /**
- * Centralized icon exports - use direct re-exports for tree-shaking
+ * Centralized icon exports - direct re-exports from lucide-react
+ *
+ * NOTE: This file exists solely for import path consistency.
+ * It does NOT pre-load icons - they load on-demand when components import them.
  */
-export {
-  Activity,
-  AlertCircle,
-  AlertTriangle,
-  Archive,
-  ArrowLeft,
-  ArrowRight,
-  Bell,
-  Briefcase,
-  Building2,
-  Calendar,
-  CalendarIcon,
-  Check,
-  CheckCircle,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  Clock,
-  CreditCard,
-  DollarSign,
-  Download,
-  Edit2,
-  ExternalLink,
-  Eye,
-  FileText,
-  Filter,
-  Flame,
-  Home,
-  LayoutDashboard,
-  LayoutGrid,
-  Linkedin,
-  List,
-  Loader2,
-  Mail,
-  Menu,
-  Mic,
-  Moon,
-  MoreVertical,
-  MousePointer,
-  Newspaper,
-  Pause,
-  Phone,
-  Play,
-  Plus,
-  RefreshCw,
-  Search,
-  Send,
-  Settings,
-  SortAsc,
-  Square,
-  Sun,
-  Tag,
-  Target,
-  Trash2,
-  TrendingUp,
-  Twitter,
-  UploadCloud,
-  User,
-  Users,
-  X,
-  XCircle,
-  Youtube,
-  Zap,
-  type LucideIcon,
-} from 'lucide-react'
+
+// Re-export everything from lucide-react
+export * from 'lucide-react'
+
+// Explicit re-exports for commonly used icons (helps with tree-shaking)
+export type { LucideIcon } from 'lucide-react'
