@@ -20,6 +20,7 @@ from starlette.testclient import TestClient
 from sqlalchemy.orm import Session
 from uuid import uuid4
 
+from app.api.dependencies.auth import get_current_user
 from app.models.community import (
     Post,
     Comment,
@@ -47,8 +48,6 @@ def setup_auth(solo_user, request, dependency_overrides):
     if 'requires_authentication' in request.node.name:
         yield None
         return
-    
-    from app.api.dependencies.auth import get_current_user
     
     dependency_overrides(get_current_user, lambda: solo_user)
     yield
@@ -378,7 +377,12 @@ def test_get_following_returns_200(client: TestClient, test_user: User, test_fol
 # Moderation Tests
 # ============================================================================
 
-def test_create_moderation_action_returns_201(client: TestClient, test_post: Post):
+def test_create_moderation_action_returns_201(
+    client: TestClient,
+    test_post: Post,
+    admin_user: User,
+    dependency_overrides,
+):
     """Test creating a moderation action returns 201 Created."""
     moderation_data = {
         "target_type": "post",
@@ -386,6 +390,8 @@ def test_create_moderation_action_returns_201(client: TestClient, test_post: Pos
         "action_type": "flag",
         "reason": "Inappropriate content",
     }
+
+    dependency_overrides(get_current_user, lambda: admin_user)
 
     response = client.post("/api/community/moderation/actions", json=moderation_data)
 
@@ -395,8 +401,15 @@ def test_create_moderation_action_returns_201(client: TestClient, test_post: Pos
     assert data["target_id"] == test_post.id
 
 
-def test_get_flagged_content_returns_200(client: TestClient, test_post: Post):
+def test_get_flagged_content_returns_200(
+    client: TestClient,
+    test_post: Post,
+    admin_user: User,
+    dependency_overrides,
+):
     """Test getting flagged content returns 200 OK."""
+    dependency_overrides(get_current_user, lambda: admin_user)
+
     response = client.get("/api/community/moderation/flagged")
 
     assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"

@@ -14,7 +14,7 @@ const mockCancel = vi.fn();
 const mockReset = vi.fn();
 
 // State that can be updated in tests
-let mockHookState = {
+const mockHookState = {
   progress: 0,
   isUploading: false,
   error: null as string | null,

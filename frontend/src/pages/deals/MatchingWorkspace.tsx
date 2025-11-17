@@ -307,21 +307,6 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
     return () => clearTimeout(timeout);
   }, [flashMessage]);
 
-  if (!hasAccess) {
-    return (
-      <div className="bg-white rounded-lg shadow p-8 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Unlock Deal Matching</h2>
-        <p className="text-gray-600 mb-6">
-          Upgrade to Professional tier or higher to access intelligent deal matching powered by AI.
-        </p>
-        <button className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium">
-          Upgrade to Professional
-        </button>
-        <p className="text-sm text-gray-500 mt-4">Starting at £598/month</p>
-      </div>
-    );
-  }
-
   const error = criteriaError || matchesError;
   const isMatchesTab = activeTab === 'matches';
   const isInitialLoading = criteriaLoading && activeTab === 'criteria';
@@ -400,6 +385,21 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
       activityEvents,
     };
   }, [matches]);
+
+  if (!hasAccess) {
+    return (
+      <div className="bg-white rounded-lg shadow p-8 text-center">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Unlock Deal Matching</h2>
+        <p className="text-gray-600 mb-6">
+          Upgrade to Professional tier or higher to access intelligent deal matching powered by AI.
+        </p>
+        <button className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium">
+          Upgrade to Professional
+        </button>
+        <p className="text-sm text-gray-500 mt-4">Starting at £598/month</p>
+      </div>
+    );
+  }
 
   if (error) {
     return (
@@ -720,7 +720,6 @@ const MatchesSkeleton: React.FC = () => (
   <div className="space-y-4">
     {Array.from({ length: 3 }).map((_, index) => (
       <div
-        // eslint-disable-next-line react/no-array-index-key
         key={`match-skeleton-${index}`}
         className="animate-pulse rounded-lg border border-gray-200 p-4 shadow-sm"
       >

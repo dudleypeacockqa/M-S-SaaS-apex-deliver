@@ -28,7 +28,7 @@ class TestDashboardAPI:
         create_organization,
         auth_headers,
     ):
-        """Test GET /dashboard/summary returns placeholder summary."""
+        """Test GET /dashboard/summary returns aggregate metrics."""
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
@@ -39,31 +39,23 @@ class TestDashboardAPI:
         assert response.status_code == 200
         data = response.json()
         
-        # Verify structure
-        assert "deals" in data
-        assert "activity" in data
-        assert "quick_stats" in data
-        
-        # Verify deals structure
-        assert "total" in data["deals"]
-        assert "active" in data["deals"]
-        assert "this_month" in data["deals"]
-        assert "pipeline_value" in data["deals"]
-        
-        # Verify activity structure
-        assert "deals_created_this_week" in data["activity"]
-        assert "documents_uploaded_this_week" in data["activity"]
-        assert "tasks_due_this_week" in data["activity"]
-        
-        # Verify quick_stats structure
-        assert "avg_deal_size" in data["quick_stats"]
-        assert "conversion_rate" in data["quick_stats"]
-        assert "active_users" in data["quick_stats"]
-        
-        # Verify placeholder values
-        assert data["deals"]["total"] == 0
-        assert data["deals"]["active"] == 0
-        assert data["quick_stats"]["active_users"] == 1  # At least current user
+        assert set(data.keys()) == {"deals", "documents", "tasks", "financial"}
+
+        # Verify deals section
+        assert {"total", "active", "won"} == set(data["deals"].keys())
+        assert isinstance(data["deals"]["total"], int)
+
+        # Documents/tasks should be integers
+        assert isinstance(data["documents"], int)
+        assert isinstance(data["tasks"], int)
+
+        # Financial block contains summary metrics
+        assert {
+            "total_deal_value",
+            "average_deal_value",
+            "active_deals",
+            "won_deals",
+        } == set(data["financial"].keys())
         
     
     def test_get_recent_activity(
@@ -80,17 +72,12 @@ class TestDashboardAPI:
         dependency_overrides(get_current_user, lambda: user)
         
         response = client.get("/api/dashboard/recent-activity", headers=auth_headers)
-        
+
         assert response.status_code == 200
         data = response.json()
-        
-        # Verify structure
-        assert "items" in data
-        assert "total" in data
-        
-        # Verify placeholder values
-        assert data["items"] == []
-        assert data["total"] == 0
+
+        # Returns list of activity entries
+        assert isinstance(data, list)
         
     
     def test_get_recent_activity_with_limit(
@@ -107,13 +94,10 @@ class TestDashboardAPI:
         dependency_overrides(get_current_user, lambda: user)
         
         response = client.get("/api/dashboard/recent-activity?limit=20", headers=auth_headers)
-        
+
         assert response.status_code == 200
         data = response.json()
-        
-        # Verify structure (limit parameter is accepted even if not used yet)
-        assert "items" in data
-        assert "total" in data
+        assert isinstance(data, list)
         
     
     def test_get_upcoming_tasks(
@@ -130,19 +114,12 @@ class TestDashboardAPI:
         dependency_overrides(get_current_user, lambda: user)
         
         response = client.get("/api/dashboard/tasks", headers=auth_headers)
-        
+
         assert response.status_code == 200
         data = response.json()
-        
-        # Verify structure
-        assert "items" in data
-        assert "total" in data
-        
-        # Verify placeholder values
-        assert data["items"] == []
-        assert data["total"] == 0
-        
-    
+        assert isinstance(data, list)
+
+
     def test_get_financial_insights(
         self,
         client: TestClient,
@@ -150,28 +127,24 @@ class TestDashboardAPI:
         create_organization,
         auth_headers,
     ):
-        """Test GET /dashboard/financial-insights returns placeholder data."""
+        """Test GET /dashboard/financial-summary returns aggregate data."""
         org = create_organization(name="Test Org")
         user = create_user(email="user@example.com", organization_id=str(org.id))
         
         dependency_overrides(get_current_user, lambda: user)
         
-        response = client.get("/api/dashboard/financial-insights", headers=auth_headers)
+        response = client.get("/api/dashboard/financial-summary", headers=auth_headers)
         
         assert response.status_code == 200
         data = response.json()
         
         # Verify structure
-        assert "total_deal_value" in data
-        assert "avg_deal_size" in data
-        assert "deals_with_financials" in data
-        assert "insights" in data
-        
-        # Verify placeholder values
-        assert data["total_deal_value"] == 0
-        assert data["avg_deal_size"] == 0
-        assert data["deals_with_financials"] == 0
-        assert data["insights"] == []
+        assert {
+            "total_deal_value",
+            "average_deal_value",
+            "active_deals",
+            "won_deals",
+        } == set(data.keys())
         
     
     def test_dashboard_endpoints_require_authentication(
@@ -183,7 +156,8 @@ class TestDashboardAPI:
             "/api/dashboard/summary",
             "/api/dashboard/recent-activity",
             "/api/dashboard/tasks",
-            "/api/dashboard/financial-insights",
+            "/api/dashboard/financial-summary",
+            "/api/dashboard/metrics",
         ]
         
         for endpoint in endpoints:

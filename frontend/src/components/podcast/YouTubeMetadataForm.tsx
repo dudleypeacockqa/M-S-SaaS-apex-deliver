@@ -102,7 +102,9 @@ export function YouTubeMetadataForm({ values, errors, onFieldChange, onErrorChan
           value={values.tags}
           onChange={(event) => {
             onFieldChange('tags', event.target.value);
-            onErrorChange && onErrorChange('tags', null);
+            if (onErrorChange) {
+              onErrorChange('tags', null);
+            }
           }}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           placeholder="investor relations, earnings"
@@ -124,7 +126,9 @@ export function YouTubeMetadataForm({ values, errors, onFieldChange, onErrorChan
             value={values.category}
             onChange={(event) => {
               onFieldChange('category', event.target.value);
-              onErrorChange && onErrorChange('category', null);
+              if (onErrorChange) {
+                onErrorChange('category', null);
+              }
             }}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           >
@@ -144,7 +148,9 @@ export function YouTubeMetadataForm({ values, errors, onFieldChange, onErrorChan
             value={values.privacy}
             onChange={(event) => {
               onFieldChange('privacy', event.target.value as YouTubePrivacyOption);
-              onErrorChange && onErrorChange('privacy', null);
+              if (onErrorChange) {
+                onErrorChange('privacy', null);
+              }
             }}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           >
@@ -165,7 +171,9 @@ export function YouTubeMetadataForm({ values, errors, onFieldChange, onErrorChan
           value={values.scheduleTime}
           onChange={(event) => {
             onFieldChange('scheduleTime', event.target.value);
-            onErrorChange && onErrorChange('scheduleTime', null);
+            if (onErrorChange) {
+              onErrorChange('scheduleTime', null);
+            }
           }}
           disabled={values.privacy === 'private'}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:bg-gray-100"
