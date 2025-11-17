@@ -518,7 +518,7 @@ def fetch_sage_statements(connection_id: str, db: Session) -> List[FinancialStat
         raise ValueError(f"Connection {connection_id} not found")
 
     # Check if token is expired
-    if connection.token_expires_at < datetime.now():
+    if connection.token_expires_at and connection.token_expires_at <= datetime.now(timezone.utc):
         # Auto-refresh token
         connection = refresh_sage_token(connection_id, db)
 

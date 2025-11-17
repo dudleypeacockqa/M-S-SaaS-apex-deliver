@@ -18,7 +18,7 @@
 **Setup Steps**:
 1. Create GA4 property at https://analytics.google.com
 2. Get Measurement ID (format: `G-XXXXXXXXXX`)
-3. Replace `G-PLACEHOLDER` in `frontend/index.html` (line 42 & 47)
+3. Set `VITE_GA_MEASUREMENT_ID` in Render → **ma-saas-frontend** service (or `.env`) so the React `AnalyticsProvider` can bootstrap GA without inline scripts.
 
 **Events Tracked**:
 - `page_view` (automatic)
@@ -50,7 +50,7 @@ gtag('config', 'G-XXXXXXXXXX', {
 **Setup Steps**:
 1. Create project at https://clarity.microsoft.com
 2. Get Project ID (format: `XXXXXXXXXX`)
-3. Replace `CLARITY_PLACEHOLDER` in `frontend/index.html` (line 61)
+3. Set `VITE_CLARITY_PROJECT_ID` in the frontend environment variables (Render → **Environment** tab) to allow the AnalyticsProvider to lazy-load Clarity.
 
 **Features**:
 - Session recordings
@@ -67,7 +67,7 @@ gtag('config', 'G-XXXXXXXXXX', {
 
 **Setup Steps**:
 1. Get Partner ID from LinkedIn Campaign Manager
-2. Replace `LINKEDIN_PLACEHOLDER` in `frontend/index.html` (lines 67 & 83)
+2. Set `VITE_LINKEDIN_PARTNER_ID` in the frontend environment variables; the AnalyticsProvider takes care of loading `snap.licdn.com` plus the `<noscript>` pixel.
 
 **Use Cases**:
 - Track conversions from LinkedIn Ads
