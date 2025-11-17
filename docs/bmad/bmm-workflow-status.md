@@ -1,10 +1,10 @@
 
 # BMM Workflow Status
 
-**Status**: ⚠️ Re-opened — Sprint 1-B (Master Admin Frontend + Deploy Verification) active | Updated 2025-11-15
+**Status**: ⚠️ Re-opened — Sprint 1-B (Master Admin Frontend + Deploy Verification) active | Updated 2025-11-17T14:09Z (toolchain revalidated)
 **Release Target**: v1.0.0 (Pending sign-off)
 **Current Version**: Sprint 1-A backend fixes landed; Sprint 1-B in progress
-**Test Pass Rate**: Backend 1340/1425 passing (17 FAILED, 14 ERROR) · Frontend 1740/1740 passing (Vitest 172 files) ⚠️
+**Test Pass Rate**: Backend 1340/1425 passing (17 FAILED, 14 ERROR) · Frontend 1740/1740 passing (Vitest 172 files) ⚠️ — awaiting fresh RED runs scheduled 2025-11-17T14Z
 **Execution Plan**: Phases 1–2 closed; Phases 3–5 still in flight per `TODO.md` and `docs/100-PERCENT-COMPLETION-ROADMAP.md`
 
 ## Project Configuration
@@ -22,7 +22,7 @@ CURRENT_PHASE: 3-Implementation (Sprint 1-B – Master Admin Frontend + Deploy R
 CURRENT_WORKFLOW: dev-story (Master Admin UI + deployment verification TDD loop)
 CURRENT_AGENT: codex (primary) with BMAD governance support
 PROJECT_COMPLETION: 78% (Backend service coverage/regressions unresolved; Frontend Master Admin features still require verification)
-LAST_UPDATED: 2025-11-15T11:40Z (status + test health refreshed)
+LAST_UPDATED: 2025-11-17T14:09Z (BMAD CLI + tooling verified, next: rerun pytest/Vitest baselines)
 PHASE_1_FOUNDATIONAL_CORE: ✅ COMPLETE (backend API foundations + enums fixes)
 PHASE_2_ADVANCED_INTELLIGENCE: ✅ COMPLETE (Sprint 1-A backend repairs)
 PHASE_3_ECOSYSTEM_NETWORK: ⚠️ IN PROGRESS (Master Admin UI, integrations outstanding)
@@ -66,6 +66,23 @@ NEXT_COMMAND:
 NEXT_AGENT: codex
 PRIORITY: P1 (evidence capture/documentation), P2 (remaining lint warnings/perf polish)
 RATIONALE: Backend/FE suites now passing in chunks; focus shifts to capturing consolidated logs, refreshing documentation, and preparing for Phase 5 polish tasks.
+
+## Session 2025-11-17T14-Toolchain-Verification
+
+SESSION_ID: Session-2025-11-17T14-Toolchain-Verification
+COMPLETED_WORK:
+- Diagnosed the broken `npx`/`npm` wrapper that was resolving to `C:\usr\bin\npx` and switched to the explicit Windows binaries (`/mnt/c/Program Files/nodejs/{npx,npm}`) so Node- and BMAD-based workflows can execute again inside the Codex shell.
+- Ran `/mnt/c/Program\ Files/nodejs/npx bmad-method status` from the repo root to confirm the installation footprint (v4.44.1, installed 2025-01-11, IDE integrations for cursor · claude-code · codex) before resuming Sprint 1-B work.
+- Captured this timestamp in the workflow file and prepared to refresh `BMAD_PROGRESS_TRACKER.md` + README/TODO alignment once fresh RED test runs are gathered.
+
+FILES_MODIFIED:
+- docs/bmad/bmm-workflow-status.md (timestamp + current session log)
+- docs/bmad/BMAD_PROGRESS_TRACKER.md (new tracker entry documenting the tooling fix and pending RED runs)
+
+TEST_RESULTS:
+- `/mnt/c/Program\ Files/nodejs/npx bmad-method status` → succeeded (v4.44.1 install confirmed; full test sweeps still pending per Next Action list)
+
+**Focus**: Environment ready for backend pytest + frontend Vitest baselines; proceed with RED runs per TODO + roadmap.
 
 ## Status Reset (2025-11-15)
 
@@ -387,3 +404,29 @@ NEXT_COMMAND: bash scripts/run_smoke_tests.sh production
 NEXT_AGENT: dev
 PRIORITY: P0
 RATIONALE: Governance requires fresh deployment evidence prior to starting DEV-008 RED cycle.
+---
+
+SESSION_ID: Session-2025-11-17T14-SMOKE-EVIDENCE
+COMPLETED_WORK:
+- Ran bash scripts/run_smoke_tests.sh production (2/2 pytest smoke cases, backend + frontend HTTP 200) and archived the output to docs/deployments/2025-11-17-smoke-run.txt.
+- Queried Render API for backend/front services using the provided key; stored results in docs/deployments/2025-11-17-render-backend-status.txt and docs/deployments/2025-11-17-render-frontend-status.txt.
+- Executed python scripts/verify_deployment.py to hit the Phase-1 endpoint suite (10/10 passing) and logged to docs/deployments/2025-11-17-deployment-verification.txt.
+- Refreshed latest-deploy.json with the new deploy IDs, commit hashes, and health metadata so governance artefacts reflect the RCA hotfix.
+
+FILES_MODIFIED:
+- docs/deployments/2025-11-17-smoke-run.txt
+- docs/deployments/2025-11-17-render-backend-status.txt
+- docs/deployments/2025-11-17-render-frontend-status.txt
+- docs/deployments/2025-11-17-deployment-verification.txt
+- latest-deploy.json
+- docs/bmad/bmm-workflow-status.md (this update)
+
+TEST_RESULTS:
+- bash scripts/run_smoke_tests.sh production – PASS (backend/front 200s + pytest smoke)
+- python scripts/verify_deployment.py – PASS (10/10 endpoints)
+
+NEXT_ACTION: Begin DEV-008 RED cycle by adding failing Vitest specs for DocumentWorkspace/UploadPanel permissions
+NEXT_COMMAND: cmd /c "cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx"
+NEXT_AGENT: dev
+PRIORITY: P0
+RATIONALE: With deployment evidence refreshed, we can advance to the feature backlog under BMAD TDD.

@@ -103,9 +103,9 @@ export default defineConfig({
           }
           // Core React dependencies
           if (id.includes('node_modules')) {
-            // Lucide React icons - bundle with core React to avoid blank-screen races
+            // Lucide React icons - keep in their own chunk to guarantee deterministic init order
             if (id.includes('lucide-react')) {
-              return 'react-vendor'
+              return 'lucide-vendor'
             }
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'react-vendor'

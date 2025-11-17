@@ -1,3 +1,32 @@
+## Session 2025-11-17T14-Toolchain-Verification – Reset CLI + Prep RED Baselines
+
+**Status**: 🔄 IN PROGRESS – BMAD CLI operational, awaiting backend/frontend test reruns
+**Duration**: 0.5 hours
+**Priority**: P0 – unblock BMAD + TDD workflows
+**Version**: Sprint 1-B (Master Admin Frontend + Deploy Verification)
+
+### Objective
+Restore `npx`/`npm` tooling so BMAD workflows and RED test runs can proceed, and capture an authoritative install status before continuing TDD.
+
+### Accomplishments
+
+- Routed `npx`/`npm` through `/mnt/c/Program Files/nodejs/{npx,npm}` to bypass the broken `C:\usr\bin` shim in the Codex shell so BMAD commands run reliably again.
+- Executed `/mnt/c/Program\ Files/nodejs/npx bmad-method status` at the repo root → CLI v4.44.1, installed 2025-01-11, IDE targets `cursor`, `claude-code`, `codex` confirmed.
+- Updated `docs/bmad/bmm-workflow-status.md` and this tracker to record the tooling fix plus the pending RED plan (backend pytest + frontend Vitest reruns per TODO/roadmap).
+
+### Evidence
+
+- Command log: `/mnt/c/Program\ Files/nodejs/npx bmad-method status` (terminal output: Directory C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver · Version 4.44.1 · IDEs cursor/claude-code/codex).
+- Files touched: `docs/bmad/bmm-workflow-status.md`, `docs/bmad/BMAD_PROGRESS_TRACKER.md`.
+
+### Next Steps
+
+1. Recreate backend baseline: ensure `.venv` deps are current then run `./backend/venv/Scripts/python.exe -m pytest backend/tests --maxfail=1 --disable-warnings -q` (capture full log for docs/tests/).
+2. Refresh frontend deps + Vitest coverage: `(cd frontend && /mnt/c/Program\ Files/nodejs/npm install && /mnt/c/Program\ Files/nodejs/npm run test -- --run --coverage)`.
+3. Archive outputs + update README, TODO, and roadmap once RED → GREEN → REFACTOR cycles land.
+
+---
+
 ## Session 2025-11-17-V1.1-RELEASE-AND-OAUTH-TESTS – Production Release + Coverage Enhancement ✅
 
 **Status**: ✅ COMPLETE – v1.1.0 Released + 60 OAuth Tests Added
