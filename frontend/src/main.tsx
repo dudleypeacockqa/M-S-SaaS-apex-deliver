@@ -2,6 +2,10 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { ClerkProvider } from "@clerk/clerk-react"
 
+// Import icons early to ensure lucide-react module executes before any component renders
+// This prevents "Cannot set properties of undefined (setting 'Activity')" errors
+import "./lib/icons"
+
 import App from "./App"
 import "./index.css"
 

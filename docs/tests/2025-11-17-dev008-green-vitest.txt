@@ -1,0 +1,4 @@
+Vitest run - DocumentWorkspace (DEV-008) - 2025-11-17T14:30Z
+Command: cmd /c "cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx"
+
+Result: PASS (32 tests, 0 failing)

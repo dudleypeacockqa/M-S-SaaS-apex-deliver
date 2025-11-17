@@ -67,6 +67,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      // Force lucide-react to always resolve to ESM build to prevent chunk splitting issues
+      'lucide-react': path.resolve(__dirname, 'node_modules/lucide-react/dist/esm/lucide-react.js'),
     },
     // Dedupe lucide-react to prevent multiple instances
     dedupe: ['lucide-react'],
@@ -89,6 +91,11 @@ export default defineConfig({
           // Skip test files entirely
           if (id.includes('.test.') || id.includes('.spec.') || id.includes('vitest')) {
             return undefined;
+          }
+          // CRITICAL: Prevent lucide-react from being split into its own chunk
+          // This prevents "Cannot set properties of undefined (setting 'Activity')" errors
+          if (id.includes('lucide-react')) {
+            return undefined; // Keep in main bundle
           }
           // Core React dependencies
           if (id.includes('node_modules')) {

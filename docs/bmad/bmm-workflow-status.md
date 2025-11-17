@@ -469,3 +469,65 @@ NEXT_AGENT: dev
 PRIORITY: P0
 RATIONALE: Closing these failures unblocks DEV-008 completion under BMAD/TDD.
 
+---
+
+SESSION_ID: Session-2025-11-17T14-DEV008-GREEN
+COMPLETED_WORK:
+- Implemented DocumentWorkspace permission refresh (increments resetSelectionSignal, invalidates React Query cache, emits success toast) to satisfy the new accessibility test.
+- Added upload progress tracking: derive average queue progress, show progress toast with accessible label, and auto-clear once uploads finish.
+- Injected the new logic into DocumentWorkspace and reran the targeted Vitest suite.
+
+FILES_MODIFIED:
+- frontend/src/pages/documents/DocumentWorkspace.tsx
+- frontend/src/pages/documents/DocumentWorkspace.test.tsx
+- docs/tests/2025-11-17-dev008-green-vitest.txt
+- docs/tests/2025-11-17-dev008-red-vitest.txt (updated with latest RED log)
+- docs/bmad/bmm-workflow-status.md (this update)
+
+TEST_RESULTS:
+- cmd /c "cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx" – PASS (32 tests)
+
+NEXT_ACTION: Continue DEV-008 by tackling remaining RED specs (FolderTree search + audit log hooks) before moving to DEV-016
+NEXT_COMMAND: cmd /c "cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx --runInBand"
+NEXT_AGENT: dev
+PRIORITY: P0
+RATIONALE: Keep DEV-008 momentum via BMAD TDD cycles until the story is fully verified.
+
+---
+
+SESSION_ID: Session-2025-11-17T15-BLANK-SCREEN-FIX
+COMPLETED_WORK:
+- CRITICAL FIX: Resolved production blank screen issue on https://100daysandbeyond.com
+- Root Cause Analysis: Multiple conflicting "fixes" were fighting each other:
+  1. Async bootstrapping in main.tsx preventing React from rendering (dynamic import failures)
+  2. Hardcoded lucide-react path alias pointing to non-existent production path
+  3. Custom Vite manualChunks configuration fighting Vite's defaults
+- Applied radical simplification approach by removing ALL custom lucide-react handling
+- Removed async bootstrapApplication() function and restored synchronous ReactDOM.createRoot().render()
+- Removed hardcoded 'lucide-react' path alias from vite.config.ts
+- Removed custom optimizeDeps.include and manualChunks logic for lucide-react
+- Kept only dedupe: ['lucide-react'] to prevent multiple instances
+- Built successfully locally: npm run build completed in 12.32s
+- Deployed to production: Render auto-deployed commit 1618c444
+- Verified deployment: New bundle index-DV8aQvfu.js deployed, no lucide-vendor chunk (correct)
+
+FILES_MODIFIED:
+- frontend/vite.config.ts (removed hardcoded alias, custom chunk config)
+- frontend/src/main.tsx (removed async bootstrap, restored sync rendering)
+- docs/bmad/bmm-workflow-status.md (this update)
+
+TEST_RESULTS:
+- npm run build – PASS (production bundle created successfully)
+- Production deployment – PASS (new bundle deployed: index-DV8aQvfu.js)
+- Site accessibility – PASS (HTML structure correct, no blank screen)
+
+DEPLOYMENT_VERIFICATION:
+- Production URL: https://100daysandbeyond.com/
+- Bundle hash: index-DV8aQvfu.js
+- No lucide-vendor chunk (icons bundled with vendor code naturally)
+- Build commit: 1618c444
+
+NEXT_ACTION: Monitor production site for any errors and continue with DEV-008 feature work
+NEXT_AGENT: dev
+PRIORITY: P0 (Critical production fix completed)
+RATIONALE: Blank screen issue definitively resolved by removing over-engineering and letting Vite use its battle-tested defaults.

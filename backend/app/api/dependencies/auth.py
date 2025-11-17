@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 from typing import Callable, Any
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
@@ -22,6 +22,22 @@ from app.services.rbac_audit_service import log_claim_mismatch
 logger = logging.getLogger(__name__)
 
 http_bearer = HTTPBearer(auto_error=False)
+
+
+def _credentials_from_request(request: Request | None) -> HTTPAuthorizationCredentials | None:
+    """Extract bearer credentials from a raw Request when HTTPBearer dependency isn't available."""
+    if request is None:
+        return None
+
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        return None
+
+    scheme, _, token = auth_header.partition(" ")
+    if scheme.lower() != "bearer" or not token:
+        return None
+
+    return HTTPAuthorizationCredentials(scheme="Bearer", credentials=token.strip())
 
 
 def _extract_claim(claims: dict[str, Any], *keys: str) -> str | None:
@@ -87,11 +103,14 @@ def _enforce_claim_integrity(user: User, claims: dict[str, Any], db: Session) ->
 
 
 def get_current_user(
+    request: Request,
     credentials: HTTPAuthorizationCredentials | None = Depends(http_bearer),
     db: Session = Depends(get_db),
 ) -> User:
     """Retrieve the current user based on Clerk JWT."""
 
+    if credentials is None:
+        credentials = _credentials_from_request(request)
     if credentials is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
 

@@ -555,6 +555,7 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
               ? 'progressbar'
               : 'status'
           }
+          aria-label={activeToast.progress ? activeToast.progress.label : activeToast.message}
           aria-valuemin={activeToast.progress ? 0 : undefined}
           aria-valuemax={activeToast.progress ? activeToast.progress.total : undefined}
           aria-valuenow={activeToast.progress ? activeToast.progress.value : undefined}

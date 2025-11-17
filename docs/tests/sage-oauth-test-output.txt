@@ -1,0 +1,46 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0 -- C:\Users\User\AppData\Local\Programs\Python\Python311\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 24 items
+
+tests\test_sage_oauth_service.py::TestRealSageClient::test_init_raises_error_when_credentials_missing PASSED [  4%]
+tests\test_sage_oauth_service.py::TestRealSageClient::test_init_sets_credentials_from_env PASSED [  8%]
+tests\test_sage_oauth_service.py::TestRealSageClient::test_init_uses_default_redirect_uri PASSED [ 12%]
+tests\test_sage_oauth_service.py::TestRealSageClient::test_get_authorization_url_builds_correct_url PASSED [ 16%]
+tests\test_sage_oauth_service.py::TestRealSageClient::test_exchange_code_for_token_success PASSED [ 20%]
+tests\test_sage_oauth_service.py::TestRealSageClient::test_exchange_code_for_token_handles_http_error PASSED [ 25%]
+tests\test_sage_oauth_service.py::TestRealSageClient::test_get_connections_returns_business_info PASSED [ 29%]
+tests\test_sage_oauth_service.py::TestRealSageClient::test_get_connections_handles_empty_response PASSED [ 33%]
+tests\test_sage_oauth_service.py::TestRealSageClient::test_refresh_access_token_success PASSED [ 37%]
+tests\test_sage_oauth_service.py::TestRealSageClient::test_refresh_access_token_handles_http_error PASSED [ 41%]
+tests\test_sage_oauth_service.py::TestHandleSageCallback::test_handle_sage_callback_raises_error_when_deal_not_found PASSED [ 45%]
+tests\test_sage_oauth_service.py::TestHandleSageCallback::test_handle_sage_callback_creates_new_connection PASSED [ 50%]
+tests\test_sage_oauth_service.py::TestHandleSageCallback::test_handle_sage_callback_updates_existing_connection PASSED [ 54%]
+tests\test_sage_oauth_service.py::TestHandleSageCallback::test_handle_sage_callback_raises_error_when_no_businesses PASSED [ 58%]
+tests\test_sage_oauth_service.py::TestRefreshSageToken::test_refresh_sage_token_raises_error_when_connection_not_found PASSED [ 62%]
+tests\test_sage_oauth_service.py::TestRefreshSageToken::test_refresh_sage_token_success PASSED [ 66%]
+tests\test_sage_oauth_service.py::TestRefreshSageToken::test_refresh_sage_token_marks_expired_on_failure PASSED [ 70%]
+tests\test_sage_oauth_service.py::TestFetchSageStatements::test_fetch_sage_statements_raises_error_when_connection_not_found PASSED [ 75%]
+tests\test_sage_oauth_service.py::TestFetchSageStatements::test_fetch_sage_statements_auto_refreshes_expired_token PASSED [ 79%]
+tests\test_sage_oauth_service.py::TestFetchSageStatements::test_fetch_sage_statements_handles_api_error_gracefully PASSED [ 83%]
+tests\test_sage_oauth_service.py::TestDisconnectSage::test_disconnect_sage_deletes_connection PASSED [ 87%]
+tests\test_sage_oauth_service.py::TestDisconnectSage::test_disconnect_sage_handles_no_connection_gracefully PASSED [ 91%]
+tests\test_sage_oauth_service.py::TestGetSageConnectionStatus::test_get_sage_connection_status_returns_none_when_no_connection PASSED [ 95%]
+tests\test_sage_oauth_service.py::TestGetSageConnectionStatus::test_get_sage_connection_status_returns_connection_info PASSED [100%]
+
+============================== warnings summary ===============================
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\..\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291
+  C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:291: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.8/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 24 passed, 6 warnings in 5.49s ========================
