@@ -257,4 +257,4 @@ const App = () => {
 }
 
 export default App
-// Render cache bust 1763391276
+// Render cache bust - fresh build without lucide-vendor chunk - 20251117154200
