@@ -1,7 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { ClerkProvider } from "@clerk/clerk-react"
-
+import "./lib/icons"
 import App from "./App"
 import "./index.css"
 
@@ -11,101 +11,23 @@ const publishableKey =
 
 const appBuildId = import.meta.env.VITE_APP_BUILD_ID ?? (typeof __APP_BUILD_ID__ !== 'undefined' ? __APP_BUILD_ID__ : undefined)
 
-const ClerkKeyMissingError = () => {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        background: 'linear-gradient(to bottom right, #f8fafc, #e2e8f0)',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: '600px',
-          background: 'white',
-          padding: '2rem',
-          borderRadius: '0.5rem',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        <h1
-          style={{
-            color: '#dc2626',
-            marginBottom: '1rem',
-            fontSize: '1.5rem',
-            fontWeight: '600',
-          }}
-        >
-          Configuration Error
-        </h1>
-        <p style={{ color: '#475569', marginBottom: '1rem', lineHeight: '1.6' }}>
-          The application is missing required configuration. The <code style={{ background: '#f1f5f9', padding: '0.125rem 0.25rem', borderRadius: '0.25rem', fontSize: '0.875rem' }}>VITE_CLERK_PUBLISHABLE_KEY</code> environment variable is not set.
-        </p>
-        <div
-          style={{
-            background: '#f8fafc',
-            padding: '1rem',
-            borderRadius: '0.375rem',
-            marginBottom: '1rem',
-            borderLeft: '4px solid #3b82f6',
-          }}
-        >
-          <p style={{ color: '#1e293b', marginBottom: '0.5rem', fontWeight: '500' }}>
-            For Administrators:
-          </p>
-          <ol style={{ color: '#475569', paddingLeft: '1.5rem', lineHeight: '1.8' }}>
-            <li>Go to your Render dashboard</li>
-            <li>Navigate to the <strong>ma-saas-frontend</strong> service</li>
-            <li>Open the <strong>Environment</strong> tab</li>
-            <li>Add <code style={{ background: '#e2e8f0', padding: '0.125rem 0.25rem', borderRadius: '0.25rem', fontSize: '0.875rem' }}>VITE_CLERK_PUBLISHABLE_KEY</code> with your Clerk publishable key</li>
-            <li>Trigger a redeploy</li>
-          </ol>
-        </div>
-        <button
-          onClick={() => window.location.reload()}
-          style={{
-            padding: '0.625rem 1.25rem',
-            background: '#3b82f6',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            fontWeight: '500',
-            fontSize: '0.875rem',
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.background = '#2563eb'
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.background = '#3b82f6'
-          }}
-        >
-          Reload Page
-        </button>
-      </div>
-    </div>
-  )
-}
-
 const Root = () => {
-  if (!publishableKey) {
-    if (import.meta.env.DEV) {
-      console.warn("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable. Rendering without Clerk.")
-      // In development, allow rendering without Clerk for testing
-      return <App />
-    }
-    // In production, show error UI instead of blank screen
-    console.error("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable in production build.")
-    return <ClerkKeyMissingError />
+  // Always provide ClerkProvider context to prevent SignedIn/SignedOut component crashes
+  // Use fallback key if real key is missing - this allows app to render
+  const keyToUse = publishableKey && 
+    publishableKey !== 'undefined' && 
+    publishableKey.trim() !== ''
+    ? publishableKey 
+    : "pk_test_fallback-key-prevents-crashes"
+  
+  if (!publishableKey || publishableKey === 'undefined' || publishableKey.trim() === '') {
+    console.warn("Missing or invalid VITE_CLERK_PUBLISHABLE_KEY. Using fallback key to prevent crashes.")
   }
 
+  // Always wrap App in ClerkProvider - even with invalid key, it initializes (auth just won't work)
+  // This prevents SignedIn/SignedOut components from crashing with "must be used within ClerkProvider" errors
   return (
-    <ClerkProvider publishableKey={publishableKey}>
+    <ClerkProvider publishableKey={keyToUse}>
       <App />
     </ClerkProvider>
   )

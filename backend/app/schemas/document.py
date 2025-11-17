@@ -182,7 +182,7 @@ class DocumentAccessLogEntry(BaseModel):
     action: str
     ip_address: Optional[str]
     user_agent: Optional[str]
-    access_metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -192,7 +192,7 @@ class DocumentAccessLogCreate(BaseModel):
     """Schema for creating manual document audit events."""
 
     action: str = Field(..., min_length=3, max_length=50)
-    access_metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = None
     ip_address: Optional[str] = None
     user_agent: Optional[str] = None
 

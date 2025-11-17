@@ -88,7 +88,8 @@ const CampaignManager = lazyNamed(() => import("./pages/master-admin/CampaignMan
 const ContentStudio = lazyNamed(() => import("./pages/master-admin/ContentStudio"), "ContentStudio")
 const LeadCapture = lazyNamed(() => import("./pages/master-admin/LeadCapture"), "LeadCapture")
 const SalesCollateral = lazyNamed(() => import("./pages/master-admin/SalesCollateral"), "SalesCollateral")
-const BlogAdminEditor = lazyNamed(() => import("./pages/admin/BlogAdminEditor"), "BlogAdminEditor")
+// Temporarily disabled - missing blogService functions (createBlogPost, updateBlogPost, publishBlogPost, getBlogPost)
+// const BlogAdminEditor = lazyNamed(() => import("./pages/admin/BlogAdminEditor"), "BlogAdminEditor")
 
 // Feature flag check for Master Admin Portal
 const isMasterAdminEnabled = import.meta.env.VITE_ENABLE_MASTER_ADMIN === 'true'
@@ -167,8 +168,9 @@ export const AppRoutes = () => {
         <Route path="admin/users" element={<SignedIn><UserManagement /></SignedIn>} />
         <Route path="admin/organizations" element={<SignedIn><OrganizationManagement /></SignedIn>} />
         <Route path="admin/system" element={<SignedIn><SystemHealth /></SignedIn>} />
-        <Route path="admin/blog/new" element={<SignedIn><BlogAdminEditor /></SignedIn>} />
-        <Route path="admin/blog/:id/edit" element={<SignedIn><BlogAdminEditor /></SignedIn>} />
+        {/* Temporarily disabled - BlogAdminEditor needs blogService functions implemented */}
+        {/* <Route path="admin/blog/new" element={<SignedIn><BlogAdminEditor /></SignedIn>} /> */}
+        {/* <Route path="admin/blog/:id/edit" element={<SignedIn><BlogAdminEditor /></SignedIn>} /> */}
 
         {/* Master Admin Portal Routes (Feature-Flagged) */}
         <Route path="master-admin" element={<SignedIn><MasterAdminRoute><MasterAdminDashboard /></MasterAdminRoute></SignedIn>} />

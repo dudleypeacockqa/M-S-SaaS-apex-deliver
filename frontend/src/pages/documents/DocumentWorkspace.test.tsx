@@ -477,8 +477,16 @@ describe('DocumentWorkspace', () => {
         })
       })
 
-      // Audit log should be triggered
-      // Implementation will add audit logging hook
+      await waitFor(() => {
+        expect(documentApiMocks.logDocumentAuditEvent).toHaveBeenCalledWith(
+          'deal-abc',
+          'doc-1',
+          expect.objectContaining({
+            action: 'permission_change',
+            metadata: expect.objectContaining({ userId: 'user-abc', permission: 'edit' }),
+          })
+        )
+      })
     })
 
     it('logs document deletion events', async () => {
@@ -497,7 +505,13 @@ describe('DocumentWorkspace', () => {
         })
       })
 
-      // Audit log should be triggered (will implement useAuditLog hook)
+      await waitFor(() => {
+        expect(documentApiMocks.logDocumentAuditEvent).toHaveBeenCalledWith(
+          'deal-abc',
+          'doc-to-delete',
+          expect.objectContaining({ action: 'DOCUMENT_DELETED' })
+        )
+      })
     })
 
     it('logs bulk actions with affected document IDs', async () => {
@@ -516,7 +530,9 @@ describe('DocumentWorkspace', () => {
         })
       })
 
-      // Audit log hook should capture bulk operations
+      await waitFor(() => {
+        expect(documentApiMocks.logDocumentAuditEvent).toHaveBeenCalledTimes(3)
+      })
     })
   })
 

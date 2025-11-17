@@ -714,6 +714,45 @@ def revoke_document_permission(
 # ============================================================================
 
 
+@router.post("/documents/{document_id}/access-logs", response_model=DocumentAccessLogEntry, status_code=status.HTTP_201_CREATED)
+def create_access_log_entry(
+    deal_id: str,
+    document_id: str,
+    payload: DocumentAccessLogCreate,
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Create a manual document audit log entry."""
+    document = document_service.get_document_by_id(
+        db=db,
+        document_id=document_id,
+        organization_id=current_user.organization_id,
+    )
+    if not document or document.deal_id != deal_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    document_service.ensure_document_permission(
+        db=db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.OWNER,
+    )
+
+    client_ip = payload.ip_address or (request.client.host if request.client else None)
+    user_agent = payload.user_agent or request.headers.get("user-agent")
+
+    return document_service.log_document_access(
+        db=db,
+        document=document,
+        user=current_user,
+        action=payload.action,
+        ip_address=client_ip,
+        user_agent=user_agent,
+        metadata=payload.metadata,
+    )
+
+
 @router.get("/documents/{document_id}/access-logs", response_model=List[DocumentAccessLogEntry])
 def get_access_logs(
     deal_id: str,
