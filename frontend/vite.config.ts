@@ -13,20 +13,20 @@ const buildId =
 const validateBuildEnv = () => {
   const isProduction = process.env.NODE_ENV === 'production'
   const isTest = process.env.NODE_ENV === 'test' || process.env.MODE === 'test'
-  
+
   // Only validate in production builds (not dev or test)
   if (isProduction && !isTest) {
     const requiredEnvVars = {
       VITE_CLERK_PUBLISHABLE_KEY: process.env.VITE_CLERK_PUBLISHABLE_KEY,
     }
-    
+
     const missingVars: string[] = []
     for (const [key, value] of Object.entries(requiredEnvVars)) {
       if (!value || value.trim() === '') {
         missingVars.push(key)
       }
     }
-    
+
     if (missingVars.length > 0) {
       const errorMessage = `
 ╔════════════════════════════════════════════════════════════════╗
@@ -67,8 +67,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      // CRITICAL: Force lucide-react to always resolve to ESM build to prevent chunk splitting issues
-      'lucide-react': path.resolve(__dirname, 'node_modules/lucide-react/dist/esm/lucide-react.js'),
     },
     // Dedupe lucide-react to prevent multiple instances
     dedupe: ['lucide-react'],
@@ -91,11 +89,6 @@ export default defineConfig({
           // Skip test files entirely
           if (id.includes('.test.') || id.includes('.spec.') || id.includes('vitest')) {
             return undefined;
-          }
-          // CRITICAL: Keep lucide-react in main bundle to prevent initialization race conditions
-          // DO NOT split lucide-react into separate chunk - causes "Cannot set properties of undefined" error
-          if (id.includes('lucide-react')) {
-            return undefined; // Keep in main bundle
           }
           // Core React dependencies
           if (id.includes('node_modules')) {
