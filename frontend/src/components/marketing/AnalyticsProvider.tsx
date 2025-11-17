@@ -4,6 +4,7 @@ const GA_SCRIPT_ID = 'ga4-script'
 const GA_CONFIG_ID = 'ga4-config'
 const HOTJAR_SCRIPT_ID = 'hotjar-script'
 const LINKEDIN_SCRIPT_ID = 'linkedin-insight-tag'
+const CLARITY_SCRIPT_ID = 'clarity-script'
 
 const loadScriptOnce = (id: string, create: () => HTMLScriptElement) => {
   if (typeof document === 'undefined') {
@@ -27,6 +28,7 @@ declare global {
     _hjSettings?: { hjid: number; hjsv: number }
     _linkedin_data_partner_ids?: string[]
     lintrk?: (...args: unknown[]) => void
+    clarity?: (...args: unknown[]) => void
   }
 }
 
@@ -112,6 +114,33 @@ window._hjSettings={hjid:${hotjarId},hjsv:${hotjarVersion}};
     })
   }, [])
 
+  // Microsoft Clarity
+  useEffect(() => {
+    const clarityId = import.meta.env.VITE_CLARITY_PROJECT_ID
+
+    if (!clarityId) {
+      return
+    }
+
+    if (typeof window.clarity !== 'function') {
+      type ClarityFn = ((...args: unknown[]) => void) & { q?: unknown[][] }
+      const clarity: ClarityFn = ((...args: unknown[]) => {
+        clarity.q = clarity.q || []
+        clarity.q.push(args)
+      }) as ClarityFn
+      window.clarity = clarity
+    }
+
+    loadScriptOnce(CLARITY_SCRIPT_ID, () => {
+      const script = document.createElement('script')
+      script.async = true
+      script.defer = true
+      script.src = `https://www.clarity.ms/tag/${clarityId}`
+      script.setAttribute('data-analytics', 'clarity')
+      return script
+    })
+  }, [])
+
   // LinkedIn Insight Tag
   useEffect(() => {
     const linkedInPartnerId = import.meta.env.VITE_LINKEDIN_PARTNER_ID
@@ -136,14 +165,9 @@ window._hjSettings={hjid:${hotjarId},hjsv:${hotjarVersion}};
     loadScriptOnce(LINKEDIN_SCRIPT_ID, () => {
       const script = document.createElement('script')
       script.type = 'text/javascript'
-      script.innerHTML = `(function(l) {
-if (!l){window.lintrk = function(a,b){window.lintrk.q.push([a,b])};
-window.lintrk.q=[]}
-var s = document.getElementsByTagName("script")[0];
-var b = document.createElement("script");
-b.type = "text/javascript";b.async = true;
-b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
-s.parentNode.insertBefore(b, s);})(window.lintrk);`
+      script.async = true
+      script.src = 'https://snap.licdn.com/li.lms-analytics/insight.min.js'
+      script.setAttribute('data-analytics', 'linkedin')
       return script
     })
 
@@ -158,4 +182,3 @@ s.parentNode.insertBefore(b, s);})(window.lintrk);`
 
   return <>{children}</>
 }
-
