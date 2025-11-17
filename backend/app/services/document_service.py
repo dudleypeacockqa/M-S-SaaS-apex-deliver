@@ -1163,7 +1163,7 @@ def get_document_access_logs(
             action=log.action,
             ip_address=log.ip_address,
             user_agent=log.user_agent,
-            metadata=log.metadata,
+            metadata=log.access_metadata,
             created_at=log.created_at,
         )
         for log in logs
@@ -1356,7 +1356,7 @@ def log_document_access(
     action: str,
     ip_address: Optional[str] = None,
     user_agent: Optional[str] = None,
-    metadata: Optional[Dict[str, Any]] = None,
+    access_metadata: Optional[Dict[str, Any]] = None,
 ) -> DocumentAccessLogEntry:
     entry = _log_access(
         db,
@@ -1365,7 +1365,7 @@ def log_document_access(
         action=action,
         ip_address=ip_address,
         user_agent=user_agent,
-        metadata=metadata,
+        access_metadata=access_metadata,
     )
     db.commit()
     db.refresh(entry)
@@ -1378,7 +1378,7 @@ def log_document_access(
         action=entry.action,
         ip_address=entry.ip_address,
         user_agent=entry.user_agent,
-        metadata=entry.metadata,
+        access_metadata=entry.access_metadata,
         created_at=entry.created_at,
     )
 
@@ -1391,7 +1391,7 @@ def _log_access(
     action: str,
     ip_address: Optional[str] = None,
     user_agent: Optional[str] = None,
-    metadata: Optional[Dict[str, Any]] = None,
+    access_metadata: Optional[Dict[str, Any]] = None,
 ) -> DocumentAccessLog:
     entry = DocumentAccessLog(
         id=str(uuid4()),
@@ -1402,7 +1402,7 @@ def _log_access(
         created_at=datetime.now(timezone.utc),
         ip_address=ip_address,
         user_agent=user_agent,
-        metadata=metadata,
+        access_metadata=access_metadata,
     )
     db.add(entry)
     db.flush()
