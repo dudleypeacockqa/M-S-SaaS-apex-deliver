@@ -176,7 +176,7 @@ POST https://api.render.com/v1/services/srv-d3ihptbipnbc73e72ne0/deploys
 1. **Update Build Command**:
    ```bash
    # Current (problematic):
-   NODE_ENV=development npm ci && npx vite build
+   npm ci && npm run build
 
    # Recommended:
    npm ci && npx vite build

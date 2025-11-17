@@ -1,20 +1,4 @@
-# Prettier ignore file
-# Prevents Prettier/linter from modifying critical config files
-
-# DO NOT FORMAT - Critical production configurations
+# Critical files - DO NOT auto-format
+# These files contain configurations that formatters misinterpret
+src/main.tsx
 vite.config.ts
-vite.config.js
-
-# Test files can be messy
-**/*.test.ts
-**/*.test.tsx
-**/*.spec.ts
-**/*.spec.tsx
-
-# Build outputs
-dist/
-build/
-.next/
-
-# Dependencies
-node_modules/

@@ -67,9 +67,15 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      'lucide-react': path.resolve(
+        __dirname,
+        'node_modules/lucide-react/dist/esm/lucide-react.js',
+      ),
     },
+    dedupe: ['lucide-react'],
   },
   optimizeDeps: {
+    include: ['lucide-react'],
     exclude: ['**/*.test.tsx', '**/*.test.ts', '**/*.spec.tsx', '**/*.spec.ts'],
   },
   server: {
@@ -89,40 +95,43 @@ export default defineConfig({
           if (normalizedId.includes('.test.') || normalizedId.includes('.spec.') || normalizedId.includes('vitest')) {
             return undefined
           }
-          // Lucide React - treat like any other vendor dependency
-          // No special chunking needed
           // Core React dependencies
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+          if (normalizedId.includes('node_modules')) {
+            // CRITICAL: Check lucide-react BEFORE react to prevent it from matching 'react-vendor'
+            // This ensures lucide-react stays in the main bundle and loads synchronously
+            if (normalizedId.includes('/lucide-react/')) {
+              return undefined  // Force into main bundle - prevents blank screen race condition
+            }
+            if (normalizedId.includes('react') || normalizedId.includes('react-dom') || normalizedId.includes('react-router')) {
               return 'react-vendor'
             }
-            if (id.includes('@clerk')) {
+            if (normalizedId.includes('@clerk')) {
               return 'clerk-vendor'
             }
-            if (id.includes('@tanstack/react-query')) {
+            if (normalizedId.includes('@tanstack/react-query')) {
               return 'react-query'
             }
             // Chart libraries (often large)
-            if (id.includes('recharts') || id.includes('chart.js') || id.includes('d3')) {
+            if (normalizedId.includes('recharts') || normalizedId.includes('chart.js') || normalizedId.includes('d3')) {
               return 'charts-vendor'
             }
             // Other vendor code
             return 'vendor'
           }
           // Split valuation suite into its own chunk (large component)
-          if (id.includes('valuation/ValuationSuite')) {
+          if (normalizedId.includes('valuation/ValuationSuite')) {
             return 'valuation-suite'
           }
           // Split podcast studio into its own chunk
-          if (id.includes('podcast/PodcastStudio')) {
+          if (normalizedId.includes('podcast/PodcastStudio')) {
             return 'podcast-studio'
           }
           // Split event components into their own chunk
-          if (id.includes('events/')) {
+          if (normalizedId.includes('events/')) {
             return 'events'
           }
           // Split community into its own chunk
-          if (id.includes('community/')) {
+          if (normalizedId.includes('community/')) {
             return 'community'
           }
         },

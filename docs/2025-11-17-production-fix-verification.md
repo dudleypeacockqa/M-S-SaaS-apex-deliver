@@ -236,7 +236,7 @@ curl https://ma-saas-backend.onrender.com/health
 **Update Build Command**:
 ```bash
 # Current:
-NODE_ENV=development npm ci && npx vite build
+    npm ci && npm run build
 
 # Recommended:
 npm ci && npx vite build

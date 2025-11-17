@@ -1,3 +1,4 @@
-# Prevent linter from auto-fixing these critical files
-vite.config.ts
+# Critical files - DO NOT auto-fix or format
+# These files contain configurations that linters misinterpret as "unused" but are critical for production
 src/main.tsx
+vite.config.ts
