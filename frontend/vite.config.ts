@@ -22,7 +22,7 @@ const validateBuildEnv = () => {
 
     const missingVars: string[] = []
     for (const [key, value] of Object.entries(requiredEnvVars)) {
-      if (!value || value.trim() === '') {
+      if (!value || (typeof value === 'string' && value.trim() === '')) {
         missingVars.push(key)
       }
     }
@@ -95,7 +95,7 @@ export default defineConfig({
           // CRITICAL: Keep lucide-react in main bundle to prevent initialization race conditions
           // DO NOT split lucide-react into separate chunk - causes "Cannot set properties of undefined" error
           if (id.includes('lucide-react')) {
-            return undefined; // Keep in main bundle
+            return undefined; // Keep in main bundle - DO NOT create separate chunk
           }
           // Core React dependencies
           if (id.includes('node_modules')) {
