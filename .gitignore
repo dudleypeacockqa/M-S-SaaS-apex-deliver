@@ -154,3 +154,4 @@ frontend/node_modules.bak.*/
 node_modules.bak.*/
 frontend/node_modules.before-vitest/
 node_modules.before-vitest/
+CLERK_KEYS_FOR_RENDER.md

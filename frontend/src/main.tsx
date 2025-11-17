@@ -9,15 +9,24 @@ const publishableKey =
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ??
   (import.meta.env.MODE === "test" ? "test-clerk-publishable-key" : undefined)
 
-if (!publishableKey) {
-  throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable")
+const Root = () => {
+  if (!publishableKey) {
+    if (import.meta.env.DEV) {
+      console.warn("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable. Rendering without Clerk.")
+    }
+    return <App />
+  }
+
+  return (
+    <ClerkProvider publishableKey={publishableKey}>
+      <App />
+    </ClerkProvider>
+  )
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ClerkProvider publishableKey={publishableKey}>
-      <App />
-    </ClerkProvider>
+    <Root />
   </React.StrictMode>
 )
 
