@@ -1,12 +1,22 @@
 /**
- * Centralized icon exports - direct re-exports from lucide-react
+ * Centralized icon exports with forced initialization
  *
- * NOTE: This file exists solely for import path consistency.
- * It does NOT pre-load icons - they load on-demand when components import them.
+ * CRITICAL: This file MUST have side effects to prevent Vite from tree-shaking
+ * the import in main.tsx. Without side effects, production builds remove the
+ * import entirely, causing "Cannot set properties of undefined" errors.
  */
 
-// Re-export everything from lucide-react
-export * from 'lucide-react'
+// Import everything to create module initialization side effect
+import * as LucideIcons from 'lucide-react'
 
-// Explicit re-exports for commonly used icons (helps with tree-shaking)
+// Force initialization by touching the window object (prevents tree-shaking)
+// This ensures Vite cannot remove the import from main.tsx during production builds
+if (typeof window !== 'undefined') {
+  // Store reference to prevent tree-shaking optimization
+  (window as any).__LUCIDE_ICONS__ = LucideIcons
+  console.log('[Icons] Lucide React initialized:', Object.keys(LucideIcons).length, 'exports')
+}
+
+// Re-export everything for component imports
+export * from 'lucide-react'
 export type { LucideIcon } from 'lucide-react'
