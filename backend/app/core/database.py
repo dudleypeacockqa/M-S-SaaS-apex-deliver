@@ -1,8 +1,8 @@
 """Database connection and session management with lazy initialization."""
 from __future__ import annotations
 
-from collections.abc import AsyncIterator, Iterator
-from typing import Callable
+from collections.abc import Iterator
+from typing import Any, Callable
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -32,22 +32,58 @@ def init_engine():
     return engine
 
 
-async def get_db() -> AsyncIterator[Session]:
-    """Provide a transactional database session that works in sync or async contexts."""
-    init_engine()  # Ensure engine is initialized before use
-    if SessionLocal is None:
-        raise RuntimeError("Database session not initialized")
+class _DBSessionContext:
+    """Iterator that exposes DB sessions to sync and async callers alike."""
 
-    session_factory = AsyncSession or SessionLocal
-    db = session_factory()
-    try:
-        yield db
-        db.commit()
-    except Exception:
-        db.rollback()
-        raise
-    finally:
-        db.close()
+    def __init__(self) -> None:
+        self._gen = self._session_generator()
+
+    def _session_generator(self):
+        init_engine()
+        if SessionLocal is None:
+            raise RuntimeError("Database session not initialized")
+
+        session_factory = SessionLocal
+        if AsyncSession is not None and AsyncSession is not SessionLocal:
+            session_factory = AsyncSession
+        if session_factory is None:
+            raise RuntimeError("Database session factory is not initialized")
+
+        db = session_factory()
+        try:
+            yield db
+            db.commit()
+        except Exception:
+            db.rollback()
+            raise
+        finally:
+            db.close()
+
+    def __iter__(self) -> "_DBSessionContext":
+        return self
+
+    def __next__(self) -> Session:
+        return next(self._gen)
+
+    def __aiter__(self) -> "_DBSessionContext":
+        return self
+
+    async def __anext__(self) -> Session:
+        try:
+            return next(self._gen)
+        except StopIteration as exc:  # pragma: no cover - standard iterator plumbing
+            raise StopAsyncIteration from exc
+
+    def throw(self, *args: Any, **kwargs: Any) -> Session:
+        return self._gen.throw(*args, **kwargs)
+
+    def close(self) -> Any:
+        return self._gen.close()
+
+
+def get_db() -> Iterator[Session]:
+    """Provide a transactional database session supporting sync + async usage."""
+    return _DBSessionContext()
 
 
 def init_db() -> None:
