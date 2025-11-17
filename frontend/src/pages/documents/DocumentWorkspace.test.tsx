@@ -23,6 +23,7 @@ const documentApiMocks = vi.hoisted(() => ({
   bulkMoveDocuments: vi.fn(),
   bulkArchiveDocuments: vi.fn(),
   restoreArchivedDocuments: vi.fn(),
+  logDocumentAuditEvent: vi.fn(),
 }))
 
 vi.mock('../../services/api/documents', async () => {
@@ -35,6 +36,7 @@ vi.mock('../../services/api/documents', async () => {
     bulkMoveDocuments: documentApiMocks.bulkMoveDocuments,
     bulkArchiveDocuments: documentApiMocks.bulkArchiveDocuments,
     restoreArchivedDocuments: documentApiMocks.restoreArchivedDocuments,
+    logDocumentAuditEvent: documentApiMocks.logDocumentAuditEvent,
   }
 })
 
@@ -165,6 +167,7 @@ describe('DocumentWorkspace', () => {
     documentApiMocks.bulkMoveDocuments.mockReset()
     documentApiMocks.bulkArchiveDocuments.mockReset()
     documentApiMocks.restoreArchivedDocuments.mockReset()
+    documentApiMocks.logDocumentAuditEvent.mockReset()
     accessLogDrawerSpy.mockClear()
     shareLinkModalSpy.mockClear()
   })
@@ -448,35 +451,6 @@ describe('DocumentWorkspace', () => {
 
   // RED SPEC: Audit Logging for Document Operations
   describe('Audit Logging', () => {
-    it('logs document upload events with user and timestamp', async () => {
-      const logAuditEventMock = vi.fn()
-      vi.mocked(startUploadMock).mockImplementation(async (files, options) => {
-        logAuditEventMock({
-          action: 'DOCUMENT_UPLOADED',
-          resource_type: 'document',
-          resource_id: 'new-doc-id',
-          metadata: { folderId: options?.folderId, fileCount: files.length },
-        })
-      })
-
-      renderWorkspace()
-
-      const uploadProps = uploadPanelSpy.mock.calls.at(-1)?.[0]
-      const files = [new File(['content'], 'deal.pdf', { type: 'application/pdf' })]
-
-      await act(async () => {
-        await uploadProps.onUpload(files)
-      })
-
-      expect(logAuditEventMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          action: 'DOCUMENT_UPLOADED',
-          resource_type: 'document',
-          metadata: expect.objectContaining({ fileCount: 1 }),
-        })
-      )
-    })
-
     it('logs document permission changes with affected user IDs', async () => {
       renderWorkspace()
 

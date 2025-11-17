@@ -1312,6 +1312,79 @@ def test_access_logs_include_user_name(client, auth_context, seeded_deal):
 # =============================================================================
 
 
+
+def test_create_manual_access_log_entry(client, auth_context, seeded_deal):
+    """Owners can append custom audit entries via the API."""
+    headers, cleanup, _, _ = auth_context
+    try:
+        upload_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/documents",
+            headers=headers,
+            files={"file": ("bulk.pdf", io.BytesIO(b"bulk"), "application/pdf")},
+        )
+        assert upload_resp.status_code == 201
+        document_id = upload_resp.json()["id"]
+
+        payload = {
+            "action": "bulk_archive",
+            "metadata": {"documentIds": [document_id], "count": 1},
+        }
+        log_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/documents/{document_id}/access-logs",
+            headers=headers,
+            json=payload,
+        )
+        assert log_resp.status_code == 201
+        body = log_resp.json()
+        assert body["action"] == "bulk_archive"
+        assert body["metadata"]["count"] == 1
+
+        logs_resp = client.get(
+            f"/api/deals/{seeded_deal.id}/documents/{document_id}/access-logs",
+            headers=headers,
+        )
+        assert logs_resp.status_code == 200
+        actions = [entry["action"] for entry in logs_resp.json()]
+        assert "bulk_archive" in actions
+    finally:
+        cleanup()
+
+
+def test_manual_access_log_requires_owner(client, auth_context, seeded_deal, create_user):
+    """Viewers should not be able to create manual audit entries."""
+    headers, cleanup, owner_user, org_id = auth_context
+    viewer = create_user(email="viewer-audit@example.com", organization_id=org_id)
+
+    try:
+        upload_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/documents",
+            headers=headers,
+            files={"file": ("audit.pdf", io.BytesIO(b"audit"), "application/pdf")},
+        )
+        assert upload_resp.status_code == 201
+        document_id = upload_resp.json()["id"]
+
+        grant_resp = client.post(
+            f"/api/deals/{seeded_deal.id}/documents/{document_id}/permissions",
+            headers=headers,
+            json={"user_id": str(viewer.id), "permission_level": "viewer"},
+        )
+        assert grant_resp.status_code == 201
+
+        dependency_overrides(get_current_user, lambda: viewer)
+        viewer_headers = {"Authorization": f"Bearer mock_token_{viewer.id}"}
+        try:
+            log_resp = client.post(
+                f"/api/deals/{seeded_deal.id}/documents/{document_id}/access-logs",
+                headers=viewer_headers,
+                json={"action": "bulk_delete"},
+            )
+            assert log_resp.status_code == status.HTTP_403_FORBIDDEN
+        finally:
+            dependency_overrides(get_current_user, lambda: owner_user)
+    finally:
+        cleanup()
+
 def test_bulk_download_documents(client, auth_context, seeded_deal, db_session):
     """Test bulk downloading multiple documents as a ZIP file."""
     headers, cleanup, user, org_id = auth_context

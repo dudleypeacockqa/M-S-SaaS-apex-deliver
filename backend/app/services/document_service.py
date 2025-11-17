@@ -1163,6 +1163,7 @@ def get_document_access_logs(
             action=log.action,
             ip_address=log.ip_address,
             user_agent=log.user_agent,
+            metadata=log.metadata,
             created_at=log.created_at,
         )
         for log in logs

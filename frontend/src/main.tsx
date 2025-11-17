@@ -157,9 +157,17 @@ const renderReactApp = () => {
   }
 }
 
-// Render app immediately - NO async bootstrapping
-// Icons will be loaded on-demand by React components
-renderReactApp()
+const bootstrapApplication = async () => {
+  try {
+    await import('./lib/icons')
+  } catch (error) {
+    console.error('Failed to preload lucide-react icons before render:', error)
+  } finally {
+    renderReactApp()
+  }
+}
+
+void bootstrapApplication()
 
 if (import.meta.env.MODE !== "test" && "serviceWorker" in navigator) {
   window.addEventListener("load", () => {
