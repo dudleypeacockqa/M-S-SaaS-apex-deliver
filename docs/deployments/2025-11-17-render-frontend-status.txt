@@ -1,0 +1,7 @@
+Render Frontend Deployment Check - 2025-11-17T13:47Z
+Command: python3 (custom snippet) with RENDER_API_KEY=rnd_oMIm1MFTqRNH8SE4fgiIiXTsNAqM
+
+Service status: 200 Active
+Latest deploy ID: dep-d4dimcttchps73anadjg
+Commit: 5aa4d13644cdf89b…
+Message (truncated): fix(critical): resolve blank screen caused by async bootstrapping and broken alias

@@ -1,0 +1,47 @@
+Smoke Test Run - Production - 2025-11-17T13:50Z
+Command: bash scripts/run_smoke_tests.sh production
+
+=========================================
+Running Smoke Tests: production
+=========================================
+
+Target Backend:  https://ma-saas-backend.onrender.com
+Target Frontend: https://100daysandbeyond.com
+
+1. Checking backend health endpoint...
+   ✅ Backend health check passed
+
+2. Verifying frontend availability...
+   ✅ Frontend responded with HTTP 200
+
+3. Running backend smoke pytest suite...
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0 -- C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-4.1.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 2 items
+
+tests\smoke_tests.py::test_health_endpoint PASSED                        [ 50%]
+tests\smoke_tests.py::test_root_redirects PASSED                         [100%]
+
+============================== warnings summary ===============================
+venv\Lib\site-packages\pydantic\_internal\_config.py:291
+venv\Lib\site-packages\pydantic\_internal\_config.py:291
+venv\Lib\site-packages\pydantic\_internal\_config.py:291
+venv\Lib\site-packages\pydantic\_internal\_config.py:291
+venv\Lib\site-packages\pydantic\_internal\_config.py:291
+venv\Lib\site-packages\pydantic\_internal\_config.py:291
+  Pydantic 2.x config deprecation warnings (acceptable)
+
+backend/tests/smoke_tests.py::test_health_endpoint
+backend/tests/smoke_tests.py::test_root_redirects
+  httpx DeprecationWarning: use transport=WSGITransport
+
+======================== 2 passed, 8 warnings in 0.45s ========================
+
+=========================================
+✅ Smoke tests completed successfully
+=========================================
