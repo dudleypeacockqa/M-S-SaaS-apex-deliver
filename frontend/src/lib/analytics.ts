@@ -10,8 +10,13 @@ const emitGtagEvent = (event: string, params: AnalyticsEventParams) => {
   }
 }
 
-const emitHotjarEvent = (event: string, params: AnalyticsEventParams) => {
+const emitBehaviorEvent = (event: string, params: AnalyticsEventParams) => {
   if (typeof window === 'undefined') {
+    return
+  }
+
+  if (typeof window.clarity === 'function') {
+    window.clarity('event', event, params)
     return
   }
 
@@ -36,7 +41,7 @@ const emitLinkedInEvent = (conversionId?: number) => {
 
 export const trackMarketingEvent = (event: string, params: AnalyticsEventParams = {}) => {
   emitGtagEvent(event, params)
-  emitHotjarEvent(event, params)
+  emitBehaviorEvent(event, params)
   emitLinkedInEvent() // Track page-level event in LinkedIn
 }
 
@@ -55,4 +60,3 @@ export const trackFormSubmission = (formName: string, location: string) => {
     timestamp: Date.now()
   })
 }
-

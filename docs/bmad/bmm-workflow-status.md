@@ -4,7 +4,7 @@
 **Status**: ⚠️ Re-opened — Sprint 1-B (Master Admin Frontend + Deploy Verification) active | Updated 2025-11-15
 **Release Target**: v1.0.0 (Pending sign-off)
 **Current Version**: Sprint 1-A backend fixes landed; Sprint 1-B in progress
-**Test Pass Rate**: Backend 677/678 (1 failing) · Frontend 93 suites failing (per TODO 2025-11-01) ⚠️
+**Test Pass Rate**: Backend 1340/1425 passing (17 FAILED, 14 ERROR) · Frontend 1740/1740 passing (Vitest 172 files) ⚠️
 **Execution Plan**: Phases 1–2 closed; Phases 3–5 still in flight per `TODO.md` and `docs/100-PERCENT-COMPLETION-ROADMAP.md`
 
 ## Project Configuration
@@ -21,8 +21,8 @@ WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.y
 CURRENT_PHASE: 3-Implementation (Sprint 1-B – Master Admin Frontend + Deploy Readiness)
 CURRENT_WORKFLOW: dev-story (Master Admin UI + deployment verification TDD loop)
 CURRENT_AGENT: codex (primary) with BMAD governance support
-PROJECT_COMPLETION: 78% (Backend ~99%, Frontend 0%, Deploy+QA pending)
-LAST_UPDATED: 2025-11-15T10:00Z (status reset after doc audit)
+PROJECT_COMPLETION: 78% (Backend service coverage/regressions unresolved; Frontend Master Admin features still require verification)
+LAST_UPDATED: 2025-11-15T11:40Z (status + test health refreshed)
 PHASE_1_FOUNDATIONAL_CORE: ✅ COMPLETE (backend API foundations + enums fixes)
 PHASE_2_ADVANCED_INTELLIGENCE: ✅ COMPLETE (Sprint 1-A backend repairs)
 PHASE_3_ECOSYSTEM_NETWORK: ⚠️ IN PROGRESS (Master Admin UI, integrations outstanding)
@@ -34,45 +34,44 @@ PHASE_6_PRODUCTION_LAUNCH: ⚠️ OPEN (Render verification + smoke evidence unc
 
 STORY_ID: Sprint-1B-Master-Admin-Portal
 STORY_STATUS: ⚠️ ACTIVE
-STORY_RESULT: Backend parity achieved (655/655 per Session 2C notes), but frontend Master Admin portal, deployment verification, and QA documentation remain unfinished. 93 Vitest failures, Render redeploy pending, BMAD trackers stale.
-BLOCKERS: 
-- Frontend Master Admin modules not implemented (Activity Tracker, Focus Session, Nudges, etc.)
-- Outstanding backend test (`test_scores_and_dashboard_stats`) + coverage gap (<80%)
-- Deployment verification + smoke docs unchecked (`TODO.md` Phase 2)
-- BMAD artefacts advertising 100% completion while sprints 1-B → 1-D remain open
+STORY_RESULT: Backend parity achieved in Session 2C, but fresh test run (2025-11-15) shows 31 backend regressions (QuickBooks OAuth mocks, Sage OAuth service, dashboard metrics cache) plus missing documentation + deployment evidence. Frontend Vitest suite now passes 1,740 tests but Master Admin UX still needs real API integration + manual validation.
+BLOCKERS:
+- Backend external-integration suites failing: `backend/tests/test_sage_oauth_service.py` (10 errors) and `backend/tests/services/test_quickbooks_oauth_mocked.py` (10 fails) plus dashboard metrics API coverage (4 fails) per pytest run (`./backend/venv/Scripts/python.exe -m pytest backend/tests`, 285s, 17F/14E/54S)
+- Deployment verification + smoke docs unchecked (`TODO.md` Phase 2); README still claims 100% completion.
+- BMAD artefacts previously advertising Phase 6 completion; still need to cascade status reset through README, trackers, roadmap.
 
 ## Assessment
 
 **Code Quality**: ⚠️ Mixed
-- Backend Master Admin services stabilized (Session 2C), but entitlement logic + integration suites pending.
-- Frontend Master Admin portal unbuilt; marketing site phases 2-10 incomplete; Document Room UI still missing advanced UX pass.
-- Deployment docs reference features/tests that do not yet exist.
+- Backend Master Admin + deal flows pass targeted tests, but Sage + QuickBooks OAuth services, dashboard cache + metrics endpoints are red and need focused fixes before considering v1 release complete.
+- Frontend Master Admin UX appears implemented; Vitest now green (1,740 passing) but still requires integrated QA + documentation updates for Activity Tracker, Focus Session, Nudges, etc.
+- Deployment docs reference features/tests that do not yet exist and still claim Phase 6 completion.
 
 **Test Infrastructure**: ⚠️ Needs Attention
-- Backend: 677/678 tests pass (per TODO), coverage 78.96% (<80% goal). External service suites skipped (Xero, Sage, QuickBooks, NetSuite, Stripe).
-- Frontend: 93 failing Vitest files across security, landing, routing, podcast studio, etc. Coverage target 85% currently unverified.
-- Accessibility/Lighthouse tasks blocked on local runner issues; Render smoke evidence stale.
+- Backend: `./backend/venv/Scripts/python.exe -m pytest backend/tests` (2025-11-15) returned 17 FAIL + 14 ERROR (QuickBooks OAuth, Sage OAuth, dashboard metrics). External suites skipped due to missing credentials (Xero, etc.). Coverage not recalculated but clearly < target while these failures persist.
+- Frontend: `npm run test` (Vitest) now fully passing (172 files, 1,740 tests). Need to capture coverage + rerun accessibility/Lighthouse.
+- Accessibility/Lighthouse tasks blocked on local runner issues; Render smoke evidence refreshed via `verify_deployment.py` but docs not updated.
 
 **Production Impact**: ⚠️ Unknown
-- README + BMAD docs advertise 100% prod deployment, but TODO + roadmap call out unfinished UI, tests, and deployment verifications. Need to revalidate Render services after new commits.
+- README + BMAD docs advertise 100% production readiness despite backend failures; Render backend health confirmed (verify_deployment.py) but code changes unverified due to failing suites. Need to reconcile documentation + redeploy only after backend suites pass.
 
 ## Next Action
 
 NEXT_ACTION: Resume Sprint 1-B RED → GREEN loop
 NEXT_COMMAND:
-1. `python -m pytest backend/tests -k test_scores_and_dashboard_stats` (RED) then patch services to close final backend failure + raise coverage ≥80%
-2. `npm --prefix frontend run test -- ActivityTracker.test.tsx --runInBand` (RED) while authoring Master Admin UI specs; expand to other failing suites sequentially
-3. Re-run Render smoke checks via `python verify_deployment.py --env production` and update docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md once backend/frontend health confirmed
-4. Update `docs/bmad/BMAD_PROGRESS_TRACKER.md`, `docs/100-PERCENT-COMPLETION-ROADMAP.md`, and README to reflect in-progress status
+1. `./backend/venv/Scripts/python.exe -m pytest backend/tests/test_sage_oauth_service.py backend/tests/services/test_quickbooks_oauth_mocked.py backend/tests/api/test_dashboard_metrics.py --maxfail=1` (RED) → triage Sage + QuickBooks OAuth + dashboard metrics regressions before touching other stories.
+2. Capture failing traces in `docs/bmad/BMAD_PROGRESS_TRACKER.md` + update roadmap to replace “1 failing test” narrative with actual 31 regressions.
+3. Repeat `npm run test -- --coverage` + `npm run lint` to record frontend baseline (already green) and move on to Activity Tracker integration QA while backend fixes bake.
+4. Re-run `./backend/venv/Scripts/python.exe verify_deployment.py` after backend suites pass and sync evidence into `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md`.
 NEXT_AGENT: codex (implementation) with BMAD governance support
-PRIORITY: P0 (restore truthful governance + unblock frontend), P1 (deployment verification), P2 (marketing audits once services stable)
-RATIONALE: Repo is materially incomplete; governance + README overstated completion. Must follow BMAD + TDD loops across backend fix, frontend implementation, marketing, QA, and deployment evidence to reach actual 100% completion.
+PRIORITY: P0 (fix QuickBooks/Sage/dashboard regressions), P1 (documentation + governance alignment), P2 (master admin feature QA + deployment evidence)
+RATIONALE: Repo is materially incomplete; backend integrations failing and documentation overstated completion. Must run TDD loops on failing suites, keep frontend green, and only claim production readiness once backend suites + deployment evidence are clean.
 
 ## Status Reset (2025-11-15)
 
 - Reviewed `README.md`, `TODO.md`, `docs/100-PERCENT-COMPLETION-ROADMAP.md`, and pinned BMAD artefacts; determined v1.0.0/v1.1.0 completion claims contradict open work.
-- Confirmed backend Session 2C (2025-11-01) fixed schema/enums, yet `test_scores_and_dashboard_stats` remains unresolved and external integrations never exercised.
-- Verified frontend Master Admin portal, marketing phases, and deployment verification checkboxes are unchecked; 93 Vitest failures still tracked.
+- Re-ran full backend suite (1425 tests) and discovered 17 FAIL + 14 ERROR cases in QuickBooks OAuth, Sage OAuth, and dashboard metrics; captured failing modules for prioritization.
+- Re-ran entire Vitest suite (172 files, 1740 tests) → all green; Activity Tracker + marketing analytics passing but still require manual QA + documentation updates.
 - Reset CURRENT_PHASE and NEXT_ACTION to match Sprint 1-B deliverables so BMAD agents entering via workflow status pick up the active work instead of an erroneously closed project.
 
 ## Completed This Session (v1.1 Optimization)

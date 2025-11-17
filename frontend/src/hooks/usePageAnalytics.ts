@@ -9,15 +9,23 @@ export const usePageAnalytics = () => {
       return
     }
 
+    const pagePath = location.pathname + location.search
+
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'page_view', {
-        page_path: location.pathname + location.search,
+        page_path: pagePath,
         page_title: document.title,
       })
     }
 
-    if (typeof window.hj === 'function') {
-      window.hj('stateChange', location.pathname + location.search)
+    if (typeof window.clarity === 'function') {
+      window.clarity('set', 'page_path', pagePath)
+      window.clarity('event', 'page_view', {
+        page_path: pagePath,
+        page_title: document.title,
+      })
+    } else if (typeof window.hj === 'function') {
+      window.hj('stateChange', pagePath)
     }
   }, [location])
 }

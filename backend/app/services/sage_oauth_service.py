@@ -638,14 +638,12 @@ def get_sage_connection_status(deal_id: str, db: Session) -> Dict:
     connection = result.scalar_one_or_none()
 
     if not connection:
-        return {
-            "connected": False,
-            "platform": None,
-        }
+        return None
 
     return {
         "connected": True,
         "platform": "sage",
+        "business_name": connection.platform_organization_name,
         "platform_organization_name": connection.platform_organization_name,
         "status": connection.connection_status,
         "last_sync": connection.last_sync_at.isoformat() if connection.last_sync_at else None,

@@ -19,10 +19,6 @@ vi.mock('./OptInPopup', () => ({
   OptInPopup: () => <div data-testid="optin-popup">Opt-in Popup</div>,
 }));
 
-vi.mock('./AnalyticsProvider', () => ({
-  AnalyticsProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
-
 vi.mock('../common/StructuredData', () => ({
   StructuredData: () => null,
 }));

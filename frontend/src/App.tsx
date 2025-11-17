@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ErrorBoundary } from "./components/common"
 import { LoadingSpinner } from "./components/common/LoadingSpinner"
 import { usePageAnalytics } from "./hooks/usePageAnalytics"
+import { AnalyticsProvider } from "./components/marketing/AnalyticsProvider"
 
 const lazyNamed = <T extends ComponentType<any>>(
   importer: () => Promise<Record<string, unknown>>,
@@ -236,11 +237,13 @@ const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Suspense fallback={<RouteLoader />}>
-            <AppRoutes />
-          </Suspense>
-        </BrowserRouter>
+        <AnalyticsProvider>
+          <BrowserRouter>
+            <Suspense fallback={<RouteLoader />}>
+              <AppRoutes />
+            </Suspense>
+          </BrowserRouter>
+        </AnalyticsProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   )

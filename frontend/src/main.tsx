@@ -9,6 +9,8 @@ const publishableKey =
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ??
   (import.meta.env.MODE === "test" ? "test-clerk-publishable-key" : undefined)
 
+const appBuildId = import.meta.env.VITE_APP_BUILD_ID ?? __APP_BUILD_ID__
+
 const Root = () => {
   if (!publishableKey) {
     if (import.meta.env.DEV) {
@@ -32,7 +34,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 if (import.meta.env.MODE !== "test" && "serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.js").catch((error) => {
+    const swVersionParam = appBuildId ? `?v=${encodeURIComponent(appBuildId)}` : ""
+    navigator.serviceWorker.register(`/service-worker.js${swVersionParam}`).catch((error) => {
       if (import.meta.env.DEV) {
         console.warn("Service worker registration failed", error)
       }

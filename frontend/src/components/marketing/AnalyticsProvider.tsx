@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
 
 const GA_SCRIPT_ID = 'ga4-script'
-const HOTJAR_SCRIPT_ID = 'hotjar-script'
+const CLARITY_SCRIPT_ID = 'clarity-script'
 const LINKEDIN_SCRIPT_ID = 'linkedin-insight-tag'
+const LINKEDIN_NOSCRIPT_ID = 'linkedin-noscript'
 
 const loadScriptOnce = (id: string, create: () => HTMLScriptElement) => {
   if (typeof document === 'undefined') {
@@ -18,17 +19,6 @@ const loadScriptOnce = (id: string, create: () => HTMLScriptElement) => {
   document.head.appendChild(script)
 }
 
-declare global {
-  interface Window {
-    dataLayer?: unknown[]
-    gtag?: (...args: unknown[]) => void
-    hj?: (...args: unknown[]) => void
-    _hjSettings?: { hjid: number; hjsv: number }
-    _linkedin_data_partner_ids?: string[]
-    lintrk?: (...args: unknown[]) => void
-  }
-}
-
 interface AnalyticsProviderProps {
   children?: React.ReactNode
 }
@@ -36,12 +26,10 @@ interface AnalyticsProviderProps {
 export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }) => {
   useEffect(() => {
     const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID
-
-    if (!measurementId) {
+    if (!measurementId || measurementId.includes('PLACEHOLDER')) {
       return
     }
 
-    // Initialize dataLayer and gtag function (no inline scripts - CSP compliant)
     if (!Array.isArray(window.dataLayer)) {
       window.dataLayer = []
     }
@@ -54,7 +42,11 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
 
     // Configure GA4 via JavaScript (not inline script)
     window.gtag('js', new Date())
-    window.gtag('config', measurementId, { anonymize_ip: true })
+    window.gtag('config', measurementId, {
+      anonymize_ip: true,
+      send_page_view: true,
+      cookie_flags: 'SameSite=None;Secure',
+    })
 
     // Load external GA4 script
     loadScriptOnce(GA_SCRIPT_ID, () => {
@@ -65,39 +57,28 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
       return script
     })
 
-    // Note: Removed inline GA_CONFIG script to comply with CSP
-    // Configuration is now done via JavaScript above
   }, [])
 
   useEffect(() => {
-    const hotjarId = import.meta.env.VITE_HOTJAR_ID
-    const hotjarVersion = import.meta.env.VITE_HOTJAR_VERSION
-
-    if (!hotjarId || !hotjarVersion) {
+    const clarityId = import.meta.env.VITE_CLARITY_PROJECT_ID
+    if (!clarityId || clarityId.includes('PLACEHOLDER')) {
       return
     }
 
-    // Initialize Hotjar queue function (CSP compliant - no inline scripts)
-    if (typeof window.hj !== 'function') {
-      type HjFn = ((...args: unknown[]) => void) & { q?: unknown[][] }
-      const hj: HjFn = ((...args: unknown[]) => {
-        hj.q = hj.q || []
-        hj.q.push(args)
-      }) as HjFn
-      window.hj = hj
+    if (typeof window.clarity !== 'function') {
+      type ClarityFn = ((...args: unknown[]) => void) & { q?: unknown[][] }
+      const clarity: ClarityFn = ((...args: unknown[]) => {
+        clarity.q = clarity.q || []
+        clarity.q.push(args)
+      }) as ClarityFn
+      window.clarity = clarity
     }
 
-    window._hjSettings = {
-      hjid: Number(hotjarId),
-      hjsv: Number(hotjarVersion),
-    }
-
-    // Load Hotjar script externally (CSP compliant)
-    loadScriptOnce(HOTJAR_SCRIPT_ID, () => {
+    loadScriptOnce(CLARITY_SCRIPT_ID, () => {
       const script = document.createElement('script')
       script.async = true
-      script.src = `https://static.hotjar.com/c/hotjar-${hotjarId}.js?sv=${hotjarVersion}`
-      script.setAttribute('data-analytics', 'hotjar')
+      script.src = `https://www.clarity.ms/tag/${clarityId}`
+      script.setAttribute('data-analytics', 'clarity')
       return script
     })
   }, [])
@@ -106,13 +87,15 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
   useEffect(() => {
     const linkedInPartnerId = import.meta.env.VITE_LINKEDIN_PARTNER_ID
 
-    if (!linkedInPartnerId) {
+    if (!linkedInPartnerId || linkedInPartnerId.includes('PLACEHOLDER')) {
       return
     }
 
     // Initialize partner IDs array
     window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || []
-    window._linkedin_data_partner_ids.push(linkedInPartnerId)
+    if (!window._linkedin_data_partner_ids.includes(linkedInPartnerId)) {
+      window._linkedin_data_partner_ids.push(linkedInPartnerId)
+    }
 
     // Initialize LinkedIn tracking function (CSP compliant - no inline scripts)
     if (typeof window.lintrk !== 'function') {
@@ -135,9 +118,9 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
     })
 
     // Add noscript image tag for LinkedIn (noscript tags are CSP compliant)
-    if (typeof document !== 'undefined' && !document.getElementById('linkedin-noscript')) {
+    if (typeof document !== 'undefined' && !document.getElementById(LINKEDIN_NOSCRIPT_ID)) {
       const noscript = document.createElement('noscript')
-      noscript.id = 'linkedin-noscript'
+      noscript.id = LINKEDIN_NOSCRIPT_ID
       const img = document.createElement('img')
       img.height = 1
       img.width = 1
@@ -151,4 +134,3 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
 
   return <>{children}</>
 }
-

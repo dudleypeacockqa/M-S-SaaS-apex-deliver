@@ -2,8 +2,18 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'node:path'
 
+const buildId =
+  process.env.VITE_APP_BUILD_ID ||
+  process.env.RENDER_GIT_COMMIT ||
+  process.env.GIT_COMMIT_SHA ||
+  process.env.VERCEL_GIT_COMMIT_SHA ||
+  new Date().toISOString().replace(/[-:.TZ]/g, '')
+
 // https://vitejs.dev/config/
 export default defineConfig({
+  define: {
+    __APP_BUILD_ID__: JSON.stringify(buildId),
+  },
   plugins: [
     react(),
     // Image optimization disabled temporarily due to import issues

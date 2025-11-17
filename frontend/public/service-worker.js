@@ -1,6 +1,15 @@
 'use strict'
 
-const CACHE_VERSION = 'v2'
+const buildVersion = (() => {
+  try {
+    const url = new URL(self.location.href)
+    return url.searchParams.get('v') || '2'
+  } catch {
+    return '2'
+  }
+})()
+
+const CACHE_VERSION = `v${buildVersion}`
 const STATIC_CACHE = 'apexdeliver-static-' + CACHE_VERSION
 const RUNTIME_CACHE = 'apexdeliver-runtime-' + CACHE_VERSION
 
@@ -98,6 +107,20 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
+  let url
+  try {
+    url = new URL(request.url)
+  } catch {
+    return
+  }
+
+  const isSupportedProtocol = url.protocol === 'http:' || url.protocol === 'https:'
+  const isSameOrigin = url.origin === self.location.origin
+
+  if (!isSupportedProtocol || !isSameOrigin) {
+    return
+  }
+
   if (request.mode === 'navigate') {
     event.respondWith(
       networkFirst(request, event).catch(async () => {
@@ -108,7 +131,7 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  if (ASSET_PATTERN.test(new URL(request.url).pathname)) {
+  if (ASSET_PATTERN.test(url.pathname)) {
     event.respondWith(cacheFirst(request))
     return
   }

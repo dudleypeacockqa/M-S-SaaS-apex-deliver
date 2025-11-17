@@ -197,9 +197,9 @@ class TestHandleSageCallback:
             )
 
     @patch('app.services.sage_oauth_service.sage_client')
-    def test_handle_sage_callback_creates_new_connection(self, mock_client, db_session, create_deal):
+    def test_handle_sage_callback_creates_new_connection(self, mock_client, db_session, create_deal_for_org):
         """Test handle_sage_callback creates new FinancialConnection."""
-        deal = create_deal()
+        deal, _, _ = create_deal_for_org()
         mock_client.exchange_code_for_token.return_value = {
             "access_token": "test_access_token",
             "refresh_token": "test_refresh_token",
@@ -224,9 +224,9 @@ class TestHandleSageCallback:
         assert connection.connection_status == "active"
 
     @patch('app.services.sage_oauth_service.sage_client')
-    def test_handle_sage_callback_updates_existing_connection(self, mock_client, db_session, create_deal):
+    def test_handle_sage_callback_updates_existing_connection(self, mock_client, db_session, create_deal_for_org):
         """Test handle_sage_callback updates existing connection."""
-        deal = create_deal()
+        deal, _, _ = create_deal_for_org()
         # Create existing connection
         existing_connection = FinancialConnection(
             deal_id=str(deal.id),
@@ -262,9 +262,9 @@ class TestHandleSageCallback:
         assert connection.access_token == "new_access_token"
 
     @patch('app.services.sage_oauth_service.sage_client')
-    def test_handle_sage_callback_raises_error_when_no_businesses(self, mock_client, db_session, create_deal):
+    def test_handle_sage_callback_raises_error_when_no_businesses(self, mock_client, db_session, create_deal_for_org):
         """Test handle_sage_callback raises error when no businesses found."""
-        deal = create_deal()
+        deal, _, _ = create_deal_for_org()
         mock_client.exchange_code_for_token.return_value = {
             "access_token": "test_token",
             "refresh_token": "test_refresh",
@@ -293,9 +293,9 @@ class TestRefreshSageToken:
             )
 
     @patch('app.services.sage_oauth_service.sage_client')
-    def test_refresh_sage_token_success(self, mock_client, db_session, create_deal):
+    def test_refresh_sage_token_success(self, mock_client, db_session, create_deal_for_org):
         """Test refresh_sage_token successfully refreshes token."""
-        deal = create_deal()
+        deal, _, _ = create_deal_for_org()
         connection = FinancialConnection(
             deal_id=str(deal.id),
             organization_id=deal.organization_id,
@@ -324,9 +324,9 @@ class TestRefreshSageToken:
         assert updated.connection_status == "active"
 
     @patch('app.services.sage_oauth_service.sage_client')
-    def test_refresh_sage_token_marks_expired_on_failure(self, mock_client, db_session, create_deal):
+    def test_refresh_sage_token_marks_expired_on_failure(self, mock_client, db_session, create_deal_for_org):
         """Test refresh_sage_token marks connection as expired on failure."""
-        deal = create_deal()
+        deal, _, _ = create_deal_for_org()
         connection = FinancialConnection(
             deal_id=str(deal.id),
             organization_id=deal.organization_id,
@@ -365,10 +365,10 @@ class TestFetchSageStatements:
     @patch('app.services.sage_oauth_service.sage_client')
     @patch('app.services.sage_oauth_service.refresh_sage_token')
     def test_fetch_sage_statements_auto_refreshes_expired_token(
-        self, mock_refresh, mock_client, db_session, create_deal
+        self, mock_refresh, mock_client, db_session, create_deal_for_org
     ):
         """Test fetch_sage_statements auto-refreshes expired token."""
-        deal = create_deal()
+        deal, _, _ = create_deal_for_org()
         expired_time = datetime.now(timezone.utc) - timedelta(hours=1)
         connection = FinancialConnection(
             deal_id=str(deal.id),
@@ -414,10 +414,10 @@ class TestFetchSageStatements:
 
     @patch('app.services.sage_oauth_service.sage_client')
     def test_fetch_sage_statements_handles_api_error_gracefully(
-        self, mock_client, db_session, create_deal
+        self, mock_client, db_session, create_deal_for_org
     ):
         """Test fetch_sage_statements handles API errors gracefully."""
-        deal = create_deal()
+        deal, _, _ = create_deal_for_org()
         connection = FinancialConnection(
             deal_id=str(deal.id),
             organization_id=deal.organization_id,
@@ -446,9 +446,9 @@ class TestFetchSageStatements:
 class TestDisconnectSage:
     """Test disconnect_sage function."""
 
-    def test_disconnect_sage_deletes_connection(self, db_session, create_deal):
+    def test_disconnect_sage_deletes_connection(self, db_session, create_deal_for_org):
         """Test disconnect_sage deletes connection."""
-        deal = create_deal()
+        deal, _, _ = create_deal_for_org()
         connection = FinancialConnection(
             deal_id=str(deal.id),
             organization_id=deal.organization_id,
@@ -469,9 +469,9 @@ class TestDisconnectSage:
         result = db_session.query(FinancialConnection).filter_by(id=connection_id).first()
         assert result is None
 
-    def test_disconnect_sage_handles_no_connection_gracefully(self, db_session, create_deal):
+    def test_disconnect_sage_handles_no_connection_gracefully(self, db_session, create_deal_for_org):
         """Test disconnect_sage handles missing connection gracefully."""
-        deal = create_deal()
+        deal, _, _ = create_deal_for_org()
         # Should not raise error
         sage_oauth_service.disconnect_sage(
             deal_id=str(deal.id),
@@ -482,18 +482,18 @@ class TestDisconnectSage:
 class TestGetSageConnectionStatus:
     """Test get_sage_connection_status function."""
 
-    def test_get_sage_connection_status_returns_none_when_no_connection(self, db_session, create_deal):
+    def test_get_sage_connection_status_returns_none_when_no_connection(self, db_session, create_deal_for_org):
         """Test get_sage_connection_status returns None when no connection."""
-        deal = create_deal()
+        deal, _, _ = create_deal_for_org()
         status = sage_oauth_service.get_sage_connection_status(
             deal_id=str(deal.id),
             db=db_session
         )
         assert status is None
 
-    def test_get_sage_connection_status_returns_connection_info(self, db_session, create_deal):
+    def test_get_sage_connection_status_returns_connection_info(self, db_session, create_deal_for_org):
         """Test get_sage_connection_status returns connection information."""
-        deal = create_deal()
+        deal, _, _ = create_deal_for_org()
         connection = FinancialConnection(
             deal_id=str(deal.id),
             organization_id=deal.organization_id,

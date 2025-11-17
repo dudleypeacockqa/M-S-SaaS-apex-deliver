@@ -434,7 +434,14 @@ def moderate_content(
 
     Requires admin/moderator permissions.
     """
-    # TODO: Add permission check for moderator role
+    # Verify moderator permissions
+    # Check if user is admin or has moderator role in organization
+    if current_user.role not in ["admin", "owner"]:
+        raise HTTPException(
+            status_code=403,
+            detail="Moderator or admin access required"
+        )
+
     action = community_service.moderate_content(moderation, current_user, db)
     return action
 
@@ -449,7 +456,13 @@ def get_flagged_content(
 
     Requires admin/moderator permissions.
     """
-    # TODO: Add permission check for moderator role
+    # Verify moderator permissions
+    if current_user.role not in ["admin", "owner"]:
+        raise HTTPException(
+            status_code=403,
+            detail="Moderator or admin access required"
+        )
+
     flagged = community_service.get_flagged_content(current_user.organization_id, db)
     return flagged
 

@@ -11,10 +11,10 @@ describe('AnalyticsProvider', () => {
   beforeEach(() => {
     // Clear any existing scripts
     document.head.innerHTML = '';
+    document.body.innerHTML = '';
     (window as any).gtag = undefined;
     (window as any).dataLayer = undefined;
-    (window as any).hj = undefined;
-    (window as any)._hjSettings = undefined;
+    (window as any).clarity = undefined;
     (window as any)._linkedin_data_partner_ids = undefined;
   });
 
@@ -67,10 +67,10 @@ describe('AnalyticsProvider', () => {
     });
   });
 
-  describe('Hotjar', () => {
-    it('should inject Hotjar script when site ID is provided', () => {
-      vi.stubEnv('VITE_HOTJAR_ID', '12345');
-      vi.stubEnv('VITE_HOTJAR_VERSION', '6');
+  describe('Microsoft Clarity', () => {
+    it('should inject Clarity script when project ID is provided', () => {
+      const clarityId = 'ABC123';
+      vi.stubEnv('VITE_CLARITY_PROJECT_ID', clarityId);
 
       render(
         <AnalyticsProvider>
@@ -78,12 +78,15 @@ describe('AnalyticsProvider', () => {
         </AnalyticsProvider>
       );
 
-      expect((window as any).hj).toBeDefined();
-      expect((window as any)._hjSettings).toBeDefined();
+      const clarityScript = document.querySelector(
+        `script[src="https://www.clarity.ms/tag/${clarityId}"]`
+      );
+      expect(clarityScript).toBeTruthy();
+      expect((window as any).clarity).toBeDefined();
     });
 
-    it('should not inject Hotjar when site ID is missing', () => {
-      vi.stubEnv('VITE_HOTJAR_ID', '');
+    it('should not inject Clarity script when project ID is missing', () => {
+      vi.stubEnv('VITE_CLARITY_PROJECT_ID', '');
 
       render(
         <AnalyticsProvider>
@@ -91,7 +94,9 @@ describe('AnalyticsProvider', () => {
         </AnalyticsProvider>
       );
 
-      expect((window as any).hj).toBeUndefined();
+      const clarityScripts = document.querySelectorAll('script[data-analytics="clarity"]');
+      expect(clarityScripts.length).toBe(0);
+      expect((window as any).clarity).toBeUndefined();
     });
   });
 
@@ -138,7 +143,7 @@ describe('AnalyticsProvider', () => {
         </AnalyticsProvider>
       );
 
-      const noscript = document.querySelector('noscript');
+      const noscript = document.getElementById('linkedin-noscript');
       expect(noscript).toBeTruthy();
       expect(noscript?.innerHTML).toContain('px.ads.linkedin.com');
       expect(noscript?.innerHTML).toContain(partnerId);
@@ -160,8 +165,7 @@ describe('AnalyticsProvider', () => {
   describe('Multiple Analytics Integration', () => {
     it('should initialize all analytics when all IDs are provided', () => {
       vi.stubEnv('VITE_GA_MEASUREMENT_ID', 'G-TEST123456');
-      vi.stubEnv('VITE_HOTJAR_ID', '12345');
-      vi.stubEnv('VITE_HOTJAR_VERSION', '6');
+      vi.stubEnv('VITE_CLARITY_PROJECT_ID', 'ABC123');
       vi.stubEnv('VITE_LINKEDIN_PARTNER_ID', '123456');
 
       render(
@@ -172,7 +176,7 @@ describe('AnalyticsProvider', () => {
 
       // All analytics should be initialized
       expect((window as any).gtag).toBeDefined();
-      expect((window as any).hj).toBeDefined();
+      expect((window as any).clarity).toBeDefined();
       expect((window as any)._linkedin_data_partner_ids).toBeDefined();
     });
   });
