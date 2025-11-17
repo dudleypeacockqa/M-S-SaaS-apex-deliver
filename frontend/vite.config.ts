@@ -67,9 +67,19 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      // CRITICAL: Force lucide-react to use ESM build to prevent module format conflicts
+      // DO NOT REMOVE: Required to prevent blank screen errors
+      'lucide-react': path.resolve(
+        __dirname,
+        'node_modules/lucide-react/dist/esm/lucide-react.js',
+      ),
     },
+    // CRITICAL: Dedupe lucide-react to ensure single instance across all chunks
+    // DO NOT REMOVE: Required to prevent blank screen errors
+    dedupe: ['lucide-react'],
   },
   optimizeDeps: {
+    include: ['lucide-react'],
     exclude: ['**/*.test.tsx', '**/*.test.ts', '**/*.spec.tsx', '**/*.spec.ts'],
   },
   server: {
@@ -91,6 +101,12 @@ export default defineConfig({
           }
           // Core React dependencies
           if (normalizedId.includes('node_modules')) {
+            // CRITICAL: Check lucide-react BEFORE react to prevent it from matching 'react-vendor'
+            // This ensures lucide-react stays in the main bundle and loads synchronously
+            // DO NOT REMOVE OR REORDER: Required to prevent blank screen errors
+            if (normalizedId.includes('/lucide-react/')) {
+              return undefined  // Force into main bundle - prevents blank screen race condition
+            }
             if (normalizedId.includes('react') || normalizedId.includes('react-dom') || normalizedId.includes('react-router')) {
               return 'react-vendor'
             }
