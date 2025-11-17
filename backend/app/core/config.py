@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     # Database
     database_url: str = "sqlite:///./app.db"
 
+    # Redis (for caching and task queue)
+    redis_url: str = ""  # e.g., "redis://localhost:6379/0" or Render Redis URL
+
     # Clerk Authentication
     clerk_publishable_key: str = ""
     clerk_secret_key: str = ""
