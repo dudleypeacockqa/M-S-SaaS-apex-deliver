@@ -1,0 +1,3 @@
+# Prevent linter from auto-fixing these critical files
+vite.config.ts
+src/main.tsx
