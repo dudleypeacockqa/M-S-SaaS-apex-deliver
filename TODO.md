@@ -559,8 +559,8 @@
 - [x] Add publishing workflow with guardrails (confirmation dialog + validation)
 - [x] Implement draft/publish state management (auto-save + manual save)
 - [x] Add tests for admin editor (15 test cases in BlogAdminEditor.test.tsx)
-- [ ] Add route to App.tsx for /admin/blog/new and /admin/blog/:id/edit
-- [ ] Verify blog publishing works end-to-end
+- [x] Add route to App.tsx for /admin/blog/new and /admin/blog/:id/edit (commit 95a2bbd)
+- [ ] Verify blog publishing works end-to-end (after deployment)
 
 ### Phase 4: Marketing Website Phases 2-10
 - [ ] Review marketing website current status
