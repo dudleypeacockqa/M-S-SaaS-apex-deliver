@@ -43,6 +43,7 @@ from app.services.sage_oauth_service import (
 from app.api.dependencies.auth import get_current_user
 from app.models.financial_connection import FinancialConnection
 from app.models.financial_narrative import FinancialNarrative
+from app.models.financial_ratio import FinancialRatio
 from sqlalchemy import select, desc
 
 router = APIRouter()
@@ -186,12 +187,21 @@ def get_financial_ratios(
             detail="You don't have access to this deal's organization"
         )
 
-    # TODO: Query FinancialRatio model for latest ratios
-    # For now, return stub indicating no ratios calculated yet
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="No financial ratios have been calculated for this deal yet. Use POST /deals/{deal_id}/financial/calculate-ratios to calculate them."
-    )
+    # Query FinancialRatio model for latest ratios
+    latest_ratio = db.query(FinancialRatio).filter(
+        FinancialRatio.deal_id == deal_id,
+        FinancialRatio.organization_id == current_user.organization_id,
+        FinancialRatio.deleted_at.is_(None)
+    ).order_by(desc(FinancialRatio.calculated_at)).first()
+
+    if not latest_ratio:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No financial ratios have been calculated for this deal yet. Use POST /deals/{deal_id}/financial/calculate-ratios to calculate them."
+        )
+
+    # Convert to response model (Pydantic will handle serialization)
+    return latest_ratio
 
 
 @router.get(
@@ -306,12 +316,20 @@ def get_financial_narrative(
             detail="You don't have access to this deal's organization"
         )
 
-    # TODO: Query FinancialNarrative model for latest narrative
-    # For now, return 404
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="No financial narrative has been generated for this deal yet"
-    )
+    # Query FinancialNarrative model for latest narrative
+    latest_narrative = db.query(FinancialNarrative).filter(
+        FinancialNarrative.deal_id == deal_id,
+        FinancialNarrative.organization_id == current_user.organization_id
+    ).order_by(desc(FinancialNarrative.generated_at)).first()
+
+    if not latest_narrative:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No financial narrative has been generated for this deal yet"
+        )
+
+    # Convert to response model (Pydantic will handle serialization)
+    return latest_narrative
 
 
 # ============================================================================
