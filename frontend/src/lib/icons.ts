@@ -4,6 +4,7 @@
 export {
   Activity,
   AlertCircle,
+  AlertTriangle,
   Archive,
   ArrowLeft,
   ArrowRight,
@@ -45,6 +46,7 @@ export {
   Phone,
   Play,
   Plus,
+  RefreshCw,
   Search,
   Send,
   Settings,

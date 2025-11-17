@@ -1,5 +1,5 @@
 import React from 'react'
-import { AlertTriangle, RefreshCw } from 'lucide-react'
+import { AlertTriangle, RefreshCw } from '@/lib/icons'
 
 interface ChunkLoadErrorProps {
   error?: Error
