@@ -1,10 +1,10 @@
 
 # BMM Workflow Status
 
-**Status**: ⚠️ Re-opened — Sprint 1-B (Master Admin Frontend + Deploy Verification) active | Updated 2025-11-17T14:21Z (toolchain + pytest/Vitest baselines captured)
+**Status**: ⚠️ Re-opened — Sprint 1-B (Master Admin Frontend + Deploy Verification) active | Updated 2025-11-17T15:05Z (backend + frontend suites now green, shifting to docs/deploy evidence)
 **Release Target**: v1.0.0 (Pending sign-off)
 **Current Version**: Sprint 1-A backend fixes landed; Sprint 1-B in progress
-**Test Pass Rate**: Backend 1487 total → 1429 PASS / 4 FAIL / 54 SKIP (all failures isolated to `test_core_edge_cases.py`) ⚠️ · Frontend 1743 total → 1738 PASS / 5 FAIL (BillingDashboard + DocumentWorkspace + LandingPage) ⚠️ – see logs dated 2025-11-17
+**Test Pass Rate**: Backend 1487 total → 1432 PASS / 0 FAIL / 55 SKIP ✅ (`backend/tests/test-results-2025-11-17.txt`) · Frontend 1743 total → 1743 PASS / 0 FAIL ✅ (`frontend/test-results-2025-11-17.txt`)
 **Execution Plan**: Phases 1–2 closed; Phases 3–5 still in flight per `TODO.md` and `docs/100-PERCENT-COMPLETION-ROADMAP.md`
 
 ## Project Configuration
@@ -21,13 +21,13 @@ WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.y
 CURRENT_PHASE: 3-Implementation (Sprint 1-B – Master Admin Frontend + Deploy Readiness)
 CURRENT_WORKFLOW: dev-story (Master Admin UI + deployment verification TDD loop)
 CURRENT_AGENT: codex (primary) with BMAD governance support
-PROJECT_COMPLETION: 78% (Backend service coverage/regressions unresolved; Frontend Master Admin features still require verification)
-LAST_UPDATED: 2025-11-17T14:21Z (Pytest + Vitest reruns logged, next: drive RED → GREEN fixes)
+PROJECT_COMPLETION: 78% (Backend + frontend tests stable; documentation/deployment evidence still pending)
+LAST_UPDATED: 2025-11-17T15:05Z (Pytest/Vitest suites green, ready to tackle docs + deployment verification)
 PHASE_1_FOUNDATIONAL_CORE: ✅ COMPLETE (backend API foundations + enums fixes)
 PHASE_2_ADVANCED_INTELLIGENCE: ✅ COMPLETE (Sprint 1-A backend repairs)
 PHASE_3_ECOSYSTEM_NETWORK: ⚠️ IN PROGRESS (Master Admin UI, integrations outstanding)
 PHASE_4_IMPLEMENTATION: ⚠️ OPEN (Frontend modules + external services, see TODO Phase 3/4)
-PHASE_5_QA: ⚠️ OPEN (Backend 4 RED cases in `test_core_edge_cases.py`, Frontend 5 RED specs in BillingDashboard/DocumentWorkspace/LandingPage, integration tests still pending)
+PHASE_5_QA: ⚠️ OPEN (Test suites now green but file-by-file evidence + integration coverage still pending; maintain pressure on skipped external integrations)
 PHASE_6_PRODUCTION_LAUNCH: ⚠️ OPEN (Render verification + smoke evidence unchecked)
 
 ## Current Story Status

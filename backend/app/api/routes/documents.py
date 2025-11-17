@@ -36,6 +36,7 @@ from app.schemas.document import (
     PermissionCreate,
     PermissionResponse,
     DocumentAccessLogEntry,
+    DocumentAccessLogCreate,
     DocumentQuestionCreate,
     DocumentQuestionListResponse,
     DocumentQuestionResolve,
