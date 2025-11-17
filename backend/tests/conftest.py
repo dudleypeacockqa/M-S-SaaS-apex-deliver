@@ -10,6 +10,7 @@ from uuid import uuid4
 
 import asyncio
 import pytest
+import pytest_asyncio
 from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
@@ -590,7 +591,7 @@ def auth_headers(solo_user):
     app.dependency_overrides.pop(get_current_user, None)
 
 
-@pytest.fixture()
+@pytest_asyncio.fixture()
 async def async_client(engine):
     """Return an AsyncClient with overridden database dependency."""
 
@@ -624,6 +625,12 @@ def test_organization(db_session):
     db_session.commit()
     db_session.refresh(org)
     return org
+
+
+@pytest.fixture()
+def test_org(test_organization):
+    """Alias fixture expected by dashboard tests."""
+    return test_organization
 
 
 @pytest.fixture()

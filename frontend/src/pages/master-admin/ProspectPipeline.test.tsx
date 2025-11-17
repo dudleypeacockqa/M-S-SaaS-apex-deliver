@@ -9,7 +9,6 @@ import { ProspectPipeline } from './ProspectPipeline'
 
 const mockNavigate = vi.fn()
 vi.mock('@/components/master-admin/prospects', () => {
-  const React = require('react')
   const sampleProspect = {
     id: 1,
     name: 'Acme Corp',

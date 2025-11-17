@@ -111,7 +111,7 @@ def _upcoming_tasks_payload(db: Session, org_id: str) -> List[Dict[str, Any]]:
 
 def _metrics_payload(db: Session, org_id: str) -> Dict[str, Any]:
     deals_count = db.scalar(
-        select(func.count()).where(Deal.organization_id == org_id, Deal.is_archived.is_(False))
+        select(func.count()).where(Deal.organization_id == org_id)
     ) or 0
     documents_count = db.scalar(
         select(func.count()).where(Document.organization_id == org_id)
@@ -215,6 +215,7 @@ async def get_dashboard_metrics(
 
 
 @router.get("/recent-activity")
+@router.get("/activity")
 async def get_recent_activity(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),

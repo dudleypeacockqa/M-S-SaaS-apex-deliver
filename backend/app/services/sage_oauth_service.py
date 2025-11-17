@@ -517,8 +517,12 @@ def fetch_sage_statements(connection_id: str, db: Session) -> List[FinancialStat
     if not connection:
         raise ValueError(f"Connection {connection_id} not found")
 
-    # Check if token is expired
-    if connection.token_expires_at and connection.token_expires_at <= datetime.now(timezone.utc):
+    # Check if token is expired (normalize naive timestamps from SQLite to UTC)
+    expires_at = connection.token_expires_at
+    if expires_at and expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+    if expires_at and expires_at <= datetime.now(timezone.utc):
         # Auto-refresh token
         connection = refresh_sage_token(connection_id, db)
 
@@ -638,8 +642,15 @@ def get_sage_connection_status(deal_id: str, db: Session) -> Dict:
     connection = result.scalar_one_or_none()
 
     if not connection:
+        print("[DEBUG] get_sage_connection_status: no connection found for deal", deal_id)
         return None
 
+    print(
+        "[DEBUG] get_sage_connection_status: returning connection",
+        connection.id,
+        connection.platform,
+        connection.platform_organization_name,
+    )
     return {
         "connected": True,
         "platform": "sage",

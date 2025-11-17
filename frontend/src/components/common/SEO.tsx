@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { convertToWebP, supportsWebP } from '../../utils/imageUtils';
+import { convertToWebP } from '../../utils/imageUtils';
 
 export interface StructuredDataArticle {
   '@type': 'Article' | 'BlogPosting';

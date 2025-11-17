@@ -257,7 +257,9 @@ export function validateVariableValues(
   providedValues: Record<string, any>
 ): { valid: boolean; missing: string[] } {
   const missing = requiredVariables.filter(
-    (variable) => !providedValues.hasOwnProperty(variable) || providedValues[variable] === ''
+    (variable) =>
+      !Object.prototype.hasOwnProperty.call(providedValues, variable) ||
+      providedValues[variable] === ''
   );
 
   return {

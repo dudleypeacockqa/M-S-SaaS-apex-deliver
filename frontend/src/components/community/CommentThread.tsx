@@ -4,7 +4,6 @@ import { formatPostDate, getReactionEmoji } from '../../services/api/community'
 
 interface CommentThreadProps {
   comments: Comment[]
-  postId: string
   currentUserId?: string
   onAddComment?: (content: string, parentCommentId: string | null) => void
   onDeleteComment?: (commentId: string) => void
@@ -150,7 +149,6 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, placeholder, autoFo
 
 export const CommentThread: React.FC<CommentThreadProps> = ({
   comments,
-  postId,
   currentUserId,
   onAddComment,
   onDeleteComment,

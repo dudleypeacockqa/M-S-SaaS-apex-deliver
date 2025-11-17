@@ -84,7 +84,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       as="image"
       href={webpSrc}
       type="image/webp"
-      // @ts-ignore - React doesn't have types for image preload attributes
+      // @ts-expect-error React types lack image preload attributes for <link rel="preload">
       imageSrcSet={sizes ? webpSrcSet : undefined}
       imageSizes={sizes}
     />

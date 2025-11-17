@@ -8,7 +8,7 @@ type StorageLike = {
 }
 
 const createStorage = (): StorageLike => {
-  let store = new Map<string, string>()
+  const store = new Map<string, string>()
   return {
     getItem: (key: string) => (store.has(String(key)) ? store.get(String(key)) ?? null : null),
     setItem: (key: string, value: string) => {
