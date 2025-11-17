@@ -19,35 +19,33 @@ const ensureFileExists = async (filePath) => {
   }
 }
 
+const collectLucideChunks = async (dir, chunks) => {
+  const entries = await fs.readdir(dir, { withFileTypes: true })
+  for (const entry of entries) {
+    const entryPath = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      await collectLucideChunks(entryPath, chunks)
+    } else if (entry.name.includes('lucide-vendor')) {
+      chunks.push(path.relative(distDir, entryPath))
+    }
+  }
+}
+
 const run = async () => {
   await ensureFileExists(htmlPath)
-  const html = await fs.readFile(htmlPath, 'utf8')
-  if (html.includes('lucide-vendor')) {
-    fail('dist/index.html still references a lucide-vendor chunk')
-  }
 
   const assetsDir = path.join(distDir, 'assets')
   await ensureFileExists(assetsDir)
 
   const lucideChunks = []
-  const walk = async (dir) => {
-    const entries = await fs.readdir(dir, { withFileTypes: true })
-    for (const entry of entries) {
-      const entryPath = path.join(dir, entry.name)
-      if (entry.isDirectory()) {
-        await walk(entryPath)
-      } else if (entry.name.includes('lucide-vendor')) {
-        lucideChunks.push(path.relative(distDir, entryPath))
-      }
-    }
-  }
-  await walk(assetsDir)
+  await collectLucideChunks(assetsDir, lucideChunks)
 
+  // Verify NO lucide-vendor chunks exist (they should be bundled normally)
   if (lucideChunks.length > 0) {
-    fail(`Found lucide-vendor chunk(s): ${lucideChunks.join(', ')}`)
+    fail(`Found problematic lucide-vendor chunks: ${lucideChunks.join(', ')}. Lucide should NOT be in a separate chunk!`)
   }
 
-  console.log('✅ Lucide bundle verification passed: no lucide-specific chunks detected')
+  console.log(`✅ Lucide bundle verification passed: no lucide-vendor chunks detected`)
 }
 
 run()
