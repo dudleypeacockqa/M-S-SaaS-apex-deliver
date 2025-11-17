@@ -67,6 +67,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      // Force lucide-react to resolve to its pure ESM build to avoid CJS export races
+      'lucide-react': path.resolve(
+        __dirname,
+        'node_modules/lucide-react/dist/esm/lucide-react.js',
+      ),
     },
     // Fix for lucide-react ESM-only package resolution
     dedupe: ['lucide-react'],
@@ -107,7 +112,7 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             // Lucide React icons - DO NOT split, bundle with main to prevent initialization issues
             if (id.includes('lucide-react')) {
-              return undefined
+              return 'react-vendor'
             }
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'react-vendor'
