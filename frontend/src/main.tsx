@@ -1,9 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { ClerkProvider } from "@clerk/clerk-react"
-// CRITICAL: Import icons to initialize lucide-react module before React renders
-// eslint-disable-next-line
-import "./lib/icons"
 import App from "./App"
 import "./index.css"
 
@@ -12,6 +9,29 @@ const publishableKey =
   (import.meta.env.MODE === "test" ? "test-clerk-publishable-key" : undefined)
 
 const appBuildId = import.meta.env.VITE_APP_BUILD_ID ?? (typeof __APP_BUILD_ID__ !== 'undefined' ? __APP_BUILD_ID__ : undefined)
+
+const unregisterLegacyServiceWorkers = () => {
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) {
+    return
+  }
+
+  navigator.serviceWorker
+    .getRegistrations()
+    .then((registrations) => {
+      registrations.forEach((registration) => {
+        registration.unregister().catch((error) => {
+          if (import.meta.env.DEV) {
+            console.warn('Failed to unregister service worker', error)
+          }
+        })
+      })
+    })
+    .catch((error) => {
+      if (import.meta.env.DEV) {
+        console.warn('Unable to enumerate service workers', error)
+      }
+    })
+}
 
 const Root = () => {
   // Always provide ClerkProvider context to prevent SignedIn/SignedOut component crashes
@@ -82,15 +102,5 @@ const renderReactApp = () => {
 }
 
 // Render React app synchronously - no async preloading needed
+unregisterLegacyServiceWorkers()
 renderReactApp()
-
-if (import.meta.env.MODE !== "test" && "serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    const swVersionParam = appBuildId ? `?v=${encodeURIComponent(appBuildId)}` : ""
-    navigator.serviceWorker.register(`/service-worker.js${swVersionParam}`).catch((error) => {
-      if (import.meta.env.DEV) {
-        console.warn("Service worker registration failed", error)
-      }
-    })
-  })
-}
