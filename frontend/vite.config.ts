@@ -68,9 +68,9 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
-    dedupe: ['lucide-react'],
   },
   optimizeDeps: {
+    include: ['lucide-react'],
     exclude: ['**/*.test.tsx', '**/*.test.ts', '**/*.spec.tsx', '**/*.spec.ts'],
   },
   server: {
@@ -85,10 +85,13 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
+          const normalizedId = id.replace(/\\/g, '/')
           // Skip test files entirely
-          if (id.includes('.test.') || id.includes('.spec.') || id.includes('vitest')) {
+          if (normalizedId.includes('.test.') || normalizedId.includes('.spec.') || normalizedId.includes('vitest')) {
             return undefined
           }
+          // Lucide React - treat like any other vendor dependency
+          // No special chunking needed
           // Core React dependencies
           if (id.includes('node_modules')) {
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
