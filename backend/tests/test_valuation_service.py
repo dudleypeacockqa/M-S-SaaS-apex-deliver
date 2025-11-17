@@ -161,6 +161,109 @@ class TestEdgeCasesAndValidation:
                 growth_rate=0.03,  # Equal = invalid
             )
 
+    def test_dcf_with_empty_cash_flows(self):
+        """Test DCF handles empty cash flows list."""
+        cash_flows = []
+        discount_rate = 0.12
+
+        present_value = valuation_service.calculate_dcf_present_value(
+            cash_flows,
+            discount_rate,
+        )
+
+        # Empty list should return zero
+        assert present_value == Decimal("0")
+
+    def test_dcf_with_negative_discount_rate(self):
+        """Test that negative discount rate raises error."""
+        with pytest.raises(ValueError, match="discount_rate must be positive"):
+            valuation_service.calculate_dcf_present_value([100000], discount_rate=-0.05)
+
+    def test_gordon_growth_with_negative_growth_rate(self):
+        """Test Gordon Growth handles negative growth rate (declining business)."""
+        terminal_cash_flow = 1000000
+        discount_rate = 0.12
+        growth_rate = -0.02  # Declining business
+
+        terminal_value = valuation_service.calculate_terminal_value_gordon_growth(
+            terminal_cash_flow,
+            discount_rate,
+            growth_rate,
+        )
+
+        # Should produce lower terminal value due to negative growth
+        # TV = FCF * (1 + g) / (r - g) = 1M * 0.98 / (0.12 - (-0.02)) = 980K / 0.14 = 7M
+        assert 6_900_000 < terminal_value < 7_100_000
+
+    def test_dcf_with_extreme_large_cash_flows(self):
+        """Test DCF handles very large cash flows without overflow."""
+        cash_flows = [1_000_000_000, 2_000_000_000, 3_000_000_000]
+        discount_rate = 0.10
+
+        present_value = valuation_service.calculate_dcf_present_value(
+            cash_flows,
+            discount_rate,
+        )
+
+        # Should produce valid result (approximately 4.82B)
+        # PV = 1B/1.1 + 2B/1.21 + 3B/1.331 ≈ 909M + 1,653M + 2,254M ≈ 4.816B
+        assert present_value > 4_800_000_000
+        assert present_value < 4_850_000_000
+
+    def test_dcf_with_extreme_small_cash_flows(self):
+        """Test DCF handles very small cash flows without underflow."""
+        cash_flows = [0.01, 0.02, 0.03]
+        discount_rate = 0.10
+
+        present_value = valuation_service.calculate_dcf_present_value(
+            cash_flows,
+            discount_rate,
+        )
+
+        # Should produce valid result (approximately 0.05)
+        assert present_value > Decimal("0.04")
+        assert present_value < Decimal("0.06")
+
+    def test_exit_multiple_with_zero_ebitda(self):
+        """Test exit multiple handles zero EBITDA."""
+        terminal_ebitda = 0
+        exit_multiple = 8.5
+
+        terminal_value = valuation_service.calculate_terminal_value_exit_multiple(
+            terminal_ebitda,
+            exit_multiple,
+        )
+
+        # Zero EBITDA should produce zero terminal value
+        assert terminal_value == Decimal("0")
+
+    def test_exit_multiple_with_negative_ebitda(self):
+        """Test exit multiple handles negative EBITDA (loss-making)."""
+        terminal_ebitda = -500000
+        exit_multiple = 8.5
+
+        terminal_value = valuation_service.calculate_terminal_value_exit_multiple(
+            terminal_ebitda,
+            exit_multiple,
+        )
+
+        # Negative EBITDA should produce negative terminal value
+        assert terminal_value == Decimal("-4250000")
+
+    def test_dcf_with_high_discount_rate(self):
+        """Test DCF with very high discount rate (risky ventures)."""
+        cash_flows = [100000, 150000, 200000]
+        discount_rate = 0.50  # 50% discount rate for high-risk ventures
+
+        present_value = valuation_service.calculate_dcf_present_value(
+            cash_flows,
+            discount_rate,
+        )
+
+        # High discount rate should significantly reduce PV
+        # Roughly: 100K/1.5 + 150K/2.25 + 200K/3.375 ≈ 66.7K + 66.7K + 59.3K ≈ 192.7K
+        assert 180_000 < present_value < 210_000
+
 
 class TestMultiplesAndScenarioAnalytics:
     def test_comparable_analysis_excludes_outliers_and_weighs_results(self, db_session, valuation_payload, test_deal, solo_user):
@@ -854,4 +957,171 @@ class TestGoToMarketKpis:
 
         assert db_session.get(Organization, org_id) is not None
         assert db_session.get(User, user_id) is not None
+
+
+class TestServiceHelperFunctions:
+    """Test helper functions and uncovered edge cases in valuation_service."""
+
+    def test_safe_division_returns_none_for_zero_denominator(self):
+        """Test _safe_division returns None when denominator is zero."""
+        result = valuation_service._safe_division(numerator=100, denominator=0)
+        assert result is None
+
+    def test_safe_division_returns_none_for_none_denominator(self):
+        """Test _safe_division returns None when denominator is None."""
+        result = valuation_service._safe_division(numerator=100, denominator=None)
+        assert result is None
+
+    def test_valuation_with_zero_shares_outstanding_has_none_share_price(
+        self, db_session, create_deal_for_org
+    ):
+        """Test valuation with zero shares_outstanding sets implied_share_price to None."""
+        deal, owner, _ = create_deal_for_org()
+
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+            created_by=owner.id,
+            forecast_years=5,
+            discount_rate=0.12,
+            terminal_growth_rate=0.03,
+            terminal_method="gordon_growth",
+            cash_flows=[500000, 650000, 800000, 950000, 1_100_000],
+            terminal_cash_flow=1_200_000,
+            net_debt=2_000_000,
+            shares_outstanding=0,  # Zero shares
+        )
+
+        # implied_share_price should be None when shares_outstanding is 0
+        assert valuation.implied_share_price is None
+
+    def test_valuation_with_none_shares_outstanding_has_none_share_price(
+        self, db_session, create_deal_for_org
+    ):
+        """Test valuation with None shares_outstanding sets implied_share_price to None."""
+        deal, owner, _ = create_deal_for_org()
+
+        valuation = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+            created_by=owner.id,
+            forecast_years=5,
+            discount_rate=0.12,
+            terminal_growth_rate=0.03,
+            terminal_method="gordon_growth",
+            cash_flows=[500000, 650000, 800000, 950000, 1_100_000],
+            terminal_cash_flow=1_200_000,
+            net_debt=2_000_000,
+            shares_outstanding=None,  # None shares
+        )
+
+        # implied_share_price should be None when shares_outstanding is None
+        assert valuation.implied_share_price is None
+
+    def test_list_valuations_returns_all_for_deal(
+        self, db_session, create_deal_for_org
+    ):
+        """Test list_valuations returns all valuations for a deal."""
+        deal, owner, _ = create_deal_for_org()
+
+        # Create multiple valuations for the same deal
+        val1 = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+            created_by=owner.id,
+            forecast_years=5,
+            discount_rate=0.12,
+            terminal_growth_rate=0.03,
+            terminal_method="gordon_growth",
+            cash_flows=[100000, 150000, 200000],
+            terminal_cash_flow=250000,
+        )
+
+        val2 = valuation_service.create_valuation(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+            created_by=owner.id,
+            forecast_years=5,
+            discount_rate=0.15,
+            terminal_growth_rate=0.02,
+            terminal_method="exit_multiple",
+            terminal_ebitda_multiple=8.5,
+            cash_flows=[120000, 180000, 240000],
+            terminal_cash_flow=300000,
+        )
+
+        # List valuations
+        valuations = valuation_service.list_valuations(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+        )
+
+        assert len(valuations) == 2
+        valuation_ids = [v.id for v in valuations]
+        assert val1.id in valuation_ids
+        assert val2.id in valuation_ids
+
+    def test_deal_exists_returns_true_for_existing_deal(
+        self, db_session, create_deal_for_org
+    ):
+        """Test deal_exists returns True for existing deal."""
+        deal, _, _ = create_deal_for_org()
+
+        exists = valuation_service.deal_exists(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=deal.organization_id,
+        )
+
+        assert exists is True
+
+    def test_deal_exists_returns_false_for_nonexistent_deal(
+        self, db_session, create_deal_for_org
+    ):
+        """Test deal_exists returns False for non-existent deal."""
+        _, _, org = create_deal_for_org()
+        fake_deal_id = str(uuid4())
+
+        exists = valuation_service.deal_exists(
+            db=db_session,
+            deal_id=fake_deal_id,
+            organization_id=org.id,
+        )
+
+        assert exists is False
+
+    def test_deal_exists_returns_false_for_wrong_organization(
+        self, db_session, create_deal_for_org
+    ):
+        """Test deal_exists returns False when organization_id doesn't match."""
+        deal, _, _ = create_deal_for_org()
+        fake_org_id = str(uuid4())
+
+        exists = valuation_service.deal_exists(
+            db=db_session,
+            deal_id=deal.id,
+            organization_id=fake_org_id,
+        )
+
+        assert exists is False
+
+    def test_update_valuation_raises_error_for_nonexistent_valuation(
+        self, db_session, create_deal_for_org
+    ):
+        """Test update_valuation raises ValueError for non-existent valuation."""
+        _, _, org = create_deal_for_org()
+        fake_valuation_id = str(uuid4())
+
+        with pytest.raises(ValueError, match="Valuation not found"):
+            valuation_service.update_valuation(
+                db=db_session,
+                valuation_id=fake_valuation_id,
+                organization_id=org.id,
+                updates={"discount_rate": 0.15},
+            )
 
