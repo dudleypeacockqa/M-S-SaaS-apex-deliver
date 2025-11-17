@@ -2,6 +2,9 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { ClerkProvider } from "@clerk/clerk-react"
 
+// Pre-import icons to ensure proper initialization before any components load
+import './lib/icons'
+
 import App from "./App"
 import "./index.css"
 
