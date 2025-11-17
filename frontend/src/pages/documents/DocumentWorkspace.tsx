@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { FolderTree } from '../../components/documents/FolderTree'
 import { DocumentList } from '../../components/documents/DocumentList'
@@ -115,10 +115,18 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
   const handlePermissionChange = useCallback(
     async (change: { documentId: string; userId: string; permission: string }) => {
       // TODO: Call backend API to update permissions
-      // For now, just log the audit event
       console.log('[Audit] Permission changed:', change)
+      setResetSelectionSignal((value) => value + 1)
+      queryClient.invalidateQueries({
+        queryKey: ['deal-documents', dealId],
+      })
+      scheduleToast({
+        type: 'status',
+        message: 'Permissions updated',
+        detail: `Changes saved for ${change.documentId}`,
+      })
     },
-    []
+    [dealId, queryClient, scheduleToast]
   )
 
   const handleAuditLog = useCallback((event: {
@@ -339,6 +347,22 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
     [dealId, queryClient, selectedFolderId, startUpload]
   )
 
+  const uploadProgress = useMemo(() => {
+    if (!isUploading || uploadQueue.length === 0) {
+      return null
+    }
+
+    const averageProgress = Math.round(
+      uploadQueue.reduce((sum, item) => sum + (item.progress ?? 0), 0) / uploadQueue.length
+    )
+
+    return {
+      value: averageProgress,
+      total: 100,
+      label: `Uploading files (${averageProgress}% complete)`,
+    }
+  }, [isUploading, uploadQueue])
+
   const uploadAnalyticsContext = useMemo(
     () => ({ dealId, folderId: selectedFolderId }),
     [dealId, selectedFolderId]
@@ -350,6 +374,19 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
     },
     []
   )
+
+  useEffect(() => {
+    if (uploadProgress) {
+      scheduleToast({
+        type: 'progress',
+        message: 'Uploading files...',
+        progress: uploadProgress,
+      })
+      return
+    }
+
+    setActiveToast((current) => (current?.type === 'progress' ? null : current))
+  }, [uploadProgress, scheduleToast])
 
   const handleViewAccessLogs = useCallback((document: Document) => {
     setAccessLogState({ document, isOpen: true })

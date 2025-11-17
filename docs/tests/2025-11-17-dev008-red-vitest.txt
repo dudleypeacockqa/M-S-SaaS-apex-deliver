@@ -1,11 +1,10 @@
-Vitest RED cycle - DocumentWorkspace (DEV-008) - 2025-11-17T14:18Z
+Vitest RED cycle - DocumentWorkspace (DEV-008) - 2025-11-17T14:21Z
 Command: cmd /c "cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx"
 
-Result: FAILED (33 tests, 3 failing)
+Result: FAILED (32 tests, 2 failing)
 Failing specs:
-1. refreshes the document list after permissions change to reflect new access state (expected resetSelectionSignal to increment)
-2. refreshes the document list after permissions change to reflect new access state (duplicate invocation via rerender snapshot)
-3. surfaces a progress toast while uploads are running (no progressbar rendered)
+1. refreshes the document list after permissions change to reflect new access state (resetSelectionSignal never increments).
+2. surfaces a progress toast while uploads are running (no element with role="progressbar" and accessible name /uploading/).
 
 Console excerpts:
 [Audit] Permission changed: { documentId: 'doc-refresh', userId: 'user-123', permission: 'editor' }

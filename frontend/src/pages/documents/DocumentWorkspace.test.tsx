@@ -279,32 +279,6 @@ describe('DocumentWorkspace', () => {
     )
   })
 
-  it('refreshes the document list after permissions change to reflect new access state', async () => {
-    renderWorkspace()
-
-    const initialProps = documentListSpy.mock.calls.at(-1)?.[0]
-    const initialSignal = initialProps?.resetSelectionSignal ?? 0
-
-    act(() => {
-      initialProps?.onManagePermissions?.({
-        id: 'doc-refresh',
-        name: 'Quarterly Review.pdf',
-        auditTrail: [],
-      })
-    })
-
-    const modalProps = permissionModalSpy.mock.calls.at(-1)?.[0]
-    await act(async () => {
-      await modalProps.onPermissionChange?.({
-        documentId: 'doc-refresh',
-        userId: 'user-123',
-        permission: 'editor',
-      })
-    })
-
-    const latestProps = documentListSpy.mock.calls.at(-1)?.[0]
-    expect(latestProps?.resetSelectionSignal ?? 0).toBeGreaterThan(initialSignal)
-  })
 
   it('refreshes the document list after permissions change to reflect new access state', async () => {
     renderWorkspace()

@@ -1,10 +1,10 @@
 
 # BMM Workflow Status
 
-**Status**: ⚠️ Re-opened — Sprint 1-B (Master Admin Frontend + Deploy Verification) active | Updated 2025-11-17T14:09Z (toolchain revalidated)
+**Status**: ⚠️ Re-opened — Sprint 1-B (Master Admin Frontend + Deploy Verification) active | Updated 2025-11-17T14:21Z (toolchain + pytest/Vitest baselines captured)
 **Release Target**: v1.0.0 (Pending sign-off)
 **Current Version**: Sprint 1-A backend fixes landed; Sprint 1-B in progress
-**Test Pass Rate**: Backend 1340/1425 passing (17 FAILED, 14 ERROR) · Frontend 1740/1740 passing (Vitest 172 files) ⚠️ — awaiting fresh RED runs scheduled 2025-11-17T14Z
+**Test Pass Rate**: Backend 1487 total → 1429 PASS / 4 FAIL / 54 SKIP (all failures isolated to `test_core_edge_cases.py`) ⚠️ · Frontend 1743 total → 1738 PASS / 5 FAIL (BillingDashboard + DocumentWorkspace + LandingPage) ⚠️ – see logs dated 2025-11-17
 **Execution Plan**: Phases 1–2 closed; Phases 3–5 still in flight per `TODO.md` and `docs/100-PERCENT-COMPLETION-ROADMAP.md`
 
 ## Project Configuration
@@ -22,34 +22,35 @@ CURRENT_PHASE: 3-Implementation (Sprint 1-B – Master Admin Frontend + Deploy R
 CURRENT_WORKFLOW: dev-story (Master Admin UI + deployment verification TDD loop)
 CURRENT_AGENT: codex (primary) with BMAD governance support
 PROJECT_COMPLETION: 78% (Backend service coverage/regressions unresolved; Frontend Master Admin features still require verification)
-LAST_UPDATED: 2025-11-17T14:09Z (BMAD CLI + tooling verified, next: rerun pytest/Vitest baselines)
+LAST_UPDATED: 2025-11-17T14:21Z (Pytest + Vitest reruns logged, next: drive RED → GREEN fixes)
 PHASE_1_FOUNDATIONAL_CORE: ✅ COMPLETE (backend API foundations + enums fixes)
 PHASE_2_ADVANCED_INTELLIGENCE: ✅ COMPLETE (Sprint 1-A backend repairs)
 PHASE_3_ECOSYSTEM_NETWORK: ⚠️ IN PROGRESS (Master Admin UI, integrations outstanding)
 PHASE_4_IMPLEMENTATION: ⚠️ OPEN (Frontend modules + external services, see TODO Phase 3/4)
-PHASE_5_QA: ⚠️ OPEN (93 frontend failures, backend coverage <80%, missing integration tests)
+PHASE_5_QA: ⚠️ OPEN (Backend 4 RED cases in `test_core_edge_cases.py`, Frontend 5 RED specs in BillingDashboard/DocumentWorkspace/LandingPage, integration tests still pending)
 PHASE_6_PRODUCTION_LAUNCH: ⚠️ OPEN (Render verification + smoke evidence unchecked)
 
 ## Current Story Status
 
 STORY_ID: Sprint-1B-Master-Admin-Portal
 STORY_STATUS: ⚠️ ACTIVE
-STORY_RESULT: Backend parity achieved in Session 2C, but fresh test run (2025-11-15) shows 31 backend regressions (QuickBooks OAuth mocks, Sage OAuth service, dashboard metrics cache) plus missing documentation + deployment evidence. Frontend Vitest suite now passes 1,740 tests but Master Admin UX still needs real API integration + manual validation.
+STORY_RESULT: Backend parity achieved in Session 2C, but fresh test run (2025-11-15) shows 31 backend regressions (QuickBooks OAuth mocks, Sage OAuth service, dashboard metrics cache) plus missing documentation + deployment evidence. Frontend Vitest suite now passes 1,740 tests but Master Admin UX still needs real API integration + manual validation. 2025-11-17 baselines refine the focus to 4 backend RED cases (`test_core_edge_cases.py`) and 5 Vitest RED specs (BillingDashboard portal + DocumentWorkspace permission refresh ×2 + upload toast + LandingPage lazy-load).
 BLOCKERS:
-- Backend external-integration suites failing: `backend/tests/test_sage_oauth_service.py` (10 errors) and `backend/tests/services/test_quickbooks_oauth_mocked.py` (10 fails) plus dashboard metrics API coverage (4 fails) per pytest run (`./backend/venv/Scripts/python.exe -m pytest backend/tests`, 285s, 17F/14E/54S)
+- Backend RED: `backend/tests/test_core_edge_cases.py` now fails 4 cases (`AsyncSession` patch broken + `get_current_user` signature mismatch) after 1,487-test run recorded in `backend/tests/test-results-2025-11-17.txt`.
+- Frontend RED: Vitest coverage run (172 files) fails BillingDashboard (missing "Opening" CTA button) plus DocumentWorkspace permission refresh + upload toast selectors and LandingPage lazy-loading expectation (`frontend/test-results-2025-11-17.txt`).
 - Deployment verification + smoke docs unchecked (`TODO.md` Phase 2); README still claims 100% completion.
 - BMAD artefacts previously advertising Phase 6 completion; still need to cascade status reset through README, trackers, roadmap.
 
 ## Assessment
 
 **Code Quality**: ⚠️ Mixed
-- Backend Master Admin + deal flows pass targeted tests, but Sage + QuickBooks OAuth services, dashboard cache + metrics endpoints are red and need focused fixes before considering v1 release complete.
-- Frontend Master Admin UX appears implemented; Vitest now green (1,740 passing) but still requires integrated QA + documentation updates for Activity Tracker, Focus Session, Nudges, etc.
+- Backend Master Admin + deal flows pass targeted tests, but new RED cases in `test_core_edge_cases.py` highlight missing AsyncSession exports + auth dependency API changes that must be fixed before calling the backend stable.
+- Frontend Master Admin UX appears implemented; Vitest still has 5 failing specs (BillingDashboard portal CTA, DocumentWorkspace permission refresh ×2 + upload toast, LandingPage lazy-load) and needs API wiring + selectors.
 - Deployment docs reference features/tests that do not yet exist and still claim Phase 6 completion.
 
 **Test Infrastructure**: ⚠️ Needs Attention
-- Backend: `./backend/venv/Scripts/python.exe -m pytest backend/tests` (2025-11-15) returned 17 FAIL + 14 ERROR (QuickBooks OAuth, Sage OAuth, dashboard metrics). External suites skipped due to missing credentials (Xero, etc.). Coverage not recalculated but clearly < target while these failures persist.
-- Frontend: `npm run test` (Vitest) now fully passing (172 files, 1,740 tests). Need to capture coverage + rerun accessibility/Lighthouse.
+- Backend: `backend/venv/Scripts/python.exe -m pytest backend/tests` (2025-11-17) captured 1,487 specs with 4 FAIL (all inside `test_core_edge_cases.py`, see `backend/tests/test-results-2025-11-17.txt`); 54 external-integration tests remain skipped pending credentials.
+- Frontend: `/mnt/c/Program Files/nodejs/npm run test -- --run --coverage` (2025-11-17 Vitest) recorded 172 files / 1,743 specs with 5 FAIL (BillingDashboard portal CTA, DocumentWorkspace permission refresh ×2 + upload toast, LandingPage lazy load) plus coverage artifacts for analysis.
 - Accessibility/Lighthouse tasks blocked on local runner issues; Render smoke evidence refreshed via `verify_deployment.py` but docs not updated.
 
 **Production Impact**: ⚠️ Unknown
@@ -57,12 +58,11 @@ BLOCKERS:
 
 ## Next Action
 
-NEXT_ACTION: Resume Sprint 1-B RED → GREEN loop
+NEXT_ACTION: Resolve RED tests identified on 2025-11-17 and refresh deployment/docs evidence
 NEXT_COMMAND:
-1. `./backend/venv/Scripts/python.exe -m pytest backend/tests > backend/tests/test-results-full.txt` (run on machine without timeout) – capture unified backend log for docs
-2. `cmd /c "cd frontend && npm run lint -- --quiet" && cmd /c "cd frontend && npm run test -- --coverage"` – archive outputs under `docs/tests/frontend-*.txt`
-3. `python verify_deployment.py > docs/deployments/2025-11-18-backend-verify.txt` after backend log captured
-4. Update README + docs/bmad trackers with latest lint/test/build/deploy evidence
+1. Backend: export `AsyncSession` from `app.core.database` (or adjust patch target) and align `get_current_user` signature to accept `request` keyword so `backend/tests/test_core_edge_cases.py` RED cases flip GREEN; add regression coverage before rerunning pytest.
+2. Frontend: update BillingDashboard CTA to render "Opening customer portal" button state, ensure DocumentWorkspace emits refresh + upload toast DOM nodes with accessible roles, and add lazy-loading attributes to below-fold LandingPage imagery; rerun `npm run test -- --run --coverage` afterward.
+3. Once tests are green, re-run `python verify_deployment.py` + capture new smoke evidence, then update README/TODO/roadmap + BMAD docs to reflect honest coverage + deployment state.
 NEXT_AGENT: codex
 PRIORITY: P1 (evidence capture/documentation), P2 (remaining lint warnings/perf polish)
 RATIONALE: Backend/FE suites now passing in chunks; focus shifts to capturing consolidated logs, refreshing documentation, and preparing for Phase 5 polish tasks.
@@ -83,6 +83,24 @@ TEST_RESULTS:
 - `/mnt/c/Program\ Files/nodejs/npx bmad-method status` → succeeded (v4.44.1 install confirmed; full test sweeps still pending per Next Action list)
 
 **Focus**: Environment ready for backend pytest + frontend Vitest baselines; proceed with RED runs per TODO + roadmap.
+
+## Session 2025-11-17T14-Baseline-Tests
+
+SESSION_ID: Session-2025-11-17T14-Baseline-Tests
+COMPLETED_WORK:
+- Executed `backend/venv/Scripts/python.exe -m pytest backend/tests` (tee → `backend/tests/test-results-2025-11-17.txt`) to capture a fresh 1,487-test backend log; identified 4 failures isolated to `test_core_edge_cases.py` (AsyncSession patch + `get_current_user` signature expectations).
+- Ran `/mnt/c/Program\\ Files/nodejs/npm run test -- --run --coverage` from `frontend/` (tee → `frontend/test-results-2025-11-17.txt`) to log the current Vitest state: 172 files / 1,743 specs with 5 RED cases (BillingDashboard portal toast, DocumentWorkspace permission refresh ×2 + progress toast, LandingPage lazy-loading).
+- Confirmed skip counts (Xero/QuickBooks/Sage/Stripe, Postgres-only migrations) remain intentional and documented in TODO/roadmap.
+
+FILES_MODIFIED:
+- backend/tests/test-results-2025-11-17.txt
+- frontend/test-results-2025-11-17.txt
+
+TEST_RESULTS:
+- Backend: 4 FAIL / 1,429 PASS / 54 SKIP / 560 WARN (AsyncSession attr + `get_current_user` API mismatches) in 243.78s.
+- Frontend: 5 FAIL / 1,738 PASS with coverage (BillingDashboard + DocumentWorkspace + LandingPage).
+
+**Focus**: Promote failing tests into RED tickets, then drive GREEN fixes (auth dependency patch + DocumentWorkspace/BillingDashboard/LandingPage selectors) before updating README + deployment docs.
 
 ## Status Reset (2025-11-15)
 
@@ -435,7 +453,7 @@ RATIONALE: With deployment evidence refreshed, we can advance to the feature bac
 SESSION_ID: Session-2025-11-17T14-DEV008-RED
 COMPLETED_WORK:
 - Added new Vitest specs covering permission refresh behaviour and upload progress toast exposure in DocumentWorkspace.
-- Ran cmd /c "cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx"; logged RED output to docs/tests/2025-11-17-dev008-red-vitest.txt with 3 expected failures.
+- Ran cmd /c "cd frontend && npx vitest run src/pages/documents/DocumentWorkspace.test.tsx"; logged RED output to docs/tests/2025-11-17-dev008-red-vitest.txt with 2 expected failures.
 
 FILES_MODIFIED:
 - frontend/src/pages/documents/DocumentWorkspace.test.tsx
@@ -450,3 +468,4 @@ NEXT_COMMAND: cmd /c "cd frontend && npx vitest run src/pages/documents/Document
 NEXT_AGENT: dev
 PRIORITY: P0
 RATIONALE: Closing these failures unblocks DEV-008 completion under BMAD/TDD.
+

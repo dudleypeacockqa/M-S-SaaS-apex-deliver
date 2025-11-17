@@ -27,6 +27,35 @@ Restore `npx`/`npm` tooling so BMAD workflows and RED test runs can proceed, and
 
 ---
 
+## Session 2025-11-17T14-Baseline-Tests – Pytest + Vitest Evidence Capture
+
+**Status**: 🔴 RED – backend + frontend suites reproduce failing specs
+**Duration**: 1.0 hour
+**Priority**: P0 – establish accurate baselines before GREEN work
+**Version**: Sprint 1-B (Master Admin Frontend + Deploy Verification)
+
+### Objective
+Run the authoritative backend + frontend suites end-to-end, archive logs, and pinpoint the current RED surface area for Sprint 1-B.
+
+### Accomplishments
+
+- Ran `backend/venv/Scripts/python.exe -m pytest backend/tests 2>&1 | tee backend/tests/test-results-2025-11-17.txt` capturing 1,487 tests → 4 FAIL (all in `backend/tests/test_core_edge_cases.py`) + 54 skips (OAuth + Postgres-only flows).
+- Ran `/mnt/c/Program\ Files/nodejs/npm run test -- --run --coverage 2>&1 | tee frontend/test-results-2025-11-17.txt` recording 172 Vitest files / 1,743 specs → 5 FAIL (BillingDashboard portal CTA, DocumentWorkspace permission refresh ×2, DocumentWorkspace upload toast, LandingPage image lazy-load).
+- Logged summaries into `docs/bmad/bmm-workflow-status.md` along with NEXT_ACTION instructions targeting these REDs.
+
+### Evidence
+
+- Backend log: `backend/tests/test-results-2025-11-17.txt` (fails: missing `AsyncSession` attr + `get_current_user` signature expectations).
+- Frontend log: `frontend/test-results-2025-11-17.txt` (fails: CTA button query, DocumentWorkspace selectors, lazy-loading attribute).
+
+### Next Steps
+
+1. Fix backend REDs: export/import AsyncSession for patching + align auth dependency signature, rerun pytest.
+2. Fix frontend REDs: adjust component DOM/testIDs (BillingDashboard, DocumentWorkspace, LandingPage) and rerun Vitest with coverage.
+3. After GREEN runs, refresh README/TODO + deployment smoke logs and proceed to deployment verification tasks.
+
+---
+
 ## Session 2025-11-17-V1.1-RELEASE-AND-OAUTH-TESTS – Production Release + Coverage Enhancement ✅
 
 **Status**: ✅ COMPLETE – v1.1.0 Released + 60 OAuth Tests Added
