@@ -1,7 +1,7 @@
 # Incident Report: PROD-2025-11-17-BLANK-PAGES
 
 - **Date**: 2025-11-17
-- **Window**: ~20 minutes (13:00–13:20 UTC)
+- **Window**: ~20 minutes (13:00-13:20 UTC)
 - **Severity**: P0 Critical
 - **Status**: Resolved (2025-11-17 13:20 UTC)
 - **Environment**: Render (Frankfurt region, Node runtime)
@@ -64,7 +64,7 @@ if (id.includes('lucide-react')) {
 ### Result
 1. lucide-react ships with the main vendor chunk, guaranteeing synchronous evaluation.
 2. Icon components are defined before React hydration, eliminating `undefined` mutations.
-3. Bundle size increases by ~50–75 KB but avoids catastrophic race conditions.
+3. Bundle size increases by ~50-75 KB but avoids catastrophic race conditions.
 
 ## Verification
 ### Automated
@@ -119,16 +119,16 @@ Uncaught TypeError: Cannot set properties of undefined (setting 'Activity')
 
 ## Related Work
 ### Failed attempts
-- `f97a09a3` – fix(frontend): resolve Lucide React icon initialization error
-- `5dc47c21` – feat(frontend): add centralized icon module
-- `768596b1` – fix(frontend): resolve lucide-react icon bundling issues
-- `8ba35233` – refactor(frontend): simplify centralized icon exports
-- `b1fc3750` – refactor(icons,analytics): optimize icons + add Clarity analytics
-- `204e7c63` – fix(frontend): pre-import icons module
-- `3060ce4e` – fix(build): optimize bundle config
+- `f97a09a3` - fix(frontend): resolve Lucide React icon initialization error
+- `5dc47c21` - feat(frontend): add centralized icon module
+- `768596b1` - fix(frontend): resolve lucide-react icon bundling issues
+- `8ba35233` - refactor(frontend): simplify centralized icon exports
+- `b1fc3750` - refactor(icons,analytics): optimize icons + add Clarity analytics
+- `204e7c63` - fix(frontend): pre-import icons module
+- `3060ce4e` - fix(build): optimize bundle config
 
 ### Final fix
-- `a7722ef4` – fix(frontend): prevent lucide-react code splitting ✅
+- `a7722ef4` - fix(frontend): prevent lucide-react code splitting [resolved]
 
 ## Outstanding Actions
 1. Complete the manual verification checklist above (document console screenshots).

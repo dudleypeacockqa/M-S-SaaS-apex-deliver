@@ -148,8 +148,11 @@ git push origin main
 ## Common Pitfalls
 
 ### 1. Environment Variable Not Set
-**Symptom:** Blank screen, no console errors
-**Fix:** Set `VITE_CLERK_PUBLISHABLE_KEY` in Render dashboard
+**Symptom (Before Fix):** Blank screen, no console errors
+**Symptom (After Fix):** 
+- Build fails with clear error message, OR
+- If build succeeds but key missing at runtime: User-friendly error page with setup instructions
+**Fix:** Set `VITE_CLERK_PUBLISHABLE_KEY` in Render dashboard and redeploy
 
 ### 2. Wrong Clerk Key (Secret vs Publishable)
 **Symptom:** Clerk errors in console
@@ -214,28 +217,29 @@ curl -I https://ma-saas-frontend.onrender.com/service-worker.js
 
 ## Prevention
 
-### Add Build-Time Validation
+### Build-Time Validation ✅ IMPLEMENTED
 
-Update `frontend/vite.config.ts`:
+The build process now validates required environment variables before building:
 
-```typescript
-export default defineConfig({
-  define: {
-    __APP_BUILD_ID__: JSON.stringify(process.env.RENDER_GIT_COMMIT || 'local'),
-  },
-  build: {
-    rollupOptions: {
-      // Validate required env vars at build time
-      onwarn(warning, warn) {
-        if (!process.env.VITE_CLERK_PUBLISHABLE_KEY && process.env.NODE_ENV === 'production') {
-          throw new Error('VITE_CLERK_PUBLISHABLE_KEY is required for production builds')
-        }
-        warn(warning)
-      }
-    }
-  }
-})
-```
+**File:** `frontend/vite.config.ts`
+
+- **Production builds:** Will fail if `VITE_CLERK_PUBLISHABLE_KEY` is missing
+- **Development/Test builds:** Allowed to proceed without key (for local testing)
+- **Error message:** Clear instructions on how to fix the issue
+
+### Runtime Error Handling ✅ IMPLEMENTED
+
+**File:** `frontend/src/main.tsx`
+
+- **Production:** Shows user-friendly error page with setup instructions if Clerk key is missing
+- **Development:** Allows rendering without Clerk (with console warning) for testing
+- **No more blank screens:** Users always see helpful error messages
+
+### Additional Safeguards
+
+1. **lucide-react Code Splitting Fix:** Icons are bundled with main bundle to prevent initialization race conditions
+2. **Error Boundaries:** Global error handlers catch and display errors gracefully
+3. **Build Validation:** Prevents deploying broken configurations
 
 ## Support
 
@@ -249,6 +253,13 @@ If issues persist after following this guide:
 ---
 
 **Created:** 2025-11-17
+**Last Updated:** 2025-11-17
 **Author:** Claude Code
-**Status:** Active Fix
-**Related:** DEPLOYMENT-GUIDE.md, MAINTENANCE-HANDOFF.md
+**Status:** ✅ Fixed with Build-Time Validation + Runtime Error UI
+**Related:** DEPLOYMENT-GUIDE.md, MAINTENANCE-HANDOFF.md, PRODUCTION-ISSUE-RESOLUTION-2025-11-17.md
+
+## Recent Improvements (2025-11-17)
+
+1. **Build-Time Validation:** Production builds now fail early if required env vars are missing
+2. **Runtime Error UI:** User-friendly error page replaces blank screens when Clerk key is missing
+3. **lucide-react Fix:** Icons bundled with main bundle to prevent initialization race conditions
