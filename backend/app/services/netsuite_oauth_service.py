@@ -527,12 +527,14 @@ def _parse_netsuite_balance_sheet(
     )
 
     # Create financial statement
+    today = datetime.now(timezone.utc).date()
     statement = FinancialStatement(
         deal_id=connection.deal_id,
         organization_id=connection.organization_id,
-        financial_connection_id=connection.id,
+        connection_id=connection.id,  # Fixed: was financial_connection_id (incorrect field name)
         statement_type="balance_sheet",
-        statement_date=datetime.now(timezone.utc).date(),
+        period_start=today,  # Fixed: was statement_date (incorrect field name)
+        period_end=today,    # For balance sheet, period is a single point in time
         currency="USD",  # NetSuite default (should be configurable)
         total_assets=total_assets,
         total_liabilities=total_liabilities,

@@ -34,6 +34,18 @@ from app.models.financial_connection import FinancialConnection
 from app.models.financial_statement import FinancialStatement
 
 
+# Helper function for SQLite timezone compatibility
+def make_comparable_datetime(dt):
+    """
+    Convert datetime to timezone-naive for comparison with SQLite results.
+    SQLite stores datetimes without timezone info, so comparisons must use naive datetimes.
+    """
+    if dt.tzinfo is not None:
+        # Remove timezone info for comparison
+        return dt.replace(tzinfo=None)
+    return dt
+
+
 # ==============================================================================
 # PHASE 1: OAuth Flow Initiation Tests (5 tests)
 # ==============================================================================
@@ -251,14 +263,15 @@ class TestHandleNetSuiteCallback:
             {"accountId": "123", "companyName": "Test"}
         ]
 
-        before = datetime.now(timezone.utc)
+        # SQLite returns naive datetimes, use naive for comparison
+        before = make_comparable_datetime(datetime.now(timezone.utc))
         connection = handle_netsuite_callback(
             code="code",
             state="state",
             deal_id=str(test_deal.id),
             db=db_session
         )
-        after = datetime.now(timezone.utc)
+        after = make_comparable_datetime(datetime.now(timezone.utc))
 
         # Token should expire approximately 2 hours from now
         expected_expiry_min = before + timedelta(hours=2)
