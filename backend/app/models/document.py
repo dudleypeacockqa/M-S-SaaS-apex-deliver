@@ -188,7 +188,7 @@ class DocumentAccessLog(Base):
     action = Column(String(50), nullable=False)  # view, download, upload, delete
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(String(500), nullable=True)
-    metadata = Column(JSON, nullable=True)
+    access_metadata = Column(JSON, nullable=True)
     organization_id = Column(
         String(36), ForeignKey("organizations.id"), nullable=False
     )
