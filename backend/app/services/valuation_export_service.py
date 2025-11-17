@@ -17,6 +17,7 @@ try:
     import pandas as pd
     PANDAS_AVAILABLE = True
 except ImportError:
+    pd = None  # type: ignore
     PANDAS_AVAILABLE = False
 
 try:
@@ -24,6 +25,9 @@ try:
     from weasyprint.text.fonts import FontConfiguration
     WEASYPRINT_AVAILABLE = True
 except ImportError:
+    HTML = None  # type: ignore
+    CSS = None  # type: ignore
+    FontConfiguration = None  # type: ignore
     WEASYPRINT_AVAILABLE = False
 
 try:
@@ -397,7 +401,16 @@ class ValuationExportService:
         """Convert HTML to PDF using weasyprint."""
         if not WEASYPRINT_AVAILABLE:
             raise ImportError("weasyprint is not installed")
-        
+
+        from importlib import import_module
+
+        global HTML  # type: ignore
+        if HTML is None:
+            try:
+                HTML = import_module("weasyprint").HTML  # type: ignore
+            except Exception as exc:
+                raise ImportError("weasyprint is not installed") from exc
+
         html = HTML(string=html_content)
         pdf_bytes = html.write_pdf()
         return pdf_bytes

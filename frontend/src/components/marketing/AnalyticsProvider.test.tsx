@@ -107,12 +107,9 @@ describe('AnalyticsProvider', () => {
       );
 
       // Check for LinkedIn script
-      const linkedInScripts = document.querySelectorAll('script');
-      const hasLinkedInScript = Array.from(linkedInScripts).some(
-        (script) => script.textContent?.includes('_linkedin_data_partner_ids') ||
-                   script.textContent?.includes('snap.licdn.com')
-      );
-      expect(hasLinkedInScript).toBe(true);
+      const linkedInScript = document.querySelector('script[data-analytics="linkedin"]');
+      expect(linkedInScript).toBeTruthy();
+      expect(linkedInScript?.getAttribute('src')).toContain('snap.licdn.com');
 
       // Check for partner ID in window object
       expect((window as any)._linkedin_data_partner_ids).toBeDefined();

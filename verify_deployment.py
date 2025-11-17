@@ -11,8 +11,8 @@ from typing import Optional
 # Render production DATABASE_URL (external connection)
 DATABASE_URL = "postgresql://ma_saas_user:iJtvWyv5q5CcIUlBZD7IaYyHAvGk5M1t@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform"
 
-# Replace with your actual backend URL
-BACKEND_URL = "https://your-backend-domain.onrender.com"
+# Render backend URL (see README deployment status)
+BACKEND_URL = "https://ma-saas-backend.onrender.com"
 
 def check_backend_health() -> bool:
     """Check if backend service is healthy"""
