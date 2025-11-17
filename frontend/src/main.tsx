@@ -1,7 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { ClerkProvider } from "@clerk/clerk-react"
-// Icons are loaded on-demand by components - no upfront import needed
+import "./lib/icons"
 import App from "./App"
 import "./index.css"
 
