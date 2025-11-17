@@ -88,7 +88,7 @@ const CampaignManager = lazyNamed(() => import("./pages/master-admin/CampaignMan
 const ContentStudio = lazyNamed(() => import("./pages/master-admin/ContentStudio"), "ContentStudio")
 const LeadCapture = lazyNamed(() => import("./pages/master-admin/LeadCapture"), "LeadCapture")
 const SalesCollateral = lazyNamed(() => import("./pages/master-admin/SalesCollateral"), "SalesCollateral")
-const BlogAdminEditor = lazyNamed(() => import("./components/blog/BlogAdminEditor"), "BlogAdminEditor")
+const BlogAdminEditor = lazyNamed(() => import("./pages/admin/BlogAdminEditor"), "BlogAdminEditor")
 
 // Feature flag check for Master Admin Portal
 const isMasterAdminEnabled = import.meta.env.VITE_ENABLE_MASTER_ADMIN === 'true'

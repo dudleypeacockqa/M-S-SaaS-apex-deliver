@@ -157,17 +157,8 @@ const renderReactApp = () => {
   }
 }
 
-const bootstrapApplication = async () => {
-  try {
-    await import('./lib/icons')
-  } catch (error) {
-    console.error('Failed to preload lucide-react icons before render:', error)
-  } finally {
-    renderReactApp()
-  }
-}
-
-void bootstrapApplication()
+// Render React app synchronously - no async preloading needed
+renderReactApp()
 
 if (import.meta.env.MODE !== "test" && "serviceWorker" in navigator) {
   window.addEventListener("load", () => {

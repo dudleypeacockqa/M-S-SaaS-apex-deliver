@@ -67,19 +67,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      // ⚠️ CRITICAL - DO NOT REMOVE ⚠️
-      // Forces lucide-react to single ESM build preventing chunk splitting
-      // Removing this causes PRODUCTION BLANK SCREENS - See frontend/CRITICAL-VITE-CONFIG.md
-      'lucide-react': path.resolve(__dirname, 'node_modules/lucide-react/dist/esm/lucide-react.js'),
     },
-    // ⚠️ CRITICAL - DO NOT REMOVE ⚠️
-    // Prevents multiple lucide-react instances which cause blank screens
     dedupe: ['lucide-react'],
   },
   optimizeDeps: {
-    // ⚠️ CRITICAL - DO NOT ADD include: ['lucide-react'] HERE ⚠️
-    // Pre-bundling lucide-react causes async loading and BLANK SCREENS
-    // See frontend/CRITICAL-VITE-CONFIG.md for details
     exclude: ['**/*.test.tsx', '**/*.test.ts', '**/*.spec.tsx', '**/*.spec.ts'],
   },
   server: {
@@ -97,13 +88,6 @@ export default defineConfig({
           // Skip test files entirely
           if (id.includes('.test.') || id.includes('.spec.') || id.includes('vitest')) {
             return undefined
-          }
-          // ⚠️⚠️⚠️ CRITICAL - DO NOT CHANGE THIS TO 'lucide-vendor' ⚠️⚠️⚠️
-          // MUST return undefined to keep lucide-react in main bundle
-          // Returning 'lucide-vendor' creates async chunk causing BLANK SCREENS
-          // See frontend/CRITICAL-VITE-CONFIG.md - this has been debugged extensively
-          if (id.includes('lucide-react')) {
-            return undefined // KEEP IN MAIN BUNDLE - DO NOT CHANGE
           }
           // Core React dependencies
           if (id.includes('node_modules')) {
