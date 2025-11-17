@@ -239,9 +239,11 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <AnalyticsProvider>
           <BrowserRouter>
-            <Suspense fallback={<RouteLoader />}>
-              <AppRoutes />
-            </Suspense>
+            <ErrorBoundary>
+              <Suspense fallback={<RouteLoader />}>
+                <AppRoutes />
+              </Suspense>
+            </ErrorBoundary>
           </BrowserRouter>
         </AnalyticsProvider>
       </QueryClientProvider>
@@ -250,3 +252,4 @@ const App = () => {
 }
 
 export default App
+// Render cache bust 1763391276

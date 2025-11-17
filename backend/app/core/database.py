@@ -13,6 +13,8 @@ from app.db.base import Base
 # Module-level variables (lazy initialization to allow test config override)
 engine = None
 SessionLocal: sessionmaker | None = None
+# Track the default session factory to detect when AsyncSession has been overridden in tests
+_default_async_session_factory: Callable[[], Session] | None = None
 # Alias used by tests to patch session creation (see backend/tests/test_core_edge_cases.py)
 AsyncSession: Callable[[], Session] | None = None  # type: ignore
 
@@ -22,13 +24,14 @@ def init_engine():
 
     This allows tests to override settings before engine creation.
     """
-    global engine, SessionLocal, AsyncSession
+    global engine, SessionLocal, AsyncSession, _default_async_session_factory
     if engine is None:
         connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
         engine = create_engine(settings.database_url, future=True, connect_args=connect_args)
         SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
         # Expose a patchable alias so tests can force failure modes without reaching into private state
         AsyncSession = SessionLocal
+        _default_async_session_factory = SessionLocal
     return engine
 
 
@@ -44,7 +47,7 @@ class _DBSessionContext:
             raise RuntimeError("Database session not initialized")
 
         session_factory = SessionLocal
-        if AsyncSession is not None and AsyncSession is not SessionLocal:
+        if AsyncSession is not None and AsyncSession is not _default_async_session_factory:
             session_factory = AsyncSession
         if session_factory is None:
             raise RuntimeError("Database session factory is not initialized")

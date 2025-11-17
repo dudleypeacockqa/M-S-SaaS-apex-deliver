@@ -23,7 +23,7 @@ const run = async () => {
   await ensureFileExists(htmlPath)
   const html = await fs.readFile(htmlPath, 'utf8')
   if (html.includes('lucide-vendor')) {
-    fail('dist/index.html still references a lucide-vendor chunk')
+    fail('dist/index.html still references a lucide-vendor chunk - this causes blank screens!')
   }
 
   const assetsDir = path.join(distDir, 'assets')
@@ -49,10 +49,10 @@ const run = async () => {
   }
 
   if (lucideChunks.length > 0) {
-    fail(`Found lucide-specific chunks: ${lucideChunks.join(', ')}`)
+    fail(`Found lucide-specific chunks that will cause blank screens: ${lucideChunks.join(', ')}`)
   }
 
-  console.log('✅ Lucide bundle verification passed: no lucide-vendor chunks detected')
+  console.log('✅ Lucide bundle verification passed: no lucide-vendor chunks detected (icons bundled with main)')
 }
 
 run()
