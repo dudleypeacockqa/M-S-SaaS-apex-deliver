@@ -176,11 +176,11 @@ POST https://api.render.com/v1/services/srv-d3ihptbipnbc73e72ne0/deploys
 1. **Update Build Command**:
    ```bash
    # Current (problematic):
-   npm ci && npm run build
+   NODE_ENV=development npm ci && npx vite build
 
    # Recommended:
-   npm ci && npx vite build
-   # Let Vite handle NODE_ENV automatically
+   npm ci && npm run build
+   # npm run build already bundles + runs lucide verification
    ```
 
 2. **Add Deployment Verification**:

@@ -306,7 +306,7 @@ Auto Deploy: yes
 Trigger: commit (main branch)
 Health Check: /
 Root Dir: frontend
-Build Command: NODE_ENV=development npm ci && npx vite build
+Build Command: npm ci && npm run build
 Start Command: npx serve -s dist -l $PORT
 ```
 

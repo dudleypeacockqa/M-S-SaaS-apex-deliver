@@ -63,7 +63,7 @@
 **HTTP Status**: 200 OK ✅
 
 ### Configuration
-- ✅ Build command: `NODE_ENV=development npm ci && npx vite build`
+- ✅ Build command: `npm ci && npm run build`
 - ✅ Start command: `npx serve -s dist -l $PORT`
 - ✅ Health check path: `/`
 - ✅ IP Allow List: 0.0.0.0/0 (public access)
