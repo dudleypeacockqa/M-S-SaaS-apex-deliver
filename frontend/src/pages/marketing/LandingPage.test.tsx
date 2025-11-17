@@ -53,3 +53,62 @@ describe('LandingPage', () => {
     expect(screen.getByText(/Unlocked £4\.2M/i)).toBeInTheDocument()
   })
 })
+
+// TDD RED PHASE: Performance Optimization Tests
+// These tests will FAIL until we replace <img> with <OptimizedImage>
+describe('LandingPage - Image Optimization (TDD)', () => {
+  it('should use OptimizedImage component for dashboard preview (not plain img)', () => {
+    renderPage()
+
+    // Find the dashboard preview image
+    const dashboardImg = screen.getByAltText(/dashboard/i)
+
+    // FAILING TEST: Currently uses <img>, should use <picture> from OptimizedImage
+    // OptimizedImage wraps img in <picture> element with WebP <source>
+    const pictureParent = dashboardImg.closest('picture')
+    expect(pictureParent).toBeTruthy()
+    expect(pictureParent?.tagName).toBe('PICTURE')
+  })
+
+  it('should serve WebP format for dashboard preview image', () => {
+    renderPage()
+
+    const dashboardImg = screen.getByAltText(/dashboard/i)
+    const pictureParent = dashboardImg.closest('picture')
+
+    // FAILING TEST: Should have WebP source element
+    const webpSource = pictureParent?.querySelector('source[type="image/webp"]')
+    expect(webpSource).toBeTruthy()
+    expect(webpSource?.getAttribute('srcSet')).toContain('.webp')
+  })
+
+  it('should have fallback PNG for dashboard preview', () => {
+    renderPage()
+
+    const dashboardImg = screen.getByAltText(/dashboard/i)
+
+    // PASSING TEST: img should still reference .png for fallback
+    expect(dashboardImg).toHaveAttribute('src')
+    const src = dashboardImg.getAttribute('src')
+    expect(src).toContain('.png')
+  })
+
+  it('should use lazy loading for below-fold images', () => {
+    renderPage()
+
+    const dashboardImg = screen.getByAltText(/dashboard/i)
+
+    // PASSING TEST: Already has loading="lazy"
+    expect(dashboardImg).toHaveAttribute('loading', 'lazy')
+  })
+
+  it('should have width and height to prevent CLS', () => {
+    renderPage()
+
+    const dashboardImg = screen.getByAltText(/dashboard/i)
+
+    // FAILING TEST: Currently missing width/height attributes
+    expect(dashboardImg).toHaveAttribute('width')
+    expect(dashboardImg).toHaveAttribute('height')
+  })
+})

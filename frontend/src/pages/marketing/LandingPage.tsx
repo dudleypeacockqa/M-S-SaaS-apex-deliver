@@ -6,6 +6,7 @@ import { CTASection } from '../../components/marketing/CTASection'
 import { SEO } from '../../components/common/SEO'
 import { ROICalculator } from '../../components/marketing/ROICalculator'
 import { ComparisonTable } from '../../components/marketing/ComparisonTable'
+import { OptimizedImage } from '../../components/common/OptimizedImage'
 
 const capliquifyHighlights = [
   {
@@ -215,9 +216,11 @@ export const LandingPage: React.FC = () => {
             </div>
 
             <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6">
-              <img
+              <OptimizedImage
                 src="/assets/dashboard-preview.png"
                 alt="CapLiquify FP&A dashboard"
+                width={1920}
+                height={1080}
                 className="w-full rounded-xl shadow-lg"
                 loading="lazy"
               />

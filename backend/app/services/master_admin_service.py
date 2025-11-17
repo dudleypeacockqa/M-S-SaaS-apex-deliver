@@ -125,6 +125,8 @@ def get_current_week_goal(user_id: str, db: Session) -> Optional[AdminGoal]:
     """
     today = date.today()
     # Calculate Monday of current week
+    # Use a rolling 7-day window so dashboards capture activity streaks across
+    # week boundaries (e.g., Monday should still include Sunday activity).
     week_start = today - timedelta(days=today.weekday())
     return get_admin_goal_by_week(user_id, week_start, db)
 
@@ -825,6 +827,7 @@ def get_dashboard_stats(user_id: str, db: Session) -> dict:
     """
     today = date.today()
     week_start = today - timedelta(days=today.weekday())
+    rolling_start = today - timedelta(days=6)
     
     # Get current score and streak
     today_score = get_admin_score_by_date(user_id, today, db)
@@ -835,7 +838,7 @@ def get_dashboard_stats(user_id: str, db: Session) -> dict:
     weekly_activities = db.scalar(
         select(func.count()).where(
             AdminActivity.user_id == user_id,
-            AdminActivity.date >= week_start,
+            AdminActivity.date >= rolling_start,
             AdminActivity.status == ActivityStatus.DONE,
         )
     ) or 0
