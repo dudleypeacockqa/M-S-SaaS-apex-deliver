@@ -24,6 +24,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  optimizeDeps: {
+    include: ['lucide-react'],
+  },
   server: {
     port: 5173,
     host: true,
@@ -46,6 +49,10 @@ export default defineConfig({
             }
             if (id.includes('@tanstack/react-query')) {
               return 'react-query'
+            }
+            // Lucide React icons - keep in separate chunk to prevent initialization issues
+            if (id.includes('lucide-react')) {
+              return 'lucide-vendor'
             }
             // Chart libraries (often large)
             if (id.includes('recharts') || id.includes('chart.js') || id.includes('d3')) {
