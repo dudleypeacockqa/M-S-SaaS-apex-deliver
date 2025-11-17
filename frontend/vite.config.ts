@@ -26,6 +26,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['lucide-react'],
+    exclude: ['**/*.test.tsx', '**/*.test.ts', '**/*.spec.tsx', '**/*.spec.ts'],
   },
   server: {
     port: 5173,
@@ -39,6 +40,10 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
+          // Skip test files entirely
+          if (id.includes('.test.') || id.includes('.spec.') || id.includes('vitest')) {
+            return undefined;
+          }
           // Core React dependencies
           if (id.includes('node_modules')) {
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {

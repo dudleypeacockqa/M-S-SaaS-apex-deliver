@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { Plus } from 'lucide-react'
+import { Plus } from '@/lib/icons'
 import { useCreateActivity } from '@/hooks/master-admin'
 import { ActivityType, ActivityStatus } from '@/services/api/masterAdmin'
 import type { AdminActivityCreate } from '@/services/api/masterAdmin'

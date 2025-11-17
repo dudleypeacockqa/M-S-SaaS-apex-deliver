@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AlertCircle, ArrowLeft } from 'lucide-react'
+import { AlertCircle, ArrowLeft } from '@/lib/icons'
 
 interface FeatureNotAvailableProps {
   featureName?: string

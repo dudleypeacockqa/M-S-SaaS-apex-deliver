@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { cn } from '@/styles/design-tokens'
-import { Flame } from 'lucide-react'
+import { Flame } from '@/lib/icons'
 
 export interface StreakCounterProps {
   streakDays: number

@@ -9,7 +9,7 @@ import { ScriptCard } from './ScriptCard'
 import { useContentScripts, useDeleteContentScript } from '@/hooks/master-admin'
 import { ContentType } from '@/services/api/masterAdmin'
 import type { AdminContentScript, ContentScriptFilters } from '@/services/api/masterAdmin'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from '@/lib/icons'
 
 export interface ScriptListProps {
   onScriptClick?: (script: AdminContentScript) => void

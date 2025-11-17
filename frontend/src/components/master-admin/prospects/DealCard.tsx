@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { cn } from '@/styles/design-tokens'
-import { DollarSign, Calendar, TrendingUp, Edit2, Trash2 } from 'lucide-react'
+import { DollarSign, Calendar, TrendingUp, Edit2, Trash2 } from '@/lib/icons'
 import { AdminDealStage } from '@/services/api/masterAdmin'
 import type { AdminDeal } from '@/services/api/masterAdmin'
 

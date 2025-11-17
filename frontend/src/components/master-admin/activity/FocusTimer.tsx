@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { cn } from '@/styles/design-tokens'
-import { Play, Pause, Square, Clock } from 'lucide-react'
+import { Play, Pause, Square, Clock } from '@/lib/icons'
 import { Button } from '@/components/ui/Button'
 import {
   useActiveFocusSession,

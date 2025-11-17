@@ -5,7 +5,7 @@
  */
 
 import React from 'react'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from '@/lib/icons'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import { ScoreDisplay, StreakCounter } from '@/components/master-admin/shared'

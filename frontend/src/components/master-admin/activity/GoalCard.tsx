@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import { cn } from '@/styles/design-tokens'
-import { Target, Edit2, Check, X } from 'lucide-react'
+import { Target, Edit2, Check, X } from '@/lib/icons'
 import { Button } from '@/components/ui/Button'
 import { useCurrentGoal, useCreateGoal, useUpdateGoal } from '@/hooks/master-admin'
 import type { AdminGoalCreate, AdminGoalUpdate } from '@/services/api/masterAdmin'

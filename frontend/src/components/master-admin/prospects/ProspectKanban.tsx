@@ -8,7 +8,7 @@
 
 import React from 'react'
 import { cn } from '@/styles/design-tokens'
-import { Plus } from 'lucide-react'
+import { Plus } from '@/lib/icons'
 import { ProspectCard } from './ProspectCard'
 import { useProspects, useUpdateProspect } from '@/hooks/master-admin'
 import { ProspectStatus } from '@/services/api/masterAdmin'

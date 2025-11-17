@@ -7,7 +7,7 @@
 
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, FileText, Download, Eye, Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Plus, FileText, Download, Eye, Calendar, ChevronLeft, ChevronRight } from '@/lib/icons'
 import { Button } from '@/components/ui/Button'
 import {
   useCollateral,

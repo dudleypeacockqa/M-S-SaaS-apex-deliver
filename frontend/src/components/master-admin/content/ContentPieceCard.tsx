@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { cn } from '@/styles/design-tokens'
-import { FileText, Edit2, Trash2, MoreVertical, Calendar, ExternalLink, Eye } from 'lucide-react'
+import { FileText, Edit2, Trash2, MoreVertical, Calendar, ExternalLink, Eye } from '@/lib/icons'
 import { ContentType, PublishStatus } from '@/services/api/masterAdmin'
 import type { AdminContentPiece } from '@/services/api/masterAdmin'
 

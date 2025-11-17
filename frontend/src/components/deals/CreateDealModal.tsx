@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { X, Loader2 } from 'lucide-react'
+import { X, Loader2 } from '@/lib/icons'
 import type { Deal, DealCreate, DealUpdate, DealStage } from '@/services/api/deals'
 import { useCreateDeal, useUpdateDeal } from '@/hooks/deals'
 import { cn } from '@/styles/design-tokens'

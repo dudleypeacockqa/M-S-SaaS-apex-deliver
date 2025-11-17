@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import { cn } from '@/styles/design-tokens'
-import { Mail, FileText } from 'lucide-react'
+import { Mail, FileText } from '@/lib/icons'
 import type { AdminCampaign } from '@/services/api/masterAdmin'
 
 export interface EmailPreviewProps {

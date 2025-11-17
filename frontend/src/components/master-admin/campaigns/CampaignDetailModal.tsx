@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import { cn } from '@/styles/design-tokens'
-import { X, Edit2, Trash2, Send } from 'lucide-react'
+import { X, Edit2, Trash2, Send } from '@/lib/icons'
 import { Button } from '@/components/ui/Button'
 import { CampaignForm } from './CampaignForm'
 import { RecipientManager } from './RecipientManager'

@@ -9,7 +9,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { useDeals, useUpdateDealStage } from '@/hooks/deals'
 import type { Deal, DealStage } from '@/services/api/deals'
 import { formatCurrency } from '@/services/api/deals'
-import { Loader2, AlertCircle, Plus, Zap } from 'lucide-react'
+import { Loader2, AlertCircle, Plus, Zap } from '@/lib/icons'
 import { cn } from '@/styles/design-tokens'
 import { DealFilters } from './DealFilters'
 import { usePipelineTemplates } from '@/hooks/pipelineTemplates'

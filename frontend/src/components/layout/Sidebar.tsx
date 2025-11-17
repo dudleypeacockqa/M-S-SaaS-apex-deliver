@@ -11,7 +11,7 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight
-} from 'lucide-react'
+} from '@/lib/icons'
 
 import type { UserRole } from '../auth/ProtectedRoute'
 import { APP_TITLE } from '../../const'

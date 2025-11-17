@@ -59,13 +59,13 @@ BLOCKERS:
 
 NEXT_ACTION: Resume Sprint 1-B RED → GREEN loop
 NEXT_COMMAND:
-1. `./backend/venv/Scripts/python.exe -m pytest backend/tests/test_sage_oauth_service.py backend/tests/services/test_quickbooks_oauth_mocked.py backend/tests/api/test_dashboard_metrics.py --maxfail=1` (RED) → triage Sage + QuickBooks OAuth + dashboard metrics regressions before touching other stories.
-2. Capture failing traces in `docs/bmad/BMAD_PROGRESS_TRACKER.md` + update roadmap to replace “1 failing test” narrative with actual 31 regressions.
-3. Repeat `npm run test -- --coverage` + `npm run lint` to record frontend baseline (already green) and move on to Activity Tracker integration QA while backend fixes bake.
-4. Re-run `./backend/venv/Scripts/python.exe verify_deployment.py` after backend suites pass and sync evidence into `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md`.
-NEXT_AGENT: codex (implementation) with BMAD governance support
-PRIORITY: P0 (fix QuickBooks/Sage/dashboard regressions), P1 (documentation + governance alignment), P2 (master admin feature QA + deployment evidence)
-RATIONALE: Repo is materially incomplete; backend integrations failing and documentation overstated completion. Must run TDD loops on failing suites, keep frontend green, and only claim production readiness once backend suites + deployment evidence are clean.
+1. `./backend/venv/Scripts/python.exe -m pytest backend/tests > backend/tests/test-results-full.txt` (run on machine without timeout) – capture unified backend log for docs
+2. `cmd /c "cd frontend && npm run lint -- --quiet" && cmd /c "cd frontend && npm run test -- --coverage"` – archive outputs under `docs/tests/frontend-*.txt`
+3. `python verify_deployment.py > docs/deployments/2025-11-18-backend-verify.txt` after backend log captured
+4. Update README + docs/bmad trackers with latest lint/test/build/deploy evidence
+NEXT_AGENT: codex
+PRIORITY: P1 (evidence capture/documentation), P2 (remaining lint warnings/perf polish)
+RATIONALE: Backend/FE suites now passing in chunks; focus shifts to capturing consolidated logs, refreshing documentation, and preparing for Phase 5 polish tasks.
 
 ## Status Reset (2025-11-15)
 

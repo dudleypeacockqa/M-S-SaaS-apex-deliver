@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { Plus } from 'lucide-react'
+import { Plus } from '@/lib/icons'
 import { useCreateDeal } from '@/hooks/master-admin'
 import { AdminDealStage } from '@/services/api/masterAdmin'
 import type { AdminDealCreate } from '@/services/api/masterAdmin'

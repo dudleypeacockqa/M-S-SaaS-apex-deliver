@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { useCampaignRecipients, useRemoveCampaignRecipient } from '@/hooks/master-admin'
-import { Mail, X, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { Mail, X, CheckCircle, XCircle, Clock } from '@/lib/icons'
 
 export interface RecipientListProps {
   campaignId: number

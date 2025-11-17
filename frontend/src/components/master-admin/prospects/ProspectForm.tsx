@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
-import { X } from 'lucide-react'
+import { X } from '@/lib/icons'
 import { useCreateProspect, useUpdateProspect } from '@/hooks/master-admin'
 import { ProspectStatus } from '@/services/api/masterAdmin'
 import type { AdminProspect, AdminProspectCreate } from '@/services/api/masterAdmin'

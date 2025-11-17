@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import { cn } from '@/styles/design-tokens'
-import { Calendar, Filter, Trash2 } from 'lucide-react'
+import { Calendar, Filter, Trash2 } from '@/lib/icons'
 import { Button } from '@/components/ui/Button'
 import { useActivities, useDeleteActivity } from '@/hooks/master-admin'
 import { ActivityType, ActivityStatus } from '@/services/api/masterAdmin'

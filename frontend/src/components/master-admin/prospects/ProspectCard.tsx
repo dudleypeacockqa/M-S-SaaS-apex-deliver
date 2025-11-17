@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { cn } from '@/styles/design-tokens'
-import { Mail, Phone, Building2, User, Calendar, MoreVertical } from 'lucide-react'
+import { Mail, Phone, Building2, User, Calendar, MoreVertical } from '@/lib/icons'
 import { ProspectStatus } from '@/services/api/masterAdmin'
 import type { AdminProspect } from '@/services/api/masterAdmin'
 

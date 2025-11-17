@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { cn } from '@/styles/design-tokens'
-import { Bell, X, ExternalLink } from 'lucide-react'
+import { Bell, X, ExternalLink } from '@/lib/icons'
 import { useUnreadNudges, useMarkNudgeAsRead } from '@/hooks/master-admin'
 import { NudgePriority } from '@/services/api/masterAdmin'
 

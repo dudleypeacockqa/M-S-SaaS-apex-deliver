@@ -9,7 +9,7 @@ import { ContentPieceCard } from './ContentPieceCard'
 import { useContentPieces, useDeleteContentPiece } from '@/hooks/master-admin'
 import { ContentType, PublishStatus } from '@/services/api/masterAdmin'
 import type { AdminContentPiece, ContentPieceFilters } from '@/services/api/masterAdmin'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from '@/lib/icons'
 
 export interface ContentPieceListProps {
   onPieceClick?: (piece: AdminContentPiece) => void

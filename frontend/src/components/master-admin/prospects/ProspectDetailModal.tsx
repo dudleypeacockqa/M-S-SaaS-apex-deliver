@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import { cn } from '@/styles/design-tokens'
-import { X, Edit2, Trash2, Plus, Mail, Phone, Building2, User, Tag } from 'lucide-react'
+import { X, Edit2, Trash2, Plus, Mail, Phone, Building2, User, Tag } from '@/lib/icons'
 import { Button } from '@/components/ui/Button'
 import { ProspectForm } from './ProspectForm'
 import { DealCard } from './DealCard'

@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { Search, X, Filter } from 'lucide-react'
+import { Search, X, Filter } from '@/lib/icons'
 import type { DealStage } from '@/services/api/deals'
 import { cn } from '@/styles/design-tokens'
 

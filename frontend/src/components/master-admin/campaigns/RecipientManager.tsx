@@ -8,7 +8,7 @@ import React, { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { RecipientList } from './RecipientList'
 import { useAddCampaignRecipient, useProspects } from '@/hooks/master-admin'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search } from '@/lib/icons'
 import type { AdminProspect } from '@/services/api/masterAdmin'
 
 export interface RecipientManagerProps {

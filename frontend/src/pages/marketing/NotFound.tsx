@@ -1,4 +1,4 @@
-import { AlertCircle, Home } from "lucide-react";
+import { AlertCircle, Home } from "@/lib/icons";
 import { useLocation } from "wouter";
 
 export default function NotFound() {

@@ -14,7 +14,7 @@ import {
   Bell,
   Plus,
   Clock,
-} from 'lucide-react'
+} from '@/lib/icons'
 import { StatCard, StreakCounter, ScoreDisplay, QuickActionButton } from '@/components/master-admin/shared'
 import { useDashboardStats, useTodayScore, useCurrentStreak } from '@/hooks/master-admin'
 

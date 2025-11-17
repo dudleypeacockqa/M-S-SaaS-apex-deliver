@@ -7,7 +7,7 @@
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useSendCampaign } from '@/hooks/master-admin'
-import { Send, AlertCircle } from 'lucide-react'
+import { Send, AlertCircle } from '@/lib/icons'
 import type { AdminCampaign } from '@/services/api/masterAdmin'
 
 export interface SendCampaignDialogProps {

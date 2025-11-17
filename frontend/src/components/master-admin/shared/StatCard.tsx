@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { cn } from '@/styles/design-tokens'
-import { LucideIcon } from 'lucide-react'
+import { LucideIcon } from '@/lib/icons'
 
 export interface StatCardProps {
   title: string

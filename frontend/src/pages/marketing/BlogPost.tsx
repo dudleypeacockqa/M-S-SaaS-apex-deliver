@@ -2,7 +2,7 @@ import { MarketingLayout } from "@/components/marketing/MarketingLayout";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, User, ArrowRight } from "lucide-react";
+import { Calendar, User, ArrowRight } from "@/lib/icons";
 
 // --- Mock Data for a Single Blog Post ---
 const mockPost = {

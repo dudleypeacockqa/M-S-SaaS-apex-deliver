@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react'
-import { Search, Filter, SortAsc } from 'lucide-react'
+import { Search, Filter, SortAsc } from '@/lib/icons'
 import { Button } from '@/components/ui/Button'
 import { ProspectCard } from './ProspectCard'
 import { useProspects } from '@/hooks/master-admin'

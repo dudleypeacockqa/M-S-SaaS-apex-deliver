@@ -9,7 +9,7 @@ import React from 'react'
 import type { Deal } from '@/services/api/deals'
 import { getStageDisplayName, formatCurrency } from '@/services/api/deals'
 import { cn } from '@/styles/design-tokens'
-import { Calendar, Building2, TrendingUp, Archive } from 'lucide-react'
+import { Calendar, Building2, TrendingUp, Archive } from '@/lib/icons'
 import { formatDate } from '@/utils/dateFormat'
 
 export interface DealCardProps {

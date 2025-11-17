@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { Activity } from 'lucide-react'
+import { Activity } from '@/lib/icons'
 import { StatCard } from './StatCard'
 
 describe('StatCard', () => {

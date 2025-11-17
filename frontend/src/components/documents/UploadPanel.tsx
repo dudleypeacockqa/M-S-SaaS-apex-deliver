@@ -5,7 +5,7 @@
  */
 
 import React, { useRef, useState } from 'react'
-import { CheckCircle, XCircle, Loader2, X, UploadCloud } from 'lucide-react'
+import { CheckCircle, XCircle, Loader2, X, UploadCloud } from '@/lib/icons'
 import { formatFileSize, calculateOverallProgress } from '@/utils/fileHelpers'
 
 export interface UploadQueueItem {

@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { cn } from '@/styles/design-tokens'
-import { Mail, Eye, MousePointer, Users, TrendingUp } from 'lucide-react'
+import { Mail, Eye, MousePointer, Users, TrendingUp } from '@/lib/icons'
 import type { AdminCampaign } from '@/services/api/masterAdmin'
 
 export interface CampaignStatsProps {

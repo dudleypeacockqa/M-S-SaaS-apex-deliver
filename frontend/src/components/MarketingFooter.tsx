@@ -1,5 +1,5 @@
 import { APP_LOGO, APP_TITLE } from "@/const";
-import { Linkedin, Twitter, Youtube } from "lucide-react";
+import { Linkedin, Twitter, Youtube } from "@/lib/icons";
 import { Link } from "wouter";
 
 export default function MarketingFooter() {

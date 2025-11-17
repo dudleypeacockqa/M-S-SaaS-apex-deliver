@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, LayoutGrid, List } from 'lucide-react'
+import { ArrowLeft, Plus, LayoutGrid, List } from '@/lib/icons'
 import { Button } from '@/components/ui/Button'
 import {
   ProspectKanban,

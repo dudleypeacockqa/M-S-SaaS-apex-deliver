@@ -9,7 +9,7 @@ import { CampaignCard } from './CampaignCard'
 import { useCampaigns, useDeleteCampaign } from '@/hooks/master-admin'
 import { CampaignType, CampaignStatus } from '@/services/api/masterAdmin'
 import type { AdminCampaign, CampaignFilters } from '@/services/api/masterAdmin'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from '@/lib/icons'
 
 export interface CampaignListProps {
   onCampaignClick?: (campaign: AdminCampaign) => void

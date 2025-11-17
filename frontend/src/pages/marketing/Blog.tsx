@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, FileText } from 'lucide-react';
+import { Search, FileText } from '@/lib/icons';
 import { MarketingLayout } from '@/components/marketing/MarketingLayout';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
