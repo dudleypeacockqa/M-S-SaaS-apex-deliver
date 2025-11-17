@@ -154,32 +154,35 @@ class TestValuationExportService:
         mock_comparables.return_value = []
         mock_precedents.return_value = []
         mock_scenarios.return_value = []
-        
+
         mock_storage_service = MagicMock()
         mock_storage_service.generate_file_key.return_value = "test-file-key"
         mock_storage_service.save_file = AsyncMock(return_value="s3://bucket/test-file-key")
         mock_storage.return_value = mock_storage_service
-        
-        # Mock weasyprint module at sys.modules level
-        import sys
-        mock_weasyprint = MagicMock()
+
+        # Mock weasyprint HTML class and dynamic import
         mock_html_instance = MagicMock()
         mock_html_instance.write_pdf.return_value = b"fake pdf content"
-        mock_weasyprint.HTML.return_value = mock_html_instance
-        
-        with patch.dict('sys.modules', {'weasyprint': mock_weasyprint}):
-            with patch('weasyprint.HTML', mock_weasyprint.HTML):
-                # Execute
-                result = await ValuationExportService.export_to_pdf(
-                    db=db_session,
-                    valuation_id=str(sample_valuation.id),
-                    organization_id=str(sample_valuation.organization_id),
-                )
-                
-                # Verify
-                assert result is not None
-                assert 'file_path' in result
-                assert 'download_url' in result
+
+        mock_weasyprint_module = MagicMock()
+        mock_weasyprint_module.HTML.return_value = mock_html_instance
+
+        with patch('importlib.import_module', return_value=mock_weasyprint_module) as mock_import:
+            # Execute
+            result = await ValuationExportService.export_to_pdf(
+                db=db_session,
+                valuation_id=str(sample_valuation.id),
+                organization_id=str(sample_valuation.organization_id),
+            )
+
+            # Verify
+            assert result is not None
+            assert 'file_path' in result
+            assert 'download_url' in result
+            assert 'file_size_bytes' in result
+            assert result['file_type'] == 'application/pdf'
+            mock_storage_service.save_file.assert_called_once()
+            mock_import.assert_called_once_with("weasyprint")
 
     @pytest.mark.asyncio
     @patch('app.services.valuation_export_service.get_storage_service')
