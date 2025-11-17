@@ -74,8 +74,9 @@ export default defineConfig({
     conditions: ['module', 'import', 'default'],
   },
   optimizeDeps: {
-    // Exclude lucide-react from pre-bundling - it's ESM-only and causes resolution issues in Vite 7
-    exclude: ['lucide-react', '**/*.test.tsx', '**/*.test.ts', '**/*.spec.tsx', '**/*.spec.ts'],
+    // Force lucide-react into the prebundle so icon exports initialize consistently
+    include: ['lucide-react'],
+    exclude: ['**/*.test.tsx', '**/*.test.ts', '**/*.spec.tsx', '**/*.spec.ts'],
     esbuildOptions: {
       target: 'esnext',
       mainFields: ['module', 'main'],

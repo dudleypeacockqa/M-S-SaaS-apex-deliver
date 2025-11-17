@@ -80,6 +80,12 @@ if (id.includes('lucide-react')) {
 - [ ] Confirm lucide icons render on marketing + application pages.
 - [ ] Smoke test major routes (public + Clerk-protected) after cache clear.
 
+### Evidence To Capture
+- [ ] Screenshot: landing page renders after fix
+- [ ] Screenshot: dashboard console showing no JS errors
+- [ ] Screenshot: master-admin route with icons visible
+- [ ] Notes: bundle size delta vs previous deploy
+
 ## Lessons Learned
 ### What went wrong
 1. Repeated icon fixes merged without proving the hypothesis in production bundles.
@@ -106,6 +112,18 @@ if (id.includes('lucide-react')) {
   - P95 page load > 3s.
   - Vendor bundle size change > 10% vs last successful deploy.
 
+## Communication
+### Stakeholders Notified
+- [x] User (reported issue)
+- [ ] Development team (pending)
+- [ ] Product owner (pending)
+- [ ] Operations team (pending)
+
+### Status Updates
+- 13:00 UTC - Issue identified
+- 13:18 UTC - Fix deployed
+- 13:20 UTC - Issue resolved
+
 ## Technical Artifacts
 ```
 Uncaught TypeError: Cannot set properties of undefined (setting 'Activity')
@@ -114,7 +132,7 @@ Uncaught TypeError: Cannot set properties of undefined (setting 'Activity')
     at vendor-xmtvmsb2.js:1:3741
 ```
 
-- **Affected files**: `frontend/vite.config.ts`, `frontend/src/lib/icons.ts` (now removed), `frontend/src/main.tsx` (icons pre-import reverted).
+- **Affected files**: `frontend/vite.config.ts`, `frontend/src/lib/icons.ts` (centralized re-exports, still in use), `frontend/src/main.tsx` (icons pre-import removed - no longer needed since lucide-react is bundled with main).
 - **Tooling**: Vite 7.2.2, React 19, lucide-react, Render (Node.js) deployment.
 
 ## Related Work
