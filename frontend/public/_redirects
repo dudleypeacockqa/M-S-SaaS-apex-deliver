@@ -1,0 +1,8 @@
+# Render Static Site Redirects
+# This file configures URL rewrites for the SPA
+
+# Serve static assets directly (don't rewrite)
+# Render automatically serves files that exist at the requested path
+
+# Fallback: All other routes → index.html (for React Router)
+/*    /index.html   200
