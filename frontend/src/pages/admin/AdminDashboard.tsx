@@ -25,6 +25,7 @@ export const AdminDashboard: React.FC = () => {
   }, []);
 
   const formatCurrency = (amount: number) => {
+    if (Number.isNaN(amount)) return 'N/A';
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency: 'GBP',

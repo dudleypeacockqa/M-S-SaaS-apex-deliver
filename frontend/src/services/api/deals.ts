@@ -140,7 +140,7 @@ export async function unarchiveDeal(dealId: string): Promise<Deal> {
  * Helper function to format currency
  */
 export function formatCurrency(amount: number | null, currency: string = 'GBP'): string {
-  if (amount === null) return 'N/A';
+  if (amount === null || Number.isNaN(amount)) return 'N/A';
 
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',

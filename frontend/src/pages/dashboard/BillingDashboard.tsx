@@ -8,6 +8,7 @@ import { CancelSubscriptionModal } from '../../components/billing/CancelSubscrip
 
 const formatCurrency = (value: number | string, currency = 'GBP'): string => {
   const numeric = typeof value === 'number' ? value : parseFloat(value)
+  if (Number.isNaN(numeric)) return 'N/A'
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency,
