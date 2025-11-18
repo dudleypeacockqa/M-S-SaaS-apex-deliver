@@ -37,6 +37,10 @@
 - `npm run test -- --run frontend/src/services/api/__tests__/documentGeneration.integration.test.ts` → ✅ 10/10 passing (client ↔ API contract). Log capture scheduled alongside upcoming integration refactor.
 - Manual export smoke (PDF + DOCX) executed locally after wiring; capture refreshed once async queue ships.
 
+## Evidence Update (2025-11-18)
+- ✅ DocumentExportQueue entitlement prompts now mirror backend detail, surfacing tier-specific messaging plus CTA links.
+- ✅ Vitest coverage extended via `DocumentExportQueuePanel.test.tsx` with logs archived in `docs/tests/2025-11-18-frontend-document-export-queue-panel.txt`.
+- 🔄 Drives DEV-014 async export queue closer to the documented plan; next step is wiring DocumentEditor integration evidence.
 ## Completion Summary (2025-11-14)
 
 ✅ **Export job queue + polling UI** – COMPLETE
@@ -65,4 +69,5 @@
 2. Implement queue/polling UI + entitlement guards until tests GREEN.
 3. Extend backend pytest coverage for export entitlement toggles if gaps discovered during wiring.
 4. Capture artefacts (Vitest log, pytest log, screenshots) and update this story + status report.
+
 

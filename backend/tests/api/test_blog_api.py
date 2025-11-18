@@ -5,6 +5,7 @@ Following TDD RED → GREEN → REFACTOR methodology.
 """
 import pytest
 from starlette.testclient import TestClient
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.blog_post import BlogPost
@@ -188,3 +189,66 @@ def test_list_blog_posts_published_only(client: TestClient, db_session: Session)
     # Should not include draft posts
     assert all(post["published"] is True for post in data)
     assert not any(post["slug"] == "draft-post" for post in data)
+
+
+def test_create_blog_post_success(client: TestClient, db_session: Session):
+    """Ensure POST /api/blog creates a blog post."""
+    payload = {
+        "title": "New FP&A Insights",
+        "slug": "new-fpa-insights",
+        "excerpt": "Short FP&A summary",
+        "content": "## Full content\n\nLots of insights.",
+        "category": "FP&A",
+        "primary_keyword": "FP&A insights",
+        "secondary_keywords": ["finance", "planning"],
+        "meta_description": "FP&A description",
+        "featured_image_url": "https://example.com/fpa.jpg",
+        "author": "Automation",
+        "read_time_minutes": 6,
+        "published": True,
+    }
+
+    response = client.post("/api/blog", json=payload)
+
+    assert response.status_code == 201, response.text
+    data = response.json()
+    assert data["slug"] == payload["slug"]
+    assert data["secondary_keywords"] == ["finance", "planning"]
+
+    post = db_session.execute(
+        select(BlogPost).where(BlogPost.slug == payload["slug"])
+    ).scalar_one()
+    assert post.title == payload["title"]
+
+
+def test_create_blog_post_duplicate_slug_returns_409(client: TestClient, db_session: Session):
+    """Duplicate slugs should return 409 Conflict."""
+    existing = BlogPost(
+        title="Existing Post",
+        slug="duplicate-slug",
+        excerpt="Existing",
+        content="Existing content",
+        category="M&A Strategy",
+        primary_keyword="existing",
+        meta_description="Existing meta",
+        author="Tester",
+        read_time_minutes=5,
+        published=True,
+    )
+    db_session.add(existing)
+    db_session.commit()
+
+    payload = {
+        "title": "New Post",
+        "slug": "duplicate-slug",
+        "excerpt": "New excerpt",
+        "content": "New content",
+        "category": "M&A Strategy",
+        "primary_keyword": "new",
+        "meta_description": "New meta",
+        "published": False,
+    }
+
+    response = client.post("/api/blog", json=payload)
+
+    assert response.status_code == 409

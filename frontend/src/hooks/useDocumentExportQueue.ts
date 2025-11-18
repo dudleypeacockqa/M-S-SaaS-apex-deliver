@@ -61,16 +61,24 @@ const parseEntitlementDetail = (error: unknown): EntitlementDetail | null => {
   return { message: 'Upgrade required to export documents.' }
 }
 
+type ExportEntitlementState = {
+  message: string
+  requiredTierLabel?: string
+  upgradeCtaUrl?: string
+} | null
+
 export type UseDocumentExportQueueResult = {
   exporting: boolean
   exportNotice: string | null
   exportError: string | null
+  exportEntitlement: ExportEntitlementState
   exportJobs: DocumentExportJob[]
   queueExport: (options: QueueOptions) => Promise<void>
   downloadExport: (job: DocumentExportJob) => Promise<void>
   cancelExport: (job: DocumentExportJob) => Promise<void>
   clearExportNotice: () => void
   clearExportError: () => void
+  clearExportEntitlement: () => void
 }
 
 export function useDocumentExportQueue(
@@ -80,6 +88,7 @@ export function useDocumentExportQueue(
   const [exporting, setExporting] = useState(false)
   const [exportNotice, setExportNotice] = useState<string | null>(null)
   const [exportError, setExportError] = useState<string | null>(null)
+  const [exportEntitlement, setExportEntitlement] = useState<ExportEntitlementState>(null)
   const [exportJobs, setExportJobs] = useState<DocumentExportJob[]>([])
   const pollersRef = useRef<Record<string, number>>({})
 
@@ -214,6 +223,7 @@ export function useDocumentExportQueue(
     async (options: QueueOptions) => {
       setExportNotice(null)
       setExportError(null)
+      setExportEntitlement(null)
       setExporting(true)
       try {
         const response = await queueDocumentExport(documentId, options)
@@ -233,9 +243,11 @@ export function useDocumentExportQueue(
       } catch (error) {
         const entitlement = parseEntitlementDetail(error)
         if (entitlement) {
-          setExportError(
-            entitlement.message || 'Upgrade required to export documents. Contact support for access.',
-          )
+          setExportEntitlement({
+            message: entitlement.message ?? 'Upgrade required to export documents.',
+            requiredTierLabel: entitlement.required_tier_label ?? undefined,
+            upgradeCtaUrl: entitlement.upgrade_cta_url ?? undefined,
+          })
         } else {
           setExportError('Failed to queue export. Please try again.')
         }
@@ -313,6 +325,8 @@ export function useDocumentExportQueue(
     cancelExport,
     clearExportNotice: () => setExportNotice(null),
     clearExportError: () => setExportError(null),
+    exportEntitlement,
+    clearExportEntitlement: () => setExportEntitlement(null),
   }
 }
 

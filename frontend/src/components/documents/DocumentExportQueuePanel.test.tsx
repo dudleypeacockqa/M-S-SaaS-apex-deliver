@@ -93,6 +93,36 @@ describe('DocumentExportQueuePanel', () => {
     )
   })
 
+  it('surfaces upgrade CTA when entitlement detail provides a CTA URL', async () => {
+    const api = await apiPromise
+    vi.mocked(api.queueDocumentExport).mockRejectedValueOnce({
+      response: {
+        status: 403,
+        data: {
+          detail: {
+            message: 'Upgrade required to unlock exports.',
+            required_tier_label: 'Growth',
+            upgrade_cta_url: 'https://app.apexdeliver.com/upgrade',
+          },
+        },
+      },
+    } as any)
+
+    renderWithQueryClient(<DocumentExportQueuePanel documentId="doc-123" />)
+
+    const queueButton = screen.getByRole('button', { name: /download document/i })
+    await userEvent.click(queueButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/upgrade required to unlock exports/i)).toBeInTheDocument()
+      expect(screen.getByText(/available on the growth plan/i)).toBeInTheDocument()
+    })
+
+    const upgradeLink = screen.getByRole('link', { name: /upgrade now/i })
+    expect(upgradeLink).toHaveAttribute('href', 'https://app.apexdeliver.com/upgrade')
+    expect(upgradeLink).toHaveAttribute('target', '_blank')
+  })
+
   it('shows existing queued jobs from the API', async () => {
     const api = await apiPromise
     vi.mocked(api.listDocumentExportJobs).mockResolvedValueOnce([

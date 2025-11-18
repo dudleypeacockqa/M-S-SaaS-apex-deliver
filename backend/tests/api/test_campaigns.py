@@ -233,6 +233,7 @@ class TestDeleteCampaign:
         )
 
         assert response.status_code == 204
+        db_session.expunge(campaign)
         assert db_session.get(AdminCampaign, campaign.id) is None
 
 

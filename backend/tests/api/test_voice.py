@@ -10,6 +10,16 @@ from unittest.mock import patch
 from app.models.master_admin import VoiceCall, AdminProspect
 
 
+class _MockResponse:
+    def __init__(self, status_code: int, payload: dict):
+        self.status_code = status_code
+        self._payload = payload
+        self.text = ""
+
+    def json(self):
+        return self._payload
+
+
 def _create_prospect(db_session, user_id: str) -> AdminProspect:
     prospect = AdminProspect(
         user_id=user_id,
@@ -53,15 +63,16 @@ class TestCreateVoiceAgent:
     @patch('app.services.voice_service.requests.post')
     async def test_create_voice_agent(self, mock_post, async_client: AsyncClient, auth_headers_master_admin: dict):
         """Test creating a voice agent."""
-        mock_response = type('MockResponse', (), {
-            'status_code': 201,
-            'json': lambda: {
+        mock_post.return_value = _MockResponse(
+            201,
+            {
                 "id": "agent-123",
                 "name": "Sales Agent",
+                "voice": "alloy",
+                "instructions": "You are a professional sales agent.",
                 "status": "active",
-            }
-        })()
-        mock_post.return_value = mock_response
+            },
+        )
         
         agent_data = {
             "name": "Sales Agent",
@@ -93,14 +104,13 @@ class TestMakeVoiceCall:
         master_admin_user,
     ):
         """Test initiating a voice call."""
-        mock_response = type('MockResponse', (), {
-            'status_code': 201,
-            'json': lambda: {
+        mock_post.return_value = _MockResponse(
+            201,
+            {
                 "id": "call-123",
                 "status": "queued",
-            }
-        })()
-        mock_post.return_value = mock_response
+            },
+        )
         
         prospect = _create_prospect(db_session, master_admin_user.id)
 

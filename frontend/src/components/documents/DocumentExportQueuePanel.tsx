@@ -24,12 +24,14 @@ export const DocumentExportQueuePanel: React.FC<DocumentExportQueuePanelProps> =
     exporting,
     exportNotice,
     exportError,
+    exportEntitlement,
     exportJobs,
     queueExport,
     downloadExport,
     cancelExport,
     clearExportError,
     clearExportNotice,
+    clearExportEntitlement,
   } = useDocumentExportQueue(documentId, pollIntervalMs)
 
   const handleQueueExport = async (options: {
@@ -66,6 +68,42 @@ export const DocumentExportQueuePanel: React.FC<DocumentExportQueuePanelProps> =
           >
             Dismiss
           </button>
+        </div>
+      ) : null}
+
+      {exportEntitlement ? (
+        <div
+          role="alert"
+          className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
+        >
+          <div className="space-y-1">
+            <p>{exportEntitlement.message}</p>
+            {exportEntitlement.requiredTierLabel ? (
+              <p className="text-xs text-amber-800">
+                Available on the {exportEntitlement.requiredTierLabel} plan.
+              </p>
+            ) : null}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {exportEntitlement.upgradeCtaUrl ? (
+              <a
+                className="inline-flex items-center justify-center rounded-md bg-amber-600 px-3 py-1 text-xs font-semibold text-white shadow-sm transition hover:bg-amber-500"
+                href={exportEntitlement.upgradeCtaUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Upgrade now
+              </a>
+            ) : null}
+            <button
+              type="button"
+              className="text-xs font-medium text-amber-800 hover:text-amber-900"
+              onClick={clearExportEntitlement}
+              aria-label="Dismiss entitlement message"
+            >
+              Dismiss
+            </button>
+          </div>
         </div>
       ) : null}
 

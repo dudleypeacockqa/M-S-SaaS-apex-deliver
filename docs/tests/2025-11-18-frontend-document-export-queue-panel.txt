@@ -1,0 +1,5 @@
+Command: npm run test -- --run --pool=threads src/components/documents/DocumentExportQueuePanel.test.tsx
+Date: 2025-11-18T12:51:00 (local)
+
+Result Summary:
+- src/components/documents/DocumentExportQueuePanel.test.tsx – 4 tests, 0 failures (new entitlement CTA spec GREEN)

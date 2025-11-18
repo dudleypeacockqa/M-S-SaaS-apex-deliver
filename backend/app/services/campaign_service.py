@@ -3,7 +3,7 @@ Campaign Service
 
 Service for managing multi-channel outreach campaigns.
 """
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func, and_, or_
@@ -77,7 +77,13 @@ def schedule_campaign(
     Raises:
         ValueError: If schedule_time is in the past
     """
-    if schedule_time < datetime.utcnow():
+    schedule_dt = (
+        schedule_time.astimezone(timezone.utc)
+        if schedule_time.tzinfo
+        else schedule_time.replace(tzinfo=timezone.utc)
+    )
+    now = datetime.now(timezone.utc)
+    if schedule_dt < now:
         raise ValueError("Cannot schedule campaign in the past")
     
     result = db.execute(
@@ -91,7 +97,7 @@ def schedule_campaign(
     if not campaign:
         raise ValueError(f"Campaign {campaign_id} not found")
     
-    campaign.schedule_at = schedule_time
+    campaign.schedule_at = schedule_dt
     campaign.status = CampaignStatus.SCHEDULED
     
     db.commit()
