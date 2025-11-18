@@ -13,6 +13,7 @@ export type WorkspaceNavId =
   | 'community'
   | 'billing'
   | 'podcast-studio'
+  | 'fpa'
   | 'customer-portal'
   | 'admin'
   | 'master-admin'
@@ -82,6 +83,12 @@ const baseNavItems: WorkspaceNavigationItem[] = [
     label: 'Podcast Studio',
     path: '/podcast-studio',
     roles: ['growth', 'enterprise', 'admin'],
+  },
+  {
+    id: 'fpa',
+    label: 'FP&A',
+    path: '/fpa',
+    roles: ['growth', 'enterprise', 'admin'], // Professional+ tier (FP&A subscribers)
   },
   {
     id: 'admin',

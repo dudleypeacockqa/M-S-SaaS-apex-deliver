@@ -13,7 +13,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       <SidebarNavigation />
 
       {/* Main Content - White background with proper spacing */}
-      <main className="flex-1 ml-64 overflow-y-auto bg-white">
+      <main className="flex-1 lg:ml-64 ml-0 overflow-y-auto bg-white">
         <div className="min-h-full">
           {children}
         </div>

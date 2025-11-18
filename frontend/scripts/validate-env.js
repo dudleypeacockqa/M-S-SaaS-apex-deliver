@@ -12,7 +12,8 @@ const requiredVars = [
 ];
 
 const optionalVars = [
-  'VITE_ENABLE_MASTER_ADMIN',
+  'VITE_ENABLE_MASTER_ADMIN',      // Master Admin Portal (enabled by default)
+  'VITE_ENABLE_CUSTOMER_PORTAL',   // Customer Portal (enabled by default)
   'VITE_STRIPE_PUBLISHABLE_KEY',
   'VITE_SENTRY_DSN',
   'VITE_GA_TRACKING_ID',

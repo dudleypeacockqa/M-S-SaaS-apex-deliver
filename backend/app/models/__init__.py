@@ -22,6 +22,26 @@ from .valuation import (
     ValuationExportLog,
 )
 from .task import DealTask, TaskTemplate, TaskAutomationRule, TaskAutomationLog
+from .pmi import (
+    PMIProject,
+    PMIWorkstream,
+    PMIMilestone,
+    PMISynergy,
+    PMIMetric,
+    PMIRisk,
+    PMIDayOneChecklist,
+    PMIProjectStatus,
+    PMIWorkstreamStatus,
+    PMIWorkstreamType,
+    PMIPhase,
+    PMISynergyCategory,
+    PMISynergyStatus,
+    PMIMetricType,
+    PMIRiskSeverity,
+    PMIRiskStatus,
+    PMIDayOneChecklistStatus,
+    PMIDayOneCategory,
+)
 from .podcast import PodcastEpisode, PodcastTranscript, PodcastAnalytics
 from .podcast_usage import PodcastUsage
 from .rbac_audit_log import RBACAuditLog, RBACAuditAction
@@ -123,6 +143,25 @@ __all__ = [
     "TaskTemplate",
     "TaskAutomationRule",
     "TaskAutomationLog",
+    # PMI Module
+    "PMIProject",
+    "PMIWorkstream",
+    "PMIMilestone",
+    "PMISynergy",
+    "PMIMetric",
+    "PMIRisk",
+    "PMIDayOneChecklist",
+    "PMIProjectStatus",
+    "PMIWorkstreamStatus",
+    "PMIWorkstreamType",
+    "PMIPhase",
+    "PMISynergyCategory",
+    "PMISynergyStatus",
+    "PMIMetricType",
+    "PMIRiskSeverity",
+    "PMIRiskStatus",
+    "PMIDayOneChecklistStatus",
+    "PMIDayOneCategory",
     "PodcastEpisode",
     "PodcastTranscript",
     "PodcastAnalytics",

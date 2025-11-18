@@ -12,7 +12,9 @@ import {
   Upload, 
   Settings,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  X,
+  Menu
 } from 'lucide-react';
 
 interface NavSection {
@@ -64,6 +66,7 @@ export const SidebarNavigation: React.FC = () => {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(navSections.map(section => section.title))
   );
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleSection = (title: string) => {
     setExpandedSections(prev => {
@@ -85,17 +88,46 @@ export const SidebarNavigation: React.FC = () => {
   };
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-slate-900 text-white flex flex-col z-40">
+    <>
+      {/* Mobile Menu Toggle Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-slate-900 text-white rounded-md shadow-lg"
+        aria-label="Toggle menu"
+      >
+        {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      </button>
+
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      <aside className={`fixed left-0 top-0 h-full w-64 bg-slate-900 text-white flex flex-col z-40 transition-transform duration-300 ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
       {/* Logo/Brand Section */}
       <div className="p-6 border-b border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-xs">FP&A</span>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-xs">FP&A</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-white">CapLiquify FP&A</h1>
+              <p className="text-xs text-slate-400">Manufacturing Dashboard</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-white">CapLiquify FP&A</h1>
-            <p className="text-xs text-slate-400">Manufacturing Dashboard</p>
-          </div>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="lg:hidden p-1 text-slate-400 hover:text-white transition-colors"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
@@ -128,6 +160,7 @@ export const SidebarNavigation: React.FC = () => {
                       <NavLink
                         key={item.path}
                         to={item.path}
+                        onClick={() => setIsMobileMenuOpen(false)}
                         className={`
                           flex items-center gap-3 px-6 py-2.5 text-sm font-medium transition-colors
                           ${active 
@@ -153,6 +186,7 @@ export const SidebarNavigation: React.FC = () => {
         <p className="text-slate-500">© 2025 CapLiquify</p>
       </div>
     </aside>
+    </>
   );
 };
 
