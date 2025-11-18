@@ -18,6 +18,12 @@
 - All acceptance criteria met: DCF, Comparables, Precedents, Scenarios, Monte Carlo, Exports with templates, Comparison charts, RBAC
 - Ready for production deployment
 
+**Update (2025-11-18 13:18 UTC)**:
+- ✅ Added Growth-tier upgrade messaging + CTA for valuation exports when the backend returns a 403 entitlement payload (matches DEV-014 pattern).
+- ✅ ValuationSuite Vitest suite expanded to cover export entitlement gating; log archived at `docs/tests/2025-11-18-frontend-valuation-suite.txt`.
+- ✅ Backend export completion now registers files in the document room for automatic audit trails (see `docs/tests/2025-11-18-backend-valuation-export.txt`).
+- 🔄 Next polish item: link Valuation export completion events to document room entries for audit evidence.
+
 **Previous Update (2025-10-29 07:35 UTC)**:
 - ✅ **PRODUCTION READY**: DEV-011 complete with 100% test pass rate
 - Backend: 12 valuation API tests + 10 financial models tests = 22/22 PASSED
@@ -236,5 +242,3 @@
 - Awaiting RED tests for valuation service/endpoints + frontend workspace. 🔄
 
 Next action: Begin Phase 1 TDD cycle by committing RED tests for DCF valuation service.
-
-

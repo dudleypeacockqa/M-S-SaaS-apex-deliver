@@ -224,7 +224,13 @@ export const pmiApi = {
     status?: PMIProject['status'];
     deal_id?: string;
   }): Promise<{ items: PMIProject[]; total: number; page: number; page_size: number }> {
-    return apiClient.get('/api/pmi/projects', { params });
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.per_page) queryParams.append('per_page', params.per_page.toString());
+    if (params?.status) queryParams.append('status', params.status);
+    if (params?.deal_id) queryParams.append('deal_id', params.deal_id);
+    const query = queryParams.toString();
+    return apiClient.get(`/api/pmi/projects${query ? `?${query}` : ''}`);
   },
 
   /**
@@ -329,7 +335,11 @@ export const pmiApi = {
    * List metrics for a project
    */
   async listMetrics(projectId: string, params?: { metric_type?: string; limit?: number }): Promise<PMIMetric[]> {
-    return apiClient.get<PMIMetric[]>(`/api/pmi/projects/${projectId}/metrics`, { params });
+    const queryParams = new URLSearchParams();
+    if (params?.metric_type) queryParams.append('metric_type', params.metric_type);
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    const query = queryParams.toString();
+    return apiClient.get<PMIMetric[]>(`/api/pmi/projects/${projectId}/metrics${query ? `?${query}` : ''}`);
   },
 
   /**
@@ -343,7 +353,11 @@ export const pmiApi = {
    * List risks for a project
    */
   async listRisks(projectId: string, params?: { workstream_id?: string; severity?: PMIRisk['severity'] }): Promise<{ items: PMIRisk[]; total: number }> {
-    return apiClient.get(`/api/pmi/projects/${projectId}/risks`, { params });
+    const queryParams = new URLSearchParams();
+    if (params?.workstream_id) queryParams.append('workstream_id', params.workstream_id);
+    if (params?.severity) queryParams.append('severity', params.severity);
+    const query = queryParams.toString();
+    return apiClient.get(`/api/pmi/projects/${projectId}/risks${query ? `?${query}` : ''}`);
   },
 
   /**
@@ -364,7 +378,10 @@ export const pmiApi = {
    * List Day 1 checklist items for a project
    */
   async listDayOneChecklist(projectId: string, params?: { category?: string }): Promise<{ items: PMIDayOneChecklist[]; total: number }> {
-    return apiClient.get(`/api/pmi/projects/${projectId}/day-one-checklist`, { params });
+    const queryParams = new URLSearchParams();
+    if (params?.category) queryParams.append('category', params.category);
+    const query = queryParams.toString();
+    return apiClient.get(`/api/pmi/projects/${projectId}/day-one-checklist${query ? `?${query}` : ''}`);
   },
 
   /**
@@ -379,6 +396,125 @@ export const pmiApi = {
    */
   async completeDayOneChecklistItem(itemId: string): Promise<PMIDayOneChecklist> {
     return apiClient.post<PMIDayOneChecklist>(`/api/pmi/day-one-checklist/${itemId}/complete`);
+  },
+
+  // AI-Powered Features
+  /**
+   * Identify risks using AI
+   */
+  async identifyRisks(projectId: string): Promise<{ risks: any[]; count: number }> {
+    return apiClient.post(`/api/pmi/projects/${projectId}/risks/ai-identify`);
+  },
+
+  /**
+   * Analyze risk mitigation strategies
+   */
+  async analyzeRiskMitigation(riskId: string): Promise<any> {
+    return apiClient.post(`/api/pmi/risks/${riskId}/ai-mitigation`);
+  },
+
+  /**
+   * Predict risk escalation
+   */
+  async predictRiskEscalation(projectId: string): Promise<{ predictions: any[] }> {
+    return apiClient.post(`/api/pmi/projects/${projectId}/risks/ai-predict-escalation`);
+  },
+
+  /**
+   * Suggest synergy opportunities
+   */
+  async suggestSynergies(projectId: string): Promise<{ synergies: any[]; count: number }> {
+    return apiClient.post(`/api/pmi/projects/${projectId}/synergies/ai-suggest`);
+  },
+
+  /**
+   * Validate synergy feasibility
+   */
+  async validateSynergy(synergyId: string): Promise<any> {
+    return apiClient.post(`/api/pmi/synergies/${synergyId}/ai-validate`);
+  },
+
+  /**
+   * Optimize synergy timing
+   */
+  async optimizeSynergyTiming(projectId: string): Promise<any> {
+    return apiClient.post(`/api/pmi/projects/${projectId}/synergies/ai-optimize-timing`);
+  },
+
+  /**
+   * Get best practices
+   */
+  async getBestPractices(projectId: string, workstreamType?: string): Promise<any> {
+    const url = workstreamType
+      ? `/api/pmi/projects/${projectId}/best-practices?workstream_type=${workstreamType}`
+      : `/api/pmi/projects/${projectId}/best-practices`;
+    return apiClient.get(url);
+  },
+
+  /**
+   * Get action recommendations
+   */
+  async getRecommendations(projectId: string): Promise<{ recommendations: any[] }> {
+    return apiClient.post(`/api/pmi/projects/${projectId}/recommendations`);
+  },
+
+  /**
+   * Benchmark against industry
+   */
+  async benchmarkAgainstIndustry(projectId: string): Promise<any> {
+    return apiClient.get(`/api/pmi/projects/${projectId}/benchmark`);
+  },
+
+  // Workstream Dependencies
+  /**
+   * Analyze workstream dependencies
+   */
+  async analyzeDependencies(projectId: string): Promise<{ dependencies: any[]; count: number }> {
+    return apiClient.post(`/api/pmi/projects/${projectId}/workstreams/analyze-dependencies`);
+  },
+
+  /**
+   * Get dependency graph
+   */
+  async getDependencyGraph(projectId: string): Promise<any> {
+    return apiClient.get(`/api/pmi/projects/${projectId}/workstreams/dependency-graph`);
+  },
+
+  // PDF Reports
+  /**
+   * Generate status report PDF
+   */
+  async generateStatusReport(projectId: string): Promise<{ download_url: string; file_path: string }> {
+    return apiClient.post(`/api/pmi/projects/${projectId}/reports/status-pdf`);
+  },
+
+  /**
+   * Generate synergy report PDF
+   */
+  async generateSynergyReport(projectId: string): Promise<{ download_url: string; file_path: string }> {
+    return apiClient.post(`/api/pmi/projects/${projectId}/reports/synergy-pdf`);
+  },
+
+  /**
+   * Generate risk report PDF
+   */
+  async generateRiskReport(projectId: string): Promise<{ download_url: string; file_path: string }> {
+    return apiClient.post(`/api/pmi/projects/${projectId}/reports/risk-pdf`);
+  },
+
+  /**
+   * Generate 100-day report PDF
+   */
+  async generate100DayReport(projectId: string): Promise<{ download_url: string; file_path: string }> {
+    return apiClient.post(`/api/pmi/projects/${projectId}/reports/100day-pdf`);
+  },
+
+  // Notifications
+  /**
+   * Send test notification
+   */
+  async sendTestNotification(projectId: string, notificationType: string): Promise<{ sent: boolean; message: string }> {
+    return apiClient.post(`/api/pmi/projects/${projectId}/notifications/test?notification_type=${notificationType}`, null);
   },
 };
 

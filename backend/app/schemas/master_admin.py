@@ -895,3 +895,70 @@ class CampaignActivityListResponse(BaseModel):
     total: int
     page: int
     per_page: int
+
+
+# ============================================================================
+# Webhook Schemas
+# ============================================================================
+
+class WebhookBase(BaseModel):
+    """Base schema for webhooks."""
+    name: str = Field(..., min_length=1, max_length=255)
+    url: str = Field(..., min_length=1, max_length=500)
+    events: list[str] = Field(..., description="List of event types to subscribe to")
+    secret_key: Optional[str] = Field(None, max_length=255, description="Secret key for webhook signature")
+    is_active: bool = Field(True, description="Whether webhook is active")
+    headers: Optional[dict] = Field(None, description="Custom headers for webhook requests")
+
+
+class WebhookCreate(WebhookBase):
+    """Schema for creating a webhook."""
+    pass
+
+
+class WebhookUpdate(BaseModel):
+    """Schema for updating a webhook."""
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    url: Optional[str] = Field(None, min_length=1, max_length=500)
+    events: Optional[list[str]] = None
+    secret_key: Optional[str] = Field(None, max_length=255)
+    is_active: Optional[bool] = None
+    headers: Optional[dict] = None
+
+
+class WebhookResponse(WebhookBase):
+    """Schema for webhook responses."""
+    id: int
+    organization_id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class WebhookListResponse(BaseModel):
+    """Schema for paginated list of webhooks."""
+    items: list[WebhookResponse]
+    total: int
+    page: int
+    per_page: int
+
+
+class WebhookDeliveryResponse(BaseModel):
+    """Schema for webhook delivery responses."""
+    id: int
+    webhook_id: int
+    organization_id: str
+    event_type: str
+    payload: dict
+    response_status: Optional[int] = None
+    response_body: Optional[str] = None
+    response_headers: Optional[dict] = None
+    error_message: Optional[str] = None
+    retry_count: int
+    next_retry_at: Optional[datetime] = None
+    delivered_at: Optional[datetime] = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)

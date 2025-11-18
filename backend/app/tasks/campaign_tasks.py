@@ -40,6 +40,38 @@ def execute_campaign_task(campaign_id: int, user_id: str):
         db.close()
 
 
+@shared_task(name="campaigns.queue_campaign_email")
+def queue_campaign_email_task(to_email: str, subject: str, content: str, template_data: Dict):
+    """
+    Queue a campaign email for sending.
+    
+    Args:
+        to_email: Recipient email address
+        subject: Email subject
+        content: Email content (HTML)
+        template_data: Template data for rendering
+    """
+    db = SessionLocal()
+    try:
+        from app.services.email_service import queue_email
+        
+        # Queue email for sending (function is now synchronous)
+        result = queue_email(
+            db=db,
+            to_email=to_email,
+            subject=subject,
+            template_name="campaign_email",
+            template_data=template_data,
+        )
+        
+        return result
+    except Exception as e:
+        print(f"Error queuing campaign email to {to_email}: {e}")
+        return {"status": "failed", "error": str(e)}
+    finally:
+        db.close()
+
+
 @shared_task(name="campaigns.send_email_batch")
 def send_email_batch_task(emails: List[Dict]):
     """
@@ -93,7 +125,8 @@ def process_scheduled_campaigns_task():
         from app.models.enums import CampaignStatus
         from app.models.user import User
         
-        now = datetime.utcnow()
+        from datetime import timezone
+        now = datetime.now(timezone.utc)
         
         # Find campaigns scheduled to run now (within the last minute)
         query = select(AdminCampaign).where(

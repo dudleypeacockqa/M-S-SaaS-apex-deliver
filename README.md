@@ -372,7 +372,7 @@ claude-code -d "Fix failing test in tests/backend/test_deal_service.py with cove
 # render.yaml (frontend)
 services:
   - type: web
-    name: ma-saas-frontend
+    name: ma-saas-platform
     env: static
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist

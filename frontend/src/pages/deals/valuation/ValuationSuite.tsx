@@ -1391,6 +1391,39 @@ const AnalyticsMetric = ({
   )
 }
 
+type ExportEntitlement = {
+  message: string
+  requiredTierLabel?: string
+  upgradeCtaUrl?: string
+} | null
+
+const parseExportEntitlement = (error: unknown): ExportEntitlement => {
+  if (typeof error !== 'object' || error === null) {
+    return null
+  }
+
+  const response = (error as { response?: { status?: number; data?: { detail?: unknown } } }).response
+  if (!response || response.status !== 403) {
+    return null
+  }
+
+  const detail = response.data?.detail
+  if (typeof detail === 'string') {
+    return { message: detail }
+  }
+
+  if (detail && typeof detail === 'object') {
+    const typed = detail as { message?: string; required_tier_label?: string; upgrade_cta_url?: string }
+    return {
+      message: typed.message ?? 'Upgrade required to export valuations.',
+      requiredTierLabel: typed.required_tier_label ?? undefined,
+      upgradeCtaUrl: typed.upgrade_cta_url ?? undefined,
+    }
+  }
+
+  return { message: 'Upgrade required to export valuations.' }
+}
+
 const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: string }) => {
   const queryClient = useQueryClient()
   const [exportType, setExportType] = useState<'pdf' | 'excel'>('pdf')
@@ -1399,12 +1432,14 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
   const [lastExport, setLastExport] = useState<ValuationExportResponse | null>(null)
   const [exportStatus, setExportStatus] = useState<ValuationExportLogEntry | null>(null)
   const [exportError, setExportError] = useState<string | null>(null)
+  const [exportEntitlement, setExportEntitlement] = useState<ExportEntitlement>(null)
   const pollingIntervalRef = useRef<number | null>(null)
 
   const { mutate, isPending } = useMutation({
     mutationFn: () => triggerExport(dealId, valuationId, exportType, exportFormat),
     onMutate: () => {
       setExportError(null)
+      setExportEntitlement(null)
       setLastExport(null)
       setExportStatus(null)
       // Clear any existing polling
@@ -1421,8 +1456,13 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
         pollExportStatus(response.task_id)
       }
     },
-    onError: () => {
-      setExportError('Unable to queue export. Please try again.')
+    onError: (err) => {
+      const entitlement = parseExportEntitlement(err)
+      if (entitlement) {
+        setExportEntitlement(entitlement)
+      } else {
+        setExportError('Unable to queue export. Please try again.')
+      }
     },
   })
 
@@ -1589,6 +1629,39 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
               {exportError}
             </p>
           )}
+          {exportEntitlement ? (
+            <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900" role="alert">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p>{exportEntitlement.message}</p>
+                  {exportEntitlement.requiredTierLabel ? (
+                    <p className="text-xs text-amber-800">
+                      Available on the {exportEntitlement.requiredTierLabel} plan.
+                    </p>
+                  ) : null}
+                </div>
+                <div className="flex items-center gap-2">
+                  {exportEntitlement.upgradeCtaUrl ? (
+                    <a
+                      href={exportEntitlement.upgradeCtaUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center rounded-md bg-amber-600 px-3 py-1 text-xs font-semibold text-white shadow-sm transition hover:bg-amber-500"
+                    >
+                      Upgrade now
+                    </a>
+                  ) : null}
+                  <button
+                    type="button"
+                    className="text-xs font-medium text-amber-800 hover:text-amber-900"
+                    onClick={() => setExportEntitlement(null)}
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : null}
           {getStatusDisplay()}
         </div>
       </SectionCard>
@@ -1659,6 +1732,5 @@ export const ValuationSuite = () => {
     </section>
   )
 }
-
 
 

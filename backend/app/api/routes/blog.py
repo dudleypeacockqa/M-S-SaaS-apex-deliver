@@ -3,12 +3,16 @@
 from typing import List, Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select, desc, or_
+from sqlalchemy import select, desc, or_, text, case
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import ProgrammingError, OperationalError
+import logging
 
 from app.db.session import get_db
 from app.models.blog_post import BlogPost
 from pydantic import BaseModel, ConfigDict, Field
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/blog", tags=["blog"])
 
@@ -70,6 +74,19 @@ def list_blog_posts(
     - **limit**: Maximum number of posts to return
     - **offset**: Number of posts to skip for pagination
     """
+    # Check if blog_posts table exists - return empty list if table doesn't exist
+    try:
+        db.execute(text("SELECT 1 FROM blog_posts LIMIT 1"))
+    except (ProgrammingError, OperationalError) as e:
+        error_msg = str(e).lower()
+        if "does not exist" in error_msg or "relation" in error_msg:
+            logger.warning(f"Blog posts table not found: {e}. Returning empty list.")
+            # Return empty list instead of 503 error to prevent site from breaking
+            return []
+        # For other database errors, log and return empty list
+        logger.error(f"Database error checking blog_posts table: {e}")
+        return []
+    
     query = select(BlogPost)
     
     # Filter by published status
@@ -91,14 +108,51 @@ def list_blog_posts(
             )
         )
     
-    # Order by published date (newest first)
-    query = query.order_by(desc(BlogPost.published_at))
+    # Order by published date (newest first), fallback to created_at if published_at is None
+    # This handles cases where published_at might be NULL
+    query = query.order_by(
+        desc(
+            case(
+                (BlogPost.published_at.isnot(None), BlogPost.published_at),
+                else_=BlogPost.created_at
+            )
+        )
+    )
     
     # Apply pagination
     query = query.offset(offset).limit(limit)
     
-    result = db.execute(query)
-    posts = result.scalars().all()
+    try:
+        result = db.execute(query)
+        posts = result.scalars().all()
+    except Exception as e:
+        logger.error(f"Error while fetching blog posts: {e}", exc_info=True)
+        # If there's an error, try a simpler query without ordering
+        try:
+            simple_query = select(BlogPost)
+            if published_only:
+                simple_query = simple_query.where(BlogPost.published == True)
+            if category:
+                simple_query = simple_query.where(BlogPost.category == category)
+            if search:
+                search_term = f"%{search}%"
+                simple_query = simple_query.where(
+                    or_(
+                        BlogPost.title.ilike(search_term),
+                        BlogPost.excerpt.ilike(search_term),
+                        BlogPost.content.ilike(search_term),
+                    )
+                )
+            simple_query = simple_query.order_by(desc(BlogPost.created_at))
+            simple_query = simple_query.offset(offset).limit(limit)
+            result = db.execute(simple_query)
+            posts = result.scalars().all()
+        except Exception as fallback_error:
+            logger.error(f"Fallback query also failed: {fallback_error}", exc_info=True)
+            raise HTTPException(
+                status_code=500,
+                detail=f"Database error: {str(fallback_error)}"
+            )
     
     return [
         BlogPostResponse(
@@ -133,9 +187,29 @@ def get_blog_post_by_slug(
     
     - **slug**: The URL-friendly slug of the blog post
     """
-    query = select(BlogPost).where(BlogPost.slug == slug)
-    result = db.execute(query)
-    post = result.scalar_one_or_none()
+    # Check if blog_posts table exists
+    try:
+        db.execute(text("SELECT 1 FROM blog_posts LIMIT 1"))
+    except (ProgrammingError, OperationalError) as e:
+        error_msg = str(e).lower()
+        if "does not exist" in error_msg or "relation" in error_msg:
+            logger.warning(f"Blog posts table not found: {e}")
+            raise HTTPException(
+                status_code=404,
+                detail="Blog post not found. Database migration may not have been applied."
+            )
+        raise
+    
+    try:
+        query = select(BlogPost).where(BlogPost.slug == slug)
+        result = db.execute(query)
+        post = result.scalar_one_or_none()
+    except Exception as e:
+        logger.error(f"Database error while fetching blog post: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Database error: {str(e)}"
+        )
     
     if not post:
         raise HTTPException(status_code=404, detail=f"Blog post with slug '{slug}' not found")
@@ -163,10 +237,27 @@ def get_blog_post_by_slug(
 @router.get("/categories/list", response_model=List[str])
 def list_categories(db: Session = Depends(get_db)) -> List[str]:
     """Get a list of all unique blog post categories."""
-    query = select(BlogPost.category).distinct()
-    result = db.execute(query)
-    categories = [row[0] for row in result.all()]
-    return categories
+    # Check if blog_posts table exists - return empty list if table doesn't exist
+    try:
+        db.execute(text("SELECT 1 FROM blog_posts LIMIT 1"))
+    except (ProgrammingError, OperationalError) as e:
+        error_msg = str(e).lower()
+        if "does not exist" in error_msg or "relation" in error_msg:
+            logger.warning(f"Blog posts table not found: {e}. Returning empty categories list.")
+            return []
+        # For other database errors, log and return empty list
+        logger.error(f"Database error checking blog_posts table: {e}")
+        return []
+    
+    try:
+        query = select(BlogPost.category).distinct()
+        result = db.execute(query)
+        categories = [row[0] for row in result.all()]
+        return categories
+    except Exception as e:
+        logger.error(f"Database error while fetching categories: {e}", exc_info=True)
+        # Return empty list instead of 500 error to prevent site from breaking
+        return []
 
 
 @router.post("", response_model=BlogPostResponse, status_code=status.HTTP_201_CREATED)

@@ -15,6 +15,11 @@ from . import (
     notification_service,
     event_reminder_service,
     fpa_service,
+    pmi_service,
+    pmi_ai_service,
+    pmi_report_service,
+    pmi_notification_service,
+    pmi_dependency_service,
 )
 from .task_service import (
     create_task,
@@ -77,4 +82,9 @@ __all__ = [
     "retry_failed_email",
     "notification_service",
     "event_reminder_service",
+    "pmi_service",
+    "pmi_ai_service",
+    "pmi_report_service",
+    "pmi_notification_service",
+    "pmi_dependency_service",
 ]

@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePMIDashboard } from '../hooks/usePMIDashboard';
 import { usePMIProject } from '../hooks/usePMIProject';
-import { ArrowLeft, Calendar, TrendingUp, AlertTriangle, CheckCircle, List, Target, Shield, ClipboardCheck } from 'lucide-react';
+import { ArrowLeft, Calendar, TrendingUp, AlertTriangle, CheckCircle, List, Target, Shield, ClipboardCheck, Sparkles, FileText } from 'lucide-react';
 import { WorkstreamBoard } from '../components/WorkstreamBoard';
 import { SynergyTracker } from '../components/SynergyTracker';
 import { RiskRegister } from '../components/RiskRegister';
 import { DayOneChecklist } from '../components/DayOneChecklist';
 import { TimelineView } from '../components/TimelineView';
+import { AIRecommendations } from '../components/AIRecommendations';
+import { ReportExporter } from '../components/ReportExporter';
 
 export const PMIProjectDetail: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -141,6 +143,8 @@ export const PMIProjectDetail: React.FC = () => {
             { id: 'synergies', label: 'Synergies', icon: Target },
             { id: 'risks', label: 'Risks', icon: Shield },
             { id: 'checklist', label: 'Day 1 Checklist', icon: ClipboardCheck },
+            { id: 'ai', label: 'AI Recommendations', icon: Sparkles },
+            { id: 'reports', label: 'Reports', icon: FileText },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -203,6 +207,8 @@ export const PMIProjectDetail: React.FC = () => {
         {activeTab === 'synergies' && projectId && <SynergyTracker projectId={projectId} />}
         {activeTab === 'risks' && projectId && <RiskRegister projectId={projectId} />}
         {activeTab === 'checklist' && projectId && <DayOneChecklist projectId={projectId} />}
+        {activeTab === 'ai' && projectId && <AIRecommendations projectId={projectId} />}
+        {activeTab === 'reports' && projectId && <ReportExporter projectId={projectId} />}
       </div>
     </div>
   );

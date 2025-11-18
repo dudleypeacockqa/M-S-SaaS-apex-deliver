@@ -1,0 +1,5 @@
+Command: npm run test -- --run --pool=threads src/pages/deals/valuation/ValuationSuite.test.tsx
+Date: 2025-11-18T13:18:12 (local)
+
+Result Summary:
+- src/pages/deals/valuation/ValuationSuite.test.tsx – 18 tests (includes new export entitlement gating RED→GREEN), 0 failures.

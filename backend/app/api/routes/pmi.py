@@ -41,6 +41,10 @@ from app.schemas.pmi import (
     PMIDashboardResponse,
 )
 from app.services import pmi_service
+from app.services import pmi_ai_service
+from app.services import pmi_report_service
+from app.services import pmi_dependency_service
+from app.services import pmi_notification_service
 
 router = APIRouter(prefix="/pmi", tags=["pmi"])
 
@@ -494,4 +498,436 @@ async def complete_day_one_checklist_item(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Checklist item not found")
 
     return item
+
+
+# AI-Powered Features Endpoints
+@router.post("/projects/{project_id}/risks/ai-identify")
+async def ai_identify_risks(
+    project_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Use AI to identify potential risks for a PMI project."""
+    await check_pmi_access(current_user)
+    try:
+        risks = await pmi_ai_service.identify_risks_from_project_data(
+            project_id,
+            current_user.organization_id,
+            db
+        )
+        return {"risks": risks, "count": len(risks)}
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI risk identification failed: {str(e)}"
+        )
+
+
+@router.post("/risks/{risk_id}/ai-mitigation")
+async def ai_analyze_risk_mitigation(
+    risk_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Use AI to analyze risk mitigation strategies."""
+    await check_pmi_access(current_user)
+    from app.models.pmi import PMIRisk, PMIProject
+    
+    risk = db.get(PMIRisk, risk_id)
+    if not risk or risk.organization_id != current_user.organization_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Risk not found")
+    
+    project = db.get(PMIProject, risk.project_id)
+    project_context = {
+        "phase": project.current_phase.value if project and project.current_phase else None,
+        "days_into_pmi": (datetime.now(timezone.utc) - project.close_date).days if project and project.close_date else None,
+    }
+    
+    try:
+        mitigation = await pmi_ai_service.analyze_risk_mitigation_strategies(
+            risk.title,
+            risk.description or "",
+            risk.severity.value,
+            project_context,
+        )
+        return mitigation
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI mitigation analysis failed: {str(e)}"
+        )
+
+
+@router.post("/projects/{project_id}/risks/ai-predict-escalation")
+async def ai_predict_risk_escalation(
+    project_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Use AI to predict which risks may escalate."""
+    await check_pmi_access(current_user)
+    try:
+        predictions = await pmi_ai_service.predict_risk_escalation(
+            project_id,
+            current_user.organization_id,
+            db
+        )
+        return {"predictions": predictions}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI escalation prediction failed: {str(e)}"
+        )
+
+
+@router.post("/projects/{project_id}/synergies/ai-suggest")
+async def ai_suggest_synergies(
+    project_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Use AI to suggest synergy opportunities."""
+    await check_pmi_access(current_user)
+    try:
+        synergies = await pmi_ai_service.suggest_synergy_opportunities(
+            project_id,
+            current_user.organization_id,
+            db
+        )
+        return {"synergies": synergies, "count": len(synergies)}
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI synergy suggestion failed: {str(e)}"
+        )
+
+
+@router.post("/synergies/{synergy_id}/ai-validate")
+async def ai_validate_synergy(
+    synergy_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Use AI to validate synergy feasibility."""
+    await check_pmi_access(current_user)
+    from app.models.pmi import PMISynergy, PMIProject
+    
+    synergy = db.get(PMISynergy, synergy_id)
+    if not synergy or synergy.organization_id != current_user.organization_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Synergy not found")
+    
+    project = db.get(PMIProject, synergy.project_id)
+    project_context = {
+        "phase": project.current_phase.value if project and project.current_phase else None,
+        "days_into_pmi": (datetime.now(timezone.utc) - project.close_date).days if project and project.close_date else None,
+    }
+    
+    try:
+        validation = await pmi_ai_service.validate_synergy_feasibility(
+            synergy.name,
+            synergy.category.value,
+            float(synergy.planned_value),
+            project_context,
+        )
+        return validation
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI synergy validation failed: {str(e)}"
+        )
+
+
+@router.post("/projects/{project_id}/synergies/ai-optimize-timing")
+async def ai_optimize_synergy_timing(
+    project_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Use AI to optimize synergy realization timeline."""
+    await check_pmi_access(current_user)
+    try:
+        optimization = await pmi_ai_service.optimize_synergy_timing(
+            project_id,
+            current_user.organization_id,
+            db
+        )
+        return optimization
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI timing optimization failed: {str(e)}"
+        )
+
+
+@router.get("/projects/{project_id}/best-practices")
+async def get_best_practices(
+    project_id: str,
+    workstream_type: Optional[str] = Query(None, description="Filter by workstream type"),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Get AI-generated best practices for the current project phase."""
+    await check_pmi_access(current_user)
+    project = pmi_service.get_pmi_project_by_id(project_id, current_user.organization_id, db)
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="PMI project not found")
+    
+    phase = project.current_phase.value if project.current_phase else "stabilization"
+    
+    try:
+        best_practices = await pmi_ai_service.generate_best_practices(phase, workstream_type)
+        return best_practices
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI best practices generation failed: {str(e)}"
+        )
+
+
+@router.post("/projects/{project_id}/recommendations")
+async def get_action_recommendations(
+    project_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Get AI-generated action recommendations based on current project state."""
+    await check_pmi_access(current_user)
+    try:
+        recommendations = await pmi_ai_service.recommend_actions(
+            project_id,
+            current_user.organization_id,
+            db
+        )
+        return {"recommendations": recommendations}
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI recommendations failed: {str(e)}"
+        )
+
+
+@router.get("/projects/{project_id}/benchmark")
+async def benchmark_against_industry(
+    project_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Compare project metrics against industry benchmarks."""
+    await check_pmi_access(current_user)
+    try:
+        benchmark = await pmi_ai_service.benchmark_against_industry(
+            project_id,
+            current_user.organization_id,
+            db
+        )
+        return benchmark
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI benchmarking failed: {str(e)}"
+        )
+
+
+# PDF Report Endpoints
+@router.post("/projects/{project_id}/reports/status-pdf")
+async def generate_status_report(
+    project_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Generate comprehensive PMI status report PDF."""
+    await check_pmi_access(current_user)
+    try:
+        result = await pmi_report_service.PMIReportService.generate_status_report_pdf(
+            project_id,
+            current_user.organization_id,
+            db
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"PDF generation failed: {str(e)}"
+        )
+
+
+@router.post("/projects/{project_id}/reports/synergy-pdf")
+async def generate_synergy_report(
+    project_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Generate synergy realization report PDF."""
+    await check_pmi_access(current_user)
+    try:
+        result = await pmi_report_service.PMIReportService.generate_synergy_report_pdf(
+            project_id,
+            current_user.organization_id,
+            db
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"PDF generation failed: {str(e)}"
+        )
+
+
+@router.post("/projects/{project_id}/reports/risk-pdf")
+async def generate_risk_report(
+    project_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Generate risk assessment report PDF."""
+    await check_pmi_access(current_user)
+    try:
+        result = await pmi_report_service.PMIReportService.generate_risk_report_pdf(
+            project_id,
+            current_user.organization_id,
+            db
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"PDF generation failed: {str(e)}"
+        )
+
+
+@router.post("/projects/{project_id}/reports/100day-pdf")
+async def generate_100day_report(
+    project_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Generate 100-day completion report PDF."""
+    await check_pmi_access(current_user)
+    try:
+        result = await pmi_report_service.PMIReportService.generate_100day_report_pdf(
+            project_id,
+            current_user.organization_id,
+            db
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"PDF generation failed: {str(e)}"
+        )
+
+
+# Workstream Dependency Endpoints
+@router.post("/projects/{project_id}/workstreams/analyze-dependencies")
+async def analyze_workstream_dependencies_endpoint(
+    project_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Use AI to analyze workstream dependencies."""
+    await check_pmi_access(current_user)
+    try:
+        dependencies = await pmi_dependency_service.analyze_workstream_dependencies(
+            project_id,
+            current_user.organization_id,
+            db
+        )
+        return {"dependencies": dependencies, "count": len(dependencies)}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Dependency analysis failed: {str(e)}"
+        )
+
+
+@router.get("/projects/{project_id}/workstreams/dependency-graph")
+async def get_dependency_graph(
+    project_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Get workstream dependency graph with optimized sequence."""
+    await check_pmi_access(current_user)
+    try:
+        optimization = await pmi_dependency_service.optimize_workstream_sequence(
+            project_id,
+            current_user.organization_id,
+            db
+        )
+        return optimization
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Dependency graph generation failed: {str(e)}"
+        )
+
+
+# Notification Endpoints
+@router.post("/projects/{project_id}/notifications/test")
+async def send_test_notification(
+    project_id: str,
+    notification_type: str = Query(..., description="Type: milestone, risk, synergy, day_one"),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Send a test notification."""
+    await check_pmi_access(current_user)
+    from sqlalchemy import select
+    from app.models.pmi import PMIMilestone
+    
+    try:
+        if notification_type == "milestone":
+            workstreams = pmi_service.list_workstreams(project_id, current_user.organization_id, db)
+            if workstreams:
+                milestones = db.scalars(
+                    select(PMIMilestone).where(PMIMilestone.workstream_id == workstreams[0].id)
+                ).all()
+                if milestones:
+                    result = await pmi_notification_service.send_milestone_reminder(
+                        milestones[0].id,
+                        current_user.organization_id,
+                        db,
+                        days_until_due=7,
+                    )
+                    return {"sent": result, "message": "Test milestone reminder sent"}
+        elif notification_type == "risk":
+            risks = pmi_service.list_risks(project_id, current_user.organization_id, db)
+            if risks:
+                result = await pmi_notification_service.send_risk_escalation_alert(
+                    risks[0].id,
+                    current_user.organization_id,
+                    db,
+                )
+                return {"sent": result, "message": "Test risk alert sent"}
+        elif notification_type == "day_one":
+            result = await pmi_notification_service.send_day_one_warning(
+                project_id,
+                current_user.organization_id,
+                db,
+                days_before=1,
+            )
+            return {"sent": result, "message": "Test Day 1 warning sent"}
+        
+        return {"sent": False, "message": "No test data available"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Test notification failed: {str(e)}"
+        )
 

@@ -23,8 +23,12 @@ vi.mock('../../services/api/documentGeneration', async (importOriginal) => {
   }
 })
 
+const documentExportQueuePanelSpy = vi.fn()
 vi.mock('../../components/documents/DocumentExportQueuePanel', () => ({
-  DocumentExportQueuePanel: () => <div data-testid="document-export-queue-panel" />,
+  DocumentExportQueuePanel: (props: { documentId: string; pollIntervalMs?: number }) => {
+    documentExportQueuePanelSpy(props)
+    return <div data-testid="document-export-queue-panel" />
+  },
 }))
 
 const DEFAULT_DOCUMENT_ID = 'doc-123'
@@ -43,6 +47,7 @@ describe('DocumentEditor', () => {
   const documentApiPromise = import('../../services/api/documentGeneration')
 
   beforeEach(async () => {
+    documentExportQueuePanelSpy.mockClear()
     const documentApi = await documentApiPromise
 
     vi.useRealTimers()
@@ -352,4 +357,30 @@ describe('DocumentEditor', () => {
       )
     })
   })
+
+
+  it('passes document id and poll interval to the export queue panel', async () => {
+    createRender()
+
+    await waitFor(() => expect(documentExportQueuePanelSpy).toHaveBeenCalled())
+    const firstCall = documentExportQueuePanelSpy.mock.calls[0]?.[0]
+    expect(firstCall).toMatchObject({ documentId: DEFAULT_DOCUMENT_ID, pollIntervalMs: 500 })
+
+    documentExportQueuePanelSpy.mockClear()
+
+    renderWithQueryClient(
+      <DocumentEditor
+        documentId={DEFAULT_DOCUMENT_ID}
+        dealId={DEFAULT_DEAL_ID}
+        exportPollIntervalMs={1500}
+      />,
+    )
+
+    await waitFor(() => {
+      expect(documentExportQueuePanelSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ documentId: DEFAULT_DOCUMENT_ID, pollIntervalMs: 1500 }),
+      )
+    })
+  })
+
 })

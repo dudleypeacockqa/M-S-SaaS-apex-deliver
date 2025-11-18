@@ -44,6 +44,7 @@ describe('BlogListingPage', () => {
 
     await waitFor(() => {
       expect(mockedFetchBlogPosts).toHaveBeenCalledTimes(1)
+      expect(mockedFetchBlogPosts).toHaveBeenCalledWith({ limit: 100 })
       expect(screen.getByText(/How to Close Deals Faster/i)).toBeInTheDocument()
     })
 
@@ -59,5 +60,19 @@ describe('BlogListingPage', () => {
       expect(mockedFetchBlogPosts).toHaveBeenCalledTimes(1)
       expect(screen.getByText(/Unable to load blog posts/i)).toBeInTheDocument()
     })
+  })
+
+  it('renders search input field', () => {
+    mockedFetchBlogPosts.mockResolvedValueOnce([])
+    renderWithRouter()
+    expect(screen.getByPlaceholderText(/search blog posts/i)).toBeInTheDocument()
+  })
+
+  it('renders category filter buttons', () => {
+    mockedFetchBlogPosts.mockResolvedValueOnce([])
+    renderWithRouter()
+    expect(screen.getByText(/all posts/i)).toBeInTheDocument()
+    expect(screen.getByText(/m&a strategy/i)).toBeInTheDocument()
+    expect(screen.getByText(/financial planning/i)).toBeInTheDocument()
   })
 })
