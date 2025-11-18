@@ -102,6 +102,14 @@ npx bmad-method workflows
 npx bmad-method run <workflow-name>
 ```
 
+### Marketing Smoke (Playwright)
+
+Serve the marketing bundle (`npm run preview:test` from `frontend/`), export `MARKETING_BASE_URL` (defaults to `http://127.0.0.1:4173` locally), then execute the Playwright suite:
+
+```bash
+MARKETING_BASE_URL=http://127.0.0.1:4173 npx playwright test --config playwright.dev.config.ts
+```
+
 ### TDD Discipline (Mandatory)
 
 All feature development follows strict Test-Driven Development:

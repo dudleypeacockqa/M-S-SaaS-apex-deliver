@@ -63,7 +63,8 @@ Command: `cd backend && pytest --maxfail=1 --disable-warnings`
 - `tests/optin-popup.spec.ts`
 - `tests/seo-meta.spec.ts`
 - `tests/integrations-link.spec.ts`
-Command: `npx playwright test --config playwright.dev.config.ts`
+Command: `MARKETING_BASE_URL=http://127.0.0.1:4173 npx playwright test --config playwright.dev.config.ts`
+> Tip: run `npm run preview:test` from `frontend/` first or point `MARKETING_BASE_URL` at a deployed marketing domain.
 
 ---
 
