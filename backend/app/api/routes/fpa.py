@@ -42,7 +42,7 @@ async def get_dashboard_metrics(
     db: Session = Depends(get_db),
 ):
     """Get executive dashboard metrics."""
-    await await check_fpa_access(current_user)
+    await check_fpa_access(current_user)
     
     # TODO: Implement actual dashboard metrics calculation
     # For now, return mock data
@@ -67,7 +67,7 @@ async def get_demand_forecasts(
     db: Session = Depends(get_db),
 ):
     """Get demand forecasts."""
-    await await check_fpa_access(current_user)
+    await check_fpa_access(current_user)
     
     # TODO: Implement actual demand forecast retrieval
     return []
@@ -79,7 +79,7 @@ async def create_demand_forecast(
     db: Session = Depends(get_db),
 ):
     """Create a new demand forecast."""
-    await await check_fpa_access(current_user)
+    await check_fpa_access(current_user)
     
     # TODO: Implement demand forecast creation
     raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Not yet implemented")
