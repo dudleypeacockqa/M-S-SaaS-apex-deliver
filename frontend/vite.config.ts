@@ -70,6 +70,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
+    include: ['lucide-react'], // Force lucide-react to be pre-bundled (prevents async chunk splitting)
     exclude: ['**/*.test.tsx', '**/*.test.ts', '**/*.spec.tsx', '**/*.spec.ts'],
   },
   server: {
@@ -99,6 +100,10 @@ export default defineConfig({
             }
             if (normalizedId.includes('@tanstack/react-query')) {
               return 'react-query'
+            }
+            // Lucide icons - create dedicated chunk to ensure proper initialization
+            if (normalizedId.includes('lucide-react')) {
+              return 'lucide-vendor'
             }
             // Chart libraries (often large)
             if (normalizedId.includes('recharts') || normalizedId.includes('chart.js') || normalizedId.includes('d3')) {
