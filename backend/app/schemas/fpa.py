@@ -23,17 +23,21 @@ class DashboardMetrics(BaseModel):
 
 class DemandForecast(BaseModel):
     id: str
+    name: str
     period: str
     forecasted_demand: int
     actual_demand: Optional[int] = None
     confidence_level: float
+    assumptions: Dict[str, Any] = Field(default_factory=dict)
     created_at: datetime
 
 
 class DemandForecastCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=255)
     period: str = Field(..., description="ISO week or month label")
     forecasted_demand: int
     confidence_level: float = Field(..., ge=0, le=1)
+    assumptions: Dict[str, Any] = Field(default_factory=dict)
 
 
 class InventoryItem(BaseModel):
@@ -76,6 +80,7 @@ class WhatIfScenario(BaseModel):
     description: str
     assumptions: Dict[str, Any]
     results: Dict[str, Any]
+    metrics: Dict[str, Any] = Field(default_factory=dict)
     created_at: datetime
 
 
@@ -83,6 +88,7 @@ class WhatIfScenarioCreate(BaseModel):
     name: str
     description: Optional[str] = None
     assumptions: Dict[str, Any] = Field(default_factory=dict)
+    metrics: Dict[str, Any] = Field(default_factory=dict)
 
 
 class ImportResponse(BaseModel):
@@ -137,3 +143,10 @@ class PredefinedScenario(BaseModel):
 
 class ApplyScenarioRequest(BaseModel):
     scenario_id: str
+
+
+class FpaReportResponse(BaseModel):
+    id: str
+    report_type: str
+    payload: Dict[str, Any]
+    created_at: datetime

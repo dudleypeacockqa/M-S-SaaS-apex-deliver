@@ -15,6 +15,7 @@ from app.models.document_generation import (
     DocumentExportJob,
     DocumentExportStatus,
 )
+from app.models.document import DocumentAccessLog
 
 dependency_overrides = None
 
@@ -82,6 +83,8 @@ class TestDocumentExportJobEndpoints:
         assert "task_id" in data
         assert data["status"] == "queued"
         assert data["format"] == "application/pdf"
+        audit = db_session.query(DocumentAccessLog).filter_by(document_id=document.id).one()
+        assert audit.action == "export"
 
 
     def test_get_export_job_status(
@@ -142,6 +145,58 @@ class TestDocumentExportJobEndpoints:
         assert data["task_id"] == str(export_job.id)
         assert data["status"] == "processing"
         assert data["format"] == "application/pdf"
+
+    def test_export_job_processes_via_background_task(
+        self,
+        client,
+        create_user,
+        create_organization,
+        db_session: Session,
+    ):
+        """Queued jobs should transition to READY and expose file path."""
+        org = create_organization(name="Export Org")
+        user = create_user(email="user@example.com", organization_id=str(org.id))
+
+        dependency_overrides(get_current_user, lambda: user)
+
+        template = DocumentTemplate(
+            id="template-999",
+            name="Processing Template",
+            content="Body",
+            organization_id=str(org.id),
+            created_by_user_id=user.id,
+            status=TemplateStatus.ACTIVE,
+        )
+        db_session.add(template)
+        db_session.flush()
+
+        document = GeneratedDocument(
+            id="doc-export-test-999",
+            template_id=template.id,
+            generated_content="Content",
+            variable_values={},
+            status=DocumentStatus.GENERATED,
+            organization_id=str(org.id),
+            generated_by_user_id=user.id,
+        )
+        db_session.add(document)
+        db_session.commit()
+
+        response = client.post(
+            f"/api/document-generation/documents/{document.id}/export-jobs",
+            json={"format": "application/pdf"},
+        )
+        assert response.status_code == 201
+        job_id = response.json()["task_id"]
+
+        status_resp = client.get(
+            f"/api/document-generation/documents/{document.id}/export-jobs/{job_id}",
+        )
+        assert status_resp.status_code == 200
+        payload = status_resp.json()
+        assert payload["status"] in {"ready", "queued"}
+        if payload["status"] == "ready":
+            assert payload["file_path"] is not None
 
 
     def test_list_export_jobs(

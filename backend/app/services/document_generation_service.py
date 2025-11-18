@@ -3,6 +3,7 @@ Document Generation Service
 Feature: F-009 Automated Document Generation
 """
 import re
+from pathlib import Path
 from typing import List, Optional, Dict, Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -20,10 +21,28 @@ from app.schemas.document_generation import (
     GeneratedDocumentCreate,
     TemplateRenderRequest,
 )
+from app.core.config import settings
 
 
 class DocumentGenerationService:
     """Service for managing document templates and generation"""
+
+    @staticmethod
+    def _write_generated_file(
+        *,
+        organization_id: str,
+        document_id: str,
+        content: str,
+        file_format: str,
+    ) -> str:
+        """Persist generated file content to storage directory."""
+        base_path = Path(settings.storage_path) / "generated_documents" / organization_id
+        base_path.mkdir(parents=True, exist_ok=True)
+        extension = "pdf" if file_format in ("pdf", "application/pdf") else "docx"
+        file_name = f"{document_id}.{extension}"
+        file_path = base_path / file_name
+        file_path.write_text(content, encoding="utf-8")
+        return str(file_path)
 
     # ========================================================================
     # Template CRUD Operations
@@ -198,10 +217,12 @@ class DocumentGenerationService:
         # TODO: If generate_file is True, generate PDF/DOCX and set file_path
         # This would integrate with a library like WeasyPrint (PDF) or python-docx (DOCX)
         if render_request.generate_file:
-            # Placeholder for file generation
-            # file_path = await generate_pdf(generated_content, template.name)
-            # generated.file_path = file_path
-            pass
+            generated.file_path = DocumentGenerationService._write_generated_file(
+                organization_id=organization_id,
+                document_id=str(generated.id),
+                content=generated_content,
+                file_format=render_request.file_format or "pdf",
+            )
 
         db.add(generated)
         db.flush()  # Flush to get the document ID

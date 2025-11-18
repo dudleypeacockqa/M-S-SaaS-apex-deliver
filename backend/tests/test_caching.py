@@ -140,37 +140,122 @@ class TestCacheInvalidation:
         mock_client.delete.assert_not_called()
 
 
-@pytest.mark.asyncio
+class DummyUser:
+    def __init__(self, organization_id="org-1", user_id="user-1"):
+        self.organization_id = organization_id
+        self.id = user_id
+
+
+class FakeRedis:
+    def __init__(self):
+        self.store: dict[str, str] = {}
+
+    def get(self, key: str):
+        return self.store.get(key)
+
+    def setex(self, key: str, ttl: int, value: str):
+        self.store[key] = value
+
+    def incr(self, key: str):
+        current = int(self.store.get(key, "0"))
+        self.store[key] = str(current + 1)
+        return self.store[key]
+
+    def keys(self, pattern: str):
+        from fnmatch import fnmatch
+        return [k for k in self.store if fnmatch(k, pattern)]
+
+    def delete(self, *keys):
+        deleted = 0
+        for key in keys:
+            if key in self.store:
+                del self.store[key]
+                deleted += 1
+        return deleted
+
+
 class TestCachedResponseDecorator:
     """Test the @cached_response decorator."""
 
-    async def test_caches_get_requests(self):
-        """Should cache GET request responses."""
-        # This test will FAIL until we apply the decorator to actual endpoints
-        # For now, it's a placeholder for integration testing
+    def _build_client(self, monkeypatch, redis_client):
+        from fastapi import FastAPI, Depends, Request
+        from fastapi.testclient import TestClient
+        from app.core.cache import cached_response, get_redis_client
 
-        # TODO: Add integration test with actual FastAPI endpoint
-        pass
+        monkeypatch.setattr("app.core.cache.get_redis_client", lambda: redis_client)
 
-    async def test_bypasses_non_get_requests(self):
-        """Should not cache POST/PUT/DELETE requests."""
-        # TODO: Verify POST requests aren't cached
-        pass
+        app = FastAPI()
+        hit_counter = {"count": 0}
 
-    async def test_respects_bypass_header(self):
-        """Should bypass cache when X-Cache-Bypass header present."""
-        # TODO: Test cache bypass header
-        pass
+        def get_user():
+            return DummyUser()
 
-    async def test_returns_cached_response_on_hit(self):
-        """Should return cached response on cache hit."""
-        # TODO: Test cache HIT scenario
-        pass
+        @app.get("/cached")
+        @cached_response(ttl=60)
+        async def cached_endpoint(request: Request, current_user: DummyUser = Depends(get_user)):
+            hit_counter["count"] += 1
+            return {"hits": hit_counter["count"]}
 
-    async def test_caches_response_on_miss(self):
-        """Should cache response on cache miss."""
-        # TODO: Test cache MISS and storage
-        pass
+        @app.post("/cached")
+        @cached_response(ttl=60)
+        async def cached_post(request: Request, current_user: DummyUser = Depends(get_user)):
+            hit_counter["count"] += 1
+            return {"hits": hit_counter["count"]}
+
+        return TestClient(app), hit_counter
+
+    def test_caches_get_requests(self, monkeypatch):
+        redis_client = FakeRedis()
+        client, counter = self._build_client(monkeypatch, redis_client)
+
+        first = client.get("/cached")
+        second = client.get("/cached")
+
+        assert first.json() == {"hits": 1}
+        assert second.json() == {"hits": 1}
+        assert "X-Cache" in second.headers
+        assert second.headers["X-Cache"] == "HIT"
+        assert redis_client.store  # cache populated
+
+    def test_bypasses_non_get_requests(self, monkeypatch):
+        redis_client = FakeRedis()
+        client, counter = self._build_client(monkeypatch, redis_client)
+
+        response = client.post("/cached")
+
+        assert response.status_code == 200
+        assert response.json() == {"hits": 1}
+        assert counter["count"] == 1
+        assert not redis_client.store  # POST should not cache
+
+    def test_respects_bypass_header(self, monkeypatch):
+        redis_client = FakeRedis()
+        client, counter = self._build_client(monkeypatch, redis_client)
+
+        response = client.get("/cached", headers={"X-Cache-Bypass": "true"})
+
+        assert response.status_code == 200
+        assert "X-Cache" not in response.headers
+        assert counter["count"] == 1
+        assert not redis_client.store
+
+    def test_returns_cached_response_on_hit(self, monkeypatch):
+        redis_client = FakeRedis()
+        client, counter = self._build_client(monkeypatch, redis_client)
+
+        client.get("/cached")
+        second = client.get("/cached")
+
+        assert second.headers["X-Cache"] == "HIT"
+        assert counter["count"] == 1  # endpoint executed once
+
+    def test_caches_response_on_miss(self, monkeypatch):
+        redis_client = FakeRedis()
+        client, counter = self._build_client(monkeypatch, redis_client)
+
+        client.get("/cached")
+        cached_keys = [key for key in redis_client.store if key.startswith("api:v1:cached")]
+        assert cached_keys, f"No cached keys found in store: {redis_client.store}"
 
 
 class TestCacheMultiTenancy:
