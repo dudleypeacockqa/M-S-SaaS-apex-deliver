@@ -37,6 +37,12 @@ from app.models.master_admin import (  # noqa: F401, E402
     AdminLeadCapture,
     AdminCollateral,
     AdminCollateralUsage,
+    CampaignTemplate,
+    CampaignActivity,
+    VoiceCall,
+    ConversationSession,
+    Webhook,
+    WebhookDelivery,
 )
 from app.models.rbac_audit_log import RBACAuditLog  # noqa: F401, E402
 from app.models.pipeline_template import PipelineTemplate, PipelineTemplateStage  # noqa: F401, E402
