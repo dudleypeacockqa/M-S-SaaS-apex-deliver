@@ -3,7 +3,7 @@
 # Updated: 2025-11-17 (Phase 3 COMPLETE, v1.0.0 and v1.1.0 SHIPPED)
 
 generated: "2025-11-10"
-last_updated: "2025-11-17"
+last_updated: "2025-11-18"
 project: "M&A Intelligence Platform"
 project_type: "software"
 selected_track: "enterprise"
@@ -40,7 +40,7 @@ workflow_status: |
   deployment-verification: docs/deployments/2025-11-16-DEPLOYMENT-VERIFICATION-FINAL.md (tea, 2025-11-16)
 
   # Phase 5: Post-Launch Optimization (IN PROGRESS - v1.2)
-  v1.2-planning: required  # agent: pm - Plan v1.2 enhancements
+  v1.2-planning: docs/bmad/V1.2-SCOPE.md (pm, 2025-11-18)
 
 project_metrics: |
   # v1.1.0 Completion Metrics (2025-11-14)
@@ -92,6 +92,8 @@ notes: |
   3. Performance optimization - Lighthouse 90%+ target
   4. Test coverage enhancement - Backend 90%+, Frontend 90%+
   5. Production polish - monitoring, analytics
+
+  Reference: docs/bmad/V1.2-SCOPE.md (2025-11-18) captures detailed objectives, story seeds, and success metrics for this phase.
 
   Estimated Timeline: 6-9 weeks
   Estimated Effort: 46-70 hours

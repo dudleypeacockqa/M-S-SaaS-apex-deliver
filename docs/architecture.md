@@ -102,6 +102,13 @@ The repository is a multi-part monorepo. `frontend/` serves a marketing funnel p
 - **Smoke Testing:** `scripts/run_smoke_tests.sh` spins API + `npm run preview` for manual verification; `verify_deployment.py/sh` check Render health.
 - **Workflow Tracking:** `docs/bmm-workflow-status.yaml` records BMAD workflow progress. Use `npx bmad-method status`/`workflows` to stay aligned.
 
+## V1.2 Enhancement Focus
+
+- **Reliability & Performance:** Close the backlog of backend/frontend TODOs (pagination, caching, Celery/Redis instrumentation, React Query cache tuning) while targeting ≥92 Lighthouse performance and ≥95 accessibility (see `docs/bmad/V1.2-SCOPE.md`).  
+- **Quality Gates:** Lift backend coverage from 84% to ≥90% and frontend from 85.1% to ≥90% via TDD-first updates to `backend/tests/**` and `frontend/src/**/*.test.tsx`.  
+- **Infrastructure Guardrails:** Update `render.yaml`, `prestart.sh`, and deployment checklists to enforce schema drift detection, health checks, and rollback procedures before v1.2 release.  
+- **Cross-Cutting Consistency:** Re-run BMAD `solutioning-gate-check` after enhancements and keep architecture/stories in sync so multiple AI agents implement features without conflict.
+
 ## Architecture Decisions & Patterns
 
 - **Multi-tenant Isolation:** All SQLAlchemy queries scope by `organization_id`, and service methods call `entitlement_service.py` before acting. Redis namespaces mirror org IDs to isolate rate limiting and Celery jobs. Clerk-issued org claims are the single source of truth for tenancy.
