@@ -6,7 +6,7 @@
   "description": "M&A Intelligence Platform - Frontend Application",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && npm run verify:lucide",
+    "build": "npx vite build && npm run verify:lucide",
     "build:check": "tsc -b && vite build && npm run verify:lucide",
     "test": "node scripts/run-vitest.mjs run",
     "test:watch": "node scripts/run-vitest.mjs",
