@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 
-from app.api.dependencies.auth import get_current_user
+from app.api.dependencies.auth import get_current_master_admin_user
 from app.db.session import get_db
 from app.models.user import User
 from app.models.master_admin import AdminCampaign, CampaignActivity
@@ -32,7 +32,7 @@ router = APIRouter(prefix="/master-admin/campaigns", tags=["campaigns"])
 @router.post("", response_model=AdminCampaignResponse, status_code=status.HTTP_201_CREATED)
 def create_campaign(
     campaign_data: AdminCampaignCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -59,7 +59,7 @@ def list_campaigns(
     per_page: int = Query(12, ge=1, le=100),
     status_filter: Optional[str] = Query(None, alias="status"),
     type_filter: Optional[str] = Query(None, alias="type"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -104,7 +104,7 @@ def list_campaigns(
 @router.get("/{campaign_id}", response_model=AdminCampaignResponse)
 def get_campaign(
     campaign_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -139,7 +139,7 @@ def get_campaign(
 def update_campaign(
     campaign_id: int,
     campaign_update: AdminCampaignUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -181,7 +181,7 @@ def update_campaign(
 @router.delete("/{campaign_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_campaign(
     campaign_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -214,7 +214,7 @@ def delete_campaign(
 def schedule_campaign(
     campaign_id: int,
     schedule_request: ScheduleCampaignRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """

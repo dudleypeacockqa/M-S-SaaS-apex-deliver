@@ -14,7 +14,7 @@ export interface User {
   first_name: string | null
   last_name: string | null
   profile_image_url: string | null
-  role: 'solo' | 'growth' | 'enterprise' | 'admin'
+  role: 'solo' | 'growth' | 'enterprise' | 'admin' | 'master_admin'
   is_active: boolean
   created_at: string
   updated_at: string
@@ -55,8 +55,11 @@ export async function getCurrentUser(token: string): Promise<User> {
 export function hasRole(user: User | null, requiredRole: string): boolean {
   if (!user) return false
 
-  // Admin has access to everything
-  if (user.role === 'admin') return true
+  // Master admin can access everything
+  if (user.role === 'master_admin') return true
+
+  // Admin has access to all non-master-admin areas
+  if (user.role === 'admin' && requiredRole !== 'master_admin') return true
 
   // Exact match required for other roles
   return user.role === requiredRole
@@ -71,6 +74,7 @@ export function getPermissionLevel(role: string): number {
     growth: 2,
     enterprise: 3,
     admin: 4,
+    master_admin: 5,
   }
   return levels[role as keyof typeof levels] || 0
 }

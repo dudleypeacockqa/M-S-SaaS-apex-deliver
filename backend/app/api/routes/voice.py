@@ -6,7 +6,7 @@ API endpoints for AI-powered voice outreach.
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import get_current_user
+from app.api.dependencies.auth import get_current_master_admin_user
 from app.db.session import get_db
 from app.models.user import User
 from app.models.master_admin import VoiceCall
@@ -26,7 +26,7 @@ router = APIRouter(prefix="/master-admin/voice", tags=["voice"])
 @router.post("/agents", response_model=VoiceAgentResponse, status_code=status.HTTP_201_CREATED)
 def create_voice_agent(
     agent_data: VoiceAgentCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -60,7 +60,7 @@ def create_voice_agent(
 
 @router.get("/agents", response_model=list[VoiceAgentResponse])
 def list_voice_agents(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -83,7 +83,7 @@ def list_voice_agents(
 @router.post("/calls", response_model=VoiceCallResponse, status_code=status.HTTP_201_CREATED)
 def make_voice_call(
     call_data: VoiceCallCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """

@@ -101,45 +101,39 @@ export async function listCampaigns(params?: {
   if (params?.per_page) queryParams.append('per_page', params.per_page.toString())
   if (params?.status) queryParams.append('status', params.status)
   if (params?.type) queryParams.append('type', params.type)
-  
-  const response = await apiClient.get(`/master-admin/campaigns?${queryParams.toString()}`)
-  return response.data
+
+  const query = queryParams.toString()
+  return apiClient.get<CampaignListResponse>(`/api/master-admin/campaigns${query ? `?${query}` : ''}`)
 }
 
 export async function getCampaign(campaignId: number): Promise<Campaign> {
-  const response = await apiClient.get(`/master-admin/campaigns/${campaignId}`)
-  return response.data
+  return apiClient.get<Campaign>(`/api/master-admin/campaigns/${campaignId}`)
 }
 
 export async function createCampaign(campaign: CampaignCreate): Promise<Campaign> {
-  const response = await apiClient.post('/master-admin/campaigns', campaign)
-  return response.data
+  return apiClient.post<Campaign>('/api/master-admin/campaigns', campaign)
 }
 
 export async function updateCampaign(campaignId: number, update: CampaignUpdate): Promise<Campaign> {
-  const response = await apiClient.put(`/master-admin/campaigns/${campaignId}`, update)
-  return response.data
+  return apiClient.put<Campaign>(`/api/master-admin/campaigns/${campaignId}`, update)
 }
 
 export async function deleteCampaign(campaignId: number): Promise<void> {
-  await apiClient.delete(`/master-admin/campaigns/${campaignId}`)
+  return apiClient.delete<void>(`/api/master-admin/campaigns/${campaignId}`)
 }
 
 export async function scheduleCampaign(campaignId: number, scheduleAt: string): Promise<Campaign> {
-  const response = await apiClient.post(`/master-admin/campaigns/${campaignId}/schedule`, {
+  return apiClient.post<Campaign>(`/api/master-admin/campaigns/${campaignId}/schedule`, {
     schedule_at: scheduleAt,
   })
-  return response.data
 }
 
 export async function executeCampaign(campaignId: number): Promise<{ sent_count: number; total_recipients: number }> {
-  const response = await apiClient.post(`/master-admin/campaigns/${campaignId}/execute`)
-  return response.data
+  return apiClient.post<{ sent_count: number; total_recipients: number }>(`/api/master-admin/campaigns/${campaignId}/execute`)
 }
 
 export async function getCampaignAnalytics(campaignId: number): Promise<CampaignAnalytics> {
-  const response = await apiClient.get(`/master-admin/campaigns/${campaignId}/analytics`)
-  return response.data
+  return apiClient.get<CampaignAnalytics>(`/api/master-admin/campaigns/${campaignId}/analytics`)
 }
 
 export async function getCampaignActivities(campaignId: number, params?: {
@@ -149,8 +143,8 @@ export async function getCampaignActivities(campaignId: number, params?: {
   const queryParams = new URLSearchParams()
   if (params?.page) queryParams.append('page', params.page.toString())
   if (params?.per_page) queryParams.append('per_page', params.per_page.toString())
-  
-  const response = await apiClient.get(`/master-admin/campaigns/${campaignId}/activities?${queryParams.toString()}`)
-  return response.data
+
+  const query = queryParams.toString()
+  return apiClient.get<CampaignActivityListResponse>(`/api/master-admin/campaigns/${campaignId}/activities${query ? `?${query}` : ''}`)
 }
 

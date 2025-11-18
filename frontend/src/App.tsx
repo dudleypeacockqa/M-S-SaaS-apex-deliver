@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ErrorBoundary } from "./components/common"
 import { LoadingSpinner } from "./components/common/LoadingSpinner"
 import { usePageAnalytics } from "./hooks/usePageAnalytics"
+import { useCurrentUser } from "./hooks/useCurrentUser"
 import { AnalyticsProvider } from "./components/marketing/AnalyticsProvider"
 import { FeatureGate } from "./components/subscription/FeatureGate"
 
@@ -123,9 +124,34 @@ const isMasterAdminEnabled = import.meta.env.VITE_ENABLE_MASTER_ADMIN !== 'false
 
 // Master Admin route wrapper - shows "Not Available" if feature disabled
 const MasterAdminRoute = ({ children }: { children: React.ReactElement }) => {
+  const { user, loading } = useCurrentUser()
+
   if (!isMasterAdminEnabled) {
-    return <FeatureNotAvailable featureName="Master Admin Portal" message="The Master Admin Portal is currently not available. This feature is being deployed in a future update." />
+    return (
+      <FeatureNotAvailable
+        featureName="Master Admin Portal"
+        message="The Master Admin Portal is currently not available. This feature is being deployed in a future update."
+      />
+    )
   }
+
+  if (loading) {
+    return <RouteLoader />
+  }
+
+  if (!user) {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  if (user.role !== 'master_admin') {
+    return (
+      <FeatureNotAvailable
+        featureName="Master Admin Portal"
+        message="You need master admin permissions to access these tools. Please contact ApexDeliver support to upgrade your account."
+      />
+    )
+  }
+
   return children
 }
 

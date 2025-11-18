@@ -430,6 +430,35 @@ def admin_user(db_session):
 
 
 @pytest.fixture()
+def master_admin_user(db_session):
+    """Create and return a test master admin user."""
+    from app.models.user import User
+    from app.models.organization import Organization
+
+    org = Organization(
+        id="test-org-master-admin",
+        name="Master Admin Test Org",
+        slug="master-admin-test-org",
+        subscription_tier="enterprise",
+    )
+    db_session.add(org)
+
+    master_admin = User(
+        id="test-master-admin-user-id",
+        clerk_user_id="test_clerk_master_admin_user",
+        email="master-admin@test.com",
+        first_name="Master",
+        last_name="Admin",
+        role="master_admin",
+        organization_id="test-org-master-admin",
+    )
+    db_session.add(master_admin)
+    db_session.commit()
+    db_session.refresh(master_admin)
+    return master_admin
+
+
+@pytest.fixture()
 def solo_user(db_session):
     """Create and return a test solo user."""
     from app.models.user import User
@@ -477,6 +506,28 @@ def auth_headers_admin(admin_user):
 
     # Clean up override after test
     app.dependency_overrides.pop(get_current_user, None)
+
+
+@pytest.fixture()
+def auth_headers_master_admin(master_admin_user):
+    """Provide authentication headers for a master admin user."""
+    from app.api.dependencies.auth import (
+        get_current_master_admin_user,
+        get_current_user,
+    )
+
+    def override_user():
+        return master_admin_user
+
+    app.dependency_overrides[get_current_user] = override_user
+    app.dependency_overrides[get_current_master_admin_user] = override_user
+
+    headers = {"Authorization": "Bearer mock_master_admin_token"}
+    try:
+        yield headers
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+        app.dependency_overrides.pop(get_current_master_admin_user, None)
 
 
 @pytest.fixture()

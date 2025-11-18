@@ -47,7 +47,7 @@ REMAINING:
 - ⏳ Performance and accessibility audits (2-3 hours) blocked on manual Lighthouse/Axe runs
 - ⏳ Marketing website Playwright smoke tests + documentation (30-40 hours)
 - ⏳ Final documentation/handoff once Decide gate has artefacts (5-7 hours)
-- ⏳ Marketing CI workflow + DAIlY_STATUS_NOTES cadence enforcement
+- ⏳ Marketing CI workflow + DAILY_STATUS_NOTES cadence enforcement
 
 ## Assessment
 
