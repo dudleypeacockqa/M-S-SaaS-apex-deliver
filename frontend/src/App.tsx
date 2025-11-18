@@ -1,6 +1,7 @@
 import { Suspense, lazy, useState, type ComponentType, type LazyExoticComponent } from "react"
 import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom"
 import { RootLayout } from "./layouts/RootLayout"
+import { ProtectedLayout } from "./layouts/ProtectedLayout"
 import { SignedIn, SignedOut } from "@clerk/clerk-react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
@@ -9,6 +10,7 @@ import { ErrorBoundary } from "./components/common"
 import { LoadingSpinner } from "./components/common/LoadingSpinner"
 import { usePageAnalytics } from "./hooks/usePageAnalytics"
 import { AnalyticsProvider } from "./components/marketing/AnalyticsProvider"
+import { FeatureGate } from "./components/subscription/FeatureGate"
 
 const lazyNamed = <T extends ComponentType<any>>(
   importer: () => Promise<Record<string, unknown>>,
@@ -89,11 +91,29 @@ const CampaignManager = lazyNamed(() => import("./pages/master-admin/CampaignMan
 const ContentStudio = lazyNamed(() => import("./pages/master-admin/ContentStudio"), "ContentStudio")
 const LeadCapture = lazyNamed(() => import("./pages/master-admin/LeadCapture"), "LeadCapture")
 const SalesCollateral = lazyNamed(() => import("./pages/master-admin/SalesCollateral"), "SalesCollateral")
+const CustomerPortalDashboard = lazyNamed(() => import("./pages/customer-portal/CustomerPortalDashboard"), "CustomerPortalDashboard")
+const CustomerAccount = lazyNamed(() => import("./pages/customer-portal/CustomerAccount"), "CustomerAccount")
+const CustomerInvoices = lazyNamed(() => import("./pages/customer-portal/CustomerInvoices"), "CustomerInvoices")
+const CustomerSettings = lazyNamed(() => import("./pages/customer-portal/CustomerSettings"), "CustomerSettings")
+const TaskBoard = lazyDefault(() => import("./pages/tasks/TaskBoard"))
+const MatchingWorkspace = lazyDefault(() => import("./pages/deals/MatchingWorkspace"))
+const DocumentWorkspace = lazyDefault(() => import("./pages/documents/DocumentWorkspace"))
+// FP&A Module Pages
+const ExecutiveDashboard = lazyNamed(() => import("./modules/fpa/pages/ExecutiveDashboard"), "ExecutiveDashboard")
+const DemandForecasting = lazyNamed(() => import("./modules/fpa/pages/DemandForecasting"), "DemandForecasting")
+const InventoryManagement = lazyNamed(() => import("./modules/fpa/pages/InventoryManagement"), "InventoryManagement")
+const ProductionTracking = lazyNamed(() => import("./modules/fpa/pages/ProductionTracking"), "ProductionTracking")
+const QualityControl = lazyNamed(() => import("./modules/fpa/pages/QualityControl"), "QualityControl")
+const WorkingCapital = lazyNamed(() => import("./modules/fpa/pages/WorkingCapital"), "WorkingCapital")
+const WhatIfAnalysis = lazyNamed(() => import("./modules/fpa/pages/WhatIfAnalysis"), "WhatIfAnalysis")
+const FinancialReports = lazyNamed(() => import("./modules/fpa/pages/FinancialReports"), "FinancialReports")
+const DataImport = lazyNamed(() => import("./modules/fpa/pages/DataImport"), "DataImport")
+const AdminPanel = lazyNamed(() => import("./modules/fpa/pages/AdminPanel"), "AdminPanel")
 // Temporarily disabled - missing blogService functions (createBlogPost, updateBlogPost, publishBlogPost, getBlogPost)
 // const BlogAdminEditor = lazyNamed(() => import("./pages/admin/BlogAdminEditor"), "BlogAdminEditor")
 
-// Feature flag check for Master Admin Portal
-const isMasterAdminEnabled = import.meta.env.VITE_ENABLE_MASTER_ADMIN === 'true'
+// Feature flag check for Master Admin Portal (enabled by default unless explicitly disabled)
+const isMasterAdminEnabled = import.meta.env.VITE_ENABLE_MASTER_ADMIN !== 'false'
 
 // Master Admin route wrapper - shows "Not Available" if feature disabled
 const MasterAdminRoute = ({ children }: { children: React.ReactElement }) => {
@@ -103,18 +123,6 @@ const MasterAdminRoute = ({ children }: { children: React.ReactElement }) => {
   return children
 }
 
-const DashboardRoute = () => {
-  return (
-    <>
-      <SignedIn>
-        <DashboardPage />
-      </SignedIn>
-      <SignedOut>
-        <Navigate to="/sign-in" replace />
-      </SignedOut>
-    </>
-  )
-}
 
 const FinancialDashboardRoute = () => {
   const { dealId } = useParams<{ dealId: string }>();
@@ -158,56 +166,155 @@ export const AppRoutes = () => {
       <Route path="legal/privacy" element={<PrivacyPolicy />} />
       <Route path="legal/cookies" element={<CookiePolicy />} />
 
-      {/* Authentication Routes (uses RootLayout) */}
+      {/* Authentication Routes (uses RootLayout - sign-in/sign-up only) */}
       <Route element={<RootLayout />}>
         <Route path="sign-in/*" element={<SignInPage />} />
         <Route path="sign-up/*" element={<SignUpPage />} />
-        <Route path="dashboard" element={<DashboardRoute />} />
+      </Route>
+
+      {/* Protected Routes (uses ProtectedLayout with NavigationMenu) */}
+      <Route element={<ProtectedLayout />}>
+        <Route path="dashboard" element={<DashboardPage />} />
 
         {/* Admin Routes */}
-        <Route path="admin" element={<SignedIn><AdminDashboard /></SignedIn>} />
-        <Route path="admin/users" element={<SignedIn><UserManagement /></SignedIn>} />
-        <Route path="admin/organizations" element={<SignedIn><OrganizationManagement /></SignedIn>} />
-        <Route path="admin/system" element={<SignedIn><SystemHealth /></SignedIn>} />
+        <Route path="admin" element={<AdminDashboard />} />
+        <Route path="admin/users" element={<UserManagement />} />
+        <Route path="admin/organizations" element={<OrganizationManagement />} />
+        <Route path="admin/system" element={<SystemHealth />} />
         {/* Temporarily disabled - BlogAdminEditor needs blogService functions implemented */}
-        {/* <Route path="admin/blog/new" element={<SignedIn><BlogAdminEditor /></SignedIn>} /> */}
-        {/* <Route path="admin/blog/:id/edit" element={<SignedIn><BlogAdminEditor /></SignedIn>} /> */}
+        {/* <Route path="admin/blog/new" element={<BlogAdminEditor />} /> */}
+        {/* <Route path="admin/blog/:id/edit" element={<BlogAdminEditor />} /> */}
 
         {/* Master Admin Portal Routes (Feature-Flagged) */}
-        <Route path="master-admin" element={<SignedIn><MasterAdminRoute><MasterAdminDashboard /></MasterAdminRoute></SignedIn>} />
-        <Route path="master-admin/activity" element={<SignedIn><MasterAdminRoute><ActivityTracker /></MasterAdminRoute></SignedIn>} />
-        <Route path="master-admin/prospects" element={<SignedIn><MasterAdminRoute><ProspectPipeline /></MasterAdminRoute></SignedIn>} />
-        <Route path="master-admin/campaigns" element={<SignedIn><MasterAdminRoute><CampaignManager /></MasterAdminRoute></SignedIn>} />
-        <Route path="master-admin/content" element={<SignedIn><MasterAdminRoute><ContentStudio /></MasterAdminRoute></SignedIn>} />
-        <Route path="master-admin/leads" element={<SignedIn><MasterAdminRoute><LeadCapture /></MasterAdminRoute></SignedIn>} />
-        <Route path="master-admin/collateral" element={<SignedIn><MasterAdminRoute><SalesCollateral /></MasterAdminRoute></SignedIn>} />
+        <Route path="master-admin" element={<MasterAdminRoute><MasterAdminDashboard /></MasterAdminRoute>} />
+        <Route path="master-admin/activity" element={<MasterAdminRoute><ActivityTracker /></MasterAdminRoute>} />
+        <Route path="master-admin/prospects" element={<MasterAdminRoute><ProspectPipeline /></MasterAdminRoute>} />
+        <Route path="master-admin/campaigns" element={<MasterAdminRoute><CampaignManager /></MasterAdminRoute>} />
+        <Route path="master-admin/content" element={<MasterAdminRoute><ContentStudio /></MasterAdminRoute>} />
+        <Route path="master-admin/leads" element={<MasterAdminRoute><LeadCapture /></MasterAdminRoute>} />
+        <Route path="master-admin/collateral" element={<MasterAdminRoute><SalesCollateral /></MasterAdminRoute>} />
 
         {/* Deal Routes */}
-        <Route path="deals" element={<SignedIn><DealPipeline /></SignedIn>} />
-        <Route path="deals/new" element={<SignedIn><NewDealPage /></SignedIn>} />
-        <Route path="deals/:dealId" element={<SignedIn><DealDetails /></SignedIn>} />
-        <Route path="deals/:dealId/data-room" element={<SignedIn><DataRoom /></SignedIn>} />
-        <Route path="deals/:dealId/documents" element={<SignedIn><DocumentRoomPage /></SignedIn>} />
-        <Route path="deals/:dealId/documents/:documentId/editor" element={<SignedIn><DocumentEditorRoute /></SignedIn>} />
-        <Route path="deals/:dealId/valuation" element={<SignedIn><ValuationSuite /></SignedIn>} />
-        <Route path="deals/:dealId/financial" element={<SignedIn><FinancialDashboardRoute /></SignedIn>} />
+        <Route path="deals" element={<DealPipeline />} />
+        <Route path="deals/new" element={<NewDealPage />} />
+        <Route path="deals/matching" element={<Suspense fallback={<RouteLoader />}><MatchingWorkspace /></Suspense>} />
+        <Route path="deals/:dealId" element={<DealDetails />} />
+        <Route path="deals/:dealId/data-room" element={<DataRoom />} />
+        <Route path="deals/:dealId/documents" element={<DocumentRoomPage />} />
+        <Route path="deals/:dealId/documents/:documentId/editor" element={<DocumentEditorRoute />} />
+        <Route path="deals/:dealId/valuation" element={<ValuationSuite />} />
+        <Route path="deals/:dealId/financial" element={<FinancialDashboardRoute />} />
+
+        {/* Task Management Routes */}
+        <Route path="tasks" element={<Suspense fallback={<RouteLoader />}><TaskBoard /></Suspense>} />
+
+        {/* Documents Workspace Routes */}
+        <Route path="documents" element={<Suspense fallback={<RouteLoader />}><DocumentWorkspace /></Suspense>} />
 
         {/* Podcast Routes */}
-        <Route path="podcast-studio" element={<SignedIn><Suspense fallback={<RouteLoader />}><PodcastStudio /></Suspense></SignedIn>} />
+        <Route path="podcast-studio" element={<Suspense fallback={<RouteLoader />}><PodcastStudio /></Suspense>} />
 
         {/* Event Routes */}
-        <Route path="events" element={<SignedIn><Suspense fallback={<RouteLoader />}><EventDashboard /></Suspense></SignedIn>} />
-        <Route path="events/new" element={<SignedIn><Suspense fallback={<RouteLoader />}><EventCreator /></Suspense></SignedIn>} />
-        <Route path="events/:eventId" element={<SignedIn><Suspense fallback={<RouteLoader />}><EventDetails /></Suspense></SignedIn>} />
+        <Route path="events" element={<Suspense fallback={<RouteLoader />}><EventDashboard /></Suspense>} />
+        <Route path="events/new" element={<Suspense fallback={<RouteLoader />}><EventCreator /></Suspense>} />
+        <Route path="events/:eventId" element={<Suspense fallback={<RouteLoader />}><EventDetails /></Suspense>} />
 
         {/* Community Routes */}
-        <Route path="community" element={<SignedIn><Suspense fallback={<RouteLoader />}><CommunityFeed /></Suspense></SignedIn>} />
+        <Route path="community" element={<Suspense fallback={<RouteLoader />}><CommunityFeed /></Suspense>} />
 
         {/* Billing & Subscription Routes */}
-        <Route path="dashboard/billing" element={<SignedIn><BillingDashboard /></SignedIn>} />
+        <Route path="dashboard/billing" element={<BillingDashboard />} />
+
+        {/* FP&A Module Routes (Feature-Gated) */}
+        <Route
+          path="fpa"
+          element={
+            <FeatureGate feature="fpa_module" requiredTier="professional">
+              <ExecutiveDashboard />
+            </FeatureGate>
+          }
+        />
+        <Route
+          path="fpa/demand-forecasting"
+          element={
+            <FeatureGate feature="fpa_module" requiredTier="professional">
+              <DemandForecasting />
+            </FeatureGate>
+          }
+        />
+        <Route
+          path="fpa/inventory"
+          element={
+            <FeatureGate feature="fpa_module" requiredTier="professional">
+              <InventoryManagement />
+            </FeatureGate>
+          }
+        />
+        <Route
+          path="fpa/production"
+          element={
+            <FeatureGate feature="fpa_module" requiredTier="professional">
+              <ProductionTracking />
+            </FeatureGate>
+          }
+        />
+        <Route
+          path="fpa/quality"
+          element={
+            <FeatureGate feature="fpa_module" requiredTier="professional">
+              <QualityControl />
+            </FeatureGate>
+          }
+        />
+        <Route
+          path="fpa/working-capital"
+          element={
+            <FeatureGate feature="fpa_module" requiredTier="professional">
+              <WorkingCapital />
+            </FeatureGate>
+          }
+        />
+        <Route
+          path="fpa/what-if"
+          element={
+            <FeatureGate feature="fpa_module" requiredTier="professional">
+              <WhatIfAnalysis />
+            </FeatureGate>
+          }
+        />
+        <Route
+          path="fpa/reports"
+          element={
+            <FeatureGate feature="fpa_module" requiredTier="professional">
+              <FinancialReports />
+            </FeatureGate>
+          }
+        />
+        <Route
+          path="fpa/import"
+          element={
+            <FeatureGate feature="fpa_module" requiredTier="professional">
+              <DataImport />
+            </FeatureGate>
+          }
+        />
+        <Route
+          path="fpa/admin"
+          element={
+            <FeatureGate feature="fpa_module" requiredTier="professional">
+              <AdminPanel />
+            </FeatureGate>
+          }
+        />
+
+        {/* Customer Portal Routes */}
+        <Route path="customer-portal" element={<CustomerPortalDashboard />} />
+        <Route path="customer-portal/account" element={<CustomerAccount />} />
+        <Route path="customer-portal/invoices" element={<CustomerInvoices />} />
+        <Route path="customer-portal/settings" element={<CustomerSettings />} />
 
         {/* Checkout Routes */}
-        <Route path="checkout/success" element={<SignedIn><CheckoutSuccess /></SignedIn>} />
+        <Route path="checkout/success" element={<CheckoutSuccess />} />
         <Route path="checkout/cancel" element={<CheckoutCancel />} />
       </Route>
 

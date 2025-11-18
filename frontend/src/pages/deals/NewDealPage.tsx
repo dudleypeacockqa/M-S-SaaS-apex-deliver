@@ -75,7 +75,30 @@ export const NewDealPage: React.FC = () => {
       // Navigate to the newly created deal's detail page
       navigate(`/deals/${createdDeal.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create deal');
+      // Provide more detailed error messages
+      let errorMessage = 'Failed to create deal';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+        
+        // Check for specific error types
+        if (err.message.includes('Unable to connect')) {
+          errorMessage = err.message;
+        } else if (err.message.includes('timeout')) {
+          errorMessage = 'Request timed out. Please check your connection and try again.';
+        } else if (err.message.includes('401') || err.message.includes('Unauthorized')) {
+          errorMessage = 'Authentication failed. Please sign in again.';
+        } else if (err.message.includes('403') || err.message.includes('Forbidden')) {
+          errorMessage = 'You do not have permission to create deals.';
+        } else if (err.message.includes('404')) {
+          errorMessage = 'API endpoint not found. Please contact support.';
+        } else if (err.message.includes('500') || err.message.includes('Internal Server Error')) {
+          errorMessage = 'Server error occurred. Please try again later.';
+        }
+      }
+      
+      setError(errorMessage);
+      console.error('Error creating deal:', err);
     } finally {
       setLoading(false);
     }

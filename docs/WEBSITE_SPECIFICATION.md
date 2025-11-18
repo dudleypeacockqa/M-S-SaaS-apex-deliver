@@ -701,7 +701,7 @@ pytest  # (if tests exist)
 ## Contact & Support
 
 **Developer:** Dudley Peacock  
-**Email:** dudley@apexdeliver.com  
+**Email:** dudley@financeflo.ai  
 **Calendar:** https://book.vimcal.com/p/dudleypeacock/requirements-planning-60-min-meet  
 **GitHub:** https://github.com/dudleypeacockqa
 

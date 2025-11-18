@@ -187,7 +187,7 @@ async function fetchWithAuth<T>(endpoint: string, options: FetchOptions = {}): P
 
     // Handle abort/timeout
     if (error instanceof Error && error.name === 'AbortError') {
-      throw new APIError('Request timeout', 408)
+      throw new APIError('Request timeout - the server took too long to respond', 408)
     }
 
     // Re-throw API errors
@@ -195,11 +195,21 @@ async function fetchWithAuth<T>(endpoint: string, options: FetchOptions = {}): P
       throw error
     }
 
-    // Handle network errors
-    throw new APIError(
-      error instanceof Error ? error.message : 'Network request failed',
-      0
-    )
+    // Handle network errors with more context
+    const errorMessage = error instanceof Error ? error.message : 'Network request failed'
+    
+    // Provide more helpful error messages
+    let userMessage = errorMessage
+    if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+      const apiUrl = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`
+      userMessage = `Unable to connect to the server. Please check:
+1. The API server is running (${API_BASE_URL})
+2. Your internet connection is working
+3. CORS is properly configured
+4. The endpoint is correct (${apiUrl})`
+    }
+    
+    throw new APIError(userMessage, 0)
   }
 }
 

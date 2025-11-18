@@ -1,6 +1,6 @@
 import { APP_LOGO, APP_TITLE } from "@/const";
 import { Linkedin, Twitter, Youtube } from "@/lib/icons";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 
 export default function MarketingFooter() {
   const currentYear = new Date().getFullYear();
@@ -18,9 +18,9 @@ export default function MarketingFooter() {
       { name: "Contact", href: "/contact" },
     ],
     legal: [
-      { name: "Privacy Policy", href: "/privacy" },
-      { name: "Terms of Service", href: "/terms" },
-      { name: "Cookie Policy", href: "/cookies" },
+      { name: "Privacy Policy", href: "/legal/privacy" },
+      { name: "Terms of Service", href: "/legal/terms" },
+      { name: "Cookie Policy", href: "/legal/cookies" },
       { name: "Security", href: "/security" },
     ],
   };
@@ -31,7 +31,7 @@ export default function MarketingFooter() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-3 mb-4">
+            <Link to="/" className="flex items-center gap-3 mb-4">
               <img src={APP_LOGO} alt={APP_TITLE} className="h-10 w-auto brightness-0 invert" />
               <span className="text-xl font-bold">{APP_TITLE}</span>
             </Link>
@@ -76,7 +76,7 @@ export default function MarketingFooter() {
               {footerLinks.product.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    to={link.href}
                     className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                   >
                     {link.name}
@@ -93,7 +93,7 @@ export default function MarketingFooter() {
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    to={link.href}
                     className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                   >
                     {link.name}
@@ -110,7 +110,7 @@ export default function MarketingFooter() {
               {footerLinks.legal.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    to={link.href}
                     className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                   >
                     {link.name}

@@ -57,7 +57,7 @@ export const DealCard: React.FC<DealCardProps> = ({
   }
 
   const formatCurrency = (value?: number) => {
-    if (!value) return 'N/A'
+    if (!value || Number.isNaN(value)) return 'N/A'
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',

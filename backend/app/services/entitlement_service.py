@@ -25,6 +25,9 @@ FEATURE_ENTITLEMENTS: Dict[str, List[str]] = {
     "data_room": ["starter", "professional", "premium", "enterprise"],
     "financial_intelligence": ["starter", "professional", "premium", "enterprise"],
 
+    # FP&A Module (CapLiquify FP&A tier and above)
+    "fpa_module": ["fpa_subscriber", "professional", "premium", "enterprise"],
+
     # Deal matching (Professional+) - DEV-018
     "deal_matching": ["professional", "premium", "enterprise"],
 
@@ -52,6 +55,7 @@ FEATURE_ENTITLEMENTS: Dict[str, List[str]] = {
 }
 
 FEATURE_UPGRADE_CTA: Dict[str, str] = {
+    "fpa_module": "/pricing",
     "deal_matching": "/pricing",
     "podcast_audio": "/pricing",
     "podcast_video": "/pricing",

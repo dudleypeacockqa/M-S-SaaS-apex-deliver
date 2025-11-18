@@ -10,7 +10,7 @@ export const AboutPage: React.FC = () => {
     name: 'Dudley Peacock',
     role: 'Founder & CEO',
     company: 'ApexDeliver Ltd',
-    email: 'dudley@apexdeliver.com',
+    email: 'dudley@financeflo.ai',
   });
 
   // Generate Organization schema

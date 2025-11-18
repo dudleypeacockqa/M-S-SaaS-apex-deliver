@@ -50,6 +50,7 @@ export const ValuationComparisonChart: React.FC<ValuationComparisonChartProps> =
   })
 
   const formatCurrency = (value: number) => {
+    if (Number.isNaN(value)) return 'N/A'
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency: 'GBP',
