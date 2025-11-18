@@ -3,8 +3,8 @@ import { Outlet } from 'react-router-dom'
 
 import type { ProtectedRouteProps } from '../components/auth/ProtectedRoute'
 import { ProtectedRoute } from '../components/auth/ProtectedRoute'
-import { Breadcrumbs } from '../components/layout/Breadcrumbs'
-import { NavigationMenu } from '../components/layout/NavigationMenu'
+import { SidebarNavigation } from '../components/layout/SidebarNavigation'
+import { AppHeader } from '../components/layout/AppHeader'
 
 interface ProtectedLayoutProps extends Pick<ProtectedRouteProps, 'requiredRole'> {
   children?: ReactNode
@@ -13,22 +13,19 @@ interface ProtectedLayoutProps extends Pick<ProtectedRouteProps, 'requiredRole'>
 export const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ requiredRole, children }) => {
   return (
     <ProtectedRoute requiredRole={requiredRole}>
-      <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#0f172a' }}>
-        <NavigationMenu />
-        <Breadcrumbs />
-        <section
-          aria-label="Protected workspace"
-          style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            padding: '2rem 1.5rem 3rem',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '2rem',
-          }}
-        >
-          {children ?? <Outlet />}
-        </section>
+      <div className="min-h-screen bg-slate-50">
+        <SidebarNavigation />
+        <div className="lg:pl-64">
+          <AppHeader />
+          <main className="min-h-[calc(100vh-4rem)]">
+            <section
+              aria-label="Protected workspace"
+              className="p-6 lg:p-8"
+            >
+              {children ?? <Outlet />}
+            </section>
+          </main>
+        </div>
       </div>
     </ProtectedRoute>
   )

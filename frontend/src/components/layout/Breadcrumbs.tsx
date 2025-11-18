@@ -42,31 +42,20 @@ export const Breadcrumbs: React.FC = () => {
   })
 
   return (
-    <nav aria-label="Breadcrumb" style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0' }}>
-      <ol
-        style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '0.75rem 1.5rem',
-          listStyle: 'none',
-          display: 'flex',
-          gap: '0.5rem',
-          flexWrap: 'wrap',
-          color: '#64748b',
-        }}
-      >
+    <nav aria-label="Breadcrumb">
+      <ol className="flex items-center gap-2 text-sm text-slate-600">
         <li>
-          <Link to="/" style={{ color: '#64748b', textDecoration: 'none' }}>
+          <Link to="/dashboard" className="hover:text-slate-900 transition-colors">
             Home
           </Link>
         </li>
         {crumbs.map((crumb) => (
-          <li key={crumb.path} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span aria-hidden="true">/</span>
+          <li key={crumb.path} className="flex items-center gap-2">
+            <span aria-hidden="true" className="text-slate-400">/</span>
             {crumb.isCurrent ? (
-              <span style={{ color: '#4f46e5', fontWeight: 600 }}>{crumb.label}</span>
+              <span className="text-indigo-600 font-semibold">{crumb.label}</span>
             ) : (
-              <Link to={crumb.path} style={{ color: '#64748b', textDecoration: 'none' }}>
+              <Link to={crumb.path} className="hover:text-slate-900 transition-colors">
                 {crumb.label}
               </Link>
             )}
