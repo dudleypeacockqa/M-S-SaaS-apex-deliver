@@ -45,7 +45,7 @@ class AdminGoal(Base):
     target_videos = Column(Integer, default=0)
     target_calls = Column(Integer, default=0)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=func.now(), nullable=False)
     
     # Relationships
     user = relationship("User", back_populates="admin_goals")
@@ -73,7 +73,7 @@ class AdminActivity(Base):
     notes = Column(Text)
     prospect_id = Column(Integer, ForeignKey("admin_prospects.id", ondelete="SET NULL"))
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=func.now(), nullable=False)
     
     # Relationships
     user = relationship("User", back_populates="admin_activities")
@@ -100,7 +100,7 @@ class AdminScore(Base):
     streak_days = Column(Integer, default=0)
     activities_count = Column(Integer, default=0)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=func.now(), nullable=False)
     
     # Relationships
     user = relationship("User", back_populates="admin_scores")
@@ -181,7 +181,7 @@ class AdminMeeting(Base):
     questions = Column(Text)
     follow_up_tasks = Column(Text)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=func.now(), nullable=False)
     
     # Relationships
     user = relationship("User", back_populates="admin_meetings")
@@ -218,7 +218,7 @@ class AdminProspect(Base):
     voice_notes_url = Column(Text)  # S3 URL for voice notes
     ghl_contact_id = Column(String(100))  # GoHighLevel contact ID
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=func.now(), nullable=False)
     last_contacted = Column(DateTime)
     
     # Relationships
@@ -254,7 +254,7 @@ class AdminDeal(Base):
     actual_close_date = Column(Date)
     notes = Column(Text)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=func.now(), nullable=False)
     
     # Relationships
     user = relationship("User", back_populates="admin_deals")
@@ -296,7 +296,7 @@ class AdminCampaign(Base):
     opened_count = Column(Integer, default=0)
     clicked_count = Column(Integer, default=0)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=func.now(), nullable=False)
     
     # Relationships
     user = relationship("User", back_populates="admin_campaigns")
@@ -370,7 +370,7 @@ class AdminContentPiece(Base):
     views_count = Column(Integer, default=0)
     published_at = Column(DateTime)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=func.now(), nullable=False)
     
     # Relationships
     user = relationship("User", back_populates="admin_content_pieces")
@@ -398,7 +398,7 @@ class AdminContentScript(Base):
     duration_minutes = Column(Integer)
     keywords = Column(Text)  # JSON array
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=func.now(), nullable=False)
     
     # Relationships
     user = relationship("User", back_populates="admin_content_scripts")
@@ -468,7 +468,7 @@ class AdminCollateral(Base):
     mime_type = Column(String(100))
     tags = Column(Text)  # JSON array
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=func.now(), nullable=False)
     
     # Relationships
     user = relationship("User", back_populates="admin_collateral")
@@ -525,7 +525,7 @@ class CampaignTemplate(Base):
     is_default = Column(Boolean, nullable=False, server_default='false')
     created_by = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     
     # Relationships
     organization = relationship("Organization")
@@ -595,7 +595,7 @@ class VoiceCall(Base):
     synthflow_call_id = Column(String(255), nullable=True)  # Synthflow API call ID
     synthflow_agent_id = Column(String(255), nullable=True)  # Synthflow agent ID
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     
     # Relationships
     organization = relationship("Organization")
@@ -630,7 +630,7 @@ class ConversationSession(Base):
     intent = Column(String(100), nullable=True)  # greeting, interested, objection, etc.
     qualification_data = Column(JSONB, nullable=True, server_default='{}')  # BANT data: budget, authority, need, timeline
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     
     # Relationships
     organization = relationship("Organization")
@@ -661,7 +661,7 @@ class Webhook(Base):
     headers = Column(JSONB, nullable=True, server_default='{}')  # Custom headers for webhook requests
     created_by = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     
     # Relationships
     organization = relationship("Organization")
