@@ -86,45 +86,24 @@ export default defineConfig({
       output: {
         manualChunks: (id) => {
           const normalizedId = id.replace(/\\/g, '/')
-          // Skip test files entirely
+          // Skip test files
           if (normalizedId.includes('.test.') || normalizedId.includes('.spec.') || normalizedId.includes('vitest')) {
             return undefined
           }
-          // Core React dependencies
+          // Keep all vendor code in main bundle - return undefined for node_modules
           if (normalizedId.includes('node_modules')) {
-            if (normalizedId.includes('react') || normalizedId.includes('react-dom') || normalizedId.includes('react-router')) {
-              return 'react-vendor'
-            }
-            if (normalizedId.includes('@clerk')) {
-              return 'clerk-vendor'
-            }
-            if (normalizedId.includes('@tanstack/react-query')) {
-              return 'react-query'
-            }
-            // Lucide icons - create dedicated chunk to ensure proper initialization
-            if (normalizedId.includes('lucide-react')) {
-              return 'lucide-vendor'
-            }
-            // Chart libraries (often large)
-            if (normalizedId.includes('recharts') || normalizedId.includes('chart.js') || normalizedId.includes('d3')) {
-              return 'charts-vendor'
-            }
-            // Other vendor code
-            return 'vendor'
+            return undefined
           }
-          // Split valuation suite into its own chunk (large component)
+          // Keep application code splitting for large feature modules
           if (normalizedId.includes('valuation/ValuationSuite')) {
             return 'valuation-suite'
           }
-          // Split podcast studio into its own chunk
           if (normalizedId.includes('podcast/PodcastStudio')) {
             return 'podcast-studio'
           }
-          // Split event components into their own chunk
           if (normalizedId.includes('events/')) {
             return 'events'
           }
-          // Split community into its own chunk
           if (normalizedId.includes('community/')) {
             return 'community'
           }
