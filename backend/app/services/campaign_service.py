@@ -458,7 +458,6 @@ def get_campaign_analytics(campaign_id: int, db: Session) -> Dict:
             CampaignActivity.campaign_id == campaign_id
         )
     )
-    )
     total_activities = activities_result.scalar() or 0
     
     return {

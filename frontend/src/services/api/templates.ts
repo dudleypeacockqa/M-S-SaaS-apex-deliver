@@ -59,34 +59,30 @@ export async function listTemplates(params?: {
   const queryParams = new URLSearchParams()
   if (params?.type) queryParams.append('type', params.type)
   if (params?.is_default !== undefined) queryParams.append('is_default', params.is_default.toString())
-  
-  const response = await apiClient.get(`/master-admin/templates?${queryParams.toString()}`)
-  return response.data
+
+  const query = queryParams.toString()
+  return apiClient.get<CampaignTemplateListResponse>(`/api/master-admin/templates${query ? `?${query}` : ''}`)
 }
 
 export async function getTemplate(templateId: number): Promise<CampaignTemplate> {
-  const response = await apiClient.get(`/master-admin/templates/${templateId}`)
-  return response.data
+  return apiClient.get<CampaignTemplate>(`/api/master-admin/templates/${templateId}`)
 }
 
 export async function createTemplate(template: CampaignTemplateCreate): Promise<CampaignTemplate> {
-  const response = await apiClient.post('/master-admin/templates', template)
-  return response.data
+  return apiClient.post<CampaignTemplate>('/api/master-admin/templates', template)
 }
 
 export async function updateTemplate(templateId: number, update: CampaignTemplateUpdate): Promise<CampaignTemplate> {
-  const response = await apiClient.put(`/master-admin/templates/${templateId}`, update)
-  return response.data
+  return apiClient.put<CampaignTemplate>(`/api/master-admin/templates/${templateId}`, update)
 }
 
 export async function deleteTemplate(templateId: number): Promise<void> {
-  await apiClient.delete(`/master-admin/templates/${templateId}`)
+  return apiClient.delete<void>(`/api/master-admin/templates/${templateId}`)
 }
 
 export async function renderTemplatePreview(templateId: number, contactData: Record<string, string>): Promise<TemplatePreviewResponse> {
-  const response = await apiClient.post(`/master-admin/templates/${templateId}/preview`, {
+  return apiClient.post<TemplatePreviewResponse>(`/api/master-admin/templates/${templateId}/preview`, {
     contact_data: contactData,
   })
-  return response.data
 }
 

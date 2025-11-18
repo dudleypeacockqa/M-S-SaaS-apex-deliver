@@ -55,22 +55,18 @@ export interface VoiceAgentCreate {
 
 // API Functions
 export async function createVoiceAgent(agent: VoiceAgentCreate): Promise<VoiceAgent> {
-  const response = await apiClient.post('/master-admin/voice/agents', agent)
-  return response.data
+  return apiClient.post<VoiceAgent>('/api/master-admin/voice/agents', agent)
 }
 
 export async function listVoiceAgents(): Promise<VoiceAgent[]> {
-  const response = await apiClient.get('/master-admin/voice/agents')
-  return response.data
+  return apiClient.get<VoiceAgent[]>(`/api/master-admin/voice/agents`)
 }
 
 export async function makeVoiceCall(call: VoiceCallCreate): Promise<VoiceCall> {
-  const response = await apiClient.post('/master-admin/voice/calls', call)
-  return response.data
+  return apiClient.post<VoiceCall>('/api/master-admin/voice/calls', call)
 }
 
 export async function getVoiceCallStatus(callId: number): Promise<VoiceCall> {
-  const response = await apiClient.get(`/master-admin/voice/calls/${callId}`)
-  return response.data
+  return apiClient.get<VoiceCall>(`/api/master-admin/voice/calls/${callId}`)
 }
 

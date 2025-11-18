@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 
-from app.api.dependencies.auth import get_current_user
+from app.api.dependencies.auth import get_current_master_admin_user
 from app.db.session import get_db
 from app.models.user import User
 from app.models.master_admin import CampaignTemplate
@@ -29,7 +29,7 @@ router = APIRouter(prefix="/master-admin/templates", tags=["templates"])
 @router.post("", response_model=CampaignTemplateResponse, status_code=status.HTTP_201_CREATED)
 def create_template(
     template_data: CampaignTemplateCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -65,7 +65,7 @@ def create_template(
 def list_templates(
     type_filter: Optional[str] = Query(None, alias="type"),
     is_default: Optional[bool] = Query(None),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -104,7 +104,7 @@ def list_templates(
 @router.get("/{template_id}", response_model=CampaignTemplateResponse)
 def get_template(
     template_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -141,7 +141,7 @@ def get_template(
 def update_template(
     template_id: int,
     template_update: CampaignTemplateUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -181,7 +181,7 @@ def update_template(
 @router.delete("/{template_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_template(
     template_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
