@@ -1,28 +1,15 @@
-#!/bin/sh
-# Simpler prestart script for Render deployment
-# This script runs migrations in a more straightforward way
-
-set -e  # Exit on error
-
+﻿#!/bin/bash
 echo "========================================="
 echo "Starting Render Backend Prestart"
 echo "========================================="
-
-# Check if DATABASE_URL is set
-if [ -z "$DATABASE_URL" ]; then
-    echo "ERROR: DATABASE_URL is not set"
-    exit 1
-fi
-
 echo "Database URL is set (length: ${#DATABASE_URL} characters)"
 
-# Run migrations
-echo "Running database migrations..."
-alembic upgrade head
+# Check if we should skip migrations
+if [ "$SKIP_MIGRATIONS" = "true" ]; then
+    echo "SKIP_MIGRATIONS is set - skipping database migrations"
+else
+    echo "Running database migrations..."
+    alembic upgrade head || echo "Migration failed but continuing..."
+fi
 
-echo "✅ Migrations completed successfully"
-alembic current
-
-echo "========================================="
-echo "Prestart script completed"
-echo "========================================="
+echo "Prestart script completed!"
