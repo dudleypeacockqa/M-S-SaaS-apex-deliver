@@ -99,3 +99,41 @@ class ChatRequest(BaseModel):
 class AIChatResponse(BaseModel):
     response: str
     context_used: List[str]
+
+
+class ScenarioVariables(BaseModel):
+    gaba_red_price: float = Field(default=30.0, ge=20, le=50)
+    gaba_black_price: float = Field(default=32.0, ge=20, le=50)
+    gaba_gold_price: float = Field(default=45.0, ge=30, le=70)
+    production_volume: float = Field(default=100.0, ge=50, le=150)
+    material_costs: float = Field(default=100.0, ge=70, le=130)
+    labor_efficiency: float = Field(default=100.0, ge=70, le=130)
+
+
+class ScenarioCalculationRequest(BaseModel):
+    variables: ScenarioVariables
+
+
+class ScenarioMetrics(BaseModel):
+    revenue: float
+    gross_margin: float
+    ebitda: float
+    ebitda_margin: float
+
+
+class ScenarioCalculationResponse(BaseModel):
+    metrics: ScenarioMetrics
+    baseline: Optional[ScenarioMetrics] = None
+
+
+class PredefinedScenario(BaseModel):
+    id: str
+    name: str
+    description: str
+    variables: ScenarioVariables
+    revenue_impact: float
+    ebitda_impact: float
+
+
+class ApplyScenarioRequest(BaseModel):
+    scenario_id: str
