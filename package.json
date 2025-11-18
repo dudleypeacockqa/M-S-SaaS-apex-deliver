@@ -1,0 +1,9 @@
+{
+  "name": "ma-saas-platform",
+  "private": true,
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@playwright/test": "^1.48.2"
+  }
+}

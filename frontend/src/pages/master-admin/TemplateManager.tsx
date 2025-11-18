@@ -189,9 +189,11 @@ export const TemplateManager: React.FC = () => {
               </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <label htmlFor="template-name" className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                   <input
                     type="text"
+                    id="template-name"
+                    name="template-name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -199,8 +201,9 @@ export const TemplateManager: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type *</label>
+                  <label htmlFor="template-type" className="block text-sm font-medium text-gray-700 mb-1">Type *</label>
                   <select
+                    id="template-type"
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -213,9 +216,11 @@ export const TemplateManager: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                  <label htmlFor="template-subject" className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
                   <input
                     type="text"
+                    id="template-subject"
+                    name="template-subject"
                     value={formData.subject || ''}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -223,8 +228,9 @@ export const TemplateManager: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Content *</label>
+                  <label htmlFor="template-content" className="block text-sm font-medium text-gray-700 mb-1">Content *</label>
                   <textarea
+                    id="template-content"
                     value={formData.content}
                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -232,7 +238,7 @@ export const TemplateManager: React.FC = () => {
                     required
                     placeholder="Hi {{first_name}}, welcome to {{company}}!"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Use {{variable_name}} for template variables</p>
+                  <p className="text-xs text-gray-500 mt-1">Use {'{{variable_name}}'} for template variables</p>
                 </div>
                 <div className="flex gap-3 pt-4 border-t border-gray-200">
                   <Button type="submit" variant="primary" loading={createTemplate.isPending || updateTemplate.isPending}>

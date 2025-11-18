@@ -6,9 +6,7 @@ API endpoints for webhook management and incoming webhook processing.
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import get_current_user
 from app.db.session import get_db
-from app.models.user import User
 from app.services import voice_service
 
 router = APIRouter(prefix="/webhooks", tags=["webhooks"])

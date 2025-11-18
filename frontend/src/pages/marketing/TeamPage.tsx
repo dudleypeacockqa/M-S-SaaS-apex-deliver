@@ -66,6 +66,14 @@ export const TeamPage: React.FC = () => {
         title="Team | ApexDeliver + CapLiquify"
         description="Meet the experts behind ApexDeliver + CapLiquify. Our world-class team combines decades of ERP expertise with cutting-edge AI innovation to deliver transformational results."
         keywords="ApexDeliver team, M&A experts, ERP specialists, finance technology team"
+        canonical="https://100daysandbeyond.com/team"
+        ogTitle="Meet the ApexDeliver Team"
+        ogDescription="A multidisciplinary leadership team with decades of ERP, finance, and AI experience supporting every client engagement."
+        ogUrl="https://100daysandbeyond.com/team"
+        ogImage="https://100daysandbeyond.com/assets/security-trust-visual.png"
+        twitterTitle="ApexDeliver Leadership Team"
+        twitterDescription="Get to know the ERP, finance, and AI experts guiding ApexDeliver + CapLiquify."
+        twitterImage="https://100daysandbeyond.com/assets/security-trust-visual.png"
       />
       <StructuredData json={teamStructuredData} id="team-schema" />
 

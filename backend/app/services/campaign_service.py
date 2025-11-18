@@ -294,7 +294,7 @@ def _execute_email_campaign(
             contact_id=prospect.id,
             activity_type="email_sent",
             status="sent",
-            metadata={"subject": subject},
+            activity_metadata={"subject": subject},
         )
         db.add(activity)
         
@@ -398,7 +398,7 @@ def track_activity(
         contact_id=contact_id,
         activity_type=activity_data["activity_type"],
         status=activity_data["status"],
-        metadata=activity_data.get("metadata", {}),
+        activity_metadata=activity_data.get("metadata", {}),
         ip_address=activity_data.get("ip_address"),
         user_agent=activity_data.get("user_agent"),
     )

@@ -106,13 +106,15 @@ def make_voice_call(
         raise ValueError("Phone number required for voice call")
     
     # Create voice call record
+    metadata = call_data.get("metadata") or {}
+
     voice_call = VoiceCall(
         organization_id=organization_id,
         campaign_id=campaign_id,
         contact_id=contact_id,
         phone_number=phone_number,
         status="queued",
-        metadata=call_data.get("metadata", {}),
+        call_metadata=metadata,
         synthflow_agent_id=call_data.get("agent_id"),
     )
     db.add(voice_call)
@@ -126,24 +128,24 @@ def make_voice_call(
         "Content-Type": "application/json",
     }
     
-    payload = {
-        "agent_id": call_data["agent_id"],
-        "phone_number": phone_number,
-        "metadata": {
-            "voice_call_id": voice_call.id,
-            "contact_id": contact_id,
-            "campaign_id": campaign_id,
-            **(call_data.get("metadata", {})),
-        },
-    }
+        payload = {
+            "agent_id": call_data["agent_id"],
+            "phone_number": phone_number,
+            "metadata": {
+                "voice_call_id": voice_call.id,
+                "contact_id": contact_id,
+                "campaign_id": campaign_id,
+                **metadata,
+            },
+        }
     
     try:
         response = requests.post(url, json=payload, headers=headers, timeout=30)
         
         if response.status_code != 201:
             voice_call.status = "failed"
-            voice_call.metadata = {
-                **(voice_call.metadata or {}),
+            voice_call.call_metadata = {
+                **(voice_call.call_metadata or {}),
                 "error": f"API error: {response.status_code} {response.text}",
             }
             db.commit()
@@ -157,8 +159,8 @@ def make_voice_call(
         
     except requests.RequestException as e:
         voice_call.status = "failed"
-        voice_call.metadata = {
-            **(voice_call.metadata or {}),
+        voice_call.call_metadata = {
+            **(voice_call.call_metadata or {}),
             "error": str(e),
         }
         db.commit()
@@ -205,8 +207,8 @@ def handle_voice_webhook(webhook_data: Dict, db: Session) -> Dict:
         voice_call.transcript = webhook_data.get("transcript")
     elif event == "call.failed":
         voice_call.status = "failed"
-        voice_call.metadata = {
-            **(voice_call.metadata or {}),
+        voice_call.call_metadata = {
+            **(voice_call.call_metadata or {}),
             "error": webhook_data.get("error_message"),
         }
     elif event == "call.cancelled":
@@ -214,8 +216,8 @@ def handle_voice_webhook(webhook_data: Dict, db: Session) -> Dict:
     
     # Update metadata
     if webhook_data.get("metadata"):
-        voice_call.metadata = {
-            **(voice_call.metadata or {}),
+        voice_call.call_metadata = {
+            **(voice_call.call_metadata or {}),
             **webhook_data.get("metadata", {}),
         }
     

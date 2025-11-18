@@ -1,5 +1,5 @@
 """Blog post model for marketing content."""
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from sqlalchemy import Column, String, Text, DateTime, Integer, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
@@ -24,8 +24,15 @@ class BlogPost(Base):
     featured_image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     published: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     published_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
     read_time_minutes: Mapped[int] = mapped_column(Integer, default=10, nullable=False)
     
     def __repr__(self) -> str:

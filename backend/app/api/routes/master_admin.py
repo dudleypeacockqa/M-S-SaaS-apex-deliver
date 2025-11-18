@@ -743,7 +743,7 @@ def update_deal(
 # Campaign Management Endpoints
 # ============================================================================
 
-@router.post("/campaigns", response_model=AdminCampaignResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/legacy/campaigns", response_model=AdminCampaignResponse, status_code=status.HTTP_201_CREATED)
 def create_campaign(
     campaign_data: AdminCampaignCreate,
     current_user: User = Depends(get_current_user),
@@ -756,7 +756,7 @@ def create_campaign(
     return campaign
 
 
-@router.get("/campaigns", response_model=AdminCampaignListResponse)
+@router.get("/legacy/campaigns", response_model=AdminCampaignListResponse)
 def list_campaigns(
     page: int = Query(1, ge=1),
     per_page: int = Query(50, ge=1, le=100),
@@ -785,7 +785,7 @@ def list_campaigns(
     }
 
 
-@router.get("/campaigns/{campaign_id}", response_model=AdminCampaignResponse)
+@router.get("/legacy/campaigns/{campaign_id}", response_model=AdminCampaignResponse)
 def get_campaign(
     campaign_id: int,
     current_user: User = Depends(get_current_user),
@@ -803,7 +803,7 @@ def get_campaign(
     return campaign
 
 
-@router.put("/campaigns/{campaign_id}", response_model=AdminCampaignResponse)
+@router.put("/legacy/campaigns/{campaign_id}", response_model=AdminCampaignResponse)
 def update_campaign(
     campaign_id: int,
     campaign_update: AdminCampaignUpdate,
@@ -824,7 +824,7 @@ def update_campaign(
     return updated_campaign
 
 
-@router.delete("/campaigns/{campaign_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/legacy/campaigns/{campaign_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_campaign(
     campaign_id: int,
     current_user: User = Depends(get_current_user),
@@ -844,7 +844,7 @@ def delete_campaign(
     return None
 
 
-@router.post("/campaigns/{campaign_id}/send", response_model=AdminCampaignResponse)
+@router.post("/legacy/campaigns/{campaign_id}/send", response_model=AdminCampaignResponse)
 def send_campaign(
     campaign_id: int,
     current_user: User = Depends(get_current_user),
@@ -865,7 +865,7 @@ def send_campaign(
 
 
 @router.post(
-    "/campaigns/{campaign_id}/recipients",
+    "/legacy/campaigns/{campaign_id}/recipients",
     response_model=AdminCampaignRecipientResponse,
     status_code=status.HTTP_201_CREATED,
 )
@@ -897,7 +897,7 @@ def add_campaign_recipient(
 
 
 @router.get(
-    "/campaigns/{campaign_id}/recipients",
+    "/legacy/campaigns/{campaign_id}/recipients",
     response_model=AdminCampaignRecipientListResponse,
 )
 def list_campaign_recipients(
@@ -920,7 +920,7 @@ def list_campaign_recipients(
 
 
 @router.put(
-    "/campaigns/{campaign_id}/recipients/{recipient_id}",
+    "/legacy/campaigns/{campaign_id}/recipients/{recipient_id}",
     response_model=AdminCampaignRecipientResponse,
 )
 def update_campaign_recipient(
@@ -955,7 +955,7 @@ def update_campaign_recipient(
 
 
 @router.delete(
-    "/campaigns/{campaign_id}/recipients/{recipient_id}",
+    "/legacy/campaigns/{campaign_id}/recipients/{recipient_id}",
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete_campaign_recipient(

@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 from app.api.dependencies.auth import get_current_master_admin_user
 from app.db.session import get_db
 from app.models.user import User
-from app.models.master_admin import VoiceCall
 from app.models.organization import Organization
 from sqlalchemy import select
 from app.schemas.master_admin import (
@@ -119,7 +118,7 @@ def make_voice_call(
 @router.get("/calls/{call_id}", response_model=VoiceCallResponse)
 def get_voice_call_status(
     call_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """

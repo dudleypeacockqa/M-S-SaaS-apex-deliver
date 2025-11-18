@@ -180,7 +180,7 @@ describe('CampaignManager', () => {
     await waitFor(() => {
       expect(getCampaignAnalytics).toHaveBeenCalledWith(7)
       expect(screen.getByText('Campaign Analytics')).toBeInTheDocument()
-      expect(screen.getByText(/60/)).toBeInTheDocument()
+      expect(screen.getByText(/33\.3%/)).toBeInTheDocument()
     })
   })
 })

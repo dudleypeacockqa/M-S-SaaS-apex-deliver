@@ -269,10 +269,16 @@ def require_feature(feature: str) -> Callable:
             return current_user
 
         # Check if user's organization has access to the feature
-        has_access = await check_feature_access(
-            current_user.organization_id,
-            feature
-        )
+        # Handle None organization_id (e.g., for master_admin or users without org)
+        if current_user.organization_id is None:
+            # Users without organization have no access (except master_admin who already bypassed)
+            has_access = False
+        else:
+            has_access = await check_feature_access(
+                current_user.organization_id,
+                feature,
+                user_role=current_user.role.value if current_user.role else None
+            )
 
         if not has_access:
             # Get required tier and upgrade message

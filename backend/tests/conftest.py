@@ -20,6 +20,26 @@ from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from _pytest.fixtures import FixtureLookupError
+from sqlalchemy.dialects.postgresql import JSONB, ARRAY, INET
+from sqlalchemy.ext.compiler import compiles
+
+
+@compiles(JSONB, "sqlite")
+def _jsonb_sqlite(element, compiler, **kwargs):
+    """Render JSONB columns as SQLite JSON for in-memory tests."""
+    return "JSON"
+
+
+@compiles(ARRAY, "sqlite")
+def _array_sqlite(element, compiler, **kwargs):
+    """Render ARRAY columns as SQLite TEXT (JSON encoded) for tests."""
+    return "TEXT"
+
+
+@compiles(INET, "sqlite")
+def _inet_sqlite(element, compiler, **kwargs):
+    """Render INET columns as TEXT for tests."""
+    return "TEXT"
 
 # Ensure repository and backend directories are on sys.path for "app" imports
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -54,6 +74,7 @@ os.environ.setdefault("CELERY_BROKER_URL", "memory://")
 os.environ.setdefault("CELERY_RESULT_BACKEND", "cache+memory://")
 os.environ.setdefault("CELERY_TASK_ALWAYS_EAGER", "true")
 os.environ.setdefault("CELERY_TASK_EAGER_PROPAGATES", "true")
+os.environ.setdefault("SYNTHFLOW_API_KEY", "sk_test_synthflow_dummy")
 
 from tests import path_safety  # pytest namespace package (PEP 420)
 

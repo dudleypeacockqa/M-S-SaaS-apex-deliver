@@ -525,7 +525,12 @@ class CampaignTemplate(Base):
     is_default = Column(Boolean, nullable=False, server_default='false')
     created_by = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
     
     # Relationships
     organization = relationship("Organization")
@@ -595,7 +600,12 @@ class VoiceCall(Base):
     synthflow_call_id = Column(String(255), nullable=True)  # Synthflow API call ID
     synthflow_agent_id = Column(String(255), nullable=True)  # Synthflow agent ID
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
     
     # Relationships
     organization = relationship("Organization")
@@ -630,7 +640,12 @@ class ConversationSession(Base):
     intent = Column(String(100), nullable=True)  # greeting, interested, objection, etc.
     qualification_data = Column(JSONB, nullable=True, server_default='{}')  # BANT data: budget, authority, need, timeline
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
     
     # Relationships
     organization = relationship("Organization")
@@ -661,7 +676,12 @@ class Webhook(Base):
     headers = Column(JSONB, nullable=True, server_default='{}')  # Custom headers for webhook requests
     created_by = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
     
     # Relationships
     organization = relationship("Organization")

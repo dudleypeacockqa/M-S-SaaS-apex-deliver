@@ -1,6 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'node:path'
+import dotenv from 'dotenv'
+
+// Load local env files before validating required keys
+['.env', '.env.local', '.env.production', '.env.production.local'].forEach(file => {
+  dotenv.config({ path: file, override: false })
+})
 
 const buildId =
   process.env.VITE_APP_BUILD_ID ||

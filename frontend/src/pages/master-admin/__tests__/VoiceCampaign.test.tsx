@@ -4,7 +4,7 @@
  * Tests for voice campaign UI following TDD principles.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
 import VoiceCampaign from '../VoiceCampaign'
@@ -27,6 +27,7 @@ describe('VoiceCampaign', () => {
         mutations: { retry: false },
       },
     })
+    vi.clearAllMocks()
   })
 
   const renderComponent = () => {
@@ -39,90 +40,108 @@ describe('VoiceCampaign', () => {
     )
   }
 
-  it('should create voice agent', async () => {
-    const { createVoiceAgent } = await import('@/services/api/voice')
+  it('renders existing voice agents', async () => {
+    const { listVoiceAgents } = await import('@/services/api/voice')
+    vi.mocked(listVoiceAgents).mockResolvedValue([
+      {
+        id: 'agent-123',
+        name: 'Sales Agent',
+        voice: 'alloy',
+        instructions: 'Sell stuff',
+        status: 'active',
+        personality: 'friendly',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ])
+
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByText('Sales Agent')).toBeInTheDocument()
+      expect(screen.getByText(/Voice: alloy/)).toBeInTheDocument()
+    })
+  })
+
+  it('creates a voice agent', async () => {
+    const { listVoiceAgents, createVoiceAgent } = await import('@/services/api/voice')
+    vi.mocked(listVoiceAgents).mockResolvedValue([])
     vi.mocked(createVoiceAgent).mockResolvedValue({
-      id: 'agent-123',
-      name: 'Sales Agent',
+      id: 'agent-999',
+      name: 'Demo Agent',
       voice: 'alloy',
+      instructions: 'Hello world',
       status: 'active',
+      personality: 'professional',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     })
 
     renderComponent()
 
-    // This will fail until we implement the component
-    // const createButton = screen.getByText('Create Agent')
-    // fireEvent.click(createButton)
-    // 
-    // const nameInput = screen.getByLabelText('Agent Name')
-    // fireEvent.change(nameInput, { target: { value: 'Sales Agent' } })
-    // 
-    // const submitButton = screen.getByText('Create')
-    // fireEvent.click(submitButton)
-    // 
-    // await waitFor(() => {
-    //   expect(createVoiceAgent).toHaveBeenCalled()
-    // })
+    fireEvent.click(screen.getByRole('button', { name: /create agent/i }))
+    fireEvent.change(screen.getByLabelText('Agent Name *'), { target: { value: 'Demo Agent' } })
+    fireEvent.change(screen.getByLabelText('Instructions *'), { target: { value: 'Hello world' } })
+    fireEvent.change(screen.getByLabelText('Personality'), { target: { value: 'professional' } })
 
-    expect(true).toBe(true) // Placeholder
+    const submitButtons = screen.getAllByRole('button', { name: /create agent/i })
+    fireEvent.click(submitButtons[submitButtons.length - 1])
+
+    await waitFor(() => {
+      expect(createVoiceAgent).toHaveBeenCalledWith({
+        name: 'Demo Agent',
+        voice: 'alloy',
+        instructions: 'Hello world',
+        personality: 'professional',
+      })
+    })
   })
 
-  it('should initiate voice call', async () => {
-    const { makeVoiceCall } = await import('@/services/api/voice')
+  it('makes a voice call and displays status updates', async () => {
+    const { listVoiceAgents, makeVoiceCall, getVoiceCallStatus } = await import('@/services/api/voice')
+    vi.mocked(listVoiceAgents).mockResolvedValue([])
     vi.mocked(makeVoiceCall).mockResolvedValue({
-      id: 1,
-      phone_number: '+1234567890',
+      id: 321,
+      organization_id: 'org',
+      contact_id: 5,
+      phone_number: '+15555555555',
       status: 'queued',
-      synthflow_call_id: 'call-123',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     })
-
-    renderComponent()
-
-    // This will fail until we implement the component
-    // const callButton = screen.getByText('Make Call')
-    // fireEvent.click(callButton)
-    // 
-    // await waitFor(() => {
-    //   expect(makeVoiceCall).toHaveBeenCalled()
-    // })
-
-    expect(true).toBe(true) // Placeholder
-  })
-
-  it('should display call status', async () => {
-    const { getVoiceCallStatus } = await import('@/services/api/voice')
     vi.mocked(getVoiceCallStatus).mockResolvedValue({
-      id: 1,
+      id: 321,
+      organization_id: 'org',
+      contact_id: 5,
+      phone_number: '+15555555555',
       status: 'in_progress',
-      duration: 60,
+      duration: 42,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     })
 
     renderComponent()
 
-    // This will fail until we implement the component
-    // await waitFor(() => {
-    //   expect(screen.getByText('in_progress')).toBeInTheDocument()
-    // })
+    fireEvent.click(screen.getByRole('button', { name: /make call/i }))
+    fireEvent.change(screen.getByLabelText('Agent ID *'), { target: { value: 'agent-123' } })
+    fireEvent.change(screen.getByLabelText('Phone Number *'), { target: { value: '+15555555555' } })
+    fireEvent.change(screen.getByLabelText('Contact ID *'), { target: { value: '5' } })
 
-    expect(true).toBe(true) // Placeholder
-  })
+    const submitButtons = screen.getAllByRole('button', { name: /make call/i })
+    fireEvent.click(submitButtons[submitButtons.length - 1])
 
-  it('should show conversation transcript', async () => {
-    const { getVoiceCallStatus } = await import('@/services/api/voice')
-    vi.mocked(getVoiceCallStatus).mockResolvedValue({
-      id: 1,
-      status: 'completed',
-      transcript: 'Hello, this is a test call.',
+    await waitFor(() => {
+      expect(makeVoiceCall).toHaveBeenCalledWith({
+        agent_id: 'agent-123',
+        phone_number: '+15555555555',
+        contact_id: 5,
+      })
     })
 
-    renderComponent()
-
-    // This will fail until we implement the component
-    // await waitFor(() => {
-    //   expect(screen.getByText('Hello, this is a test call.')).toBeInTheDocument()
-    // })
-
-    expect(true).toBe(true) // Placeholder
+    await waitFor(() => {
+      expect(getVoiceCallStatus).toHaveBeenCalledWith(321)
+      expect(screen.getByText(/in_progress/i)).toBeInTheDocument()
+    })
   })
 })
 

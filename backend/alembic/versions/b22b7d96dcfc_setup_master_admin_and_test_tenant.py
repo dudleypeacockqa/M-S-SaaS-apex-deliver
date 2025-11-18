@@ -35,13 +35,23 @@ def upgrade() -> None:
     # 1. Update dudley@qamarketing.com to master_admin role
     # Note: User must exist in database (created via Clerk webhook)
     # This will update the role if the user exists, otherwise do nothing
-    conn.execute(text("""
+    result = conn.execute(text("""
         UPDATE users 
         SET role = 'master_admin', 
             is_active = true,
             updated_at = :now
         WHERE email = 'dudley@qamarketing.com'
+        RETURNING id
     """), {"now": datetime.now(timezone.utc)})
+    
+    updated = result.fetchone()
+    if updated:
+        print("✅ Updated dudley@qamarketing.com to master_admin role")
+    else:
+        print("⚠️  User dudley@qamarketing.com not found - will be created via Clerk webhook")
+    
+    # Commit the update
+    conn.commit()
     
     # 2. Create test organization for dudley.peacock@icloud.com
     # Generate a UUID for the organization
@@ -68,6 +78,9 @@ def upgrade() -> None:
     else:
         test_org_id = org_exists[0]
         print(f"✅ Test organization already exists")
+    
+    # Commit the organization creation/update
+    conn.commit()
     
     # 3. Create/update dudley.peacock@icloud.com as admin in test org
     # First check if user exists
@@ -110,6 +123,9 @@ def upgrade() -> None:
             "now": datetime.now(timezone.utc)
         })
         print(f"⚠️  Created placeholder user for dudley.peacock@icloud.com - update with real Clerk ID")
+    
+    # Commit all changes
+    conn.commit()
 
 
 def downgrade() -> None:

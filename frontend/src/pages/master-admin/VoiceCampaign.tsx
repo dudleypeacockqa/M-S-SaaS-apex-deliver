@@ -140,9 +140,11 @@ export const VoiceCampaign: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Create Voice Agent</h2>
               <form onSubmit={handleCreateAgent} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Agent Name *</label>
+                  <label htmlFor="voice-agent-name" className="block text-sm font-medium text-gray-700 mb-1">Agent Name *</label>
                   <input
                     type="text"
+                    id="voice-agent-name"
+                    name="voice-agent-name"
                     value={agentFormData.name}
                     onChange={(e) => setAgentFormData({ ...agentFormData, name: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -150,8 +152,9 @@ export const VoiceCampaign: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Voice</label>
+                  <label htmlFor="voice-agent-voice" className="block text-sm font-medium text-gray-700 mb-1">Voice</label>
                   <select
+                    id="voice-agent-voice"
                     value={agentFormData.voice}
                     onChange={(e) => setAgentFormData({ ...agentFormData, voice: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -165,8 +168,9 @@ export const VoiceCampaign: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Instructions *</label>
+                  <label htmlFor="voice-agent-instructions" className="block text-sm font-medium text-gray-700 mb-1">Instructions *</label>
                   <textarea
+                    id="voice-agent-instructions"
                     value={agentFormData.instructions}
                     onChange={(e) => setAgentFormData({ ...agentFormData, instructions: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -176,9 +180,11 @@ export const VoiceCampaign: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Personality</label>
+                  <label htmlFor="voice-agent-personality" className="block text-sm font-medium text-gray-700 mb-1">Personality</label>
                   <input
                     type="text"
+                    id="voice-agent-personality"
+                    name="voice-agent-personality"
                     value={agentFormData.personality || ''}
                     onChange={(e) => setAgentFormData({ ...agentFormData, personality: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -208,9 +214,11 @@ export const VoiceCampaign: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Make Voice Call</h2>
               <form onSubmit={handleMakeCall} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Agent ID *</label>
+                  <label htmlFor="voice-call-agent-id" className="block text-sm font-medium text-gray-700 mb-1">Agent ID *</label>
                   <input
                     type="text"
+                    id="voice-call-agent-id"
+                    name="voice-call-agent-id"
                     value={callFormData.agent_id}
                     onChange={(e) => setCallFormData({ ...callFormData, agent_id: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -218,9 +226,11 @@ export const VoiceCampaign: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                  <label htmlFor="voice-call-phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
                   <input
                     type="tel"
+                    id="voice-call-phone"
+                    name="voice-call-phone"
                     value={callFormData.phone_number}
                     onChange={(e) => setCallFormData({ ...callFormData, phone_number: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -229,9 +239,11 @@ export const VoiceCampaign: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Contact ID *</label>
+                  <label htmlFor="voice-call-contact" className="block text-sm font-medium text-gray-700 mb-1">Contact ID *</label>
                   <input
                     type="number"
+                    id="voice-call-contact"
+                    name="voice-call-contact"
                     value={callFormData.contact_id || ''}
                     onChange={(e) => setCallFormData({ ...callFormData, contact_id: parseInt(e.target.value) })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"

@@ -1,0 +1,90 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#app-root"
+  - generic [ref=e3]:
+    - heading "100 Days & Beyond M&A Intelligence Platform" [level=1] [ref=e4]
+    - generic [ref=e6]:
+      - link "Skip to main content" [ref=e7] [cursor=pointer]:
+        - /url: "#main-content"
+      - navigation "Primary" [ref=e8]:
+        - generic [ref=e10]:
+          - link "ApexDeliver home" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e13]: ApexDeliver
+            - generic [ref=e14]: + CapLiquify
+          - generic [ref=e15]:
+            - button "Products" [ref=e17] [cursor=pointer]:
+              - text: Products
+              - img [ref=e18]
+            - button "Solutions" [ref=e21] [cursor=pointer]:
+              - text: Solutions
+              - img [ref=e22]
+            - button "Resources" [ref=e25] [cursor=pointer]:
+              - text: Resources
+              - img [ref=e26]
+            - button "Company" [ref=e29] [cursor=pointer]:
+              - text: Company
+              - img [ref=e30]
+            - link "Pricing" [ref=e33] [cursor=pointer]:
+              - /url: /pricing
+          - generic [ref=e34]:
+            - link "Sign In" [ref=e35] [cursor=pointer]:
+              - /url: /sign-in
+            - link "Start Free Trial" [ref=e36] [cursor=pointer]:
+              - /url: /sign-up
+      - main "Main content" [ref=e37]:
+        - generic [ref=e39]:
+          - heading "Insights & Strategies for M&A Success" [level=1] [ref=e40]
+          - paragraph [ref=e41]: Expert guidance on mergers, acquisitions, financial planning, and business transformation from the ApexDeliver team.
+        - generic [ref=e44]:
+          - button "All Posts" [ref=e45] [cursor=pointer]
+          - button "M&A Strategy" [ref=e46] [cursor=pointer]
+          - button "Financial Planning" [ref=e47] [cursor=pointer]
+          - button "Post-Merger Integration" [ref=e48] [cursor=pointer]
+          - button "Working Capital" [ref=e49] [cursor=pointer]
+          - button "Pricing Strategy" [ref=e50] [cursor=pointer]
+        - alert [ref=e54]: Unable to load blog posts. Please try again later.
+      - contentinfo [ref=e55]:
+        - generic [ref=e56]:
+          - generic [ref=e57]:
+            - generic [ref=e58]:
+              - heading "ApexDeliver" [level=3] [ref=e59]
+              - paragraph [ref=e60]: Professional M&A intelligence platform for dealmakers worldwide.
+            - generic [ref=e61]:
+              - heading "Product" [level=4] [ref=e62]
+              - list [ref=e63]:
+                - listitem [ref=e64]:
+                  - link "Features" [ref=e65] [cursor=pointer]:
+                    - /url: /features
+                - listitem [ref=e66]:
+                  - link "Pricing" [ref=e67] [cursor=pointer]:
+                    - /url: /pricing
+                - listitem [ref=e68]:
+                  - link "Get Started" [ref=e69] [cursor=pointer]:
+                    - /url: /sign-up
+            - generic [ref=e70]:
+              - heading "Company" [level=4] [ref=e71]
+              - list [ref=e72]:
+                - listitem [ref=e73]:
+                  - link "About Us" [ref=e74] [cursor=pointer]:
+                    - /url: /about
+                - listitem [ref=e75]:
+                  - link "Contact" [ref=e76] [cursor=pointer]:
+                    - /url: /contact
+            - generic [ref=e77]:
+              - heading "Legal" [level=4] [ref=e78]
+              - list [ref=e79]:
+                - listitem [ref=e80]:
+                  - link "Terms of Service" [ref=e81] [cursor=pointer]:
+                    - /url: /legal/terms
+                - listitem [ref=e82]:
+                  - link "Privacy Policy" [ref=e83] [cursor=pointer]:
+                    - /url: /legal/privacy
+                - listitem [ref=e84]:
+                  - link "Cookie Policy" [ref=e85] [cursor=pointer]:
+                    - /url: /legal/cookies
+          - paragraph [ref=e87]: © 2025 ApexDeliver. All rights reserved.
+```

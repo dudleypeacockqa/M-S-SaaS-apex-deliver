@@ -14,14 +14,14 @@ const renderLandingPage = async () => {
     </RouterWrapper>
   );
 
-  await screen.findByText(/Close Deals/i, undefined, { timeout: 10000 });
+  await screen.findAllByText(/Close Deals/i, undefined, { timeout: 10000 });
   return utils;
 };
 
 describe('EnhancedLandingPage', () => {
   it('renders without crashing', async () => {
     await renderLandingPage();
-    expect(screen.getByText(/Close Deals/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Close Deals/i).length).toBeGreaterThan(0);
   });
 
   it('renders EnhancedHeroSection', async () => {
@@ -64,6 +64,26 @@ describe('EnhancedLandingPage', () => {
     expect(screen.getByText(/A Feature for Every Stage of Your Growth Journey/i)).toBeInTheDocument();
   });
 
+  it('showcases the expanded platform map', async () => {
+    await renderLandingPage();
+    expect(screen.getAllByText(/Sales & Promotion Pricing Studio/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Events \+ Community Engine/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Enterprise Governance & Intelligence/i)).toBeInTheDocument();
+  });
+
+  it('highlights new launches and 100-day sprints', async () => {
+    await renderLandingPage();
+    expect(screen.getByText(/Event Management Hub/i)).toBeInTheDocument();
+    expect(screen.getByText(/Community \+ Podcast Network/i)).toBeInTheDocument();
+    expect(screen.getByText(/Sprint 01 - Visibility/i)).toBeInTheDocument();
+  });
+
+  it('covers persona-specific plays', async () => {
+    await renderLandingPage();
+    expect(screen.getByText(/Portfolio CFOs & Finance Leads/i)).toBeInTheDocument();
+    expect(screen.getByText(/Revenue & Commercial Ops/i)).toBeInTheDocument();
+  });
+
   it('renders Pricing Teaser section', async () => {
     await renderLandingPage();
     expect(screen.getByText(/Powerful, Transparent Pricing That Scales With You/i)).toBeInTheDocument();
@@ -79,7 +99,7 @@ describe('EnhancedLandingPage', () => {
 
   it('shows three-step workflow', async () => {
     await renderLandingPage();
-    expect(screen.getByText(/Land with CapLiquify/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Land with CapLiquify/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Expand to ApexDeliver/i)).toBeInTheDocument();
     expect(screen.getByText(/Grow Your Portfolio/i)).toBeInTheDocument();
   });

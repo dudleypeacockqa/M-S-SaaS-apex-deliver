@@ -4,8 +4,6 @@ Campaign API Routes
 API endpoints for campaign management.
 """
 from typing import Optional
-from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
@@ -241,7 +239,7 @@ def schedule_campaign(
 @router.post("/{campaign_id}/execute")
 def execute_campaign(
     campaign_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -262,7 +260,7 @@ def execute_campaign(
 @router.get("/{campaign_id}/analytics", response_model=CampaignAnalyticsResponse)
 def get_campaign_analytics(
     campaign_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -297,7 +295,7 @@ def get_campaign_activities(
     campaign_id: int,
     page: int = Query(1, ge=1),
     per_page: int = Query(50, ge=1, le=100),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """

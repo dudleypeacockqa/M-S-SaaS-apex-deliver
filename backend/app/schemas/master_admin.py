@@ -827,8 +827,9 @@ class VoiceCallResponse(VoiceCallBase):
     synthflow_agent_id: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+    metadata: Optional[dict] = Field(default=None, alias="call_metadata")
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class VoiceAgentCreate(BaseModel):
@@ -880,12 +881,12 @@ class CampaignActivityResponse(BaseModel):
     contact_id: int
     activity_type: str
     status: str
-    metadata: Optional[dict] = None
+    metadata: Optional[dict] = Field(default=None, alias="activity_metadata")
     ip_address: Optional[str] = None
     user_agent: Optional[str] = None
     created_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class CampaignActivityListResponse(BaseModel):

@@ -292,7 +292,7 @@ class TestTrackCampaignActivity:
         # assert activity.id is not None
         # assert activity.activity_type == "email_opened"
         # assert activity.status == "opened"
-        # assert activity.metadata["ip_address"] == "192.168.1.1"
+        # assert activity.activity_metadata["ip_address"] == "192.168.1.1"
         
         assert True
 

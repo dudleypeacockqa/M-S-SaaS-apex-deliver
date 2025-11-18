@@ -1,0 +1,143 @@
+
+Running 7 tests using 5 workers
+
+  ✓  4 [chromium] › tests\optin-popup.spec.ts:6:7 › Opt-in popup › allows visitors to subscribe to the newsletter (2.7s)
+  ✓  3 [chromium] › tests\contact-flow.spec.ts:6:7 › Contact flow › submits the marketing contact form (2.8s)
+  ✓  5 [chromium] › tests\seo-meta.spec.ts:13:9 › SEO meta › sets canonical + og:url for / (2.8s)
+  ✓  6 [chromium] › tests\seo-meta.spec.ts:13:9 › SEO meta › sets canonical + og:url for /contact (1.5s)
+  ✘  1 [chromium] › tests\integrations-link.spec.ts:6:7 › Integrations visibility › highlights iPaaS integrations on the pricing page (3.1s)
+  ✘  2 [chromium] › tests\blog-smoke.spec.ts:6:7 › Blog smoke › renders marketing blog listing with hero content (13.4s)
+  ✘  7 [chromium] › tests\seo-meta.spec.ts:13:9 › SEO meta › sets canonical + og:url for /team (12.1s)
+
+
+  1) [chromium] › tests\blog-smoke.spec.ts:6:7 › Blog smoke › renders marketing blog listing with hero content 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('textbox', { name: /search blog posts/i })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for getByRole('textbox', { name: /search blog posts/i })[22m
+
+
+      10 |
+      11 |     await expect(page.getByRole("heading", { name: /M&A Success/i })).toBeVisible();
+    > 12 |     await expect(page.getByRole('textbox', { name: /search blog posts/i })).toBeVisible();
+         |                                                                             ^
+      13 |   });
+      14 | });
+      15 |
+        at C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\tests\blog-smoke.spec.ts:12:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\blog-smoke-Blog-smoke-rend-d8e51-g-listing-with-hero-content-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\blog-smoke-Blog-smoke-rend-d8e51-g-listing-with-hero-content-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\blog-smoke-Blog-smoke-rend-d8e51-g-listing-with-hero-content-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\blog-smoke-Blog-smoke-rend-d8e51-g-listing-with-hero-content-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\blog-smoke-Blog-smoke-rend-d8e51-g-listing-with-hero-content-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\integrations-link.spec.ts:6:7 › Integrations visibility › highlights iPaaS integrations on the pricing page 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('link', { name: /Contact Sales/i })
+    Expected: visible
+    Error: strict mode violation: getByRole('link', { name: /Contact Sales/i }) resolved to 2 elements:
+        1) <a href="/contact" data-discover="true" data-testid="pricing-cta-enterprise" class="w-full bg-gray-100 text-indigo-900 border-2 border-indigo-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50">Contact Sales</a> aka getByTestId('pricing-cta-enterprise')
+        2) <a href="/contact" data-discover="true" data-testid="pricing-cta-community" class="w-full bg-gray-100 text-indigo-900 border-2 border-indigo-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50">Contact Sales</a> aka getByTestId('pricing-cta-community')
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for getByRole('link', { name: /Contact Sales/i })[22m
+
+
+      12 |     await integrationBenefit.scrollIntoViewIfNeeded();
+      13 |     await expect(integrationBenefit).toBeVisible();
+    > 14 |     await expect(page.getByRole('link', { name: /Contact Sales/i })).toBeVisible();
+         |                                                                      ^
+      15 |   });
+      16 | });
+      17 |
+        at C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\tests\integrations-link.spec.ts:14:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\integrations-link-Integrat-8f45a-rations-on-the-pricing-page-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\integrations-link-Integrat-8f45a-rations-on-the-pricing-page-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\integrations-link-Integrat-8f45a-rations-on-the-pricing-page-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\integrations-link-Integrat-8f45a-rations-on-the-pricing-page-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\integrations-link-Integrat-8f45a-rations-on-the-pricing-page-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests\seo-meta.spec.ts:13:9 › SEO meta › sets canonical + og:url for /team ───────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveAttribute[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('link[rel="canonical"]')
+    Expected: [32m"https://100daysandbeyond.com/[7mteam[27m"[39m
+    Received: [31m"https://100daysandbeyond.com/"[39m
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toHaveAttribute" with timeout 10000ms[22m
+    [2m  - waiting for locator('link[rel="canonical"]')[22m
+    [2m    13 × locator resolved to <link rel="canonical" href="https://100daysandbeyond.com/"/>[22m
+    [2m       - unexpected value "https://100daysandbeyond.com/"[22m
+
+
+      17 |
+      18 |       const canonical = page.locator('link[rel="canonical"]');
+    > 19 |       await expect(canonical).toHaveAttribute('href', pageConfig.canonical);
+         |                               ^
+      20 |
+      21 |       const ogUrl = page.locator('meta[property="og:url"]');
+      22 |       await expect(ogUrl).toHaveAttribute('content', pageConfig.canonical);
+        at C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\tests\seo-meta.spec.ts:19:31
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-team-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-team-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-team-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-team-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-team-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [chromium] › tests\blog-smoke.spec.ts:6:7 › Blog smoke › renders marketing blog listing with hero content 
+    [chromium] › tests\integrations-link.spec.ts:6:7 › Integrations visibility › highlights iPaaS integrations on the pricing page 
+    [chromium] › tests\seo-meta.spec.ts:13:9 › SEO meta › sets canonical + og:url for /team ────────
+  4 passed (21.2s)

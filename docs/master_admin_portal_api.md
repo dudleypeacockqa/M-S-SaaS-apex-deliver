@@ -60,11 +60,29 @@ All endpoints live under the /master-admin prefix, require Clerk authenticated u
 
 ## Campaigns
 - POST /master-admin/campaigns – Create a campaign via AdminCampaignCreate (name, campaign_type, status, scheduled_at, notes).
-- GET /master-admin/campaigns – Paginated campaigns with optional status filter; returns AdminCampaignListResponse.
+- GET /master-admin/campaigns – Paginated campaigns with optional status/type filters; returns AdminCampaignListResponse.
 - GET /master-admin/campaigns/{campaign_id} – Fetch campaign details and recipients.
 - PUT /master-admin/campaigns/{campaign_id} – Update scheduling, status, or template content.
 - DELETE /master-admin/campaigns/{campaign_id} – Remove a campaign and orphaned recipients.
-- POST /master-admin/campaigns/{campaign_id}/send – Trigger the send workflow; validates quotas before updating status.
+- POST /master-admin/campaigns/{campaign_id}/schedule – Store a future send timestamp.
+- POST /master-admin/campaigns/{campaign_id}/execute – Trigger the multi-channel execution workflow immediately; validates quotas before updating status.
+- GET /master-admin/campaigns/{campaign_id}/analytics – Return delivery/engagement metrics (open rate, click rate, activity counts).
+- GET /master-admin/campaigns/{campaign_id}/activities – Paginated log of tracked campaign events (email_opened, email_clicked, etc.).
+
+## Templates
+- POST /master-admin/templates – Create a reusable content template with CampaignTemplateCreate (name, type, subject, content, is_default).
+- GET /master-admin/templates – List templates scoped to the requester’s organization; supports type/is_default filters.
+- GET /master-admin/templates/{template_id} – Fetch a specific template.
+- PUT /master-admin/templates/{template_id} – Update template metadata/content via CampaignTemplateUpdate.
+- DELETE /master-admin/templates/{template_id} – Remove the template.
+- POST /master-admin/templates/{template_id}/preview – Render a template with contact_data using the template service’s variable substitution.
+
+## Voice Campaigns
+- POST /master-admin/voice/agents – Provision a Synthflow agent via VoiceAgentCreate (name, instructions, optional phone/webhook metadata).
+- GET /master-admin/voice/agents – List configured agents for the organization.
+- POST /master-admin/voice/calls – Initiate a voice call via VoiceCallCreate (agent_id, phone_number, contact_id, optional campaign_id/metadata).
+- GET /master-admin/voice/calls/{call_id} – Retrieve the latest status/transcript/duration for a call.
+- POST /webhooks/voice/incoming – Receive Synthflow webhook callbacks (call.started, call.completed, etc.) and persist updates.
 
 ## Content
 - POST /master-admin/content/scripts – Create a content script using AdminContentScriptCreate (title, script_body, distribution_channel).

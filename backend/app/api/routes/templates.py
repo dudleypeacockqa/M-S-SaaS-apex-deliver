@@ -215,7 +215,7 @@ def delete_template(
 def render_template_preview(
     template_id: int,
     preview_request: TemplatePreviewRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """

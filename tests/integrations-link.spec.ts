@@ -8,7 +8,9 @@ test.describe('Integrations visibility', () => {
     expect(response, 'pricing page should respond').toBeTruthy();
     expect(response?.ok()).toBeTruthy();
 
-    await expect(page.getByText('API Access & iPaaS Integrations')).toBeVisible();
+    const integrationBenefit = page.getByText('API Access & iPaaS Integrations');
+    await integrationBenefit.scrollIntoViewIfNeeded();
+    await expect(integrationBenefit).toBeVisible();
     await expect(page.getByRole('link', { name: /Contact Sales/i })).toBeVisible();
   });
 });

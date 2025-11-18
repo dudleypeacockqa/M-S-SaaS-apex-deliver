@@ -9,6 +9,6 @@ test.describe("Blog smoke", () => {
     expect(response?.ok()).toBeTruthy();
 
     await expect(page.getByRole("heading", { name: /M&A Success/i })).toBeVisible();
-    await expect(page.getByPlaceholder("Search articles by title or keyword...")).toBeVisible();
+    await expect(page.getByRole('textbox', { name: /search blog posts/i })).toBeVisible();
   });
 });
