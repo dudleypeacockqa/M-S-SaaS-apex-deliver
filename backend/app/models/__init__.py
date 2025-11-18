@@ -57,6 +57,7 @@ from .document_generation import (
     DocumentExportStatus,
     DocumentExportJob,
 )
+from .fpa import FpaForecast, FpaScenario, FpaReport
 from .event import (
     Event,
     EventTicket,
@@ -179,6 +180,9 @@ __all__ = [
     "DocumentStatus",
     "DocumentExportStatus",
     "DocumentExportJob",
+    "FpaForecast",
+    "FpaScenario",
+    "FpaReport",
     # Event Management
     "Event",
     "EventTicket",

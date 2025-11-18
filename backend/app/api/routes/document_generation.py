@@ -29,6 +29,8 @@ from app.services.document_generation_service import DocumentGenerationService
 from app.services.document_export_service import DocumentExportService
 from app.services.document_ai_service import DocumentAIService
 from app.services.storage_service import get_storage_service
+from app.tasks.document_exports import enqueue_export_processing
+from app.models.document import DocumentAccessLog
 from app.models.document_generation import (
     DocumentAISuggestion,
     DocumentVersion,
@@ -676,6 +678,15 @@ def list_document_versions(
         .order_by(desc(DocumentVersion.version_number))
     ).all()
 
+    # Resolve creator names in batch
+    creator_ids = {str(version.created_by_user_id) for version in versions if version.created_by_user_id}
+    creator_lookup: dict[str, str] = {}
+    if creator_ids:
+        users = db.scalars(select(User).where(User.id.in_(creator_ids))).all()
+        for creator in users:
+            full_name = " ".join(filter(None, [creator.first_name, creator.last_name])).strip()
+            creator_lookup[str(creator.id)] = full_name or creator.email or "Unknown User"
+
     # Convert to summary format
     summaries = []
     for version in versions:
@@ -683,7 +694,7 @@ def list_document_versions(
             id=version.id,
             label=version.label or f"v{version.version_number}",
             created_at=version.created_at,
-            created_by=None,  # TODO: Get user name from created_by_user_id
+            created_by=creator_lookup.get(str(version.created_by_user_id)),
             summary=version.summary,
         ))
 
@@ -794,16 +805,29 @@ def queue_export_job(
         options=export_request.options or {},
         status=DocumentExportStatus.QUEUED,
     )
-    
+
     db.add(export_job)
+    db.flush()
+
+    # Log export request for audit trail
+    audit_log = DocumentAccessLog(
+        document_id=document_id,
+        user_id=current_user.id,
+        action="export",
+        organization_id=current_user.organization_id,
+        metadata_json={
+            "format": export_request.format,
+            "job_id": str(export_job.id),
+        },
+    )
+    db.add(audit_log)
+
     db.commit()
     db.refresh(export_job)
 
-    # TODO: In production, trigger background task here (Celery/Redis)
-    # For now, process synchronously for tests
-    # In a real implementation, this would queue a Celery task
-    
-    # For test compatibility, return the job
+    # Trigger background processing (Celery eager in tests)
+    enqueue_export_processing(str(export_job.id))
+
     return ExportJobResponse(
         task_id=export_job.id,
         document_id=export_job.document_id,

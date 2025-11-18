@@ -15,6 +15,7 @@ from app.schemas.fpa import (
     ChatRequest,
     DashboardMetrics,
     DemandForecast,
+    DemandForecastCreate,
     ImportResponse,
     InventoryItem,
     PredefinedScenario,
@@ -25,7 +26,9 @@ from app.schemas.fpa import (
     ScenarioMetrics,
     ScenarioVariables,
     WhatIfScenario,
+    WhatIfScenarioCreate,
     WorkingCapitalAnalysis,
+    FpaReportResponse,
 )
 from app.services import entitlement_service, fpa_service
 
@@ -64,19 +67,24 @@ async def get_demand_forecasts(
 ):
     """Get demand forecasts."""
     await check_fpa_access(current_user)
-    return fpa_service.get_demand_forecasts()
+    return fpa_service.get_demand_forecasts(db, str(current_user.organization_id))
 
 
-@router.post("/demand-forecast")
+@router.post("/demand-forecast", response_model=DemandForecast, status_code=status.HTTP_201_CREATED)
 async def create_demand_forecast(
+    payload: DemandForecastCreate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Create a new demand forecast."""
     await check_fpa_access(current_user)
-    
-    # TODO: Implement demand forecast creation
-    raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Not yet implemented")
+
+    return fpa_service.create_demand_forecast(
+        db=db,
+        organization_id=str(current_user.organization_id),
+        user_id=str(current_user.id),
+        payload=payload,
+    )
 
 
 @router.get("/inventory", response_model=List[InventoryItem])
@@ -126,19 +134,24 @@ async def get_what_if_scenarios(
 ):
     """Get what-if analysis scenarios."""
     await check_fpa_access(current_user)
-    return fpa_service.get_what_if_scenarios()
+    return fpa_service.get_what_if_scenarios(db, str(current_user.organization_id))
 
 
-@router.post("/what-if")
+@router.post("/what-if", response_model=WhatIfScenario, status_code=status.HTTP_201_CREATED)
 async def create_what_if_scenario(
+    payload: WhatIfScenarioCreate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Create a new what-if scenario."""
     await check_fpa_access(current_user)
-    
-    # TODO: Implement scenario creation
-    raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Not yet implemented")
+
+    return fpa_service.create_what_if_scenario(
+        db=db,
+        organization_id=str(current_user.organization_id),
+        user_id=str(current_user.id),
+        payload=payload,
+    )
 
 
 @router.post("/what-if/calculate", response_model=ScenarioCalculationResponse)
@@ -294,7 +307,7 @@ async def apply_scenario(
     }
 
 
-@router.get("/reports/{report_type}")
+@router.get("/reports/{report_type}", response_model=FpaReportResponse)
 async def generate_report(
     report_type: str,
     current_user: User = Depends(get_current_user),
@@ -302,9 +315,13 @@ async def generate_report(
 ):
     """Generate a financial report."""
     await check_fpa_access(current_user)
-    
-    # TODO: Implement report generation
-    raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Not yet implemented")
+
+    return fpa_service.generate_report(
+        db=db,
+        organization_id=str(current_user.organization_id),
+        user_id=str(current_user.id),
+        report_type=report_type,
+    )
 
 
 @router.post("/import", response_model=ImportResponse)

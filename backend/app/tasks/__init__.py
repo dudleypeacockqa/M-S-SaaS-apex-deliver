@@ -22,6 +22,7 @@ from .pmi_notifications import (
     check_synergy_targets_task,
     check_day_one_readiness_task,
 )
+from .document_exports import enqueue_export_processing, process_document_export_job
 
 __all__ = [
     "enqueue_manual_rule_run",
@@ -38,4 +39,6 @@ __all__ = [
     "check_risk_escalations_task",
     "check_synergy_targets_task",
     "check_day_one_readiness_task",
+    "enqueue_export_processing",
+    "process_document_export_job",
 ]

@@ -6,10 +6,12 @@ Background tasks for campaign execution, email sending, and webhook delivery.
 from celery import shared_task
 from datetime import datetime
 from typing import Dict, List
+import asyncio
 
 from app.db.session import SessionLocal
 from app.services import campaign_service
 from app.models.user import User
+from app.services.email_service import send_email, render_template
 
 
 @shared_task(name="campaigns.execute_campaign")
@@ -80,18 +82,35 @@ def send_email_batch_task(emails: List[Dict]):
     Args:
         emails: List of email dictionaries with 'to', 'subject', 'content', etc.
     """
-    # This would integrate with your email service (SendGrid, AWS SES, etc.)
-    # For now, this is a placeholder
+    async def _deliver(payload: Dict) -> Dict[str, str]:
+        html_content = payload.get("html_content")
+        text_content = payload.get("text_content")
+
+        if not html_content and payload.get("template_name"):
+            rendered = await render_template(
+                template_name=payload["template_name"],
+                template_data=payload.get("template_data") or {},
+            )
+            html_content = rendered["html_content"]
+            text_content = rendered.get("text_content")
+
+        return await send_email(
+            to_email=payload["to"],
+            subject=payload["subject"],
+            html_content=html_content or "",
+            text_content=text_content,
+        )
+
     sent_count = 0
+    failures: List[str] = []
     for email in emails:
         try:
-            # TODO: Actually send email via email service
-            # send_email(email['to'], email['subject'], email['content'])
+            asyncio.run(_deliver(email))
             sent_count += 1
-        except Exception as e:
-            print(f"Error sending email to {email.get('to')}: {e}")
-    
-    return {"sent_count": sent_count, "total": len(emails)}
+        except Exception as exc:  # pragma: no cover - logged for observability
+            failures.append(f"{email.get('to')}: {exc}")
+
+    return {"sent_count": sent_count, "total": len(emails), "failures": failures}
 
 
 @shared_task(name="campaigns.update_campaign_analytics")

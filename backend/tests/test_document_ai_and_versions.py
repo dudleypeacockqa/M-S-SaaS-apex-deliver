@@ -37,7 +37,12 @@ class TestAISuggestionEndpoints:
     ):
         """Test fetching AI suggestions for a document"""
         org = create_organization(name="Template Org")
-        user = create_user(email="user@example.com", organization_id=str(org.id))
+        user = create_user(
+            email="user@example.com",
+            organization_id=str(org.id),
+            first_name="Alice",
+            last_name="Analyst",
+        )
 
         template = DocumentTemplate(
             name="Test Template",
@@ -252,6 +257,8 @@ class TestVersionHistoryEndpoints:
         assert len(data) >= 2
         assert any(v["label"] == "v1.0" for v in data)
         assert any(v["label"] == "v2.0" for v in data)
+        first_entry = next(v for v in data if v["label"] == "v1.0")
+        assert first_entry["created_by"] == "Alice Analyst"
 
 
     def test_restore_document_version(
