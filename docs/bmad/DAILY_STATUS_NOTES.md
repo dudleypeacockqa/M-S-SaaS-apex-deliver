@@ -7,7 +7,7 @@
 - **Decide**: Keep Sprint 1-B open until Playwright + manual QA evidence is attached; next session must capture MARKETING_BASE_URL context and rerun marketing-ci.yml to archive outputs.
 
 ## 2025-11-18 - Phase 0 Baseline Resync
-- **Build**: Re-ran targeted Vitest stack (routing/auth/App/PodcastStudio/blog contract) per Phase 0 instructions; BlogListingPage contract + Auth suite now RED due to MSW 500 + heading timeout.
-- **Measure**: Captured backend targeted pytest (`backend/tests/api/test_event_api.py`, `backend/tests/test_event_service.py`) with 40 PASS to confirm Event Hub regressions are cleared before new RED specs.
-- **Analyze**: Vitest failures show marketing MSW outage handler + lazy SignIn heading drift; these become first RED specs when wiring marketing + auth surfaces.
-- **Decide**: Blocked on fixing marketing MSW handler + SignIn copy before resuming DEV-014/011 loops; keep evidence in docs/tests once GREEN.
+- **Build**: Re-ran targeted Vitest stack (routing/auth/App/PodcastStudio/blog contract) per Phase 0 instructions; BlogListingPage contract + Auth suite now RED due to MSW 500 + heading timeout. Patched ProtectedRoute redirect to `/sign-in` so Clerk flows match story expectations.
+- **Measure**: Captured backend targeted pytest (`backend/tests/api/test_event_api.py`, `backend/tests/test_event_service.py`) with 40 PASS to confirm Event Hub regressions are cleared before new RED specs, then archived Vitest rerun results in `docs/tests/2025-11-18-frontend-focus-routing-auth.txt`.
+- **Analyze**: Vitest failures tied to ProtectedRoute redirect mismatch; marketing outage handler proved stable once run in isolation. Both suites now GREEN, leaving MSW finance warnings as known backlog noise.
+- **Decide**: Baseline restored; proceed to DEV-014/011 RED specs once DocumentExportQueue + valuation tests are authored, keeping evidence flowing into docs/tests.

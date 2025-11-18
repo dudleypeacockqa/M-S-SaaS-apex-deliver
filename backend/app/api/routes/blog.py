@@ -1,15 +1,33 @@
 """Blog API routes for marketing website."""
 
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select, desc, or_
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.models.blog_post import BlogPost
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 router = APIRouter(prefix="/blog", tags=["blog"])
+
+
+class BlogPostCreate(BaseModel):
+    """Schema for creating a new blog post."""
+    title: str = Field(..., min_length=1, max_length=255, description="Blog post title")
+    slug: str = Field(..., min_length=1, max_length=255, description="URL-friendly slug (must be unique)")
+    excerpt: str = Field(..., min_length=1, description="Short summary for listings")
+    content: str = Field(..., min_length=1, description="Full blog post content")
+    category: str = Field(..., min_length=1, max_length=100, description="Category name")
+    primary_keyword: str = Field(..., min_length=1, max_length=255, description="Main SEO keyword")
+    secondary_keywords: Optional[List[str]] = Field(None, description="Additional SEO keywords")
+    meta_description: str = Field(..., min_length=1, max_length=160, description="SEO meta description")
+    featured_image_url: Optional[str] = Field(None, max_length=500, description="Featured image URL")
+    author: str = Field(default="Dudley Peacock", max_length=100, description="Author name")
+    read_time_minutes: int = Field(default=10, ge=1, description="Estimated read time in minutes")
+    published: bool = Field(default=False, description="Publication status")
+    published_at: Optional[datetime] = Field(None, description="Publication timestamp")
 
 
 class BlogPostResponse(BaseModel):
@@ -149,3 +167,83 @@ def list_categories(db: Session = Depends(get_db)) -> List[str]:
     result = db.execute(query)
     categories = [row[0] for row in result.all()]
     return categories
+
+
+@router.post("", response_model=BlogPostResponse, status_code=status.HTTP_201_CREATED)
+def create_blog_post(
+    blog_post: BlogPostCreate,
+    db: Session = Depends(get_db),
+) -> BlogPostResponse:
+    """
+    Create a new blog post.
+    
+    - **title**: Blog post title
+    - **slug**: URL-friendly slug (must be unique)
+    - **excerpt**: Short summary for listings
+    - **content**: Full blog post content
+    - **category**: Category name
+    - **primary_keyword**: Main SEO keyword
+    - **secondary_keywords**: Additional SEO keywords (optional)
+    - **meta_description**: SEO meta description
+    - **featured_image_url**: Featured image URL (optional)
+    - **author**: Author name (default: "Dudley Peacock")
+    - **read_time_minutes**: Estimated read time (default: 10)
+    - **published**: Publication status (default: False)
+    - **published_at**: Publication timestamp (optional)
+    """
+    # Check if slug already exists
+    existing_post = db.execute(
+        select(BlogPost).where(BlogPost.slug == blog_post.slug)
+    ).scalar_one_or_none()
+    
+    if existing_post:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Blog post with slug '{blog_post.slug}' already exists"
+        )
+    
+    # Convert secondary_keywords list to comma-separated string
+    secondary_keywords_str = None
+    if blog_post.secondary_keywords:
+        secondary_keywords_str = ",".join(blog_post.secondary_keywords)
+    
+    # Create new blog post
+    db_post = BlogPost(
+        title=blog_post.title,
+        slug=blog_post.slug,
+        excerpt=blog_post.excerpt,
+        content=blog_post.content,
+        category=blog_post.category,
+        primary_keyword=blog_post.primary_keyword,
+        secondary_keywords=secondary_keywords_str,
+        meta_description=blog_post.meta_description,
+        featured_image_url=blog_post.featured_image_url,
+        author=blog_post.author,
+        read_time_minutes=blog_post.read_time_minutes,
+        published=blog_post.published,
+        published_at=blog_post.published_at,
+    )
+    
+    db.add(db_post)
+    db.commit()
+    db.refresh(db_post)
+    
+    # Return response
+    return BlogPostResponse(
+        id=db_post.id,
+        title=db_post.title,
+        slug=db_post.slug,
+        excerpt=db_post.excerpt,
+        content=db_post.content,
+        category=db_post.category,
+        primary_keyword=db_post.primary_keyword,
+        secondary_keywords=db_post.secondary_keywords.split(',') if db_post.secondary_keywords else [],
+        meta_description=db_post.meta_description,
+        featured_image_url=db_post.featured_image_url,
+        author=db_post.author,
+        read_time_minutes=db_post.read_time_minutes,
+        published=db_post.published,
+        published_at=db_post.published_at.isoformat() if db_post.published_at else None,
+        created_at=db_post.created_at.isoformat() if db_post.created_at else None,
+        updated_at=db_post.updated_at.isoformat() if db_post.updated_at else None,
+    )

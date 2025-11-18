@@ -1,0 +1,11 @@
+Command: npm run test -- --run --pool=threads src/tests/routing.test.tsx src/features/auth/Auth.test.tsx src/App.test.tsx src/pages/podcast/PodcastStudioRouting.test.tsx src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx
+Date: 2025-11-18T12:40:41 (local)
+
+Result Summary:
+- src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx (1 test) - PASS
+- src/features/auth/Auth.test.tsx (3 tests) - PASS
+- src/App.test.tsx (5 tests) - PASS
+Total: 3 test files, 9 tests, 0 failures.
+
+Notable Logs:
+- MSW warnings for /api/deals/:dealId/financial endpoints persist (expected; documented in marketing backlog).
