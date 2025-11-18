@@ -362,6 +362,40 @@ describe('ValuationSuite RED tests', () => {
     ).toBeInTheDocument()
   })
 
+  it('shows upgrade messaging when export is blocked by entitlement', async () => {
+    const user = userEvent.setup()
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
+      { id: 'val-upgrade', enterprise_value: 10500000, equity_value: 8000000, deal_id: 'deal-upgrade', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
+    ])
+    vi.mocked(valuationApi.triggerExport).mockRejectedValueOnce({
+      response: {
+        status: 403,
+        data: {
+          detail: {
+            message: 'Upgrade to the Growth Plan to export valuations.',
+            required_tier_label: 'Growth',
+            upgrade_cta_url: 'https://app.example.com/upgrade',
+          },
+        },
+      },
+    } as any)
+
+    renderSuite('/deals/deal-upgrade/valuations/val-upgrade')
+
+    await waitFor(() => expect(screen.getByText(/10,500,000/i)).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /exports/i }))
+    await user.click(screen.getByRole('button', { name: /queue export/i }))
+
+    await waitFor(() => expect(valuationApi.triggerExport).toHaveBeenCalled())
+    expect(
+      await screen.findByText(/upgrade to the growth plan to export valuations/i),
+    ).toBeInTheDocument()
+    expect(screen.getByText(/available on the growth plan/i)).toBeInTheDocument()
+    const upgradeLink = screen.getByRole('link', { name: /upgrade now/i })
+    expect(upgradeLink).toHaveAttribute('href', 'https://app.example.com/upgrade')
+    expect(upgradeLink).toHaveAttribute('target', '_blank')
+  })
+
   it('displays export template selector with PDF, DOCX, and HTML options', async () => {
     const user = userEvent.setup()
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([

@@ -5,7 +5,7 @@ Tests for campaign management service following TDD principles.
 Write tests first (RED), then implement service (GREEN).
 """
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch, MagicMock
 from sqlalchemy.orm import Session
 
@@ -19,6 +19,7 @@ from app.models.master_admin import (
 from app.models.enums import CampaignType, CampaignStatus
 from app.models.user import User
 from app.models.organization import Organization
+from app.services import campaign_service
 
 
 class TestCreateCampaign:
@@ -141,9 +142,9 @@ class TestScheduleCampaign:
 class TestExecuteCampaign:
     """Test campaign execution functionality."""
     
-    @patch('app.services.campaign_service.send_email')
-    def test_execute_email_campaign(self, mock_send_email, db: Session, test_user: User, test_org: Organization):
+    def test_execute_email_campaign(self, db: Session, test_user: User, test_org: Organization):
         """Test executing an email campaign."""
+        
         # Create prospects
         prospect1 = AdminProspect(
             user_id=str(test_user.id),
@@ -187,22 +188,26 @@ class TestExecuteCampaign:
         db.add_all([recipient1, recipient2])
         db.commit()
         
-        # Mock email sending
-        mock_send_email.return_value = {"message_id": "test-123", "status": "sent"}
-        
-        # This will fail until we implement the service
-        # from app.services.campaign_service import execute_campaign
-        # result = execute_campaign(campaign.id, test_user, db)
-        
-        # Assertions
-        # assert result["sent_count"] == 2
-        # assert mock_send_email.call_count == 2
-        # assert campaign.status == CampaignStatus.SENT
-        
-        assert True
+        # Mock Celery task - patch where it's imported
+        with patch('app.tasks.campaign_tasks.queue_campaign_email_task') as mock_task:
+            mock_task.delay = Mock(return_value=Mock(id="task-123"))
+            
+            # Execute campaign
+            result = campaign_service.execute_campaign(campaign.id, test_user, db)
+            
+            # Refresh campaign to get updated status
+            db.refresh(campaign)
+            db.refresh(recipient1)
+            db.refresh(recipient2)
+            
+            # Assertions
+            assert mock_task.delay.call_count == 2  # Called for each recipient
+            assert recipient1.sent is True
+            assert recipient2.sent is True
+            assert recipient1.sent_at is not None
+            assert recipient2.sent_at is not None
     
-    @patch('app.services.voice_service.make_synthflow_call')
-    def test_execute_voice_campaign(self, mock_make_call, db: Session, test_user: User, test_org: Organization):
+    def test_execute_voice_campaign(self, db: Session, test_user: User, test_org: Organization):
         """Test executing a voice campaign via Synthflow."""
         # Create prospect with phone
         prospect = AdminProspect(
@@ -228,21 +233,41 @@ class TestExecuteCampaign:
         db.commit()
         db.refresh(campaign)
         
-        # Mock voice call
-        mock_make_call.return_value = {
-            "call_id": "call-123",
-            "status": "queued",
-        }
+        # Add recipient
+        recipient = AdminCampaignRecipient(
+            campaign_id=campaign.id,
+            prospect_id=prospect.id,
+        )
+        db.add(recipient)
+        db.commit()
         
-        # This will fail until we implement the service
-        # from app.services.campaign_service import execute_campaign
-        # result = execute_campaign(campaign.id, test_user, db)
-        
-        # Assertions
-        # assert mock_make_call.called
-        # assert campaign.status == CampaignStatus.SENDING
-        
-        assert True
+        # Mock voice call service
+        with patch('app.services.voice_service.make_voice_call') as mock_make_call:
+            from app.models.master_admin import VoiceCall
+            from datetime import datetime, timezone
+            
+            # Create mock voice call return value
+            mock_voice_call = VoiceCall(
+                id=1,
+                organization_id=str(test_org.id),
+                phone_number=prospect.phone,
+                status="queued",
+                contact_id=prospect.id,
+                campaign_id=campaign.id,
+                created_at=datetime.now(timezone.utc),
+            )
+            mock_make_call.return_value = mock_voice_call
+            
+            # Execute campaign
+            result = campaign_service.execute_campaign(campaign.id, test_user, db)
+            
+            # Refresh to get updated status
+            db.refresh(campaign)
+            db.refresh(recipient)
+            
+            # Assertions
+            assert mock_make_call.called
+            assert recipient.sent is True
 
 
 class TestTrackCampaignActivity:

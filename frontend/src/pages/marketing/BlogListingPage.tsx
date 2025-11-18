@@ -8,6 +8,7 @@ export const BlogListingPage: React.FC = () => {
   const [posts, setPosts] = useState<BlogPostSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
   const categories = [
@@ -26,7 +27,20 @@ export const BlogListingPage: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await fetchBlogPosts();
+        
+        const params: { category?: string; search?: string; limit?: number } = {
+          limit: 100, // Get all posts
+        };
+        
+        if (selectedCategory !== 'all') {
+          params.category = selectedCategory;
+        }
+        
+        if (searchTerm.trim()) {
+          params.search = searchTerm.trim();
+        }
+        
+        const data = await fetchBlogPosts(params);
         if (!isActive) return;
         setPosts(data);
       } catch (err) {
@@ -41,16 +55,16 @@ export const BlogListingPage: React.FC = () => {
       }
     };
 
-    loadPosts();
+    // Debounce search to avoid too many API calls
+    const timeoutId = setTimeout(() => {
+      loadPosts();
+    }, searchTerm ? 300 : 0);
 
     return () => {
       isActive = false;
+      clearTimeout(timeoutId);
     };
-  }, []);
-
-  const filteredPosts = selectedCategory === 'all' 
-    ? posts 
-    : posts.filter(post => post.category.toLowerCase() === selectedCategory.toLowerCase());
+  }, [selectedCategory, searchTerm]);
 
   return (
     <MarketingLayout>
@@ -80,14 +94,67 @@ export const BlogListingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Category Filter */}
+      {/* Search and Category Filter */}
       <section className="py-8 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Search Bar */}
+          <div className="mb-6 max-w-2xl mx-auto">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search blog posts..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-3 pl-10 pr-4 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg
+                  className="w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                  aria-label="Clear search"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Category Filter */}
           <div className="flex flex-wrap gap-4 justify-center">
             {categories.map((category) => (
               <button
                 key={category}
-                onClick={() => setSelectedCategory(category === 'All Posts' ? 'all' : category)}
+                onClick={() => {
+                  setSelectedCategory(category === 'All Posts' ? 'all' : category);
+                  setSearchTerm(''); // Clear search when category changes
+                }}
                 className={`px-6 py-2 rounded-full font-semibold transition-all ${
                   (category === 'All Posts' && selectedCategory === 'all') ||
                   category.toLowerCase() === selectedCategory.toLowerCase()
@@ -115,15 +182,38 @@ export const BlogListingPage: React.FC = () => {
                 {error}
               </div>
             </div>
-          ) : filteredPosts.length === 0 ? (
+          ) : posts.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-4xl mb-4">📝</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">No posts yet</h3>
-              <p className="text-gray-600">Check back soon for expert insights on M&A and financial planning.</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                {searchTerm || selectedCategory !== 'all' 
+                  ? 'No posts found' 
+                  : 'No posts yet'}
+              </h3>
+              <p className="text-gray-600">
+                {searchTerm || selectedCategory !== 'all'
+                  ? 'Try adjusting your search or filter criteria.'
+                  : 'Check back soon for expert insights on M&A and financial planning.'}
+              </p>
+              {(searchTerm || selectedCategory !== 'all') && (
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSelectedCategory('all');
+                  }}
+                  className="mt-4 px-6 py-2 bg-indigo-900 text-white rounded-lg hover:bg-indigo-800 transition-colors"
+                >
+                  Clear Filters
+                </button>
+              )}
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredPosts.map((post) => (
+            <>
+              <div className="mb-4 text-center text-gray-600">
+                <p>Showing {posts.length} post{posts.length !== 1 ? 's' : ''}</p>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {posts.map((post) => (
                 <Link
                   key={post.id}
                   to={`/blog/${post.slug}`}
@@ -158,8 +248,9 @@ export const BlogListingPage: React.FC = () => {
                     </div>
                   </div>
                 </Link>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </section>

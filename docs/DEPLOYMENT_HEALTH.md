@@ -1,3 +1,40 @@
+> **2025-11-18 13:25 UTC (500 Error Fix Applied)**
+> - **Backend Blog API Fix**: ✅ COMPLETED
+>   - Added error handling to blog API endpoints (`backend/app/api/routes/blog.py`)
+>   - Blog endpoints now return 503 with helpful message instead of 500 when table missing
+>   - Enhanced `prestart.sh` to verify `blog_posts` table exists after migrations
+>   - Migration will run automatically on next deployment via `RENDER_PRESTART_RUN_MIGRATIONS=1`
+>   - Files changed: `backend/app/api/routes/blog.py`, `prestart.sh`
+> - **Custom Domain DNS Fix**: ⏳ DOCUMENTED
+>   - Frontend works on Render URL (`ma-saas-platform.onrender.com`) but not custom domain
+>   - Custom domain `100daysandbeyond.com` returns 500 via Cloudflare
+>   - Root cause: Cloudflare DNS not correctly routing to Render service
+>   - Fix documented in `docs/FIX_500_ERROR_2025-11-18.md` (requires manual Cloudflare DNS update)
+>   - Action required: Update Cloudflare DNS CNAME records to point to `ma-saas-platform.onrender.com`
+> - **Next Steps**: 
+>   1. Deploy backend changes (push to main, Render will auto-deploy)
+>   2. Monitor deployment logs for migration execution and table verification
+>   3. Update Cloudflare DNS per fix documentation
+>   4. Run verification scripts after deployment
+> - **Documentation**: See `docs/FIX_500_ERROR_2025-11-18.md` for complete fix details
+>
+> **2025-11-18 13:18 UTC (Blog & Domain Verification)**
+> - **Blog API Verification**: ❌ CRITICAL - blog_posts table missing in production
+>   - Backend health: ✅ Healthy (HTTP 200, all services configured)
+>   - Blog API endpoints: ❌ All returning HTTP 500 (GET /api/blog, /api/blog/categories/list, /api/blog/{slug})
+>   - Blog upload script: ❌ All 52 posts failed with HTTP 500
+>   - Root cause: Migration `9913803fac51` exists in codebase but not applied to production database
+>   - Evidence: `docs/deployments/2025-11-18-blog-verification.txt`
+>   - Action required: Apply migration via `alembic upgrade head` on production database, then re-run upload script
+> - **DNS & Custom Domain Verification**: ⚠️ PARTIAL - DNS works but frontend returns 500
+>   - DNS resolution: ✅ Working (100daysandbeyond.com resolves to Cloudflare IPs: 104.21.94.52, 172.67.219.210)
+>   - Cloudflare proxy: ✅ Active (orange cloud enabled)
+>   - SSL/TLS: ✅ Active (HTTPS works)
+>   - Custom domain: ❌ Returns HTTP 500 errors (https://100daysandbeyond.com, /blog)
+>   - Evidence: `docs/deployments/2025-11-18-dns-verification.txt`
+>   - Action required: Check Render frontend service logs for 500 error cause, verify custom domain configuration in Render dashboard
+> - **Verification Scripts**: `python scripts/verify_deployment.py` → 3/10 checks passed (backend health OK, blog/frontend 500 errors)
+>
 > **2025-11-13 10:22 UTC**
 > - Frontend service `srv-d3ihptbipnbc73e72ne0` manually redeployed via `python trigger_render_deploy.py --service srv-d3ihptbipnbc73e72ne0`; Render API responded `deployment triggered`.
 > - Immediately executed `python scripts/verify_deployment.py production` → 10/10 checks GREEN. Log archived at `docs/deployments/2025-11-13-verify-deployment.txt`.

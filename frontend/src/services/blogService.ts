@@ -12,7 +12,23 @@ export interface BlogPostSummary {
   featured_image_url?: string | null
 }
 
-export const fetchBlogPosts = async (): Promise<BlogPostSummary[]> => {
-  const response = await api.get<BlogPostSummary[]>('/blog')
+export interface FetchBlogPostsParams {
+  category?: string
+  search?: string
+  limit?: number
+  offset?: number
+}
+
+export const fetchBlogPosts = async (params?: FetchBlogPostsParams): Promise<BlogPostSummary[]> => {
+  const queryParams = new URLSearchParams()
+  if (params?.category) queryParams.append('category', params.category)
+  if (params?.search) queryParams.append('search', params.search)
+  if (params?.limit) queryParams.append('limit', params.limit.toString())
+  if (params?.offset) queryParams.append('offset', params.offset.toString())
+  
+  const queryString = queryParams.toString()
+  const endpoint = queryString ? `/blog?${queryString}` : '/blog'
+  
+  const response = await api.get<BlogPostSummary[]>(endpoint)
   return response.data
 }

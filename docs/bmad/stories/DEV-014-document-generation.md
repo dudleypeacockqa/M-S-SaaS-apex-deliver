@@ -39,6 +39,7 @@
 
 ## Evidence Update (2025-11-18)
 - ✅ DocumentExportQueue entitlement prompts now mirror backend detail, surfacing tier-specific messaging plus CTA links.
+- ✅ DocumentEditor integration spec verifies the queue panel receives the correct `documentId` + poll interval (see `docs/tests/2025-11-18-document-editor-export-integration.txt`).
 - ✅ Vitest coverage extended via `DocumentExportQueuePanel.test.tsx` with logs archived in `docs/tests/2025-11-18-frontend-document-export-queue-panel.txt`.
 - 🔄 Drives DEV-014 async export queue closer to the documented plan; next step is wiring DocumentEditor integration evidence.
 ## Completion Summary (2025-11-14)

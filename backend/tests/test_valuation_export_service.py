@@ -9,6 +9,7 @@ from unittest.mock import Mock, patch, MagicMock, AsyncMock
 from decimal import Decimal
 from uuid import uuid4
 
+from app.models.document import Document
 from app.models.valuation import ValuationModel, ValuationExportLog
 from app.services import valuation_service
 from app.services.valuation_export_service import ValuationExportService
@@ -369,6 +370,12 @@ class TestValuationExportService:
                 assert export_log.status == 'completed'
                 assert export_log.download_url is not None
                 assert export_log.file_size_bytes is not None
+                assert export_log.document_id is not None
+                document = db_session.get(Document, export_log.document_id)
+                assert document is not None
+                assert document.file_key == "test-file-key"
+                assert document.file_type == 'application/pdf'
+                assert document.deal_id == str(sample_valuation.deal_id)
                 assert result is not None
 
     @pytest.mark.asyncio

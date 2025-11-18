@@ -138,8 +138,15 @@ echo "Current directory: $(pwd)"
 echo "Python version: $(python3 --version 2>/dev/null || python --version 2>/dev/null || echo 'python unavailable')"
 echo "Target DB Host: ${DATABASE_URL}" | sed -E 's#://[^@]*@#://***@#'
 
+# Check SKIP_MIGRATIONS - if set, still run migrations but log it
+if [ "$SKIP_MIGRATIONS" = "true" ]; then
+  echo "[prestart] WARNING: SKIP_MIGRATIONS is set to 'true'"
+  echo "[prestart] However, RENDER_PRESTART_RUN_MIGRATIONS=1 is set, so migrations will run"
+  echo "[prestart] To fully skip migrations, unset both SKIP_MIGRATIONS and RENDER_PRESTART_RUN_MIGRATIONS"
+fi
+
 if [ "$RUN_MIGRATIONS" != "1" ]; then
-  echo "[prestart] Skipping migrations (handled inside backend/entrypoint.sh)."
+  echo "[prestart] Skipping migrations (RENDER_PRESTART_RUN_MIGRATIONS != 1)."
   echo "[prestart] Set RENDER_PRESTART_RUN_MIGRATIONS=1 to run prestart migrations."
   exit 0
 fi
@@ -243,6 +250,53 @@ if run_with_retry alembic_upgrade; then
     echo ""
     echo "Final migration status:"
     alembic current
+    echo ""
+    
+    # Verify critical tables exist
+    echo "Verifying critical database tables..."
+    python3 <<'PY'
+import os
+import sys
+from sqlalchemy import create_engine, text
+
+db_url = os.environ.get("DATABASE_URL")
+if not db_url:
+    print("⚠️  DATABASE_URL not set - skipping table verification")
+    sys.exit(0)
+
+try:
+    engine = create_engine(db_url)
+    with engine.connect() as conn:
+        # Check for blog_posts table
+        result = conn.execute(text(
+            "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'blog_posts')"
+        ))
+        blog_table_exists = result.scalar()
+        
+        if blog_table_exists:
+            print("✅ blog_posts table exists")
+        else:
+            print("⚠️  WARNING: blog_posts table does not exist!")
+            print("   This may cause blog API endpoints to return 500 errors.")
+            print("   Migration 9913803fac51 should create this table.")
+            print("   Check migration status with: alembic current")
+        
+        # Check for other critical tables
+        critical_tables = ['users', 'organizations', 'deals']
+        for table in critical_tables:
+            result = conn.execute(text(
+                f"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = '{table}')"
+            ))
+            exists = result.scalar()
+            if exists:
+                print(f"✅ {table} table exists")
+            else:
+                print(f"⚠️  WARNING: {table} table does not exist!")
+except Exception as e:
+    print(f"⚠️  Table verification failed: {e}")
+    print("   Proceeding anyway - application may have issues")
+PY
+    
     echo ""
     echo "========================================="
     echo "Prestart complete - ready to start application"

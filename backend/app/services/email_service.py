@@ -116,7 +116,7 @@ async def render_template(*, template_name: str, template_data: Dict[str, Any]) 
     }
 
 
-async def queue_email(
+def queue_email(
     *,
     db: Session,
     to_email: str,
@@ -124,7 +124,11 @@ async def queue_email(
     template_name: str,
     template_data: Dict[str, Any],
 ) -> Dict[str, Any]:
-    """Queue an email for asynchronous sending."""
+    """Queue an email for asynchronous sending.
+    
+    Note: This function is synchronous as it only performs database operations.
+    The actual email sending happens asynchronously via Celery tasks.
+    """
 
     queued_email = EmailQueue(
         to_email=to_email,

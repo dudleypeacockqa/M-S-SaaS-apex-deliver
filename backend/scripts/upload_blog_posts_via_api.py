@@ -8,7 +8,7 @@ import json
 import sys
 import requests
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Dict, Optional
 
 # Add backend directory to path
@@ -96,8 +96,8 @@ def upload_blog_posts() -> bool:
                 "featured_image_url": post_data.get('featured_image_url'),
                 "author": post_data.get('author', 'Dudley Peacock'),
                 "read_time_minutes": post_data.get('read_time_minutes', 10),
-                "published": post_data.get('published', False),
-                "published_at": published_at.isoformat() if published_at else None,
+                "published": post_data.get('published', True),  # Default to True so posts are visible
+                "published_at": published_at.isoformat() if published_at else datetime.now(timezone.utc).isoformat(),
             }
             
             # Remove None values for optional fields (but keep required ones)

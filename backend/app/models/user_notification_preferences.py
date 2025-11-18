@@ -35,6 +35,12 @@ class UserNotificationPreferences(Base):
     system_updates = Column(Boolean, nullable=False, default=True)
     security_alerts = Column(Boolean, nullable=False, default=True)
     
+    # PMI notifications
+    pmi_milestone_reminders = Column(Boolean, nullable=False, default=True)
+    pmi_risk_alerts = Column(Boolean, nullable=False, default=True)
+    pmi_synergy_alerts = Column(Boolean, nullable=False, default=True)
+    pmi_day_one_warnings = Column(Boolean, nullable=False, default=True)
+    
     # Timestamps
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)

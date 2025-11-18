@@ -147,7 +147,7 @@ def execute_campaign(
     
     # Update campaign status
     campaign.status = CampaignStatus.SENDING
-    campaign.started_at = datetime.utcnow()
+    campaign.started_at = datetime.now(timezone.utc)
     db.commit()
     
     # Get recipients
@@ -160,7 +160,7 @@ def execute_campaign(
     
     if not recipients:
         campaign.status = CampaignStatus.SENT
-        campaign.completed_at = datetime.utcnow()
+        campaign.completed_at = datetime.now(timezone.utc)
         db.commit()
         return {"sent_count": 0, "total_recipients": 0}
     
@@ -181,8 +181,8 @@ def execute_campaign(
     campaign.sent_count = sent_count
     campaign.total_recipients = len(recipients)
     campaign.status = CampaignStatus.SENT
-    campaign.sent_at = datetime.utcnow()
-    campaign.completed_at = datetime.utcnow()
+    campaign.sent_at = datetime.now(timezone.utc)
+    campaign.completed_at = datetime.now(timezone.utc)
     db.commit()
     
     # Integrate with LeadCapture: Create lead capture records for new contacts
@@ -291,30 +291,26 @@ def _execute_email_campaign(
         # Send email via email service (queue for async processing)
         if prospect.email:
             try:
-                import asyncio
-                from app.services.email_service import queue_email
+                # Use Celery task for email queuing (better for production)
+                from app.tasks.campaign_tasks import queue_campaign_email_task
                 
-                # Queue email for async sending
-                email_result = asyncio.run(
-                    queue_email(
-                        db=db,
-                        to_email=prospect.email,
-                        subject=subject,
-                        template_name="campaign_email",  # Default template
-                        template_data={
-                            "subject": subject,
-                            "content": content,
-                            "first_name": contact_data.get("first_name", ""),
-                            "last_name": contact_data.get("last_name", ""),
-                            "company": contact_data.get("company", ""),
-                        }
-                    )
+                # Queue email via Celery task
+                queue_campaign_email_task.delay(
+                    to_email=prospect.email,
+                    subject=subject,
+                    content=content,
+                    template_data={
+                        "subject": subject,
+                        "content": content,
+                        "first_name": contact_data.get("first_name", ""),
+                        "last_name": contact_data.get("last_name", ""),
+                        "company": contact_data.get("company", ""),
+                    }
                 )
                 
-                # Mark as sent if queued successfully
-                if email_result.get("status") == "queued":
-                    recipient.sent = True
-                    recipient.sent_at = datetime.utcnow()
+                # Mark as queued (will be marked as sent when email is actually sent)
+                recipient.sent = True
+                recipient.sent_at = datetime.now(timezone.utc)
             except Exception as e:
                 # Log error but continue with other recipients
                 print(f"Error queuing email for {prospect.email}: {e}")

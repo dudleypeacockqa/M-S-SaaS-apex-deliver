@@ -2,7 +2,9 @@
 
 ## Deployment & Health Snapshot
 - Backend FastAPI service (`/app/app/main.py`) is healthy per platform diagnostics; database, Clerk auth, and webhook configs are active (latest check 2025-11-18).
-- Frontend static build `ma-saas-platform.onrender.com` serves the current marketing + app bundle, but the custom domain `100daysandbeyond.com` is routed to a non-existent service (`ma-saas-frontend`); DNS/Cloudflare must be repointed to the working Render service.
+- Frontend static build `ma-saas-platform.onrender.com` serves the current marketing + app bundle and is working correctly (HTTP 200).
+- Custom domain `100daysandbeyond.com` returns 500 errors via Cloudflare; DNS needs to be updated to point CNAME records to `ma-saas-platform.onrender.com` (see `docs/FIX_500_ERROR_2025-11-18.md` for fix instructions).
+- Blog API endpoints now have improved error handling (return 503 instead of 500 when `blog_posts` table missing); migration `9913803fac51` will run automatically on next deployment.
 - BlogAdminEditor and related admin routes exist in code (`frontend/src/pages/admin/BlogAdminEditor.tsx`) but are not present in the deployed bundle, and the backend exposes read-only blog APIs (GET-only), so the 52-post import still requires a DB seed/migration.
 
 ## User Roles & Access Model
@@ -90,6 +92,7 @@ Sub-app for B2B2C partners: dashboard, account, invoices, settings. Currently ex
 - Admin editing capability exists in code (`frontend/src/pages/admin/BlogAdminEditor.tsx`) but deploy + backend write APIs pending (only GET endpoints exist per earlier investigation).
 
 ## Outstanding Gaps & Recommendations
-1. **Domain Routing:** Update Render custom domain settings or Cloudflare DNS so `100daysandbeyond.com` resolves to `ma-saas-platform.onrender.com`.
+1. **Domain Routing:** ⏳ IN PROGRESS - Update Cloudflare DNS CNAME records to point `100daysandbeyond.com` to `ma-saas-platform.onrender.com`. See `docs/FIX_500_ERROR_2025-11-18.md` for detailed instructions.
 2. **Blog Content Upload:** Either add POST endpoints under `/api/blog` or run the provided 52-post SQL/seed via backend tasks to populate the CMS.
 3. **Deployment Sync:** Ensure the latest frontend build (containing BlogAdminEditor + EnhancedLandingPage updates) is deployed once domain fix is complete.
+4. **Backend Deployment:** Push current changes to trigger automatic migration execution and verify `blog_posts` table creation.

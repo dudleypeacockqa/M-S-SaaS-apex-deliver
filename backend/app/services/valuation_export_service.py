@@ -57,6 +57,7 @@ except ImportError:
     TA_RIGHT = None  # type: ignore
     colors = None  # type: ignore
 
+from app.models.document import Document
 from app.services.valuation_service import get_valuation, list_comparable_companies, list_precedent_transactions, list_scenarios
 from app.services.storage_service import get_storage_service
 from app.core.config import get_settings
@@ -479,6 +480,67 @@ class ValuationExportService:
         return buffer.read()
 
     @staticmethod
+    @staticmethod
+    def _register_document_room_entry(
+        *,
+        db,
+        export_log,
+        export_result: Dict[str, Any],
+    ) -> Optional[Document]:
+        """Persist valuation exports into the document room once complete."""
+
+        if export_log.document_id:
+            return None
+
+        file_key = export_result.get('file_path')
+        if not file_key:
+            return None
+
+        valuation = get_valuation(
+            db=db,
+            valuation_id=export_log.valuation_id,
+            organization_id=export_log.organization_id,
+        )
+        if not valuation:
+            return None
+
+        uploader_id = export_log.exported_by or valuation.created_by
+        if not uploader_id:
+            return None
+
+        ext = 'pdf' if export_log.export_type == 'pdf' else 'xlsx'
+        timestamp = datetime.now(UTC).strftime('%Y%m%d-%H%M%S')
+        document_name = f"Valuation Export - {valuation.id}-{timestamp}.{ext}"
+
+        document = Document(
+            id=str(uuid.uuid4()),
+            name=document_name,
+            file_key=file_key,
+            file_size=export_result.get('file_size_bytes') or 0,
+            file_type=export_result.get('file_type') or (
+                'application/pdf'
+                if export_log.export_type == 'pdf'
+                else 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            ),
+            deal_id=str(valuation.deal_id),
+            folder_id=None,
+            organization_id=export_log.organization_id,
+            uploaded_by=uploader_id,
+            version=1,
+            parent_document_id=None,
+        )
+        document.created_at = datetime.now(UTC)
+        db.add(document)
+        db.commit()
+        db.refresh(document)
+
+        export_log.document_id = document.id
+        db.add(export_log)
+        db.commit()
+
+        return document
+
+    @staticmethod
     async def process_export_task(
         export_log_id: str,
         db,
@@ -533,6 +595,12 @@ class ValuationExportService:
             db.add(export_log)
             db.commit()
             db.refresh(export_log)
+
+            ValuationExportService._register_document_room_entry(
+                db=db,
+                export_log=export_log,
+                export_result=result,
+            )
 
             return result
 
