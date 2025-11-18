@@ -3,8 +3,6 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 import uuid
-from typing import Any, Dict
-
 from sqlalchemy import Column, DateTime, ForeignKey, JSON, Numeric, String, Text, Index
 
 from app.db.base import Base, GUID
