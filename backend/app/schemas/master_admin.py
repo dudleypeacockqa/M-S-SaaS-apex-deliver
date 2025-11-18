@@ -350,7 +350,11 @@ class AdminCampaignBase(BaseModel):
     status: CampaignStatus = Field(CampaignStatus.DRAFT, description="Campaign status")
     subject: Optional[str] = Field(None, max_length=500, description="Email subject or SMS preview")
     content: str = Field(..., min_length=1, description="Campaign content")
+    template_id: Optional[int] = Field(None, description="Template ID for this campaign")
+    settings: Optional[dict] = Field(None, description="Campaign-specific settings (JSON)")
     scheduled_at: Optional[datetime] = Field(None, description="Scheduled send time")
+    started_at: Optional[datetime] = Field(None, description="Campaign start time")
+    completed_at: Optional[datetime] = Field(None, description="Campaign completion time")
 
 
 class AdminCampaignCreate(AdminCampaignBase):
@@ -364,7 +368,11 @@ class AdminCampaignUpdate(BaseModel):
     status: Optional[CampaignStatus] = None
     subject: Optional[str] = Field(None, max_length=500)
     content: Optional[str] = Field(None, min_length=1)
+    template_id: Optional[int] = None
+    settings: Optional[dict] = None
     scheduled_at: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
 
 
 class AdminCampaignResponse(AdminCampaignBase):
@@ -380,6 +388,18 @@ class AdminCampaignResponse(AdminCampaignBase):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CampaignAnalyticsResponse(BaseModel):
+    """Schema for campaign analytics."""
+    total_recipients: int
+    sent_count: int
+    opened_count: int
+    clicked_count: int
+    open_rate: float
+    click_rate: float
+    click_to_open_rate: float
+    total_activities: int
 
 
 class AdminCampaignRecipientBase(BaseModel):
@@ -732,6 +752,145 @@ class AdminLeadCaptureListResponse(BaseModel):
 class AdminCollateralListResponse(BaseModel):
     """Schema for paginated list of sales collateral."""
     items: list[AdminCollateralResponse]
+    total: int
+    page: int
+    per_page: int
+
+
+# ============================================================================
+# Cold Outreach Hub Schemas
+# ============================================================================
+
+class CampaignTemplateBase(BaseModel):
+    """Base schema for campaign templates."""
+    name: str = Field(..., min_length=1, max_length=255)
+    subject: Optional[str] = Field(None, max_length=500)
+    content: str = Field(..., min_length=1)
+    type: str = Field(..., description="Template type: email, voice, linkedin, multi_channel")
+    variables: Optional[list[str]] = Field(None, description="List of template variables")
+    is_default: bool = Field(False, description="Is this the default template for this type")
+
+
+class CampaignTemplateCreate(CampaignTemplateBase):
+    """Schema for creating a template."""
+    pass
+
+
+class CampaignTemplateUpdate(BaseModel):
+    """Schema for updating a template."""
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    subject: Optional[str] = Field(None, max_length=500)
+    content: Optional[str] = Field(None, min_length=1)
+    type: Optional[str] = None
+    is_default: Optional[bool] = None
+
+
+class CampaignTemplateResponse(CampaignTemplateBase):
+    """Schema for template responses."""
+    id: int
+    organization_id: str
+    created_by: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CampaignTemplateListResponse(BaseModel):
+    """Schema for paginated list of templates."""
+    items: list[CampaignTemplateResponse]
+    total: int
+
+
+class TemplatePreviewRequest(BaseModel):
+    """Schema for template preview request."""
+    contact_data: dict = Field(..., description="Contact data for variable substitution")
+
+
+class TemplatePreviewResponse(BaseModel):
+    """Schema for template preview response."""
+    subject: str
+    content: str
+
+
+class VoiceCallBase(BaseModel):
+    """Base schema for voice calls."""
+    phone_number: str = Field(..., description="Phone number to call")
+    agent_id: Optional[str] = Field(None, description="Synthflow agent ID")
+    campaign_id: Optional[int] = Field(None, description="Campaign ID if part of campaign")
+    contact_id: int = Field(..., description="Contact/Prospect ID")
+    metadata: Optional[dict] = Field(None, description="Additional call metadata")
+
+
+class VoiceCallCreate(VoiceCallBase):
+    """Schema for creating a voice call."""
+    pass
+
+
+class VoiceCallResponse(VoiceCallBase):
+    """Schema for voice call responses."""
+    id: int
+    organization_id: str
+    status: str
+    duration: Optional[int] = None
+    recording_url: Optional[str] = None
+    transcript: Optional[str] = None
+    synthflow_call_id: Optional[str] = None
+    synthflow_agent_id: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class VoiceAgentCreate(BaseModel):
+    """Schema for creating a Synthflow agent."""
+    name: str = Field(..., min_length=1, max_length=100)
+    voice: Optional[str] = Field("alloy", description="Voice type")
+    personality: Optional[str] = Field(None, description="Agent personality")
+    instructions: str = Field(..., min_length=10, description="Agent instructions")
+    phone_number: Optional[str] = Field(None, description="Phone number for agent")
+    webhook_url: Optional[str] = Field(None, description="Webhook URL for call events")
+    max_call_duration: Optional[int] = Field(300, ge=60, le=3600, description="Max call duration in seconds")
+    language: Optional[str] = Field("en-US", description="Language code")
+
+
+class VoiceAgentResponse(BaseModel):
+    """Schema for Synthflow agent response."""
+    id: str
+    name: str
+    voice: str
+    personality: Optional[str] = None
+    instructions: str
+    status: str
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+
+class ScheduleCampaignRequest(BaseModel):
+    """Schema for scheduling a campaign."""
+    schedule_at: datetime = Field(..., description="When to execute the campaign")
+
+
+class CampaignActivityResponse(BaseModel):
+    """Schema for campaign activity responses."""
+    id: int
+    organization_id: str
+    campaign_id: int
+    contact_id: int
+    activity_type: str
+    status: str
+    metadata: Optional[dict] = None
+    ip_address: Optional[str] = None
+    user_agent: Optional[str] = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CampaignActivityListResponse(BaseModel):
+    """Schema for paginated list of campaign activities."""
+    items: list[CampaignActivityResponse]
     total: int
     page: int
     per_page: int
