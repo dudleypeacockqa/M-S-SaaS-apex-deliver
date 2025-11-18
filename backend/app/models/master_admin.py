@@ -18,6 +18,7 @@ from sqlalchemy import (
     Column, Integer, String, Text, Date, DateTime, Boolean, Numeric,
     ForeignKey, CheckConstraint, UniqueConstraint, Index, Enum
 )
+from sqlalchemy.dialects.postgresql import JSONB, ARRAY, INET
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
@@ -212,6 +213,7 @@ class AdminProspect(Base):
     status = Column(Enum(ProspectStatus), default=ProspectStatus.NEW)
     source = Column(String(100))  # networking, referral, inbound, etc.
     tags = Column(Text)  # JSON array of tags
+    custom_fields = Column(JSONB, nullable=True, server_default='{}')  # Custom fields for contact enrichment
     notes = Column(Text)
     voice_notes_url = Column(Text)  # S3 URL for voice notes
     ghl_contact_id = Column(String(100))  # GoHighLevel contact ID
@@ -223,6 +225,8 @@ class AdminProspect(Base):
     user = relationship("User", back_populates="admin_prospects")
     activities = relationship("AdminActivity", back_populates="prospect", cascade="all, delete-orphan")
     deals = relationship("AdminDeal", back_populates="prospect", cascade="all, delete-orphan")
+    campaign_activities = relationship("CampaignActivity", back_populates="contact", cascade="all, delete-orphan")
+    voice_calls = relationship("VoiceCall", back_populates="contact", cascade="all, delete-orphan")
     
     # Indexes
     __table_args__ = (
@@ -271,7 +275,7 @@ class AdminDeal(Base):
 # ============================================================================
 
 class AdminCampaign(Base):
-    """Email/SMS campaign management."""
+    """Email/SMS/Voice/LinkedIn campaign management."""
     __tablename__ = "admin_campaigns"
     
     id = Column(Integer, primary_key=True, index=True)
@@ -281,8 +285,12 @@ class AdminCampaign(Base):
     status = Column(Enum(CampaignStatus), default=CampaignStatus.DRAFT)
     subject = Column(String(500))  # Email subject or SMS preview
     content = Column(Text, nullable=False)
-    scheduled_at = Column(DateTime)
+    template_id = Column(Integer, ForeignKey("campaign_templates.id", ondelete="SET NULL"), nullable=True)
+    settings = Column(JSONB, nullable=True, server_default='{}')  # Campaign-specific settings
+    scheduled_at = Column(DateTime(timezone=True), nullable=True)
+    started_at = Column(DateTime(timezone=True), nullable=True)
     sent_at = Column(DateTime)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
     total_recipients = Column(Integer, default=0)
     sent_count = Column(Integer, default=0)
     opened_count = Column(Integer, default=0)
@@ -293,10 +301,15 @@ class AdminCampaign(Base):
     # Relationships
     user = relationship("User", back_populates="admin_campaigns")
     recipients = relationship("AdminCampaignRecipient", back_populates="campaign", cascade="all, delete-orphan")
+    template = relationship("CampaignTemplate", foreign_keys=[template_id])
+    activities = relationship("CampaignActivity", back_populates="campaign", cascade="all, delete-orphan")
+    voice_calls = relationship("VoiceCall", back_populates="campaign", cascade="all, delete-orphan")
     
     # Indexes
     __table_args__ = (
         Index("idx_admin_campaigns_user_status", "user_id", "status"),
+        Index("idx_admin_campaigns_template_id", "template_id"),
+        Index("idx_admin_campaigns_schedule_at", "schedule_at"),
     )
     
     def __repr__(self) -> str:
@@ -492,3 +505,208 @@ class AdminCollateralUsage(Base):
     
     def __repr__(self) -> str:
         return f"<AdminCollateralUsage(id={self.id}, collateral_id={self.collateral_id}, used_at={self.used_at})>"
+
+
+# ============================================================================
+# Cold Outreach Hub Models
+# ============================================================================
+
+class CampaignTemplate(Base):
+    """Reusable campaign templates with variable substitution."""
+    __tablename__ = "campaign_templates"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String(255), nullable=False)
+    subject = Column(String(500), nullable=True)
+    content = Column(Text, nullable=False)
+    type = Column(String(50), nullable=False)  # email, voice, linkedin, multi_channel
+    variables = Column(JSONB, nullable=True, server_default='[]')  # List of template variables like {{first_name}}
+    is_default = Column(Boolean, nullable=False, server_default='false')
+    created_by = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    organization = relationship("Organization")
+    creator = relationship("User")
+    campaigns = relationship("AdminCampaign", back_populates="template", foreign_keys="AdminCampaign.template_id")
+    
+    # Indexes
+    __table_args__ = (
+        Index("idx_campaign_templates_organization_id", "organization_id"),
+        Index("idx_campaign_templates_type", "type"),
+        Index("idx_campaign_templates_is_default", "is_default"),
+    )
+    
+    def __repr__(self) -> str:
+        return f"<CampaignTemplate(id={self.id}, name='{self.name}', type='{self.type}')>"
+
+
+class CampaignActivity(Base):
+    """Detailed campaign activity tracking."""
+    __tablename__ = "campaign_activities"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False)
+    campaign_id = Column(Integer, ForeignKey("admin_campaigns.id", ondelete="CASCADE"), nullable=False)
+    contact_id = Column(Integer, ForeignKey("admin_prospects.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    activity_type = Column(String(100), nullable=False)  # email_sent, email_opened, email_clicked, etc.
+    status = Column(String(50), nullable=False)  # pending, sent, delivered, opened, clicked, replied, bounced, failed
+    metadata = Column(JSONB, nullable=True, server_default='{}')  # Additional activity data
+    ip_address = Column(INET, nullable=True)
+    user_agent = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    organization = relationship("Organization")
+    campaign = relationship("AdminCampaign", back_populates="activities")
+    contact = relationship("AdminProspect", back_populates="campaign_activities")
+    user = relationship("User")
+    
+    # Indexes
+    __table_args__ = (
+        Index("idx_campaign_activities_organization_id", "organization_id"),
+        Index("idx_campaign_activities_campaign_id", "campaign_id"),
+        Index("idx_campaign_activities_contact_id", "contact_id"),
+        Index("idx_campaign_activities_activity_type", "activity_type"),
+        Index("idx_campaign_activities_created_at", "created_at"),
+    )
+    
+    def __repr__(self) -> str:
+        return f"<CampaignActivity(id={self.id}, activity_type='{self.activity_type}', status='{self.status}')>"
+
+
+class VoiceCall(Base):
+    """Voice call tracking for AI-powered outreach."""
+    __tablename__ = "voice_calls"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False)
+    campaign_id = Column(Integer, ForeignKey("admin_campaigns.id", ondelete="SET NULL"), nullable=True)
+    contact_id = Column(Integer, ForeignKey("admin_prospects.id", ondelete="CASCADE"), nullable=False)
+    phone_number = Column(String(50), nullable=False)
+    status = Column(String(50), nullable=False)  # queued, calling, in_progress, completed, failed, cancelled
+    duration = Column(Integer, nullable=True)  # Duration in seconds
+    recording_url = Column(Text, nullable=True)
+    transcript = Column(Text, nullable=True)
+    metadata = Column(JSONB, nullable=True, server_default='{}')  # Additional call metadata
+    synthflow_call_id = Column(String(255), nullable=True)  # Synthflow API call ID
+    synthflow_agent_id = Column(String(255), nullable=True)  # Synthflow agent ID
+    created_at = Column(DateTime(timezone=True), server_default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    organization = relationship("Organization")
+    campaign = relationship("AdminCampaign", back_populates="voice_calls")
+    contact = relationship("AdminProspect", back_populates="voice_calls")
+    conversation_session = relationship("ConversationSession", back_populates="voice_call", uselist=False)
+    
+    # Indexes
+    __table_args__ = (
+        Index("idx_voice_calls_organization_id", "organization_id"),
+        Index("idx_voice_calls_campaign_id", "campaign_id"),
+        Index("idx_voice_calls_contact_id", "contact_id"),
+        Index("idx_voice_calls_status", "status"),
+        Index("idx_voice_calls_synthflow_call_id", "synthflow_call_id"),
+    )
+    
+    def __repr__(self) -> str:
+        return f"<VoiceCall(id={self.id}, phone_number='{self.phone_number}', status='{self.status}')>"
+
+
+class ConversationSession(Base):
+    """AI conversation session tracking with lead qualification."""
+    __tablename__ = "conversation_sessions"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False)
+    voice_call_id = Column(Integer, ForeignKey("voice_calls.id", ondelete="SET NULL"), nullable=True)
+    session_id = Column(String(255), nullable=False, unique=True)
+    conversation_history = Column(JSONB, nullable=True, server_default='[]')  # Array of conversation messages
+    lead_score = Column(Integer, nullable=True)  # 0-100 BANT qualification score
+    sentiment = Column(String(50), nullable=True)  # positive, neutral, negative
+    intent = Column(String(100), nullable=True)  # greeting, interested, objection, etc.
+    qualification_data = Column(JSONB, nullable=True, server_default='{}')  # BANT data: budget, authority, need, timeline
+    created_at = Column(DateTime(timezone=True), server_default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    organization = relationship("Organization")
+    voice_call = relationship("VoiceCall", back_populates="conversation_session")
+    
+    # Indexes
+    __table_args__ = (
+        Index("idx_conversation_sessions_organization_id", "organization_id"),
+        Index("idx_conversation_sessions_voice_call_id", "voice_call_id"),
+        Index("idx_conversation_sessions_session_id", "session_id"),
+    )
+    
+    def __repr__(self) -> str:
+        return f"<ConversationSession(id={self.id}, session_id='{self.session_id}', lead_score={self.lead_score})>"
+
+
+class Webhook(Base):
+    """Webhook configuration for event-driven integrations."""
+    __tablename__ = "webhooks"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String(255), nullable=False)
+    url = Column(String(500), nullable=False)
+    events = Column(ARRAY(String), nullable=False)  # Array of event types to listen for
+    secret_key = Column(String(255), nullable=True)
+    is_active = Column(Boolean, nullable=False, server_default='true')
+    headers = Column(JSONB, nullable=True, server_default='{}')  # Custom headers for webhook requests
+    created_by = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    organization = relationship("Organization")
+    creator = relationship("User")
+    deliveries = relationship("WebhookDelivery", back_populates="webhook", cascade="all, delete-orphan")
+    
+    # Indexes
+    __table_args__ = (
+        Index("idx_webhooks_organization_id", "organization_id"),
+        Index("idx_webhooks_is_active", "is_active"),
+    )
+    
+    def __repr__(self) -> str:
+        return f"<Webhook(id={self.id}, name='{self.name}', url='{self.url}')>"
+
+
+class WebhookDelivery(Base):
+    """Webhook delivery tracking with retry logic."""
+    __tablename__ = "webhook_deliveries"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    webhook_id = Column(Integer, ForeignKey("webhooks.id", ondelete="CASCADE"), nullable=False)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False)
+    event_type = Column(String(100), nullable=False)
+    payload = Column(JSONB, nullable=False)
+    response_status = Column(Integer, nullable=True)
+    response_body = Column(Text, nullable=True)
+    response_headers = Column(JSONB, nullable=True)
+    error_message = Column(Text, nullable=True)
+    retry_count = Column(Integer, nullable=False, server_default='0')
+    next_retry_at = Column(DateTime(timezone=True), nullable=True)
+    delivered_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    webhook = relationship("Webhook", back_populates="deliveries")
+    organization = relationship("Organization")
+    
+    # Indexes
+    __table_args__ = (
+        Index("idx_webhook_deliveries_webhook_id", "webhook_id"),
+        Index("idx_webhook_deliveries_organization_id", "organization_id"),
+        Index("idx_webhook_deliveries_event_type", "event_type"),
+        Index("idx_webhook_deliveries_created_at", "created_at"),
+    )
+    
+    def __repr__(self) -> str:
+        return f"<WebhookDelivery(id={self.id}, webhook_id={self.webhook_id}, event_type='{self.event_type}')>"

@@ -85,6 +85,9 @@ class CampaignType(str, PyEnum):
     EMAIL = "email"
     SMS = "sms"
     MIXED = "mixed"
+    VOICE = "voice"
+    LINKEDIN = "linkedin"
+    MULTI_CHANNEL = "multi_channel"
 
 
 class CampaignStatus(str, PyEnum):
