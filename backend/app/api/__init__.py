@@ -1,9 +1,9 @@
 """API router definitions."""
 from fastapi import APIRouter
 
-from app.api.routes import auth, blog, community, dashboard, deal_matching, deals, documents, document_generation, events, event_payments, financial, fpa, marketing, master_admin, notifications, podcasts, pmi, subscriptions, tasks, valuation, pipeline_templates, campaigns, voice, templates, webhooks
+from app.api.routes import auth, blog, community, dashboard, deal_matching, deals, documents, document_generation, events, event_payments, financial, fpa, marketing, master_admin, notifications, podcasts, pmi, subscriptions, tasks, valuation, pipeline_templates, campaigns, voice, templates
 from app.api import document_sharing
-from app.api.webhooks import clerk
+from app.api.webhooks import clerk, voice as voice_webhooks
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(auth.router)
@@ -32,6 +32,6 @@ api_router.include_router(community.router)  # F-013: Community Platform - Full 
 api_router.include_router(campaigns.router)  # Cold Outreach Hub - Campaign Management
 api_router.include_router(voice.router)  # Cold Outreach Hub - Voice AI Integration
 api_router.include_router(templates.router)  # Cold Outreach Hub - Template Management
-api_router.include_router(webhooks.router)  # Cold Outreach Hub - Webhook Processing
+api_router.include_router(voice_webhooks.router)  # Cold Outreach Hub - Voice Webhook Processing
 
 

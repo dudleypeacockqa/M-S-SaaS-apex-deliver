@@ -25,7 +25,6 @@ from . import (
     templates,
     valuation,
     voice,
-    webhooks,
 )
 
 __all__ = [
@@ -53,5 +52,4 @@ __all__ = [
     "templates",
     "valuation",
     "voice",
-    "webhooks",
 ]

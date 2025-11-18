@@ -282,10 +282,41 @@ def _execute_email_campaign(
                 # Log error but continue
                 print(f"Error rendering template: {e}")
         
-        # TODO: Actually send email via email service
-        # For now, just mark as sent
-        recipient.sent = True
-        recipient.sent_at = datetime.utcnow()
+        # Send email via email service (queue for async processing)
+        if prospect.email:
+            try:
+                import asyncio
+                from app.services.email_service import queue_email
+                
+                # Queue email for async sending
+                email_result = asyncio.run(
+                    queue_email(
+                        db=db,
+                        to_email=prospect.email,
+                        subject=subject,
+                        template_name="campaign_email",  # Default template
+                        template_data={
+                            "subject": subject,
+                            "content": content,
+                            "first_name": contact_data.get("first_name", ""),
+                            "last_name": contact_data.get("last_name", ""),
+                            "company": contact_data.get("company", ""),
+                        }
+                    )
+                )
+                
+                # Mark as sent if queued successfully
+                if email_result.get("status") == "queued":
+                    recipient.sent = True
+                    recipient.sent_at = datetime.utcnow()
+            except Exception as e:
+                # Log error but continue with other recipients
+                print(f"Error queuing email for {prospect.email}: {e}")
+                # Mark as failed but don't stop campaign
+                recipient.sent = False
+        else:
+            # No email address, mark as skipped
+            recipient.sent = False
         
         # Track activity
         activity = CampaignActivity(

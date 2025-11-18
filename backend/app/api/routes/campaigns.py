@@ -9,6 +9,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 
 from app.api.dependencies.auth import get_current_master_admin_user
+
+# Legacy compatibility: some deployments still reference get_current_user
+# for these endpoints. Alias it to the stricter dependency so we fail safe.
+get_current_user = get_current_master_admin_user
 from app.db.session import get_db
 from app.models.user import User
 from app.models.master_admin import AdminCampaign, CampaignActivity

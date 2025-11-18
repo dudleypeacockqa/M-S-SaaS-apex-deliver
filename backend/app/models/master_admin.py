@@ -528,7 +528,7 @@ class CampaignTemplate(Base):
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=lambda: datetime.now(timezone.utc),
+        onupdate=func.now(),
         nullable=False,
     )
     
@@ -603,7 +603,7 @@ class VoiceCall(Base):
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=lambda: datetime.now(timezone.utc),
+        onupdate=func.now(),
         nullable=False,
     )
     
@@ -643,7 +643,7 @@ class ConversationSession(Base):
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=lambda: datetime.now(timezone.utc),
+        onupdate=func.now(),
         nullable=False,
     )
     
@@ -679,7 +679,7 @@ class Webhook(Base):
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=lambda: datetime.now(timezone.utc),
+        onupdate=func.now(),
         nullable=False,
     )
     

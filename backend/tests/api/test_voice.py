@@ -147,7 +147,7 @@ class TestVoiceWebhook:
     """Test POST /api/webhooks/voice/incoming endpoint."""
     
     @pytest.mark.asyncio
-    @patch('app.services.voice_service.handle_voice_webhook', return_value={"status": "processed"})
+    @patch('app.api.webhooks.voice.voice_service.handle_voice_webhook', return_value={"status": "processed"})
     async def test_voice_webhook(self, mock_handler, async_client: AsyncClient, db_session):
         """Test processing incoming voice webhook."""
         webhook_data = {
