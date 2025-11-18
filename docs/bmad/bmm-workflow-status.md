@@ -1,11 +1,11 @@
 
 # BMM Workflow Status
 
-**Status**: ✅ COMPLETE — All features implemented and tested | Updated 2025-11-17T17:45Z (100% test pass rate achieved, final QA + marketing website implementation remaining)
-**Release Target**: v1.0.0 (Ready for final QA)
-**Current Version**: v1.0.0-rc1 (All core features complete)
-**Test Pass Rate**: Backend 814/814 PASS (100%) ✅ · Frontend 1,742/1,742 PASS (100%) ✅ · Master Admin 91/91 PASS (100%) ✅
-**Execution Plan**: Phases 1–3 COMPLETE; Phase 4 (Final QA + Marketing) in progress per `COMPLETION-PLAN-2025-11-17.md`
+**Status**: ⚠️ IN PROGRESS — Suites are green but final QA, Playwright evidence, and marketing deliverables remain
+**Release Target**: v1.0.0 (Final QA + marketing smoke sign-off)
+**Current Version**: v1.0.0-rc1 (Core features code-complete)
+**Test Pass Rate (2025-11-17)**: Backend 1,432/1,432 PASS (100%) ✅ · Frontend 1,742/1,742 PASS (100%) ✅ · Master Admin 91/91 PASS (100%) ✅
+**Execution Plan**: Phases 1–3 COMPLETE; Phase 4 (Final QA + Marketing) and BMAD Decide evidence in progress per `COMPLETION-PLAN-2025-11-17.md`
 
 ## Project Configuration
 
@@ -34,31 +34,32 @@ PHASE_7_MARKETING_WEBSITE: ⏳ PENDING (To be implemented in this repo)
 ## Current Story Status
 
 STORY_ID: Final-Completion-2025-11-17
-STORY_STATUS: ✅ COMPLETE (Core Platform) + ⚠️ IN PROGRESS (Final QA + Marketing)
-STORY_RESULT: All 13 core features (F-001 through F-013) implemented and tested with 100% pass rate. Master Admin Portal complete with 7 features and 91 tests passing. F-010 BlogAdminEditor component created with TDD approach, routes integrated, and deployed (commit 95a2bbd). Production deployment healthy on Render. Remaining work: Manual QA of Master Admin Portal, performance audits, and marketing website implementation.
+STORY_STATUS: ⚠️ IN PROGRESS (Evidence + release blockers outstanding)
+STORY_RESULT: All 13 core features (F-001 through F-013) implemented with green automated suites. Manual QA, Playwright smoke coverage, and documentation proof remain before calling the story done.
 COMPLETED:
-- ✅ Backend: 814/814 tests passing (100%), 84% coverage
+- ✅ Backend: 1,432/1,432 tests passing (100%), 84% coverage, 55 intentional skips captured in log
 - ✅ Frontend: 1,742/1,742 tests passing (100%), 85.1% coverage
 - ✅ Master Admin: 91/91 tests passing (100%)
 - ✅ F-010 BlogAdminEditor: Component, tests, and routes complete (commit 95a2bbd)
 - ✅ Production: Both services deployed and healthy
 REMAINING:
-- ⏳ Manual QA of Master Admin Portal (4-6 hours)
-- ⏳ Performance and accessibility audits (2-3 hours)
-- ⏳ Marketing website implementation (30-40 hours)
-- ⏳ Final documentation and handoff (5-7 hours)
+- ⏳ Manual QA of Master Admin Portal (4-6 hours) with evidence capture
+- ⏳ Performance and accessibility audits (2-3 hours) blocked on manual Lighthouse/Axe runs
+- ⏳ Marketing website Playwright smoke tests + documentation (30-40 hours)
+- ⏳ Final documentation/handoff once Decide gate has artefacts (5-7 hours)
+- ⏳ Marketing CI workflow + DAIlY_STATUS_NOTES cadence enforcement
 
 ## Assessment
 
-**Code Quality**: ✅ EXCELLENT
-- Backend: 814/814 tests passing (100%), 84% coverage, all core features implemented
+**Code Quality**: ✅ STRONG (automation green, evidence pending)
+- Backend: 1,432/1,432 tests passing (100%), 84% coverage, all core features implemented
 - Frontend: 1,742/1,742 tests passing (100%), 85.1% coverage, all UI components complete
 - Master Admin: 91/91 tests passing (100%), all 7 features implemented and tested
 - F-010 BlogAdminEditor: Component created with TDD, 15 test cases, routes integrated
 - Production: Both services deployed and healthy, auto-deploy working correctly
 
 **Test Infrastructure**: ✅ ROBUST
-- Backend: 814/814 tests passing (100%), comprehensive test coverage across all features
+- Backend: 1,432/1,432 tests passing (100%), comprehensive suites with 55 documented skips
 - Frontend: 1,742/1,742 tests passing (100%), all components tested with Vitest
 - Master Admin: 91/91 tests passing (100%), all features validated
 - CI/CD: Render auto-deploy working correctly, tests run on every push

@@ -112,7 +112,7 @@ const masterAdminNavItem: WorkspaceNavigationItem = {
   id: 'master-admin',
   label: 'Master Admin',
   path: '/master-admin',
-  roles: ['admin'],
+  roles: ['admin', 'master_admin'],
 }
 
 const enableMasterAdmin = import.meta.env.VITE_ENABLE_MASTER_ADMIN !== 'false'

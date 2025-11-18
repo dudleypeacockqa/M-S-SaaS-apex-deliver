@@ -1,22 +1,27 @@
 """FP&A Module API endpoints."""
 from __future__ import annotations
 
-from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
-from pydantic import BaseModel
+from typing import List
+
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user
 from app.db.session import get_db
 from app.models.user import User
-from app.services import entitlement_service
-
-
-class ChatRequest(BaseModel):
-    """AI chat request model."""
-    message: str
-    conversation_history: Optional[list] = None
-    context: Optional[dict] = None
+from app.schemas.fpa import (
+    AIChatResponse,
+    ChatRequest,
+    DashboardMetrics,
+    DemandForecast,
+    ImportResponse,
+    InventoryItem,
+    ProductionMetric,
+    QualityMetric,
+    WhatIfScenario,
+    WorkingCapitalAnalysis,
+)
+from app.services import entitlement_service, fpa_service
 
 router = APIRouter(prefix="/fpa", tags=["fpa"])
 
@@ -36,41 +41,24 @@ async def check_fpa_access(current_user: User) -> None:
         )
 
 
-@router.get("/dashboard")
+@router.get("/dashboard", response_model=DashboardMetrics)
 async def get_dashboard_metrics(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get executive dashboard metrics."""
     await check_fpa_access(current_user)
-    
-    # TODO: Implement actual dashboard metrics calculation
-    # For now, return mock data
-    return {
-        "total_revenue": 2500000.0,
-        "active_orders": 1250,
-        "inventory_value": 800000.0,
-        "active_customers": 850,
-        "revenue_growth": 15.2,
-        "order_fulfillment": 94.8,
-        "customer_satisfaction": 4.7,
-        "inventory_turnover": 8.2,
-        "working_capital_current": 1900000.0,
-        "working_capital_30day": 2150000.0,
-        "working_capital_growth": 13.5,
-    }
+    return fpa_service.get_dashboard_metrics()
 
 
-@router.get("/demand-forecast")
+@router.get("/demand-forecast", response_model=List[DemandForecast])
 async def get_demand_forecasts(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get demand forecasts."""
     await check_fpa_access(current_user)
-    
-    # TODO: Implement actual demand forecast retrieval
-    return []
+    return fpa_service.get_demand_forecasts()
 
 
 @router.post("/demand-forecast")
@@ -85,71 +73,54 @@ async def create_demand_forecast(
     raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Not yet implemented")
 
 
-@router.get("/inventory")
+@router.get("/inventory", response_model=List[InventoryItem])
 async def get_inventory_items(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get inventory items."""
     await check_fpa_access(current_user)
-    
-    # TODO: Implement inventory retrieval
-    return []
+    return fpa_service.get_inventory_items()
 
 
-@router.get("/production")
+@router.get("/production", response_model=List[ProductionMetric])
 async def get_production_metrics(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get production metrics."""
     await check_fpa_access(current_user)
-    
-    # TODO: Implement production metrics retrieval
-    return []
+    return fpa_service.get_production_metrics()
 
 
-@router.get("/quality")
+@router.get("/quality", response_model=List[QualityMetric])
 async def get_quality_metrics(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get quality control metrics."""
     await check_fpa_access(current_user)
-    
-    # TODO: Implement quality metrics retrieval
-    return []
+    return fpa_service.get_quality_metrics()
 
 
-@router.get("/working-capital")
+@router.get("/working-capital", response_model=WorkingCapitalAnalysis)
 async def get_working_capital_analysis(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get working capital analysis."""
     await check_fpa_access(current_user)
-    
-    # TODO: Implement working capital calculation
-    return {
-        "current": 1900000.0,
-        "projection_30day": 2150000.0,
-        "growth_percentage": 13.5,
-        "dso": 45.2,
-        "dpo": 38.5,
-        "dio": 52.3,
-    }
+    return fpa_service.get_working_capital_analysis()
 
 
-@router.get("/what-if")
+@router.get("/what-if", response_model=List[WhatIfScenario])
 async def get_what_if_scenarios(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get what-if analysis scenarios."""
     await check_fpa_access(current_user)
-    
-    # TODO: Implement scenario retrieval
-    return []
+    return fpa_service.get_what_if_scenarios()
 
 
 @router.post("/what-if")
@@ -177,7 +148,7 @@ async def generate_report(
     raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Not yet implemented")
 
 
-@router.post("/import")
+@router.post("/import", response_model=ImportResponse)
 async def import_data(
     file: UploadFile = File(...),
     import_type: str = Form(...),
@@ -187,14 +158,13 @@ async def import_data(
     """Import data from file."""
     await check_fpa_access(current_user)
     
-    # TODO: Implement data import
     return {
         "success": True,
         "message": f"Data import for {import_type} is not yet implemented",
     }
 
 
-@router.post("/ai-chat")
+@router.post("/ai-chat", response_model=AIChatResponse)
 async def ai_chat(
     request: ChatRequest,
     current_user: User = Depends(get_current_user),
@@ -203,12 +173,5 @@ async def ai_chat(
     """AI chatbot endpoint for FP&A module."""
     await check_fpa_access(current_user)
     
-    # TODO: Implement AI chat using OpenAI/Anthropic
-    # For now, return a placeholder response
-    context_page = request.context.get("current_page", "executive_dashboard") if request.context else "executive_dashboard"
-    
-    return {
-        "response": "I'm your FP&A AI assistant. I can help you with financial analysis, forecasting, and insights. How can I assist you today?",
-        "context_used": ["fpa_module", context_page],
-    }
+    return fpa_service.respond_to_chat(request)
 

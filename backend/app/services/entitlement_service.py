@@ -28,6 +28,9 @@ FEATURE_ENTITLEMENTS: Dict[str, List[str]] = {
     # FP&A Module (CapLiquify FP&A tier and above)
     "fpa_module": ["fpa_subscriber", "professional", "premium", "enterprise"],
 
+    # PMI Module (Post-Merger Integration) - Professional+
+    "pmi_module": ["professional", "premium", "enterprise"],
+
     # Deal matching (Professional+) - DEV-018
     "deal_matching": ["professional", "premium", "enterprise"],
 
@@ -88,13 +91,14 @@ def get_feature_upgrade_cta(feature: str) -> str:
 
 
 
-async def check_feature_access(organization_id: str, feature: str) -> bool:
+async def check_feature_access(organization_id: str, feature: str, user_role: str | None = None) -> bool:
     """
     Check if organization has access to a specific feature.
 
     Args:
         organization_id: Clerk organization ID
         feature: Feature identifier (e.g., "podcast_audio", "youtube_integration")
+        user_role: Optional user role to check for master_admin bypass
 
     Returns:
         bool: True if organization's tier grants access, False otherwise
@@ -109,6 +113,11 @@ async def check_feature_access(organization_id: str, feature: str) -> bool:
         >>> else:
         ...     # Show upgrade prompt
     """
+    # Master admin bypasses all feature checks
+    if user_role == "master_admin":
+        logger.debug(f"Master admin bypassing feature check for: {feature}")
+        return True
+
     # Validate feature exists
     if feature not in FEATURE_ENTITLEMENTS:
         logger.warning(f"Feature not found in entitlement matrix: {feature}")

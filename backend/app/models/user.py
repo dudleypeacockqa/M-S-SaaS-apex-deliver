@@ -18,6 +18,7 @@ class UserRole(str, enum.Enum):
     growth = "growth"
     enterprise = "enterprise"
     admin = "admin"
+    master_admin = "master_admin"
 
 
 def get_role_level(role: UserRole) -> int:
@@ -29,13 +30,14 @@ def get_role_level(role: UserRole) -> int:
         role: The UserRole to get level for
 
     Returns:
-        Integer permission level (1-4)
+        Integer permission level (1-5, where 5 is master_admin)
     """
     role_levels = {
         UserRole.solo: 1,
         UserRole.growth: 2,
         UserRole.enterprise: 3,
         UserRole.admin: 4,
+        UserRole.master_admin: 5,
     }
     return role_levels.get(role, 0)
 

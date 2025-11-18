@@ -112,25 +112,53 @@ def get_current_user(
     return user
 
 
+def is_master_admin(user: User) -> bool:
+    """Check if user has master admin role."""
+    return user.role == UserRole.master_admin
+
+
 def get_current_admin_user(
     current_user: User = Depends(get_current_user),
 ) -> User:
     """
-    Dependency that ensures the current user is an admin.
+    Dependency that ensures the current user is an admin or master admin.
 
     Args:
         current_user: The authenticated user
 
     Returns:
-        The authenticated admin user
+        The authenticated admin or master admin user
 
     Raises:
-        HTTPException: If user is not an admin (403 Forbidden)
+        HTTPException: If user is not an admin or master admin (403 Forbidden)
     """
-    if current_user.role != UserRole.admin:
+    if current_user.role not in (UserRole.admin, UserRole.master_admin):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required",
+        )
+    return current_user
+
+
+def get_current_master_admin_user(
+    current_user: User = Depends(get_current_user),
+) -> User:
+    """
+    Dependency that ensures the current user is a master admin.
+
+    Args:
+        current_user: The authenticated user
+
+    Returns:
+        The authenticated master admin user
+
+    Raises:
+        HTTPException: If user is not a master admin (403 Forbidden)
+    """
+    if not is_master_admin(current_user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Master admin access required",
         )
     return current_user
 
@@ -153,8 +181,8 @@ def require_role(required_role: UserRole) -> Callable:
     """
 
     def role_checker(current_user: User = Depends(get_current_user)) -> User:
-        # Admin can access everything
-        if current_user.role == UserRole.admin:
+        # Master admin and admin can access everything
+        if current_user.role in (UserRole.admin, UserRole.master_admin):
             return current_user
 
         # Check for exact role match
@@ -188,8 +216,8 @@ def require_min_role(minimum_role: UserRole) -> Callable:
     """
 
     def permission_checker(current_user: User = Depends(get_current_user)) -> User:
-        # Admin always has sufficient permissions
-        if current_user.role == UserRole.admin:
+        # Master admin and admin always have sufficient permissions
+        if current_user.role in (UserRole.admin, UserRole.master_admin):
             return current_user
 
         user_level = get_role_level(current_user.role)
@@ -236,6 +264,10 @@ def require_feature(feature: str) -> Callable:
     async def check_access(
         current_user: User = Depends(get_current_user)
     ) -> User:
+        # Master admin bypasses all feature checks
+        if is_master_admin(current_user):
+            return current_user
+
         # Check if user's organization has access to the feature
         has_access = await check_feature_access(
             current_user.organization_id,

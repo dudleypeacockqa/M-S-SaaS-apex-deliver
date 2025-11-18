@@ -9,6 +9,8 @@ import {
   getStageColor,
 } from '../../services/api/deals';
 import { useDeal, useUpdateDeal } from '../../hooks/deals';
+import { useQuery } from '@tanstack/react-query';
+import { pmiApi } from '../../modules/pmi/services/pmiApi';
 
 type TabType = 'overview' | 'financials' | 'documents' | 'team';
 
@@ -19,6 +21,16 @@ export const DealDetails: React.FC = () => {
   // React Query hooks
   const { data: deal, isLoading: loading, error: queryError } = useDeal(dealId || '');
   const { mutate: updateDealMutation, isPending: updating, error: updateQueryError } = useUpdateDeal();
+  
+  // Check if PMI project exists for this deal
+  const { data: pmiProjects } = useQuery({
+    queryKey: ['pmi', 'projects', { deal_id: dealId }],
+    queryFn: () => pmiApi.listProjects({ deal_id: dealId || '', per_page: 1 }),
+    enabled: !!dealId && (deal?.stage === 'won' || deal?.stage === 'closing'),
+  });
+  
+  const hasPMIProject = pmiProjects && pmiProjects.items.length > 0;
+  const pmiProjectId = pmiProjects?.items[0]?.id;
 
   // Local UI state
   const [isEditing, setIsEditing] = useState(false);
@@ -235,6 +247,29 @@ export const DealDetails: React.FC = () => {
               >
                 💰 Financial Intelligence
               </button>
+              {(deal.stage === 'won' || deal.stage === 'closing') && (
+                <button
+                  onClick={() => {
+                    if (hasPMIProject && pmiProjectId) {
+                      navigate(`/pmi/projects/${pmiProjectId}`);
+                    } else {
+                      navigate(`/pmi/projects/new?deal_id=${deal.id}`);
+                    }
+                  }}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background: hasPMIProject ? '#8b5cf6' : '#7c3aed',
+                    color: 'white',
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {hasPMIProject ? '📊 View PMI Project' : '🚀 Start PMI Project'}
+                </button>
+              )}
               <button
                 onClick={handleEditClick}
                 style={{

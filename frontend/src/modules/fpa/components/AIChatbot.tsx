@@ -34,11 +34,12 @@ export const AIChatbot: React.FC = () => {
       timestamp: new Date(),
     };
 
+    const conversationHistory = [...messages, userMessage];
     setMessages(prev => [...prev, userMessage]);
     setInput('');
 
     try {
-      const response = await sendMessage(input.trim(), messages);
+      const response = await sendMessage(userMessage.content, conversationHistory);
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),

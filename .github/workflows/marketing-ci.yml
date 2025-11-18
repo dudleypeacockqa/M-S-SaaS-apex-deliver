@@ -1,0 +1,95 @@
+name: marketing-ci
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'tests/**'
+      - 'playwright.dev.config.ts'
+      - 'playwright.tsconfig.json'
+      - '.github/workflows/marketing-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'tests/**'
+      - 'playwright.dev.config.ts'
+      - 'playwright.tsconfig.json'
+
+env:
+  MARKETING_BASE_URL: http://127.0.0.1:4173
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend deps
+        run: npm ci
+        working-directory: frontend
+
+      - name: Lint frontend
+        run: npm run lint
+        working-directory: frontend
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: frontend
+
+      - name: Run Vitest with coverage
+        run: npm run test -- --run --coverage
+        working-directory: frontend
+
+      - name: Start marketing preview server
+        run: nohup npm run preview:test > preview.log 2>&1 &
+        working-directory: frontend
+
+      - name: Wait for preview server
+        run: |
+          for i in {1..30}; do
+            if curl -sSf http://127.0.0.1:4173 > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Preview server never became reachable" >&2
+          exit 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install backend deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r backend/requirements.txt
+
+      - name: Run backend pytest
+        run: pytest --maxfail=1 --disable-warnings
+        working-directory: backend
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright marketing smoke tests
+        run: npx playwright test --config playwright.dev.config.ts
+
+      - name: Stop preview server
+        if: always()
+        run: |
+          pkill -f "vite preview" || true
+          pkill -f "frontend/node_modules" || true

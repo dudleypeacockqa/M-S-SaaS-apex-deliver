@@ -14,6 +14,7 @@ from . import (
     organization_service,
     notification_service,
     event_reminder_service,
+    fpa_service,
 )
 from .task_service import (
     create_task,
@@ -54,6 +55,7 @@ __all__ = [
     "podcast_service",
     "quota_service",
     "organization_service",
+    "fpa_service",
     "create_task",
     "list_tasks",
     "get_task",

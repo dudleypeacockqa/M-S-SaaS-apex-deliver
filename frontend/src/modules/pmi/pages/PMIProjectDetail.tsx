@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePMIDashboard } from '../hooks/usePMIDashboard';
 import { usePMIProject } from '../hooks/usePMIProject';
-import { ArrowLeft, Calendar, TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Calendar, TrendingUp, AlertTriangle, CheckCircle, List, Target, Shield, ClipboardCheck } from 'lucide-react';
+import { WorkstreamBoard } from '../components/WorkstreamBoard';
+import { SynergyTracker } from '../components/SynergyTracker';
+import { RiskRegister } from '../components/RiskRegister';
+import { DayOneChecklist } from '../components/DayOneChecklist';
+import { TimelineView } from '../components/TimelineView';
 
 export const PMIProjectDetail: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<string>('dashboard');
   const { data: dashboard, isLoading: dashboardLoading } = usePMIDashboard(projectId || null);
   const { data: project, isLoading: projectLoading } = usePMIProject(projectId || null);
 
@@ -125,38 +131,78 @@ export const PMIProjectDetail: React.FC = () => {
         </div>
       )}
 
-      {/* Workstreams Summary */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Workstreams</h2>
-        <div className="space-y-3">
-          {dashboard.workstreams_summary.map((workstream) => (
-            <div key={workstream.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-              <div className="flex-1">
-                <h3 className="font-medium text-gray-900">{workstream.name}</h3>
-                <p className="text-sm text-gray-600">{workstream.workstream_type}</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">{workstream.progress_percentage}%</p>
-                  <p className="text-xs text-gray-500">Complete</p>
-                </div>
-                <span
-                  className={`px-2 py-1 text-xs font-medium rounded ${
-                    workstream.status === 'completed'
-                      ? 'bg-green-100 text-green-800'
-                      : workstream.status === 'in_progress'
-                      ? 'bg-blue-100 text-blue-800'
-                      : workstream.status === 'at_risk'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}
-                >
-                  {workstream.status}
-                </span>
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="flex space-x-8">
+          {[
+            { id: 'dashboard', label: 'Dashboard', icon: TrendingUp },
+            { id: 'timeline', label: 'Timeline', icon: Calendar },
+            { id: 'workstreams', label: 'Workstreams', icon: List },
+            { id: 'synergies', label: 'Synergies', icon: Target },
+            { id: 'risks', label: 'Risks', icon: Shield },
+            { id: 'checklist', label: 'Day 1 Checklist', icon: ClipboardCheck },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === tab.id
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <tab.icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* Tab Content */}
+      <div className="mt-6">
+        {activeTab === 'dashboard' && (
+          <div className="space-y-6">
+            {/* Workstreams Summary */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Workstreams Summary</h2>
+              <div className="space-y-3">
+                {dashboard.workstreams_summary.map((workstream) => (
+                  <div key={workstream.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900">{workstream.name}</h3>
+                      <p className="text-sm text-gray-600">{workstream.workstream_type}</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-gray-900">{workstream.progress_percentage}%</p>
+                        <p className="text-xs text-gray-500">Complete</p>
+                      </div>
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded ${
+                          workstream.status === 'completed'
+                            ? 'bg-green-100 text-green-800'
+                            : workstream.status === 'in_progress'
+                            ? 'bg-blue-100 text-blue-800'
+                            : workstream.status === 'at_risk'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {workstream.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
+
+        {activeTab === 'timeline' && projectId && <TimelineView projectId={projectId} />}
+        {activeTab === 'workstreams' && projectId && <WorkstreamBoard projectId={projectId} />}
+        {activeTab === 'synergies' && projectId && <SynergyTracker projectId={projectId} />}
+        {activeTab === 'risks' && projectId && <RiskRegister projectId={projectId} />}
+        {activeTab === 'checklist' && projectId && <DayOneChecklist projectId={projectId} />}
       </div>
     </div>
   );

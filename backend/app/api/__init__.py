@@ -1,7 +1,7 @@
 """API router definitions."""
 from fastapi import APIRouter
 
-from app.api.routes import auth, blog, community, dashboard, deal_matching, deals, documents, document_generation, events, event_payments, financial, fpa, marketing, master_admin, notifications, podcasts, pmi, subscriptions, tasks, valuation, pipeline_templates
+from app.api.routes import auth, blog, community, dashboard, deal_matching, deals, documents, document_generation, events, event_payments, financial, fpa, marketing, master_admin, notifications, podcasts, pmi, subscriptions, tasks, valuation, pipeline_templates, campaigns, voice, templates, webhooks
 from app.api import document_sharing
 from app.api.webhooks import clerk
 
@@ -29,5 +29,9 @@ api_router.include_router(fpa.router)  # FP&A Module - CapLiquify FP&A Dashboard
 api_router.include_router(pmi.router)  # PMI Module - Post-Merger Integration
 api_router.include_router(master_admin.router)  # Master Admin Portal - Full implementation
 api_router.include_router(community.router)  # F-013: Community Platform - Full implementation
+api_router.include_router(campaigns.router)  # Cold Outreach Hub - Campaign Management
+api_router.include_router(voice.router)  # Cold Outreach Hub - Voice AI Integration
+api_router.include_router(templates.router)  # Cold Outreach Hub - Template Management
+api_router.include_router(webhooks.router)  # Cold Outreach Hub - Webhook Processing
 
 

@@ -55,6 +55,15 @@ from app.models.document_generation import (  # noqa: F401, E402
 from app.models.event_payment import EventPayment, EventPaymentReceipt  # noqa: F401, E402
 from app.models.user_notification_preferences import UserNotificationPreferences  # noqa: F401, E402
 from app.models.email_queue import EmailQueue  # noqa: F401, E402
+from app.models.pmi import (  # noqa: F401, E402
+    PMIProject,
+    PMIWorkstream,
+    PMIMilestone,
+    PMISynergy,
+    PMIMetric,
+    PMIRisk,
+    PMIDayOneChecklist,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

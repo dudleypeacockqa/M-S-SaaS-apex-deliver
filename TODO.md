@@ -20,6 +20,14 @@
 
 ## 🎯 Current Sprint: Master Admin Portal Completion
 
+### Phase 0: BMAD Evidence & Governance
+
+- [x] Reconcile README/bmm-workflow-status/100% status docs with 2025-11-17 test evidence
+- [x] Reinstate BMAD daily status log at `docs/bmad/DAILY_STATUS_NOTES.md`
+- [x] Land required marketing Playwright specs (`tests/*.spec.ts`) + `playwright.dev.config.ts`
+- [x] Add `marketing-ci.yml` workflow running lint, build, Vitest, pytest, and Playwright
+- [ ] Capture first green Playwright + CI evidence (requires MARKETING_BASE_URL + deployed preview)
+
 ### Phase 1: Backend API (100% Complete) ✅
 
 #### ✅ Completed (Session 2C - 2025-11-01)

@@ -14,7 +14,8 @@ from sqlalchemy import select
 
 from openai import OpenAI
 
-from app.models.master_admin import ConversationSession, VoiceCall
+from app.models.master_admin import ConversationSession, VoiceCall, AdminProspect, AdminDeal
+from app.models.enums import AdminDealStage, ProspectStatus
 
 # Initialize OpenAI client
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY")) if os.getenv("OPENAI_API_KEY") else None
@@ -208,6 +209,46 @@ def process_message(
             session.intent = intent.get("intent")
             session.qualification_data = lead_qualification
             db.commit()
+            
+            # Integrate with Deal Pipeline: Create deal from qualified leads
+            # If lead score is high enough (>= 70), create a deal in the pipeline
+            if lead_qualification.get("score", 0) >= 70 and session.voice_call_id:
+                voice_call_result = db.execute(
+                    select(VoiceCall).where(VoiceCall.id == session.voice_call_id)
+                )
+                voice_call = voice_call_result.scalar_one_or_none()
+                
+                if voice_call and voice_call.contact_id:
+                    prospect_result = db.execute(
+                        select(AdminProspect).where(AdminProspect.id == voice_call.contact_id)
+                    )
+                    prospect = prospect_result.scalar_one_or_none()
+                    
+                    if prospect:
+                        # Check if deal already exists
+                        existing_deal_result = db.execute(
+                            select(AdminDeal).where(
+                                AdminDeal.prospect_id == prospect.id,
+                                AdminDeal.stage == AdminDealStage.QUALIFICATION
+                            )
+                        )
+                        existing_deal = existing_deal_result.scalar_one_or_none()
+                        
+                        if not existing_deal:
+                            # Create new deal from qualified lead
+                            deal = AdminDeal(
+                                user_id=prospect.user_id,
+                                prospect_id=prospect.id,
+                                name=f"Deal: {prospect.name}",
+                                stage=AdminDealStage.QUALIFICATION,
+                                value=lead_qualification.get("qualification_data", {}).get("budget", 0),
+                                notes=f"Auto-created from voice call qualification. Score: {lead_qualification.get('score')}",
+                            )
+                            db.add(deal)
+                            
+                            # Update prospect status
+                            prospect.status = ProspectStatus.QUALIFIED
+                            db.commit()
     
     return {
         "response": response,

@@ -287,7 +287,7 @@ class AdminCampaign(Base):
     content = Column(Text, nullable=False)
     template_id = Column(Integer, ForeignKey("campaign_templates.id", ondelete="SET NULL"), nullable=True)
     settings = Column(JSONB, nullable=True, server_default='{}')  # Campaign-specific settings
-    scheduled_at = Column(DateTime(timezone=True), nullable=True)
+    schedule_at = Column(DateTime(timezone=True), nullable=True)
     started_at = Column(DateTime(timezone=True), nullable=True)
     sent_at = Column(DateTime)
     completed_at = Column(DateTime(timezone=True), nullable=True)

@@ -104,6 +104,11 @@ class Deal(Base):
         back_populates="deal",
         cascade="all, delete-orphan",
     )
+    pmi_projects = relationship(
+        "PMIProject",
+        back_populates="deal",
+        cascade="all, delete-orphan",
+    )
 
     # Indexes for performance
     __table_args__ = (

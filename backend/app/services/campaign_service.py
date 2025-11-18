@@ -19,6 +19,7 @@ from app.models.enums import CampaignType, CampaignStatus
 from app.models.user import User
 from app.models.organization import Organization
 from app.services.template_service import render_template
+from app.services import master_admin_service
 
 
 def create_campaign(
@@ -177,6 +178,42 @@ def execute_campaign(
     campaign.sent_at = datetime.utcnow()
     campaign.completed_at = datetime.utcnow()
     db.commit()
+    
+    # Integrate with LeadCapture: Create lead capture records for new contacts
+    # This ensures all campaign recipients are tracked in the lead capture system
+    from app.models.master_admin import AdminLeadCapture
+    
+    for recipient in recipients:
+        prospect_result = db.execute(
+            select(AdminProspect).where(AdminProspect.id == recipient.prospect_id)
+        )
+        prospect = prospect_result.scalar_one_or_none()
+        
+        if prospect:
+            # Check if lead capture already exists for this prospect
+            # If not, create one linked to the campaign
+            # This integration ensures campaign activities are tracked in the lead capture system
+            from sqlalchemy import select as sql_select
+            existing_capture_result = db.execute(
+                sql_select(AdminLeadCapture).where(
+                    AdminLeadCapture.user_id == campaign.user_id,
+                    AdminLeadCapture.email == prospect.email
+                )
+            )
+            existing_capture = existing_capture_result.scalar_one_or_none()
+            
+            if not existing_capture and prospect.email:
+                # Create lead capture record for campaign tracking
+                lead_capture = AdminLeadCapture(
+                    user_id=campaign.user_id,
+                    name=prospect.name or "Unknown",
+                    email=prospect.email,
+                    phone=prospect.phone,
+                    company=prospect.company,
+                    source=f"campaign_{campaign.id}",
+                )
+                db.add(lead_capture)
+                db.commit()
     
     return {
         "sent_count": sent_count,

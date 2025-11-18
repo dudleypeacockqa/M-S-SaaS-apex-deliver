@@ -4,7 +4,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 
 import { LoadingSpinner } from '../common/LoadingSpinner'
 
-export type UserRole = 'solo' | 'growth' | 'enterprise' | 'admin'
+export type UserRole = 'solo' | 'growth' | 'enterprise' | 'admin' | 'master_admin'
 
 export interface ProtectedRouteProps {
   children: ReactNode
@@ -12,13 +12,17 @@ export interface ProtectedRouteProps {
 }
 
 const resolveRole = (role: unknown): UserRole => {
-  if (role === 'growth' || role === 'enterprise' || role === 'admin') {
-    return role
+  if (role === 'growth' || role === 'enterprise' || role === 'admin' || role === 'master_admin') {
+    return role as UserRole
   }
   return 'solo'
 }
 
 const hasRequiredRole = (userRole: UserRole, requirement?: UserRole | UserRole[]): boolean => {
+  // Master admin has access to everything
+  if (userRole === 'master_admin') {
+    return true
+  }
   if (!requirement) {
     return true
   }

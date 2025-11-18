@@ -20,7 +20,8 @@ interface ChatRequest {
 }
 
 interface ChatResponse {
-  response: string;
+  response?: string;
+  message?: string;
   context_used?: string[];
 }
 
@@ -44,7 +45,7 @@ export const aiChatService = {
       message,
       conversation_history: history,
       context: {
-        current_page: window.location.pathname,
+        current_page: typeof window !== 'undefined' ? window.location.pathname : '/fpa',
       },
     };
 

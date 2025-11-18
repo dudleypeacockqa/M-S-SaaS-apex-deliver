@@ -88,6 +88,8 @@ const CommunityFeed = lazyNamed(() => import("./pages/community/CommunityFeed"),
 const ActivityTracker = lazyNamed(() => import("./pages/master-admin/ActivityTracker"), "ActivityTracker")
 const ProspectPipeline = lazyNamed(() => import("./pages/master-admin/ProspectPipeline"), "ProspectPipeline")
 const CampaignManager = lazyNamed(() => import("./pages/master-admin/CampaignManager"), "CampaignManager")
+const VoiceCampaign = lazyNamed(() => import("./pages/master-admin/VoiceCampaign"), "VoiceCampaign")
+const TemplateManager = lazyNamed(() => import("./pages/master-admin/TemplateManager"), "TemplateManager")
 const ContentStudio = lazyNamed(() => import("./pages/master-admin/ContentStudio"), "ContentStudio")
 const LeadCapture = lazyNamed(() => import("./pages/master-admin/LeadCapture"), "LeadCapture")
 const SalesCollateral = lazyNamed(() => import("./pages/master-admin/SalesCollateral"), "SalesCollateral")
@@ -109,6 +111,10 @@ const WhatIfAnalysis = lazyNamed(() => import("./modules/fpa/pages/WhatIfAnalysi
 const FinancialReports = lazyNamed(() => import("./modules/fpa/pages/FinancialReports"), "FinancialReports")
 const DataImport = lazyNamed(() => import("./modules/fpa/pages/DataImport"), "DataImport")
 const AdminPanel = lazyNamed(() => import("./modules/fpa/pages/AdminPanel"), "AdminPanel")
+// PMI Module Components
+const PMIProjectList = lazyNamed(() => import("./modules/pmi/pages/PMIProjectList"), "PMIProjectList")
+const PMIProjectDetail = lazyNamed(() => import("./modules/pmi/pages/PMIProjectDetail"), "PMIProjectDetail")
+const PMIProjectCreate = lazyNamed(() => import("./modules/pmi/pages/PMIProjectCreate"), "PMIProjectCreate")
 // Temporarily disabled - missing blogService functions (createBlogPost, updateBlogPost, publishBlogPost, getBlogPost)
 // const BlogAdminEditor = lazyNamed(() => import("./pages/admin/BlogAdminEditor"), "BlogAdminEditor")
 
@@ -190,6 +196,8 @@ export const AppRoutes = () => {
         <Route path="master-admin/activity" element={<MasterAdminRoute><ActivityTracker /></MasterAdminRoute>} />
         <Route path="master-admin/prospects" element={<MasterAdminRoute><ProspectPipeline /></MasterAdminRoute>} />
         <Route path="master-admin/campaigns" element={<MasterAdminRoute><CampaignManager /></MasterAdminRoute>} />
+        <Route path="master-admin/voice" element={<MasterAdminRoute><VoiceCampaign /></MasterAdminRoute>} />
+        <Route path="master-admin/templates" element={<MasterAdminRoute><TemplateManager /></MasterAdminRoute>} />
         <Route path="master-admin/content" element={<MasterAdminRoute><ContentStudio /></MasterAdminRoute>} />
         <Route path="master-admin/leads" element={<MasterAdminRoute><LeadCapture /></MasterAdminRoute>} />
         <Route path="master-admin/collateral" element={<MasterAdminRoute><SalesCollateral /></MasterAdminRoute>} />
@@ -224,6 +232,32 @@ export const AppRoutes = () => {
 
         {/* Billing & Subscription Routes */}
         <Route path="dashboard/billing" element={<BillingDashboard />} />
+
+        {/* PMI Module Routes (Feature-Gated) */}
+        <Route
+          path="pmi/projects"
+          element={
+            <FeatureGate feature="pmi_module" requiredTier="professional">
+              <PMIProjectList />
+            </FeatureGate>
+          }
+        />
+        <Route
+          path="pmi/projects/new"
+          element={
+            <FeatureGate feature="pmi_module" requiredTier="professional">
+              <PMIProjectCreate />
+            </FeatureGate>
+          }
+        />
+        <Route
+          path="pmi/projects/:projectId"
+          element={
+            <FeatureGate feature="pmi_module" requiredTier="professional">
+              <PMIProjectDetail />
+            </FeatureGate>
+          }
+        />
 
         {/* FP&A Module Routes (Feature-Gated) */}
         <Route

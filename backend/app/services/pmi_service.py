@@ -26,8 +26,10 @@ from app.models.pmi import (
     PMIDayOneChecklistStatus,
     PMIPhase,
 )
-from app.models.deal import Deal
+from app.models.deal import Deal, DealStage
 from app.models.user import User
+from app.models.task import DealTask
+from app.services import task_service
 from app.schemas.pmi import (
     PMIProjectCreate,
     PMIProjectUpdate,
@@ -761,4 +763,180 @@ def generate_100_day_plan(project_id: str, organization_id: str, db: Session) ->
         db.add(checklist_item)
 
     db.commit()
+
+
+# Task Integration Functions
+def create_tasks_from_milestone(
+    milestone_id: str,
+    organization_id: str,
+    created_by: str,
+    db: Session,
+) -> List[DealTask]:
+    """
+    Create tasks from a PMI milestone.
+
+    Args:
+        milestone_id: PMI milestone ID
+        organization_id: Organization ID
+        created_by: User ID creating the tasks
+        db: Database session
+
+    Returns:
+        List of created tasks
+    """
+    milestone = db.scalar(
+        select(PMIMilestone).where(
+            PMIMilestone.id == milestone_id,
+            PMIMilestone.organization_id == organization_id,
+        )
+    )
+    if not milestone:
+        raise ValueError(f"Milestone {milestone_id} not found")
+
+    workstream = db.scalar(
+        select(PMIWorkstream).where(PMIWorkstream.id == milestone.workstream_id)
+    )
+    if not workstream:
+        raise ValueError(f"Workstream not found for milestone {milestone_id}")
+
+    project = db.scalar(
+        select(PMIProject).where(PMIProject.id == workstream.project_id)
+    )
+    if not project:
+        raise ValueError(f"PMI project not found")
+
+    # Create a task for the milestone
+    task_payload = {
+        "title": f"{milestone.name} - {workstream.name}",
+        "description": milestone.description or f"Milestone: {milestone.name}",
+        "status": "todo",
+        "priority": "high" if workstream.priority == "high" else "normal",
+        "stage_gate": f"PMI: {workstream.workstream_type}",
+        "due_date": milestone.target_date,
+    }
+
+    task = task_service.create_task(
+        db=db,
+        deal_id=project.deal_id,
+        organization_id=organization_id,
+        created_by=created_by,
+        payload=task_payload,
+    )
+
+    return [task]
+
+
+def update_workstream_progress_from_tasks(
+    workstream_id: str,
+    organization_id: str,
+    db: Session,
+) -> None:
+    """
+    Update workstream progress based on completed tasks.
+
+    Args:
+        workstream_id: PMI workstream ID
+        organization_id: Organization ID
+        db: Database session
+    """
+    workstream = get_workstream_by_id(workstream_id, organization_id, db)
+    if not workstream:
+        raise ValueError(f"Workstream {workstream_id} not found")
+
+    project = db.scalar(
+        select(PMIProject).where(PMIProject.id == workstream.project_id)
+    )
+    if not project:
+        return
+
+    # Get all tasks for the deal that match this workstream
+    tasks, _ = task_service.list_tasks(
+        db=db,
+        deal_id=project.deal_id,
+        organization_id=organization_id,
+    )
+
+    # Filter tasks by stage_gate matching workstream
+    workstream_tasks = [
+        t for t in tasks
+        if t.stage_gate and f"PMI: {workstream.workstream_type}" in t.stage_gate
+    ]
+
+    if not workstream_tasks:
+        return
+
+    # Calculate progress based on completed tasks
+    completed_tasks = [t for t in workstream_tasks if t.status == "completed"]
+    progress = (len(completed_tasks) / len(workstream_tasks)) * 100 if workstream_tasks else 0
+
+    workstream.progress_percentage = Decimal(str(round(progress, 2)))
+
+    # Update status based on progress
+    if progress == 100:
+        workstream.status = PMIWorkstreamStatus.completed
+    elif progress > 0:
+        workstream.status = PMIWorkstreamStatus.in_progress
+
+    db.commit()
+    db.refresh(workstream)
+
+
+def auto_create_pmi_project_for_deal(
+    deal_id: str,
+    organization_id: str,
+    created_by: str,
+    db: Session,
+) -> Optional[PMIProject]:
+    """
+    Auto-create PMI project when deal moves to 'won' stage.
+
+    Args:
+        deal_id: Deal ID
+        organization_id: Organization ID
+        created_by: User ID creating the project
+        db: Database session
+
+    Returns:
+        Created PMI project or None if already exists
+    """
+    # Check if PMI project already exists for this deal
+    existing = db.scalar(
+        select(PMIProject).where(
+            PMIProject.deal_id == deal_id,
+            PMIProject.organization_id == organization_id,
+        )
+    )
+    if existing:
+        return None
+
+    deal = db.scalar(
+        select(Deal).where(
+            Deal.id == deal_id,
+            Deal.organization_id == organization_id,
+        )
+    )
+    if not deal or deal.stage != DealStage.won:
+        return None
+
+    # Create PMI project
+    project = PMIProject(
+        id=str(uuid.uuid4()),
+        name=f"PMI: {deal.name}",
+        deal_id=deal_id,
+        organization_id=organization_id,
+        status=PMIProjectStatus.planning,
+        close_date=datetime.now(timezone.utc),
+        day_one_date=datetime.now(timezone.utc) + timedelta(days=1),
+        target_completion_date=datetime.now(timezone.utc) + timedelta(days=100),
+        description=f"Post-Merger Integration project for {deal.target_company}",
+        created_by=created_by,
+    )
+    db.add(project)
+    db.commit()
+    db.refresh(project)
+
+    # Generate 100-day plan
+    generate_100_day_plan(project.id, organization_id, db)
+
+    return project
 

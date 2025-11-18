@@ -11,8 +11,8 @@ const linkPalette = {
 }
 
 const resolveRole = (role: unknown): UserRole => {
-  if (role === 'growth' || role === 'enterprise' || role === 'admin') {
-    return role
+  if (role === 'growth' || role === 'enterprise' || role === 'admin' || role === 'master_admin') {
+    return role as UserRole
   }
   return 'solo'
 }
@@ -21,7 +21,10 @@ export const NavigationMenu: React.FC = () => {
   const { user } = useUser()
   const role = resolveRole(user?.publicMetadata?.role)
 
-  const visibleLinks = WORKSPACE_NAV_ITEMS.filter((item) => item.roles.includes(role))
+  // Master admin sees all links
+  const visibleLinks = role === 'master_admin' 
+    ? WORKSPACE_NAV_ITEMS 
+    : WORKSPACE_NAV_ITEMS.filter((item) => item.roles.includes(role))
 
   return (
     <nav
