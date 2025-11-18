@@ -11,7 +11,7 @@ class TestCreateTemplate:
     """Test POST /api/master-admin/templates endpoint."""
     
     @pytest.mark.asyncio
-    async def test_create_template(self, client: AsyncClient, auth_headers: dict):
+    async def test_create_template(self, client: AsyncClient, auth_headers_master_admin: dict):
         """Test creating a template."""
         template_data = {
             "name": "Welcome Email Template",
@@ -23,7 +23,7 @@ class TestCreateTemplate:
         response = await client.post(
             "/api/master-admin/templates",
             json=template_data,
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -40,11 +40,11 @@ class TestListTemplates:
     """Test GET /api/master-admin/templates endpoint."""
     
     @pytest.mark.asyncio
-    async def test_list_templates(self, client: AsyncClient, auth_headers: dict):
+    async def test_list_templates(self, client: AsyncClient, auth_headers_master_admin: dict):
         """Test listing templates."""
         response = await client.get(
             "/api/master-admin/templates",
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -55,11 +55,11 @@ class TestListTemplates:
         assert True
     
     @pytest.mark.asyncio
-    async def test_list_templates_with_type_filter(self, client: AsyncClient, auth_headers: dict):
+    async def test_list_templates_with_type_filter(self, client: AsyncClient, auth_headers_master_admin: dict):
         """Test listing templates filtered by type."""
         response = await client.get(
             "/api/master-admin/templates?type=email",
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -75,13 +75,13 @@ class TestGetTemplate:
     """Test GET /api/master-admin/templates/{id} endpoint."""
     
     @pytest.mark.asyncio
-    async def test_get_template(self, client: AsyncClient, auth_headers: dict, db_session):
+    async def test_get_template(self, client: AsyncClient, auth_headers_master_admin: dict, db_session):
         """Test getting a specific template."""
         template_id = 1  # Would be actual ID
         
         response = await client.get(
             f"/api/master-admin/templates/{template_id}",
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -96,7 +96,7 @@ class TestRenderTemplatePreview:
     """Test POST /api/master-admin/templates/{id}/preview endpoint."""
     
     @pytest.mark.asyncio
-    async def test_render_template_preview(self, client: AsyncClient, auth_headers: dict, db_session):
+    async def test_render_template_preview(self, client: AsyncClient, auth_headers_master_admin: dict, db_session):
         """Test rendering a template preview."""
         template_id = 1  # Would be actual ID
         
@@ -108,7 +108,7 @@ class TestRenderTemplatePreview:
         response = await client.post(
             f"/api/master-admin/templates/{template_id}/preview",
             json=contact_data,
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint

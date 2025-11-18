@@ -15,7 +15,7 @@ class TestCreateCampaign:
     """Test POST /api/master-admin/campaigns endpoint."""
     
     @pytest.mark.asyncio
-    async def test_create_campaign(self, client: AsyncClient, auth_headers: dict):
+    async def test_create_campaign(self, client: AsyncClient, auth_headers_master_admin: dict):
         """Test creating a new campaign."""
         campaign_data = {
             "name": "Test Campaign",
@@ -27,7 +27,7 @@ class TestCreateCampaign:
         response = await client.post(
             "/api/master-admin/campaigns",
             json=campaign_data,
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -40,7 +40,7 @@ class TestCreateCampaign:
         assert True
     
     @pytest.mark.asyncio
-    async def test_create_campaign_with_template(self, client: AsyncClient, auth_headers: dict, db_session):
+    async def test_create_campaign_with_template(self, client: AsyncClient, auth_headers_master_admin: dict, db_session):
         """Test creating a campaign with a template."""
         # Create template first (would be done via template endpoint)
         # For now, we'll assume template exists
@@ -56,7 +56,7 @@ class TestCreateCampaign:
         response = await client.post(
             "/api/master-admin/campaigns",
             json=campaign_data,
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -71,11 +71,11 @@ class TestListCampaigns:
     """Test GET /api/master-admin/campaigns endpoint."""
     
     @pytest.mark.asyncio
-    async def test_list_campaigns(self, client: AsyncClient, auth_headers: dict):
+    async def test_list_campaigns(self, client: AsyncClient, auth_headers_master_admin: dict):
         """Test listing campaigns."""
         response = await client.get(
             "/api/master-admin/campaigns",
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -87,11 +87,11 @@ class TestListCampaigns:
         assert True
     
     @pytest.mark.asyncio
-    async def test_list_campaigns_with_filters(self, client: AsyncClient, auth_headers: dict):
+    async def test_list_campaigns_with_filters(self, client: AsyncClient, auth_headers_master_admin: dict):
         """Test listing campaigns with filters."""
         response = await client.get(
             "/api/master-admin/campaigns?status=draft&type=email",
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -107,14 +107,14 @@ class TestGetCampaign:
     """Test GET /api/master-admin/campaigns/{id} endpoint."""
     
     @pytest.mark.asyncio
-    async def test_get_campaign(self, client: AsyncClient, auth_headers: dict, db_session):
+    async def test_get_campaign(self, client: AsyncClient, auth_headers_master_admin: dict, db_session):
         """Test getting a specific campaign."""
         # Create campaign first (would be done via POST)
         campaign_id = 1  # Would be actual ID
         
         response = await client.get(
             f"/api/master-admin/campaigns/{campaign_id}",
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -125,11 +125,11 @@ class TestGetCampaign:
         assert True
     
     @pytest.mark.asyncio
-    async def test_get_campaign_not_found(self, client: AsyncClient, auth_headers: dict):
+    async def test_get_campaign_not_found(self, client: AsyncClient, auth_headers_master_admin: dict):
         """Test getting a non-existent campaign."""
         response = await client.get(
             "/api/master-admin/campaigns/99999",
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -142,7 +142,7 @@ class TestUpdateCampaign:
     """Test PUT /api/master-admin/campaigns/{id} endpoint."""
     
     @pytest.mark.asyncio
-    async def test_update_campaign(self, client: AsyncClient, auth_headers: dict, db_session):
+    async def test_update_campaign(self, client: AsyncClient, auth_headers_master_admin: dict, db_session):
         """Test updating a campaign."""
         campaign_id = 1  # Would be actual ID
         
@@ -154,7 +154,7 @@ class TestUpdateCampaign:
         response = await client.put(
             f"/api/master-admin/campaigns/{campaign_id}",
             json=update_data,
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -169,13 +169,13 @@ class TestDeleteCampaign:
     """Test DELETE /api/master-admin/campaigns/{id} endpoint."""
     
     @pytest.mark.asyncio
-    async def test_delete_campaign(self, client: AsyncClient, auth_headers: dict, db_session):
+    async def test_delete_campaign(self, client: AsyncClient, auth_headers_master_admin: dict, db_session):
         """Test deleting a campaign."""
         campaign_id = 1  # Would be actual ID
         
         response = await client.delete(
             f"/api/master-admin/campaigns/{campaign_id}",
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -188,7 +188,7 @@ class TestScheduleCampaign:
     """Test POST /api/master-admin/campaigns/{id}/schedule endpoint."""
     
     @pytest.mark.asyncio
-    async def test_schedule_campaign(self, client: AsyncClient, auth_headers: dict, db_session):
+    async def test_schedule_campaign(self, client: AsyncClient, auth_headers_master_admin: dict, db_session):
         """Test scheduling a campaign."""
         campaign_id = 1  # Would be actual ID
         schedule_time = (datetime.utcnow() + timedelta(hours=1)).isoformat()
@@ -196,7 +196,7 @@ class TestScheduleCampaign:
         response = await client.post(
             f"/api/master-admin/campaigns/{campaign_id}/schedule",
             json={"schedule_at": schedule_time},
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint
@@ -212,13 +212,13 @@ class TestGetCampaignAnalytics:
     """Test GET /api/master-admin/campaigns/{id}/analytics endpoint."""
     
     @pytest.mark.asyncio
-    async def test_get_campaign_analytics(self, client: AsyncClient, auth_headers: dict, db_session):
+    async def test_get_campaign_analytics(self, client: AsyncClient, auth_headers_master_admin: dict, db_session):
         """Test getting campaign analytics."""
         campaign_id = 1  # Would be actual ID
         
         response = await client.get(
             f"/api/master-admin/campaigns/{campaign_id}/analytics",
-            headers=auth_headers
+            headers=auth_headers_master_admin
         )
         
         # This will fail until we implement the endpoint

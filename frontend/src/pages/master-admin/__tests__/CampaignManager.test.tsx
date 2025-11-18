@@ -4,7 +4,7 @@
  * Tests for campaign management UI following TDD principles.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
 import CampaignManager from '../CampaignManager'
@@ -42,17 +42,34 @@ describe('CampaignManager', () => {
     )
   }
 
-  it('should render campaign list', async () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('renders campaigns returned from the API', async () => {
     const { listCampaigns } = await import('@/services/api/campaigns')
     vi.mocked(listCampaigns).mockResolvedValue({
       items: [
         {
           id: 1,
+          user_id: 'user-1',
           name: 'Test Campaign',
           type: 'email',
           status: 'draft',
-          total_recipients: 100,
-          sent_count: 0,
+          total_recipients: 42,
+          sent_count: 10,
+          opened_count: 5,
+          clicked_count: 1,
+          subject: 'Subject',
+          content: 'Body',
+          template_id: undefined,
+          settings: {},
+          scheduled_at: undefined,
+          started_at: undefined,
+          sent_at: undefined,
+          completed_at: undefined,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         },
       ],
       total: 1,
@@ -62,90 +79,109 @@ describe('CampaignManager', () => {
 
     renderComponent()
 
-    // This will fail until we implement the component
-    // await waitFor(() => {
-    //   expect(screen.getByText('Test Campaign')).toBeInTheDocument()
-    // })
-
-    expect(true).toBe(true) // Placeholder
+    await waitFor(() => {
+      expect(screen.getByText('Test Campaign')).toBeInTheDocument()
+    })
   })
 
-  it('should create new campaign', async () => {
-    const { createCampaign } = await import('@/services/api/campaigns')
+  it('allows creating a campaign through the modal form', async () => {
+    const { listCampaigns, createCampaign } = await import('@/services/api/campaigns')
+    vi.mocked(listCampaigns).mockResolvedValue({ items: [], total: 0, page: 1, per_page: 12 })
     vi.mocked(createCampaign).mockResolvedValue({
-      id: 1,
-      name: 'New Campaign',
+      id: 99,
+      user_id: 'user-99',
+      name: 'My Campaign',
       type: 'email',
       status: 'draft',
+      content: 'Hello world',
+      subject: 'Subject line',
+      template_id: undefined,
+      settings: {},
+      total_recipients: 0,
+      sent_count: 0,
+      opened_count: 0,
+      clicked_count: 0,
+      scheduled_at: undefined,
+      started_at: undefined,
+      sent_at: undefined,
+      completed_at: undefined,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     })
 
     renderComponent()
 
-    // This will fail until we implement the component
-    // const createButton = screen.getByText('Create Campaign')
-    // fireEvent.click(createButton)
-    // 
-    // const nameInput = screen.getByLabelText('Campaign Name')
-    // fireEvent.change(nameInput, { target: { value: 'New Campaign' } })
-    // 
-    // const submitButton = screen.getByText('Create')
-    // fireEvent.click(submitButton)
-    // 
-    // await waitFor(() => {
-    //   expect(createCampaign).toHaveBeenCalledWith({
-    //     name: 'New Campaign',
-    //     type: 'email',
-    //     content: '',
-    //   })
-    // })
+    fireEvent.click(screen.getByRole('button', { name: /create campaign/i }))
 
-    expect(true).toBe(true) // Placeholder
-  })
+    fireEvent.change(screen.getByLabelText('Name *'), { target: { value: 'My Campaign' } })
+    fireEvent.change(screen.getByLabelText('Subject'), { target: { value: 'Subject line' } })
+    fireEvent.change(screen.getByLabelText('Content *'), { target: { value: 'Hello world' } })
 
-  it('should schedule campaign', async () => {
-    const { scheduleCampaign } = await import('@/services/api/campaigns')
-    vi.mocked(scheduleCampaign).mockResolvedValue({
-      id: 1,
-      name: 'Scheduled Campaign',
-      status: 'scheduled',
-      schedule_at: '2025-12-01T10:00:00Z',
+    const submitButtons = screen.getAllByRole('button', { name: /create campaign/i })
+    fireEvent.click(submitButtons[submitButtons.length - 1])
+
+    await waitFor(() => {
+      expect(createCampaign).toHaveBeenCalledWith({
+        name: 'My Campaign',
+        type: 'email',
+        subject: 'Subject line',
+        content: 'Hello world',
+      })
     })
-
-    renderComponent()
-
-    // This will fail until we implement the component
-    // const scheduleButton = screen.getByText('Schedule')
-    // fireEvent.click(scheduleButton)
-    // 
-    // await waitFor(() => {
-    //   expect(scheduleCampaign).toHaveBeenCalled()
-    // })
-
-    expect(true).toBe(true) // Placeholder
   })
 
-  it('should display campaign analytics', async () => {
-    const { getCampaignAnalytics } = await import('@/services/api/campaigns')
+  it('shows analytics after selecting a campaign card', async () => {
+    const { listCampaigns, getCampaignAnalytics } = await import('@/services/api/campaigns')
+    vi.mocked(listCampaigns).mockResolvedValue({
+      items: [
+        {
+          id: 7,
+          user_id: 'user-2',
+          name: 'Analytics Campaign',
+          type: 'email',
+          status: 'sent',
+          total_recipients: 200,
+          sent_count: 200,
+          opened_count: 50,
+          clicked_count: 25,
+          subject: 'Subject',
+          content: 'Body',
+          template_id: undefined,
+          settings: {},
+          scheduled_at: undefined,
+          started_at: undefined,
+          sent_at: undefined,
+          completed_at: undefined,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ],
+      total: 1,
+      page: 1,
+      per_page: 12,
+    })
     vi.mocked(getCampaignAnalytics).mockResolvedValue({
-      total_recipients: 100,
-      sent_count: 100,
-      opened_count: 25,
-      clicked_count: 10,
-      open_rate: 0.25,
-      click_rate: 0.10,
-      click_to_open_rate: 0.40,
-      total_activities: 35,
+      total_recipients: 200,
+      sent_count: 180,
+      opened_count: 60,
+      clicked_count: 30,
+      open_rate: 0.333,
+      click_rate: 0.166,
+      click_to_open_rate: 0.5,
+      total_activities: 90,
     })
 
     renderComponent()
 
-    // This will fail until we implement the component
-    // await waitFor(() => {
-    //   expect(screen.getByText('25%')).toBeInTheDocument() // Open rate
-    //   expect(screen.getByText('10%')).toBeInTheDocument() // Click rate
-    // })
+    await waitFor(() => expect(screen.getByText('Analytics Campaign')).toBeInTheDocument())
 
-    expect(true).toBe(true) // Placeholder
+    fireEvent.click(screen.getByText('Analytics Campaign'))
+
+    await waitFor(() => {
+      expect(getCampaignAnalytics).toHaveBeenCalledWith(7)
+      expect(screen.getByText('Campaign Analytics')).toBeInTheDocument()
+      expect(screen.getByText(/60/)).toBeInTheDocument()
+    })
   })
 })
 
