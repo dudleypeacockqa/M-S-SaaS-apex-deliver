@@ -128,16 +128,16 @@ def make_voice_call(
         "Content-Type": "application/json",
     }
     
-        payload = {
-            "agent_id": call_data["agent_id"],
-            "phone_number": phone_number,
-            "metadata": {
-                "voice_call_id": voice_call.id,
-                "contact_id": contact_id,
-                "campaign_id": campaign_id,
-                **metadata,
-            },
-        }
+    payload = {
+        "agent_id": call_data["agent_id"],
+        "phone_number": phone_number,
+        "metadata": {
+            "voice_call_id": voice_call.id,
+            "contact_id": contact_id,
+            "campaign_id": campaign_id,
+            **metadata,
+        },
+    }
     
     try:
         response = requests.post(url, json=payload, headers=headers, timeout=30)
