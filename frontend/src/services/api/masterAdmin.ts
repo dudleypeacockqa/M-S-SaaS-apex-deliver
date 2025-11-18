@@ -71,6 +71,9 @@ export enum CampaignType {
   EMAIL = 'email',
   SMS = 'sms',
   MIXED = 'mixed',
+  VOICE = 'voice',
+  LINKEDIN = 'linkedin',
+  MULTI_CHANNEL = 'multi_channel',
 }
 
 export enum CampaignStatus {
