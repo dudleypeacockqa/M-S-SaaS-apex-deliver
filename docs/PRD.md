@@ -1,8 +1,8 @@
 # M&A Intelligence Platform - Product Requirements Document
 
 **Author:** Codex (Analyst)  
-**Date:** 2025-11-10  
-**Version:** 1.0
+**Date:** 2025-11-18  
+**Version:** 1.2 (adds v1.2 enhancement scope)
 
 ---
 
@@ -66,6 +66,16 @@ M&A workloads demand audit trails (SOC2/GDPR), legal holds, permission tiers, an
 - **Advanced Analytics:** Portfolio forecasting, anomaly detection, cohort dashboards, benchmarking, and multi-entity funnel insights.  
 - **Events & Community:** Ticketing, webinars, referral programs, premium content gating, and success marketing automations.  
 - **Usage-Based Monetization:** Metered document room storage, AI compute bundles, task automation packs with alerts for upgrades.
+
+### V1.2 Enhancement Objectives
+
+The **v1.2 scope** (see `docs/bmad/V1.2-SCOPE.md`) concentrates on:
+
+1. Clearing outstanding backend (11) and frontend (12) TODOs with emphasis on pagination, caching, and UX polish.  
+2. Raising Lighthouse performance/accessibility metrics to ≥90 while tightening React/Vite bundles.  
+3. Increasing automated test coverage to ≥90% across backend (`pytest --cov=backend/app`) and frontend (`npm run test -- --coverage`).  
+4. Hardening cross-cutting systems—Clerk/Stripe integrations, Cloudflare R2 storage, Celery/Redis automation—and enhancing deployment guardrails in `render.yaml`/`prestart.sh`.  
+5. Keeping BMAD workflow artifacts (stories, architecture, deployment reports) synced so multiple AI agents can execute consistently.
 
 ### Vision (Future)
 
