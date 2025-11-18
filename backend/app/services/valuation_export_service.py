@@ -24,7 +24,8 @@ try:
     from weasyprint import HTML, CSS
     from weasyprint.text.fonts import FontConfiguration
     WEASYPRINT_AVAILABLE = True
-except ImportError:
+except (ImportError, OSError):
+    # OSError can occur if system libraries (libgobject, libpango, etc.) are missing
     HTML = None  # type: ignore
     CSS = None  # type: ignore
     FontConfiguration = None  # type: ignore

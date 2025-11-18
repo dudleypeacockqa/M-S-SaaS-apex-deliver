@@ -14,7 +14,8 @@ from decimal import Decimal
 try:
     from weasyprint import HTML, CSS
     WEASYPRINT_AVAILABLE = True
-except ImportError:
+except (ImportError, OSError):
+    # OSError can occur if system libraries (libgobject, libpango, etc.) are missing
     HTML = None
     CSS = None
     WEASYPRINT_AVAILABLE = False
