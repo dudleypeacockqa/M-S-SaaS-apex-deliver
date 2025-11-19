@@ -12,7 +12,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import BlogAdminEditor from './BlogAdminEditor';
 import * as blogService from '@/services/blogService';
 
@@ -24,7 +24,7 @@ vi.mock('@/services/blogService', () => ({
   getBlogPost: vi.fn(),
 }));
 
-const renderWithProviders = (component: React.ReactElement) => {
+const renderWithProviders = (component: React.ReactElement, route = '/admin/blog/new') => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
@@ -34,9 +34,12 @@ const renderWithProviders = (component: React.ReactElement) => {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        {component}
-      </BrowserRouter>
+      <MemoryRouter initialEntries={[route]}>
+        <Routes>
+          <Route path="/admin/blog/new" element={component} />
+          <Route path="/admin/blog/:id/edit" element={component} />
+        </Routes>
+      </MemoryRouter>
     </QueryClientProvider>
   );
 };
@@ -138,6 +141,65 @@ describe('BlogAdminEditor', () => {
             publishedAt: expect.any(String),
           })
         );
+      });
+    });
+
+    it('loads existing post data when editing', async () => {
+      vi.mocked(blogService.getBlogPost).mockResolvedValue({
+        id: 1,
+        title: 'Existing Title',
+        slug: 'existing-title',
+        excerpt: 'Existing excerpt',
+        content: 'Existing content',
+        category: 'Insights',
+        primary_keyword: 'insights',
+        secondary_keywords: ['seo', 'growth'],
+        meta_description: 'Existing meta',
+        featured_image_url: 'https://example.com/image.jpg',
+        author: 'Editor',
+        read_time_minutes: 5,
+        published: false,
+        published_at: null,
+        created_at: '2025-11-17T00:00:00Z',
+        updated_at: '2025-11-18T00:00:00Z',
+      } as any);
+
+      renderWithProviders(<BlogAdminEditor />, '/admin/blog/existing-title/edit');
+
+      expect(await screen.findByDisplayValue('Existing Title')).toBeInTheDocument();
+      expect(screen.getByLabelText(/tags/i)).toHaveValue('seo, growth');
+      expect(blogService.getBlogPost).toHaveBeenCalledWith('existing-title');
+    });
+
+    it('updates an existing post when saving a draft', async () => {
+      const user = userEvent.setup();
+      vi.mocked(blogService.getBlogPost).mockResolvedValue({
+        id: 1,
+        title: 'Existing Title',
+        slug: 'existing-title',
+        excerpt: 'Existing excerpt',
+        content: 'Existing content',
+        category: 'Insights',
+        primary_keyword: 'insights',
+        secondary_keywords: ['seo'],
+        meta_description: 'Existing meta',
+        featured_image_url: null,
+        author: 'Editor',
+        read_time_minutes: 5,
+        published: false,
+        published_at: null,
+        created_at: '2025-11-17T00:00:00Z',
+        updated_at: '2025-11-18T00:00:00Z',
+      } as any);
+      vi.mocked(blogService.updateBlogPost).mockResolvedValue({ id: 'post-1' } as any);
+
+      renderWithProviders(<BlogAdminEditor />, '/admin/blog/existing-title/edit');
+
+      await screen.findByDisplayValue('Existing Title');
+      await user.click(screen.getByRole('button', { name: /save draft/i }));
+
+      await waitFor(() => {
+        expect(blogService.updateBlogPost).toHaveBeenCalled();
       });
     });
   });

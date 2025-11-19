@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'node:path'
 import dotenv from 'dotenv'
+import Sitemap from 'vite-plugin-sitemap'
 
 import { resolveImageminPlugin } from './config/imageminPluginLoader'
 
@@ -72,6 +73,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    Sitemap({ hostname: 'https://100daysandbeyond.com' }),
     imageminPluginFactory &&
       imageminPluginFactory({
         gifsicle: {

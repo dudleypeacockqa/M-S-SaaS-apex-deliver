@@ -1,22 +1,19 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { DynamicPricingSimulator } from './DynamicPricingSimulator';
 
 // Mock Recharts
-vi.mock('recharts', () => {
-  const OriginalModule = vi.importActual('recharts');
-  return {
-    ...OriginalModule,
-    ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div className="recharts-responsive-container">{children}</div>,
-    BarChart: ({ children }: { children: React.ReactNode }) => <div className="recharts-bar-chart">{children}</div>,
-    Bar: () => <div className="recharts-bar" />,
-    XAxis: () => <div className="recharts-x-axis" />,
-    YAxis: () => <div className="recharts-y-axis" />,
-    CartesianGrid: () => <div className="recharts-cartesian-grid" />,
-    Tooltip: () => <div className="recharts-tooltip" />,
-    Cell: () => <div className="recharts-cell" />,
-  };
-});
+vi.mock('recharts', () => ({
+  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div className="recharts-responsive-container">{children}</div>,
+  BarChart: ({ children }: { children: React.ReactNode }) => <div className="recharts-bar-chart">{children}</div>,
+  Bar: () => <div className="recharts-bar" />,
+  XAxis: () => <div className="recharts-x-axis" />,
+  YAxis: () => <div className="recharts-y-axis" />,
+  CartesianGrid: () => <div className="recharts-cartesian-grid" />,
+  Tooltip: () => <div className="recharts-tooltip" />,
+  Cell: () => <div className="recharts-cell" />,
+}));
 
 describe('DynamicPricingSimulator', () => {
   it('renders title', () => {

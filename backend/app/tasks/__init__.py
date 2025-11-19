@@ -8,6 +8,10 @@ from .campaign_tasks import (
     update_campaign_analytics_task,
     process_scheduled_campaigns_task,
 )
+from .email_tasks import (
+    process_email_queue_task,
+    retry_failed_emails_task,
+)
 from .voice_tasks import (
     make_voice_call_task,
     process_voice_webhook_task,
@@ -31,6 +35,8 @@ __all__ = [
     "send_email_batch_task",
     "update_campaign_analytics_task",
     "process_scheduled_campaigns_task",
+    "process_email_queue_task",
+    "retry_failed_emails_task",
     "make_voice_call_task",
     "process_voice_webhook_task",
     "deliver_webhook_task",

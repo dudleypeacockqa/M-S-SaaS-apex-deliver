@@ -53,6 +53,10 @@ jobs:
         run: npm run test -- --run --coverage
         working-directory: frontend
 
+      - name: Run Blog Admin Vitest focus
+        run: npm run test -- --run src/pages/admin/BlogAdminEditor.test.tsx src/tests/integration/routing.test.tsx
+        working-directory: frontend
+
       - name: Start marketing preview server
         run: nohup npm run preview:test > preview.log 2>&1 &
         working-directory: frontend
@@ -81,6 +85,9 @@ jobs:
       - name: Run backend pytest
         run: pytest --maxfail=1 --disable-warnings
         working-directory: backend
+
+      - name: Run blog API regression tests
+        run: pytest backend/tests/api/test_blog_api.py -k "update_blog_post"
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps

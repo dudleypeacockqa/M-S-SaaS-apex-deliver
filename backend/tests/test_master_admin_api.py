@@ -17,8 +17,14 @@ def test_master_admin_requires_auth(client):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_goal_crud_flow(client, auth_headers_admin):
-    headers = auth_headers_admin
+def test_admin_cannot_access_master_admin_routes(client, auth_headers_admin):
+    response = client.get("/api/master-admin/goals/current", headers=auth_headers_admin)
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json()["detail"] == "Master admin access required"
+
+
+def test_goal_crud_flow(client, auth_headers_master_admin):
+    headers = auth_headers_master_admin
     monday = _current_monday()
     payload = {
         "week_start": monday.isoformat(),
@@ -56,8 +62,8 @@ def test_goal_crud_flow(client, auth_headers_admin):
     assert update_response.json()["target_calls"] == 12
 
 
-def test_activity_crud_and_listing(client, auth_headers_admin):
-    headers = auth_headers_admin
+def test_activity_crud_and_listing(client, auth_headers_master_admin):
+    headers = auth_headers_master_admin
     today = date.today().isoformat()
 
     first_payload = {
@@ -116,8 +122,8 @@ def test_activity_crud_and_listing(client, auth_headers_admin):
     assert missing_resp.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_scores_and_dashboard_stats(client, auth_headers_admin):
-    headers = auth_headers_admin
+def test_scores_and_dashboard_stats(client, auth_headers_master_admin):
+    headers = auth_headers_master_admin
     today = date.today()
     # Use today and yesterday to ensure we have data for the /scores/today endpoint
     # and to test week aggregation
@@ -195,8 +201,8 @@ def test_scores_and_dashboard_stats(client, auth_headers_admin):
     assert dashboard["unread_nudges"] == 1
 
 
-def test_focus_session_flow(client, auth_headers_admin):
-    headers = auth_headers_admin
+def test_focus_session_flow(client, auth_headers_master_admin):
+    headers = auth_headers_master_admin
     start_time = datetime.utcnow().replace(microsecond=0).isoformat()
 
     create_resp = client.post(
@@ -230,8 +236,8 @@ def test_focus_session_flow(client, auth_headers_admin):
     assert second_complete.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_nudge_management(client, auth_headers_admin):
-    headers = auth_headers_admin
+def test_nudge_management(client, auth_headers_master_admin):
+    headers = auth_headers_master_admin
     create_resp = client.post(
         "/api/master-admin/nudges",
         json={"type": "alert", "message": "Pipeline review due", "priority": "high"},
@@ -258,8 +264,8 @@ def test_nudge_management(client, auth_headers_admin):
     assert missing_resp.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_meeting_template_management(client, auth_headers_admin):
-    headers = auth_headers_admin
+def test_meeting_template_management(client, auth_headers_master_admin):
+    headers = auth_headers_master_admin
     payload = {
         "title": "Discovery Call",
         "type": "discovery",
@@ -282,8 +288,8 @@ def test_meeting_template_management(client, auth_headers_admin):
     assert other_resp.json()["total"] == 0
 
 
-def test_prospect_crud_flow(client, auth_headers_admin):
-    headers = auth_headers_admin
+def test_prospect_crud_flow(client, auth_headers_master_admin):
+    headers = auth_headers_master_admin
     payload = {
         "name": "Jane Founder",
         "email": "jane@example.com",
@@ -318,8 +324,8 @@ def test_prospect_crud_flow(client, auth_headers_admin):
     assert missing_resp.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_deal_pipeline_flow(client, auth_headers_admin):
-    headers = auth_headers_admin
+def test_deal_pipeline_flow(client, auth_headers_master_admin):
+    headers = auth_headers_master_admin
     prospect_resp = client.post(
         "/api/master-admin/prospects",
         json={"name": "Acme Procurement", "status": "qualified"},
@@ -364,8 +370,8 @@ def test_deal_pipeline_flow(client, auth_headers_admin):
     assert update_resp.json()["probability"] == 65
 
 
-def test_campaign_and_recipient_management(client, auth_headers_admin):
-    headers = auth_headers_admin
+def test_campaign_and_recipient_management(client, auth_headers_master_admin):
+    headers = auth_headers_master_admin
     prospect_resp = client.post(
         "/api/master-admin/prospects",
         json={"name": "Pipeline Lead", "email": "lead@example.com", "status": "qualified"},
@@ -446,8 +452,8 @@ def test_campaign_and_recipient_management(client, auth_headers_admin):
     assert missing_campaign.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_content_script_and_piece_flow(client, auth_headers_admin):
-    headers = auth_headers_admin
+def test_content_script_and_piece_flow(client, auth_headers_master_admin):
+    headers = auth_headers_master_admin
     script_payload = {
         "title": "YouTube Launch Script",
         "type": "youtube",
@@ -508,8 +514,8 @@ def test_content_script_and_piece_flow(client, auth_headers_admin):
     assert delete_script.status_code == status.HTTP_204_NO_CONTENT
 
 
-def test_lead_capture_flow(client, auth_headers_admin):
-    headers = auth_headers_admin
+def test_lead_capture_flow(client, auth_headers_master_admin):
+    headers = auth_headers_master_admin
     payload = {
         "name": "Conference Lead",
         "email": "lead@event.com",
@@ -552,8 +558,8 @@ def test_lead_capture_flow(client, auth_headers_admin):
     assert missing_resp.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_collateral_library_flow(client, auth_headers_admin):
-    headers = auth_headers_admin
+def test_collateral_library_flow(client, auth_headers_master_admin):
+    headers = auth_headers_master_admin
     collateral_payload = {
         "title": "One Pager",
         "type": "one-pager",

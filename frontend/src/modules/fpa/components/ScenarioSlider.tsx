@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 interface ScenarioSliderProps {
   label: string;
@@ -21,6 +21,7 @@ export const ScenarioSlider: React.FC<ScenarioSliderProps> = ({
   formatValue,
   onChange,
 }) => {
+  const sliderId = useId();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseFloat(e.target.value);
     onChange(newValue);
@@ -32,12 +33,15 @@ export const ScenarioSlider: React.FC<ScenarioSliderProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-4">
-        <label className="text-sm font-semibold text-gray-900">{label}</label>
+        <label htmlFor={sliderId} className="text-sm font-semibold text-gray-900">
+          {label}
+        </label>
         <span className="text-lg font-bold text-indigo-600">Current: {displayValue}</span>
       </div>
       
       <div className="relative">
         <input
+          id={sliderId}
           type="range"
           min={min}
           max={max}

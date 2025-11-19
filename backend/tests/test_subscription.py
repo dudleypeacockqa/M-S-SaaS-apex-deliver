@@ -14,6 +14,15 @@ from app.core.subscription import (
 )
 
 
+@pytest.fixture(autouse=True)
+def disable_clerk_bypass(monkeypatch):
+    """Ensure Clerk bypass is disabled for subscription-specific tests."""
+
+    monkeypatch.delenv("CLERK_BYPASS_TIERS", raising=False)
+    yield
+    monkeypatch.setenv("CLERK_BYPASS_TIERS", "1")
+
+
 class TestGetOrganizationTier:
     """Tests for fetching organization subscription tier from Clerk."""
 

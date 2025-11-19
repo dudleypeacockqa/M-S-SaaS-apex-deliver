@@ -15,11 +15,12 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Card } from '@/components/ui/Card';
-import { 
-  createBlogPost, 
-  updateBlogPost, 
+import {
+  createBlogPost,
+  updateBlogPost,
   publishBlogPost,
-  getBlogPost 
+  getBlogPost,
+  type BlogPostEditorPayload,
 } from '@/services/blogService';
 
 interface BlogPostForm {
@@ -54,12 +55,33 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({ autoSaveIntervalMs = 
     metaDescription: '',
     featuredImage: null,
     status: 'draft',
+    publishedAt: undefined,
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
+  const [isLoadingPost, setIsLoadingPost] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const buildPayload = useCallback(
+    (data: BlogPostForm, overrides?: Partial<BlogPostForm>): BlogPostEditorPayload => {
+      const merged = { ...data, ...overrides }
+      return {
+        title: merged.title,
+        content: merged.content,
+        excerpt: merged.excerpt,
+        author: merged.author,
+        tags: merged.tags,
+        slug: merged.slug,
+        metaDescription: merged.metaDescription,
+        status: merged.status,
+        publishedAt: merged.publishedAt,
+        featuredImageUrl: imagePreview,
+      }
+    },
+    [imagePreview]
+  );
 
   // Auto-generate slug from title
   useEffect(() => {
@@ -74,22 +96,54 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({ autoSaveIntervalMs = 
 
   // Auto-save draft on interval
   useEffect(() => {
-    if (!formData.title) return;
+    if (!formData.title || isLoadingPost) return;
 
     const interval = setInterval(() => {
-      saveDraftMutation.mutate(formData);
+      saveDraftMutation.mutate({ ...formData, status: 'draft', publishedAt: undefined });
     }, autoSaveIntervalMs);
 
     return () => clearInterval(interval);
-  }, [formData, autoSaveIntervalMs]);
+  }, [formData, autoSaveIntervalMs, isLoadingPost]);
+
+  const loadExistingPost = useCallback(async () => {
+    if (!id) return;
+    setIsLoadingPost(true);
+    try {
+      const post = await getBlogPost(id);
+      setFormData({
+        title: post.title,
+        content: post.content,
+        excerpt: post.excerpt,
+        author: post.author,
+        tags: post.secondary_keywords.join(', '),
+        slug: post.slug,
+        metaDescription: post.meta_description,
+        featuredImage: null,
+        status: post.published ? 'published' : 'draft',
+        publishedAt: post.published_at ?? undefined,
+      });
+      setImagePreview(post.featured_image_url ?? null);
+      setLastSaved(post.updated_at ? new Date(post.updated_at) : null);
+      setErrors({});
+    } catch (error) {
+      console.error('Failed to load blog post', error);
+    } finally {
+      setIsLoadingPost(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    loadExistingPost();
+  }, [loadExistingPost]);
 
   // Mutations
   const saveDraftMutation = useMutation({
     mutationFn: (data: BlogPostForm) => {
+      const payload = buildPayload(data, { status: 'draft', publishedAt: undefined });
       if (id) {
-        return updateBlogPost(id, { ...data, status: 'draft' });
+        return updateBlogPost(id, payload);
       }
-      return createBlogPost({ ...data, status: 'draft' });
+      return createBlogPost(payload);
     },
     onSuccess: () => {
       setLastSaved(new Date());
@@ -99,12 +153,11 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({ autoSaveIntervalMs = 
 
   const publishMutation = useMutation({
     mutationFn: (data: BlogPostForm) => {
-      const publishData = {
-        ...data,
+      const publishData = buildPayload(data, {
         status: 'published' as const,
         publishedAt: new Date().toISOString(),
-      };
-      
+      });
+
       if (id) {
         return publishBlogPost(id, publishData);
       }
@@ -151,15 +204,18 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({ autoSaveIntervalMs = 
   };
 
   const handleSaveDraft = () => {
-    saveDraftMutation.mutate(formData);
+    if (isLoadingPost) return;
+    saveDraftMutation.mutate({ ...formData, status: 'draft', publishedAt: undefined });
   };
 
   const handlePublish = () => {
+    if (isLoadingPost) return;
     if (!validateForm()) return;
     setShowPublishDialog(true);
   };
 
   const confirmPublish = () => {
+    if (isLoadingPost) return;
     publishMutation.mutate(formData);
     setShowPublishDialog(false);
   };
@@ -167,6 +223,11 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({ autoSaveIntervalMs = 
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
       <Card className="p-6">
+        {isLoadingPost && (
+          <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600">
+            Loading blog post…
+          </div>
+        )}
         <h1 className="text-3xl font-bold mb-6">
           {id ? 'Edit Blog Post' : 'Create New Blog Post'}
         </h1>
@@ -318,14 +379,14 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({ autoSaveIntervalMs = 
                 type="button"
                 variant="outline"
                 onClick={handleSaveDraft}
-                disabled={saveDraftMutation.isPending}
+                disabled={isLoadingPost || saveDraftMutation.isPending}
               >
                 Save Draft
               </Button>
               <Button
                 type="button"
                 onClick={handlePublish}
-                disabled={publishMutation.isPending}
+                disabled={isLoadingPost || publishMutation.isPending}
               >
                 Publish
               </Button>

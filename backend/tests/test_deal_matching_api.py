@@ -7,6 +7,8 @@ import pytest
 from decimal import Decimal
 from unittest.mock import patch
 
+from fastapi import status
+
 from app.api.dependencies.auth import get_current_user
 from app.models.deal_match import DealMatchCriteria, DealMatch, DealMatchAction
 
@@ -27,7 +29,7 @@ pytestmark = pytest.mark.usefixtures("match_org", "match_user", "match_deal")
 class TestDealMatchingCriteriaAPI:
     """Test suite for deal matching criteria CRUD endpoints."""
 
-    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=True)
     def test_create_criteria_success(self, mock_check_access, client, match_user, match_org):
         """Test creating new deal matching criteria."""
 
@@ -64,6 +66,26 @@ class TestDealMatchingCriteriaAPI:
         assert "id" in data
         assert "created_at" in data
 
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=False)
+    def test_create_criteria_requires_feature_access(self, mock_check_access, client, match_user):
+        """Ensure criteria creation is denied when feature access is missing."""
+        dependency_overrides(get_current_user, lambda: match_user)
+
+        response = client.post(
+            "/api/match-criteria",
+            headers={"Authorization": f"Bearer mock_token_{match_user.id}"},
+            json={
+                "name": "Denied Criteria",
+                "deal_type": "buy_side",
+                "industries": ["saas"],
+                "min_deal_size": 1000000,
+                "max_deal_size": 5000000,
+            },
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json()["detail"].startswith("Upgrade")
+
 
     def test_create_criteria_requires_auth(self, client):
         """Test creating criteria requires authentication."""
@@ -80,7 +102,7 @@ class TestDealMatchingCriteriaAPI:
 
         assert response.status_code == 401
 
-    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=True)
     def test_list_criteria(self, mock_check_access, client, match_user, db_session):
         """Test listing all criteria for current user."""
 
@@ -125,7 +147,7 @@ class TestDealMatchingCriteriaAPI:
 class TestDealMatchingAPI:
     """Test suite for deal matching operations endpoints."""
 
-    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=True)
     def test_find_matches_for_deal(
         self, mock_check_access, client, match_user, match_deal, create_deal_for_org, match_org, db_session
     ):
@@ -170,6 +192,27 @@ class TestDealMatchingAPI:
         assert "total_count" in data
         assert isinstance(data["matches"], list)
 
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=False)
+    def test_find_matches_requires_feature_access(self, mock_check_access, client, match_user, match_deal):
+        """Ensure match finding respects subscription entitlements."""
+        dependency_overrides(get_current_user, lambda: match_user)
+
+        response = client.post(
+            f"/api/deals/{match_deal.id}/find-matches",
+            headers={"Authorization": f"Bearer mock_token_{match_user.id}"},
+            json={
+                "criteria": {
+                    "deal_type": "buy_side",
+                    "industries": ["saas"],
+                    "min_deal_size": 1000000,
+                    "max_deal_size": 5000000,
+                }
+            },
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json()["detail"].startswith("Upgrade")
+
 
     def test_find_matches_requires_auth(self, client, match_deal):
         """Test finding matches requires authentication."""
@@ -187,7 +230,7 @@ class TestDealMatchingAPI:
 
         assert response.status_code == 401
 
-    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=True)
     def test_list_matches_for_deal(
         self, mock_check_access, client, match_user, match_deal, create_deal_for_org, match_org, db_session
     ):
@@ -251,7 +294,7 @@ class TestDealMatchingAPI:
 
         assert response.status_code == 401
 
-    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=True)
     def test_list_matches_deal_not_found(self, mock_check_access, client, match_user):
         """Test listing matches for non-existent deal."""
 
@@ -265,7 +308,7 @@ class TestDealMatchingAPI:
         assert response.status_code == 404
 
 
-    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=True)
     def test_find_matches_deal_not_found(self, mock_check_access, client, match_user):
         """Test finding matches for non-existent deal."""
 
@@ -291,7 +334,7 @@ class TestDealMatchingAPI:
 class TestDealMatchActionsAPI:
     """Test suite for match action tracking endpoints."""
 
-    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=True)
     def test_record_match_action_view(
         self, mock_check_access, client, match_user, match_deal, create_deal_for_org, match_org, db_session
     ):
@@ -338,7 +381,7 @@ class TestDealMatchActionsAPI:
         assert "created_at" in data
 
 
-    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=True)
     def test_record_match_action_save(
         self, mock_check_access, client, match_user, match_deal, create_deal_for_org, match_org, db_session
     ):
@@ -381,7 +424,7 @@ class TestDealMatchActionsAPI:
         assert data["metadata"]["note"] == "Interesting opportunity"
 
 
-    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=True)
     def test_record_match_action_pass(
         self, mock_check_access, client, match_user, match_deal, create_deal_for_org, match_org, db_session
     ):
@@ -428,7 +471,7 @@ class TestDealMatchActionsAPI:
         assert updated_match.status == "declined"
 
 
-    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=True)
     def test_record_match_action_request_intro(
         self, mock_check_access, client, match_user, match_deal, create_deal_for_org, match_org, db_session
     ):
@@ -487,7 +530,7 @@ class TestDealMatchActionsAPI:
 
         assert response.status_code == 401
 
-    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=True)
     def test_record_match_action_match_not_found(self, mock_check_access, client, match_user):
         """Test recording action for non-existent match."""
 
@@ -509,7 +552,7 @@ class TestDealMatchActionsAPI:
 class TestDealMatchingIntegration:
     """Integration tests for end-to-end matching workflow."""
 
-    @patch('app.services.entitlement_service.check_feature_access', return_value=True)
+    @patch('app.api.dependencies.auth.check_feature_access', return_value=True)
     def test_create_criteria_and_find_matches_workflow(
         self, mock_check_access, client, match_user, match_deal, create_deal_for_org, match_org
     ):

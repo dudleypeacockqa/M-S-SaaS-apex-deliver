@@ -39,9 +39,22 @@ const emitLinkedInEvent = (conversionId?: number) => {
   }
 }
 
+const emitGTMEvent = (event: string, params: AnalyticsEventParams) => {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  window.dataLayer = window.dataLayer || []
+  window.dataLayer.push({
+    event,
+    ...params
+  })
+}
+
 export const trackMarketingEvent = (event: string, params: AnalyticsEventParams = {}) => {
   emitGtagEvent(event, params)
   emitBehaviorEvent(event, params)
+  emitGTMEvent(event, params)
   emitLinkedInEvent() // Track page-level event in LinkedIn
 }
 

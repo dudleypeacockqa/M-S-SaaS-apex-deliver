@@ -1,7 +1,7 @@
 # M&A Intelligence Platform - Honest 100% Completion Status (2025-11-19T12:45Z)
 
 **Repository**: `main` (local HEAD 0f04225f)
-**Last Updated**: 2025-11-19 12:45 UTC (plan refresh + marketing Playwright evidence)
+**Last Updated**: 2025-11-19 14:10 UTC (docs synced + marketing Playwright log archived + QA prep planning)
 **Audited Artifacts**: backend/tests/test-results-2025-11-17.txt, frontend/test-results-2025-11-17.txt, docs/tests/2025-11-19-playwright.txt, docs/deployments/2025-11-19-marketing-playwright.txt, docs/bmad/DAILY_STATUS_NOTES.md
 
 ---
@@ -11,7 +11,7 @@
 - **Actual completion: ⚠️ 99.2%** – automated suites are green, yet BMAD Decide artefacts (documentation sync, BlogAdminEditor E2E proof, manual QA, marketing evidence) remain open.
 - **Test posture: STRONG** – Backend 1,432/1,432 tests pass (55 documented skips, 84% coverage); Frontend 1,742/1,742 tests pass (85.1% coverage); Master Admin 91/91 tests pass.
 - **Deployments: HEALTHY** – Backend (https://ma-saas-backend.onrender.com) and frontend (https://100daysandbeyond.com) verified via `verify_deployment.py` and manual checks on 2025-11-17.
-- **Primary blockers**: (1) Governance docs not yet updated with the latest status, (2) BlogAdminEditor lacks recorded production verification, (3) Seven-surface Master Admin manual QA with Clerk auth has not been executed, (4) Manual Lighthouse/Axe baselines not refreshed post Cloudflare changes, (5) Marketing backlog (mobile nav focus, 38 blog posts, forms + integrations, SEO artefacts) unfinished.
+- **Primary blockers**: (1) BlogAdminEditor lacks recorded production verification, (2) Seven-surface Master Admin manual QA with Clerk auth has not been executed, (3) Manual Lighthouse/Axe baselines not refreshed post Cloudflare changes, (4) Marketing backlog (mobile nav focus, 38 blog posts, forms + integrations, SEO artefacts) unfinished.
 
 ---
 
@@ -22,7 +22,7 @@
 | Backend quality | ✅ 1,432/1,432 passing; 55 skips; 84% coverage | `backend/tests/test-results-2025-11-17.txt` |
 | Frontend quality | ✅ 1,742/1,742 passing; 85.1% coverage | `frontend/test-results-2025-11-17.txt` |
 | Deployment health | ✅ Render backend verified via `verify_deployment.py`; frontend 200 OK | `docs/deployments/2025-11-17-backend-verify.txt` |
-| Governance docs | ⚠️ In progress – README/bmm/100%-status misaligned with latest workflow | README.md, `docs/bmad/bmm-workflow-status.md`, this file |
+| Governance docs | ✅ Synced 2025-11-19 (README/BMAD plan reference the Playwright evidence + next steps) | README.md, `docs/bmad/bmm-workflow-status.md`, this file |
 | BlogAdminEditor verification | ⚠️ Needs `/admin/blog/new` + `/admin/blog/:id/edit` E2E capture | `COMPLETION-PLAN-2025-11-17.md` §1.2 |
 | Master Admin manual QA | ⚠️ Pending 7-surface walkthrough + screenshots | `docs/testing/2025-11-17-MASTER-ADMIN-VALIDATION-CHECKLIST.md` |
 | Performance & accessibility | ⚠️ Manual Lighthouse/Axe runs blocked by Cloudflare; needs manual capture | README.md §Remaining Work, `docs/FINAL-COMPLETION-PLAN.md` |
@@ -36,7 +36,7 @@
 2. ✅ Render backend verified (`verify_deployment.py` → `docs/deployments/2025-11-17-backend-verify.txt`).
 3. ✅ BMAD CLI installed (v4.44.1) and `npx bmad-method status` executed before this update.
 4. ✅ Documentation assets refreshed: `COMPLETION-PLAN-2025-11-17.md`, `TODO.md`, BMAD progress tracker, DAILY_STATUS_NOTES baseline.
-5. ✅ Marketing Playwright infrastructure landed (config + workflow); awaiting first green run with MARKETING_BASE_URL exported.
+5. ✅ Marketing Playwright helper script + embedded preview server landed, and the first green run was captured on 2025-11-19 (docs/tests/2025-11-19-playwright.txt).
 
 ---
 
@@ -44,9 +44,9 @@
 
 1. **Governance Sync** – Update README.md, `docs/bmad/bmm-workflow-status.md`, and this file with the live 2025-11-17 evidence so no artifact prematurely claims 100%.
 2. **BlogAdminEditor E2E Proof** – Extend backend + Playwright/Vitest coverage for `/admin/blog/new` and `/admin/blog/:id/edit`, capture RED logs, fix flows, and archive screenshots/logs confirming production behaviour.
-3. **Master Admin Manual QA** – Execute the seven-module checklist (Dashboard, Activity, Pipeline, Campaigns, Content Studio, Lead Capture, Sales Collateral) using a Clerk-authenticated tester; store notes + media in `docs/testing/`.
+3. **Master Admin Manual QA** – Execute the seven-module checklist (Dashboard, Activity, Pipeline, Campaigns, Content Studio, Lead Capture, Sales Collateral) using a Clerk-authenticated tester; store notes + media in `docs/testing/` and track prerequisites in `docs/testing/2025-11-19-master-admin-qa-prep.md`.
 4. **Manual Lighthouse & Axe Audits** – Run DevTools Lighthouse and Axe DevTools on https://100daysandbeyond.com, document scores, and record any remediation tickets (Cloudflare prevents automated CI runs).
-5. **Marketing Website Completion** – Finish mobile dropdown focus management, implement marketing forms/chatbot/newsletter flows, publish the remaining 38 blog posts with imagery, wire SEO assets (sitemap, robots, OG/Twitter/meta tags, structured data), and capture a passing Playwright smoke run.
+5. **Marketing Website Completion** – Finish mobile dropdown focus management, implement marketing forms/chatbot/newsletter flows, publish the remaining 38 blog posts with imagery, wire SEO assets (sitemap, robots, OG/Twitter/meta tags, structured data), and keep the marketing Playwright smoke suite green (wire script into CI).
 6. **Final Documentation & Handoff** – Generate completion certificate, feature inventory, API/user guides, deployment runbook, troubleshooting guide, and ops handoff package once the above gates are cleared.
 
 ---
@@ -55,7 +55,7 @@
 
 | # | Gap | Impact | Effort | Priority |
 |---|-----|--------|--------|----------|
-| 1 | Governance docs unsynced | Teams lack authoritative artifact describing 2025-11-17 status | 1-2 hrs | P0 |
+| 1 | Governance docs unsynced | ✅ Synced 2025-11-19 (Docs now reference Nov-19 evidence); monitor future updates | -- | P0 |
 | 2 | BlogAdminEditor lacks E2E verification | Can’t claim F-010 complete without proof of `/admin/blog/*` flows | 2-3 hrs | P0 |
 | 3 | Master Admin manual QA missing | No screenshots/evidence for 7 production modules | 4-6 hrs | P0 |
 | 4 | Performance & accessibility audits stale | No Lighthouse/Axe data post Cloudflare tightening | 2-3 hrs | P1 |
@@ -85,7 +85,7 @@
 ### Phase 4 – Marketing Website Finalization (PENDING)
 - Deliver mobile dropdown focus states/animations, ROI widget, marketing forms/chatbot/newsletter integrations, analytics wiring, and SEO artefacts (sitemap, robots, OG/Twitter, structured data).
 - Complete remaining 38 blog posts (per MARKETING_WEBSITE_STATUS.md) with imagery, publish via BlogAdminEditor, and capture GoHighLevel + YouTube embed proofs.
-- Produce a green marketing Playwright smoke suite run with MARKETING_BASE_URL pointed to the preview server.
+- Keep the marketing Playwright smoke suite green (run `scripts/run-marketing-playwright.mjs` locally or in CI) and archive each execution under `docs/tests/`.
 
 ### Phase 5 – Final Documentation & Handoff (PENDING)
 - Update BMAD trackers, generate the 100% completion certificate, compile feature inventory + API/user guides, produce deployment/troubleshooting runbooks, and assemble the executive summary + maintenance plan.

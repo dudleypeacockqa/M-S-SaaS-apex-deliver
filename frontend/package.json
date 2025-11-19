@@ -18,7 +18,29 @@
     "axe:local": "axe http://127.0.0.1:4173/ --load-delay 5000 --timeout 60000 --save docs/testing/axe-report.json",
     "audit:local": "npm run lighthouse:local && npm run axe:local",
     "audit:help": "echo 'Usage: VITE_CLERK_PUBLISHABLE_KEY=<key> npm run preview:test (in one terminal), then npm run audit:local (in another)'",
-    "verify:lucide": "node scripts/verify-lucide-chunk.mjs"
+    "verify:lucide": "node scripts/verify-lucide-chunk.mjs",
+    "postbuild": "react-snap"
+  },
+  "reactSnap": {
+    "source": "dist",
+    "destination": "dist",
+    "include": [
+      "/",
+      "/pricing",
+      "/features",
+      "/contact",
+      "/about",
+      "/team",
+      "/podcast",
+      "/security",
+      "/faq",
+      "/capliquify-fpa",
+      "/sales-promotion-pricing"
+    ],
+    "puppeteerArgs": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox"
+    ]
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.53.3",

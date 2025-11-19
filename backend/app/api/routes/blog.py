@@ -358,6 +358,56 @@ def create_blog_post(
     db.add(db_post)
     db.commit()
     db.refresh(db_post)
-    
+
     # Return response
     return serialize_blog_post(db_post)
+
+
+@router.put("/{slug}", response_model=BlogPostResponse)
+def update_blog_post(
+    slug: str,
+    blog_post: BlogPostUpdate,
+    db: Session = Depends(get_db),
+) -> BlogPostResponse:
+    """Update an existing blog post by slug."""
+
+    existing_post = db.execute(
+        select(BlogPost).where(BlogPost.slug == slug)
+    ).scalar_one_or_none()
+
+    if not existing_post:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Blog post with slug '{slug}' not found",
+        )
+
+    update_data = blog_post.model_dump(exclude_unset=True)
+
+    new_slug = update_data.get("slug")
+    if new_slug and new_slug != existing_post.slug:
+        conflict = db.execute(
+            select(BlogPost).where(
+                BlogPost.slug == new_slug,
+                BlogPost.id != existing_post.id,
+            )
+        ).scalar_one_or_none()
+        if conflict:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Blog post with slug '{new_slug}' already exists",
+            )
+
+    if "secondary_keywords" in update_data:
+        keywords = update_data["secondary_keywords"]
+        update_data["secondary_keywords"] = (
+            ",".join(keywords) if keywords else None
+        )
+
+    for field, value in update_data.items():
+        setattr(existing_post, field, value)
+
+    db.add(existing_post)
+    db.commit()
+    db.refresh(existing_post)
+
+    return serialize_blog_post(existing_post)

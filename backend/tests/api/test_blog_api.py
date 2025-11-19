@@ -252,3 +252,89 @@ def test_create_blog_post_duplicate_slug_returns_409(client: TestClient, db_sess
     response = client.post("/api/blog", json=payload)
 
     assert response.status_code == 409
+
+
+def test_update_blog_post_success(client: TestClient, db_session: Session):
+    """PUT /api/blog/{slug} updates editable fields."""
+    post = BlogPost(
+        title="Original Title",
+        slug="original-slug",
+        excerpt="Original excerpt",
+        content="Original content",
+        category="M&A Strategy",
+        primary_keyword="strategy",
+        secondary_keywords="legacy,content",
+        meta_description="Original meta",
+        author="Test Author",
+        read_time_minutes=5,
+        published=False,
+    )
+    db_session.add(post)
+    db_session.commit()
+
+    payload = {
+        "title": "Updated Title",
+        "excerpt": "Updated excerpt",
+        "secondary_keywords": ["seo", "growth"],
+        "published": True,
+    }
+
+    response = client.put("/api/blog/original-slug", json=payload)
+
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["title"] == "Updated Title"
+    assert data["secondary_keywords"] == ["seo", "growth"]
+    assert data["published"] is True
+
+    refreshed = db_session.execute(
+        select(BlogPost).where(BlogPost.slug == "original-slug")
+    ).scalar_one()
+    assert refreshed.title == "Updated Title"
+    assert refreshed.secondary_keywords == "seo,growth"
+
+
+def test_update_blog_post_handles_slug_conflicts(client: TestClient, db_session: Session):
+    """Changing slug to an existing value returns 409."""
+    first = BlogPost(
+        title="First",
+        slug="first-slug",
+        excerpt="First",
+        content="First",
+        category="FP&A",
+        primary_keyword="first",
+        meta_description="First",
+        author="Author",
+        read_time_minutes=3,
+    )
+    second = BlogPost(
+        title="Second",
+        slug="second-slug",
+        excerpt="Second",
+        content="Second",
+        category="FP&A",
+        primary_keyword="second",
+        meta_description="Second",
+        author="Author",
+        read_time_minutes=3,
+    )
+    db_session.add_all([first, second])
+    db_session.commit()
+
+    response = client.put(
+        "/api/blog/first-slug",
+        json={"slug": "second-slug"},
+    )
+
+    assert response.status_code == 409
+    assert "already exists" in response.json()["detail"]
+
+
+def test_update_blog_post_not_found_returns_404(client: TestClient):
+    """Updating a non-existent slug returns 404."""
+    response = client.put(
+        "/api/blog/does-not-exist",
+        json={"title": "Updated"},
+    )
+
+    assert response.status_code == 404

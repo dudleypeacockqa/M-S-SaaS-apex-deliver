@@ -1,22 +1,19 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { CashFlowCalculator } from './CashFlowCalculator';
 
 // Mock Recharts since it uses ResizeObserver which isn't in JSDOM
-vi.mock('recharts', () => {
-  const OriginalModule = vi.importActual('recharts');
-  return {
-    ...OriginalModule,
-    ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div className="recharts-responsive-container">{children}</div>,
-    LineChart: ({ children }: { children: React.ReactNode }) => <div className="recharts-line-chart">{children}</div>,
-    Line: () => <div className="recharts-line" />,
-    XAxis: () => <div className="recharts-x-axis" />,
-    YAxis: () => <div className="recharts-y-axis" />,
-    CartesianGrid: () => <div className="recharts-cartesian-grid" />,
-    Tooltip: () => <div className="recharts-tooltip" />,
-    ReferenceLine: () => <div className="recharts-reference-line" />,
-  };
-});
+vi.mock('recharts', () => ({
+  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div className="recharts-responsive-container">{children}</div>,
+  LineChart: ({ children }: { children: React.ReactNode }) => <div className="recharts-line-chart">{children}</div>,
+  Line: () => <div className="recharts-line" />,
+  XAxis: () => <div className="recharts-x-axis" />,
+  YAxis: () => <div className="recharts-y-axis" />,
+  CartesianGrid: () => <div className="recharts-cartesian-grid" />,
+  Tooltip: () => <div className="recharts-tooltip" />,
+  ReferenceLine: () => <div className="recharts-reference-line" />,
+}));
 
 describe('CashFlowCalculator', () => {
   it('renders input fields correctly', () => {

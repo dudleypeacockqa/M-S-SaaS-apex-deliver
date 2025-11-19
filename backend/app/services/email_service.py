@@ -8,7 +8,6 @@ from __future__ import annotations
 import json
 import logging
 import asyncio
-import json
 import os
 from datetime import datetime, timezone
 from pathlib import Path
@@ -124,11 +123,7 @@ async def queue_email(
     template_name: str,
     template_data: Dict[str, Any],
 ) -> Dict[str, Any]:
-    """Queue an email for asynchronous sending.
-    
-    Note: This function is synchronous as it only performs database operations.
-    The actual email sending happens asynchronously via Celery tasks.
-    """
+    """Queue an email for asynchronous sending via Celery tasks."""
 
     queued_email = EmailQueue(
         to_email=to_email,
@@ -160,6 +155,12 @@ async def retry_failed_email(*, db: Session, email_id: str) -> Dict[str, Any]:
     if email.retry_count >= MAX_RETRY_ATTEMPTS:
         raise ValueError("Max retries exceeded")
 
+    return await process_email_entry(db=db, email=email)
+
+
+async def process_email_entry(*, db: Session, email: EmailQueue) -> Dict[str, Any]:
+    """Render, send, and persist delivery details for a queued email."""
+
     rendered = await render_template(
         template_name=email.template_name,
         template_data=email.get_template_data(),
@@ -173,11 +174,12 @@ async def retry_failed_email(*, db: Session, email_id: str) -> Dict[str, Any]:
 
     email.retry_count += 1
     email.updated_at = datetime.now(timezone.utc)
-    email.status = result["status"]
-    if result["status"] == "failed":
+    email.status = result.get("status", "failed")
+    if email.status == "failed":
         email.error_message = result.get("error")
     else:
         email.sent_at = datetime.now(timezone.utc)
+        email.error_message = None
     db.add(email)
     db.commit()
 

@@ -125,6 +125,11 @@ The project was executed in five distinct phases:
 - **Verification:** Executed `npm --prefix frontend run test -- src/components/deal-matching/__tests__/MatchInsights.test.tsx` which invokes `node scripts/run-vitest.mjs`; the suite passed (3 tests, 62 ms) confirming Vitest can launch again under the new shell configuration.
 - **Housekeeping:** Removed stray zero-byte files (`frontend/cd`, `frontend/npm`, `frontend/npx`) that were created while the shell was misconfigured so future tooling cannot accidentally treat them as directories. The `frontend/frontend` duplication mentioned in the runbook was not present; directory checks confirmed the workspace is now clean.
 
+### 4.4 Integration Testing Coverage (19 Nov 2025)
+- **What-If Analysis workflow:** Added `src/tests/integration/whatIfAnalysisWorkflow.test.tsx` to exercise the full scenario modeling loop. The suite mocks `fpaApi` end points, asserts that slider changes dispatch `/what-if/calculate` payloads, and verifies that applying a curated scenario updates the gradient KPI cards plus the baseline banner. During the effort we also gave `ScenarioSlider` an `htmlFor`/`id` pairing via `useId`, eliminating a11y violations and enabling `findByLabelText` across the FP&A suite.
+- **Deal Pipeline workflow:** Added `src/tests/integration/dealPipelineWorkflow.test.tsx` to validate the Kanban summary header, total pipeline value, navigation to `/deals/new`, and the optimistic stage mutation path. The test stubs the Kanban board to trigger `onDealMove`, confirming `updateDealStage` receives the correct deal id/stage and that the QueryClient invalidation path remains stable.
+- **Execution:** Both new suites run via `npm --prefix frontend run test -- src/tests/integration/<file>.test.tsx` and pass under the repaired CLI shell.
+
 ### Pending / Recommended Next Actions
 1.  **Comprehensive Testing:**
     *   Run the full test suite (`npm test` and `pytest`) to ensure no regressions from the deep refactoring.

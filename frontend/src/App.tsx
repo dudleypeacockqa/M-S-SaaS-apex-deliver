@@ -77,6 +77,10 @@ const BookTrial = lazyNamed(() => import("./pages/marketing/BookTrial"), "BookTr
 const TermsOfService = lazyNamed(() => import("./pages/marketing/legal/TermsOfService"), "TermsOfService")
 const PrivacyPolicy = lazyNamed(() => import("./pages/marketing/legal/PrivacyPolicy"), "PrivacyPolicy")
 const CookiePolicy = lazyNamed(() => import("./pages/marketing/legal/CookiePolicy"), "CookiePolicy")
+const DealRoomAlternative = lazyNamed(() => import("./pages/marketing/compare/DealRoomAlternative"), "DealRoomAlternative")
+const MidaxoAlternative = lazyNamed(() => import("./pages/marketing/compare/MidaxoAlternative"), "MidaxoAlternative")
+const SolutionCFO = lazyNamed(() => import("./pages/marketing/solutions/SolutionCFO"), "SolutionCFO")
+const SolutionDealTeam = lazyNamed(() => import("./pages/marketing/solutions/SolutionDealTeam"), "SolutionDealTeam")
 const DocumentEditor = lazyNamed(() => import("./pages/documents/DocumentEditor"), "DocumentEditor")
 const DocumentRoomPage = lazyNamed(() => import("./pages/deals/DocumentRoomPage"), "DocumentRoomPage")
 const FeatureNotAvailable = lazyNamed(() => import("./pages/FeatureNotAvailable"), "FeatureNotAvailable")
@@ -198,6 +202,10 @@ export const AppRoutes = () => {
       <Route path="legal/terms" element={<TermsOfService />} />
       <Route path="legal/privacy" element={<PrivacyPolicy />} />
       <Route path="legal/cookies" element={<CookiePolicy />} />
+      <Route path="compare/dealroom-alternative" element={<DealRoomAlternative />} />
+      <Route path="compare/midaxo-alternative" element={<MidaxoAlternative />} />
+      <Route path="solutions/cfo" element={<SolutionCFO />} />
+      <Route path="solutions/deal-team" element={<SolutionDealTeam />} />
 
       {/* Authentication Routes (uses RootLayout - sign-in/sign-up only) */}
       <Route element={<RootLayout />}>

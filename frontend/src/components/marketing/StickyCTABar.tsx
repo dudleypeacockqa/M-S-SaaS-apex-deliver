@@ -19,10 +19,12 @@ export const StickyCTABar: React.FC = () => {
     }
 
     const handleScroll = () => {
-      const { scrollHeight } = document.documentElement
-      const offset = scrollHeight - window.innerHeight
+      const { scrollHeight, clientHeight } = document.documentElement
+      const offset = scrollHeight - clientHeight
       const progress = offset <= 0 ? 0 : (window.scrollY / offset) * 100
-      setIsVisible(progress > 80)
+      // Mobile: Show earlier (50%) to capture attention. Desktop: 80%
+      const threshold = window.innerWidth < 768 ? 50 : 80
+      setIsVisible(progress > threshold)
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })

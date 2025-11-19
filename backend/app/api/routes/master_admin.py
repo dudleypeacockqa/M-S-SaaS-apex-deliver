@@ -7,7 +7,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import get_current_user
+from app.api.dependencies.auth import get_current_master_admin_user
 from app.db.session import get_db
 from app.models.user import User
 from app.models.master_admin import (
@@ -87,7 +87,7 @@ router = APIRouter(prefix="/master-admin", tags=["master-admin"])
 
 @router.get("/dashboard", response_model=dict)
 def get_dashboard_stats(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -107,7 +107,7 @@ def get_dashboard_stats(
 @router.post("/goals", response_model=AdminGoalResponse, status_code=status.HTTP_201_CREATED)
 def create_goal(
     goal: AdminGoalCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -132,7 +132,7 @@ def create_goal(
 
 @router.get("/goals/current", response_model=AdminGoalResponse)
 def get_current_week_goal(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -152,7 +152,7 @@ def get_current_week_goal(
 @router.get("/goals/{week_start}", response_model=AdminGoalResponse)
 def get_goal_by_week(
     week_start: date,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -173,7 +173,7 @@ def get_goal_by_week(
 def update_goal(
     goal_id: int,
     goal_update: AdminGoalUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -200,7 +200,7 @@ def update_goal(
 @router.post("/activities", response_model=AdminActivityResponse, status_code=status.HTTP_201_CREATED)
 def create_activity(
     activity: AdminActivityCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -221,7 +221,7 @@ def list_activities(
     start_date: Optional[date] = Query(None, description="Filter by start date"),
     end_date: Optional[date] = Query(None, description="Filter by end date"),
     activity_type: Optional[ActivityType] = Query(None, description="Filter by activity type"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -250,7 +250,7 @@ def list_activities(
 @router.get("/activities/{activity_id}", response_model=AdminActivityResponse)
 def get_activity(
     activity_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -269,7 +269,7 @@ def get_activity(
 def update_activity(
     activity_id: int,
     activity_update: AdminActivityUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -291,7 +291,7 @@ def update_activity(
 @router.delete("/activities/{activity_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_activity(
     activity_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -315,7 +315,7 @@ def delete_activity(
 
 @router.get("/scores/today", response_model=AdminScoreResponse)
 def get_today_score(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -335,7 +335,7 @@ def get_today_score(
 
 @router.get("/scores/streak", response_model=dict)
 def get_current_streak(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -350,7 +350,7 @@ def get_current_streak(
 @router.get("/scores/{score_date}", response_model=AdminScoreResponse)
 def get_score_by_date(
     score_date: date,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -368,7 +368,7 @@ def get_score_by_date(
 @router.get("/scores/week/{week_start}", response_model=AdminScoreListResponse)
 def get_weekly_scores(
     week_start: date,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -388,7 +388,7 @@ def get_weekly_scores(
 @router.post("/focus-sessions", response_model=AdminFocusSessionResponse, status_code=status.HTTP_201_CREATED)
 def create_focus_session(
     session: AdminFocusSessionCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -402,7 +402,7 @@ def create_focus_session(
 
 @router.get("/focus-sessions/active", response_model=AdminFocusSessionResponse)
 def get_active_focus_session(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -424,7 +424,7 @@ def complete_focus_session(
     session_id: int,
     interrupted: bool = Query(False, description="Whether the session was interrupted"),
     notes: Optional[str] = Query(None, description="Completion notes"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -456,7 +456,7 @@ def complete_focus_session(
 @router.post("/nudges", response_model=AdminNudgeResponse, status_code=status.HTTP_201_CREATED)
 def create_nudge(
     nudge: AdminNudgeCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -470,7 +470,7 @@ def create_nudge(
 
 @router.get("/nudges/unread", response_model=AdminNudgeListResponse)
 def get_unread_nudges(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -485,7 +485,7 @@ def get_unread_nudges(
 @router.put("/nudges/{nudge_id}/read", response_model=AdminNudgeResponse)
 def mark_nudge_as_read(
     nudge_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -509,7 +509,7 @@ def mark_nudge_as_read(
 @router.post("/meetings", response_model=AdminMeetingResponse, status_code=status.HTTP_201_CREATED)
 def create_meeting_template(
     meeting: AdminMeetingCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -525,7 +525,7 @@ def create_meeting_template(
 @router.get("/meetings/type/{meeting_type}", response_model=AdminMeetingListResponse)
 def get_meeting_templates_by_type(
     meeting_type: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -546,7 +546,7 @@ def get_meeting_templates_by_type(
 @router.post("/prospects", response_model=AdminProspectResponse, status_code=status.HTTP_201_CREATED)
 def create_prospect(
     prospect: AdminProspectCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -564,7 +564,7 @@ def list_prospects(
     per_page: int = Query(50, ge=1, le=100, description="Items per page"),
     status: Optional[str] = Query(None, description="Filter by prospect status"),
     search: Optional[str] = Query(None, description="Search by name, email, or company"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -592,7 +592,7 @@ def list_prospects(
 @router.get("/prospects/{prospect_id}", response_model=AdminProspectResponse)
 def get_prospect(
     prospect_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -611,7 +611,7 @@ def get_prospect(
 def update_prospect(
     prospect_id: int,
     prospect_update: AdminProspectUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -633,7 +633,7 @@ def update_prospect(
 @router.delete("/prospects/{prospect_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_prospect(
     prospect_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -656,7 +656,7 @@ def delete_prospect(
 @router.post("/deals", response_model=AdminDealResponse, status_code=status.HTTP_201_CREATED)
 def create_deal(
     deal: AdminDealCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -673,7 +673,7 @@ def list_deals(
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(50, ge=1, le=100, description="Items per page"),
     stage: Optional[str] = Query(None, description="Filter by deal stage"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -700,7 +700,7 @@ def list_deals(
 @router.get("/deals/{deal_id}", response_model=AdminDealResponse)
 def get_deal(
     deal_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -719,7 +719,7 @@ def get_deal(
 def update_deal(
     deal_id: int,
     deal_update: AdminDealUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -746,7 +746,7 @@ def update_deal(
 @router.post("/legacy/campaigns", response_model=AdminCampaignResponse, status_code=status.HTTP_201_CREATED)
 def create_campaign(
     campaign_data: AdminCampaignCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -762,7 +762,7 @@ def list_campaigns(
     per_page: int = Query(50, ge=1, le=100),
     status: Optional[str] = None,
     campaign_type: Optional[str] = None,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -788,7 +788,7 @@ def list_campaigns(
 @router.get("/legacy/campaigns/{campaign_id}", response_model=AdminCampaignResponse)
 def get_campaign(
     campaign_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -807,7 +807,7 @@ def get_campaign(
 def update_campaign(
     campaign_id: int,
     campaign_update: AdminCampaignUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -827,7 +827,7 @@ def update_campaign(
 @router.delete("/legacy/campaigns/{campaign_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_campaign(
     campaign_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -847,7 +847,7 @@ def delete_campaign(
 @router.post("/legacy/campaigns/{campaign_id}/send", response_model=AdminCampaignResponse)
 def send_campaign(
     campaign_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -872,7 +872,7 @@ def send_campaign(
 def add_campaign_recipient(
     campaign_id: int,
     recipient_data: AdminCampaignRecipientCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """Attach a prospect to the campaign recipient list."""
@@ -902,7 +902,7 @@ def add_campaign_recipient(
 )
 def list_campaign_recipients(
     campaign_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """Return all recipients for a campaign."""
@@ -927,7 +927,7 @@ def update_campaign_recipient(
     campaign_id: int,
     recipient_id: int,
     recipient_update: AdminCampaignRecipientUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """Update recipient engagement state."""
@@ -961,7 +961,7 @@ def update_campaign_recipient(
 def delete_campaign_recipient(
     campaign_id: int,
     recipient_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """Remove a prospect from the campaign recipient list."""
@@ -989,7 +989,7 @@ def delete_campaign_recipient(
 @router.post("/content/scripts", response_model=AdminContentScriptResponse, status_code=status.HTTP_201_CREATED)
 def create_content_script(
     script_data: AdminContentScriptCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1004,7 +1004,7 @@ def list_content_scripts(
     page: int = Query(1, ge=1),
     per_page: int = Query(50, ge=1, le=100),
     script_type: Optional[str] = None,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1029,7 +1029,7 @@ def list_content_scripts(
 @router.get("/content/scripts/{script_id}", response_model=AdminContentScriptResponse)
 def get_content_script(
     script_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1048,7 +1048,7 @@ def get_content_script(
 def update_content_script(
     script_id: int,
     script_update: AdminContentScriptUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1068,7 +1068,7 @@ def update_content_script(
 @router.delete("/content/scripts/{script_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_content_script(
     script_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1088,7 +1088,7 @@ def delete_content_script(
 @router.post("/content/pieces", response_model=AdminContentPieceResponse, status_code=status.HTTP_201_CREATED)
 def create_content_piece(
     content_data: AdminContentPieceCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1104,7 +1104,7 @@ def list_content_pieces(
     per_page: int = Query(50, ge=1, le=100),
     content_type: Optional[str] = None,
     status: Optional[str] = None,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1130,7 +1130,7 @@ def list_content_pieces(
 @router.get("/content/pieces/{content_id}", response_model=AdminContentPieceResponse)
 def get_content_piece(
     content_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1149,7 +1149,7 @@ def get_content_piece(
 def update_content_piece(
     content_id: int,
     content_update: AdminContentPieceUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1169,7 +1169,7 @@ def update_content_piece(
 @router.delete("/content/pieces/{content_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_content_piece(
     content_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1193,7 +1193,7 @@ def delete_content_piece(
 @router.post("/lead-captures", response_model=AdminLeadCaptureResponse, status_code=status.HTTP_201_CREATED)
 def create_lead_capture(
     lead_data: AdminLeadCaptureCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1210,7 +1210,7 @@ def list_lead_captures(
     event_name: Optional[str] = None,
     interest_level: Optional[str] = None,
     follow_up_sent: Optional[bool] = None,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1237,7 +1237,7 @@ def list_lead_captures(
 @router.get("/lead-captures/{lead_id}", response_model=AdminLeadCaptureResponse)
 def get_lead_capture(
     lead_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1256,7 +1256,7 @@ def get_lead_capture(
 def update_lead_capture(
     lead_id: int,
     lead_update: AdminLeadCaptureUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1276,7 +1276,7 @@ def update_lead_capture(
 @router.delete("/lead-captures/{lead_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_lead_capture(
     lead_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1296,7 +1296,7 @@ def delete_lead_capture(
 @router.post("/lead-captures/{lead_id}/sync-ghl", response_model=AdminLeadCaptureResponse)
 def sync_lead_to_gohighlevel(
     lead_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1320,7 +1320,7 @@ def sync_lead_to_gohighlevel(
 @router.post("/collateral", response_model=AdminCollateralResponse, status_code=status.HTTP_201_CREATED)
 def create_collateral(
     collateral_data: AdminCollateralCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1336,7 +1336,7 @@ def list_collateral(
     per_page: int = Query(50, ge=1, le=100),
     collateral_type: Optional[str] = None,
     search: Optional[str] = None,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1362,7 +1362,7 @@ def list_collateral(
 @router.get("/collateral/{collateral_id}", response_model=AdminCollateralResponse)
 def get_collateral(
     collateral_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1381,7 +1381,7 @@ def get_collateral(
 def update_collateral(
     collateral_id: int,
     collateral_update: AdminCollateralUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1401,7 +1401,7 @@ def update_collateral(
 @router.delete("/collateral/{collateral_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_collateral(
     collateral_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -1422,7 +1422,7 @@ def delete_collateral(
 def track_collateral_usage_endpoint(
     collateral_id: int,
     prospect_id: Optional[int] = None,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_master_admin_user),
     db: Session = Depends(get_db),
 ):
     """

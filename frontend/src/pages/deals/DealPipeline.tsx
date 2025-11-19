@@ -74,7 +74,7 @@ export const DealPipeline: React.FC = () => {
     )
   }
 
-  const deals = dealsData?.items ?? []
+  const deals = (dealsData?.items ?? []).filter((deal) => !deal.archived_at)
   const totalValue = deals.reduce((sum, deal) => sum + (deal.deal_size || 0), 0)
 
   return (

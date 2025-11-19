@@ -13,7 +13,7 @@
 ```
 Backend:  1,432 / 1,432 passing (55 skips, 84% coverage)
 Frontend: 1,742 / 1,742 passing (85.1% coverage)
-Marketing Playwright: Specs exist but have not produced a green run yet
+Marketing Playwright: 7/7 specs passing via scripts/run-marketing-playwright.mjs (log: docs/tests/2025-11-19-playwright.txt)
 Prod Backend: https://ma-saas-backend.onrender.com (healthy per 2025-11-17 verify log)
 Prod Frontend: https://100daysandbeyond.com (last manual check 2025-11-17)
 ```
@@ -21,7 +21,7 @@ Prod Frontend: https://100daysandbeyond.com (last manual check 2025-11-17)
 ### Evidence Gaps Called Out In Docs
 - MASTER ADMIN manual QA has never been executed (see checklist file)
 - Performance & accessibility audits record 2025-11-13 data only; Lighthouse/Axe reruns pending (Cloudflare requires manual driver)
-- Marketing Playwright workflow configured but **no execution evidence**
+- Marketing Playwright workflow captured its first green run (docs/tests/2025-11-19-playwright.txt) but CI wiring + screenshot/video artifacts still pending
 - BlogAdminEditor (F-010) lacks end-to-end validation notes
 - Marketing website parity vs. apexdeliver-marketing repo is undocumented (missing asset parity plan)
 - BMAD trackers and README still reference 99.2% state; they do not track marketing deliverables or manual QA evidence
@@ -32,8 +32,8 @@ Prod Frontend: https://100daysandbeyond.com (last manual check 2025-11-17)
 
 | Workstream | Required Evidence | Current State | Owner Action |
 |------------|------------------|---------------|--------------|
-| **W1. Governance & Docs** | README, TODO.md, `bmm-workflow-status`, `100-PERCENT-COMPLETION-STATUS`, `FINAL-COMPLETION-PLAN` synchronized to 19 Nov facts | Outdated (Nov-17 snapshot) | Refresh artefacts, add new plan + sequencing |
-| **W2. Automation Evidence** | Marketing Playwright green log, CI notes, screenshots | Tests exist; never run due to missing preview orchestration | Build automated preview+Playwright runner, capture results |
+| **W1. Governance & Docs** | README, TODO.md, `bmm-workflow-status`, `100-PERCENT-COMPLETION-STATUS`, `FINAL-COMPLETION-PLAN` synchronized to 19 Nov facts | Synced 2025-11-19 (README/TODO/BMAD updated with marketing evidence) | Keep artefacts updated as QA + marketing deliverables land; highlight new doc locations |
+| **W2. Automation Evidence** | Marketing Playwright green log, CI notes, screenshots | Helper script + preview automation landed; first log archived 2025-11-19 | Wire the new script/config into CI and capture screenshot/trace artifacts for marketing smoke |
 | **W3. Master Admin Manual QA** | Completed checklist + sign-off log + test user details | Checklist blank | Secure Clerk test credentials, execute flows, archive logs & screen captures |
 | **W4. Marketing Web Implementation** | Page inventory, asset parity list, blog content backlog, SEO artefacts | `TODO.md` references but no centralized tracking | Create backlog + delivery board, implement missing UI/SEO/content |
 | **W5. Performance & Accessibility** | Nov-19 Lighthouse/Axe HTML/JSON outputs + remediation tickets | Last run 2025-11-13 | Establish repeatable local flow despite Cloudflare (manual driver or allowed IP), archive reports |
@@ -45,17 +45,17 @@ Prod Frontend: https://100daysandbeyond.com (last manual check 2025-11-17)
 
 ### Wave 0 - Enable Tooling (In Progress)
 1. Refresh this plan and link every scope item back to governing docs [done] (this document)
-2. Update `README.md`, `TODO.md`, `bmm-workflow-status.md`, and `100-PERCENT-COMPLETION-STATUS.md` to reference new plan + remaining scope [gear]
-3. Wire Playwright config with an embedded `webServer` (runs `npm run preview:test`) so CI and local dev no longer require manual preview shells [gear]
+2. Update `README.md`, `TODO.md`, `bmm-workflow-status.md`, and `100-PERCENT-COMPLETION-STATUS.md` to reference new plan + remaining scope [done] (synced on 2025-11-19 with marketing evidence references)
+3. Wire Playwright config with an embedded `webServer` (runs `npm run preview:test`) so CI and local dev no longer require manual preview shells [done] (playwright.dev.config.ts + scripts/run-marketing-playwright.mjs + docs/tests/2025-11-19-playwright.txt)
 4. Create scripts/log locations for Lighthouse + Axe so manual runs can be archived under `docs/testing/<date>-*.{html,json}` [gear]
 
 ### Wave 1 - Evidence Closeout (Blocker Removal)
-1. Execute Playwright smoke tests with `MARKETING_BASE_URL=http://127.0.0.1:4173`, archive outputs under `docs/tests/<date>-playwright*.txt`, attach screenshots/videos where helpful.
-2. Run backend + frontend targeted smoke suites (existing commands) and archive latest logs to prove nothing regressed while enabling Playwright.
-3. Stand up documentation automation: update `docs/bmad/DAILY_STATUS_NOTES.md` and create `docs/deployments/2025-11-19-marketing-playwright.txt` summarizing evidence.
+1. Execute Playwright smoke tests with `MARKETING_BASE_URL=http://127.0.0.1:4173`, archive outputs under `docs/tests/<date>-playwright*.txt`, attach screenshots/videos where helpful. [done] (node scripts/run-marketing-playwright.mjs + docs/tests/2025-11-19-playwright.txt)
+2. Run backend + frontend targeted smoke suites (existing commands) and archive latest logs to prove nothing regressed while enabling Playwright. [gear] (latest backend/frontend logs are still 2025-11-17; rerun after manual QA prep)
+3. Stand up documentation automation: update `docs/bmad/DAILY_STATUS_NOTES.md` and create `docs/deployments/2025-11-19-marketing-playwright.txt` summarizing evidence. [done] (deployment summary + Nov-19 daily note recorded)
 
 ### Wave 2 - Manual QA & Marketing Implementation
-1. Provision/obtain Clerk QA credentials (Starter + Enterprise) via `.env` secrets; document safe storage.
+1. Provision/obtain Clerk QA credentials (Starter + Enterprise) via `.env` secrets; document safe storage in `docs/testing/2025-11-19-master-admin-qa-prep.md`.
 2. Work through the 7 Master Admin checklist categories, logging steps + screenshots. Any defects -> create BMAD story entries.
 3. Inventory marketing pages vs. apexdeliver-marketing feature list; produce `docs/marketing/marketing-gap-analysis-2025-11-19.md`.
 4. Implement missing marketing UI/seo/backlog items (see `COMPLETION-PLAN-2025-11-17` section2). Use TDD (component tests + Playwright updates) per feature.
@@ -86,9 +86,9 @@ Prod Frontend: https://100daysandbeyond.com (last manual check 2025-11-17)
 ---
 
 ## Immediate Next Actions
-1. Update governance docs (`README`, `TODO`, `bmm-workflow-status`, `100-PERCENT-COMPLETION-STATUS`) to reference the refreshed plan and highlight evidence gaps.
-2. Implement Playwright `webServer` + helper script, then run the suite to capture first green log.
-3. Create `docs/tests/2025-11-19-playwright.log` and `docs/deployments/2025-11-19-marketing-playwright.txt` summarizing the run.
-4. Kick off Master Admin QA preparation: confirm `.env` variables, data availability, and logging locations before executing checklist.
+1. Kick off Master Admin QA preparation: confirm `.env` variables, seed data, and evidence folders before running the checklist.
+2. Draft `docs/marketing/marketing-gap-analysis-2025-11-19.md` so marketing parity/SEO/blog work is tracked in one artifact.
+3. Outline the manual Lighthouse/Axe flow (scripts + docs/testing storage) so reruns can be archived without rework.
+4. Wire `scripts/run-marketing-playwright.mjs` into the marketing CI workflow and document how to store traces/screenshots for preview runs.
 
 Once the above are complete, shift focus to Wave 2 deliverables (marketing parity + manual QA execution).

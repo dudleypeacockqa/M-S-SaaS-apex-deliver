@@ -21,6 +21,25 @@
     <meta name="twitter:description" content="Transform every stage of the M&A lifecycle with AI-powered deal intelligence, valuations, and execution." />
     <meta name="twitter:image" content="https://100daysandbeyond.com/assets/dashboard-preview.webp" />
 
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        if (!i || i === 'undefined') {
+          console.warn('GTM ID missing; skipping Tag Manager bootstrap')
+          return
+        }
+        w[l] = w[l] || []
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : ''
+        j.async = true
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl
+        f.parentNode.insertBefore(j, f)
+      })(window, document, 'script', 'dataLayer', '%VITE_GTM_ID%')
+    </script>
+    <!-- End Google Tag Manager -->
+
     <!-- Performance hints: preconnect to external domains -->
     <link rel="preconnect" href="https://api.clerk.com" crossorigin />
     <link rel="dns-prefetch" href="https://api.clerk.com" />
@@ -70,6 +89,10 @@
 
   </head>
   <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=%VITE_GTM_ID%"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <a class="skip-link" href="#app-root">Skip to main content</a>
     <div id="app-root" aria-live="polite">
       <h1 class="sr-only">100 Days &amp; Beyond M&amp;A Intelligence Platform</h1>

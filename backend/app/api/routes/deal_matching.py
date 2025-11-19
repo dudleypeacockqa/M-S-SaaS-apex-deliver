@@ -8,7 +8,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import get_current_user, require_feature
+from app.api.dependencies.auth import require_feature
 from app.db.session import get_db
 from app.models.deal import Deal
 from app.models.deal_match import DealMatch, DealMatchAction, DealMatchCriteria
@@ -37,7 +37,7 @@ def _decimal(value: Optional[float], default: float) -> Decimal:
 @router.post("/match-criteria", response_model=MatchCriteriaResponse, status_code=status.HTTP_201_CREATED)
 async def create_match_criteria(
     payload: MatchCriteriaCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_feature("deal_matching")),
     db: Session = Depends(get_db),
 ):
     """Create a saved matching criteria profile for the current organization."""
@@ -64,7 +64,7 @@ async def create_match_criteria(
 
 @router.get("/match-criteria", response_model=List[MatchCriteriaResponse])
 async def list_match_criteria(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_feature("deal_matching")),
     db: Session = Depends(get_db),
 ):
     """Return all saved criteria for the caller's organization."""
@@ -98,7 +98,7 @@ def _build_ad_hoc_criteria(current_user: User, data: Dict) -> DealMatchCriteria:
 async def find_matches_for_deal(
     deal_id: str,
     request: FindMatchesRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_feature("deal_matching")),
     db: Session = Depends(get_db),
 ):
     """Calculate intelligent matches for a given deal."""
@@ -167,7 +167,7 @@ async def find_matches_for_deal(
 @router.get("/deals/{deal_id}/matches", response_model=List[DealMatchResponse])
 async def list_deal_matches(
     deal_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_feature("deal_matching")),
     db: Session = Depends(get_db),
 ):
     """Return stored matches for a deal owned by the current organization."""
@@ -210,7 +210,7 @@ def _serialize_criteria(model: DealMatchCriteria) -> MatchCriteriaResponse:
 async def record_match_action(
     match_id: str,
     payload: MatchActionCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_feature("deal_matching")),
     db: Session = Depends(get_db),
 ):
     """Record a user action on a deal match (view, save, pass, request_intro)."""

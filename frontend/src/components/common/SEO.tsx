@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { convertToWebP } from '../../utils/imageUtils';
 
 export interface StructuredDataArticle {
@@ -53,121 +54,53 @@ export const SEO: React.FC<SEOProps> = ({
   canonical,
   structuredData,
 }) => {
-  useEffect(() => {
-    // Set document title
-    document.title = title;
+  // Helper to optimize image URLs (auto-convert to WebP)
+  const optimizeImageUrl = (url: string | undefined): string | undefined => {
+    if (!url) return undefined;
+    // Convert PNG/JPG to WebP for better performance
+    // Social media platforms (Twitter, Facebook, LinkedIn) support WebP
+    return convertToWebP(url);
+  };
 
-    // Helper function to set or update meta tag
-    const setMetaTag = (name: string, content: string, property?: boolean) => {
-      const attribute = property ? 'property' : 'name';
-      let element = document.querySelector(`meta[${attribute}="${name}"]`);
+  const optimizedOgImage = optimizeImageUrl(ogImage) || ogImage;
+  const optimizedTwitterImage = optimizeImageUrl(twitterImage || ogImage) || twitterImage || ogImage;
 
-      if (!element) {
-        element = document.createElement('meta');
-        element.setAttribute(attribute, name);
-        document.head.appendChild(element);
-      }
+  const dataWithContext = structuredData ? {
+    '@context': 'https://schema.org',
+    ...structuredData,
+  } : null;
 
-      element.setAttribute('content', content);
-    };
+  return (
+    <Helmet>
+      {/* Set document title */}
+      <title>{title}</title>
 
-    // Helper to optimize image URLs (auto-convert to WebP)
-    const optimizeImageUrl = (url: string | undefined): string | undefined => {
-      if (!url) return undefined;
-      // Convert PNG/JPG to WebP for better performance
-      // Social media platforms (Twitter, Facebook, LinkedIn) support WebP
-      return convertToWebP(url);
-    };
+      {/* Set basic meta tags */}
+      <meta name="description" content={description} />
+      {keywords && <meta name="keywords" content={keywords} />}
 
-    // Set basic meta tags
-    setMetaTag('description', description);
-    if (keywords) {
-      setMetaTag('keywords', keywords);
-    }
+      {/* Set OpenGraph tags */}
+      <meta property="og:title" content={ogTitle || title} />
+      <meta property="og:description" content={ogDescription || description} />
+      <meta property="og:type" content="website" />
+      {optimizedOgImage && <meta property="og:image" content={optimizedOgImage} />}
+      {ogUrl && <meta property="og:url" content={ogUrl} />}
 
-    // Set OpenGraph tags
-    setMetaTag('og:title', ogTitle || title, true);
-    setMetaTag('og:description', ogDescription || description, true);
-    setMetaTag('og:type', 'website', true);
+      {/* Set Twitter Card tags */}
+      <meta name="twitter:card" content={twitterCard} />
+      <meta name="twitter:title" content={twitterTitle || ogTitle || title} />
+      <meta name="twitter:description" content={twitterDescription || ogDescription || description} />
+      {optimizedTwitterImage && <meta name="twitter:image" content={optimizedTwitterImage} />}
 
-    if (ogImage) {
-      // Use WebP for OG images (Facebook, LinkedIn support it)
-      const optimizedOgImage = optimizeImageUrl(ogImage);
-      setMetaTag('og:image', optimizedOgImage || ogImage, true);
-    }
+      {/* Set canonical URL */}
+      {canonical && <link rel="canonical" href={canonical} />}
 
-    if (ogUrl) {
-      setMetaTag('og:url', ogUrl, true);
-    }
-
-    // Set Twitter Card tags
-    setMetaTag('twitter:card', twitterCard);
-    setMetaTag('twitter:title', twitterTitle || ogTitle || title);
-    setMetaTag('twitter:description', twitterDescription || ogDescription || description);
-
-    if (twitterImage || ogImage) {
-      // Use WebP for Twitter images (Twitter supports WebP since 2019)
-      const imageUrl = twitterImage || ogImage || '';
-      const optimizedTwitterImage = optimizeImageUrl(imageUrl);
-      setMetaTag('twitter:image', optimizedTwitterImage || imageUrl);
-    }
-
-    // Set canonical URL
-    if (canonical) {
-      let linkElement = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
-
-      if (!linkElement) {
-        linkElement = document.createElement('link');
-        linkElement.setAttribute('rel', 'canonical');
-        document.head.appendChild(linkElement);
-      }
-
-      linkElement.setAttribute('href', canonical);
-    }
-
-    // Add structured data (JSON-LD)
-    if (structuredData) {
-      const scriptId = 'structured-data-jsonld';
-      let scriptElement = document.getElementById(scriptId) as HTMLScriptElement;
-
-      if (!scriptElement) {
-        scriptElement = document.createElement('script');
-        scriptElement.id = scriptId;
-        scriptElement.type = 'application/ld+json';
-        document.head.appendChild(scriptElement);
-      }
-
-      // Add @context if not present
-      const dataWithContext = {
-        '@context': 'https://schema.org',
-        ...structuredData,
-      };
-
-      scriptElement.textContent = JSON.stringify(dataWithContext, null, 2);
-    }
-
-    // Cleanup function to remove structured data when component unmounts
-    return () => {
-      const scriptElement = document.getElementById('structured-data-jsonld');
-      if (scriptElement) {
-        scriptElement.remove();
-      }
-    };
-  }, [
-    title,
-    description,
-    keywords,
-    ogTitle,
-    ogDescription,
-    ogImage,
-    ogUrl,
-    twitterCard,
-    twitterTitle,
-    twitterDescription,
-    twitterImage,
-    canonical,
-    structuredData,
-  ]);
-
-  return null; // This component doesn't render anything
+      {/* Add structured data (JSON-LD) */}
+      {dataWithContext && (
+        <script type="application/ld+json">
+          {JSON.stringify(dataWithContext)}
+        </script>
+      )}
+    </Helmet>
+  );
 };

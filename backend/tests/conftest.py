@@ -74,6 +74,7 @@ os.environ.setdefault("CELERY_BROKER_URL", "memory://")
 os.environ.setdefault("CELERY_RESULT_BACKEND", "cache+memory://")
 os.environ.setdefault("CELERY_TASK_ALWAYS_EAGER", "true")
 os.environ.setdefault("CELERY_TASK_EAGER_PROPAGATES", "true")
+os.environ.setdefault("CLERK_BYPASS_TIERS", "1")
 os.environ.setdefault("SYNTHFLOW_API_KEY", "sk_test_synthflow_dummy")
 
 from tests import path_safety  # pytest namespace package (PEP 420)
@@ -488,6 +489,26 @@ def master_admin_user(db_session):
 
 
 @pytest.fixture()
+def master_admin_user_no_org(db_session):
+    """Create a master admin user without tenant association."""
+    from app.models.user import User
+
+    master_admin = User(
+        id="test-master-admin-no-org-id",
+        clerk_user_id="test_clerk_master_admin_no_org",
+        email="master-admin-no-org@test.com",
+        first_name="Platform",
+        last_name="Operator",
+        role="master_admin",
+        organization_id=None,
+    )
+    db_session.add(master_admin)
+    db_session.commit()
+    db_session.refresh(master_admin)
+    return master_admin
+
+
+@pytest.fixture()
 def solo_user(db_session):
     """Create and return a test solo user."""
     from app.models.user import User
@@ -521,45 +542,52 @@ def solo_user(db_session):
 @pytest.fixture()
 def auth_headers_admin(admin_user):
     """Provide authentication headers for an admin user."""
-    from app.api.dependencies.auth import (
-        get_current_master_admin_user,
-        get_current_user,
-    )
+    from app.api.dependencies.auth import get_current_user
 
     def override_user():
         return admin_user
 
     app.dependency_overrides[get_current_user] = override_user
-    app.dependency_overrides[get_current_master_admin_user] = override_user
 
     headers = {"Authorization": "Bearer mock_admin_token"}
     try:
         yield headers
     finally:
         app.dependency_overrides.pop(get_current_user, None)
-        app.dependency_overrides.pop(get_current_master_admin_user, None)
 
 
 @pytest.fixture()
 def auth_headers_master_admin(master_admin_user):
     """Provide authentication headers for a master admin user."""
-    from app.api.dependencies.auth import (
-        get_current_master_admin_user,
-        get_current_user,
-    )
+    from app.api.dependencies.auth import get_current_user
 
     def override_user():
         return master_admin_user
 
     app.dependency_overrides[get_current_user] = override_user
-    app.dependency_overrides[get_current_master_admin_user] = override_user
 
     headers = {"Authorization": "Bearer mock_master_admin_token"}
     try:
         yield headers
     finally:
         app.dependency_overrides.pop(get_current_user, None)
-        app.dependency_overrides.pop(get_current_master_admin_user, None)
+
+
+@pytest.fixture()
+def auth_headers_master_admin_no_org(master_admin_user_no_org):
+    """Auth headers for master admin without org context."""
+    from app.api.dependencies.auth import get_current_user
+
+    def override_user():
+        return master_admin_user_no_org
+
+    app.dependency_overrides[get_current_user] = override_user
+
+    headers = {"Authorization": "Bearer mock_master_admin_no_org_token"}
+    try:
+        yield headers
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
 @pytest.fixture()

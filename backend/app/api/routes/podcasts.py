@@ -9,7 +9,7 @@ from pathlib import Path
 from fastapi import APIRouter, Body, Depends, File, HTTPException, Response, UploadFile, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import get_current_user, require_feature
+from app.api.dependencies.auth import get_current_user, require_feature, is_master_admin
 from app.core import subscription
 from app.db.session import get_db
 from app.models.user import User
@@ -201,6 +201,33 @@ async def get_feature_access(
     """Expose feature entitlement state for the current tenant."""
 
     organization_id = current_user.organization_id
+
+    if organization_id is None:
+        if not is_master_admin(current_user):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Organization context is required to evaluate feature access",
+            )
+        try:
+            required_tier = entitlement_service.get_required_tier(feature)
+        except FeatureNotFoundError as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+
+        tier = subscription.SubscriptionTier.ENTERPRISE
+        upgrade_required = False
+        tier_label = get_tier_label(tier)
+        required_tier_label = get_tier_label(required_tier)
+        return {
+            "feature": feature,
+            "tier": tier.value,
+            "tier_label": tier_label,
+            "has_access": True,
+            "required_tier": required_tier.value,
+            "required_tier_label": required_tier_label,
+            "upgrade_required": upgrade_required,
+            "upgrade_message": None,
+            "upgrade_cta_url": None,
+        }
 
     try:
         tier = await subscription.get_organization_tier(organization_id)

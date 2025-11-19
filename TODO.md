@@ -26,7 +26,7 @@
 - [x] Reinstate BMAD daily status log at `docs/bmad/DAILY_STATUS_NOTES.md`
 - [x] Land required marketing Playwright specs (`tests/*.spec.ts`) + `playwright.dev.config.ts`
 - [x] Add `marketing-ci.yml` workflow running lint, build, Vitest, pytest, and Playwright
-- [ ] Capture first green Playwright + CI evidence (requires MARKETING_BASE_URL + deployed preview)
+- [x] Capture first green Playwright + CI evidence (requires MARKETING_BASE_URL + deployed preview) -- see `docs/tests/2025-11-19-playwright.txt`
 
 ### Phase 1: Backend API (100% Complete) ✅
 

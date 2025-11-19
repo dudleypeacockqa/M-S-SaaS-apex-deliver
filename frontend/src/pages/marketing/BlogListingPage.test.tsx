@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 
 vi.mock('../../services/blogService', () => ({
   fetchBlogPosts: vi.fn(),
@@ -13,9 +14,11 @@ const mockedFetchBlogPosts = fetchBlogPosts as unknown as vi.Mock
 
 const renderWithRouter = () =>
   render(
-    <BrowserRouter>
-      <BlogListingPage />
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <BlogListingPage />
+      </BrowserRouter>
+    </HelmetProvider>
   )
 
 describe('BlogListingPage', () => {
@@ -68,11 +71,14 @@ describe('BlogListingPage', () => {
     expect(screen.getByPlaceholderText(/search blog posts/i)).toBeInTheDocument()
   })
 
-  it('renders category filter buttons', () => {
+  it('renders category filter buttons', async () => {
     mockedFetchBlogPosts.mockResolvedValueOnce([])
     renderWithRouter()
-    expect(screen.getByText(/all posts/i)).toBeInTheDocument()
-    expect(screen.getByText(/m&a strategy/i)).toBeInTheDocument()
-    expect(screen.getByText(/financial planning/i)).toBeInTheDocument()
+    
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /all posts/i })).toBeInTheDocument()
+    })
+    expect(screen.getByRole('button', { name: /m&a strategy/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /financial planning/i })).toBeInTheDocument()
   })
 })

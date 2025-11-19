@@ -3,6 +3,7 @@
 This module handles fetching subscription tier information from Clerk
 organization metadata and provides caching for performance.
 """
+import os
 import time
 from enum import Enum
 from typing import Optional, Dict
@@ -47,6 +48,7 @@ class ClerkAPIError(Exception):
 # Format: {org_id: {"tier": SubscriptionTier, "timestamp": float}}
 _tier_cache: Dict[str, Dict] = {}
 CACHE_TTL_SECONDS = 300  # 5 minutes
+_BYPASS_ENV_FLAG = "CLERK_BYPASS_TIERS"
 
 
 async def get_organization_tier(organization_id: str) -> SubscriptionTier:
@@ -83,6 +85,21 @@ async def get_organization_tier(organization_id: str) -> SubscriptionTier:
             return cached_data["tier"]
         else:
             logger.debug(f"Cache expired for organization {organization_id} (age: {cache_age:.1f}s)")
+
+    # Allow tests/dev environments to bypass Clerk via env flag
+    bypass_flag = os.getenv(_BYPASS_ENV_FLAG, "").strip().lower()
+    if bypass_flag in {"1", "true", "yes"}:
+        tier = SubscriptionTier.STARTER
+        _tier_cache[organization_id] = {
+            "tier": tier,
+            "timestamp": time.time(),
+        }
+        logger.debug(
+            "Bypassing Clerk lookup for organization %s in %s environment",
+            organization_id,
+            settings.environment,
+        )
+        return tier
 
     # Fetch from Clerk API
     try:

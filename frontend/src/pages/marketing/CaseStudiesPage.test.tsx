@@ -4,6 +4,8 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import type { ReactElement } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { CaseStudiesPage } from './CaseStudiesPage';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -12,8 +14,12 @@ vi.mock('../../lib/analytics', () => ({
   trackCtaClick: vi.fn(),
 }));
 
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>);
+const renderWithRouter = (component: ReactElement) => {
+  return render(
+    <HelmetProvider>
+      <BrowserRouter>{component}</BrowserRouter>
+    </HelmetProvider>
+  );
 };
 
 describe('CaseStudiesPage', () => {
@@ -25,28 +31,29 @@ describe('CaseStudiesPage', () => {
 
     it('should render key metrics in hero', () => {
       renderWithRouter(<CaseStudiesPage />);
-      // Multiple instances of "75%" may exist (hero, case studies, etc)
       expect(screen.getAllByText(/75%/i)[0]).toBeInTheDocument();
       expect(screen.getByText(/faster pmi cycles/i)).toBeInTheDocument();
     });
   });
 
-  describe('Case Study: TechVentures PE', () => {
-    it('should render TechVentures PE case study', () => {
+  describe('Case Study: Horizon Capital Partners', () => {
+    it('should render Horizon Capital Partners case study', () => {
       renderWithRouter(<CaseStudiesPage />);
-      expect(screen.getByText('TechVentures PE')).toBeInTheDocument();
-      // Multiple instances of "private equity" may exist (multiple case studies)
+      expect(screen.getByText('Horizon Capital Partners')).toBeInTheDocument();
       expect(screen.getAllByText(/private equity/i)[0]).toBeInTheDocument();
     });
 
-    it('should render PMI reduction result', () => {
+    it('should render metrics', () => {
       renderWithRouter(<CaseStudiesPage />);
-      expect(screen.getByText(/reduced post-merger integration from 18 months to 4\.5 months/i)).toBeInTheDocument();
+      // Use getAllByText because "40%" might appear in multiple places (e.g. other case studies or copy)
+      const metrics = screen.getAllByText(/40%/i);
+      expect(metrics.length).toBeGreaterThan(0);
+      expect(metrics[0]).toBeInTheDocument();
     });
 
     it('should render testimonial quote', () => {
       renderWithRouter(<CaseStudiesPage />);
-      expect(screen.getByText(/capliquify transformed how we manage our portfolio/i)).toBeInTheDocument();
+      expect(screen.getByText(/apexdeliver transformed how we manage our deal flow/i)).toBeInTheDocument();
     });
   });
 
@@ -54,11 +61,11 @@ describe('CaseStudiesPage', () => {
     it('should render at least 5 case studies', () => {
       renderWithRouter(<CaseStudiesPage />);
 
-      expect(screen.getByText('TechVentures PE')).toBeInTheDocument();
-      expect(screen.getByText('Precision Manufacturing Group')).toBeInTheDocument();
       expect(screen.getByText('Horizon Capital Partners')).toBeInTheDocument();
-      expect(screen.getByText('Regional Distribution Co.')).toBeInTheDocument();
-      expect(screen.getByText('Growth Equity Fund')).toBeInTheDocument();
+      expect(screen.getByText('TechGrowth Solutions')).toBeInTheDocument();
+      expect(screen.getByText('Park Advisory')).toBeInTheDocument();
+      expect(screen.getByText('Equilibrium Partners')).toBeInTheDocument();
+      expect(screen.getByText('NexGen Manufacturing')).toBeInTheDocument();
     });
   });
 

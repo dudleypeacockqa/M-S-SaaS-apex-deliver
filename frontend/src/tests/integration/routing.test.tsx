@@ -113,7 +113,7 @@ describe("Integration: routing", () => {
     setMockClerkState({
       isSignedIn: true,
       isLoaded: true,
-      user: { firstName: 'Taylor', id: 'user-1' },
+      user: { firstName: 'Taylor', id: 'user-1', publicMetadata: { role: 'admin' } },
       organization: { name: 'Test Org', id: 'org-1' },
     })
     window.history.replaceState({}, 'Test', '/admin/blog/new')
@@ -131,7 +131,7 @@ describe("Integration: routing", () => {
     setMockClerkState({
       isSignedIn: true,
       isLoaded: true,
-      user: { firstName: 'Taylor', id: 'user-1' },
+      user: { firstName: 'Taylor', id: 'user-1', publicMetadata: { role: 'admin' } },
       organization: { name: 'Test Org', id: 'org-1' },
     })
     mockBlogService.getBlogPost.mockResolvedValueOnce({

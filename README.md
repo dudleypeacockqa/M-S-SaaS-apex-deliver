@@ -2,11 +2,11 @@
 # M&A Intelligence Platform
 
 **Version**: v1.0.0-rc1 (Release Candidate)
-**Status**: ⚠️ 99.2% IN PROGRESS – Test suites are green; governance docs, BlogAdminEditor proof, manual QA, marketing Playwright evidence, and audits remain outstanding
+**Status**: ✅ 99.2% IN PROGRESS — Wave 0 (Governance & Evidence) is active; automation is green but Master Admin QA, BlogAdminEditor proof, marketing parity, audits, and documentation sign-off remain
 **Methodology**: BMAD v6-alpha + Test-Driven Development (TDD)
 **Phase**: Phase 7 - Final QA + Marketing Website Implementation
-**Completion**: All 13 core features + 7 Master Admin features + F-010 BlogAdminEditor implemented and deployed; evidence work for Master Admin QA + marketing remains
-**Test Pass Rate (2025-11-17)**: Backend 1,432/1,432 (100%) ✅ · Frontend 1,742/1,742 (100%) ✅ · Master Admin 91/91 (100%) ✅
+**Completion**: All 13 core features + 7 Master Admin features + F-010 BlogAdminEditor ship in prod; we are closing the remaining evidence + marketing backlog to legitimately claim 100%
+**Test Evidence (2025-11-17)**: Backend 1,432/1,432 PASS (55 skips, 84% cov) • Frontend 1,742/1,742 PASS (85.1% cov) • Master Admin 91/91 PASS (100%)
 
 ---
 
@@ -30,15 +30,27 @@
 - ✅ Production deployment with health monitoring and CI/CD
 
 **Remaining Work** (See [COMPLETION-PLAN-2025-11-17.md](COMPLETION-PLAN-2025-11-17.md)):
-- ⏳ F-010 BlogAdminEditor end-to-end verification in production
-- ⏳ Manual Master Admin QA (4-6 hours) + evidence capture
-- ⏳ Performance & accessibility audits (manual Lighthouse + Axe)
-- ⏳ Marketing Playwright smoke suite + integrations evidence
-- ⏳ Documentation + roadmap sync so nothing claims 100% without proof
+- 🔁 BlogAdminEditor `/admin/blog/*` end-to-end verification (RED/Green Playwright/Vitest + production screenshots)
+- 👥 Master Admin manual QA (7 modules, 4–6 hours) with Clerk accounts + evidence (docs/testing)
+- 🌐 Marketing backlog: mobile nav polish, 38 blog posts, lead capture/chatbot/newsletter integrations, SEO assets, CI-powered Playwright proof
+- 🚦 Performance & accessibility baselines: manual Lighthouse + Axe reruns with Nov‑19+ data + remediation tickets
+- 📚 Governance proof: README/TODO/BMAD trackers, marketing gap analysis, and daily status logs updated once evidence lands
+
+### Path to 100% (Wave execution cadence)
+
+| Wave | Focus | Key Deliverables | Status |
+| --- | --- | --- | --- |
+| Wave 0 | Governance & automation prep | Sync README/TODO/BMAD docs, keep marketing Playwright helper + scripts documented, refresh backend/frontend smoke logs | ⚙️ In progress |
+| Wave 1 | Evidence scaffolding | Draft marketing gap analysis, create manual QA prep notes, outline Lighthouse/Axe capture flow, wire Playwright helper into CI | 🟡 Pending (starts after Wave 0 doc sync) |
+| Wave 2 | Manual QA + BlogAdmin proof | Execute Master Admin checklist, capture `/admin/blog/*` proof, record production screenshots/logs | 🟡 Pending |
+| Wave 3 | Marketing parity | Implement remaining marketing pages/content/integrations/SEO via TDD; extend Vitest/Playwright coverage | 🟥 Not started |
+| Wave 4 | Audits + automation reruns | Run Lighthouse/Axe, rerun full pytest/vitest/playwright suites, archive docs/tests logs | 🟥 Not started |
+| Wave 5 | Final documentation & handoff | Update 100%-status docs, completion certificate, feature inventory, ops handoff | 🟥 Not started |
 
 **Documentation Evidence**:
 - [FINAL-COMPLETION-PLAN.md](docs/FINAL-COMPLETION-PLAN.md) - Current completion roadmap
 - [Master Admin Validation Checklist](docs/testing/2025-11-17-MASTER-ADMIN-VALIDATION-CHECKLIST.md) - Manual QA procedures
+- [Master Admin QA Prep Notes](docs/testing/2025-11-19-master-admin-qa-prep.md) - Accounts, data, and evidence folders for the upcoming manual run
 - [Backend Verification Log](docs/deployments/2025-11-17-backend-verify.txt) - Health/Alembic/table/index results
 - [BMAD Daily Status](docs/bmad/DAILY_STATUS_NOTES.md) - Build/Measure/Analyze log (new)
 - [Session Summary](docs/2025-11-17-SESSION-SUMMARY.md) - Worklog for this execution window
@@ -106,13 +118,13 @@ npx bmad-method run <workflow-name>
 
 ### Marketing Smoke (Playwright)
 
-Run the helper script to build the marketing bundle, start the preview server, and execute the Playwright smoke suite with the correct MARKETING_BASE_URL.
+Run the helper script to build the marketing bundle, start the preview server, and execute the Playwright smoke suite with the correct `MARKETING_BASE_URL`.
 
-`ash
+```bash
 node scripts/run-marketing-playwright.mjs
-`
+```
 
-The script defaults MARKETING_BASE_URL to http://127.0.0.1:4173. Export MARKETING_BASE_URL before running if you need to hit a deployed preview (the Playwright config will skip starting the local preview whenever the variable points elsewhere). Tee the output into docs/tests/<date>-playwright.txt to archive evidence.
+The script defaults `MARKETING_BASE_URL` to `http://127.0.0.1:4173`. Export `MARKETING_BASE_URL` before running if you need to hit a deployed preview (the Playwright config will skip starting the local preview whenever the variable points elsewhere). Tee the output into `docs/tests/<date>-playwright.txt` to archive evidence.
 
 ### TDD Discipline (Mandatory)
 
@@ -476,28 +488,18 @@ Copyright © 2025 Dudley Peacock / Apex Deliver
 
 ## Project Status
 
-**Current Phase**: Phase 1 - Foundational Core & Revenue Engine (Months 1-3)
+**Current Wave**: Wave 0 – Governance & Evidence (Phase 7 overall)
+**Overall Completion**: 99.2% (automation green; proof + marketing backlog pending)
 
-**Completed**:
+| Phase | Scope | Status | Evidence |
+| --- | --- | --- | --- |
+| Phase 1 | Foundational Core & Revenue Engine | ✅ Complete | see `docs/bmad/bmm-workflow-status.md` |
+| Phase 2 | Advanced Intelligence Modules | ✅ Complete | backend/tests + frontend/tests logs (2025-11-17) |
+| Phase 3 | Ecosystem Network Features | ✅ Complete | README Current Status + BMAD tracker |
+| Phase 4 | Master Admin Portal | ✅ Complete | `backend/tests/test_master_admin_api.py`, docs/tests logs |
+| Phase 5 | BlogAdminEditor (F-010) | 🔁 95% – needs `/admin/blog/*` proof | [COMPLETION-PLAN-2025-11-17.md](COMPLETION-PLAN-2025-11-17.md) §1.2 |
+| Phase 6 | Final QA & Evidence | ⚙️ In progress – Master Admin QA, Lighthouse/Axe, automation log refresh | [FINAL-COMPLETION-PLAN.md](docs/FINAL-COMPLETION-PLAN.md) (Waves 0-4) |
+| Phase 7 | Marketing Website Parity | 🟥 Pending – content/integrations/SEO backlog | TODO.md + upcoming marketing gap analysis |
 
-- [x] Project structure setup
-- [x] Git repository initialization
-- [x] Documentation framework
-- [x] BMAD methodology integration
-
-**In Progress**:
-
-- [ ] User & Organization Management (F-001)
-- [ ] Deal Flow & Pipeline Management (F-002)
-- [ ] Subscription & Billing System (F-005)
-
-**Next Up**:
-
-- [ ] Financial Intelligence Engine (F-006)
-- [ ] Secure Document & Data Room (F-003)
-- [ ] Multi-Method Valuation Suite (F-007)
-
----
-
-**Last Updated**: October 23, 2025  
+**Last Updated**: November 19, 2025  
 **Maintained By**: Dudley Peacock with AI assistance (Manus, CODEX, Claude Code)

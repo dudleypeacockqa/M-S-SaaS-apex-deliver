@@ -16,6 +16,15 @@ from app.core.subscription import (
 )
 
 
+@pytest.fixture(autouse=True)
+def disable_clerk_bypass(monkeypatch):
+    """Force subscription core tests to exercise full Clerk flow."""
+
+    monkeypatch.delenv("CLERK_BYPASS_TIERS", raising=False)
+    yield
+    monkeypatch.setenv("CLERK_BYPASS_TIERS", "1")
+
+
 class TestSubscriptionTierComparison:
     """Test SubscriptionTier enum comparison operations"""
     
