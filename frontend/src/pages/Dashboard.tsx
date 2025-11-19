@@ -3,7 +3,7 @@
  *
  * User dashboard home - shows overview of deals, recent activity, and quick actions.
  * Protected route - requires authentication.
- * Layout (NavigationMenu + Breadcrumbs) provided by AppLayout wrapper.
+ * ProtectedLayout injects the enterprise sidebar + contextual header navigation.
  */
 export const Dashboard = () => {
   return (

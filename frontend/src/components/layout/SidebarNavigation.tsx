@@ -41,11 +41,9 @@ export const SidebarNavigation: React.FC = () => {
 
   // Filter items by role and remove duplicates
   const visibleItems = useMemo(() => {
-    const filtered = role === 'master_admin'
+    return role === 'master_admin'
       ? WORKSPACE_NAV_ITEMS
       : WORKSPACE_NAV_ITEMS.filter((item) => item.roles.includes(role))
-    
-    return filtered.filter((item) => item.id !== 'deal-matching')
   }, [role])
 
   // Group items by section

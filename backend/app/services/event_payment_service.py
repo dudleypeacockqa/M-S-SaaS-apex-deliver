@@ -11,6 +11,7 @@ from uuid import uuid4
 
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.models.event import (
     Event,
     EventTicket,
@@ -23,8 +24,8 @@ from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
-STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY") or os.getenv("STRIPE_API_KEY")
-STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+STRIPE_SECRET_KEY = settings.stripe_secret_key or os.getenv("STRIPE_API_KEY")
+STRIPE_WEBHOOK_SECRET = settings.stripe_webhook_secret or os.getenv("STRIPE_WEBHOOK_SECRET")
 
 try:  # pragma: no cover - import guard for environments without stripe package
     import stripe  # type: ignore

@@ -51,6 +51,7 @@ const SystemHealth = lazyNamed(() => import("./pages/admin/SystemHealth"), "Syst
 const DealPipeline = lazyNamed(() => import("./pages/deals/DealPipeline"), "DealPipeline")
 const NewDealPage = lazyNamed(() => import("./pages/deals/NewDealPage"), "NewDealPage")
 const DealDetails = lazyNamed(() => import("./pages/deals/DealDetails"), "DealDetails")
+const DealWorkspaceDirectory = lazyNamed(() => import("./pages/deals/DealWorkspaceDirectory"), "DealWorkspaceDirectory")
 const DataRoom = lazyNamed(() => import("./pages/deals/DataRoom"), "DataRoom")
 const ValuationSuite = lazyNamed(() => import("./pages/deals/valuation/ValuationSuite"), "ValuationSuite")
 const FinancialDashboard = lazyDefault(() => import("./pages/deals/FinancialDashboard"))
@@ -204,7 +205,7 @@ export const AppRoutes = () => {
         <Route path="sign-up/*" element={<SignUpPage />} />
       </Route>
 
-      {/* Protected Routes (uses ProtectedLayout with NavigationMenu) */}
+      {/* Protected Routes (ProtectedLayout + enterprise sidebar) */}
       <Route element={<ProtectedLayout />}>
         <Route path="dashboard" element={<DashboardPage />} />
 
@@ -232,6 +233,8 @@ export const AppRoutes = () => {
         <Route path="deals" element={<DealPipeline />} />
         <Route path="deals/new" element={<NewDealPage />} />
         <Route path="deals/matching" element={<Suspense fallback={<RouteLoader />}><MatchingWorkspace /></Suspense>} />
+        <Route path="deals/workspaces" element={<DealWorkspaceDirectory />} />
+        <Route path="deals/workspaces/:workspaceId" element={<DealWorkspaceDirectory />} />
         <Route path="deals/:dealId" element={<DealDetails />} />
         <Route path="deals/:dealId/data-room" element={<DataRoom />} />
         <Route path="deals/:dealId/documents" element={<DocumentRoomPage />} />

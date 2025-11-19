@@ -23,7 +23,6 @@ from app.schemas.fpa import (
     QualityMetric,
     ScenarioCalculationRequest,
     ScenarioCalculationResponse,
-    ScenarioMetrics,
     ScenarioVariables,
     WhatIfScenario,
     WhatIfScenarioCreate,
@@ -155,54 +154,14 @@ async def create_what_if_scenario(
 
 
 @router.post("/what-if/calculate", response_model=ScenarioCalculationResponse)
-async def calculate_scenario_impact(
+async def calculate_scenario_impact_route(
     request: ScenarioCalculationRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Calculate financial impact of scenario variables."""
     await check_fpa_access(current_user)
-    
-    # Baseline metrics
-    baseline_revenue = 10_760_000
-    baseline_gross_margin = 67.6
-    baseline_ebitda = 2_970_000
-    baseline_ebitda_margin = 27.6
-    
-    # Calculate multipliers
-    vars = request.variables
-    volume_multiplier = vars.production_volume / 100.0
-    price_multiplier = (
-        vars.gaba_red_price / 30.0 * 0.4 +
-        vars.gaba_black_price / 32.0 * 0.35 +
-        vars.gaba_gold_price / 45.0 * 0.25
-    )
-    cost_multiplier = vars.material_costs / 100.0
-    efficiency_multiplier = vars.labor_efficiency / 100.0
-    
-    # Calculate new metrics
-    revenue = baseline_revenue * volume_multiplier * price_multiplier
-    cost_of_goods_sold = revenue * 0.324 * cost_multiplier / efficiency_multiplier
-    gross_profit = revenue - cost_of_goods_sold
-    gross_margin = (gross_profit / revenue) * 100 if revenue > 0 else 0
-    operating_expenses = revenue * 0.4 * (1 / efficiency_multiplier)
-    ebitda = gross_profit - operating_expenses
-    ebitda_margin = (ebitda / revenue) * 100 if revenue > 0 else 0
-    
-    return ScenarioCalculationResponse(
-        metrics=ScenarioMetrics(
-            revenue=revenue,
-            gross_margin=gross_margin,
-            ebitda=ebitda,
-            ebitda_margin=ebitda_margin,
-        ),
-        baseline=ScenarioMetrics(
-            revenue=baseline_revenue,
-            gross_margin=baseline_gross_margin,
-            ebitda=baseline_ebitda,
-            ebitda_margin=baseline_ebitda_margin,
-        ),
-    )
+    return fpa_service.calculate_scenario_impact(request.variables)
 
 
 @router.get("/what-if/presets", response_model=List[PredefinedScenario])
@@ -298,7 +257,7 @@ async def apply_scenario(
     
     # Calculate impact for the scenario
     calc_request = ScenarioCalculationRequest(variables=scenario.variables)
-    result = await calculate_scenario_impact(calc_request, current_user, db)
+    result = await calculate_scenario_impact_route(calc_request, current_user, db)
     
     return {
         "scenario": scenario,

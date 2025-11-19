@@ -1402,7 +1402,7 @@ def _log_access(
         created_at=datetime.now(timezone.utc),
         ip_address=ip_address,
         user_agent=user_agent,
-        metadata=metadata,
+        metadata_json=metadata,
     )
     db.add(entry)
     db.flush()

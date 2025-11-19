@@ -30,7 +30,6 @@ from app.services.document_export_service import DocumentExportService
 from app.services.document_ai_service import DocumentAIService
 from app.services.storage_service import get_storage_service
 from app.tasks.document_exports import enqueue_export_processing
-from app.models.document import DocumentAccessLog
 from app.models.document_generation import (
     DocumentAISuggestion,
     DocumentVersion,
@@ -807,21 +806,6 @@ def queue_export_job(
     )
 
     db.add(export_job)
-    db.flush()
-
-    # Log export request for audit trail
-    audit_log = DocumentAccessLog(
-        document_id=document_id,
-        user_id=current_user.id,
-        action="export",
-        organization_id=current_user.organization_id,
-        metadata_json={
-            "format": export_request.format,
-            "job_id": str(export_job.id),
-        },
-    )
-    db.add(audit_log)
-
     db.commit()
     db.refresh(export_job)
 

@@ -24,6 +24,17 @@ const documentApiMocks = vi.hoisted(() => ({
   bulkArchiveDocuments: vi.fn(),
   restoreArchivedDocuments: vi.fn(),
   logDocumentAuditEvent: vi.fn(),
+  listPermissions: vi.fn().mockResolvedValue([
+    {
+      id: 'perm-001',
+      document_id: 'doc-1',
+      user_id: 'user-abc',
+      user_email: 'collaborator@example.com',
+      role: 'viewer',
+      created_at: new Date().toISOString(),
+    },
+  ]),
+  updatePermission: vi.fn().mockResolvedValue(true),
 }))
 
 vi.mock('../../services/api/documents', async () => {
@@ -37,6 +48,8 @@ vi.mock('../../services/api/documents', async () => {
     bulkArchiveDocuments: documentApiMocks.bulkArchiveDocuments,
     restoreArchivedDocuments: documentApiMocks.restoreArchivedDocuments,
     logDocumentAuditEvent: documentApiMocks.logDocumentAuditEvent,
+    listPermissions: documentApiMocks.listPermissions,
+    updatePermission: documentApiMocks.updatePermission,
   }
 })
 
@@ -168,6 +181,8 @@ describe('DocumentWorkspace', () => {
     documentApiMocks.bulkArchiveDocuments.mockReset()
     documentApiMocks.restoreArchivedDocuments.mockReset()
     documentApiMocks.logDocumentAuditEvent.mockReset()
+    documentApiMocks.listPermissions.mockClear()
+    documentApiMocks.updatePermission.mockClear()
     accessLogDrawerSpy.mockClear()
     shareLinkModalSpy.mockClear()
   })
@@ -473,17 +488,19 @@ describe('DocumentWorkspace', () => {
         await modalProps.onPermissionChange?.({
           documentId: 'doc-1',
           userId: 'user-abc',
-          permission: 'edit',
+          permission: 'editor',
         })
       })
 
       await waitFor(() => {
+        expect(documentApiMocks.listPermissions).toHaveBeenCalledWith('doc-1')
+        expect(documentApiMocks.updatePermission).toHaveBeenCalledWith('perm-001', { role: 'editor' })
         expect(documentApiMocks.logDocumentAuditEvent).toHaveBeenCalledWith(
           'deal-abc',
           'doc-1',
           expect.objectContaining({
             action: 'permission_change',
-            metadata: expect.objectContaining({ userId: 'user-abc', permission: 'edit' }),
+            metadata: expect.objectContaining({ userId: 'user-abc', permission: 'editor' }),
           })
         )
       })

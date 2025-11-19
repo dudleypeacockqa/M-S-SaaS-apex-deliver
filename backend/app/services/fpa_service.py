@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from typing import Dict, List, Optional
 
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select, desc
 from sqlalchemy.orm import Session
 
@@ -27,6 +28,9 @@ from app.schemas.fpa import (
     WhatIfScenarioCreate,
     WorkingCapitalAnalysis,
     FpaReportResponse,
+    ScenarioVariables,
+    ScenarioMetrics,
+    ScenarioCalculationResponse,
 )
 
 
@@ -269,6 +273,51 @@ def create_what_if_scenario(
     return _serialize_scenario(scenario)
 
 
+_BASELINE_REVENUE = 10_760_000.0
+_BASELINE_GROSS_MARGIN = 67.6
+_BASELINE_EBITDA = 2_970_000.0
+_BASELINE_EBITDA_MARGIN = 27.6
+
+
+def calculate_scenario_impact(variables: ScenarioVariables) -> ScenarioCalculationResponse:
+    """
+    Deterministically calculate scenario deltas for What-If analysis.
+
+    Centralizing this logic ensures the API and backend services speak the same business language,
+    making it easier to adjust coefficients without touching route handlers.
+    """
+    volume_multiplier = variables.production_volume / 100.0
+    price_multiplier = (
+        (variables.gaba_red_price / 30.0) * 0.4
+        + (variables.gaba_black_price / 32.0) * 0.35
+        + (variables.gaba_gold_price / 45.0) * 0.25
+    )
+    cost_multiplier = variables.material_costs / 100.0
+    efficiency_multiplier = variables.labor_efficiency / 100.0
+
+    revenue = _BASELINE_REVENUE * volume_multiplier * price_multiplier
+    cost_of_goods_sold = revenue * 0.324 * cost_multiplier / efficiency_multiplier
+    gross_profit = revenue - cost_of_goods_sold
+    gross_margin = (gross_profit / revenue) * 100 if revenue > 0 else 0.0
+    operating_expenses = revenue * 0.4 * (1 / efficiency_multiplier)
+    ebitda = gross_profit - operating_expenses
+    ebitda_margin = (ebitda / revenue) * 100 if revenue > 0 else 0.0
+
+    metrics = ScenarioMetrics(
+        revenue=round(revenue, 2),
+        gross_margin=round(gross_margin, 2),
+        ebitda=round(ebitda, 2),
+        ebitda_margin=round(ebitda_margin, 2),
+    )
+    baseline = ScenarioMetrics(
+        revenue=_BASELINE_REVENUE,
+        gross_margin=_BASELINE_GROSS_MARGIN,
+        ebitda=_BASELINE_EBITDA,
+        ebitda_margin=_BASELINE_EBITDA_MARGIN,
+    )
+    return ScenarioCalculationResponse(metrics=metrics, baseline=baseline)
+
+
 def respond_to_chat(request: ChatRequest) -> AIChatResponse:
     """Return a lightweight AI response for prototype flows."""
     context_page = request.context.get("current_page", "executive_dashboard") if request.context else "executive_dashboard"
@@ -305,13 +354,13 @@ def generate_report(
             "total_forecast": total_demand,
             "average_confidence": avg_confidence,
         },
-        "top_scenario": scenarios[0].model_dump() if scenarios else None,
+        "top_scenario": jsonable_encoder(scenarios[0]) if scenarios else None,
     }
 
     record = FpaReport(
         organization_id=organization_id,
         report_type=report_type,
-        payload=payload,
+        payload=jsonable_encoder(payload),
         created_by_user_id=user_id,
     )
     db.add(record)

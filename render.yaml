@@ -49,3 +49,5 @@ services:
         sync: false
       - key: VITE_ENABLE_MASTER_ADMIN
         value: true
+      - key: VITE_PODCAST_PLAYLIST_ID
+        sync: false

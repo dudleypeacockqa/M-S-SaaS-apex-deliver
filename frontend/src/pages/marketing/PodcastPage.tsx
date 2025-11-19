@@ -5,6 +5,11 @@ import { SEO } from '../../components/common/SEO';
 import { trackCtaClick } from '../../lib/analytics';
 
 export const PodcastPage: React.FC = () => {
+  const playlistId = import.meta.env.VITE_PODCAST_PLAYLIST_ID
+  const playlistUrl = playlistId
+    ? `https://www.youtube.com/embed/videoseries?list=${playlistId}`
+    : null
+
   return (
     <MarketingLayout>
       <SEO
@@ -29,15 +34,24 @@ export const PodcastPage: React.FC = () => {
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="aspect-video bg-gray-900 rounded-xl overflow-hidden shadow-2xl">
-            {/* TODO: Replace with actual YouTube playlist embed code */}
-            {/* Example: <iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=YOUR_PLAYLIST_ID" ... /> */}
-            <div className="w-full h-full flex items-center justify-center text-white">
-              <div className="text-center">
-                <div className="text-6xl mb-4">🎙️</div>
-                <h3 className="text-2xl font-bold mb-2">YouTube Playlist Coming Soon</h3>
-                <p className="text-gray-300">Subscribe to stay updated on new episodes</p>
+            {playlistUrl ? (
+              <iframe
+                title="100 Days and Beyond Podcast Playlist"
+                className="w-full h-full"
+                src={playlistUrl}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-white">
+                <div className="text-center">
+                  <div className="text-6xl mb-4">🎙️</div>
+                  <h3 className="text-2xl font-bold mb-2">YouTube Playlist Coming Soon</h3>
+                  <p className="text-gray-300">Subscribe to stay updated on new episodes</p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>

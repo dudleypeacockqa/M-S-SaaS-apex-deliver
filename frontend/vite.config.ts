@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import viteImagemin from 'vite-plugin-imagemin'
 import path from 'node:path'
 import dotenv from 'dotenv'
 
@@ -61,15 +62,33 @@ Build aborted.
 validateBuildEnv()
 
 // https://vitejs.dev/config/
+const shouldOptimizeImages = process.env.VITE_DISABLE_IMAGE_MIN !== 'true'
+
 export default defineConfig({
   define: {
     __APP_BUILD_ID__: JSON.stringify(buildId),
   },
   plugins: [
     react(),
-    // Image optimization disabled temporarily due to import issues
-    // TODO: Re-enable vite-plugin-imagemin after fixing import syntax
-  ],
+    shouldOptimizeImages &&
+      viteImagemin({
+        gifsicle: {
+          optimizationLevel: 3,
+        },
+        optipng: {
+          optimizationLevel: 5,
+        },
+        mozjpeg: {
+          quality: 75,
+        },
+        svgo: {
+          plugins: [
+            { name: 'removeViewBox', active: false },
+            { name: 'removeDimensions', active: true },
+          ],
+        },
+      }),
+  ].filter(Boolean),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

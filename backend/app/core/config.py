@@ -49,6 +49,9 @@ class Settings(BaseSettings):
     sendgrid_from_email: str = "noreply@100daysandbeyond.com"
     sendgrid_from_name: str = "100 Days & Beyond"
     contact_notification_email: str = "contact@100daysandbeyond.com"
+    stripe_secret_key: str = ""
+    stripe_webhook_secret: str = ""
+    stripe_publishable_key: str = ""
 
     # Storage Configuration
     storage_path: str = "./storage"

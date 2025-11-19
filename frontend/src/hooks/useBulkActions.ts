@@ -1,6 +1,13 @@
 import { useState, useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import type { Document } from '../services/api/documents'
+import {
+  bulkArchiveDocuments,
+  bulkMoveDocuments,
+  restoreArchivedDocuments,
+  type BulkArchiveResult,
+  type BulkMoveResult,
+} from '../services/api/documents'
 
 /**
  * Reusable hook for bulk document operations with optimistic updates
@@ -81,33 +88,22 @@ export function useBulkActions(dealId: string) {
         // Close modal
         setBulkMoveState({ isOpen: false, documents: [] })
 
-        // TODO: Call actual API endpoint
-        // const result = await bulkMoveDocuments(documents.map(d => d.id), targetFolderId)
-
-        // Simulate API call for testing
-        const result: any = await new Promise((resolve, reject) => {
-          setTimeout(() => {
-            // For testing: check if we should simulate an error
-            if ((window as any).__TEST_BULK_MOVE_ERROR__) {
-              reject(new Error('Network error'))
-            } else if ((window as any).__TEST_BULK_MOVE_PARTIAL_FAILURE__) {
-              resolve((window as any).__TEST_BULK_MOVE_PARTIAL_FAILURE__)
-            } else {
-              resolve({ success: true })
-            }
-          }, 100)
+        const result: BulkMoveResult = await bulkMoveDocuments(dealId, {
+          document_ids: documents.map((doc) => doc.id),
+          target_folder_id: targetFolderId,
         })
 
-        // Handle partial failures
-        if (result && !result.success && result.results) {
-          const successCount = result.results.filter((r: any) => r.success).length
-          const failures = result.results.filter((r: any) => !r.success)
-
-          const failedDoc = failures[0]
-          const matchingDoc = documents.find((d) => d.id === failedDoc.id)
+        if (result.failures && result.failures.length > 0) {
+          const successCount = result.moved_ids.length
+          const failureSummary = result.failures
+            .map((failure) => {
+              const docName = documents.find((doc) => doc.id === failure.id)?.name ?? failure.id
+              return `${docName}: ${failure.reason}`
+            })
+            .join('; ')
 
           setToast({
-            message: `Moved ${successCount} of ${documents.length} documents. ${matchingDoc?.name}: ${failedDoc.error}`,
+            message: `Moved ${successCount} of ${documents.length} documents. Issues: ${failureSummary}`,
             type: 'status',
           })
         }
@@ -177,20 +173,23 @@ export function useBulkActions(dealId: string) {
         setBulkArchiveState({ isOpen: false, documents: [] })
         setProgress(null)
 
-        // TODO: Call actual API endpoint
-        // await bulkArchiveDocuments(documents.map(d => d.id))
-
-        // Simulate API call for testing
-        await new Promise((resolve, reject) => {
-          setTimeout(() => {
-            // For testing: check if we should simulate an error
-            if ((window as any).__TEST_BULK_ARCHIVE_ERROR__) {
-              reject(new Error('Server error'))
-            } else {
-              resolve(undefined)
-            }
-          }, 100)
+        const archiveResult: BulkArchiveResult = await bulkArchiveDocuments(dealId, {
+          document_ids: documents.map((doc) => doc.id),
         })
+
+        if (archiveResult.failures && archiveResult.failures.length > 0) {
+          const failureSummary = archiveResult.failures
+            .map((failure) => {
+              const docName = documents.find((doc) => doc.id === failure.id)?.name ?? failure.id
+              return `${docName}: ${failure.reason}`
+            })
+            .join('; ')
+
+          setToast({
+            message: `Some documents could not be archived: ${failureSummary}`,
+            type: 'alert',
+          })
+        }
 
         // Invalidate queries to refetch
         queryClient.invalidateQueries({
@@ -217,11 +216,7 @@ export function useBulkActions(dealId: string) {
   const handleUndoArchive = useCallback(
     async (documents: Document[]) => {
       try {
-        // TODO: Call unarchive API endpoint
-        // await bulkUnarchiveDocuments(documents.map(d => d.id))
-
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 100))
+        await restoreArchivedDocuments(dealId, documents.map((doc) => doc.id))
 
         setToast({
           message: `Unarchived ${documents.length} document${documents.length !== 1 ? 's' : ''}`,

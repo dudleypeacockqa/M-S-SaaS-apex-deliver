@@ -95,7 +95,12 @@ class TestAISuggestionEndpoints:
     ):
         """Test accepting an AI suggestion"""
         org = create_organization(name="Template Org")
-        user = create_user(email="user@example.com", organization_id=str(org.id))
+        user = create_user(
+            email="user@example.com",
+            organization_id=str(org.id),
+            first_name="Alice",
+            last_name="Analyst",
+        )
 
         template = DocumentTemplate(
             name="Test Template",

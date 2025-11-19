@@ -254,7 +254,11 @@ class TestCachedResponseDecorator:
         client, counter = self._build_client(monkeypatch, redis_client)
 
         client.get("/cached")
-        cached_keys = [key for key in redis_client.store if key.startswith("api:v1:cached")]
+        cached_keys = [
+            key
+            for key in redis_client.store
+            if key.startswith("api:v1:cached") or key.startswith("api:v1::cached")
+        ]
         assert cached_keys, f"No cached keys found in store: {redis_client.store}"
 
 

@@ -407,6 +407,26 @@ export async function listDocumentAccessLogs(
   })
 }
 
+export interface DocumentAuditEventPayload {
+  action: string
+  metadata?: Record<string, unknown>
+  ip_address?: string | null
+  user_agent?: string | null
+}
+
+export async function logDocumentAuditEvent(
+  dealId: string,
+  documentId: string,
+  payload: DocumentAuditEventPayload
+): Promise<DocumentAccessLogEntry> {
+  const headers = await getAuthHeaders("json")
+  return request<DocumentAccessLogEntry>(buildDealUrl(dealId, `/documents/${documentId}/access-logs`), {
+    method: "POST",
+    headers,
+    body: JSON.stringify(payload),
+  })
+}
+
 export async function listPermissions(documentId: string): Promise<DocumentPermission[]> {
 
   const headers = await getAuthHeaders("json")

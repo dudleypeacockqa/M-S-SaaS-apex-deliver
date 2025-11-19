@@ -107,6 +107,7 @@ The repository is a multi-part monorepo. `frontend/` serves a marketing funnel p
 - **Reliability & Performance:** Close the backlog of backend/frontend TODOs (pagination, caching, Celery/Redis instrumentation, React Query cache tuning) while targeting ≥92 Lighthouse performance and ≥95 accessibility (see `docs/bmad/V1.2-SCOPE.md`).  
 - **Quality Gates:** Lift backend coverage from 84% to ≥90% and frontend from 85.1% to ≥90% via TDD-first updates to `backend/tests/**` and `frontend/src/**/*.test.tsx`.  
 - **Infrastructure Guardrails:** Update `render.yaml`, `prestart.sh`, and deployment checklists to enforce schema drift detection, health checks, and rollback procedures before v1.2 release.  
+- **Document Export Hardening:** Document exports now enqueue Celery jobs with real file generation plus audit logging, ensuring `DocumentVersionSummary` and `DocumentExportJob` entries include attribution and consistent storage metadata.  
 - **Cross-Cutting Consistency:** Re-run BMAD `solutioning-gate-check` after enhancements and keep architecture/stories in sync so multiple AI agents implement features without conflict.
 
 ## Architecture Decisions & Patterns

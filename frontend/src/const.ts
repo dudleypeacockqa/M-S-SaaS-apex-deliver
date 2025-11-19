@@ -3,7 +3,6 @@ import type { LucideIcon } from 'lucide-react'
 import {
   LayoutDashboard,
   Briefcase,
-  Search,
   CheckSquare,
   FileText,
   Calendar,
@@ -14,6 +13,7 @@ import {
   Settings,
   UserCog,
   Building2,
+  KanbanSquare,
 } from 'lucide-react'
 
 export const APP_LOGO = '/logo.svg'
@@ -22,7 +22,6 @@ export const APP_TITLE = 'ApexDeliver'
 export type WorkspaceNavId =
   | 'dashboard'
   | 'deals'
-  | 'deal-matching'
   | 'tasks'
   | 'documents'
   | 'events'
@@ -30,6 +29,7 @@ export type WorkspaceNavId =
   | 'billing'
   | 'podcast-studio'
   | 'fpa'
+  | 'pmi'
   | 'customer-portal'
   | 'admin'
   | 'master-admin'
@@ -73,16 +73,12 @@ const baseNavItems: WorkspaceNavigationItem[] = [
     hasSubMenu: true,
     subMenuItems: [
       { label: 'Pipeline', path: '/deals' },
-      { label: 'Matching', path: '/deals/matching' },
+      { label: 'Matching Intelligence', path: '/deals/matching' },
+      { label: 'Deal Details', path: '/deals/workspaces/details' },
+      { label: 'Data Room', path: '/deals/workspaces/data-room' },
+      { label: 'Valuation Suite', path: '/deals/workspaces/valuation' },
+      { label: 'Financial Intelligence', path: '/deals/workspaces/financial' },
     ],
-  },
-  {
-    id: 'deal-matching',
-    label: 'Deal Matching',
-    path: '/deals/matching',
-    roles: ['growth', 'enterprise', 'admin'], // Professional+ tier
-    icon: Search,
-    section: 'DEAL MANAGEMENT',
   },
   {
     id: 'tasks',
@@ -143,6 +139,19 @@ const baseNavItems: WorkspaceNavigationItem[] = [
       { label: 'Financial Reports', path: '/fpa/reports' },
       { label: 'Data Import', path: '/fpa/import' },
       { label: 'Admin Panel', path: '/fpa/admin' },
+    ],
+  },
+  {
+    id: 'pmi',
+    label: 'PMI Projects',
+    path: '/pmi/projects',
+    roles: ['growth', 'enterprise', 'admin'],
+    icon: KanbanSquare,
+    section: 'DEAL MANAGEMENT',
+    hasSubMenu: true,
+    subMenuItems: [
+      { label: 'Project Portfolio', path: '/pmi/projects' },
+      { label: 'Create Project', path: '/pmi/projects/new' },
     ],
   },
   {

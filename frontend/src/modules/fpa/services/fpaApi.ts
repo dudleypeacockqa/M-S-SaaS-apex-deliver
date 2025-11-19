@@ -23,6 +23,14 @@ export interface DemandForecast {
   created_at: string;
 }
 
+export interface DemandForecastCreate {
+  name?: string;
+  period: string;
+  forecasted_demand: number;
+  confidence_level: number;
+  assumptions?: Record<string, any>;
+}
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -63,6 +71,53 @@ export interface WhatIfScenario {
   description: string;
   assumptions: Record<string, any>;
   results: Record<string, any>;
+  created_at: string;
+}
+
+export interface ScenarioVariablesPayload {
+  gaba_red_price: number;
+  gaba_black_price: number;
+  gaba_gold_price: number;
+  production_volume: number;
+  material_costs: number;
+  labor_efficiency: number;
+}
+
+export interface ScenarioCalculationRequest {
+  variables: ScenarioVariablesPayload;
+}
+
+export interface ScenarioMetrics {
+  revenue: number;
+  gross_margin: number;
+  ebitda: number;
+  ebitda_margin: number;
+}
+
+export interface ScenarioCalculationResponse {
+  metrics: ScenarioMetrics;
+  baseline?: ScenarioMetrics;
+}
+
+export interface PredefinedScenario {
+  id: string;
+  name: string;
+  description: string;
+  variables: ScenarioVariablesPayload;
+  revenue_impact: number;
+  ebitda_impact: number;
+}
+
+export interface ApplyScenarioResponse {
+  scenario: PredefinedScenario;
+  metrics: ScenarioMetrics;
+  baseline: ScenarioMetrics;
+}
+
+export interface FpaReportResponse {
+  id: string;
+  report_type: string;
+  payload: Record<string, any>;
   created_at: string;
 }
 

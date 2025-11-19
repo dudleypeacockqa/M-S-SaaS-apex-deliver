@@ -356,6 +356,45 @@ class TestDocumentGenerationEndpoints:
         assert "2025-11-13" in data["generated_content"]
         assert data["status"] == "generated"
 
+    def test_generate_document_with_file_artifact(
+        self,
+        client,
+        create_user,
+        create_organization,
+        db_session: Session,
+    ):
+        """Generating with generate_file=True stores file path."""
+        org = create_organization(name="Template Org")
+        user = create_user(email="user2@example.com", organization_id=str(org.id))
+
+        template = DocumentTemplate(
+            name="Export Template",
+            content="Document for {{company}}",
+            variables=["company"],
+            organization_id=str(org.id),
+            created_by_user_id=user.id,
+        )
+        db_session.add(template)
+        db_session.commit()
+        db_session.refresh(template)
+
+        from app.api.dependencies.auth import get_current_user
+        dependency_overrides(get_current_user, lambda: user)
+
+        render_request = {
+            "variable_values": {"company": "Apex"},
+            "generate_file": True,
+            "file_format": "pdf",
+        }
+
+        response = client.post(
+            f"/api/document-generation/templates/{template.id}/generate",
+            json=render_request,
+        )
+        assert response.status_code == 201
+        document_id = response.json()["generated_document_id"]
+        generated = db_session.get(GeneratedDocument, document_id)
+        assert generated.file_path is not None
 
     def test_generate_document_missing_variables(
         self,

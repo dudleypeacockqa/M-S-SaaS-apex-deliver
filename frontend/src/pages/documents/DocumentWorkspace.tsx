@@ -15,8 +15,13 @@ import {
   bulkArchiveDocuments,
   bulkMoveDocuments,
   restoreArchivedDocuments,
+  listPermissions,
+  updatePermission,
+  logDocumentAuditEvent,
   type BulkArchiveResult,
   type BulkMoveResult,
+  type DocumentPermission,
+  type PermissionLevel,
 } from '../../services/api/documents'
 
 type ToastType = 'status' | 'alert' | 'progress'
@@ -138,30 +143,92 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
 
   const handlePermissionChange = useCallback(
     async (change: { documentId: string; userId: string; permission: string }) => {
-      // TODO: Call backend API to update permissions
-      console.log('[Audit] Permission changed:', change)
-      setResetSelectionSignal((value) => value + 1)
-      queryClient.invalidateQueries({
-        queryKey: ['deal-documents', dealId],
-      })
-      scheduleToast({
-        type: 'status',
-        message: 'Permissions updated',
-        detail: `Changes saved for ${change.documentId}`,
-      })
+      const nextRole = change.permission as PermissionLevel
+      if (!['viewer', 'editor', 'owner'].includes(nextRole)) {
+        throw new Error(`Unsupported permission level: ${change.permission}`)
+      }
+      try {
+        const permissions = await listPermissions(change.documentId)
+        const target = permissions.find(
+          (permission: DocumentPermission) =>
+            permission.user_id === change.userId || permission.user_email === change.userId
+        )
+
+        if (!target) {
+          throw new Error('Permission record not found for the selected user')
+        }
+
+        await updatePermission(target.id, { role: nextRole })
+
+        await logDocumentAuditEvent(dealId, change.documentId, {
+          action: 'permission_change',
+          metadata: { userId: change.userId, permission: nextRole },
+        })
+
+        const entryId =
+          typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}`
+
+        setPermissionAuditTrail((current) => [
+          {
+            id: entryId,
+            actor: 'You',
+            action: `Set ${target.user_email} to ${nextRole}`,
+            createdAt: new Date().toISOString(),
+          },
+          ...current,
+        ])
+
+        setResetSelectionSignal((value) => value + 1)
+        queryClient.invalidateQueries({
+          queryKey: ['deal-documents', dealId],
+        })
+        scheduleToast({
+          type: 'status',
+          message: 'Permissions updated',
+          detail: `Changes saved for ${change.documentId}`,
+        })
+      } catch (error) {
+        console.error('[Permission Update Failed]', error)
+        scheduleToast({
+          type: 'alert',
+          message: 'Failed to update permissions',
+          detail: error instanceof Error ? error.message : undefined,
+        })
+      }
     },
     [dealId, queryClient, scheduleToast]
   )
 
-  const handleAuditLog = useCallback((event: {
-    action: string
-    resource_type: string
-    resource_id: string
-    metadata?: Record<string, any>
-  }) => {
-    // TODO: Send audit log to backend
-    console.log('[Audit]', event)
-  }, [])
+  const handleAuditLog = useCallback(
+    async (event: {
+      action: string
+      resource_type: string
+      resource_id: string
+      metadata?: Record<string, any>
+    }) => {
+      const documentIds = Array.isArray(event.metadata?.documentIds)
+        ? (event.metadata?.documentIds as string[])
+        : [event.resource_id]
+
+      try {
+        await Promise.all(
+          documentIds.map((docId) =>
+            logDocumentAuditEvent(dealId, docId, {
+              action: event.action,
+              metadata: event.metadata,
+            })
+          )
+        )
+      } catch (error) {
+        console.error('[Audit Log Failed]', error)
+        scheduleToast({
+          type: 'alert',
+          message: 'Failed to record document activity',
+        })
+      }
+    },
+    [dealId, scheduleToast]
+  )
 
   const handleRootBreadcrumb = useCallback(() => {
     setSelectedFolderId(null)

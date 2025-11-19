@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
@@ -68,10 +69,14 @@ async def read_root() -> dict[str, str]:
 @app.get("/health")
 async def health_check() -> dict[str, str | bool]:
     """Health check endpoint for Render."""
+    storage_path_ready = Path(settings.storage_path).exists()
     return {
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "clerk_configured": bool(settings.clerk_secret_key),
         "database_configured": bool(settings.database_url),
         "webhook_configured": bool(settings.clerk_webhook_secret),
+        "stripe_configured": bool(settings.stripe_secret_key),
+        "redis_configured": bool(settings.redis_url),
+        "storage_path_ready": storage_path_ready,
     }

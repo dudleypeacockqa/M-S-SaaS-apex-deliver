@@ -14,6 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.models.organization import Organization
 from app.models.subscription import (
     Invoice,
@@ -23,7 +24,7 @@ from app.models.subscription import (
 )
 
 # Initialize Stripe
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+stripe.api_key = settings.stripe_secret_key or os.getenv("STRIPE_SECRET_KEY")
 
 
 # ============================================================================
