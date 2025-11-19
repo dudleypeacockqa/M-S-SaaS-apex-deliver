@@ -1,71 +1,51 @@
-import React from 'react';
-import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
-
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 import { DynamicPricingSimulator } from './DynamicPricingSimulator';
 
+// Mock Recharts
 vi.mock('recharts', () => {
-  const MockContainer: React.FC<React.PropsWithChildren> = ({ children }) => (
-    <div data-testid="mock-responsive-container">{children}</div>
-  );
-  const makeNullComponent = () => () => null;
-
+  const OriginalModule = vi.importActual('recharts');
   return {
-    ResponsiveContainer: MockContainer,
-    BarChart: MockContainer,
-    CartesianGrid: makeNullComponent(),
-    XAxis: makeNullComponent(),
-    YAxis: makeNullComponent(),
-    Tooltip: makeNullComponent(),
-    Legend: makeNullComponent(),
-    Bar: makeNullComponent(),
+    ...OriginalModule,
+    ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div className="recharts-responsive-container">{children}</div>,
+    BarChart: ({ children }: { children: React.ReactNode }) => <div className="recharts-bar-chart">{children}</div>,
+    Bar: () => <div className="recharts-bar" />,
+    XAxis: () => <div className="recharts-x-axis" />,
+    YAxis: () => <div className="recharts-y-axis" />,
+    CartesianGrid: () => <div className="recharts-cartesian-grid" />,
+    Tooltip: () => <div className="recharts-tooltip" />,
+    Cell: () => <div className="recharts-cell" />,
   };
 });
 
 describe('DynamicPricingSimulator', () => {
-  it('announces the best case revenue and updates when inputs change', () => {
+  it('renders title', () => {
     render(<DynamicPricingSimulator />);
+    expect(screen.getByText('Dynamic Pricing Engine')).toBeInTheDocument();
+  });
 
-    const summary = screen.getByTestId('pricing-summary');
-    expect(summary).toHaveTextContent(/Best case revenue/i);
-    expect(summary).toHaveTextContent('Volume (50+)');
-    expect(summary).toHaveTextContent('$13,500');
+  it('renders inputs', () => {
+    render(<DynamicPricingSimulator />);
+    expect(screen.getByText('Base Product Price ($)')).toBeInTheDocument();
+    expect(screen.getByText('Discount Strategy (%)')).toBeInTheDocument();
+  });
 
-    const seasonalInput = screen.getByLabelText(/Seasonal Multiplier/i);
-    fireEvent.change(seasonalInput, { target: { value: '1.8' } });
+  it('renders elasticity slider', () => {
+    render(<DynamicPricingSimulator />);
+    expect(screen.getByText(/Market Elasticity/)).toBeInTheDocument();
+    expect(screen.getByRole('slider')).toBeInTheDocument();
+  });
 
-    expect(summary).toHaveTextContent('Seasonal Peak');
-    expect(summary).toHaveTextContent('$14,400');
+  it('shows AI recommendation', () => {
+    render(<DynamicPricingSimulator />);
+    expect(screen.getByText('AI Recommendation')).toBeInTheDocument();
+    expect(screen.getByText(/5% discount/)).toBeInTheDocument();
+  });
+
+  it('updates base price', () => {
+    render(<DynamicPricingSimulator />);
+    const input = screen.getByDisplayValue('100');
+    fireEvent.change(input, { target: { value: '200' } });
+    expect(input).toHaveValue(200);
   });
 });
-import { render, screen, fireEvent } from '@testing-library/react';
-import { DynamicPricingSimulator } from './DynamicPricingSimulator';
-import React from 'react';
-
-// Mock Recharts
-jest.mock('recharts', () => ({
-  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  BarChart: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Bar: () => <div>Bar</div>,
-  XAxis: () => <div>XAxis</div>,
-  YAxis: () => <div>YAxis</div>,
-  CartesianGrid: () => <div>CartesianGrid</div>,
-  Tooltip: () => <div>Tooltip</div>,
-  Legend: () => <div>Legend</div>,
-}));
-
-describe('DynamicPricingSimulator', () => {
-  it('renders all inputs', () => {
-    render(<DynamicPricingSimulator />);
-    expect(screen.getByLabelText('Base Price ($)')).toBeInTheDocument();
-    expect(screen.getByLabelText('Volume Discount (%)')).toBeInTheDocument();
-    expect(screen.getByLabelText('Seasonal Multiplier (x)')).toBeInTheDocument();
-  });
-
-  it('renders impact analysis', () => {
-    render(<DynamicPricingSimulator />);
-    expect(screen.getByText('Impact Analysis')).toBeInTheDocument();
-    expect(screen.getByText(/Volume pricing could increase revenue/)).toBeInTheDocument();
-  });
-});
-

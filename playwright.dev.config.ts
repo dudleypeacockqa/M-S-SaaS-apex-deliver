@@ -1,7 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 
 process.env.PLAYWRIGHT_TSCONFIG = 'playwright.tsconfig.json';
-const baseURL = process.env.MARKETING_BASE_URL ?? 'http://127.0.0.1:4173';
+const DEFAULT_BASE_URL = 'http://127.0.0.1:4173';
+const baseURL = process.env.MARKETING_BASE_URL ?? DEFAULT_BASE_URL;
+const shouldStartPreview = !process.env.MARKETING_BASE_URL || process.env.MARKETING_BASE_URL === DEFAULT_BASE_URL;
+const previewCommand = 'npm run preview:test --prefix frontend';
 
 export default defineConfig({
   testDir: './tests',
@@ -21,4 +24,14 @@ export default defineConfig({
       use: devices['Desktop Chrome'],
     },
   ],
+  ...(shouldStartPreview
+    ? {
+        webServer: {
+          command: previewCommand,
+          url: baseURL,
+          reuseExistingServer: !process.env.CI,
+          timeout: 120_000,
+        },
+      }
+    : {}),
 });

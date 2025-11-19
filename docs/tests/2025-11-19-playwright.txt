@@ -1,0 +1,130 @@
+
+> ma-saas-frontend@1.1.0 build
+> npx vite build && npm run verify:lucide
+
+[dotenv@17.2.3] injecting env (1) from .env -- tip:   override existing env vars with { override: true }
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip:   write to custom object with { processEnv: myObject }
+[dotenv@17.2.3] injecting env (3) from .env.production -- tip:  add access controls to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env.production.local -- tip:   specify custom .env file path with { path: '/custom/path/.env' }
+vite v5.4.21 building for production...
+transforming...
+ 3005 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                         3.93 kB  gzip:   1.33 kB
+dist/assets/css/index-DcN2daN6.css                     96.61 kB  gzip:  14.17 kB
+dist/assets/js/tiny-invariant-BM5KeS_Z.js               0.07 kB  gzip:   0.09 kB
+dist/assets/js/DocumentRoomPage-DhMqQIvK.js             0.32 kB  gzip:   0.23 kB
+dist/assets/js/personSchema-v0r4f8E-.js                 0.35 kB  gzip:   0.23 kB
+dist/assets/js/usePMIProject-CklSfWdI.js                0.45 kB  gzip:   0.28 kB
+dist/assets/js/billingService-CwspmOpF.js               0.67 kB  gzip:   0.36 kB
+dist/assets/js/SignUpPage-C8nU7lAA.js                   0.77 kB  gzip:   0.46 kB
+dist/assets/js/admin-W5i9foLB.js                        1.11 kB  gzip:   0.39 kB
+dist/assets/js/fpaApi-Bghkr70v.js                       1.17 kB  gzip:   0.51 kB
+dist/assets/js/organizationSchema-B8tda4O_.js           1.29 kB  gzip:   0.70 kB
+dist/assets/js/CustomerInvoices-Cvf3Ekf4.js             1.51 kB  gzip:   0.50 kB
+dist/assets/js/FeatureNotAvailable-DHR1vXcJ.js          1.54 kB  gzip:   0.71 kB
+dist/assets/js/CheckoutSuccess-BVxEO-n_.js              1.56 kB  gzip:   0.70 kB
+dist/assets/js/CustomerAccount-DxGXn2W6.js              1.61 kB  gzip:   0.58 kB
+dist/assets/js/CheckoutCancel-phAyJnKA.js               1.67 kB  gzip:   0.78 kB
+dist/assets/js/DataRoom-D4taggLq.js                     2.05 kB  gzip:   0.95 kB
+dist/assets/js/DataImport-l4UEd2ks.js                   2.08 kB  gzip:   1.01 kB
+dist/assets/js/CustomerPortalDashboard-Cl3uzcG3.js      2.11 kB  gzip:   0.68 kB
+dist/assets/js/FinancialReports-B0da557O.js             2.21 kB  gzip:   0.98 kB
+dist/assets/js/useScores-CbpGRNEg.js                    2.53 kB  gzip:   1.08 kB
+dist/assets/js/SignInPage-DJiPBwDt.js                   2.59 kB  gzip:   1.00 kB
+dist/assets/js/CTASection-DswQE-Hy.js                   2.79 kB  gzip:   0.97 kB
+dist/assets/js/AdminPanel-Ci-Hmxm5.js                   2.81 kB  gzip:   1.02 kB
+dist/assets/js/CustomerSettings-AwZ5C7Ot.js             2.89 kB  gzip:   0.78 kB
+dist/assets/js/WorkingCapital-BCqRtkvL.js               3.16 kB  gzip:   0.96 kB
+dist/assets/js/PMIProjectList-CBIYHHn4.js               3.26 kB  gzip:   1.18 kB
+dist/assets/js/QualityControl-CRxxqQzQ.js               3.57 kB  gzip:   1.24 kB
+dist/assets/js/pmiApi-DY2yxdhW.js                       3.95 kB  gzip:   0.99 kB
+dist/assets/js/ProductionTracking-F5IaCyvy.js           4.59 kB  gzip:   1.37 kB
+dist/assets/js/PodcastPage-Debekzmb.js                  4.89 kB  gzip:   1.67 kB
+dist/assets/js/InventoryManagement-B7DjYBXb.js          5.19 kB  gzip:   1.60 kB
+dist/assets/js/TeamPage-DJY4pqqU.js                     5.45 kB  gzip:   2.11 kB
+dist/assets/js/masterAdmin-CMVPCRAa.js                  5.50 kB  gzip:   1.40 kB
+dist/assets/js/DealWorkspaceDirectory-j_1Q_Kq5.js       5.62 kB  gzip:   2.11 kB
+dist/assets/js/PMIProjectCreate-HGaUy8CZ.js             5.71 kB  gzip:   1.64 kB
+dist/assets/js/DemandForecasting-CgYiVuVV.js            6.50 kB  gzip:   1.87 kB
+dist/assets/js/MasterAdminDashboard-CdzJMVkL.js         6.56 kB  gzip:   2.04 kB
+dist/assets/js/BlogListingPage-C8Arj0eN.js              6.67 kB  gzip:   2.51 kB
+dist/assets/js/AdminDashboard-o4EoW3nh.js               6.73 kB  gzip:   1.64 kB
+dist/assets/js/BookTrial-BF2CbJxh.js                    7.01 kB  gzip:   2.18 kB
+dist/assets/js/FinancialDashboard-CquYc-M0.js           7.07 kB  gzip:   1.96 kB
+dist/assets/js/SystemHealth-VGRHrAtj.js                 7.23 kB  gzip:   1.62 kB
+dist/assets/js/LeadCapture--53FKTh-.js                  7.57 kB  gzip:   2.23 kB
+dist/assets/js/OrganizationManagement-BGiWoxy3.js       7.60 kB  gzip:   2.04 kB
+dist/assets/js/NewDealPage-BNVHSq16.js                  7.64 kB  gzip:   2.24 kB
+dist/assets/js/ExecutiveDashboard-S3osKTip.js           7.80 kB  gzip:   1.91 kB
+dist/assets/js/TemplateManager-BWGA7P5y.js              8.15 kB  gzip:   2.46 kB
+dist/assets/js/DealPipeline-Cfg6IgIj.js                 8.37 kB  gzip:   3.00 kB
+dist/assets/js/ContactPage-Dh_570Uy.js                  9.00 kB  gzip:   2.61 kB
+dist/assets/js/VoiceCampaign-02Xf5_tM.js                9.05 kB  gzip:   2.23 kB
+dist/assets/js/SalesCollateral-DeT3XIBw.js              9.07 kB  gzip:   2.61 kB
+dist/assets/js/SecurityPage-DrbkIqTc.js                 9.19 kB  gzip:   3.12 kB
+dist/assets/js/AboutPage-D31JLsro.js                    9.58 kB  gzip:   3.06 kB
+dist/assets/js/DashboardLayout-BTGZkf_w.js              9.73 kB  gzip:   3.28 kB
+dist/assets/js/CookiePolicy-ND3bnyox.js                 9.83 kB  gzip:   2.58 kB
+dist/assets/js/TermsOfService-D1pUYVP8.js              10.69 kB  gzip:   3.42 kB
+dist/assets/js/CaseStudiesPage-O6eHo9Iw.js             10.99 kB  gzip:   3.50 kB
+dist/assets/js/CampaignManager-CjgwiuCF.js             11.62 kB  gzip:   3.03 kB
+dist/assets/js/react-redux-CpCWRdYR.js                 11.79 kB  gzip:   4.46 kB
+dist/assets/js/FAQPage-BHEPU6xU.js                     12.02 kB  gzip:   4.93 kB
+dist/assets/js/FourStageCyclePage-CTmCr6jF.js          12.25 kB  gzip:   4.15 kB
+dist/assets/js/WhatIfAnalysis-C632VamY.js              13.43 kB  gzip:   3.63 kB
+dist/assets/js/PrivacyPolicy-kIjYxQZy.js               13.81 kB  gzip:   3.59 kB
+dist/assets/js/CapLiquifyFPAPage-BJVGAqFZ.js           14.65 kB  gzip:   4.56 kB
+dist/assets/js/UserManagement-zzOERnSu.js              16.00 kB  gzip:   4.08 kB
+dist/assets/js/BillingDashboard-C86ijV0X.js            16.38 kB  gzip:   4.26 kB
+dist/assets/js/BarChart-CCTRwXWz.js                    16.53 kB  gzip:   5.41 kB
+dist/assets/js/SalesPromotionPricingPage-B1Z0qTkg.js   16.97 kB  gzip:   5.05 kB
+dist/assets/js/FeaturesPage-DVnaLs5C.js                17.32 kB  gzip:   3.37 kB
+dist/assets/js/DashboardPage-BZjRkniG.js               17.60 kB  gzip:   5.03 kB
+dist/assets/js/LineChart-B-qhmD98.js                   17.70 kB  gzip:   5.41 kB
+dist/assets/js/SEO-CR1VqBtv.js                         18.10 kB  gzip:   5.85 kB
+dist/assets/js/ActivityTracker-BfffCrhX.js             20.43 kB  gzip:   5.07 kB
+dist/assets/js/DealDetails-p-kojDt1.js                 21.07 kB  gzip:   4.84 kB
+dist/assets/js/PricingPage-CLJijx14.js                 25.25 kB  gzip:   5.39 kB
+dist/assets/js/ContentStudio-DDIghRvh.js               25.63 kB  gzip:   4.51 kB
+dist/assets/js/DocumentEditor-TLWoXrZe.js              29.27 kB  gzip:   7.63 kB
+dist/assets/js/ProspectPipeline-D1B5Qenw.js            30.73 kB  gzip:   6.64 kB
+dist/assets/js/TaskBoard-nGnkPz6q.js                   32.09 kB  gzip:   7.24 kB
+dist/assets/js/PMIProjectDetail-CYxxE-pQ.js            37.41 kB  gzip:   7.12 kB
+dist/assets/js/MatchingWorkspace-CxZu-kMl.js           45.49 kB  gzip:  10.74 kB
+dist/assets/js/EnhancedLandingPage-CptfRkQ-.js         45.52 kB  gzip:  11.93 kB
+dist/assets/js/index-tkjEFdNW.js                       45.95 kB  gzip:  10.27 kB
+dist/assets/js/valuation-suite-BlkaYNWH.js             49.90 kB  gzip:  10.60 kB
+dist/assets/js/DocumentWorkspace-B9KH4T2N.js           70.46 kB  gzip:  18.43 kB
+dist/assets/js/dnd.esm-iHgYgnhU.js                     84.32 kB  gzip:  24.96 kB
+dist/assets/js/BlogPostPage-DDpnutti.js               122.35 kB  gzip:  36.64 kB
+dist/assets/js/podcast-studio-Dx3sngTp.js             122.48 kB  gzip:  34.15 kB
+dist/assets/js/index-ZatI0iKq.js                      146.94 kB  gzip:  35.51 kB
+dist/assets/js/events-2Of--79C.js                     156.08 kB  gzip:  43.20 kB
+dist/assets/js/index-BiP4ouvn.js                      235.98 kB  gzip:  72.90 kB
+dist/assets/js/CartesianChart-COXiJtyG.js             304.10 kB  gzip:  88.23 kB
+dist/assets/js/community-D55qmaa4.js                  622.65 kB  gzip: 163.31 kB
+ built in 32.45s
+
+> ma-saas-frontend@1.1.0 verify:lucide
+> node scripts/verify-lucide-chunk.mjs
+
+  Lucide bundle verification passed!
+
+Verified:
+  - No lucide-specific chunks in dist/assets/js/
+  - index.html does not reference lucide-vendor chunks
+  - Icons will load synchronously with main bundle
+
+Running 7 tests using 5 workers
+
+    3 [chromium]  tests\integrations-link.spec.ts:6:7  Integrations visibility  highlights iPaaS integrations on the pricing page (3.7s)
+    2 [chromium]  tests\contact-flow.spec.ts:6:7  Contact flow  submits the marketing contact form (3.8s)
+    4 [chromium]  tests\optin-popup.spec.ts:6:7  Opt-in popup  allows visitors to subscribe to the newsletter (3.8s)
+    5 [chromium]  tests\seo-meta.spec.ts:13:9  SEO meta  sets canonical + og:url for / (3.8s)
+    1 [chromium]  tests\blog-smoke.spec.ts:6:7  Blog smoke  renders marketing blog listing with hero content (3.9s)
+    6 [chromium]  tests\seo-meta.spec.ts:13:9  SEO meta  sets canonical + og:url for /contact (1.5s)
+    7 [chromium]  tests\seo-meta.spec.ts:13:9  SEO meta  sets canonical + og:url for /team (1.5s)
+
+  7 passed (11.5s)

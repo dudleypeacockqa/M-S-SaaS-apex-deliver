@@ -101,27 +101,10 @@ class TestScheduleCampaign:
         db.add(campaign)
         db.commit()
         db.refresh(campaign)
-
-        dummy_prospect = AdminProspect(
-            user_id=str(test_user.id),
-            name="Analytics Prospect",
-            email="analytics@example.com",
-        )
-        db.add(dummy_prospect)
-        db.commit()
-        db.refresh(dummy_prospect)
-
-        dummy_prospect = AdminProspect(
-            user_id=str(test_user.id),
-            name="Analytics Prospect",
-            email="analytics@example.com",
-        )
-        db.add(dummy_prospect)
-        db.commit()
-        db.refresh(dummy_prospect)
         
         # Schedule for 1 hour from now
-        schedule_time = datetime.utcnow() + timedelta(hours=1)
+        from datetime import timezone
+        schedule_time = datetime.now(timezone.utc) + timedelta(hours=1)
         
         # This will fail until we implement the service
         # from app.services.campaign_service import schedule_campaign
@@ -147,7 +130,8 @@ class TestScheduleCampaign:
         db.commit()
         db.refresh(campaign)
         
-        past_time = datetime.utcnow() - timedelta(hours=1)
+        from datetime import timezone
+        past_time = datetime.now(timezone.utc) - timedelta(hours=1)
         
         # This will fail until we implement the service
         # from app.services.campaign_service import schedule_campaign

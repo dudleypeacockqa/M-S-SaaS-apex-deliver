@@ -37,11 +37,13 @@
 - ⏳ Documentation + roadmap sync so nothing claims 100% without proof
 
 **Documentation Evidence**:
-- [FINAL-COMPLETION-PLAN.md](docs/FINAL-COMPLETION-PLAN.md) – Current completion roadmap
-- [Master Admin Validation Checklist](docs/testing/2025-11-17-MASTER-ADMIN-VALIDATION-CHECKLIST.md) – Manual QA procedures
-- [Backend Verification Log](docs/deployments/2025-11-17-backend-verify.txt) – Health/Alembic/table/index results
-- [BMAD Daily Status](docs/bmad/DAILY_STATUS_NOTES.md) – Build/Measure/Analyze log (new)
-- [Session Summary](docs/2025-11-17-SESSION-SUMMARY.md) – Worklog for this execution window
+- [FINAL-COMPLETION-PLAN.md](docs/FINAL-COMPLETION-PLAN.md) - Current completion roadmap
+- [Master Admin Validation Checklist](docs/testing/2025-11-17-MASTER-ADMIN-VALIDATION-CHECKLIST.md) - Manual QA procedures
+- [Backend Verification Log](docs/deployments/2025-11-17-backend-verify.txt) - Health/Alembic/table/index results
+- [BMAD Daily Status](docs/bmad/DAILY_STATUS_NOTES.md) - Build/Measure/Analyze log (new)
+- [Session Summary](docs/2025-11-17-SESSION-SUMMARY.md) - Worklog for this execution window
+- [Marketing Playwright Log](docs/tests/2025-11-19-playwright.txt) - Build + smoke output
+- [Marketing Playwright Summary](docs/deployments/2025-11-19-marketing-playwright.txt) - Evidence + follow-up actions
 
 
 
@@ -104,11 +106,13 @@ npx bmad-method run <workflow-name>
 
 ### Marketing Smoke (Playwright)
 
-Serve the marketing bundle (`npm run preview:test` from `frontend/`), export `MARKETING_BASE_URL` (defaults to `http://127.0.0.1:4173` locally), then execute the Playwright suite:
+Run the helper script to build the marketing bundle, start the preview server, and execute the Playwright smoke suite with the correct MARKETING_BASE_URL.
 
-```bash
-MARKETING_BASE_URL=http://127.0.0.1:4173 npx playwright test --config playwright.dev.config.ts
-```
+`ash
+node scripts/run-marketing-playwright.mjs
+`
+
+The script defaults MARKETING_BASE_URL to http://127.0.0.1:4173. Export MARKETING_BASE_URL before running if you need to hit a deployed preview (the Playwright config will skip starting the local preview whenever the variable points elsewhere). Tee the output into docs/tests/<date>-playwright.txt to archive evidence.
 
 ### TDD Discipline (Mandatory)
 

@@ -1,11 +1,11 @@
 
 # BMM Workflow Status
 
-**Status**: ⚠️ IN PROGRESS — Suites are green; documentation sync, BlogAdminEditor verification, manual QA, and marketing evidence still outstanding
+**Status**: IN PROGRESS - Suites are green; documentation sync, BlogAdminEditor verification, marketing parity backlog, manual QA, and audits still outstanding
 **Release Target**: v1.0.0 (Final QA + marketing smoke sign-off)
 **Current Version**: v1.0.0-rc1 (Core features code-complete)
 **Test Pass Rate (2025-11-17)**: Backend 1,432/1,432 PASS (100%) ✅ · Frontend 1,742/1,742 PASS (100%) ✅ · Master Admin 91/91 PASS (100%) ✅
-**Execution Plan**: Phases 1–3 COMPLETE; Phase 4 (Final QA + Marketing) and BMAD Decide evidence in progress per `COMPLETION-PLAN-2025-11-17.md`
+**Execution Plan**: Phase 7 (Final QA + Marketing) executing per docs/FINAL-COMPLETION-PLAN.md (wave-based backlog)
 
 ## Project Configuration
 
@@ -19,10 +19,10 @@ WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.y
 ## Current State
 
 CURRENT_PHASE: 7-Final QA & Marketing Evidence (Documentation sync + BlogAdmin verification)
-CURRENT_WORKFLOW: dev-story (Governance sync + BlogAdmin verification + marketing deliverables via TDD)
+CURRENT_WORKFLOW: dev-story (Wave 0 governance sync + marketing evidence capture)
 CURRENT_AGENT: codex (primary) with BMAD governance support
 PROJECT_COMPLETION: 99.2% (All features complete; final QA + marketing website implementation remaining)
-LAST_UPDATED: 2025-11-17T19:45Z (npx bmad-method status run; beginning governance sync + BlogAdmin verification)
+LAST_UPDATED: 2025-11-19T12:45Z (Plan refreshed + Playwright smoke log captured)
 PHASE_1_FOUNDATIONAL_CORE: ✅ COMPLETE (All 7 foundational features implemented and tested)
 PHASE_2_ADVANCED_INTELLIGENCE: ✅ COMPLETE (All 4 intelligence features implemented and tested)
 PHASE_3_ECOSYSTEM_NETWORK: ✅ COMPLETE (All 3 ecosystem features implemented and tested)
@@ -42,10 +42,11 @@ COMPLETED:
 - ✅ Master Admin: 91/91 tests passing (100%)
 - ✅ F-010 BlogAdminEditor: Component, tests, and routes complete (commit 95a2bbd)
 - ✅ Production: Both services deployed and healthy
+- ✅ Marketing Playwright: 7/7 specs passing via scripts/run-marketing-playwright.mjs (docs/tests/2025-11-19-playwright.txt)
 REMAINING:
 - ⏳ Manual QA of Master Admin Portal (4-6 hours) with evidence capture
 - ⏳ Performance and accessibility audits (2-3 hours) blocked on manual Lighthouse/Axe runs
-- ⏳ Marketing website Playwright smoke tests + documentation (30-40 hours)
+- ⏳ Marketing website parity + SEO/blog backlog documentation (see docs/FINAL-COMPLETION-PLAN.md)
 - ⏳ Final documentation/handoff once Decide gate has artefacts (5-7 hours)
 - ⏳ Marketing CI workflow + DAILY_STATUS_NOTES cadence enforcement
 
@@ -74,18 +75,16 @@ REMAINING:
 
 ## Next Action
 
-NEXT_ACTION: Sync governance docs and verify BlogAdminEditor before manual QA and marketing evidence
+NEXT_ACTION: Wave 0 documentation + marketing evidence sync leading into Master Admin QA prep
 NEXT_COMMAND:
-1. Run `npx bmad-method status` (DONE) and align README.md, docs/bmad/bmm-workflow-status.md, and docs/bmad/100-PERCENT-COMPLETION-STATUS.md with the 2025-11-17 test evidence.
-2. Extend BlogAdminEditor automated coverage (backend + Playwright/Vitest) for `/admin/blog/new` and `/admin/blog/:id/edit` to capture RED state.
-3. Implement/fix BlogAdminEditor flows until tests turn GREEN, capture screenshots/logs, and mark F-010 fully verified.
-4. Execute Master Admin manual QA checklist with Clerk test account, store evidence in docs/testing/.
-5. Capture manual Lighthouse + Axe audits and first green marketing Playwright run (MARKETING_BASE_URL) and archive reports.
-6. Continue marketing backlog (mobile nav focus states, 38 blog posts, forms/integrations, SEO artefacts) per COMPLETION-PLAN-2025-11-17.md.
+1. Align README.md, TODO.md, docs/bmad/bmm-workflow-status.md, and docs/bmad/100-PERCENT-COMPLETION-STATUS.md with the 2025-11-19 plan + Playwright evidence.
+2. Keep the marketing smoke automation green via `node scripts/run-marketing-playwright.mjs` and archive each run under docs/tests/.
+3. Draft docs/marketing/marketing-gap-analysis-2025-11-19.md to track SEO, page parity, and blog backlog deliverables.
+4. Stage Master Admin manual QA (Clerk test accounts, seed data, docs/testing logging folders) before executing the checklist.
+5. Schedule manual Lighthouse + Axe reruns after marketing parity updates and store the reports in docs/testing/.
 NEXT_AGENT: codex
-PRIORITY: P0 (Critical Fix + 100% Completion)
-RATIONALE: Critical 500 error blocking production. After fix, complete remaining 0.8% of project (marketing features, QA, documentation) to achieve 100% completion per 100-PERCENT-COMPLETION-PLAN-2025-11-18.md
-
+PRIORITY: P0 (Evidence + manual QA prep)
+RATIONALE: Governance artefacts and marketing evidence must be current before moving to manual QA + performance audits.
 ## Session 2025-11-19T10-Imagemin-Hardening
 
 SESSION_ID: Session-2025-11-19T10-Imagemin-Hardening
@@ -400,7 +399,7 @@ WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.y
 ## Current State
 
 CURRENT_PHASE: 6-Complete
-CURRENT_WORKFLOW: Phase-6-Production-Launch
+CURRENT_WORKFLOW: dev-story (Wave 0 governance sync + marketing evidence capture)
 CURRENT_AGENT: dev
 PHASE_1_COMPLETE: true
 PHASE_2_COMPLETE: true

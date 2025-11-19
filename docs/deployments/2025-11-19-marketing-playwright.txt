@@ -1,0 +1,12 @@
+# Marketing Smoke Evidence - 2025-11-19
+
+- **Command**: `node scripts/run-marketing-playwright.mjs`
+- **Preview Startup**: Playwright `webServer` executed `npm run preview:test --prefix frontend`
+- **Base URL**: http://127.0.0.1:4173 (default MARKETING_BASE_URL)
+- **Build Inputs**: `frontend/.env`, `.env.production` (see dotenv banner in log)
+- **Tests**: 7 Playwright specs (`tests/*.spec.ts`) executed via `playwright.dev.config.ts`
+- **Result**: [pass] 7 passed, 0 failed (chromium project)
+- **Artifacts**:
+  - Raw console log: `docs/tests/2025-11-19-playwright.txt`
+  - Playwright traces/videos (if needed) under `test-results/` (ignored in git)
+- **Next Steps**: wire command into CI workflow + attach screenshot/video evidence when running against deployed preview.

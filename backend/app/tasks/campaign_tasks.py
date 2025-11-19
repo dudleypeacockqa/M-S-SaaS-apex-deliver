@@ -55,15 +55,18 @@ def queue_campaign_email_task(to_email: str, subject: str, content: str, templat
     """
     db = SessionLocal()
     try:
+        import asyncio
         from app.services.email_service import queue_email
         
-        # Queue email for sending (function is now synchronous)
-        result = queue_email(
-            db=db,
-            to_email=to_email,
-            subject=subject,
-            template_name="campaign_email",
-            template_data=template_data,
+        # Queue email for sending (async function, use asyncio.run in Celery task)
+        result = asyncio.run(
+            queue_email(
+                db=db,
+                to_email=to_email,
+                subject=subject,
+                template_name="campaign_email",
+                template_data=template_data,
+            )
         )
         
         return result

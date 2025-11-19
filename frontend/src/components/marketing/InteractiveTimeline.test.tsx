@@ -1,32 +1,35 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 import { InteractiveTimeline } from './InteractiveTimeline';
 
 describe('InteractiveTimeline', () => {
-  it('renders all 4 stages', () => {
+  it('renders timeline title', () => {
     render(<InteractiveTimeline />);
-    expect(screen.getByText('Stage 1: Evaluation')).toBeInTheDocument();
-    expect(screen.getByText('Stage 2: Pre-Deal')).toBeInTheDocument();
-    expect(screen.getByText('Stage 3: Post-Deal')).toBeInTheDocument();
-    expect(screen.getByText('Stage 4: Operations')).toBeInTheDocument();
+    expect(screen.getByText('M&A Lifecycle Explorer')).toBeInTheDocument();
   });
 
-  it('shows details for active stage', () => {
+  it('renders all stages in navigation', () => {
     render(<InteractiveTimeline />);
-    // Default is Stage 1
-    expect(screen.getByText('Deal sourcing')).toBeInTheDocument();
-    expect(screen.getByText('Initial screening')).toBeInTheDocument();
+    expect(screen.getByText('Evaluation')).toBeInTheDocument();
+    expect(screen.getByText('Pre-Deal')).toBeInTheDocument();
+    expect(screen.getByText('Post-Deal')).toBeInTheDocument();
+    expect(screen.getByText('Optimization')).toBeInTheDocument();
   });
 
-  it('updates details when stage clicked', () => {
+  it('shows first stage content by default', () => {
     render(<InteractiveTimeline />);
-    
-    // Click Stage 2
-    const stage2Buttons = screen.getAllByText('Stage 2: Pre-Deal');
-    // Click the desktop button (first one usually) or just any
-    fireEvent.click(stage2Buttons[0]);
-    
-    expect(screen.getByText('Due diligence')).toBeInTheDocument();
-    expect(screen.getByText('Legal review')).toBeInTheDocument();
+    expect(screen.getByText('Initial sourcing, screening, and preliminary valuation of potential targets.')).toBeInTheDocument();
+  });
+
+  it('changes content when stage is clicked', () => {
+    render(<InteractiveTimeline />);
+    const postDealButton = screen.getByText('Post-Deal');
+    fireEvent.click(postDealButton);
+    expect(screen.getByText('Closing the transaction and beginning the immediate integration tasks.')).toBeInTheDocument();
+  });
+
+  it('displays stage duration', () => {
+    render(<InteractiveTimeline />);
+    expect(screen.getByText('0-90 Days')).toBeInTheDocument();
   });
 });
-

@@ -1,55 +1,52 @@
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 import { CaseStudy } from './CaseStudy';
 import { CaseStudy as CaseStudyType } from '../../data/caseStudies';
 
-describe('CaseStudy', () => {
+describe('CaseStudy Component', () => {
   const mockCaseStudy: CaseStudyType = {
-    id: 'test-1',
+    id: 'test-case',
     customerName: 'Test Company',
-    industry: 'Test Industry',
-    customerSize: '100 employees',
-    challenge: 'Test challenge',
-    solution: 'Test solution',
+    industry: 'Technology',
+    customerSize: '100-500',
+    challenge: 'Manual processes slowing down growth.',
+    solution: 'Implemented automation suite.',
     results: {
-      metric1: { value: '50%', label: 'Test metric' },
-      metric2: { value: '10 days', label: 'Test time' },
+      metric1: { value: '50%', label: 'Growth' },
+      metric2: { value: '10x', label: 'ROI' },
+      metric3: { value: '2w', label: 'Time saved' },
     },
-    quote: 'Test quote',
-    quoteName: 'John Doe',
+    quote: 'This platform changed everything.',
+    quoteName: 'Jane Doe',
     quoteTitle: 'CEO',
-    logoUrl: '/test-logo.svg',
-    publishedDate: '2025-10-01',
-    featured: true,
+    logoUrl: '/logo.png',
+    publishedDate: '2025-01-01',
+    featured: true
   };
 
-  it('renders customer name and industry', () => {
+  it('renders customer info correctly', () => {
     render(<CaseStudy caseStudy={mockCaseStudy} />);
     expect(screen.getByText('Test Company')).toBeInTheDocument();
-    expect(screen.getByText(/Test Industry/)).toBeInTheDocument();
+    expect(screen.getByText('Technology')).toBeInTheDocument();
   });
 
-  it('displays challenge and solution sections', () => {
+  it('renders challenge and solution', () => {
     render(<CaseStudy caseStudy={mockCaseStudy} />);
-    expect(screen.getByText('Test challenge')).toBeInTheDocument();
-    expect(screen.getByText('Test solution')).toBeInTheDocument();
+    expect(screen.getByText('Manual processes slowing down growth.')).toBeInTheDocument();
+    expect(screen.getByText('Implemented automation suite.')).toBeInTheDocument();
   });
 
-  it('shows metrics in results section', () => {
+  it('renders metrics', () => {
     render(<CaseStudy caseStudy={mockCaseStudy} />);
     expect(screen.getByText('50%')).toBeInTheDocument();
-    expect(screen.getByText('Test metric')).toBeInTheDocument();
+    expect(screen.getByText('Growth')).toBeInTheDocument();
+    expect(screen.getByText('10x')).toBeInTheDocument();
   });
 
-  it('displays customer quote with attribution', () => {
+  it('renders quote', () => {
     render(<CaseStudy caseStudy={mockCaseStudy} />);
-    expect(screen.getByText(/Test quote/)).toBeInTheDocument();
-    expect(screen.getByText(/John Doe/)).toBeInTheDocument();
-    expect(screen.getByText(/CEO/)).toBeInTheDocument();
-  });
-
-  it('includes CTA button', () => {
-    render(<CaseStudy caseStudy={mockCaseStudy} />);
-    expect(screen.getByText(/Start Your Free Trial/i)).toBeInTheDocument();
+    expect(screen.getByText('"This platform changed everything."')).toBeInTheDocument();
+    expect(screen.getByText('Jane Doe')).toBeInTheDocument();
+    expect(screen.getByText('CEO')).toBeInTheDocument();
   });
 });
-

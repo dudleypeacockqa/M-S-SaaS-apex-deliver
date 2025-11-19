@@ -17,6 +17,28 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/blog", tags=["blog"])
 
 
+def serialize_blog_post(post: BlogPost) -> "BlogPostResponse":
+    """Convert a BlogPost ORM object into a response schema."""
+    return BlogPostResponse(
+        id=post.id,
+        title=post.title,
+        slug=post.slug,
+        excerpt=post.excerpt,
+        content=post.content,
+        category=post.category,
+        primary_keyword=post.primary_keyword,
+        secondary_keywords=post.secondary_keywords.split(',') if post.secondary_keywords else [],
+        meta_description=post.meta_description,
+        featured_image_url=post.featured_image_url,
+        author=post.author,
+        read_time_minutes=post.read_time_minutes,
+        published=post.published,
+        published_at=post.published_at.isoformat() if post.published_at else None,
+        created_at=post.created_at.isoformat() if post.created_at else None,
+        updated_at=post.updated_at.isoformat() if post.updated_at else None,
+    )
+
+
 class BlogPostCreate(BaseModel):
     """Schema for creating a new blog post."""
     title: str = Field(..., min_length=1, max_length=255, description="Blog post title")
@@ -54,6 +76,24 @@ class BlogPostResponse(BaseModel):
     published_at: Optional[str]
     created_at: str
     updated_at: str
+
+
+class BlogPostUpdate(BaseModel):
+    """Schema for updating an existing blog post."""
+
+    title: Optional[str] = None
+    slug: Optional[str] = None
+    excerpt: Optional[str] = None
+    content: Optional[str] = None
+    category: Optional[str] = None
+    primary_keyword: Optional[str] = None
+    secondary_keywords: Optional[List[str]] = None
+    meta_description: Optional[str] = None
+    featured_image_url: Optional[str] = None
+    author: Optional[str] = None
+    read_time_minutes: Optional[int] = Field(None, ge=1)
+    published: Optional[bool] = None
+    published_at: Optional[datetime] = None
 
 
 @router.get("", response_model=List[BlogPostResponse])
@@ -320,21 +360,4 @@ def create_blog_post(
     db.refresh(db_post)
     
     # Return response
-    return BlogPostResponse(
-        id=db_post.id,
-        title=db_post.title,
-        slug=db_post.slug,
-        excerpt=db_post.excerpt,
-        content=db_post.content,
-        category=db_post.category,
-        primary_keyword=db_post.primary_keyword,
-        secondary_keywords=db_post.secondary_keywords.split(',') if db_post.secondary_keywords else [],
-        meta_description=db_post.meta_description,
-        featured_image_url=db_post.featured_image_url,
-        author=db_post.author,
-        read_time_minutes=db_post.read_time_minutes,
-        published=db_post.published,
-        published_at=db_post.published_at.isoformat() if db_post.published_at else None,
-        created_at=db_post.created_at.isoformat() if db_post.created_at else None,
-        updated_at=db_post.updated_at.isoformat() if db_post.updated_at else None,
-    )
+    return serialize_blog_post(db_post)

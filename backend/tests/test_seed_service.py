@@ -1,7 +1,9 @@
 """Tests for tenant seeding helpers."""
 from __future__ import annotations
 
-from sqlalchemy.orm import Session
+import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.models.user import UserRole
 from app.services.seed_service import TenantSeedConfig, ensure_tenant_admin
@@ -63,3 +65,27 @@ def test_ensure_tenant_admin_is_idempotent(db_session: Session):
     assert user.first_name == "Dudley"
     assert user.last_name == "Peacock"
     assert user.organization_id == updated.organization_id
+
+
+def test_ensure_tenant_admin_requires_migrations():
+    engine = create_engine("sqlite:///:memory:")
+    SessionLocal = sessionmaker(bind=engine)
+    session = SessionLocal()
+
+    config = TenantSeedConfig(
+        organization_id="org-dge",
+        organization_name="Digital Growth Equity",
+        organization_slug="digital-growth-equity",
+        subscription_tier="professional",
+        admin_clerk_user_id="clerk-dge-admin",
+        admin_email="dge.admin@example.com",
+        admin_first_name="Digital",
+        admin_last_name="Admin",
+    )
+
+    try:
+        with pytest.raises(RuntimeError) as excinfo:
+            ensure_tenant_admin(session, config)
+        assert "migrations" in str(excinfo.value)
+    finally:
+        session.close()

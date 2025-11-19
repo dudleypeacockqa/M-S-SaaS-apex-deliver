@@ -4,6 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Tuple
 
+from sqlalchemy.exc import SQLAlchemyError, OperationalError
 from sqlalchemy.orm import Session
 
 from app.models.organization import Organization
@@ -42,17 +43,24 @@ def ensure_tenant_admin(db: Session, config: TenantSeedConfig) -> Tuple[Organiza
         "slug": config.organization_slug,
         "public_metadata": {"subscription_tier": config.subscription_tier},
     }
-    organization = organization_service.upsert_from_clerk(db, org_payload)
+    try:
+        organization = organization_service.upsert_from_clerk(db, org_payload)
 
-    user_payload = {
-        "id": config.admin_clerk_user_id,
-        "email": config.admin_email,
-        "first_name": config.admin_first_name,
-        "last_name": config.admin_last_name,
-        "organization_id": config.organization_id,
-        "public_metadata": {"role": config.admin_role.value},
-    }
-    user = user_service.create_user_from_clerk(db, user_payload)
+        user_payload = {
+            "id": config.admin_clerk_user_id,
+            "email": config.admin_email,
+            "first_name": config.admin_first_name,
+            "last_name": config.admin_last_name,
+            "organization_id": config.organization_id,
+            "public_metadata": {"role": config.admin_role.value},
+        }
+        user = user_service.create_user_from_clerk(db, user_payload)
+    except OperationalError as exc:  # pragma: no cover - handled in tests with sqlite memory
+        raise RuntimeError(
+            "Database schema is missing required tables. Run migrations before seeding tenants."
+        ) from exc
+    except SQLAlchemyError:
+        raise
 
     if user.organization_id != config.organization_id:
         user.organization_id = config.organization_id

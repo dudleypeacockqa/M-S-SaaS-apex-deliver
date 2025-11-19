@@ -227,6 +227,8 @@ Use the dedicated seed helper to provision Dudley’s Digital Growth Equity tena
 
 The script invokes `TenantSeedConfig`/`ensure_tenant_admin`, so it’s idempotent—rerunning updates the org + admin in-place (tier, metadata, etc.). Once seeded, log in as `dudley.peacock@icloud.com` via Clerk to validate `/admin` against the Digital Growth Equity tenant.
 
+**Reminder:** run `python -m alembic upgrade head` (Postgres `DATABASE_URL`) before seeding so required tables exist.
+
 ---
 
 ## Role Configuration Examples

@@ -3,6 +3,8 @@ import { SEO } from '../../components/common/SEO';
 import { Link } from 'react-router-dom';
 import { trackCtaClick } from '../../lib/analytics';
 
+import { DynamicPricingSimulator } from '../../components/marketing/DynamicPricingSimulator';
+
 export const SalesPromotionPricingPage: React.FC = () => {
   const features = [
     {
@@ -166,81 +168,13 @@ export const SalesPromotionPricingPage: React.FC = () => {
 
             {/* Right: Portal Mockup */}
             <div className="relative">
-              <div className="bg-white rounded-lg shadow-2xl p-6 transform hover:scale-105 transition-transform duration-300">
-                {/* Mockup Header */}
-                <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
-                  <h3 className="text-lg font-bold text-gray-900">Customer Portal</h3>
-                  <span className="text-sm bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-semibold">
-                    Active
-                  </span>
-                </div>
-
-                {/* Mockup Content */}
-                <div className="space-y-4">
-                  {/* Personalized Pricing */}
-                  <div>
-                    <div className="text-sm font-semibold text-gray-700 mb-2">Your Pricing</div>
-                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <div className="text-xs text-gray-600">Product A</div>
-                          <div className="text-lg font-bold text-gray-900">£45.00</div>
-                          <div className="text-xs text-emerald-700">15% off list</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-gray-600">Product B</div>
-                          <div className="text-lg font-bold text-gray-900">£32.50</div>
-                          <div className="text-xs text-emerald-700">20% off list</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Active Promotions */}
-                  <div>
-                    <div className="text-sm font-semibold text-gray-700 mb-2">Active Promotions</div>
-                    <div className="bg-yellow-50 border-2 border-yellow-200 p-3 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-sm font-bold text-gray-900">Q4 Volume Bonus</div>
-                          <div className="text-xs text-gray-600">Extra 5% on orders £5,000+</div>
-                        </div>
-                        <div className="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded font-semibold">
-                          Ends Dec 31
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Quick Actions */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <button className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded hover:bg-indigo-700">
-                      Place Order
-                    </button>
-                    <button className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded hover:bg-gray-200">
-                      View Invoices
-                    </button>
-                  </div>
-
-                  {/* Account Summary */}
-                  <div className="pt-3 border-t border-gray-200">
-                    <div className="grid grid-cols-2 gap-3 text-center">
-                      <div>
-                        <div className="text-xs text-gray-600">Credit Available</div>
-                        <div className="text-sm font-bold text-emerald-700">£15,000</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-gray-600">YTD Spend</div>
-                        <div className="text-sm font-bold text-gray-900">£42,500</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="transform hover:scale-105 transition-transform duration-300">
+                <DynamicPricingSimulator />
               </div>
 
               {/* Floating Badge */}
               <div className="absolute -top-4 -right-4 bg-yellow-400 text-indigo-900 px-4 py-2 rounded-full font-bold text-sm shadow-lg transform rotate-12">
-                Live Portal
+                Interactive Demo
               </div>
             </div>
           </div>

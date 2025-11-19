@@ -116,13 +116,6 @@ export default defineConfig({
           'node_modules/react-router-dom/dist/index.mjs',
         ),
       },
-      {
-        find: '@reduxjs/toolkit',
-        replacement: path.resolve(
-          __dirname,
-          'node_modules/@reduxjs/toolkit/dist/redux-toolkit.modern.mjs',
-        ),
-      },
     ],
   },
   test: {

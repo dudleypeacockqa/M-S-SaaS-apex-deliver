@@ -121,8 +121,10 @@ def _safe_create_index(index_name: str, table_name: Optional[str], columns, **kw
     if table_name and _index_exists(index_name, table_name, schema):
         return
     try:
+        print(f"[migration-debug] create index {index_name} on {table_name}")
         op.create_index(index_name, table_name, columns, **kwargs)
     except SAFE_EXCEPTIONS:
+        print(f"[migration-debug] skip index {index_name}")
         pass
 
 
@@ -177,8 +179,10 @@ def _safe_create_table(table_name: str, *columns, **kwargs) -> None:
     if _table_exists(table_name, schema):
         return
     try:
+        print(f"[migration-debug] create table {table_name}")
         op.create_table(table_name, *columns, **kwargs)
     except SAFE_EXCEPTIONS:
+        print(f"[migration-debug] skip table {table_name}")
         pass
 
 
@@ -1432,3 +1436,4 @@ def downgrade() -> None:
     _safe_drop_index('idx_community_follows_follower', 'community_follows')
     _safe_drop_table('community_follows')
     # ### end Alembic commands ###
+

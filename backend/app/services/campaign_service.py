@@ -405,6 +405,8 @@ def _execute_voice_campaign(
         except Exception as e:
             # Log error but continue
             print(f"Error initiating voice call: {e}")
+            # Mark as failed but don't stop campaign
+            recipient.sent = False
 
     return initiated_count
 
