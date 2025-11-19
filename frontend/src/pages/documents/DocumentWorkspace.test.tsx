@@ -205,6 +205,12 @@ describe('DocumentWorkspace', () => {
     expect(screen.getByTestId('upload-pane')).toBeInTheDocument()
   })
 
+  it('shows workspace and document-action help tooltips', () => {
+    renderWorkspace()
+    expect(screen.getByRole('button', { name: /workspace help/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /document actions help/i })).toBeInTheDocument()
+  })
+
   it('forwards onDocumentsLoaded to the underlying DocumentList', () => {
     const onDocumentsLoaded = vi.fn()
     renderWorkspace({ onDocumentsLoaded })
@@ -313,6 +319,16 @@ describe('DocumentWorkspace', () => {
     })
 
     const modalProps = permissionModalSpy.mock.calls.at(-1)?.[0]
+    documentApiMocks.listPermissions.mockResolvedValueOnce([
+      {
+        id: 'perm-refresh',
+        document_id: 'doc-refresh',
+        user_id: 'user-123',
+        user_email: 'executive@example.com',
+        role: 'viewer',
+        created_at: new Date().toISOString(),
+      },
+    ])
     await act(async () => {
       await modalProps.onPermissionChange?.({
         documentId: 'doc-refresh',

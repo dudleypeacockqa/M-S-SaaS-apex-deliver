@@ -16,16 +16,15 @@ export const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ requiredRole, 
 
   return (
     <ProtectedRoute requiredRole={requiredRole}>
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-white">
         <SidebarNavigation />
-        <div className={`transition-[padding] duration-300 ease-in-out ${isCollapsed ? 'lg:pl-16' : 'lg:pl-64'}`}>
+        <div className={`tabular-nums transition-all duration-300 ease-in-out ${isCollapsed ? 'lg:pl-16' : 'lg:pl-64'}`}>
           <AppHeader />
-          <main className="min-h-[calc(100vh-4rem)]">
-            <section
-              aria-label="Protected workspace"
-              className="p-6 lg:p-8"
-            >
-              {children ?? <Outlet />}
+          <main className="min-h-[calc(100vh-4rem)] bg-slate-50/30">
+            <section aria-label="Protected workspace" className="p-6 lg:p-8">
+              <div className="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-[0_25px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl tabular-nums">
+                {children ?? <Outlet />}
+              </div>
             </section>
           </main>
         </div>

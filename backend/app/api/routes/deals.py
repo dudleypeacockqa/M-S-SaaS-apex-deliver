@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user
+from app.api.dependencies.tenant_scope import require_scoped_organization_id
 from app.db.session import get_db
 from app.models.user import User
 from app.models.deal import Deal
@@ -41,6 +42,7 @@ def list_deals(
     sort: Optional[str] = Query(None, description="Sort field (prefix with - for descending)"),
     include_archived: bool = Query(False, description="Include archived deals"),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -49,7 +51,7 @@ def list_deals(
     Supports pagination, filtering, and sorting.
     """
     deals, total = deal_service.list_deals(
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         db=db,
         page=page,
         per_page=per_page,
@@ -71,6 +73,7 @@ def list_deals(
 def get_deal(
     deal_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -78,7 +81,7 @@ def get_deal(
 
     Users can only view deals within their organization.
     """
-    deal = deal_service.get_deal_by_id(deal_id, current_user.organization_id, db)
+    deal = deal_service.get_deal_by_id(deal_id, organization_id, db)
     if not deal:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Deal not found"
@@ -92,6 +95,7 @@ def update_deal(
     deal_id: str,
     deal_update: DealUpdate,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -101,7 +105,7 @@ def update_deal(
     Users can only update deals within their organization.
     """
     # First check if deal exists and belongs to user's org
-    existing_deal = deal_service.get_deal_by_id(deal_id, current_user.organization_id, db)
+    existing_deal = deal_service.get_deal_by_id(deal_id, organization_id, db)
     if not existing_deal:
         # Check if deal exists in another org
         other_org_deal = db.get(Deal, deal_id)
@@ -114,9 +118,7 @@ def update_deal(
             status_code=status.HTTP_404_NOT_FOUND, detail="Deal not found"
         )
 
-    updated_deal = deal_service.update_deal(
-        deal_id, deal_update, current_user.organization_id, db
-    )
+    updated_deal = deal_service.update_deal(deal_id, deal_update, organization_id, db)
     return updated_deal
 
 
@@ -125,12 +127,13 @@ def update_deal_stage_endpoint(
     deal_id: str,
     stage_update: DealStageUpdate,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Update the stage of an existing deal within the user's organization."""
     updated_deal = deal_service.update_deal_stage(
         deal_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         stage=stage_update.stage,
         db=db,
     )
@@ -150,6 +153,7 @@ def update_deal_stage_endpoint(
 def archive_deal(
     deal_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -159,7 +163,7 @@ def archive_deal(
     Users can only archive deals within their organization.
     """
     # First check if deal exists and belongs to user's org
-    existing_deal = deal_service.get_deal_by_id(deal_id, current_user.organization_id, db)
+    existing_deal = deal_service.get_deal_by_id(deal_id, organization_id, db)
     if not existing_deal:
         # Check if deal exists in another org
         other_org_deal = db.get(Deal, deal_id)
@@ -172,7 +176,7 @@ def archive_deal(
             status_code=status.HTTP_404_NOT_FOUND, detail="Deal not found"
         )
 
-    deal_service.archive_deal(deal_id, current_user.organization_id, db)
+    deal_service.archive_deal(deal_id, organization_id, db)
     return {"message": "Deal archived successfully"}
 
 
@@ -180,6 +184,7 @@ def archive_deal(
 def restore_deal(
     deal_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -190,7 +195,7 @@ def restore_deal(
     # First check if deal exists and belongs to user's org
     existing_deal = db.scalar(
         db.query(Deal)
-        .filter(Deal.id == deal_id, Deal.organization_id == current_user.organization_id)
+        .filter(Deal.id == deal_id, Deal.organization_id == organization_id)
         .statement
     )
     if not existing_deal:
@@ -205,7 +210,5 @@ def restore_deal(
             status_code=status.HTTP_404_NOT_FOUND, detail="Deal not found"
         )
 
-    restored_deal = deal_service.unarchive_deal(
-        deal_id, current_user.organization_id, db
-    )
+    restored_deal = deal_service.unarchive_deal(deal_id, organization_id, db)
     return restored_deal

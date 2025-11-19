@@ -35,7 +35,11 @@ interface BlogPostForm {
   publishedAt?: string;
 }
 
-const BlogAdminEditor: React.FC = () => {
+interface BlogAdminEditorProps {
+  autoSaveIntervalMs?: number;
+}
+
+const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({ autoSaveIntervalMs = 30000 }) => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -68,16 +72,16 @@ const BlogAdminEditor: React.FC = () => {
     }
   }, [formData.title, id]);
 
-  // Auto-save draft every 30 seconds
+  // Auto-save draft on interval
   useEffect(() => {
     if (!formData.title) return;
 
     const interval = setInterval(() => {
       saveDraftMutation.mutate(formData);
-    }, 30000);
+    }, autoSaveIntervalMs);
 
     return () => clearInterval(interval);
-  }, [formData]);
+  }, [formData, autoSaveIntervalMs]);
 
   // Mutations
   const saveDraftMutation = useMutation({

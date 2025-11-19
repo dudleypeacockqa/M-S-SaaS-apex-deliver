@@ -101,6 +101,24 @@ class TestScheduleCampaign:
         db.add(campaign)
         db.commit()
         db.refresh(campaign)
+
+        dummy_prospect = AdminProspect(
+            user_id=str(test_user.id),
+            name="Analytics Prospect",
+            email="analytics@example.com",
+        )
+        db.add(dummy_prospect)
+        db.commit()
+        db.refresh(dummy_prospect)
+
+        dummy_prospect = AdminProspect(
+            user_id=str(test_user.id),
+            name="Analytics Prospect",
+            email="analytics@example.com",
+        )
+        db.add(dummy_prospect)
+        db.commit()
+        db.refresh(dummy_prospect)
         
         # Schedule for 1 hour from now
         schedule_time = datetime.utcnow() + timedelta(hours=1)
@@ -343,23 +361,32 @@ class TestCampaignAnalytics:
         db.add(campaign)
         db.commit()
         db.refresh(campaign)
-        
+
+        dummy_prospect = AdminProspect(
+            user_id=str(test_user.id),
+            name="Analytics Prospect",
+            email="analytics@example.com",
+        )
+        db.add(dummy_prospect)
+        db.commit()
+        db.refresh(dummy_prospect)
+
         # Create activities
         for i in range(25):
             activity = CampaignActivity(
                 organization_id=str(test_org.id),
                 campaign_id=campaign.id,
-                contact_id=1,  # Placeholder
+                contact_id=dummy_prospect.id,
                 activity_type="email_opened",
                 status="opened",
             )
             db.add(activity)
-        
+
         for i in range(10):
             activity = CampaignActivity(
                 organization_id=str(test_org.id),
                 campaign_id=campaign.id,
-                contact_id=1,  # Placeholder
+                contact_id=dummy_prospect.id,
                 activity_type="email_clicked",
                 status="clicked",
             )

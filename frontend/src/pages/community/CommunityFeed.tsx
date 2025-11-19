@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { PostCard } from '../../components/community/PostCard'
 import { CreatePostModal } from '../../components/community/CreatePostModal'
+import { HelpTooltip } from '../../components/common/HelpTooltip'
 import {
   listPosts,
   createPost,
@@ -106,7 +107,7 @@ export const CommunityFeed: React.FC = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex gap-4 flex-wrap">
+        <div className="flex gap-4 flex-wrap items-center">
           <input
             type="text"
             placeholder="Search posts..."
@@ -141,6 +142,20 @@ export const CommunityFeed: React.FC = () => {
             <option value="draft">Draft</option>
             <option value="archived">Archived</option>
           </select>
+
+          <HelpTooltip
+            label="Community help"
+            content={
+              <div>
+                <p className="font-semibold text-slate-800">Moderation checklist</p>
+                <ul className="mt-1 list-disc pl-4 text-slate-600">
+                  <li>Review new posts daily and remove spam.</li>
+                  <li>Log key actions per the community guide (`docs/bmad/community-moderation-guide.md`).</li>
+                  <li>Use reactions to highlight helpful insights for the team.</li>
+                </ul>
+              </div>
+            }
+          />
         </div>
       </div>
 

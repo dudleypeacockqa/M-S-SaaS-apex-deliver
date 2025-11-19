@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePMIProjects } from '../hooks/usePMIProject';
 import { Plus, Calendar, TrendingUp } from 'lucide-react';
+import { HelpTooltip } from '../../../components/common/HelpTooltip';
 
 export const PMIProjectList: React.FC = () => {
   const navigate = useNavigate();
@@ -32,6 +33,19 @@ export const PMIProjectList: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900">PMI Projects</h1>
           <p className="text-gray-600 mt-1">Manage your Post-Merger Integration projects</p>
         </div>
+        <HelpTooltip
+          label="PMI help"
+          content={
+            <div>
+              <p className="font-semibold text-slate-800">PMI checklist</p>
+              <ul className="mt-1 list-disc pl-4 text-slate-600">
+                <li>Validate day-one milestones and risk register weekly.</li>
+                <li>Link PMI projects to each closed deal for status visibility.</li>
+                <li>Log synergy tracking updates in the PMI detail view.</li>
+              </ul>
+            </div>
+          }
+        />
         <button
           onClick={() => navigate('/pmi/projects/new')}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"

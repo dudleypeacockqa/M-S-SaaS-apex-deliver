@@ -431,6 +431,7 @@ class AdminLeadCapture(Base):
     event_date = Column(Date)
     interest_level = Column(String(50))  # hot, warm, cold
     follow_up_type = Column(String(100))  # immediate, 1-day, 1-week, etc.
+    source = Column(String(255))  # e.g., campaign identifier
     notes = Column(Text)
     voice_notes_url = Column(Text)  # S3 URL
     synced_to_ghl = Column(Boolean, default=False)

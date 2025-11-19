@@ -13,6 +13,7 @@ from uuid import uuid4
 from fastapi.testclient import TestClient
 
 from app.api.dependencies.auth import get_current_user
+from app.models.deal import Deal, DealStage
 from app.models.subscription import Subscription, SubscriptionStatus, SubscriptionTier
 from app.models.user import UserRole
 
@@ -101,4 +102,58 @@ def test_non_master_admin_cannot_use_master_tenant_header(
 
     assert response.status_code == 403
     assert "Master admin access required" in response.json()["detail"]
+
+
+def test_master_admin_requires_scope_for_deal_access(
+    client: TestClient,
+    db_session,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
+    """
+    Master admins must supply a tenant header to interact with deal endpoints.
+    """
+    master_org = create_organization(name="Master Org")
+    master_admin = create_user(
+        email="scope-admin@example.com",
+        role=UserRole.master_admin,
+        organization_id=str(master_org.id),
+    )
+    tenant_org = create_organization(name="Deal Org")
+    deal_owner = create_user(
+        email="owner@example.com",
+        role=UserRole.growth,
+        organization_id=str(tenant_org.id),
+    )
+
+    deal = Deal(
+        id=str(uuid4()),
+        name="Scoped Deal",
+        target_company="Scoped Co",
+        organization_id=str(tenant_org.id),
+        owner_id=deal_owner.id,
+        stage=DealStage.sourcing,
+        currency="GBP",
+    )
+    db_session.add(deal)
+    db_session.commit()
+
+    dependency_overrides(get_current_user, lambda: master_admin)
+
+    no_scope = client.get(
+        f"/api/deals/{deal.id}",
+        headers={"Authorization": "Bearer master_admin_token"},
+    )
+    assert no_scope.status_code in (400, 404)
+
+    scoped = client.get(
+        f"/api/deals/{deal.id}",
+        headers={
+            "Authorization": "Bearer master_admin_token",
+            "X-Master-Tenant-Id": str(tenant_org.id),
+        },
+    )
+    assert scoped.status_code == 200
+    assert scoped.json()["id"] == str(deal.id)
 

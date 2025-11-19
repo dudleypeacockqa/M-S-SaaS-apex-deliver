@@ -99,18 +99,18 @@ const toRelativeTimeLabel = (input?: string | Date | null): string => {
   if (diffMs < 0) return 'just now'
   const diffMinutes = Math.floor(diffMs / 60000)
   if (diffMinutes < 1) return 'just now'
-  if (diffMinutes < 60) return 
+  if (diffMinutes < 60) return `${diffMinutes}m ago`
   const diffHours = Math.floor(diffMinutes / 60)
-  if (diffHours < 24) return 
+  if (diffHours < 24) return `${diffHours}h ago`
   const diffDays = Math.floor(diffHours / 24)
-  return 
+  return `${diffDays}d ago`
 }
 
 const toCompactDurationLabel = (hours?: number | null): string => {
   if (hours === null || hours === undefined || Number.isNaN(hours)) return '—'
-  if (hours < 1) return 
-  if (hours < 24) return 
-  return 
+  if (hours < 1) return `${Math.max(1, Math.round(hours * 60))}m`
+  if (hours < 24) return `${Math.round(hours)}h`
+  return `${Math.round(hours / 24)}d`
 }
 
 export const DashboardPage: React.FC = () => {
@@ -193,7 +193,7 @@ const WelcomeSection: React.FC<WelcomeSectionProps> = ({ userName, dealsData, de
 
 const QuickStat: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div className="text-center">
-    <div className="text-2xl font-bold">{value}</div>
+    <div className="text-2xl font-bold tabular-nums">{value}</div>
     <div className="text-sm text-blue-100">{label}</div>
   </div>
 )
@@ -292,22 +292,22 @@ const PipelineSummaryWidget: React.FC<PipelineWidgetProps> = ({ dealsData, deals
           <div className="py-8 px-6">
             {/* Welcome Guide for First-Time Users */}
             <div className="text-center mb-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Welcome to M&A Intelligence Platform! ??</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Welcome to M&A Intelligence Platform!</h3>
               <p className="text-gray-600">Let's get you started with your first deal to unlock all features.</p>
             </div>
 
             {/* Feature Highlights */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-left">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="text-blue-600 font-semibold mb-2">?? Valuation Suite</div>
+                <div className="text-blue-600 font-semibold mb-2">Valuation Suite</div>
                 <p className="text-sm text-gray-700">DCF, Comparables, Precedent Transactions & Sensitivity Analysis</p>
               </div>
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                <div className="text-purple-600 font-semibold mb-2">?? Financial Intelligence</div>
+                <div className="text-purple-600 font-semibold mb-2">Financial Intelligence</div>
                 <p className="text-sm text-gray-700">47+ financial ratios with AI-generated insights (GPT-4)</p>
               </div>
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div className="text-green-600 font-semibold mb-2">?? Document Room</div>
+                <div className="text-green-600 font-semibold mb-2">Document Room</div>
                 <p className="text-sm text-gray-700">Secure file storage with permissions & folder organization</p>
               </div>
             </div>
@@ -321,7 +321,7 @@ const PipelineSummaryWidget: React.FC<PipelineWidgetProps> = ({ dealsData, deals
                 <li><strong>Upload documents</strong> - Use the "Documents" tab to securely store deal files</li>
               </ol>
               <p className="text-xs text-gray-600 mt-3 italic">
-                ?? Pro Tip: All advanced features (Valuation Suite, Financial Dashboard) are accessed through deals!
+                💡 Pro Tip: All advanced features (Valuation Suite, Financial Dashboard) are accessed through deals!
               </p>
             </div>
 
@@ -356,7 +356,7 @@ const PipelineSummaryWidget: React.FC<PipelineWidgetProps> = ({ dealsData, deals
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className={}>
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${theme.iconBg}`}>
                         <Icon className="h-5 w-5" />
                       </div>
                       <div>
@@ -364,7 +364,7 @@ const PipelineSummaryWidget: React.FC<PipelineWidgetProps> = ({ dealsData, deals
                         <p className="text-xs text-gray-500">{Math.round(stage.share * 100) || 0}% of pipeline</p>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right tabular-nums">
                       <p className="text-sm font-semibold text-gray-900">{stage.value}</p>
                       <p className="text-xs text-gray-500">
                         {stage.count} {stage.count === 1 ? 'deal' : 'deals'}
@@ -374,8 +374,8 @@ const PipelineSummaryWidget: React.FC<PipelineWidgetProps> = ({ dealsData, deals
                   <div className="mt-4">
                     <div className="h-2 w-full rounded-full bg-gray-100">
                       <div
-                        className={}
-                        style={{ width:  }}
+                        className={`h-full rounded-full bg-gradient-to-r ${theme.gradient}`}
+                        style={{ width: `${progressWidth}%` }}
                       />
                     </div>
                     <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
@@ -450,7 +450,7 @@ const QuickActionsWidget: React.FC = () => {
               >
                 <div className="group flex h-full flex-col rounded-2xl border border-gray-100 bg-white/80 p-4 transition hover:-translate-y-0.5 hover:border-gray-200 hover:shadow-lg">
                   <div className="flex items-start justify-between">
-                    <div className={}>
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${action.accent}`}>
                       <Icon className="h-5 w-5" />
                     </div>
                     <span className="rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-gray-500">
@@ -488,6 +488,7 @@ const ActivityFeedWidget: React.FC<ActivityFeedProps> = ({ dealsData, dealsLoadi
       .slice(0, 5)
 
     return sortedDeals.map((deal) => {
+      const stageName = getStageDisplayName(deal.stage)
       const metaParts: string[] = []
       if (deal.deal_size) {
         metaParts.push(formatCurrency(deal.deal_size, deal.currency))
@@ -500,7 +501,7 @@ const ActivityFeedWidget: React.FC<ActivityFeedProps> = ({ dealsData, dealsLoadi
 
       return {
         id: deal.id,
-        message: ,
+        message: `${deal.name} updated in ${stageName}`,
         time: toRelativeTimeLabel(deal.updated_at),
         meta: metaParts.join(' • '),
         stage: deal.stage,
@@ -536,7 +537,9 @@ const ActivityFeedWidget: React.FC<ActivityFeedProps> = ({ dealsData, dealsLoadi
 
               return (
                 <div key={activity.id} className="relative pb-6 last:pb-0">
-                  <div className={}>
+                  <div
+                    className={`absolute -left-5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-gradient-to-br ${theme.gradient} text-white shadow`}
+                  >
                     <Icon className="h-3.5 w-3.5" />
                   </div>
                   <div className="flex items-center justify-between gap-4">
@@ -622,7 +625,7 @@ const UpcomingTasksWidget: React.FC = () => {
                   className="rounded-2xl border border-gray-100 p-4 transition hover:border-gray-200 hover:shadow-sm"
                 >
                   <div className="flex items-start gap-3">
-                    <div className={}>
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-full ${accentClass}`}>
                       <CheckCircle2 className="h-4 w-4" />
                     </div>
                     <div className="flex-1">
@@ -669,7 +672,7 @@ const FinancialInsightsWidget: React.FC<FinancialInsightsProps> = ({ dealsData, 
       totalValue: formatCurrency(totalValue, 'GBP'),
       avgDeal: formatCurrency(avgDealSize, 'GBP'),
       activeDeals: deals.length.toString(),
-      stageCoverage: ,
+      stageCoverage: `${stageCoverage}/${activePipelineStages.length}`,
     }
   }, [dealsData])
 
@@ -716,11 +719,11 @@ const FinancialInsightsWidget: React.FC<FinancialInsightsProps> = ({ dealsData, 
   }[]
 
   return (
-    <Card variant="elevated" padding="lg">
+    <Card variant="elevated" padding="lg" className="tabular-nums">
       <CardHeader>
         <h2 className="text-xl font-bold text-gray-900">Financial Insights</h2>
       </CardHeader>
-      <CardBody>
+      <CardBody className="tabular-nums">
         {dealsLoading && (
           <div className="flex items-center justify-center py-8">
             <Spinner />
@@ -737,12 +740,12 @@ const FinancialInsightsWidget: React.FC<FinancialInsightsProps> = ({ dealsData, 
                   className="rounded-2xl border border-gray-100 bg-white/80 p-4 shadow-sm transition hover:border-gray-200 hover:shadow-md"
                 >
                   <div className="flex items-center justify-between">
-                    <div className={}>
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${card.accent}`}>
                       <Icon className="h-4 w-4" />
                     </div>
                     <span className="text-xs text-gray-500">{card.description}</span>
                   </div>
-                  <p className="mt-4 text-2xl font-semibold text-gray-900">{card.value}</p>
+                  <p className="mt-4 text-2xl font-semibold text-gray-900 tabular-nums">{card.value}</p>
                   <p className="text-xs uppercase tracking-wide text-gray-500">{card.label}</p>
                 </div>
               )

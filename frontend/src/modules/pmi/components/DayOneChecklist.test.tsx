@@ -5,7 +5,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useMutation, useQuery } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { DayOneChecklist } from './DayOneChecklist';
 import * as pmiApi from '../services/pmiApi';
@@ -47,7 +47,6 @@ describe('DayOneChecklist', () => {
   });
 
   it('should render loading state', () => {
-    const { useQuery } = await import('@tanstack/react-query');
     vi.mocked(useQuery).mockReturnValue({
       data: undefined,
       isLoading: true,
@@ -59,14 +58,12 @@ describe('DayOneChecklist', () => {
   });
 
   it('should render checklist items', async () => {
-    const { useQuery } = await import('@tanstack/react-query');
     vi.mocked(useQuery).mockReturnValue({
       data: { items: mockChecklistItems, total: 1 },
       isLoading: false,
       error: null,
     } as any);
 
-    const { useMutation } = await import('@tanstack/react-query');
     vi.mocked(useMutation).mockReturnValue({
       mutate: vi.fn(),
       isPending: false,

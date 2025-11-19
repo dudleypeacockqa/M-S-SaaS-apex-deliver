@@ -320,10 +320,18 @@ def db_session(engine):
         session.close()
 
 
+@pytest.fixture()
+def db(db_session):
+    """Backward-compatible alias for older tests expecting a `db` fixture."""
+
+    return db_session
+
+
 __all__ = [
     "engine",
     "client",
     "db_session",
+    "db",
     "create_user",
     "create_organization",
     "auth_headers_solo",
@@ -372,8 +380,8 @@ def create_user(db_session) -> Callable[..., User]:
         user = User(
             clerk_user_id=clerk_user_id or f"clerk_{uuid4()}",
             email=email or f"user_{uuid4()}@example.com",
-            first_name=first_name,
-            last_name=last_name,
+            first_name=first_name or "Alice",
+            last_name=last_name or "Analyst",
             role=role_value,
             organization_id=organization_id,
             last_login_at=last_login_at,

@@ -9,6 +9,7 @@ import BulkArchiveModal from '../../components/documents/BulkArchiveModal'
 import { DocumentQuestionsPanel } from '../../components/documents/DocumentQuestionsPanel'
 import { AccessLogDrawer } from '../../components/documents/AccessLogDrawer'
 import { ShareLinkModal } from '../../components/documents/ShareLinkModal'
+import { HelpTooltip } from '../../components/common/HelpTooltip'
 import type { Document } from '../../services/api/documents'
 import { useDocumentUploads } from '../../hooks/useDocumentUploads'
 import {
@@ -557,6 +558,37 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
               </>
             )}
           </nav>
+          <HelpTooltip
+            label="Workspace help"
+            content={
+              <div>
+                <p className="font-semibold text-slate-800">Document workspace tips</p>
+                <ul className="mt-1 list-disc pl-4 text-slate-600">
+                  <li>Folders inherit permissions; adjust sharing before uploading sensitive files.</li>
+                  <li>Audit logs capture every download and are exportable from the menu.</li>
+                  <li>Use the Questions panel to route vendor inquiries to subject matter experts.</li>
+                </ul>
+              </div>
+            }
+          />
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 bg-slate-50/80 px-4 py-3">
+          <p className="text-sm text-slate-500">
+            Bulk actions update permissions, share links, or archive sensitive files instantly. Review the Document Workspace guide before making sweeping changes.
+          </p>
+          <HelpTooltip
+            label="Document actions help"
+            content={
+              <div>
+                <p className="font-semibold text-slate-800">Bulk action reminders</p>
+                <ul className="mt-1 list-disc pl-4 text-slate-600">
+                  <li>Document Workspace SOP: see <code>docs/bmad/document-workspace-guide.md</code>.</li>
+                  <li>Archive in batches after exporting audit logs.</li>
+                  <li>Use bulk share for investor access, then revoke in the audit trail.</li>
+                </ul>
+              </div>
+            }
+          />
         </div>
         <DocumentList
           dealId={dealId}

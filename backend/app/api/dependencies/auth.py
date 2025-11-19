@@ -292,7 +292,6 @@ def require_feature(feature: str) -> Callable:
             has_access = await check_feature_access(
                 current_user.organization_id,
                 feature,
-                user_role=current_user.role.value if current_user.role else None
             )
 
         if not has_access:

@@ -91,6 +91,11 @@ The project was executed in five distinct phases:
 *   **Schema Alignment:** Ensured Pydantic models (Backend) match TypeScript interfaces (Frontend) for the new FP&A features.
 *   **API Completeness:** Verified endpoints for the What-If analysis engine and data retrieval.
 
+### 3.6 Master Admin Access Scope
+*   **AccessScope Dependency:** Introduced a centralized FastAPI dependency (`app/api/dependencies/tenant_scope.py`) that interprets `X-Master-Tenant-Id` and `X-Master-Customer-Id` headers, returning an `AccessScope` object for every request. Master admins can now impersonate any tenant/customer without mutating their own organization record, while non-master users are automatically blocked if they attempt to pass the override headers.
+*   **Org-Scoped Routes Updated:** Key backend surfaces (`/api/billing/*`, `/api/deals/*`, `/api/deals/{deal_id}/tasks/*`, `/api/document-generation/*`, `/api/deals/{deal_id}/documents/*`) were refactored to depend on the scoped organization ID rather than the raw `current_user.organization_id`. This ensures the master admin portal can manage any subscriber’s pipeline, documents, tasks, and billing context through the same RBAC code paths.
+*   **Regression Coverage:** Added backend tests (`tests/test_master_admin_scope.py`) that exercise the new scope headers end-to-end, confirming master admins can traverse tenant billing/deal data while standard admins receive 403s. These tests also prove that requests without explicit scope are safely constrained to the actor’s native organization.
+
 ---
 
 ## 4. Current Status & Next Steps

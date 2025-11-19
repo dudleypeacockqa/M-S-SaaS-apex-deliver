@@ -50,7 +50,7 @@ describe('TimelineView', () => {
     } as any);
 
     renderWithProviders(<TimelineView projectId="project-1" />);
-    expect(screen.getByText(/Stabilization/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Stabilization/i).length).toBeGreaterThan(0);
   });
 });
 

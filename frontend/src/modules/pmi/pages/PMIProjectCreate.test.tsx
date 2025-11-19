@@ -41,9 +41,9 @@ describe('PMIProjectCreate', () => {
   });
 
   it('should handle form submission', async () => {
-    const mockMutate = vi.fn();
+    const mockMutate = vi.fn().mockResolvedValue({ id: 'proj-123' });
     vi.mocked(useCreatePMIProject).mockReturnValue({
-      mutate: mockMutate,
+      mutateAsync: mockMutate,
       isPending: false,
       isSuccess: false,
       isError: false,
@@ -54,10 +54,15 @@ describe('PMIProjectCreate', () => {
     const nameInput = screen.getByLabelText(/project name/i);
     await userEvent.type(nameInput, 'New PMI Project');
 
-    const submitButton = screen.getByRole('button', { name: /create/i });
+    const dealInput = screen.getByLabelText(/associated deal/i);
+    await userEvent.type(dealInput, 'deal-1');
+
+    const submitButton = screen.getByRole('button', { name: /create pmi project/i });
     await userEvent.click(submitButton);
 
-    expect(mockMutate).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalled();
+    });
   });
 });
 

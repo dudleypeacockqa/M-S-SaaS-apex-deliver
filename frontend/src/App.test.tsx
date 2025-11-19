@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
@@ -31,6 +31,39 @@ const renderApp = (initialEntries: string[] = ["/"]) => {
   )
 }
 
+const jsonResponse = (body: unknown) =>
+  Promise.resolve(
+    new Response(JSON.stringify(body), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    })
+  )
+
+const createMockFetch = () =>
+  vi.fn((input: RequestInfo | URL) => {
+    const url = typeof input === "string" ? input : input.url
+
+    if (url.includes("/financial/ratios")) {
+      return jsonResponse({ ratios: [] })
+    }
+
+    if (url.includes("/financial/narrative")) {
+      return jsonResponse({ narrative: "" })
+    }
+
+    if (url.includes("/financial/")) {
+      return jsonResponse({})
+    }
+
+    if (url.includes("/blog")) {
+      return jsonResponse({ items: [] })
+    }
+
+    return jsonResponse({})
+  })
+
+let fetchMock: ReturnType<typeof createMockFetch>
+
 describe("AppRoutes", () => {
   beforeEach(() => {
     setMockClerkState({
@@ -39,6 +72,13 @@ describe("AppRoutes", () => {
       user: null,
       organization: null,
     })
+
+    fetchMock = createMockFetch()
+    vi.stubGlobal("fetch", fetchMock)
+  })
+
+  afterEach(() => {
+    fetchMock?.mockClear()
   })
 
   it("renders the home route with sign-in actions for visitors", async () => {

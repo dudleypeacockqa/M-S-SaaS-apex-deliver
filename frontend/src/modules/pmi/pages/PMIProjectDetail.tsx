@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { usePMIDashboard } from '../hooks/usePMIDashboard';
 import { usePMIProject } from '../hooks/usePMIProject';
 import { ArrowLeft, Calendar, TrendingUp, AlertTriangle, CheckCircle, List, Target, Shield, ClipboardCheck, Sparkles, FileText } from 'lucide-react';
+import { HelpTooltip } from '../../../components/common/HelpTooltip';
 import { WorkstreamBoard } from '../components/WorkstreamBoard';
 import { SynergyTracker } from '../components/SynergyTracker';
 import { RiskRegister } from '../components/RiskRegister';
@@ -60,6 +61,21 @@ export const PMIProjectDetail: React.FC = () => {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
         <p className="text-gray-600 mt-1">{project.description}</p>
+        <div className="mt-3">
+          <HelpTooltip
+            label="PMI detail help"
+            content={
+              <div>
+                <p className="font-semibold text-slate-800">Integration leader tips</p>
+                <ul className="mt-1 list-disc pl-4 text-slate-600">
+                  <li>Review synergy progress before every steering meeting.</li>
+                  <li>Update the risk register when critical issues shift phases.</li>
+                  <li>Export day-one reports after checkpoints to brief executives.</li>
+                </ul>
+              </div>
+            }
+          />
+        </div>
       </div>
 
       {/* Key Metrics Cards */}

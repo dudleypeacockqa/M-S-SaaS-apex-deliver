@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useUser, UserButton } from '@clerk/clerk-react'
 import {
@@ -40,6 +40,13 @@ export const SidebarNavigation: React.FC = () => {
   )
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
+  const [sectionPreview, setSectionPreview] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!isCollapsed) {
+      setSectionPreview(null)
+    }
+  }, [isCollapsed])
 
   const visibleItems = useMemo(() => {
     return role === 'master_admin' ? WORKSPACE_NAV_ITEMS : WORKSPACE_NAV_ITEMS.filter((item) => item.roles.includes(role))
@@ -157,7 +164,12 @@ export const SidebarNavigation: React.FC = () => {
             const expanded = isCollapsed ? true : expandedSections.has(section.title)
 
             return (
-              <div key={section.title} className="mb-5">
+              <div
+                key={section.title}
+                className="relative mb-5"
+                onMouseEnter={() => isCollapsed && setSectionPreview(section.title)}
+                onMouseLeave={() => isCollapsed && setSectionPreview(null)}
+              >
                 {!isCollapsed && (
                   <button
                     onClick={() => toggleSection(section.title)}
@@ -229,12 +241,30 @@ export const SidebarNavigation: React.FC = () => {
                             </div>
                           )}
                         </div>
-                      )}
+                      )
                     })}
                   </div>
                 )}
+
+                {isCollapsed && sectionPreview === section.title && (
+                  <div className="pointer-events-none absolute left-full top-1/2 hidden -translate-y-1/2 lg:block">
+                    <div className="ml-4 min-w-[230px] rounded-2xl border border-white/10 bg-slate-950/90 p-4 shadow-2xl shadow-slate-900/40 backdrop-blur-xl">
+                      <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">{section.title}</p>
+                      <ul className="mt-3 space-y-1.5 text-sm text-slate-300">
+                        {section.items.slice(0, 4).map((item) => (
+                          <li key={`preview-${item.id}`} className="flex items-center justify-between gap-2">
+                            <span className="truncate">{item.label}</span>
+                            {item.subMenuItems?.length ? (
+                              <span className="text-[11px] text-slate-500">{item.subMenuItems.length} tabs</span>
+                            ) : null}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            )
           })}
         </nav>
 

@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { SynergyTracker } from './SynergyTracker';
 import * as pmiApi from '../../services/pmiApi';
@@ -48,7 +48,6 @@ describe('SynergyTracker', () => {
   });
 
   it('should render loading state', () => {
-    const { useQuery } = await import('@tanstack/react-query');
     vi.mocked(useQuery).mockReturnValue({
       data: undefined,
       isLoading: true,
@@ -60,7 +59,6 @@ describe('SynergyTracker', () => {
   });
 
   it('should render synergies and calculate totals', async () => {
-    const { useQuery } = await import('@tanstack/react-query');
     vi.mocked(useQuery).mockReturnValue({
       data: { items: mockSynergies, total: 1 },
       isLoading: false,

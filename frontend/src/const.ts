@@ -225,3 +225,35 @@ export const WORKSPACE_NAV_ITEMS: WorkspaceNavigationItem[] = [
 export const getLoginUrl = () => {
   return import.meta.env.VITE_CLERK_SIGN_IN_URL || '/sign-in'
 }
+
+export interface FlattenedWorkspaceNavItem {
+  id: string
+  label: string
+  path: string
+  section: string
+  roles: UserRole[]
+  icon?: LucideIcon
+}
+
+export const FLATTENED_WORKSPACE_NAV_ITEMS: FlattenedWorkspaceNavItem[] = WORKSPACE_NAV_ITEMS.flatMap((item) => {
+  const baseItem = [{
+    id: item.id,
+    label: item.label,
+    path: item.path,
+    section: item.section || 'Navigation',
+    roles: item.roles,
+    icon: item.icon,
+  }]
+
+  const subItems = (item.subMenuItems ?? []).map((sub) => ({
+    id: `${item.id}-${sub.path}`,
+    label: `${item.label} > ${sub.label}`,
+    path: sub.path,
+    section: item.section || 'Navigation',
+    roles: item.roles,
+    icon: sub.icon || item.icon,
+  }))
+
+  return [...baseItem, ...subItems]
+})
+

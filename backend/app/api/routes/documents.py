@@ -19,6 +19,10 @@ from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user
+try:
+    from app.api.dependencies.tenant_scope import require_scoped_organization_id as _tenant_scope_org_dependency
+except ImportError:  # pragma: no cover - dependency optional in some runtimes
+    _tenant_scope_org_dependency = None
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.document import (
@@ -46,6 +50,30 @@ from app.services import document_service
 from app.services.storage_service import get_storage_service
 
 router = APIRouter(prefix="/deals/{deal_id}", tags=["documents"])
+
+
+def _require_user_organization(current_user: User) -> str:
+    organization_id = current_user.organization_id
+    if not organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Organization context required for document operations",
+        )
+    return str(organization_id)
+
+
+if _tenant_scope_org_dependency is None:
+    def require_scoped_organization_id(
+        current_user: User = Depends(get_current_user),
+    ) -> str:
+        """Fallback dependency that scopes to the caller's organization."""
+        return _require_user_organization(current_user)
+else:
+    def require_scoped_organization_id(
+        organization_id: str = Depends(_tenant_scope_org_dependency),
+    ) -> str:
+        """Proxy dependency that leverages the master-admin scope helper."""
+        return organization_id
 
 
 # ============================================================================
@@ -99,9 +127,11 @@ def list_folders(
 
     Returns folder hierarchy for the specified deal.
     """
+    organization_id = _require_user_organization(current_user)
+
     folders = document_service.list_folders(
         deal_id=deal_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         parent_id=parent_id or None,
         search=search or None,
         include_tree=include_tree,
@@ -122,9 +152,11 @@ def get_folder(
 
     Returns folder metadata and document count.
     """
+    organization_id = _require_user_organization(current_user)
+
     folder = document_service.get_folder_by_id(
         folder_id=folder_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         db=db
     )
     if not folder:
@@ -149,9 +181,11 @@ def update_folder(
 
     Supports partial updates - only provided fields will be updated.
     """
+    organization_id = _require_user_organization(current_user)
+
     folder = document_service.get_folder_by_id(
         folder_id=folder_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         db=db
     )
     if not folder:
@@ -181,9 +215,11 @@ def delete_folder(
 
     Folder cannot contain documents or subfolders.
     """
+    organization_id = _require_user_organization(current_user)
+
     folder = document_service.get_folder_by_id(
         folder_id=folder_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         db=db
     )
     if not folder:
@@ -302,6 +338,7 @@ def list_documents(
     file_type: Optional[str] = Query(None, description="Filter by file type"),
     include_archived: bool = Query(False, description="Include archived documents"),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -321,7 +358,7 @@ def list_documents(
     documents, total = document_service.list_documents(
         db=db,
         deal_id=deal_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         params=params,
         current_user=current_user,
     )
@@ -344,6 +381,7 @@ async def bulk_download_documents(
     deal_id: str,
     payload: BulkDownloadRequest,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Download multiple documents as a single ZIP archive (DEV-008)."""
@@ -351,7 +389,7 @@ async def bulk_download_documents(
     zip_bytes, filename = await document_service.bulk_download_documents(
         db=db,
         document_ids=[str(doc_id) for doc_id in payload.document_ids],
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         current_user=current_user,
     )
 
@@ -369,6 +407,7 @@ def get_document(
     document_id: str,
     request: Request,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -379,7 +418,7 @@ def get_document(
     document = document_service.get_document_by_id(
         db=db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
     if not document:
         raise HTTPException(
@@ -413,6 +452,7 @@ def update_document(
     document_id: str,
     folder_id: Optional[str] = Query(None, description="Move to folder (null for root)"),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -422,7 +462,7 @@ def update_document(
     """
     document = document_service.get_document_by_id(
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         db=db
     )
     if not document:
@@ -453,6 +493,7 @@ def delete_document(
     deal_id: str,
     document_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -462,7 +503,7 @@ def delete_document(
     """
     document = document_service.get_document_by_id(
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         db=db
     )
     if not document:
@@ -492,6 +533,7 @@ async def download_document(
     document_id: str,
     request: Request,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -502,7 +544,7 @@ async def download_document(
     document = document_service.get_document_by_id(
         db=db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
     if not document:
         raise HTTPException(
@@ -522,7 +564,7 @@ async def download_document(
     try:
         file_path = await storage.get_file_path(
             file_key=document.file_key,
-            organization_id=str(current_user.organization_id)
+            organization_id=organization_id
         )
     except FileNotFoundError:
         raise HTTPException(
@@ -552,13 +594,14 @@ def archive_document_endpoint(
     deal_id: str,
     document_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Archive a document (soft delete)."""
     document = document_service.get_document_by_id(
         db=db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
     if not document:
         raise HTTPException(
@@ -586,13 +629,14 @@ def restore_document_endpoint(
     deal_id: str,
     document_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Restore an archived document."""
     document = document_service.get_document_by_id(
         db=db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
     if not document:
         raise HTTPException(
@@ -621,6 +665,7 @@ def grant_permission(
     document_id: str,
     permission_data: PermissionCreate,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -632,7 +677,7 @@ def grant_permission(
     document = document_service.get_document_by_id(
         db=db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
     if not document:
         raise HTTPException(
@@ -661,6 +706,7 @@ def list_permissions(
     deal_id: str,
     document_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -671,7 +717,7 @@ def list_permissions(
     document = document_service.get_document_by_id(
         db=db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
     if not document:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
@@ -686,7 +732,7 @@ def list_permissions(
     permissions = document_service.list_document_permissions(
         db=db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
     return permissions
 
@@ -697,13 +743,14 @@ def revoke_document_permission(
     document_id: str,
     user_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     document_service.revoke_document_permission(
         db=db,
         document_id=document_id,
         target_user_id=user_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         current_user=current_user,
     )
 
@@ -721,13 +768,14 @@ def create_access_log_entry(
     payload: DocumentAccessLogCreate,
     request: Request,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Create a manual document audit log entry."""
     document = document_service.get_document_by_id(
         db=db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
     if not document or document.deal_id != deal_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
@@ -759,6 +807,7 @@ def get_access_logs(
     document_id: str,
     limit: int = Query(100, ge=1, le=1000, description="Maximum number of logs"),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -769,7 +818,7 @@ def get_access_logs(
     document = document_service.get_document_by_id(
         db=db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
     if not document:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
@@ -784,7 +833,7 @@ def get_access_logs(
     logs = document_service.get_document_access_logs(
         db=db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         limit=limit,
     )
     return logs
@@ -795,6 +844,7 @@ def get_document_versions(
     deal_id: str,
     document_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -805,7 +855,7 @@ def get_document_versions(
     versions = document_service.get_document_versions(
         db=db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
     return versions
 
@@ -816,6 +866,7 @@ async def restore_document_version(
     document_id: str,
     version_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -827,7 +878,7 @@ async def restore_document_version(
         db=db,
         document_id=document_id,
         version_id=version_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         current_user=current_user,
     )
     return restored_doc
@@ -843,6 +894,7 @@ async def bulk_download_documents(
     deal_id: str,
     request: BulkDownloadRequest,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -859,7 +911,7 @@ async def bulk_download_documents(
     zip_content, filename = await document_service.bulk_download_documents(
         db=db,
         document_ids=document_ids,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         current_user=current_user,
     )
 
@@ -877,6 +929,7 @@ def bulk_delete_documents(
     deal_id: str,
     request: BulkDeleteRequest,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -891,7 +944,7 @@ def bulk_delete_documents(
     deleted_ids, failed_ids, failed_reasons = document_service.bulk_delete_documents(
         db=db,
         document_ids=document_ids,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         current_user=current_user,
     )
 
@@ -928,13 +981,14 @@ def create_document_question_endpoint(
     document_id: str,
     payload: DocumentQuestionCreate,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Capture a new question associated with a specific document."""
     question = document_service.create_document_question(
         db=db,
         document_id=document_id,
-        organization_id=str(current_user.organization_id),
+        organization_id=organization_id,
         current_user=current_user,
         payload=payload,
     )
@@ -949,13 +1003,14 @@ def list_document_questions_endpoint(
     deal_id: str,
     document_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """List all questions for a document (oldest first)."""
     return document_service.list_document_questions(
         db=db,
         document_id=document_id,
-        organization_id=str(current_user.organization_id),
+        organization_id=organization_id,
         current_user=current_user,
     )
 
@@ -969,6 +1024,7 @@ def resolve_document_question_endpoint(
     question_id: str,
     payload: DocumentQuestionResolve,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Resolve a question by providing an answer and marking it complete."""
@@ -976,7 +1032,7 @@ def resolve_document_question_endpoint(
         db=db,
         question_id=question_id,
         deal_id=deal_id,
-        organization_id=str(current_user.organization_id),
+        organization_id=organization_id,
         current_user=current_user,
         payload=payload,
     )

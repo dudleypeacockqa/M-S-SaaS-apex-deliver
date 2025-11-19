@@ -21,6 +21,7 @@ import { MatchSuccessRate } from '../../components/deal-matching/analytics/Match
 import { MatchScoreDistribution } from '../../components/deal-matching/analytics/MatchScoreDistribution';
 import { RecentMatches } from '../../components/deal-matching/analytics/RecentMatches';
 import { MatchingActivity } from '../../components/deal-matching/analytics/MatchingActivity';
+import { MatchInsights, calculateMatchInsights } from '../../components/deal-matching/analytics/MatchInsights';
 import { ErrorBoundary } from '../../components/common';
 
 interface MatchingWorkspaceProps {
@@ -312,6 +313,8 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
   const isInitialLoading = criteriaLoading && activeTab === 'criteria';
   const showMatchesLoader = isMatchesTab && (matchesLoading || findMatchesMutation.isPending);
   const canFindMatches = Boolean(activeCriteria && dealId);
+
+  const matchInsights = useMemo(() => calculateMatchInsights(matches), [matches]);
 
   const matchAnalytics = useMemo(() => {
     if (!matches || matches.length === 0) {
@@ -646,6 +649,7 @@ const MatchingWorkspace: React.FC<MatchingWorkspaceProps> = ({
 
               {matchAnalytics && !showMatchesLoader && (
                 <div className="mb-6 space-y-4">
+                  <MatchInsights insights={matchInsights} />
                   <div className="grid gap-4 md:grid-cols-2">
                     <MatchSuccessRate
                       successRate={matchAnalytics.successRate}

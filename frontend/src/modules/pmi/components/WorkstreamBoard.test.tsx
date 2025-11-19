@@ -12,11 +12,11 @@ import { WorkstreamBoard } from './WorkstreamBoard';
 import * as pmiApi from '../../services/pmiApi';
 
 // Mock the workstreams hook
-vi.mock('../../hooks/useWorkstreams', () => ({
+vi.mock('../hooks/useWorkstreams', () => ({
   useWorkstreams: vi.fn(),
 }));
 
-import { useWorkstreams } from '../../hooks/useWorkstreams';
+import { useWorkstreams } from '../hooks/useWorkstreams';
 
 const mockWorkstreams: pmiApi.PMIWorkstream[] = [
   {
@@ -142,10 +142,10 @@ describe('WorkstreamBoard', () => {
     renderWithProviders(<WorkstreamBoard projectId="project-1" />);
 
     await waitFor(() => {
-      const inProgressElement = screen.getByText('in_progress');
+      const inProgressElement = screen.getByText(/in progress/i);
       expect(inProgressElement).toBeInTheDocument();
-      
-      const completedElement = screen.getByText('completed');
+
+      const completedElement = screen.getByText(/completed/i);
       expect(completedElement).toBeInTheDocument();
     });
   });

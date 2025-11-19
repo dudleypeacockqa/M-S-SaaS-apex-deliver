@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { pmiApi, type PMIRisk } from '../services/pmiApi';
 import { AlertTriangle, Shield, CheckCircle, XCircle } from 'lucide-react';
+import { HelpTooltip } from '../../../components/common/HelpTooltip';
 
 interface RiskRegisterProps {
   projectId: string;
@@ -75,6 +76,19 @@ export const RiskRegister: React.FC<RiskRegisterProps> = ({ projectId }) => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900">Risk Register</h2>
+        <HelpTooltip
+          label="Risk register help"
+          content={
+            <div>
+              <p className="font-semibold text-slate-800">Risk management tips</p>
+              <ul className="mt-1 list-disc pl-4 text-slate-600">
+                <li>Log mitigation owners and review dates in each risk card.</li>
+                <li>Escalate critical open risks during the weekly steering call.</li>
+                <li>Export the register before major board updates for documentation.</li>
+              </ul>
+            </div>
+          }
+        />
       </div>
 
       {/* Risk Summary */}

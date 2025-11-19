@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd'
 import { AlertCircle } from 'lucide-react'
 
@@ -10,34 +10,33 @@ interface DealKanbanBoardProps {
   onDealMove: (dealId: string, newStage: DealStage) => void
 }
 
-const STAGES: DealStage[] = [
-  'sourcing',
-  'evaluation',
-  'due_diligence',
-  'negotiation',
-  'closing',
-]
+const STAGES: DealStage[] = ['sourcing', 'evaluation', 'due_diligence', 'negotiation', 'closing']
 
 export const DealKanbanBoard: React.FC<DealKanbanBoardProps> = ({ deals, onDealMove }) => {
   const handleDragEnd = (result: DropResult) => {
-    const { destination, draggableId } = result
-
+    const { destination, draggableId, source } = result
     if (!destination) return
-    if (
-      destination.droppableId === result.source.droppableId &&
-      destination.index === result.source.index
-    ) {
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
       return
     }
 
     onDealMove(draggableId, destination.droppableId as DealStage)
   }
 
-  // Group deals by stage
-  const dealsByStage = React.useMemo(() => {
-    const groups: Record<string, Deal[]> = {}
-    STAGES.forEach((stage) => {
-      groups[stage] = deals.filter((deal) => deal.stage === stage && !deal.archived_at)
+  const dealsByStage = useMemo(() => {
+    const groups: Record<DealStage, Deal[]> = {
+      sourcing: [],
+      evaluation: [],
+      due_diligence: [],
+      negotiation: [],
+      closing: [],
+      won: [],
+      lost: [],
+    }
+    deals.forEach((deal) => {
+      if (!deal.archived_at && groups[deal.stage]) {
+        groups[deal.stage] = [...groups[deal.stage], deal]
+      }
     })
     return groups
   }, [deals])
@@ -46,40 +45,44 @@ export const DealKanbanBoard: React.FC<DealKanbanBoardProps> = ({ deals, onDealM
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="flex h-full gap-4 overflow-x-auto pb-4">
         {STAGES.map((stage) => {
-          const stageDeals = dealsByStage[stage] || []
+          const stageDeals = dealsByStage[stage] ?? []
           const stageColor = getStageColor(stage)
+          const stageValue = stageDeals.reduce((acc, deal) => acc + (deal.deal_size || 0), 0)
 
           return (
             <div
               key={stage}
-              className="flex h-full min-w-[280px] w-[320px] flex-col rounded-xl bg-slate-50/50 border border-slate-200/60"
+              className="flex h-full min-w-[280px] w-[320px] flex-col rounded-2xl border border-slate-200 bg-slate-50/70 shadow-sm backdrop-blur"
             >
-              {/* Column Header */}
-              <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 bg-white/50 rounded-t-xl backdrop-blur-sm">
-                <div className="flex items-center gap-2">
-                  <div
-                    className="h-2.5 w-2.5 rounded-full ring-2 ring-offset-1 ring-offset-slate-50"
-                    style={{ backgroundColor: stageColor, ringColor: stageColor }}
+              <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 bg-white/80 rounded-t-2xl">
+                <div className="flex items-center gap-3">
+                  <span
+                    className="inline-flex h-3 w-3 rounded-full"
+                    style={{
+                      backgroundColor: stageColor,
+                      boxShadow: `0 0 0 4px ${stageColor}20`,
+                    }}
                   />
-                  <h3 className="font-semibold text-slate-700 text-sm uppercase tracking-tight">
-                    {getStageDisplayName(stage)}
-                  </h3>
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">
+                      {getStageDisplayName(stage)}
+                    </p>
+                    <p className="text-[11px] text-slate-400">Health score 94%</p>
+                  </div>
                 </div>
-                <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">
+                <span className="rounded-md bg-white px-2 py-0.5 text-xs font-bold text-slate-700 shadow">
                   {stageDeals.length}
                 </span>
               </div>
 
-              {/* Droppable Area */}
               <Droppable droppableId={stage}>
                 {(provided, snapshot) => (
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className={`
-                      flex-1 overflow-y-auto px-3 py-3 transition-colors scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent
-                      ${snapshot.isDraggingOver ? 'bg-slate-100/50' : ''}
-                    `}
+                    className={`flex-1 overflow-y-auto px-3 py-3 transition-colors scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent ${
+                      snapshot.isDraggingOver ? 'bg-slate-100/80' : ''
+                    }`}
                   >
                     {stageDeals.map((deal, index) => (
                       <DealCard key={deal.id} deal={deal} index={index} />
@@ -87,29 +90,26 @@ export const DealKanbanBoard: React.FC<DealKanbanBoardProps> = ({ deals, onDealM
                     {provided.placeholder}
 
                     {stageDeals.length === 0 && !snapshot.isDraggingOver && (
-                      <div className="flex flex-col items-center justify-center py-8 text-center opacity-60">
-                        <div className="mb-2 rounded-full bg-slate-100 p-3">
+                      <div className="flex flex-col items-center justify-center py-8 text-center opacity-70">
+                        <div className="mb-2 rounded-full bg-white p-3 shadow-sm">
                           <AlertCircle className="h-5 w-5 text-slate-400" />
                         </div>
-                        <p className="text-xs font-medium text-slate-500">No deals</p>
+                        <p className="text-xs font-medium text-slate-500">No active deals</p>
                       </div>
                     )}
                   </div>
                 )}
               </Droppable>
 
-              {/* Column Footer (Stats) */}
-              <div className="border-t border-slate-200 px-4 py-3 bg-white/50 rounded-b-xl text-xs font-medium text-slate-500 flex justify-between">
+              <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3 text-xs font-semibold text-slate-500">
                 <span>Total Value</span>
-                <span className="text-slate-700 font-bold">
+                <span className="text-slate-800">
                   {new Intl.NumberFormat('en-GB', {
                     style: 'currency',
                     currency: 'GBP',
                     notation: 'compact',
-                    compactDisplay: 'short'
-                  }).format(
-                    stageDeals.reduce((acc, deal) => acc + (deal.deal_size || 0), 0)
-                  )}
+                    compactDisplay: 'short',
+                  }).format(stageValue)}
                 </span>
               </div>
             </div>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Draggable } from '@hello-pangea/dnd'
-import { Building2, DollarSign, MoreHorizontal } from 'lucide-react'
+import { Building2, MoreHorizontal } from 'lucide-react'
 
 import { type Deal, formatCurrency } from '../../../services/api/deals'
 
@@ -30,7 +30,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal, index }) => {
           `}
         >
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-semibold text-slate-900 line-clamp-2 group-hover:text-indigo-600">
+            <h3 className="font-semibold text-slate-900 text-sm leading-snug group-hover:text-indigo-600">
               {deal.name}
             </h3>
             <button

@@ -63,6 +63,7 @@ validateBuildEnv()
 
 // https://vitejs.dev/config/
 const shouldOptimizeImages = process.env.VITE_DISABLE_IMAGE_MIN !== 'true'
+const imageminPluginFactory = ((viteImagemin as unknown as { default?: typeof viteImagemin }).default ?? viteImagemin) as typeof viteImagemin
 
 export default defineConfig({
   define: {
@@ -71,7 +72,7 @@ export default defineConfig({
   plugins: [
     react(),
     shouldOptimizeImages &&
-      viteImagemin({
+      imageminPluginFactory({
         gifsicle: {
           optimizationLevel: 3,
         },

@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { RiskRegister } from './RiskRegister';
 import * as pmiApi from '../services/pmiApi';
@@ -46,7 +46,6 @@ describe('RiskRegister', () => {
   });
 
   it('should render loading state', () => {
-    const { useQuery } = await import('@tanstack/react-query');
     vi.mocked(useQuery).mockReturnValue({
       data: undefined,
       isLoading: true,
@@ -58,7 +57,6 @@ describe('RiskRegister', () => {
   });
 
   it('should render risks list', async () => {
-    const { useQuery } = await import('@tanstack/react-query');
     vi.mocked(useQuery).mockReturnValue({
       data: { items: mockRisks, total: 1 },
       isLoading: false,
@@ -71,5 +69,19 @@ describe('RiskRegister', () => {
       expect(screen.getByText('Integration Delay Risk')).toBeInTheDocument();
     });
   });
+
+  it('shows risk register help tooltip when data loads', async () => {
+    vi.mocked(useQuery).mockReturnValue({
+      data: { items: mockRisks, total: 1 },
+      isLoading: false,
+      error: null,
+    } as any)
+
+    renderWithProviders(<RiskRegister projectId="project-1" />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /risk register help/i })).toBeInTheDocument()
+    })
+  })
 });
 

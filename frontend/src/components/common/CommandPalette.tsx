@@ -10,10 +10,11 @@ import {
   UploadCloud,
 } from '@/lib/icons'
 
-import { WORKSPACE_NAV_ITEMS } from '../../const'
-import type { WorkspaceNavigationItem } from '../../const'
+import { FLATTENED_WORKSPACE_NAV_ITEMS, type FlattenedWorkspaceNavItem } from '../../const'
 
 const CONTEXT_EVENT = 'apex:command-search'
+const RECENT_COMMAND_KEY = 'command-palette:recent-ids'
+const MAX_RECENT_COMMANDS = 6
 
 type CommandKind = 'navigation' | 'action' | 'context'
 
@@ -33,36 +34,18 @@ interface CommandItem {
   onSelect?: () => void
 }
 
-const mapNavigationItems = (items: WorkspaceNavigationItem[]): CommandItem[] => {
-  const result: CommandItem[] = []
-
-  items.forEach((item) => {
+const mapNavigationItems = (items: FlattenedWorkspaceNavItem[]): CommandItem[] =>
+  items.map((item) => {
     const Icon = item.icon ?? Layers
-    result.push({
+    return {
       id: item.id,
       label: item.label,
       section: item.section || 'Navigation',
       kind: 'navigation',
       path: item.path,
       icon: <Icon className="h-4 w-4" />,
-    })
-
-    if (item.hasSubMenu && item.subMenuItems) {
-      item.subMenuItems.forEach((sub) => {
-        result.push({
-          id: `${item.id}-${sub.path}`,
-          label: `${item.label} • ${sub.label}`,
-          section: item.section || 'Navigation',
-          kind: 'navigation',
-          path: sub.path,
-          icon: <Icon className="h-4 w-4" />,
-        })
-      })
     }
   })
-
-  return result
-}
 
 const formatContextLabel = (pathname: string) => {
   const parts = pathname.split('/').filter(Boolean)
@@ -75,9 +58,25 @@ const formatContextLabel = (pathname: string) => {
 export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(0)
+  const [recentIds, setRecentIds] = useState<string[]>([])
   const navigate = useNavigate()
   const location = useLocation()
   const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      const stored = window.sessionStorage.getItem(RECENT_COMMAND_KEY)
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        if (Array.isArray(parsed)) {
+          setRecentIds(parsed.filter((id): id is string => typeof id === 'string'))
+        }
+      }
+    } catch {
+      setRecentIds([])
+    }
+  }, [])
 
   useEffect(() => {
     if (!isOpen) {
@@ -117,7 +116,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
     }
   }, [query, isOpen])
 
-  const navigationItems = useMemo(() => mapNavigationItems(WORKSPACE_NAV_ITEMS), [])
+  const navigationItems = useMemo(() => mapNavigationItems(FLATTENED_WORKSPACE_NAV_ITEMS), [])
 
   const quickActions = useMemo<CommandItem[]>(
     () => [
@@ -177,19 +176,53 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
     ]
   }, [location.pathname, query])
 
-  const dataset = useMemo(() => [...contextItems, ...quickActions, ...navigationItems], [contextItems, quickActions, navigationItems])
+  const searchableItems = useMemo(() => [...quickActions, ...navigationItems, ...contextItems], [quickActions, navigationItems, contextItems])
+
+  const rememberCommand = useCallback((item: CommandItem) => {
+    if (item.kind === 'context') {
+      return
+    }
+    setRecentIds((prev) => {
+      const next = [item.id, ...prev.filter((id) => id !== item.id)].slice(0, MAX_RECENT_COMMANDS)
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem(RECENT_COMMAND_KEY, JSON.stringify(next))
+      }
+      return next
+    })
+  }, [])
+
+  const resolvedRecentItems = useMemo(() => {
+    if (!recentIds.length) return []
+    const registry = new Map(searchableItems.map((item) => [item.id, item]))
+    return recentIds
+      .map((id) => registry.get(id))
+      .filter((item): item is CommandItem => Boolean(item))
+  }, [recentIds, searchableItems])
 
   const filteredItems = useMemo(() => {
     if (!query.trim()) {
-      return dataset.slice(0, 8)
+      const deduped = new Map<string, CommandItem>()
+      const addItem = (item: CommandItem) => {
+        if (!deduped.has(item.id)) {
+          deduped.set(item.id, item)
+        }
+      }
+      contextItems.forEach(addItem)
+      if (resolvedRecentItems.length) {
+        resolvedRecentItems.forEach(addItem)
+      }
+      quickActions.forEach(addItem)
+      navigationItems.forEach(addItem)
+      return Array.from(deduped.values()).slice(0, 12)
     }
 
     const term = query.toLowerCase()
-    return dataset.filter((item) => item.label.toLowerCase().includes(term) || item.section.toLowerCase().includes(term))
-  }, [dataset, query])
+    return searchableItems.filter((item) => item.label.toLowerCase().includes(term) || item.section.toLowerCase().includes(term))
+  }, [contextItems, navigationItems, quickActions, resolvedRecentItems, searchableItems, query])
 
   const handleSelect = useCallback(
     (item: CommandItem) => {
+      rememberCommand(item)
       if (item.kind === 'navigation' && item.path) {
         navigate(item.path)
       } else if (item.onSelect) {
@@ -197,7 +230,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
       }
       onClose()
     },
-    [navigate, onClose]
+    [navigate, onClose, rememberCommand]
   )
 
   const handleKeyNavigation = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -273,7 +306,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
                       </span>
                       <div className="flex-1">
                         <p className="text-sm font-semibold tracking-tight">{item.label}</p>
-                        <p className="text-xs text-slate-400">{item.kind === 'action' ? 'Action' : 'Navigate'}</p>
+                        <p className="text-xs text-slate-400">
+                          {item.kind === 'action' ? 'Action' : item.kind === 'context' ? 'Context' : 'Navigate'}
+                        </p>
                       </div>
                       {item.hint && (
                         <span className="rounded-md border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-widest text-slate-400">
@@ -297,4 +332,3 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
     </div>
   )
 }
-

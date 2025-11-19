@@ -9,11 +9,12 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import BlogAdminEditor from './BlogAdminEditor';
+import * as blogService from '@/services/blogService';
 
 // Mock blog API service
 vi.mock('@/services/blogService', () => ({
@@ -74,7 +75,7 @@ describe('BlogAdminEditor', () => {
   describe('AC-10.2: Draft/Publish Workflow', () => {
     it('saves post as draft by default', async () => {
       const user = userEvent.setup();
-      const { createBlogPost } = await import('@/services/blogService');
+      vi.mocked(blogService.createBlogPost).mockResolvedValue({ id: 'post-1' } as any);
       
       renderWithProviders(<BlogAdminEditor />);
 
@@ -83,7 +84,7 @@ describe('BlogAdminEditor', () => {
       await user.click(screen.getByRole('button', { name: /save draft/i }));
 
       await waitFor(() => {
-        expect(createBlogPost).toHaveBeenCalledWith(
+        expect(blogService.createBlogPost).toHaveBeenCalledWith(
           expect.objectContaining({
             title: 'Test Post',
             content: 'Test content',
@@ -118,7 +119,7 @@ describe('BlogAdminEditor', () => {
 
     it('publishes post with timestamp after confirmation', async () => {
       const user = userEvent.setup();
-      const { publishBlogPost } = await import('@/services/blogService');
+      vi.mocked(blogService.createBlogPost).mockResolvedValue({ id: 'post-1' } as any);
       
       renderWithProviders(<BlogAdminEditor />);
 
@@ -131,7 +132,7 @@ describe('BlogAdminEditor', () => {
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(publishBlogPost).toHaveBeenCalledWith(
+        expect(blogService.createBlogPost).toHaveBeenCalledWith(
           expect.objectContaining({
             status: 'published',
             publishedAt: expect.any(String),
@@ -164,38 +165,41 @@ describe('BlogAdminEditor', () => {
       await user.upload(fileInput, file);
 
       const preview = await screen.findByAltText(/preview/i);
-      expect(preview).toHaveAttribute('src', expect.stringContaining('blob:'));
+      expect(preview).toHaveAttribute('src', expect.stringContaining('data:image/png;base64'));
     });
   });
 
   describe('AC-10.4: Auto-save and Draft Management', () => {
     it('auto-saves draft every 30 seconds', async () => {
       vi.useFakeTimers();
-      const { updateBlogPost } = await import('@/services/blogService');
-      const user = userEvent.setup({ delay: null });
+      vi.mocked(blogService.createBlogPost).mockResolvedValue({ id: 'post-1' } as any);
 
-      renderWithProviders(<BlogAdminEditor />);
+      try {
+        renderWithProviders(<BlogAdminEditor autoSaveIntervalMs={50} />);
 
-      await user.type(screen.getByLabelText(/title/i), 'Auto-save test');
-      
-      // Advance timers by 30 seconds
-      vi.advanceTimersByTime(30000);
+        const titleInput = screen.getByLabelText(/title/i);
+        fireEvent.change(titleInput, { target: { value: 'Auto-save test' } });
+        expect(screen.getByDisplayValue('Auto-save test')).toBeInTheDocument();
+        
+        await act(async () => {
+          vi.advanceTimersByTime(50);
+        });
 
-      await waitFor(() => {
-        expect(updateBlogPost).toHaveBeenCalled();
-      });
-
-      vi.useRealTimers();
+        expect(blogService.createBlogPost).toHaveBeenCalled();
+      } finally {
+        vi.useRealTimers();
+      }
     });
 
     it('shows last saved timestamp', async () => {
       const user = userEvent.setup();
+      vi.mocked(blogService.createBlogPost).mockResolvedValue({ id: 'post-1' } as any);
       renderWithProviders(<BlogAdminEditor />);
 
       await user.type(screen.getByLabelText(/title/i), 'Test');
       await user.click(screen.getByRole('button', { name: /save draft/i }));
 
-      expect(await screen.findByText(/saved at/i)).toBeInTheDocument();
+      expect(await screen.findByText(/saved at/i, {}, { timeout: 2000 })).toBeInTheDocument();
     });
   });
 

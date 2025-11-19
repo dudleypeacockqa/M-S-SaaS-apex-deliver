@@ -42,20 +42,26 @@ export const Breadcrumbs: React.FC = () => {
   })
 
   return (
-    <nav aria-label="Breadcrumb">
-      <ol className="flex items-center gap-2 text-sm text-slate-600">
+    <nav aria-label="Breadcrumb" className="text-xs font-medium text-slate-500">
+      <ol className="flex items-center gap-1.5 whitespace-nowrap">
         <li>
-          <Link to="/dashboard" className="hover:text-slate-900 transition-colors">
+          <Link
+            to="/dashboard"
+            className="text-slate-400 transition-colors hover:text-slate-900"
+          >
             Home
           </Link>
         </li>
         {crumbs.map((crumb) => (
-          <li key={crumb.path} className="flex items-center gap-2">
-            <span aria-hidden="true" className="text-slate-400">/</span>
+          <li key={crumb.path} className="flex items-center gap-1.5">
+            <span aria-hidden="true" className="text-slate-300">{'>'}</span>
             {crumb.isCurrent ? (
-              <span className="text-indigo-600 font-semibold">{crumb.label}</span>
+              <span className="text-slate-900">{crumb.label}</span>
             ) : (
-              <Link to={crumb.path} className="hover:text-slate-900 transition-colors">
+              <Link
+                to={crumb.path}
+                className="text-slate-400 transition-colors hover:text-slate-900"
+              >
                 {crumb.label}
               </Link>
             )}

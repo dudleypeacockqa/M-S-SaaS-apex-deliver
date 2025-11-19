@@ -268,19 +268,21 @@ def _execute_email_campaign(
         if not prospect or not prospect.email:
             continue
         
+        # Precompute contact data for templating and analytics
+        contact_data = {
+            "first_name": prospect.name.split()[0] if prospect.name else "",
+            "last_name": prospect.name.split()[-1] if prospect.name and len(prospect.name.split()) > 1 else "",
+            "name": prospect.name or "",
+            "company": prospect.company or "",
+            "email": prospect.email or "",
+        }
+
         # Render template if exists
         subject = campaign.subject
         content = campaign.content
-        
+
         if template:
             try:
-                contact_data = {
-                    "first_name": prospect.name.split()[0] if prospect.name else "",
-                    "last_name": prospect.name.split()[-1] if prospect.name and len(prospect.name.split()) > 1 else "",
-                    "name": prospect.name or "",
-                    "company": prospect.company or "",
-                    "email": prospect.email or "",
-                }
                 rendered = render_template(template.id, contact_data, db)
                 subject = rendered["subject"]
                 content = rendered["content"]
@@ -396,12 +398,14 @@ def _execute_voice_campaign(
                 db,
                 campaign_id=campaign.id
             )
-            
+
             initiated_count += 1
+            recipient.sent = True
+            recipient.sent_at = datetime.now(timezone.utc)
         except Exception as e:
             # Log error but continue
             print(f"Error initiating voice call: {e}")
-    
+
     return initiated_count
 
 
