@@ -18,7 +18,7 @@ export const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ requiredRole, 
     <ProtectedRoute requiredRole={requiredRole}>
       <div className="min-h-screen bg-slate-50">
         <SidebarNavigation />
-        <div className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'lg:pl-20' : 'lg:pl-64'}`}>
+        <div className={`transition-[padding] duration-300 ease-in-out ${isCollapsed ? 'lg:pl-16' : 'lg:pl-64'}`}>
           <AppHeader />
           <main className="min-h-[calc(100vh-4rem)]">
             <section

@@ -51,6 +51,16 @@ export const DealDetails: React.FC = () => {
     { value: 'lost', label: 'Lost' },
   ];
 
+  const stageConfidence: Record<DealStage, number> = {
+    sourcing: 35,
+    evaluation: 45,
+    due_diligence: 58,
+    negotiation: 72,
+    closing: 88,
+    won: 100,
+    lost: 0,
+  };
+
   const currencies = ['GBP', 'USD', 'EUR'];
 
   const handleEditClick = () => {
@@ -166,6 +176,47 @@ export const DealDetails: React.FC = () => {
       </section>
     );
   }
+
+  const stageProbability = stageConfidence[deal.stage] ?? 0;
+  const dealSizeLabel = deal.deal_size ? formatCurrency(deal.deal_size, deal.currency) : 'Not set';
+  const createdTimestamp = new Date(deal.created_at).getTime();
+  const updatedTimestamp = new Date(deal.updated_at).getTime();
+  const pipelineDays = Math.max(1, Math.round((updatedTimestamp - createdTimestamp) / (1000 * 60 * 60 * 24)));
+
+  const financialHighlights = [
+    {
+      label: 'Deal Size',
+      value: dealSizeLabel,
+      meta: deal.deal_size ? deal.currency : 'Enter valuation to firm up',
+    },
+    {
+      label: 'Stage Confidence',
+      value: `${stageProbability}%`,
+      meta: `Based on ${getStageDisplayName(deal.stage)} probability curve`,
+    },
+    {
+      label: 'Pipeline Velocity',
+      value: `${pipelineDays} days`,
+      meta: 'Time since creation',
+    },
+    {
+      label: 'Working Capital Focus',
+      value: deal.stage === 'closing' ? 'Finalize financing' : 'Monitor burn',
+      meta: 'Recommendation from FP&A',
+    },
+  ];
+
+  const documentShortcuts = [
+    { label: 'Open Document Workspace', action: () => navigate(`/deals/${deal.id}/documents`) },
+    { label: 'Launch Data Room', action: () => navigate(`/deals/${deal.id}/data-room`) },
+    { label: 'Export Package', action: () => navigate(`/deals/${deal.id}/documents`) },
+  ];
+
+  const teamAssignments = [
+    { role: 'Deal Owner', person: deal.owner_id || 'Unassigned', description: 'Primary accountability' },
+    { role: 'Integration Lead', person: hasPMIProject ? 'Assigned via PMI' : 'Pending assignment', description: 'Coordinates PMI workstreams' },
+    { role: 'Finance Lead', person: 'FP&A Workspace', description: 'Runs modeling + diligence' },
+  ];
 
   return (
     <section data-testid="deal-details" style={{ display: 'grid', gap: '1.5rem', padding: '2rem' }}>
@@ -811,7 +862,84 @@ export const DealDetails: React.FC = () => {
           <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem' }}>
             Financial Overview
           </h2>
-          <p style={{ color: '#64748b' }}>Financial intelligence dashboard coming soon...</p>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: '1rem',
+              marginBottom: '1.5rem',
+            }}
+          >
+            {financialHighlights.map((card) => (
+              <div
+                key={card.label}
+                style={{
+                  padding: '1rem',
+                  borderRadius: '12px',
+                  border: '1px solid #e2e8f0',
+                  background: '#f8fafc',
+                }}
+              >
+                <p style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
+                  {card.label}
+                </p>
+                <p style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a' }}>{card.value}</p>
+                <p style={{ fontSize: '0.875rem', color: '#475569' }}>{card.meta}</p>
+              </div>
+            ))}
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gap: '1rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            }}
+          >
+            <div
+              style={{
+                padding: '1.25rem',
+                borderRadius: '12px',
+                border: '1px solid #c7d2fe',
+                background: '#eef2ff',
+              }}
+            >
+              <p style={{ fontSize: '0.875rem', color: '#4338ca', fontWeight: 600 }}>Valuation Suite</p>
+              <p style={{ color: '#312e81', marginTop: '0.5rem' }}>
+                Run Monte Carlo, comparable companies, and precedent transactions to validate {deal.target_company}'s pricing.
+              </p>
+              <button
+                style={{
+                  marginTop: '0.75rem',
+                  padding: '0.5rem 0.75rem',
+                  border: 'none',
+                  borderRadius: '8px',
+                  background: '#312e81',
+                  color: 'white',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+                onClick={() => navigate(`/deals/${deal.id}/valuation`)}
+              >
+                Open Valuation Suite
+              </button>
+            </div>
+            <div
+              style={{
+                padding: '1.25rem',
+                borderRadius: '12px',
+                border: '1px solid #a5b4fc',
+                background: '#f5f3ff',
+              }}
+            >
+              <p style={{ fontSize: '0.875rem', color: '#4c1d95', fontWeight: 600 }}>Financial Playbook</p>
+              <ul style={{ marginTop: '0.5rem', paddingLeft: '1.2rem', color: '#4338ca', fontSize: '0.875rem' }}>
+                <li>Review FP&A What-If outcomes.</li>
+                <li>Sync working capital guardrails.</li>
+                <li>Share banker pack via Reports.</li>
+              </ul>
+            </div>
+          </div>
         </article>
       )}
 
@@ -826,10 +954,52 @@ export const DealDetails: React.FC = () => {
             border: '1px solid #e2e8f0',
           }}
         >
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem' }}>
-            Deal Documents
-          </h2>
-          <p style={{ color: '#64748b' }}>Document management interface coming soon...</p>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>Deal Documents</h2>
+          <p style={{ color: '#475569', marginBottom: '1.5rem' }}>
+            Manage diligence folders, audit logs, and AI Q&A directly from the workspace.
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+            {documentShortcuts.map((shortcut) => (
+              <button
+                key={shortcut.label}
+                onClick={shortcut.action}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '10px',
+                  padding: '0.85rem 1rem',
+                  fontSize: '0.95rem',
+                  fontWeight: 600,
+                  color: '#0f172a',
+                  cursor: 'pointer',
+                }}
+              >
+                {shortcut.label}
+                <span aria-hidden="true">↗</span>
+              </button>
+            ))}
+          </div>
+
+          <div
+            style={{
+              border: '1px dashed #cbd5f5',
+              borderRadius: '12px',
+              padding: '1rem',
+              color: '#475569',
+              background: '#eef2ff',
+            }}
+          >
+            <p style={{ fontWeight: 600 }}>Data room readiness</p>
+            <ul style={{ marginTop: '0.5rem', paddingLeft: '1.2rem', fontSize: '0.9rem' }}>
+              <li>Watermarking + access logs enabled</li>
+              <li>Bulk upload queue staged for next drop</li>
+              <li>AI assistant primed for vendor Q&A</li>
+            </ul>
+          </div>
         </article>
       )}
 
@@ -844,10 +1014,70 @@ export const DealDetails: React.FC = () => {
             border: '1px solid #e2e8f0',
           }}
         >
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem' }}>
-            Deal Team
-          </h2>
-          <p style={{ color: '#64748b' }}>Team collaboration features coming soon...</p>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>Deal Team</h2>
+          <p style={{ color: '#475569', marginBottom: '1rem' }}>
+            Keep internal leaders, advisors, and PMI coordinators aligned across the lifecycle.
+          </p>
+
+          <div style={{ display: 'grid', gap: '1rem' }}>
+            {teamAssignments.map((assignment) => (
+              <div
+                key={assignment.role}
+                style={{
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '10px',
+                  padding: '0.85rem 1rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <p style={{ fontSize: '0.85rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>
+                    {assignment.role}
+                  </p>
+                  <p style={{ fontSize: '1rem', fontWeight: 600, color: '#0f172a' }}>{assignment.person}</p>
+                  <p style={{ fontSize: '0.85rem', color: '#475569' }}>{assignment.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div
+            style={{
+              marginTop: '1.5rem',
+              padding: '1rem',
+              borderRadius: '12px',
+              background: hasPMIProject ? '#ecfdf5' : '#fff7ed',
+              border: `1px solid ${hasPMIProject ? '#a7f3d0' : '#fed7aa'}`,
+            }}
+          >
+            <p style={{ fontWeight: 600, color: hasPMIProject ? '#065f46' : '#9a3412' }}>
+              {hasPMIProject ? 'PMI project linked' : 'PMI project recommended'}
+            </p>
+            <p style={{ fontSize: '0.9rem', color: hasPMIProject ? '#047857' : '#c2410c' }}>
+              {hasPMIProject
+                ? 'Track day-one readiness, synergy targets, and risk register from the PMI module.'
+                : 'Create the PMI project to align workstreams and day-one milestones.'}
+            </p>
+            <button
+              onClick={() =>
+                hasPMIProject ? navigate(`/pmi/projects/${pmiProjectId}`) : navigate('/pmi/projects/new')
+              }
+              style={{
+                marginTop: '0.75rem',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '0.5rem 0.75rem',
+                background: hasPMIProject ? '#059669' : '#ea580c',
+                color: 'white',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              {hasPMIProject ? 'Open PMI project' : 'Create PMI project'}
+            </button>
+          </div>
         </article>
       )}
     </section>

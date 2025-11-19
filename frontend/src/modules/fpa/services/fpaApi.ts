@@ -142,7 +142,7 @@ export const fpaApi = {
   /**
    * Create new demand forecast
    */
-  async createDemandForecast(data: Partial<DemandForecast>): Promise<DemandForecast> {
+  async createDemandForecast(data: DemandForecastCreate): Promise<DemandForecast> {
     return apiClient.post<DemandForecast>('/api/fpa/demand-forecast', data);
   },
 
@@ -189,13 +189,42 @@ export const fpaApi = {
   },
 
   /**
+   * Calculate scenario impact using backend engine
+   */
+  async calculateScenarioImpact(payload: ScenarioCalculationRequest): Promise<ScenarioCalculationResponse> {
+    return apiClient.post<ScenarioCalculationResponse>('/api/fpa/what-if/calculate', payload);
+  },
+
+  /**
+   * Fetch curated scenario presets
+   */
+  async getScenarioPresets(): Promise<PredefinedScenario[]> {
+    return apiClient.get<PredefinedScenario[]>('/api/fpa/what-if/presets');
+  },
+
+  /**
+   * Apply a predefined scenario server-side
+   */
+  async applyScenario(scenarioId: string): Promise<ApplyScenarioResponse> {
+    return apiClient.post<ApplyScenarioResponse>('/api/fpa/what-if/apply', { scenario_id: scenarioId });
+  },
+
+  /**
    * Generate financial report
    */
-  async generateReport(reportType: string, params: Record<string, any>): Promise<Blob> {
-    return apiClient.get<Blob>(`/api/fpa/reports/${reportType}`, {
-      responseType: 'blob',
-      ...params,
-    });
+  async generateReport(reportType: string, params?: Record<string, any>): Promise<FpaReportResponse> {
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+
+    const query = searchParams.toString()
+    const endpoint = query ? `/api/fpa/reports/${reportType}?${query}` : `/api/fpa/reports/${reportType}`
+    return apiClient.get<FpaReportResponse>(endpoint)
   },
 
   /**

@@ -137,6 +137,52 @@ class TestUserServiceCRUD:
         assert user.last_name == "User"
         assert user.role == UserRole.solo
         assert user.organization_id == str(org.id)
+
+    def test_create_user_from_clerk_assigns_master_admin_role_without_org(
+        self,
+        db_session: Session,
+    ):
+        """Master admin Clerk payload should persist elevated role without org."""
+        clerk_data = {
+            "id": "clerk_master_admin",
+            "email_addresses": [{"email_address": "superadmin@example.com"}],
+            "first_name": "Master",
+            "last_name": "Admin",
+            "public_metadata": {"role": "master_admin"},
+        }
+
+        user = create_user_from_clerk(db_session, clerk_data)
+
+        assert user.role == UserRole.master_admin
+        assert user.organization_id is None
+
+    def test_update_user_from_clerk_promotes_user_to_master_admin(
+        self,
+        db_session: Session,
+        create_user,
+    ):
+        """Updating from Clerk should allow promotion to master admin role."""
+        user = create_user(
+            email="promo@example.com",
+            role=UserRole.admin,
+            first_name="Regular",
+            last_name="Admin",
+        )
+
+        clerk_data = {
+            "id": user.clerk_user_id,
+            "email": "promo@example.com",
+            "first_name": "Master",
+            "last_name": "Admin",
+            "public_metadata": {"role": "master_admin"},
+        }
+
+        updated = update_user_from_clerk(db_session, user.clerk_user_id, clerk_data)
+
+        assert updated.id == user.id
+        assert updated.role == UserRole.master_admin
+        assert updated.first_name == "Master"
+        assert updated.last_name == "Admin"
     
     def test_create_user_from_clerk_updates_existing_user(
         self,
