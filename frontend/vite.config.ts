@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import viteImagemin from 'vite-plugin-imagemin'
 import path from 'node:path'
 import dotenv from 'dotenv'
+
+import { resolveImageminPlugin } from './config/imageminPluginLoader'
 
 // Load local env files before validating required keys
 ['.env', '.env.local', '.env.production', '.env.production.local'].forEach(file => {
@@ -63,7 +64,7 @@ validateBuildEnv()
 
 // https://vitejs.dev/config/
 const shouldOptimizeImages = process.env.VITE_DISABLE_IMAGE_MIN !== 'true'
-const imageminPluginFactory = ((viteImagemin as unknown as { default?: typeof viteImagemin }).default ?? viteImagemin) as typeof viteImagemin
+const imageminPluginFactory = resolveImageminPlugin(shouldOptimizeImages)
 
 export default defineConfig({
   define: {
@@ -71,7 +72,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    shouldOptimizeImages &&
+    imageminPluginFactory &&
       imageminPluginFactory({
         gifsicle: {
           optimizationLevel: 3,

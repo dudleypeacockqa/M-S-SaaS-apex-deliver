@@ -61,7 +61,9 @@ export const WorkingCapital: React.FC = () => {
                   <h3 className='text-lg font-semibold text-indigo-900'>Accelerate collections run</h3>
                 </div>
               </div>
-              <p className='mt-4 text-sm text-indigo-900'>Deploy automated reminders for the 4 largest invoices (>£250k) to compress DSO by 2.5 days.</p>
+              <p className='mt-4 text-sm text-indigo-900'>
+                Deploy automated reminders for the 4 largest invoices ({'>'}£250k) to compress DSO by 2.5 days.
+              </p>
             </section>
           </>
         )}

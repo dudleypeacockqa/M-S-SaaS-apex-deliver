@@ -86,6 +86,33 @@ NEXT_AGENT: codex
 PRIORITY: P0 (Critical Fix + 100% Completion)
 RATIONALE: Critical 500 error blocking production. After fix, complete remaining 0.8% of project (marketing features, QA, documentation) to achieve 100% completion per 100-PERCENT-COMPLETION-PLAN-2025-11-18.md
 
+## Session 2025-11-19T10-Imagemin-Hardening
+
+SESSION_ID: Session-2025-11-19T10-Imagemin-Hardening
+COMPLETED_WORK:
+- Diagnosed Render’s frontend deploy failure (`TypeError: viteImagemin is not a function`) and added a guarded loader helper at `frontend/config/imageminPluginLoader.ts` that dynamically resolves `vite-plugin-imagemin`, verifies callable exports, and logs safe fallbacks when the dependency misbehaves.
+- Added a dedicated Vitest suite (`frontend/src/__tests__/imageminPluginLoader.test.ts`) covering happy path, invalid exports, disabled optimization flag, and loader exceptions to keep the regression under TDD.
+- Escaped the literal `>` character inside `frontend/src/modules/fpa/pages/WorkingCapital.tsx` so Vitest/ESBuild can parse the component again (this JSX syntax bug previously blocked every frontend test run).
+- Updated `vite.config.ts` to consume the new helper, refreshed `tsconfig.node.json` includes, and documented the fix in `docs/implementation_report_2025_11_19.md`.
+- Installed frontend dependencies via `npm install` (front-end workspace) so `vitest`, `vite`, and related CLIs are available for RED/GREEN runs on Windows.
+FILES_MODIFIED:
+- frontend/config/imageminPluginLoader.ts
+- frontend/src/__tests__/imageminPluginLoader.test.ts
+- frontend/src/modules/fpa/pages/WorkingCapital.tsx
+- frontend/vite.config.ts
+- frontend/tsconfig.node.json
+- docs/implementation_report_2025_11_19.md
+- docs/bmad/bmm-workflow-status.md (this entry)
+TEST_RESULTS:
+- `cd frontend && npm run test -- src/__tests__/imageminPluginLoader.test.ts` – PASS (4 tests)
+- `cd frontend && npm run test` – PASS (full Vitest suite; existing warning noise only)
+- `cd frontend && npm run lint` – PASS with existing warnings documented in Section 4.1 of the implementation report
+- `cd frontend && npm run build` – PASS (`vite build` + `npm run verify:lucide`)
+NEXT_ACTION: Trigger frontend Render redeploy (`cd frontend && npm run build && cd .. && python trigger_render_deploy.py --service <frontend-service-id>`) so the hardened build reaches production, then monitor deploy logs for the imagemin warning to confirm graceful degradation is working.
+NEXT_AGENT: codex
+PRIORITY: P0 (Production deploy unblocker)
+RATIONALE: Render is currently blocked on the imagemin plugin error; with the helper and test coverage in place we must redeploy to restore automated publishing.
+
 ## Session 2025-11-17T14-Toolchain-Verification
 
 SESSION_ID: Session-2025-11-17T14-Toolchain-Verification
