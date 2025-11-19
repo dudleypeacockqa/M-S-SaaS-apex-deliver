@@ -281,6 +281,14 @@ const renderTaskBoard = () => {
     expect(within(doneColumn).getByText('Board approval prep')).toBeInTheDocument();
   });
 
+  it('renders task board help tooltip near filters', async () => {
+    renderTaskBoard();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /task board help/i })).toBeInTheDocument();
+    });
+  });
+
   it('persists filters when modified', async () => {
     const user = userEvent.setup();
     renderTaskBoard();

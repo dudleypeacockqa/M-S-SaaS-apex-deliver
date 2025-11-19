@@ -71,6 +71,7 @@ vite.config.d.ts
 
 # Ignore local file storage
 uploads/
+backend/storage/
 
 # Ignore Claude Code workspace
 .claude/

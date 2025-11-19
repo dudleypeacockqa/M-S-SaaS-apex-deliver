@@ -116,6 +116,16 @@ describe('EventDashboard', () => {
       expect(screen.getByText(/No events found/i)).toBeInTheDocument()
     })
   })
+
+  it('renders event help tooltip near filters', async () => {
+    vi.mocked(eventsApi.listEvents).mockResolvedValue([])
+
+    renderWithProviders(<EventDashboard />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /event help/i })).toBeInTheDocument()
+    })
+  })
 })
 
 

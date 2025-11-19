@@ -13,7 +13,7 @@ from sqlalchemy import (
     Text,
     JSON,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, foreign
 from sqlalchemy.sql import func
 
 from app.db.base import Base, GUID
@@ -111,7 +111,10 @@ class Document(Base):
         "DocumentPermission", back_populates="document", cascade="all, delete-orphan"
     )
     access_logs = relationship(
-        "DocumentAccessLog", back_populates="document", cascade="all, delete-orphan"
+        "DocumentAccessLog",
+        back_populates="document",
+        cascade="all, delete-orphan",
+        primaryjoin="Document.id == foreign(DocumentAccessLog.document_id)",
     )
 
     questions = relationship(
@@ -183,7 +186,7 @@ class DocumentAccessLog(Base):
     __tablename__ = "document_access_logs"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    document_id = Column(GUID, ForeignKey("documents.id"), nullable=False)
+    document_id = Column(GUID, nullable=False)
     user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     action = Column(String(50), nullable=False)  # view, download, upload, delete
     ip_address = Column(String(45), nullable=True)
@@ -195,7 +198,12 @@ class DocumentAccessLog(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
-    document = relationship("Document", back_populates="access_logs")
+    document = relationship(
+        "Document",
+        back_populates="access_logs",
+        primaryjoin="foreign(DocumentAccessLog.document_id) == Document.id",
+        viewonly=True,
+    )
     user = relationship("User")
     organization = relationship("Organization")
 

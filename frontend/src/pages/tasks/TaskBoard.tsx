@@ -502,7 +502,10 @@ const TaskBoard: React.FC = () => {
         {typeof metadata?.total === 'number' && (
           <span className="text-gray-400">{metadata.total} total in workspace</span>
         )}
-        <HelpTooltip content="Filters, quick search, and board preferences are scoped to your browser. Clear filters to reset the experience for all teammates." />
+        <HelpTooltip
+          label="Task board help"
+          content="Filters, quick search, and board preferences are scoped to your browser. Clear filters to reset the experience for all teammates."
+        />
       </div>
 
       <TaskFilters filters={filters} assignees={assignees} onChange={handleFiltersChange} onClear={handleClearFilters} />

@@ -70,6 +70,7 @@ class TestPMIDealTaskWorkflow:
             target_date=datetime.now(timezone.utc) + timedelta(days=30),
             status="not_started",
         )
+        milestone = pmi_service.create_milestone(milestone_data, user, db_session)
         
         with patch('app.services.pmi_service.task_service') as mock_task_service:
             mock_task = Mock()

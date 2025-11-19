@@ -21,6 +21,7 @@ import VideoUploadModal from '../../components/podcast/VideoUploadModal';
 import { YouTubePublishModal } from '../../components/podcast/YouTubePublishModal';
 import LiveStreamManager from '../../components/podcast/LiveStreamManager';
 import { EpisodeTranscriptPanel } from '../../components/podcast/EpisodeTranscriptPanel';
+import { HelpTooltip } from '../../components/common/HelpTooltip';
 import {
   getQuotaSummary,
   listEpisodes,
@@ -311,11 +312,24 @@ function PodcastStudioContent() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-8 space-y-2">
         <h1 className="text-3xl font-bold text-gray-900">Podcast Studio</h1>
-        <p className="mt-2 text-gray-600">
+        <p className="text-gray-600">
           Create and manage your podcast episodes
         </p>
+        <HelpTooltip
+          label="Podcast help"
+          content={
+            <div>
+              <p className="font-semibold text-slate-800">Production tips</p>
+              <ul className="mt-1 list-disc pl-4 text-slate-600">
+                <li>Review `docs/bmad/podcast-studio-guide.md` before recording days.</li>
+                <li>Watch quota warnings to stay under tier limits.</li>
+                <li>Publish to YouTube only after transcripts and notes are final.</li>
+              </ul>
+            </div>
+          }
+        />
       </div>
 
       <div

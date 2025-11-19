@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { listEvents, deleteEvent, type Event } from '../../services/api/events'
 import { Card, CardHeader, CardBody, Button, Spinner } from '../../components/ui'
+import { HelpTooltip } from '../../components/common/HelpTooltip'
 
 export const EventDashboard: React.FC = () => {
   const navigate = useNavigate()
@@ -78,7 +79,7 @@ export const EventDashboard: React.FC = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
             Status:
             <select
@@ -106,6 +107,20 @@ export const EventDashboard: React.FC = () => {
               <option value="hybrid">Hybrid</option>
             </select>
           </label>
+
+          <HelpTooltip
+            label="Event help"
+            content={
+              <div>
+                <p className="font-semibold text-slate-800">Operations tips</p>
+                <ul className="mt-1 list-disc pl-4 text-slate-600">
+                  <li>Review `docs/bmad/event-operations-guide.md` before launches.</li>
+                  <li>Filters are per user; clear them before sharing snapshots.</li>
+                  <li>Use the upcoming event spotlight to brief executives.</li>
+                </ul>
+              </div>
+            }
+          />
         </div>
 
         {/* Events Grid */}

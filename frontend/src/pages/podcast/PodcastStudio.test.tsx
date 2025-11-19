@@ -218,6 +218,28 @@ describe('PodcastStudio', () => {
         expect(screen.getByText(/podcast studio/i)).toBeInTheDocument();
       });
     });
+
+    it('renders podcast help tooltip when data is available', async () => {
+      vi.mocked(podcastApi.checkFeatureAccess).mockResolvedValue({
+        feature: 'podcast_audio',
+        tier: 'professional',
+        tierLabel: 'Professional',
+        hasAccess: true,
+        requiredTier: 'professional',
+        requiredTierLabel: 'Professional',
+        upgradeRequired: false,
+        upgradeMessage: null,
+        upgradeCtaUrl: null,
+      });
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue(defaultQuota);
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([]);
+
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /podcast help/i })).toBeInTheDocument();
+      });
+    });
   });
 
   describe('Quota Display', () => {
@@ -1019,4 +1041,3 @@ describe('PodcastStudio', () => {
     });
   });
 });
-

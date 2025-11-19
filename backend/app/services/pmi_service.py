@@ -20,10 +20,12 @@ from app.models.pmi import (
     PMIDayOneChecklist,
     PMIProjectStatus,
     PMIWorkstreamStatus,
+    PMIWorkstreamType,
     PMISynergyStatus,
     PMIRiskSeverity,
     PMIRiskStatus,
     PMIDayOneChecklistStatus,
+    PMIDayOneCategory,
     PMIPhase,
 )
 from app.models.deal import Deal, DealStage
@@ -624,7 +626,25 @@ def get_pmi_dashboard(project_id: str, organization_id: str, db: Session) -> PMI
     # Get risks
     risks = list_risks(project_id, organization_id, db)
     total_risks = len(risks)
-    critical_risks = sum(1 for r in risks if r.severity == PMIRiskSeverity.critical and r.status == PMIRiskStatus.open)
+    critical_risks = sum(
+        1
+        for r in risks
+        if r.severity == PMIRiskSeverity.critical and r.status == PMIRiskStatus.open
+    )
+    risk_priority = {
+        PMIRiskSeverity.critical: 3,
+        PMIRiskSeverity.high: 2,
+        PMIRiskSeverity.medium: 1,
+        PMIRiskSeverity.low: 0,
+    }
+    top_risks = sorted(
+        risks,
+        key=lambda r: (
+            r.status == PMIRiskStatus.open,
+            risk_priority.get(r.severity, 0),
+        ),
+        reverse=True,
+    )[:5]
 
     # Get Day 1 checklist
     checklist_items = list_day_one_checklist(project_id, organization_id, db)
@@ -666,9 +686,11 @@ def get_pmi_dashboard(project_id: str, organization_id: str, db: Session) -> PMI
         PMIProjectResponse,
         PMIWorkstreamResponse,
         PMIMetricResponse,
+        PMIRiskResponse,
     )
 
     return PMIDashboardResponse(
+        project_id=project.id,
         project=PMIProjectResponse.model_validate(project),
         total_workstreams=total_workstreams,
         completed_workstreams=completed_workstreams,
@@ -683,6 +705,7 @@ def get_pmi_dashboard(project_id: str, organization_id: str, db: Session) -> PMI
         days_remaining=days_remaining,
         recent_metrics=[PMIMetricResponse.model_validate(m) for m in recent_metrics],
         workstreams_summary=[PMIWorkstreamResponse.model_validate(w) for w in workstreams],
+        top_risks=[PMIRiskResponse.model_validate(r) for r in top_risks],
     )
 
 
@@ -857,9 +880,11 @@ def update_workstream_progress_from_tasks(
     )
 
     # Filter tasks by stage_gate matching workstream
+    stage_label = f"PMI: {workstream.workstream_type.value}" if isinstance(workstream.workstream_type, PMIWorkstreamType) else f"PMI: {workstream.workstream_type}"
     workstream_tasks = [
-        t for t in tasks
-        if t.stage_gate and f"PMI: {workstream.workstream_type}" in t.stage_gate
+        t
+        for t in tasks
+        if t.stage_gate and stage_label.lower() in t.stage_gate.lower()
     ]
 
     if not workstream_tasks:

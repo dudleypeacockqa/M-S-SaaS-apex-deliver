@@ -15,18 +15,22 @@ from app.api.dependencies.auth import get_current_master_admin_user
 get_current_user = get_current_master_admin_user
 from app.db.session import get_db
 from app.models.user import User
-from app.models.master_admin import AdminCampaign, CampaignActivity
+from app.models.master_admin import AdminCampaign, CampaignActivity, AdminCampaignRecipient
 from app.models.organization import Organization
 from app.schemas.master_admin import (
     AdminCampaignCreate,
     AdminCampaignUpdate,
     AdminCampaignResponse,
     AdminCampaignListResponse,
+    AdminCampaignRecipientCreate,
+    AdminCampaignRecipientUpdate,
+    AdminCampaignRecipientResponse,
+    AdminCampaignRecipientListResponse,
     CampaignAnalyticsResponse,
     CampaignActivityListResponse,
     ScheduleCampaignRequest,
 )
-from app.services import campaign_service
+from app.services import campaign_service, master_admin_service
 
 router = APIRouter(prefix="/master-admin/campaigns", tags=["campaigns"])
 
@@ -259,6 +263,132 @@ def execute_campaign(
     """
     result = campaign_service.execute_campaign(campaign_id, current_user, db)
     return result
+
+
+def _get_user_campaign_or_404(campaign_id: int, current_user: User, db: Session) -> AdminCampaign:
+    campaign = master_admin_service.get_admin_campaign_by_id(
+        campaign_id,
+        str(current_user.id),
+        db,
+    )
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    return campaign
+
+
+@router.post("/{campaign_id}/send", response_model=AdminCampaignResponse)
+def send_campaign(
+    campaign_id: int,
+    current_user: User = Depends(get_current_master_admin_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Mark a campaign as sent (legacy compatibility endpoint).
+    """
+    campaign = _get_user_campaign_or_404(campaign_id, current_user, db)
+    return master_admin_service.send_admin_campaign(campaign, db)
+
+
+@router.post(
+    "/{campaign_id}/recipients",
+    response_model=AdminCampaignRecipientResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def add_campaign_recipient(
+    campaign_id: int,
+    recipient_data: AdminCampaignRecipientCreate,
+    current_user: User = Depends(get_current_master_admin_user),
+    db: Session = Depends(get_db),
+):
+    """Attach a prospect to the campaign recipient list."""
+    campaign = _get_user_campaign_or_404(campaign_id, current_user, db)
+    try:
+        recipient = master_admin_service.add_admin_campaign_recipient(
+            campaign,
+            prospect_id=recipient_data.prospect_id,
+            db=db,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return recipient
+
+
+@router.get(
+    "/{campaign_id}/recipients",
+    response_model=AdminCampaignRecipientListResponse,
+)
+def list_campaign_recipients(
+    campaign_id: int,
+    current_user: User = Depends(get_current_master_admin_user),
+    db: Session = Depends(get_db),
+):
+    """Return all recipients for a campaign."""
+    _get_user_campaign_or_404(campaign_id, current_user, db)
+    recipients = master_admin_service.list_admin_campaign_recipients(
+        campaign_id=campaign_id,
+        user_id=str(current_user.id),
+        db=db,
+    )
+    return {
+        "items": recipients,
+        "total": len(recipients),
+        "page": 1,
+        "per_page": len(recipients),
+    }
+
+
+@router.delete(
+    "/{campaign_id}/recipients/{recipient_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_campaign_recipient(
+    campaign_id: int,
+    recipient_id: int,
+    current_user: User = Depends(get_current_master_admin_user),
+    db: Session = Depends(get_db),
+):
+    """Remove a recipient from the campaign."""
+    campaign = _get_user_campaign_or_404(campaign_id, current_user, db)
+    recipient = db.scalar(
+        select(AdminCampaignRecipient).where(
+            AdminCampaignRecipient.id == recipient_id,
+            AdminCampaignRecipient.campaign_id == campaign_id,
+        )
+    )
+    if not recipient:
+        raise HTTPException(status_code=404, detail="Recipient not found")
+
+    master_admin_service.delete_admin_campaign_recipient(recipient, campaign, db)
+
+
+@router.put(
+    "/{campaign_id}/recipients/{recipient_id}",
+    response_model=AdminCampaignRecipientResponse,
+)
+def update_campaign_recipient(
+    campaign_id: int,
+    recipient_id: int,
+    recipient_update: AdminCampaignRecipientUpdate,
+    current_user: User = Depends(get_current_master_admin_user),
+    db: Session = Depends(get_db),
+):
+    campaign = _get_user_campaign_or_404(campaign_id, current_user, db)
+    recipient = db.scalar(
+        select(AdminCampaignRecipient).where(
+            AdminCampaignRecipient.id == recipient_id,
+            AdminCampaignRecipient.campaign_id == campaign_id,
+        )
+    )
+    if not recipient:
+        raise HTTPException(status_code=404, detail="Recipient not found")
+
+    updated = master_admin_service.update_admin_campaign_recipient(
+        recipient,
+        recipient_update,
+        campaign,
+        db,
+    )
+    return updated
 
 
 @router.get("/{campaign_id}/analytics", response_model=CampaignAnalyticsResponse)

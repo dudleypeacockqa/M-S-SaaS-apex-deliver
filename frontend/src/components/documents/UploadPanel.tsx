@@ -7,6 +7,7 @@
 import React, { useRef, useState } from 'react'
 import { CheckCircle, XCircle, Loader2, X, UploadCloud } from '@/lib/icons'
 import { formatFileSize, calculateOverallProgress } from '@/utils/fileHelpers'
+import { HelpTooltip } from '../common/HelpTooltip'
 
 export interface UploadQueueItem {
   id: string
@@ -373,6 +374,23 @@ const UploadPanel: React.FC<UploadPanelProps> = ({
           )}
         </div>
       )}
+
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-slate-700">Upload documents</h3>
+        <HelpTooltip
+          label="Upload help"
+          content={
+            <div>
+              <p className="font-semibold text-slate-800">Upload best practices</p>
+              <ul className="mt-1 list-disc pl-4 text-slate-600">
+                <li>Review `docs/bmad/document-workspace-guide.md` before large transfers.</li>
+                <li>Upload sensitive files only into folders with the correct permissions.</li>
+                <li>Export the audit log after each major batch.</li>
+              </ul>
+            </div>
+          }
+        />
+      </div>
 
       <div
         data-testid="upload-dropzone"

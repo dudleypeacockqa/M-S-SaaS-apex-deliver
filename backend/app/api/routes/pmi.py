@@ -51,12 +51,23 @@ router = APIRouter(prefix="/pmi", tags=["pmi"])
 
 async def check_pmi_access(current_user: User) -> None:
     """Check if user has access to PMI module."""
-    # Check if user's organization has PMI subscription
-    has_access = await entitlement_service.check_feature_access(
-        organization_id=current_user.organization_id,
-        feature="pmi_module",
-    )
-    
+    if not current_user.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Organization context is required for PMI access",
+        )
+
+    try:
+        has_access = await entitlement_service.check_feature_access(
+            organization_id=current_user.organization_id,
+            feature="pmi_module",
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="PMI module access requires Professional tier and above",
+        ) from exc
+
     if not has_access:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

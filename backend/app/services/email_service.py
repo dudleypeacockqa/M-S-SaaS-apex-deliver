@@ -116,7 +116,7 @@ async def render_template(*, template_name: str, template_data: Dict[str, Any]) 
     }
 
 
-def queue_email(
+async def queue_email(
     *,
     db: Session,
     to_email: str,

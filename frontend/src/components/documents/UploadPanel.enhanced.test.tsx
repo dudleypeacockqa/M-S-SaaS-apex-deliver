@@ -110,11 +110,26 @@ describe('UploadPanel - Enhanced Features (Sprint 2 Task 1)', () => {
         />
       );
 
-      // Should have cancel button for each file
       const cancelButtons = screen.getAllByRole('button', { name: /cancel/i });
       expect(cancelButtons).toHaveLength(2);
       expect(cancelButtons[0]).toHaveAttribute('aria-label', 'Cancel upload for file1.pdf');
       expect(cancelButtons[1]).toHaveAttribute('aria-label', 'Cancel upload for file2.docx');
+    });
+
+    it('shows upload helper icon for the documentation link', () => {
+      render(
+        <UploadPanel
+          onUpload={vi.fn()}
+          isUploading={true}
+          uploadQueue={[
+            { id: '1', name: 'file1.pdf', progress: 25, status: 'uploading' },
+            { id: '2', name: 'file2.docx', progress: 50, status: 'uploading' }
+          ]}
+          onCancelFile={vi.fn()}
+        />
+      );
+
+      expect(screen.getByRole('button', { name: /upload help/i })).toBeInTheDocument()
     });
 
     it('should call onCancelFile with correct file id when cancel clicked', async () => {

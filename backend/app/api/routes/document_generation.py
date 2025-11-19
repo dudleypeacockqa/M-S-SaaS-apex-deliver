@@ -38,6 +38,7 @@ from app.models.document_generation import (
     DocumentExportJob,
     DocumentExportStatus,
 )
+from app.models.document import DocumentAccessLog
 from app.schemas.document_generation import (
     AISuggestionResponse,
     FetchSuggestionRequest,
@@ -818,6 +819,14 @@ def queue_export_job(
     )
 
     db.add(export_job)
+    audit_entry = DocumentAccessLog(
+        document_id=document_id,
+        organization_id=current_user.organization_id,
+        user_id=current_user.id,
+        action="export",
+        metadata_json={"format": export_job.format},
+    )
+    db.add(audit_entry)
     db.commit()
     db.refresh(export_job)
 

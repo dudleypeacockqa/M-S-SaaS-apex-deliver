@@ -175,10 +175,18 @@ class TestHandleVoiceWebhook:
     
     def test_handle_voice_webhook_call_started(self, db: Session, test_user: User, test_org: Organization):
         """Test handling a webhook when call starts."""
+        prospect = AdminProspect(
+            user_id=str(test_user.id),
+            name="Voice Prospect",
+            phone="+1234567890",
+        )
+        db.add(prospect)
+        db.commit()
+        db.refresh(prospect)
         # Create voice call
         voice_call = VoiceCall(
             organization_id=str(test_org.id),
-            contact_id=1,  # Placeholder
+            contact_id=prospect.id,
             phone_number="+1234567890",
             status="queued",
             synthflow_call_id="call-123",
@@ -204,9 +212,17 @@ class TestHandleVoiceWebhook:
     
     def test_handle_voice_webhook_call_completed(self, db: Session, test_user: User, test_org: Organization):
         """Test handling a webhook when call completes."""
+        prospect = AdminProspect(
+            user_id=str(test_user.id),
+            name="Voice Prospect",
+            phone="+1234567890",
+        )
+        db.add(prospect)
+        db.commit()
+        db.refresh(prospect)
         voice_call = VoiceCall(
             organization_id=str(test_org.id),
-            contact_id=1,
+            contact_id=prospect.id,
             phone_number="+1234567890",
             status="in_progress",
             synthflow_call_id="call-123",
@@ -243,10 +259,18 @@ class TestConversationEngineQualifyLead:
     @patch('app.services.conversation_engine_service.openai_client')
     def test_conversation_engine_qualify_lead(self, mock_openai, db: Session, test_user: User, test_org: Organization):
         """Test qualifying a lead using the conversation engine."""
+        prospect = AdminProspect(
+            user_id=str(test_user.id),
+            name="Voice Prospect",
+            phone="+1234567890",
+        )
+        db.add(prospect)
+        db.commit()
+        db.refresh(prospect)
         # Create voice call and conversation session
         voice_call = VoiceCall(
             organization_id=str(test_org.id),
-            contact_id=1,
+            contact_id=prospect.id,
             phone_number="+1234567890",
             status="completed",
         )

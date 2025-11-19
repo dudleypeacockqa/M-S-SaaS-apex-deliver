@@ -84,7 +84,7 @@ class PMIWorkstreamBase(BaseModel):
 class PMIWorkstreamCreate(PMIWorkstreamBase):
     """Schema for creating a new workstream."""
 
-    project_id: str = Field(..., description="PMI project ID")
+    project_id: Optional[str] = Field(None, description="PMI project ID")
 
 
 class PMIWorkstreamUpdate(BaseModel):
@@ -126,7 +126,7 @@ class PMIMilestoneBase(BaseModel):
 class PMIMilestoneCreate(PMIMilestoneBase):
     """Schema for creating a new milestone."""
 
-    workstream_id: str = Field(..., description="Workstream ID")
+    workstream_id: Optional[str] = Field(None, description="Workstream ID")
 
 
 class PMIMilestoneUpdate(BaseModel):
@@ -170,7 +170,7 @@ class PMISynergyBase(BaseModel):
 class PMISynergyCreate(PMISynergyBase):
     """Schema for creating a new synergy."""
 
-    project_id: str = Field(..., description="PMI project ID")
+    project_id: Optional[str] = Field(None, description="PMI project ID")
 
 
 class PMISynergyUpdate(BaseModel):
@@ -214,7 +214,7 @@ class PMIMetricBase(BaseModel):
 class PMIMetricCreate(PMIMetricBase):
     """Schema for creating a new metric."""
 
-    project_id: str = Field(..., description="PMI project ID")
+    project_id: Optional[str] = Field(None, description="PMI project ID")
 
 
 class PMIMetricResponse(PMIMetricBase):
@@ -243,7 +243,7 @@ class PMIRiskBase(BaseModel):
 class PMIRiskCreate(PMIRiskBase):
     """Schema for creating a new risk."""
 
-    project_id: str = Field(..., description="PMI project ID")
+    project_id: Optional[str] = Field(None, description="PMI project ID")
     workstream_id: Optional[str] = Field(None, description="Associated workstream ID")
 
 
@@ -291,7 +291,7 @@ class PMIDayOneChecklistBase(BaseModel):
 class PMIDayOneChecklistCreate(PMIDayOneChecklistBase):
     """Schema for creating a new Day 1 checklist item."""
 
-    project_id: str = Field(..., description="PMI project ID")
+    project_id: Optional[str] = Field(None, description="PMI project ID")
 
 
 class PMIDayOneChecklistUpdate(BaseModel):
@@ -322,6 +322,7 @@ class PMIDayOneChecklistResponse(PMIDayOneChecklistBase):
 class PMIDashboardResponse(BaseModel):
     """Schema for PMI dashboard aggregated data."""
 
+    project_id: str
     project: PMIProjectResponse
     total_workstreams: int
     completed_workstreams: int
@@ -336,6 +337,7 @@ class PMIDashboardResponse(BaseModel):
     days_remaining: Optional[int]
     recent_metrics: List[PMIMetricResponse]
     workstreams_summary: List[PMIWorkstreamResponse]
+    top_risks: List[PMIRiskResponse] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
 

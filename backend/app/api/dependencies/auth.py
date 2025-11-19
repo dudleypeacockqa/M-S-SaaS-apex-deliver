@@ -116,8 +116,14 @@ def get_current_user(
 
 
 def is_master_admin(user: User) -> bool:
-    """Check if user has master admin role."""
-    return user.role == UserRole.master_admin
+    """Check if user has master admin role (tolerates test doubles without role attr)."""
+    role = getattr(user, "role", None)
+    if isinstance(role, str):
+        try:
+            role = UserRole(role)
+        except ValueError:
+            return False
+    return role == UserRole.master_admin
 
 
 def get_effective_organization_id(

@@ -521,20 +521,23 @@ def solo_user(db_session):
 @pytest.fixture()
 def auth_headers_admin(admin_user):
     """Provide authentication headers for an admin user."""
-    from app.api.dependencies.auth import get_current_user
+    from app.api.dependencies.auth import (
+        get_current_master_admin_user,
+        get_current_user,
+    )
 
-    # Override the dependency to return our test admin user
-    def override_get_current_user():
+    def override_user():
         return admin_user
 
-    app.dependency_overrides[get_current_user] = override_get_current_user
+    app.dependency_overrides[get_current_user] = override_user
+    app.dependency_overrides[get_current_master_admin_user] = override_user
 
-    # Return headers (actual token doesn't matter since we override dependency)
     headers = {"Authorization": "Bearer mock_admin_token"}
-    yield headers
-
-    # Clean up override after test
-    app.dependency_overrides.pop(get_current_user, None)
+    try:
+        yield headers
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+        app.dependency_overrides.pop(get_current_master_admin_user, None)
 
 
 @pytest.fixture()
@@ -834,6 +837,28 @@ def create_deal_for_org(db_session, create_user, create_organization, request):
         return deal, owner_user, org
 
     return _create
+
+
+@pytest.fixture()
+def create_deal(create_deal_for_org, db_session):
+    """
+    Helper fixture returning a callable to create a deal with optional overrides.
+
+    Many legacy tests expect a `create_deal` fixture that accepts keyword overrides
+    like `organization_id`, `owner_id`, or `stage`. This wrapper reuses the richer
+    create_deal_for_org factory and then applies the requested changes.
+    """
+
+    def _create_deal(**overrides):
+        deal, _, _ = create_deal_for_org()
+        if overrides:
+            for field, value in overrides.items():
+                setattr(deal, field, value)
+            db_session.commit()
+            db_session.refresh(deal)
+        return deal
+
+    return _create_deal
 
 
 @pytest.fixture()
