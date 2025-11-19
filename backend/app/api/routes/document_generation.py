@@ -11,6 +11,7 @@ import asyncio
 
 from app.db.session import get_db
 from app.api.dependencies.auth import get_current_user
+from app.api.dependencies.tenant_scope import require_scoped_organization_id
 from app.models.user import User
 from app.models.document_generation import DocumentStatus
 from app.schemas.document_generation import (
@@ -57,6 +58,7 @@ router = APIRouter(prefix="/document-generation", tags=["document-generation"])
 def create_template(
     template_data: DocumentTemplateCreate,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -65,7 +67,7 @@ def create_template(
     Requires authentication and organization membership.
     """
     # Ensure user can only create templates for their organization
-    if template_data.organization_id != current_user.organization_id:
+    if template_data.organization_id != organization_id:
         raise HTTPException(status_code=403, detail="Cannot create template for another organization")
 
     # Override created_by_user_id with current user
@@ -82,6 +84,7 @@ def list_templates(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -93,7 +96,7 @@ def list_templates(
     """
     templates = DocumentGenerationService.list_templates(
         db,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         status=status,
         template_type=template_type,
         skip=skip,
@@ -106,13 +109,14 @@ def list_templates(
 def get_template(
     template_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Get a specific document template by ID"""
     template = DocumentGenerationService.get_template(
         db,
         template_id=template_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not template:
@@ -126,13 +130,14 @@ def update_template(
     template_id: str,
     update_data: DocumentTemplateUpdate,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Update an existing document template"""
     template = DocumentGenerationService.update_template(
         db,
         template_id=template_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         update_data=update_data,
     )
 
@@ -146,13 +151,14 @@ def update_template(
 def delete_template(
     template_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Archive a document template (soft delete)"""
     deleted = DocumentGenerationService.delete_template(
         db,
         template_id=template_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not deleted:
@@ -174,6 +180,7 @@ def generate_document(
     template_id: str,
     render_request: TemplateRenderRequest,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -186,7 +193,7 @@ def generate_document(
         generated = DocumentGenerationService.generate_document(
             db,
             template_id=template_id,
-            organization_id=current_user.organization_id,
+            organization_id=organization_id,
             generated_by_user_id=current_user.id,
             render_request=render_request,
         )
@@ -215,6 +222,7 @@ def list_generated_documents(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -226,7 +234,7 @@ def list_generated_documents(
     """
     documents = DocumentGenerationService.list_generated_documents(
         db,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         template_id=template_id,
         status=status,
         skip=skip,
@@ -239,13 +247,14 @@ def list_generated_documents(
 def get_generated_document(
     document_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Get a specific generated document by ID"""
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not document:
@@ -259,13 +268,14 @@ def update_document_status(
     document_id: str,
     status: str = Query(..., pattern="^(draft|generated|finalized|sent)$"),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Update the status of a generated document"""
     document = DocumentGenerationService.update_generated_document_status(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         new_status=DocumentStatus(status),
     )
 
@@ -280,13 +290,14 @@ def update_document(
     document_id: str,
     update_data: GeneratedDocumentUpdate,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """Update a generated document (content, status, file_path)"""
     document = DocumentGenerationService.update_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         update_data=update_data,
         user_id=current_user.id,
     )
@@ -318,6 +329,7 @@ async def export_document(
     document_id: str,
     export_request: ExportRequest,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -329,7 +341,7 @@ async def export_document(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not document:
@@ -345,7 +357,7 @@ async def export_document(
             try:
                 file_path = await DocumentExportService.export_to_pdf(
                     content=document.generated_content,
-                    organization_id=current_user.organization_id,
+                    organization_id=organization_id,
                     document_id=document_id,
                     options=options,
                 )
@@ -365,7 +377,7 @@ async def export_document(
             try:
                 file_path = await DocumentExportService.export_to_docx(
                     content=document.generated_content,
-                    organization_id=current_user.organization_id,
+                    organization_id=organization_id,
                     document_id=document_id,
                     options=options,
                 )
@@ -384,7 +396,7 @@ async def export_document(
             try:
                 file_path = await DocumentExportService.export_to_html(
                     content=document.generated_content,
-                    organization_id=current_user.organization_id,
+                    organization_id=organization_id,
                     document_id=document_id,
                     options=options,
                 )

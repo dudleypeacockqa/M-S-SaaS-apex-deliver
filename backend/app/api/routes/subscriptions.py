@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Header
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import get_current_user
+from app.api.dependencies.tenant_scope import AccessScope, get_access_scope
 from app.db.session import get_db
 from app.models.organization import Organization
 from app.models.subscription import Invoice, Subscription, SubscriptionTier
@@ -43,13 +43,14 @@ router = APIRouter(prefix="/billing", tags=["billing", "subscriptions"])
 @router.post("/create-checkout-session", response_model=CheckoutSessionResponse)
 def create_checkout_session(
     subscription_data: SubscriptionCreate,
-    current_user: User = Depends(get_current_user),
+    scope: AccessScope = Depends(get_access_scope),
     db: Session = Depends(get_db),
 ):
     """Create a Stripe Checkout Session for subscription purchase."""
+    organization_id = scope.require_organization_id()
     try:
         result = subscription_service.create_checkout_session(
-            organization_id=current_user.organization_id,
+            organization_id=organization_id,
             tier=subscription_data.tier,
             billing_period="monthly",
             success_url=subscription_data.success_url,
@@ -65,13 +66,14 @@ def create_checkout_session(
 
 @router.get("/customer-portal", response_model=CustomerPortalResponse)
 def create_customer_portal_session(
-    current_user: User = Depends(get_current_user),
+    scope: AccessScope = Depends(get_access_scope),
     db: Session = Depends(get_db),
 ):
     """Create a Stripe Billing Portal session so customers can manage payment methods."""
+    organization_id = scope.require_organization_id()
     try:
         session = subscription_service.create_billing_portal_session(
-            organization_id=current_user.organization_id,
+            organization_id=organization_id,
             return_url=f"{os.getenv('FRONTEND_URL', 'http://localhost:5173')}/dashboard/billing",
             db=db,
         )
@@ -84,13 +86,12 @@ def create_customer_portal_session(
 
 @router.get("/me", response_model=SubscriptionResponse)
 def get_my_subscription(
-    current_user: User = Depends(get_current_user),
+    scope: AccessScope = Depends(get_access_scope),
     db: Session = Depends(get_db),
 ):
     """Get current user's subscription details."""
-    subscription = subscription_service.get_organization_subscription(
-        current_user.organization_id, db
-    )
+    organization_id = scope.require_organization_id()
+    subscription = subscription_service.get_organization_subscription(organization_id, db)
     if not subscription:
         raise HTTPException(status_code=404, detail="No subscription found for your organization")
     return SubscriptionResponse.model_validate(subscription)
@@ -98,18 +99,17 @@ def get_my_subscription(
 
 @router.get("/billing-dashboard", response_model=BillingDashboardResponse)
 def get_billing_dashboard(
-    current_user: User = Depends(get_current_user),
+    scope: AccessScope = Depends(get_access_scope),
     db: Session = Depends(get_db),
 ):
     """Get complete billing dashboard data."""
-    subscription = subscription_service.get_organization_subscription(
-        current_user.organization_id, db
-    )
+    organization_id = scope.require_organization_id()
+    subscription = subscription_service.get_organization_subscription(organization_id, db)
     if not subscription:
         raise HTTPException(status_code=404, detail="No subscription found")
     result = db.execute(
         select(func.count(Deal.id)).filter(
-            Deal.organization_id == current_user.organization_id,
+            Deal.organization_id == organization_id,
             Deal.archived_at.is_(None),
         )
     )
@@ -117,7 +117,7 @@ def get_billing_dashboard(
 
     result = db.execute(
         select(func.count(User.id)).filter(
-            User.organization_id == current_user.organization_id,
+            User.organization_id == organization_id,
             User.deleted_at.is_(None),
         )
     )
@@ -125,7 +125,7 @@ def get_billing_dashboard(
 
     result = db.execute(
         select(func.count(Document.id)).filter(
-            Document.organization_id == current_user.organization_id,
+            Document.organization_id == organization_id,
             Document.archived_at.is_(None),
         )
     )
@@ -133,7 +133,7 @@ def get_billing_dashboard(
 
     storage_bytes_result = db.execute(
         select(func.coalesce(func.sum(Document.file_size), 0)).filter(
-            Document.organization_id == current_user.organization_id,
+            Document.organization_id == organization_id,
             Document.archived_at.is_(None),
         )
     )
@@ -177,13 +177,14 @@ def get_billing_dashboard(
 @router.put("/change-tier", response_model=SubscriptionResponse)
 def change_subscription_tier(
     tier_update: SubscriptionUpdate,
-    current_user: User = Depends(get_current_user),
+    scope: AccessScope = Depends(get_access_scope),
     db: Session = Depends(get_db),
 ):
     """Change subscription tier (upgrade or downgrade)."""
+    organization_id = scope.require_organization_id()
     try:
         updated_subscription = subscription_service.update_subscription_tier(
-            organization_id=current_user.organization_id,
+            organization_id=organization_id,
             new_tier=tier_update.new_tier,
             prorate=tier_update.prorate,
             db=db,
@@ -198,13 +199,14 @@ def change_subscription_tier(
 @router.post("/cancel", response_model=SubscriptionResponse)
 def cancel_my_subscription(
     cancel_request: CancelSubscriptionRequest,
-    current_user: User = Depends(get_current_user),
+    scope: AccessScope = Depends(get_access_scope),
     db: Session = Depends(get_db),
 ):
     """Cancel the current subscription."""
+    organization_id = scope.require_organization_id()
     try:
         canceled_subscription = subscription_service.cancel_subscription(
-            organization_id=current_user.organization_id,
+            organization_id=organization_id,
             immediately=cancel_request.immediately,
             db=db,
         )

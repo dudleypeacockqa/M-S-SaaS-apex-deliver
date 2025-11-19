@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable, Any
+from typing import Callable, Any, TYPE_CHECKING
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -18,6 +18,9 @@ from app.services.entitlement_service import (
     get_feature_upgrade_message,
 )
 from app.services.rbac_audit_service import log_claim_mismatch
+
+if TYPE_CHECKING:  # pragma: no cover
+    from app.api.dependencies.tenant_scope import AccessScope
 
 logger = logging.getLogger(__name__)
 
@@ -115,6 +118,18 @@ def get_current_user(
 def is_master_admin(user: User) -> bool:
     """Check if user has master admin role."""
     return user.role == UserRole.master_admin
+
+
+def get_effective_organization_id(
+    user: User,
+    scope: "AccessScope | None" = None,
+) -> str | None:
+    """
+    Return the organization id to use for access control, honoring scope overrides.
+    """
+    if scope:
+        return scope.organization_id
+    return user.organization_id
 
 
 def get_current_admin_user(

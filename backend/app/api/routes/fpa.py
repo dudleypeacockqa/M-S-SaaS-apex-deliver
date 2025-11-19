@@ -266,6 +266,32 @@ async def apply_scenario(
     }
 
 
+@router.post("/scenarios/calculate", response_model=ScenarioCalculationResponse)
+async def calculate_scenario_impact_alias(
+    request: ScenarioCalculationRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return await calculate_scenario_impact(request, current_user, db)
+
+
+@router.get("/scenarios/presets", response_model=List[PredefinedScenario])
+async def get_predefined_scenarios_alias(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return await get_predefined_scenarios(current_user, db)
+
+
+@router.post("/scenarios/apply")
+async def apply_scenario_alias(
+    request: ApplyScenarioRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return await apply_scenario(request, current_user, db)
+
+
 @router.get("/reports/{report_type}", response_model=FpaReportResponse)
 async def generate_report(
     report_type: str,
