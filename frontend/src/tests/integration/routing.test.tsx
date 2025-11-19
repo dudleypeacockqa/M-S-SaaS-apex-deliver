@@ -11,21 +11,40 @@ vi.mock("@clerk/clerk-react", async () => {
   return createClerkMock()
 })
 // Blog admin API mocks (prevent real network calls while routing tests load editor)
-type BlogServiceMock = {
-  createBlogPost: ReturnType<typeof vi.fn>
-  updateBlogPost: ReturnType<typeof vi.fn>
-  publishBlogPost: ReturnType<typeof vi.fn>
-  getBlogPost: ReturnType<typeof vi.fn>
-}
-
-const mockBlogService: BlogServiceMock = {
+const mockBlogService = {
   createBlogPost: vi.fn(),
   updateBlogPost: vi.fn(),
   publishBlogPost: vi.fn(),
   getBlogPost: vi.fn(),
 }
 
-vi.mock('@/services/blogService', () => mockBlogService)
+const buildMockBlogPost = (overrides: Partial<import('@/services/blogService').BlogPost> = {}) => ({
+  id: 'blog-post-1',
+  title: 'Existing Test Post',
+  slug: 'existing-test-post',
+  excerpt: 'Existing excerpt',
+  content: 'Existing content',
+  author: 'Editor',
+  category: 'Insights',
+  read_time_minutes: 8,
+  published_at: '2025-11-17T12:00:00Z',
+  featured_image_url: null,
+  primary_keyword: 'Existing',
+  secondary_keywords: ['seo', 'bmad'],
+  meta_description: 'Existing meta description',
+  published: false,
+  created_at: '2025-11-17T12:00:00Z',
+  updated_at: '2025-11-17T12:00:00Z',
+  ...overrides,
+})
+
+vi.mock('@/services/blogService', async () => {
+  const actual = await vi.importActual<typeof import('@/services/blogService')>('@/services/blogService')
+  return {
+    ...actual,
+    ...mockBlogService,
+  }
+})
 
 
 describe("Integration: routing", () => {
@@ -43,18 +62,7 @@ describe("Integration: routing", () => {
     mockBlogService.createBlogPost.mockResolvedValue({ id: 'blog-post-1' })
     mockBlogService.updateBlogPost.mockResolvedValue({ id: 'blog-post-1' })
     mockBlogService.publishBlogPost.mockResolvedValue({ id: 'blog-post-1' })
-    mockBlogService.getBlogPost.mockResolvedValue({
-      id: 'blog-post-1',
-      title: 'Existing Test Post',
-      content: 'Existing content',
-      excerpt: 'Existing excerpt',
-      author: 'Editor',
-      tags: 'seo, bmad',
-      slug: 'existing-test-post',
-      metaDescription: 'Existing meta description',
-      status: 'draft',
-      publishedAt: '2025-11-17T12:00:00Z',
-    })
+    mockBlogService.getBlogPost.mockResolvedValue(buildMockBlogPost())
   })
 
   it("renders the landing page for visitors", async () => {
@@ -134,18 +142,19 @@ describe("Integration: routing", () => {
       user: { firstName: 'Taylor', id: 'user-1', publicMetadata: { role: 'admin' } },
       organization: { name: 'Test Org', id: 'org-1' },
     })
-    mockBlogService.getBlogPost.mockResolvedValueOnce({
-      id: 'existing-post',
-      title: 'Existing Title',
-      content: 'Existing content block',
-      excerpt: 'Existing excerpt',
-      author: 'Editor',
-      tags: 'existing',
-      slug: 'existing-title',
-      metaDescription: 'Existing meta',
-      status: 'draft',
-      publishedAt: '2025-11-17T12:00:00Z',
-    })
+    mockBlogService.getBlogPost.mockResolvedValueOnce(
+      buildMockBlogPost({
+        id: 'existing-post',
+        title: 'Existing Title',
+        slug: 'existing-title',
+        content: 'Existing content block',
+        excerpt: 'Existing excerpt',
+        secondary_keywords: ['existing'],
+        meta_description: 'Existing meta',
+        published_at: '2025-11-17T12:00:00Z',
+        updated_at: '2025-11-18T12:00:00Z',
+      }),
+    )
     window.history.replaceState({}, 'Test', '/admin/blog/existing-post/edit')
 
     render(<App />)

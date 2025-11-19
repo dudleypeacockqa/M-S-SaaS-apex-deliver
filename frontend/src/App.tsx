@@ -4,6 +4,7 @@ import { RootLayout } from "./layouts/RootLayout"
 import { ProtectedLayout } from "./layouts/ProtectedLayout"
 import { SignedIn, SignedOut } from "@clerk/clerk-react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { ProtectedRoute } from "./components/auth/ProtectedRoute"
 
 // CACHE BUST: Force fresh Render build - 2025-11-17T16:10Z
 import { ErrorBoundary } from "./components/common"
@@ -121,8 +122,7 @@ const AdminPanel = lazyNamed(() => import("./modules/fpa/pages/AdminPanel"), "Ad
 const PMIProjectList = lazyNamed(() => import("./modules/pmi/pages/PMIProjectList"), "PMIProjectList")
 const PMIProjectDetail = lazyNamed(() => import("./modules/pmi/pages/PMIProjectDetail"), "PMIProjectDetail")
 const PMIProjectCreate = lazyNamed(() => import("./modules/pmi/pages/PMIProjectCreate"), "PMIProjectCreate")
-// Temporarily disabled - missing blogService functions (createBlogPost, updateBlogPost, publishBlogPost, getBlogPost)
-// const BlogAdminEditor = lazyNamed(() => import("./pages/admin/BlogAdminEditor"), "BlogAdminEditor")
+const BlogAdminEditor = lazyDefault(() => import("./pages/admin/BlogAdminEditor"))
 
 // Feature flag check for Master Admin Portal (enabled by default unless explicitly disabled)
 const isMasterAdminEnabled = import.meta.env.VITE_ENABLE_MASTER_ADMIN !== 'false'
@@ -230,8 +230,26 @@ export const AppRoutes = () => {
         <Route path="admin/users" element={<UserManagement />} />
         <Route path="admin/organizations" element={<OrganizationManagement />} />
         <Route path="admin/system" element={<SystemHealth />} />
-        <Route path="admin/blog/new" element={<BlogAdminEditor />} />
-        <Route path="admin/blog/:id/edit" element={<BlogAdminEditor />} />
+        <Route
+          path="admin/blog/new"
+          element={(
+            <ProtectedRoute requiredRole={['admin', 'master_admin']}>
+              <Suspense fallback={<RouteLoader />}>
+                <BlogAdminEditor />
+              </Suspense>
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="admin/blog/:id/edit"
+          element={(
+            <ProtectedRoute requiredRole={['admin', 'master_admin']}>
+              <Suspense fallback={<RouteLoader />}>
+                <BlogAdminEditor />
+              </Suspense>
+            </ProtectedRoute>
+          )}
+        />
 
         {/* Master Admin Portal Routes (Feature-Flagged) */}
         <Route path="master-admin" element={<MasterAdminRoute><MasterAdminDashboard /></MasterAdminRoute>} />

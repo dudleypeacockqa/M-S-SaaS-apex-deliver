@@ -19,6 +19,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user
+from app.core.ownership import require_document_access
 try:
     from app.api.dependencies.tenant_scope import require_scoped_organization_id as _tenant_scope_org_dependency
 except ImportError:  # pragma: no cover - dependency optional in some runtimes
@@ -415,16 +416,13 @@ def get_document(
 
     Logs access for audit trail.
     """
-    document = document_service.get_document_by_id(
-        db=db,
+    document = require_document_access(
         document_id=document_id,
+        deal_id=deal_id,
         organization_id=organization_id,
+        current_user=current_user,
+        db=db,
     )
-    if not document:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Document not found"
-        )
 
     document_service.ensure_document_permission(
         db=db,
@@ -460,16 +458,13 @@ def update_document(
 
     Currently supports moving documents between folders.
     """
-    document = document_service.get_document_by_id(
+    document = require_document_access(
         document_id=document_id,
+        deal_id=deal_id,
         organization_id=organization_id,
-        db=db
+        current_user=current_user,
+        db=db,
     )
-    if not document:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Document not found"
-        )
 
     document_service.ensure_document_permission(
         db=db,
@@ -501,16 +496,13 @@ def delete_document(
 
     Document can be restored later. Use permanent delete for hard deletion.
     """
-    document = document_service.get_document_by_id(
+    document = require_document_access(
         document_id=document_id,
+        deal_id=deal_id,
         organization_id=organization_id,
-        db=db
+        current_user=current_user,
+        db=db,
     )
-    if not document:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Document not found"
-        )
 
     document_service.ensure_document_permission(
         db=db,
@@ -541,16 +533,13 @@ async def download_document(
 
     Logs download access for audit trail.
     """
-    document = document_service.get_document_by_id(
-        db=db,
+    document = require_document_access(
         document_id=document_id,
+        deal_id=deal_id,
         organization_id=organization_id,
+        current_user=current_user,
+        db=db,
     )
-    if not document:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Document not found"
-        )
 
     document_service.ensure_document_permission(
         db=db,
@@ -598,16 +587,13 @@ def archive_document_endpoint(
     db: Session = Depends(get_db),
 ):
     """Archive a document (soft delete)."""
-    document = document_service.get_document_by_id(
-        db=db,
+    document = require_document_access(
         document_id=document_id,
+        deal_id=deal_id,
         organization_id=organization_id,
+        current_user=current_user,
+        db=db,
     )
-    if not document:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Document not found"
-        )
 
     document_service.ensure_document_permission(
         db=db,
@@ -673,17 +659,14 @@ def grant_permission(
 
     Permission levels: viewer, editor, owner
     """
-    # Verify document exists
-    document = document_service.get_document_by_id(
-        db=db,
+    # Verify document exists and belongs to the scoped deal
+    document = require_document_access(
         document_id=document_id,
+        deal_id=deal_id,
         organization_id=organization_id,
+        current_user=current_user,
+        db=db,
     )
-    if not document:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Document not found"
-        )
 
     document_service.ensure_document_permission(
         db=db,
@@ -714,13 +697,13 @@ def list_permissions(
 
     Shows who has access and their permission level.
     """
-    document = document_service.get_document_by_id(
-        db=db,
+    document = require_document_access(
         document_id=document_id,
+        deal_id=deal_id,
         organization_id=organization_id,
+        current_user=current_user,
+        db=db,
     )
-    if not document:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
 
     document_service.ensure_document_permission(
         db=db,
@@ -746,6 +729,13 @@ def revoke_document_permission(
     organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
+    document = require_document_access(
+        document_id=document_id,
+        deal_id=deal_id,
+        organization_id=organization_id,
+        current_user=current_user,
+        db=db,
+    )
     document_service.revoke_document_permission(
         db=db,
         document_id=document_id,
@@ -772,13 +762,13 @@ def create_access_log_entry(
     db: Session = Depends(get_db),
 ):
     """Create a manual document audit log entry."""
-    document = document_service.get_document_by_id(
-        db=db,
+    document = require_document_access(
         document_id=document_id,
+        deal_id=deal_id,
         organization_id=organization_id,
+        current_user=current_user,
+        db=db,
     )
-    if not document or document.deal_id != deal_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
 
     document_service.ensure_document_permission(
         db=db,
@@ -815,13 +805,13 @@ def get_access_logs(
 
     Returns recent access history including views, downloads, and modifications.
     """
-    document = document_service.get_document_by_id(
-        db=db,
+    document = require_document_access(
         document_id=document_id,
+        deal_id=deal_id,
         organization_id=organization_id,
+        current_user=current_user,
+        db=db,
     )
-    if not document:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
 
     document_service.ensure_document_permission(
         db=db,
@@ -852,6 +842,13 @@ def get_document_versions(
 
     Returns all versions in chronological order (oldest to newest).
     """
+    require_document_access(
+        document_id=document_id,
+        deal_id=deal_id,
+        organization_id=organization_id,
+        current_user=current_user,
+        db=db,
+    )
     versions = document_service.get_document_versions(
         db=db,
         document_id=document_id,
@@ -874,6 +871,13 @@ async def restore_document_version(
 
     Creates a new version with the content of the specified version.
     """
+    require_document_access(
+        document_id=document_id,
+        deal_id=deal_id,
+        organization_id=organization_id,
+        current_user=current_user,
+        db=db,
+    )
     restored_doc = await document_service.restore_document_version(
         db=db,
         document_id=document_id,
@@ -985,6 +989,13 @@ def create_document_question_endpoint(
     db: Session = Depends(get_db),
 ):
     """Capture a new question associated with a specific document."""
+    require_document_access(
+        document_id=document_id,
+        deal_id=deal_id,
+        organization_id=organization_id,
+        current_user=current_user,
+        db=db,
+    )
     question = document_service.create_document_question(
         db=db,
         document_id=document_id,
@@ -1007,6 +1018,13 @@ def list_document_questions_endpoint(
     db: Session = Depends(get_db),
 ):
     """List all questions for a document (oldest first)."""
+    require_document_access(
+        document_id=document_id,
+        deal_id=deal_id,
+        organization_id=organization_id,
+        current_user=current_user,
+        db=db,
+    )
     return document_service.list_document_questions(
         db=db,
         document_id=document_id,

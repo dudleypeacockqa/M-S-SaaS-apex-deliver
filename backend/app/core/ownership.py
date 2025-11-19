@@ -7,9 +7,11 @@ from sqlalchemy.orm import Session
 from app.api.dependencies.auth import get_current_user
 from app.db.session import get_db
 from app.models.deal import Deal
+from app.models.document import Document
 from app.models.pipeline_template import PipelineTemplate
 from app.models.user import User
-from app.services import pipeline_template_service
+from app.schemas.document import PermissionLevel
+from app.services import document_service, pipeline_template_service
 
 
 def require_deal_access(
@@ -41,4 +43,39 @@ def require_template_access(
     return template
 
 
-__all__ = ["require_deal_access", "require_template_access"]
+def require_document_access(
+    *,
+    document_id: str,
+    deal_id: str,
+    organization_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> Document:
+    """Ensure the current user can access a specific document within a deal."""
+
+    document = (
+        db.query(Document)
+        .filter(
+            Document.id == document_id,
+            Document.organization_id == organization_id,
+            Document.deal_id == deal_id,
+        )
+        .one_or_none()
+    )
+    if document is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document not found",
+        )
+
+    document_service.ensure_document_permission(
+        db=db,
+        document=document,
+        user=current_user,
+        minimum_level=PermissionLevel.VIEWER,
+        allow_editor_for_own=True,
+    )
+    return document
+
+
+__all__ = ["require_deal_access", "require_template_access", "require_document_access"]

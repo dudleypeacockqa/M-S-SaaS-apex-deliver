@@ -45,3 +45,9 @@ eact-snap automatically whenever test routes are on.
 - **Analyze**: Determined that all merge blockers map to four domains (RBAC audit logging, subscription/billing APIs, marketing parity, automation scripts). Suites haven’t run since 19 Nov morning, so we will author new failing pytest/Vitest/Playwright specs per domain before touching implementations.
 - **Decide**: Update bmm-workflow-status with the branch audit summary and redirect NEXT_ACTION to the TDD diff cycle (test-first, then fixes) so we can proceed to Wave 1 execution and merge into main.
 
+## 2025-11-19 - Backend Pytest Rerun + Frontend Failure Logging
+- **Build**: Re-ran the full backend suite via `venv/Scripts/python.exe -m pytest --maxfail=1 --disable-warnings`, capturing the output to `docs/tests/2025-11-19-backend-pytest.txt`. Attempted `npm run test -- --run --coverage` and `node scripts/run-marketing-playwright.mjs` to refresh frontend/marketing evidence; both remain RED (Vitest failures in ContactPage/BookTrial/Pricing/ProtectedRoute/FPA modules plus Playwright build aborts).
+- **Measure**: Updated `README.md`, `TODO.md`, `docs/bmad/100-PERCENT-COMPLETION-STATUS.md`, and `docs/bmad/bmm-workflow-status.md` to reference the Nov-19 backend log and explicitly document the RED Vitest/Playwright suites. Logged the failing console output to `docs/tests/2025-11-19-frontend-vitest.txt` and the Playwright build error to `docs/tests/2025-11-19-playwright.txt`.
+- **Analyze**: Backend remains stable (1,708 PASS / 62 SKIP). Frontend/marketing blockers cluster around marketing pages (forms, metadata, routing) and optional chaining/polyfill gaps. Governance artefacts now reflect the RED status so no document claims 100% without evidence.
+- **Decide**: Advance to Wave 1 tasks (BlogAdminEditor verification + QA prep) only after triaging the RED Vitest suites; keep `docs/tests/` updated with every run so Decide gates have auditable artifacts.
+

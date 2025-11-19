@@ -96,8 +96,8 @@ To elevate the platform’s access controls to an enterprise-ready posture, exec
 3. **Cross-service RBAC middleware**
    - ✅ Introduce a centralized permission registry (`app/core/permissions.py`) plus `require_permission(...)` dependency; billing endpoints now consume `Permission.BILLING_VIEW` / `Permission.BILLING_MANAGE`.
    - ✅ Permission denials now emit RBAC audit entries (`permission_denied`) so SOC teams can trace unauthorized attempts.
-   - ✅ Added `require_deal_access` (valuations) and `require_template_access` (pipeline templates) so routes share consistent ownership guards and tests enforce multi-tenant isolation.
-   - Provide additional decorators for documents, tasks, and collaboration features, gradually expanding the registry to those modules.
+   - ✅ Added `require_deal_access` (valuations), `require_template_access` (pipeline templates), and `require_document_access` (data room documents) so routes share consistent ownership guards and tests enforce multi-tenant isolation.
+   - Provide additional decorators for documents’ ancillary endpoints, tasks, and collaboration features, gradually expanding the registry to those modules.
 4. **Tenant scoping upgrades**
    - ✅ Log every impersonation header usage in `rbac_audit_logs` (actions `impersonation`, `permission_denied`) so SOC operations can trace cross-tenant access and blocked attempts; automated pytest coverage ensures non-master attempts create denial entries.
    - Require explicit tenant headers for master admin impersonation and build throttling/alerting for suspicious usage.
@@ -145,3 +145,24 @@ To elevate the platform’s access controls to an enterprise-ready posture, exec
    - Update developer guides, runbooks, and onboarding materials so every engineer understands the policy engine and how to request new permissions.
 
 Executing this plan will align backend, frontend, and operational processes with enterprise expectations, providing clear traceability, least-privilege enforcement, and rapid incident response capabilities ahead of the next release phase.
+
+## Document Ownership Hardening Status
+- **Helper coverage expanded**: `require_document_access` now fronts every document route that operates on a document identifier (metadata, updates, deletes, permissions, access logs, versions, questions). The helper enforces both tenant/ deal scoping and baseline viewer permissions before service logic executes. [`backend/app/api/routes/documents.py`](../backend/app/api/routes/documents.py)
+- **Regression safety nets**: Added deal-mismatch regression tests so any endpoint that attempts to operate on a document under the wrong `deal_id` now returns a hardened 404. [`backend/tests/test_documents_api_errors.py`](../backend/tests/test_documents_api_errors.py)
+- **Gap visibility**: Tests explicitly cover read, mutation, and audit endpoints. Remaining bulk/AI surfaces (AI suggestions, bulk download/delete, access exports) are earmarked for the next TDD slice so helper enforcement can be parameterized without breaking partial-success semantics.
+
+## Next Execution Plan (BMAD-aligned)
+1. **Finalize document helper parameterization**
+   - Allow `require_document_access` to accept a `minimum_level` override so bulk operations can assert deal ownership without enforcing view permissions that intentionally allow partial success.
+   - Thread the helper through AI suggestion routes once minimum-level overrides exist.
+2. **Bulk operation hardening**
+   - Pre-validate document ids for `/documents/bulk-download` and `/documents/bulk-delete` against the scoped `deal_id` (skip-only behavior preserved via per-id helper calls with `minimum_level=None`).
+   - Add pytest coverage ensuring bulk endpoints return 404 when any id references another deal, plus 403 when scoped user lacks owner permission across the entire batch.
+3. **Admin vs master admin separation**
+   - Update navigation guards so tenant admins never see master-admin menus/components (`frontend/src/components/navigation/*`), and double-enforce on the backend via `require_role(UserRole.master_admin)` for `/master-admin` routers.
+   - Extend BMAD runbooks to clarify that admins receive only tenant-level tooling; master admins remain platform-only with impersonation mediated through `require_scoped_organization_id`.
+4. **Operational telemetry**
+   - Instrument RBAC audit logs and dashboards to emit dedicated signals whenever helper-based 404s are triggered (helps detect probing attempts across deals within the same tenant).
+   - Feed those metrics into the SOC 2 evidence binder referenced in Phase 4.
+
+This execution plan keeps BMAD and TDD practices front-and-center: every enforcement change will start with failing tests in `backend/tests/test_documents_api_errors.py` (and new suites for AI/bulk flows) before tightening the service layer, while documentation changes maintain a single-source record for entitlement decisions.

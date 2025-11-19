@@ -47,14 +47,14 @@ describe('ProtectedRoute', () => {
     mockUserState.user = null
   })
 
-  it('redirects unauthenticated users to the landing page', () => {
+  it('redirects unauthenticated users to the sign-in page', () => {
     renderRoute(
       <ProtectedRoute>
         <ProtectedContent />
       </ProtectedRoute>,
     )
 
-    expect(screen.getByTestId('landing-page')).toBeInTheDocument()
+    expect(screen.getByTestId('sign-in-page')).toBeInTheDocument()
     expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument()
   })
 

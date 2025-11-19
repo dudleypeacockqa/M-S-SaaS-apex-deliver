@@ -3,10 +3,19 @@ import './test/shims/polyfills'
 import { beforeAll, afterAll, beforeEach, vi, expect} from 'vitest'
 import { render } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import React, { ReactElement } from 'react'
+import React, { ReactElement, Fragment } from 'react'
 import { installClerkMock } from './test/shims/clerk'
 import { setupServer } from 'msw/node'
 import { mswHandlers, resetDocumentRoomFixtures, resetPodcastFixtures } from './tests/msw/server'
+
+vi.mock('react-helmet-async', () => {
+  const Helmet = ({ children = null }: { children?: React.ReactNode }) => React.createElement(Fragment, null, children)
+  const HelmetProvider = ({ children = null }: { children?: React.ReactNode }) => React.createElement(Fragment, null, children)
+  return {
+    Helmet,
+    HelmetProvider,
+  }
+})
 
 const server = setupServer(...mswHandlers)
 
