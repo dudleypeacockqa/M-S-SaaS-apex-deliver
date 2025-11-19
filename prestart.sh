@@ -160,7 +160,7 @@ cd backend
 
 # Check if alembic is installed
 if ! command -v alembic &> /dev/null; then
-    echo "❌ ERROR: Alembic not found in PATH"
+    echo "? ERROR: Alembic not found in PATH"
     echo "Installing alembic..."
     pip install alembic
 fi
@@ -179,7 +179,7 @@ alembic heads
 # MIGRATION RECOVERY: Handle partially-applied 89a67cacf69a migration
 # ==============================================================================
 echo ""
-echo "🔍 Checking for partial migration state..."
+echo "?? Checking for partial migration state..."
 python3 <<'PY'
 import os
 import sys
@@ -187,7 +187,7 @@ from sqlalchemy import create_engine, text
 
 db_url = os.environ.get("DATABASE_URL")
 if not db_url:
-    print("⚠️  DATABASE_URL not set - skipping recovery check")
+    print("??  DATABASE_URL not set - skipping recovery check")
     sys.exit(0)
 
 try:
@@ -200,7 +200,7 @@ try:
         table_exists = result.scalar()
 
         if not table_exists:
-            print("✅ Table valuation_export_logs doesn't exist yet - no recovery needed")
+            print("? Table valuation_export_logs doesn't exist yet - no recovery needed")
             sys.exit(0)
 
         # Check if task_id column exists (indicator that migration was partially applied)
@@ -217,24 +217,24 @@ try:
             migration_recorded = result.scalar()
 
             if not migration_recorded:
-                print("⚠️  PARTIAL MIGRATION DETECTED!")
+                print("??  PARTIAL MIGRATION DETECTED!")
                 print("   - valuation_export_logs.task_id column exists")
                 print("   - But migration 89a67cacf69a not recorded in alembic_version")
                 print("")
-                print("🔧 Applying recovery: Marking migration as complete...")
+                print("?? Applying recovery: Marking migration as complete...")
 
                 conn.execute(text("INSERT INTO alembic_version (version_num) VALUES ('89a67cacf69a')"))
                 conn.commit()
 
-                print("✅ Recovery complete: Migration 89a67cacf69a marked as applied")
+                print("? Recovery complete: Migration 89a67cacf69a marked as applied")
                 print("   Next: Alembic will skip 89a67cacf69a and apply 86d427f030f2")
             else:
-                print("✅ Migration 89a67cacf69a already recorded - no recovery needed")
+                print("? Migration 89a67cacf69a already recorded - no recovery needed")
         else:
-            print("✅ No partial migration detected - proceeding normally")
+            print("? No partial migration detected - proceeding normally")
 
 except Exception as e:
-    print(f"⚠️  Recovery check failed: {e}")
+    print(f"??  Recovery check failed: {e}")
     print("   Proceeding with normal migration (may fail if state is inconsistent)")
 PY
 
@@ -246,7 +246,7 @@ echo ""
 echo "Applying database migrations..."
 if run_with_retry alembic_upgrade; then
     echo ""
-    echo "✅ SUCCESS: All migrations applied"
+    echo "? SUCCESS: All migrations applied"
     echo ""
     echo "Final migration status:"
     alembic current
@@ -261,7 +261,7 @@ from sqlalchemy import create_engine, text
 
 db_url = os.environ.get("DATABASE_URL")
 if not db_url:
-    print("⚠️  DATABASE_URL not set - skipping table verification")
+    print("??  DATABASE_URL not set - skipping table verification")
     sys.exit(0)
 
 try:
@@ -274,9 +274,9 @@ try:
         blog_table_exists = result.scalar()
         
         if blog_table_exists:
-            print("✅ blog_posts table exists")
+            print("? blog_posts table exists")
         else:
-            print("⚠️  WARNING: blog_posts table does not exist!")
+            print("??  WARNING: blog_posts table does not exist!")
             print("   This may cause blog API endpoints to return 500 errors.")
             print("   Migration 9913803fac51 should create this table.")
             print("   Check migration status with: alembic current")
@@ -289,11 +289,11 @@ try:
             ))
             exists = result.scalar()
             if exists:
-                print(f"✅ {table} table exists")
+                print(f"? {table} table exists")
             else:
-                print(f"⚠️  WARNING: {table} table does not exist!")
+                print(f"??  WARNING: {table} table does not exist!")
 except Exception as e:
-    print(f"⚠️  Table verification failed: {e}")
+    print(f"??  Table verification failed: {e}")
     print("   Proceeding anyway - application may have issues")
 PY
     
@@ -303,7 +303,8 @@ PY
     echo "========================================="
 else
     echo ""
-    echo "❌ ERROR: Migration failed"
+    echo "? ERROR: Migration failed"
     echo "========================================="
     exit 1
 fi
+

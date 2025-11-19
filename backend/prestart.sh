@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # Render prestart script - runs before starting the FastAPI application
 # This script applies Alembic database migrations before app starts
 
@@ -23,10 +23,11 @@ else
     echo ""
     echo "Applying migrations..."
     alembic upgrade head
-    echo "✅ Migrations applied successfully"
+    echo "? Migrations applied successfully"
     echo ""
     echo "Final Alembic revision:"
     alembic current
 fi
 
 echo "Prestart script completed!"
+
