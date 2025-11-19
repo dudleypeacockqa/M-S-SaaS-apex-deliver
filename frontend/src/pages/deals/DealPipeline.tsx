@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, AlertCircle } from 'lucide-react'
+import { Plus, AlertCircle, Info } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { DealKanbanBoard } from '../../modules/deals/components/DealKanbanBoard'
@@ -29,7 +29,7 @@ export const DealPipeline: React.FC = () => {
       updateDealStage(dealId, newStage),
     onMutate: async ({ dealId, newStage }) => {
       await queryClient.cancelQueries({ queryKey: ['deals'] })
-      const previousDeals = queryClient.getQueryData(['deals'])
+      const previousDeals = queryClient.getQueryData<{ items: Deal[] }>(['deals'])
 
       queryClient.setQueryData(['deals'], (old: { items: Deal[] } | undefined) => {
         if (!old) return old
@@ -90,7 +90,7 @@ export const DealPipeline: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
-            {/* Filters could go here */}
+          {/* Filters could go here */}
           <button
             onClick={() => navigate('/deals/new')}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm"
@@ -100,6 +100,20 @@ export const DealPipeline: React.FC = () => {
           </button>
         </div>
       </header>
+
+      {error && (
+        <div className="mb-4 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <Info className="h-4 w-4" />
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            className="ml-auto text-xs font-semibold underline decoration-dotted hover:text-amber-900"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Kanban Board Container */}
       <div className="flex-1 min-h-0 bg-white rounded-xl border border-slate-200 shadow-sm p-4 overflow-hidden">

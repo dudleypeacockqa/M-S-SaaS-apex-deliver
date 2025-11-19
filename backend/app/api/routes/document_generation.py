@@ -665,6 +665,7 @@ def reject_ai_suggestion(
 def list_document_versions(
     document_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -676,7 +677,7 @@ def list_document_versions(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not document:
@@ -688,7 +689,7 @@ def list_document_versions(
         select(DocumentVersion)
         .where(
             DocumentVersion.document_id == document_id,
-            DocumentVersion.organization_id == current_user.organization_id,
+            DocumentVersion.organization_id == organization_id,
         )
         .order_by(desc(DocumentVersion.version_number))
     ).all()
@@ -721,6 +722,7 @@ def restore_document_version(
     document_id: str,
     version_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -732,7 +734,7 @@ def restore_document_version(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not document:
@@ -744,7 +746,7 @@ def restore_document_version(
         select(DocumentVersion).where(
             DocumentVersion.id == version_id,
             DocumentVersion.document_id == document_id,
-            DocumentVersion.organization_id == current_user.organization_id,
+            DocumentVersion.organization_id == organization_id,
         )
     )
 
@@ -768,7 +770,7 @@ def restore_document_version(
         content=version.content,
         label=f"Restored from v{version.version_number}",
         summary=f"Restored from version {version.version_number}",
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         created_by_user_id=current_user.id,
     )
     db.add(new_version)
@@ -793,6 +795,7 @@ def queue_export_job(
     document_id: str,
     export_request: ExportJobCreate,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -805,7 +808,7 @@ def queue_export_job(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not document:
@@ -814,7 +817,7 @@ def queue_export_job(
     # Create export job
     export_job = DocumentExportJob(
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         requested_by_user_id=current_user.id,
         format=export_request.format,
         options=export_request.options or {},
@@ -847,6 +850,7 @@ def get_export_job_status(
     document_id: str,
     job_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -858,7 +862,7 @@ def get_export_job_status(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not document:
@@ -870,7 +874,7 @@ def get_export_job_status(
         select(DocumentExportJob).where(
             DocumentExportJob.id == job_id,
             DocumentExportJob.document_id == document_id,
-            DocumentExportJob.organization_id == current_user.organization_id,
+            DocumentExportJob.organization_id == organization_id,
         )
     )
 
@@ -895,6 +899,7 @@ def get_export_job_status(
 def list_export_jobs(
     document_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -906,7 +911,7 @@ def list_export_jobs(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not document:
@@ -917,7 +922,7 @@ def list_export_jobs(
     export_jobs = db.scalars(
         select(DocumentExportJob).where(
             DocumentExportJob.document_id == document_id,
-            DocumentExportJob.organization_id == current_user.organization_id,
+            DocumentExportJob.organization_id == organization_id,
         ).order_by(desc(DocumentExportJob.queued_at))
     ).all()
 

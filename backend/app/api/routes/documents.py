@@ -19,6 +19,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user
+from app.api.dependencies.tenant_scope import require_scoped_organization_id
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.document import (

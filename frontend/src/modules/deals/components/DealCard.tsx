@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Draggable } from '@hello-pangea/dnd'
-import { Building2, DollarSign, MoreHorizontal } from 'lucide-react'
+import { Building2, MoreHorizontal } from 'lucide-react'
 
 import { type Deal, formatCurrency } from '../../../services/api/deals'
 

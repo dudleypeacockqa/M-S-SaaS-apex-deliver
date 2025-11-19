@@ -58,8 +58,11 @@ export const DealKanbanBoard: React.FC<DealKanbanBoardProps> = ({ deals, onDealM
               <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 bg-white/50 rounded-t-xl backdrop-blur-sm">
                 <div className="flex items-center gap-2">
                   <div
-                    className="h-2.5 w-2.5 rounded-full ring-2 ring-offset-1 ring-offset-slate-50"
-                    style={{ backgroundColor: stageColor, ringColor: stageColor }}
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{
+                      backgroundColor: stageColor,
+                      boxShadow: `0 0 0 2px ${stageColor}33`,
+                    }}
                   />
                   <h3 className="font-semibold text-slate-700 text-sm uppercase tracking-tight">
                     {getStageDisplayName(stage)}

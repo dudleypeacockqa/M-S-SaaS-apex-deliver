@@ -289,10 +289,12 @@ def require_feature(feature: str) -> Callable:
             # Users without organization have no access (except master_admin who already bypassed)
             has_access = False
         else:
+            # Keep compatibility with existing entitlement tests by using the
+            # original two-argument signature. Master admin bypass happens
+            # earlier, so we don't need to forward the role here.
             has_access = await check_feature_access(
                 current_user.organization_id,
                 feature,
-                user_role=current_user.role.value if current_user.role else None
             )
 
         if not has_access:

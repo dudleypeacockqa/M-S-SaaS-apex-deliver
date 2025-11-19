@@ -3,11 +3,13 @@
  * Feature: F-012 Event Management Hub
  */
 
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { listEvents, deleteEvent, type Event } from '../../services/api/events'
 import { Card, CardHeader, CardBody, Button, Spinner } from '../../components/ui'
+import { LoadingState } from '../../components/common/LoadingState'
+import { EmptyState } from '../../components/common/EmptyState'
 
 export const EventDashboard: React.FC = () => {
   const navigate = useNavigate()
@@ -44,21 +46,53 @@ export const EventDashboard: React.FC = () => {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-      </div>
+  const summary = useMemo(() => {
+    if (!events || events.length === 0) {
+      return {
+        totalEvents: 0,
+        publishedEvents: 0,
+        projectedRevenue: 0,
+        averageTicket: 0,
+      }
+    }
+
+    const totalEvents = events.length
+    const publishedEvents = events.filter((event) => event.status === 'published').length
+    const projectedRevenue = events.reduce((sum, event) => {
+      const capacity = event.capacity ?? 0
+      return sum + capacity * event.base_price
+    }, 0)
+    const averageTicket = events.reduce((sum, event) => sum + event.base_price, 0) / totalEvents
+
+    return {
+      totalEvents,
+      publishedEvents,
+      projectedRevenue,
+      averageTicket,
+    }
+  }, [events])
+
+  const upcomingEvent = useMemo(() => {
+    if (!events || events.length === 0) return null
+    const sorted = [...events].sort((a, b) =>
+      new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
     )
+    return sorted[0]
+  }, [events])
+
+  if (isLoading) {
+    return <LoadingState message="Loading events" fullScreen />
   }
 
   if (error) {
     return (
       <div className="p-6">
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-          <h3 className="text-lg font-semibold text-red-900">Error Loading Events</h3>
-          <p className="text-sm text-red-700">{error instanceof Error ? error.message : 'Failed to load events'}</p>
-        </div>
+        <EmptyState
+          title="Error loading events"
+          description={error instanceof Error ? error.message : 'Failed to load events'}
+          onAction={() => queryClient.invalidateQueries({ queryKey: ['events'] })}
+          actionLabel="Retry"
+        />
       </div>
     )
   }
@@ -77,8 +111,32 @@ export const EventDashboard: React.FC = () => {
           </Button>
         </div>
 
+        {/* Summary */}
+        <div className="grid gap-4 md:grid-cols-4">
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">Total events</p>
+            <p className="text-3xl font-bold text-indigo-900">{summary.totalEvents}</p>
+          </div>
+          <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600">Live campaigns</p>
+            <p className="text-3xl font-bold text-emerald-900">{summary.publishedEvents}</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Projected revenue</p>
+            <p className="text-3xl font-bold text-slate-900">
+              £{summary.projectedRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+            </p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Average ticket</p>
+            <p className="text-3xl font-bold text-slate-900">
+              £{summary.averageTicket.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+            </p>
+          </div>
+        </div>
+
         {/* Filters */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4 rounded-xl border border-slate-200 bg-white p-4">
           <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
             Status:
             <select
@@ -108,6 +166,28 @@ export const EventDashboard: React.FC = () => {
           </label>
         </div>
 
+        {upcomingEvent && (
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">Next event</p>
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900">{upcomingEvent.name}</h3>
+                <p className="text-sm text-gray-500">
+                  {new Date(upcomingEvent.start_date).toLocaleString()} · {upcomingEvent.event_type.replace('_', ' ')}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={() => handleViewEvent(upcomingEvent.id)} className="bg-indigo-600 text-white">
+                  Review run sheet
+                </Button>
+                <Button onClick={() => navigate(`/events/${upcomingEvent.id}/registrations`)} className="bg-white border border-slate-200 text-slate-700">
+                  Registrations
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Events Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {events && events.length > 0 ? (
@@ -135,12 +215,18 @@ export const EventDashboard: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <span className="font-medium">Start:</span>
-                      <span>{new Date(event.start_date).toLocaleDateString()}</span>
+                      <span>{new Date(event.start_date).toLocaleString()}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <span className="font-medium">Price:</span>
                       <span>{event.currency} {event.base_price.toFixed(2)}</span>
                     </div>
+                    {event.capacity && (
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <span className="font-medium">Capacity:</span>
+                        <span>{event.capacity.toLocaleString()}</span>
+                      </div>
+                    )}
                   </div>
                   <div className="mt-4 flex items-center gap-2">
                     <Button
@@ -161,11 +247,13 @@ export const EventDashboard: React.FC = () => {
               </Card>
             ))
           ) : (
-            <div className="col-span-full text-center py-12">
-              <p className="text-gray-500">No events found</p>
-              <Button onClick={handleCreateEvent} className="mt-4 bg-indigo-600 text-white hover:bg-indigo-500">
-                Create Event
-              </Button>
+            <div className="col-span-full">
+              <EmptyState
+                title="No events match the filters"
+                description="Launch your first event or adjust filters to see published experiences."
+                onAction={handleCreateEvent}
+                actionLabel="Create event"
+              />
             </div>
           )}
         </div>
