@@ -437,7 +437,7 @@ async def export_document(
         updated_document = DocumentGenerationService.update_generated_document(
             db,
             document_id=document_id,
-            organization_id=current_user.organization_id,
+            organization_id=organization_id,
             update_data=update_data,
             user_id=current_user.id,
         )
@@ -473,6 +473,7 @@ async def export_document(
 async def download_exported_document(
     document_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -484,7 +485,7 @@ async def download_exported_document(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not document:
@@ -511,7 +512,7 @@ async def download_exported_document(
     try:
         file_path = await storage.get_file_path(
             file_key=file_key,
-            organization_id=current_user.organization_id,
+            organization_id=organization_id,
         )
     except FileNotFoundError:
         raise HTTPException(
@@ -546,6 +547,7 @@ async def fetch_ai_suggestions(
     document_id: str,
     request: FetchSuggestionRequest,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -557,7 +559,7 @@ async def fetch_ai_suggestions(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not document:
@@ -567,7 +569,7 @@ async def fetch_ai_suggestions(
         suggestions = await DocumentAIService.generate_suggestions(
             db,
             document_id=document_id,
-            organization_id=current_user.organization_id,
+            organization_id=organization_id,
             user_id=current_user.id,
             context=request.context,
             content=request.content,
@@ -590,6 +592,7 @@ def accept_ai_suggestion(
     document_id: str,
     suggestion_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -601,7 +604,7 @@ def accept_ai_suggestion(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not document:
@@ -610,7 +613,7 @@ def accept_ai_suggestion(
     suggestion = DocumentAIService.accept_suggestion(
         db,
         suggestion_id=suggestion_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not suggestion:
@@ -624,6 +627,7 @@ def reject_ai_suggestion(
     document_id: str,
     suggestion_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -635,7 +639,7 @@ def reject_ai_suggestion(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not document:
@@ -644,7 +648,7 @@ def reject_ai_suggestion(
     suggestion = DocumentAIService.reject_suggestion(
         db,
         suggestion_id=suggestion_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not suggestion:
