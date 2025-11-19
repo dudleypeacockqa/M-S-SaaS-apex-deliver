@@ -2,6 +2,7 @@ import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { Link } from 'react-router-dom';
 import { trackCtaClick } from '../../lib/analytics';
+import { InteractiveTimeline } from '../../components/marketing/InteractiveTimeline';
 
 export const FourStageCyclePage: React.FC = () => {
   const stages = [
@@ -120,26 +121,7 @@ export const FourStageCyclePage: React.FC = () => {
 
           {/* Visual Cycle Diagram */}
           <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {stages.map((stage, index) => (
-                <div key={index} className="relative">
-                  <div className="bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-lg p-6 hover:bg-white/20 transition">
-                    <div className="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center text-2xl font-bold mb-3 mx-auto">
-                      {stage.number}
-                    </div>
-                    <h3 className="text-lg font-bold mb-1">{stage.title}</h3>
-                    <p className="text-sm text-indigo-200">{stage.subtitle}</p>
-                    <p className="text-xs text-emerald-300 mt-2">{stage.timeline}</p>
-                  </div>
-                  {/* Arrow */}
-                  {index < stages.length - 1 && (
-                    <div className="hidden md:block absolute top-1/2 -right-2 transform -translate-y-1/2 text-emerald-400 text-2xl z-10">
-                      →
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <InteractiveTimeline />
           </div>
         </div>
       </section>

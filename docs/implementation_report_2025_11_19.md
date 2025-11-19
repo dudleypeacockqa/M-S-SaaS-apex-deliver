@@ -119,6 +119,12 @@ The project was executed in five distinct phases:
 - **Supporting fixes:** Escaped the literal `>` character in `WorkingCapital.tsx` so Vitest/ESBuild can parse the FP&A markup again (it previously blocked all frontend tests). Updated `tsconfig.node.json` to include the new config helper.
 - **Verification:** `npm run test` (for targeted files), `npm run lint`, and `npm run build` (simulated) now succeed locally. The production build command matches Render’s (`npm ci && npx vite build && npm run verify:lucide`), providing parity evidence for deployment.
 
+### 4.3 CLI & Test Runner Recovery (19 Nov 2025)
+- **Root cause:** `npm run` delegated to `C:\Program Files\PowerShell\7\pwsh.exe`, which does not exist inside the current Windows image, causing every script (including Vitest) to fail with `spawn ... ENOENT`.
+- **Fix applied:** Re-pointed the script shell to the built-in Command Prompt by running `npm config set script-shell C:\Windows\System32\cmd.exe` at the repo root and inside `frontend/`, then verified the setting with `npm config get script-shell` (both contexts now report `C:\Windows\System32\cmd.exe`).
+- **Verification:** Executed `npm --prefix frontend run test -- src/components/deal-matching/__tests__/MatchInsights.test.tsx` which invokes `node scripts/run-vitest.mjs`; the suite passed (3 tests, 62 ms) confirming Vitest can launch again under the new shell configuration.
+- **Housekeeping:** Removed stray zero-byte files (`frontend/cd`, `frontend/npm`, `frontend/npx`) that were created while the shell was misconfigured so future tooling cannot accidentally treat them as directories. The `frontend/frontend` duplication mentioned in the runbook was not present; directory checks confirmed the workspace is now clean.
+
 ### Pending / Recommended Next Actions
 1.  **Comprehensive Testing:**
     *   Run the full test suite (`npm test` and `pytest`) to ensure no regressions from the deep refactoring.

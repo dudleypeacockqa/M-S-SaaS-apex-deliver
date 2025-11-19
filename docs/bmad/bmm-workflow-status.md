@@ -1,7 +1,7 @@
 
 # BMM Workflow Status
 
-**Status**: ⚠️ IN PROGRESS — Suites are green but final QA, Playwright evidence, and marketing deliverables remain
+**Status**: ⚠️ IN PROGRESS — Suites are green; documentation sync, BlogAdminEditor verification, manual QA, and marketing evidence still outstanding
 **Release Target**: v1.0.0 (Final QA + marketing smoke sign-off)
 **Current Version**: v1.0.0-rc1 (Core features code-complete)
 **Test Pass Rate (2025-11-17)**: Backend 1,432/1,432 PASS (100%) ✅ · Frontend 1,742/1,742 PASS (100%) ✅ · Master Admin 91/91 PASS (100%) ✅
@@ -18,11 +18,11 @@ WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.y
 
 ## Current State
 
-CURRENT_PHASE: 3-Implementation (Sprint 1-B – Master Admin Frontend + Deploy Readiness)
-CURRENT_WORKFLOW: dev-story (Master Admin UI + deployment verification TDD loop)
+CURRENT_PHASE: 7-Final QA & Marketing Evidence (Documentation sync + BlogAdmin verification)
+CURRENT_WORKFLOW: dev-story (Governance sync + BlogAdmin verification + marketing deliverables via TDD)
 CURRENT_AGENT: codex (primary) with BMAD governance support
 PROJECT_COMPLETION: 99.2% (All features complete; final QA + marketing website implementation remaining)
-LAST_UPDATED: 2025-11-17T15:05Z (Pytest/Vitest suites green, ready to tackle docs + deployment verification)
+LAST_UPDATED: 2025-11-17T19:45Z (npx bmad-method status run; beginning governance sync + BlogAdmin verification)
 PHASE_1_FOUNDATIONAL_CORE: ✅ COMPLETE (All 7 foundational features implemented and tested)
 PHASE_2_ADVANCED_INTELLIGENCE: ✅ COMPLETE (All 4 intelligence features implemented and tested)
 PHASE_3_ECOSYSTEM_NETWORK: ✅ COMPLETE (All 3 ecosystem features implemented and tested)
@@ -74,14 +74,14 @@ REMAINING:
 
 ## Next Action
 
-NEXT_ACTION: Fix critical 500 error and complete 100% project delivery
+NEXT_ACTION: Sync governance docs and verify BlogAdminEditor before manual QA and marketing evidence
 NEXT_COMMAND:
-1. Fix SQLAlchemy server_default error in master_admin.py (onupdate pattern)
-2. Deploy fixes to production via Render
-3. Verify application starts successfully
-4. Complete remaining marketing website features (MARK-007, MARK-008)
-5. Execute final QA checklist (Master Admin Portal, performance audits)
-6. Complete final documentation and handoff package
+1. Run `npx bmad-method status` (DONE) and align README.md, docs/bmad/bmm-workflow-status.md, and docs/bmad/100-PERCENT-COMPLETION-STATUS.md with the 2025-11-17 test evidence.
+2. Extend BlogAdminEditor automated coverage (backend + Playwright/Vitest) for `/admin/blog/new` and `/admin/blog/:id/edit` to capture RED state.
+3. Implement/fix BlogAdminEditor flows until tests turn GREEN, capture screenshots/logs, and mark F-010 fully verified.
+4. Execute Master Admin manual QA checklist with Clerk test account, store evidence in docs/testing/.
+5. Capture manual Lighthouse + Axe audits and first green marketing Playwright run (MARKETING_BASE_URL) and archive reports.
+6. Continue marketing backlog (mobile nav focus states, 38 blog posts, forms/integrations, SEO artefacts) per COMPLETION-PLAN-2025-11-17.md.
 NEXT_AGENT: codex
 PRIORITY: P0 (Critical Fix + 100% Completion)
 RATIONALE: Critical 500 error blocking production. After fix, complete remaining 0.8% of project (marketing features, QA, documentation) to achieve 100% completion per 100-PERCENT-COMPLETION-PLAN-2025-11-18.md

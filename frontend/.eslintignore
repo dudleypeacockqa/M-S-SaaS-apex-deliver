@@ -1,4 +1,0 @@
-# Critical files - DO NOT auto-fix or format
-# These files contain configurations that linters misinterpret as "unused" but are critical for production
-src/main.tsx
-vite.config.ts

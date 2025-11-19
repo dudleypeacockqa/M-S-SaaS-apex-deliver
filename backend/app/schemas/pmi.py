@@ -339,6 +339,7 @@ class PMIDashboardResponse(BaseModel):
     workstreams_summary: List[PMIWorkstreamResponse]
     top_risks: List[PMIRiskResponse] = Field(default_factory=list)
 
+
     model_config = ConfigDict(from_attributes=True)
 
 

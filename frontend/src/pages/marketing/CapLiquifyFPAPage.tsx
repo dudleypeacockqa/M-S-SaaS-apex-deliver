@@ -2,6 +2,7 @@ import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { Link } from 'react-router-dom';
 import { trackCtaClick } from '../../lib/analytics';
+import { CashFlowCalculator } from '../../components/marketing/CashFlowCalculator';
 
 export const CapLiquifyFPAPage: React.FC = () => {
   const features = [
@@ -124,82 +125,13 @@ export const CapLiquifyFPAPage: React.FC = () => {
 
             {/* Right: Dashboard Mockup */}
             <div className="relative">
-              <div className="bg-white rounded-lg shadow-2xl p-6 transform hover:scale-105 transition-transform duration-300">
-                {/* Mockup Header */}
-                <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
-                  <h3 className="text-lg font-bold text-gray-900">13-Week Cash Forecast</h3>
-                  <span className="text-sm text-emerald-700 font-semibold">Updated 2 min ago</span>
-                </div>
-
-                {/* Mockup Chart */}
-                <div className="space-y-4">
-                  {/* Cash Balance Line */}
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-gray-600">Ending Cash Balance</span>
-                      <span className="font-bold text-gray-900">£2.4M</span>
-                    </div>
-                    <div className="h-32 bg-gradient-to-r from-emerald-100 to-emerald-50 rounded-lg relative overflow-hidden">
-                      {/* Simulated line chart */}
-                      <svg className="w-full h-full" viewBox="0 0 400 128" preserveAspectRatio="none">
-                        <path
-                          d="M 0 80 Q 50 70 100 65 T 200 60 T 300 55 T 400 50"
-                          fill="none"
-                          stroke="#10b981"
-                          strokeWidth="3"
-                        />
-                        <path
-                          d="M 0 80 Q 50 70 100 65 T 200 60 T 300 55 T 400 50 L 400 128 L 0 128 Z"
-                          fill="url(#gradient)"
-                          opacity="0.3"
-                        />
-                        <defs>
-                          <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#10b981" />
-                            <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                    </div>
-                  </div>
-
-                  {/* Working Capital Metrics */}
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <div className="text-xs text-gray-600 mb-1">DSO</div>
-                      <div className="text-lg font-bold text-gray-900">42 days</div>
-                      <div className="text-xs text-emerald-700">↓ 3 days</div>
-                    </div>
-                    <div className="bg-purple-50 p-3 rounded-lg">
-                      <div className="text-xs text-gray-600 mb-1">DPO</div>
-                      <div className="text-lg font-bold text-gray-900">35 days</div>
-                      <div className="text-xs text-emerald-700">↑ 2 days</div>
-                    </div>
-                    <div className="bg-orange-50 p-3 rounded-lg">
-                      <div className="text-xs text-gray-600 mb-1">DIO</div>
-                      <div className="text-lg font-bold text-gray-900">28 days</div>
-                      <div className="text-xs text-red-600">↑ 1 day</div>
-                    </div>
-                  </div>
-
-                  {/* Scenario Toggle */}
-                  <div className="flex gap-2">
-                    <button className="px-3 py-1 bg-emerald-700 text-white text-xs font-semibold rounded">
-                      Base Case
-                    </button>
-                    <button className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded hover:bg-gray-200">
-                      Best Case
-                    </button>
-                    <button className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded hover:bg-gray-200">
-                      Worst Case
-                    </button>
-                  </div>
-                </div>
+              <div className="transform hover:scale-105 transition-transform duration-300">
+                <CashFlowCalculator />
               </div>
 
               {/* Floating Badge */}
               <div className="absolute -top-4 -right-4 bg-yellow-400 text-indigo-900 px-4 py-2 rounded-full font-bold text-sm shadow-lg transform rotate-12">
-                Live Demo
+                Interactive Demo
               </div>
             </div>
           </div>

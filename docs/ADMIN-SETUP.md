@@ -212,6 +212,23 @@ For sensitive admin flags, consider using **Private metadata** instead.
 
 ---
 
+## Digital Growth Equity Tenant (Seed Script)
+
+Use the dedicated seed helper to provision Dudley’s Digital Growth Equity tenant in any environment:
+
+1. Set `DATABASE_URL` for the target environment (Render, local Postgres, etc.).
+2. Optionally override `DIGITAL_GROWTH_EQUITY_*` env vars (org name, tier, admin email) if defaults don’t apply.
+3. Run the script from repo root:
+
+   ```bash
+   cd backend
+   python scripts/seed_digital_growth_equity.py
+   ```
+
+The script invokes `TenantSeedConfig`/`ensure_tenant_admin`, so it’s idempotent—rerunning updates the org + admin in-place (tier, metadata, etc.). Once seeded, log in as `dudley.peacock@icloud.com` via Clerk to validate `/admin` against the Digital Growth Equity tenant.
+
+---
+
 ## Role Configuration Examples
 
 ### Example 1: Solo User
