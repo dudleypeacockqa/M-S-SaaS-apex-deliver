@@ -401,6 +401,23 @@ def test_create_moderation_action_returns_201(
     assert data["target_id"] == test_post.id
 
 
+def test_create_moderation_action_requires_admin(
+    client: TestClient,
+    test_post: Post,
+):
+    """Non-admin users should be blocked from moderation actions."""
+    moderation_data = {
+        "target_type": "post",
+        "target_id": test_post.id,
+        "action_type": "flag",
+        "reason": "Spam",
+    }
+
+    response = client.post("/api/community/moderation/actions", json=moderation_data)
+
+    assert response.status_code == 403, response.text
+
+
 def test_get_flagged_content_returns_200(
     client: TestClient,
     test_post: Post,
@@ -415,6 +432,16 @@ def test_get_flagged_content_returns_200(
     assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
     data = response.json()
     assert isinstance(data, list)
+
+
+def test_get_flagged_content_requires_admin(
+    client: TestClient,
+    test_post: Post,
+):
+    """Non-admin users should be blocked from viewing flagged content."""
+    response = client.get("/api/community/moderation/flagged")
+
+    assert response.status_code == 403, response.text
 
 
 # ============================================================================
