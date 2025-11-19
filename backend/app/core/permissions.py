@@ -39,15 +39,28 @@ PERMISSION_MATRIX: Mapping[Permission, set[UserRole]] = {
 }
 
 
+def _normalize_role(role: UserRole | str | None) -> UserRole | None:
+    if isinstance(role, UserRole):
+        return role
+    if isinstance(role, str):
+        try:
+            return UserRole(role)
+        except ValueError:
+            return None
+    return None
+
+
 def check_permission(user: User, permission: Permission) -> bool:
     """Return True if the user is allowed to perform the permission."""
 
-    # Master admin bypasses all specific checks
     if is_master_admin(user):
         return True
+    normalized_role = _normalize_role(user.role)
+    if not normalized_role:
+        return False
 
     allowed_roles = PERMISSION_MATRIX.get(permission, set())
-    return user.role in allowed_roles
+    return normalized_role in allowed_roles
 
 
 def require_permission(permission: Permission):

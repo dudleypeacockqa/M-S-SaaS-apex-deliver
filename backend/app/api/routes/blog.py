@@ -358,7 +358,7 @@ def create_blog_post(
     db.add(db_post)
     db.commit()
     db.refresh(db_post)
-
+    
     # Return response
     return serialize_blog_post(db_post)
 

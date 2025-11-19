@@ -96,9 +96,10 @@ To elevate the platform’s access controls to an enterprise-ready posture, exec
 3. **Cross-service RBAC middleware**
    - ✅ Introduce a centralized permission registry (`app/core/permissions.py`) plus `require_permission(...)` dependency; billing endpoints now consume `Permission.BILLING_VIEW` / `Permission.BILLING_MANAGE`.
    - ✅ Permission denials now emit RBAC audit entries (`permission_denied`) so SOC teams can trace unauthorized attempts.
-   - Provide convenience decorators for “organization owner”, “resource collaborator”, etc., and expand the registry to additional modules.
+   - ✅ Added `require_deal_access` (valuations) and `require_template_access` (pipeline templates) so routes share consistent ownership guards and tests enforce multi-tenant isolation.
+   - Provide additional decorators for documents, tasks, and collaboration features, gradually expanding the registry to those modules.
 4. **Tenant scoping upgrades**
-   - ✅ Log every impersonation header usage in `rbac_audit_logs` (actions `impersonation`, `permission_denied`) so SOC operations can trace cross-tenant access and blocked attempts.
+   - ✅ Log every impersonation header usage in `rbac_audit_logs` (actions `impersonation`, `permission_denied`) so SOC operations can trace cross-tenant access and blocked attempts; automated pytest coverage ensures non-master attempts create denial entries.
    - Require explicit tenant headers for master admin impersonation and build throttling/alerting for suspicious usage.
 
 ### Phase 2 – Data & Audit Enhancements

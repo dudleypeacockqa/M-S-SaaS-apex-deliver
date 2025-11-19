@@ -12,9 +12,10 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.models.deal import Deal, DealStage
-from app.models.document import Document, Folder
+from app.models.document import Document, DocumentPermission, Folder
 from app.models.user import User, UserRole
 from app.services import document_service
+from app.schemas.document import FolderCreate, PermissionLevel
 
 
 @pytest.fixture(autouse=True)
@@ -140,6 +141,360 @@ def test_delete_folder_with_subfolders_raises_value_error(
         )
 
 
+def _create_base_document(
+    db_session: Session,
+    *,
+    deal,
+    owner,
+    organization,
+    folder_name: str = "Permissions Folder",
+    document_name: str = "permissions.pdf",
+):
+    """Helper to create a folder and document tied to a deal."""
+
+    folder = Folder(
+        id=str(uuid.uuid4()),
+        name=folder_name,
+        deal_id=deal.id,
+        organization_id=organization.id,
+        created_by=owner.id,
+    )
+    db_session.add(folder)
+    db_session.commit()
+
+    document = Document(
+        id=str(uuid.uuid4()),
+        name=document_name,
+        file_key=f"file-{uuid.uuid4()}",
+        file_size=2048,
+        file_type="application/pdf",
+        deal_id=deal.id,
+        folder_id=str(folder.id),
+        organization_id=organization.id,
+        uploaded_by=owner.id,
+    )
+    db_session.add(document)
+    db_session.commit()
+
+    return folder, document
+
+
+def _create_folder_hierarchy(
+    db_session: Session,
+    *,
+    deal,
+    organization,
+    owner,
+):
+    """Create a parent/child folder pair for permission inheritance tests."""
+
+    parent_folder = Folder(
+        id=str(uuid.uuid4()),
+        name="Parent Folder",
+        deal_id=deal.id,
+        organization_id=organization.id,
+        created_by=owner.id,
+    )
+    child_folder = Folder(
+        id=str(uuid.uuid4()),
+        name="Child Folder",
+        deal_id=deal.id,
+        parent_folder_id=str(parent_folder.id),
+        organization_id=organization.id,
+        created_by=owner.id,
+    )
+    db_session.add_all([parent_folder, child_folder])
+    db_session.commit()
+
+    return parent_folder, child_folder
+
+
+def test_resolve_folder_permission_owner_has_implicit_owner(
+    db_session: Session,
+    create_deal_for_org,
+):
+    """Deal owners automatically resolve to OWNER permission."""
+
+    deal, owner, organization = create_deal_for_org()
+    _, folder = _create_folder_hierarchy(
+        db_session,
+        deal=deal,
+        organization=organization,
+        owner=owner,
+    )
+
+    level = document_service._resolve_folder_permission(  # type: ignore[attr-defined]
+        db_session,
+        folder=folder,
+        user=owner,
+        deal=deal,
+    )
+
+    assert level == PermissionLevel.OWNER
+
+
+def test_resolve_folder_permission_inherits_from_parent(
+    db_session: Session,
+    create_deal_for_org,
+):
+    """Child folders inherit the highest permission from any ancestor."""
+
+    deal, owner, organization = create_deal_for_org()
+    collaborator = User(
+        id=str(uuid.uuid4()),
+        clerk_user_id="clerk-folder-collab",
+        email="folder@example.com",
+        organization_id=organization.id,
+        role=UserRole.growth,
+    )
+    db_session.add(collaborator)
+    db_session.commit()
+
+    parent, child = _create_folder_hierarchy(
+        db_session,
+        deal=deal,
+        organization=organization,
+        owner=owner,
+    )
+
+    db_session.add(
+        DocumentPermission(
+            id=str(uuid.uuid4()),
+            folder_id=str(parent.id),
+            document_id=None,
+            user_id=str(collaborator.id),
+            permission_level=PermissionLevel.EDITOR,
+            organization_id=organization.id,
+            granted_by=owner.id,
+        )
+    )
+    db_session.commit()
+
+    level = document_service._resolve_folder_permission(  # type: ignore[attr-defined]
+        db_session,
+        folder=child,
+        user=collaborator,
+        deal=deal,
+    )
+
+    assert level == PermissionLevel.EDITOR
+
+
+def test_user_has_document_listing_access_with_folder_permission(
+    db_session: Session,
+    create_deal_for_org,
+):
+    """Folder permissions grant listing access."""
+
+    deal, owner, organization = create_deal_for_org()
+    collaborator = User(
+        id=str(uuid.uuid4()),
+        clerk_user_id="clerk-list-folder",
+        email="list-folder@example.com",
+        organization_id=organization.id,
+        role=UserRole.growth,
+    )
+    db_session.add(collaborator)
+    db_session.commit()
+
+    folder, _ = _create_base_document(
+        db_session,
+        deal=deal,
+        owner=owner,
+        organization=organization,
+    )
+
+    db_session.add(
+        DocumentPermission(
+            id=str(uuid.uuid4()),
+            folder_id=str(folder.id),
+            document_id=None,
+            user_id=str(collaborator.id),
+            permission_level=PermissionLevel.VIEWER,
+            organization_id=organization.id,
+            granted_by=owner.id,
+        )
+    )
+    db_session.commit()
+
+    assert document_service._user_has_document_listing_access(  # type: ignore[attr-defined]
+        db_session,
+        deal=deal,
+        user=collaborator,
+    )
+
+
+def test_user_has_document_listing_access_when_uploaded_document(
+    db_session: Session,
+    create_deal_for_org,
+):
+    """Users who uploaded a document should maintain listing access."""
+
+    deal, owner, organization = create_deal_for_org()
+    uploader = User(
+        id=str(uuid.uuid4()),
+        clerk_user_id="clerk-list-upload",
+        email="list-upload@example.com",
+        organization_id=organization.id,
+        role=UserRole.growth,
+    )
+    db_session.add(uploader)
+    db_session.commit()
+
+    document = Document(
+        id=str(uuid.uuid4()),
+        name="listing.pdf",
+        file_key="listing-key",
+        file_size=1024,
+        file_type="application/pdf",
+        deal_id=deal.id,
+        folder_id=None,
+        organization_id=organization.id,
+        uploaded_by=uploader.id,
+    )
+    db_session.add(document)
+    db_session.commit()
+
+    assert document_service._user_has_document_listing_access(  # type: ignore[attr-defined]
+        db_session,
+        deal=deal,
+        user=uploader,
+    )
+
+
+def test_resolve_document_permission_inherits_folder_permissions(
+    db_session: Session,
+    create_deal_for_org,
+):
+    """
+    TDD RED: _resolve_document_permission should inherit folder-level permissions.
+    """
+
+    deal, owner, organization = create_deal_for_org()
+    collaborator = User(
+        id=str(uuid.uuid4()),
+        clerk_user_id="clerk-collab",
+        email="collab@example.com",
+        organization_id=organization.id,
+        role=UserRole.growth,
+    )
+    db_session.add(collaborator)
+    db_session.commit()
+
+    folder, document = _create_base_document(
+        db_session,
+        deal=deal,
+        owner=owner,
+        organization=organization,
+    )
+
+    permission = DocumentPermission(
+        id=str(uuid.uuid4()),
+        folder_id=str(folder.id),
+        document_id=None,
+        user_id=str(collaborator.id),
+        permission_level=PermissionLevel.EDITOR,
+        organization_id=organization.id,
+        granted_by=owner.id,
+    )
+    db_session.add(permission)
+    db_session.commit()
+
+    level = document_service._resolve_document_permission(  # type: ignore[attr-defined]
+        db_session,
+        document=document,
+        user=collaborator,
+    )
+
+    assert level == PermissionLevel.EDITOR
+
+
+def test_resolve_document_permission_blocks_other_organizations(
+    db_session: Session,
+    create_deal_for_org,
+    create_organization,
+):
+    """TDD RED: access from non-member org should raise HTTP 404."""
+
+    deal, owner, organization = create_deal_for_org()
+    folder, document = _create_base_document(
+        db_session,
+        deal=deal,
+        owner=owner,
+        organization=organization,
+    )
+
+    outsider_org = create_organization()
+    outsider = User(
+        id=str(uuid.uuid4()),
+        clerk_user_id="clerk-outsider",
+        email="outsider@example.com",
+        organization_id=outsider_org.id,
+        role=UserRole.growth,
+    )
+    db_session.add(outsider)
+    db_session.commit()
+
+    with pytest.raises(HTTPException) as exc_info:
+        document_service._resolve_document_permission(  # type: ignore[attr-defined]
+            db_session,
+            document=document,
+            user=outsider,
+        )
+
+    assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_ensure_document_permission_raises_for_insufficient_level(
+    db_session: Session,
+    create_deal_for_org,
+):
+    """
+    TDD RED: ensure_document_permission enforces minimum level checks.
+    """
+
+    deal, owner, organization = create_deal_for_org()
+    collaborator = User(
+        id=str(uuid.uuid4()),
+        clerk_user_id="clerk-collab-viewer",
+        email="viewer@example.com",
+        organization_id=organization.id,
+        role=UserRole.growth,
+    )
+    db_session.add(collaborator)
+    db_session.commit()
+
+    folder, document = _create_base_document(
+        db_session,
+        deal=deal,
+        owner=owner,
+        organization=organization,
+    )
+
+    permission = DocumentPermission(
+        id=str(uuid.uuid4()),
+        folder_id=str(folder.id),
+        document_id=None,
+        user_id=str(collaborator.id),
+        permission_level=PermissionLevel.VIEWER,
+        organization_id=organization.id,
+        granted_by=owner.id,
+    )
+    db_session.add(permission)
+    db_session.commit()
+
+    with pytest.raises(HTTPException) as exc_info:
+        document_service.ensure_document_permission(
+            db=db_session,
+            document=document,
+            user=collaborator,
+            minimum_level=PermissionLevel.EDITOR,
+        )
+
+    assert exc_info.value.status_code == status.HTTP_403_FORBIDDEN
+    assert "Insufficient permissions" in exc_info.value.detail
+
+
 @pytest.mark.asyncio
 async def test_upload_document_unsupported_file_type(
     db_session: Session,
@@ -218,8 +573,6 @@ def test_create_folder_insufficient_permissions_for_subfolder(
 
     Tests lines 349-352: Insufficient permissions error for subfolder creation
     """
-    from app.schemas.document import FolderCreate
-
     deal, owner, organization = create_deal_for_org()
 
     # Create parent folder with proper UUID

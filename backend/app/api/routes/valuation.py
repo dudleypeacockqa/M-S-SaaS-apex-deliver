@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user, require_min_role
+from app.core.ownership import require_deal_access
 from app.db.session import get_db
 from app.models.deal import Deal
 from app.models.user import User, UserRole
@@ -37,13 +38,6 @@ def _error(status_code: int, code: str, message: str):
     raise HTTPException(status_code=status_code, detail={"code": code, "message": message})
 
 
-def _ensure_deal_access(*, db: Session, deal_id: str, user: User) -> Deal:
-    deal = db.get(Deal, deal_id)
-    if not deal or deal.organization_id != user.organization_id:
-        _error(status.HTTP_404_NOT_FOUND, "DEAL_NOT_FOUND", "Deal not found")
-    return deal
-
-
 def _require_growth_user(current_user: User = Depends(get_current_user)) -> User:
     checker = require_min_role(UserRole.growth)
     return checker(current_user)
@@ -55,7 +49,7 @@ def list_valuations(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
     valuations = valuation_service.list_valuations(
         db=db,
         deal_id=deal_id,
@@ -71,7 +65,7 @@ def create_valuation(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
     valuation = valuation_service.create_valuation(
         db=db,
         deal_id=deal_id,
@@ -82,11 +76,11 @@ def create_valuation(
     return valuation
 
 
-def _get_valuation(*, db: Session, deal_id: str, valuation_id: str, user: User):
-    valuation = valuation_service.get_valuation(db=db, valuation_id=valuation_id, organization_id=user.organization_id)
+def _get_valuation(*, db: Session, deal: Deal, valuation_id: str):
+    valuation = valuation_service.get_valuation(db=db, valuation_id=valuation_id, organization_id=deal.organization_id)
     if valuation is None:
         _error(status.HTTP_404_NOT_FOUND, "VALUATION_NOT_FOUND", "Valuation not found")
-    if str(valuation.deal_id) != deal_id:
+    if str(valuation.deal_id) != str(deal.id):
         _error(status.HTTP_403_FORBIDDEN, "DEAL_MISMATCH", "Valuation does not belong to this deal")
     return valuation
 
@@ -98,8 +92,8 @@ def get_valuation(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    valuation = _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    valuation = _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     return valuation
 
 
@@ -111,8 +105,8 @@ def update_valuation(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     updated = valuation_service.update_valuation(
         db=db,
         valuation_id=valuation_id,
@@ -129,8 +123,8 @@ def delete_valuation(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     valuation_service.delete_valuation(
         db=db,
         valuation_id=valuation_id,
@@ -145,8 +139,8 @@ def list_comparables(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     return valuation_service.list_comparable_companies(
         db=db,
         valuation_id=valuation_id,
@@ -162,8 +156,8 @@ def add_comparable_company(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     comparable = valuation_service.add_comparable(
         db=db,
         valuation_id=valuation_id,
@@ -180,8 +174,8 @@ def list_precedent_transactions(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     return valuation_service.list_precedent_transactions(
         db=db,
         valuation_id=valuation_id,
@@ -197,8 +191,8 @@ def add_precedent_transaction(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     precedent = valuation_service.add_precedent_transaction(
         db=db,
         valuation_id=valuation_id,
@@ -215,8 +209,8 @@ def list_scenarios(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     return valuation_service.list_scenarios(
         db=db,
         valuation_id=valuation_id,
@@ -232,8 +226,8 @@ def create_scenario(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     scenario = valuation_service.create_scenario(
         db=db,
         valuation_id=valuation_id,
@@ -252,8 +246,8 @@ def get_scenario_summary(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     return valuation_service.calculate_scenario_summary(
         db=db,
         valuation_id=valuation_id,
@@ -270,8 +264,8 @@ def get_comparable_summary(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     return valuation_service.calculate_comparable_multiples(
         db=db,
         valuation_id=valuation_id,
@@ -289,8 +283,8 @@ def get_transaction_summary(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     return valuation_service.calculate_precedent_multiples(
         db=db,
         valuation_id=valuation_id,
@@ -306,7 +300,7 @@ def get_valuation_summary(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
     valuations = valuation_service.list_valuations(
         db=db,
         deal_id=deal_id,
@@ -335,7 +329,8 @@ def run_monte_carlo(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    valuation = _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    valuation = _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     try:
         result = valuation_service.run_monte_carlo_simulation(
             base_cash_flows=valuation.cash_flows,
@@ -358,7 +353,8 @@ def trigger_export(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    valuation = _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    valuation = _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     try:
         export_log = valuation_service.log_export_event(
             db=db,
@@ -402,8 +398,8 @@ def list_exports(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     logs = valuation_service.list_export_logs(
         db=db,
         valuation_id=valuation_id,
@@ -420,8 +416,8 @@ def get_export_status(
     current_user: User = Depends(_require_growth_user),
     db: Session = Depends(get_db),
 ):
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     log_entry = valuation_service.get_export_log_by_task(
         db=db,
         valuation_id=valuation_id,
@@ -446,8 +442,8 @@ async def download_valuation_export(
     from app.models.valuation import ValuationExportLog
     from fastapi.responses import FileResponse
     
-    _ensure_deal_access(db=db, deal_id=deal_id, user=current_user)
-    _get_valuation(db=db, deal_id=deal_id, valuation_id=valuation_id, user=current_user)
+    deal = require_deal_access(deal_id=deal_id, current_user=current_user, db=db)
+    _get_valuation(db=db, deal=deal, valuation_id=valuation_id)
     
     # Verify export log exists and belongs to user's organization
     export_log = db.query(ValuationExportLog).filter(

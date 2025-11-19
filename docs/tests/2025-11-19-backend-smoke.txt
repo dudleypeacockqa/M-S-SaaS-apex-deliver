@@ -4,7 +4,7 @@ rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
 configfile: pytest.ini
 plugins: anyio-3.7.1, asyncio-0.21.1, cov-4.1.0
 asyncio: mode=Mode.STRICT
-collected 1777 items
+collected 1785 items
 
 tests\test_additional_ratios.py ...............                          [  0%]
 tests\test_api_middleware.py ...............                             [  1%]
@@ -37,6 +37,56 @@ tests\test_document_generation_api.py ....................               [ 24%]
 tests\test_document_generation_api_errors.py ............                [ 24%]
 tests\test_document_generation_models.py ..........                      [ 25%]
 tests\test_document_service.py ....                                      [ 25%]
-tests\test_document_service_error_paths.py .......                       [ 26%]
-tests\test_email_service.py .......                                      [ 26%]
-tests\test_email_tasks.py ..                                             [ 26%]
+tests\test_document_service_error_paths.py ..F
+
+================================== FAILURES ===================================
+________ test_resolve_document_permission_inherits_folder_permissions _________
+
+db_session = <sqlalchemy.orm.session.Session object at 0x00000201DB4FF910>
+create_deal_for_org = <function create_deal_for_org.<locals>._create at 0x00000201DB7CF380>
+
+    
+    def test_resolve_document_permission_inherits_folder_permissions(
+        db_session: Session,
+        create_deal_for_org,
+    ):
+        """
+        TDD RED: _resolve_document_permission should inherit folder-level permissions.
+        """
+    
+        deal, owner, organization = create_deal_for_org()
+        collaborator = User(
+            id=str(uuid.uuid4()),
+            clerk_user_id="clerk-collab",
+            email="collab@example.com",
+            organization_id=organization.id,
+            role=UserRole.growth,
+        )
+        db_session.add(collaborator)
+        db_session.commit()
+    
+        folder, document = _create_base_document(
+            db_session,
+            deal=deal,
+            owner=owner,
+            organization=organization,
+        )
+    
+        permission = DocumentPermission(
+            id=str(uuid.uuid4()),
+            folder_id=str(folder.id),
+            document_id=None,
+>           user_id=str(collaborator.id),
+            permission_level=PermissionLevel.EDITOR,
+            organization_id=organization.id,
+            granted_by=owner.id,
+        )
+E       NameError: name 'PermissionLevel' is not defined
+
+tests\test_document_service_error_paths.py:212: NameError
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_campaign_schema_migration.py:212: Enum introspection only supported on PostgreSQL in tests
+SKIPPED [1] tests\test_core_edge_cases.py:58: Database module uses lazy initialization; connection errors are handled at connection-time by SQLAlchemy engine, not in get_db()
+FAILED tests\test_document_service_error_paths.py::test_resolve_document_permission_inherits_folder_permissions
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+===== 1 failed, 458 passed, 2 skipped, 284 warnings in 141.82s (0:02:21) ======

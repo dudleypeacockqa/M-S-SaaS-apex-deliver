@@ -54,14 +54,7 @@ Prod Frontend: https://100daysandbeyond.com (last manual check 2025-11-17)
 2. Run backend + frontend targeted smoke suites (existing commands) and archive latest logs to prove nothing regressed while enabling Playwright. [gear] (backend blog/marketing APIs refreshed 2025-11-19 -> `docs/tests/2025-11-19-backend-blog-marketing.txt`; rerun focused frontend stack after nav/backlog fixes)
 3. Stand up documentation automation: update `docs/bmad/DAILY_STATUS_NOTES.md` and create `docs/deployments/2025-11-19-marketing-playwright.txt` summarizing evidence. [done] (deployment summary + Nov-19 daily note recorded)
 
-### Wave 2 - Manual QA & Marketing Implementation
-1. Provision/obtain Clerk QA credentials (Starter + Enterprise) via `.env` secrets; document safe storage in `docs/testing/2025-11-19-master-admin-qa-prep.md`.
-2. Work through the 7 Master Admin checklist categories, logging steps + screenshots. Any defects -> create BMAD story entries.
-3. Inventory marketing pages vs. apexdeliver-marketing feature list; produce `docs/marketing/marketing-gap-analysis-2025-11-19.md`. [done]
-4. Implement missing marketing UI/seo/backlog items (see `COMPLETION-PLAN-2025-11-17` section2). Use TDD (component tests + Playwright updates) per feature.
-5. Generate/publish outstanding blog posts using BlogAdminEditor and store evidence (IDs, cover images).
-
-### Wave 3 - Audits & Final Wrap
+### Wave 2 - Manual QA & Marketing Implementation\n1. Seed the QA tenant via python scripts/seed_master_admin_demo.py (set MASTER_ADMIN_USER_ID/ORG_ID and capture output in docs/testing/master-admin/2025-11-19/data/records.json).\n2. Execute the seven-surface checklist, capturing screenshots/logs in docs/testing/master-admin/2025-11-19/; create BMAD stories for defects.\n3. Inventory marketing pages vs. apexdeliver-marketing feature list; produce docs/marketing/marketing-gap-analysis-2025-11-19.md.\n4. Implement missing marketing UI/SEO/backlog items (see COMPLETION-PLAN-2025-11-17 §2) using TDD (component specs + Playwright).\n5. Generate/publish outstanding blog posts via BlogAdminEditor and store IDs/cover imagery for evidence.\n\n### Wave 3 - Audits & Final Wrap
 1. After UI/content updates, re-run Lighthouse + Axe; attach HTML/JSON + summary markdown under `docs/testing/`.
 2. Re-run Playwright + vitest + pytest to lock in final green logs; store coverage summaries.
 3. Update BMAD trackers with final completion %, NEXT_ACTION set to `final-signoff`, and produce completion certificate + executive summary.
@@ -92,3 +85,4 @@ Prod Frontend: https://100daysandbeyond.com (last manual check 2025-11-17)
 4. Wire `scripts/run-marketing-playwright.mjs` into the marketing CI workflow and document how to store traces/screenshots for preview runs. [done] (marketing-ci.yml now runs helper + uploads logs/reports)
 
 Once the above are complete, shift focus to Wave 2 deliverables (marketing parity + manual QA execution).
+

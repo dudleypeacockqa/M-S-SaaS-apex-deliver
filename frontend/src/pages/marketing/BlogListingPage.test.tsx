@@ -68,13 +68,10 @@ describe('BlogListingPage', () => {
     expect(screen.getByPlaceholderText(/search blog posts/i)).toBeInTheDocument()
   })
 
-  it('renders category filter buttons', async () => {
+  it('renders category filter buttons', () => {
     mockedFetchBlogPosts.mockResolvedValueOnce([])
     renderWithRouter()
-    
-    await waitFor(() => {
-        expect(screen.getByText(/all posts/i)).toBeInTheDocument()
-    })
+    expect(screen.getByText(/all posts/i)).toBeInTheDocument()
     expect(screen.getByText(/m&a strategy/i)).toBeInTheDocument()
     expect(screen.getByText(/financial planning/i)).toBeInTheDocument()
   })

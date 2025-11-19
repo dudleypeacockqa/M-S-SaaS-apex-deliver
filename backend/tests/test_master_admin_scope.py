@@ -93,10 +93,6 @@ def test_non_master_admin_cannot_use_master_tenant_header(
         organization_id=str(org.id),
     )
     other_org = create_organization(name="Victim Org", subscription_tier="enterprise")
-
-    from app.core.permissions import require_permission
-    from app.api.dependencies.auth import require_feature
-
     dependency_overrides(get_current_user, lambda: intruder)
 
     response = client.get(

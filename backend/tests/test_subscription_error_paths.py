@@ -250,7 +250,7 @@ def test_billing_dashboard_zero_counts(
     assert usage["documents_count"] >= 0
 
 
-def test_change_tier_value_error(client: TestClient, auth_headers_solo: dict, db_session: Session):
+def test_change_tier_value_error(client: TestClient, auth_headers_admin: dict, db_session: Session):
     """
     TDD RED: change_subscription_tier should handle ValueError (lines 162)
 
@@ -262,14 +262,14 @@ def test_change_tier_value_error(client: TestClient, auth_headers_solo: dict, db
         response = client.put(
             "/api/billing/change-tier",
             json={"new_tier": "starter", "prorate": True},
-            headers=auth_headers_solo
+            headers=auth_headers_admin,
         )
 
         assert response.status_code == 400
         assert "Cannot downgrade" in response.json()["detail"]
 
 
-def test_change_tier_general_exception(client: TestClient, auth_headers_solo: dict, db_session: Session):
+def test_change_tier_general_exception(client: TestClient, auth_headers_admin: dict, db_session: Session):
     """
     TDD RED: change_subscription_tier should handle general Exception (lines 163-164)
 
@@ -281,14 +281,14 @@ def test_change_tier_general_exception(client: TestClient, auth_headers_solo: di
         response = client.put(
             "/api/billing/change-tier",
             json={"new_tier": "enterprise", "prorate": True},
-            headers=auth_headers_solo
+            headers=auth_headers_admin,
         )
 
         assert response.status_code == 500
         assert "Failed to update subscription" in response.json()["detail"]
 
 
-def test_cancel_subscription_value_error(client: TestClient, auth_headers_solo: dict, db_session: Session):
+def test_cancel_subscription_value_error(client: TestClient, auth_headers_admin: dict, db_session: Session):
     """
     TDD RED: cancel_my_subscription should handle ValueError (lines 182)
 
@@ -300,14 +300,14 @@ def test_cancel_subscription_value_error(client: TestClient, auth_headers_solo: 
         response = client.post(
             "/api/billing/cancel",
             json={"immediately": True},
-            headers=auth_headers_solo
+            headers=auth_headers_admin,
         )
 
         assert response.status_code == 400
         assert "already cancelled" in response.json()["detail"]
 
 
-def test_cancel_subscription_general_exception(client: TestClient, auth_headers_solo: dict, db_session: Session):
+def test_cancel_subscription_general_exception(client: TestClient, auth_headers_admin: dict, db_session: Session):
     """
     TDD RED: cancel_my_subscription should handle general Exception (lines 183-184)
 
@@ -319,7 +319,7 @@ def test_cancel_subscription_general_exception(client: TestClient, auth_headers_
         response = client.post(
             "/api/billing/cancel",
             json={"immediately": False},
-            headers=auth_headers_solo
+            headers=auth_headers_admin,
         )
 
         assert response.status_code == 500

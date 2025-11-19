@@ -97,3 +97,53 @@ class TestFpaRoutes:
         assert report.report_type == "executive-summary"
         assert "demand_summary" in report.payload
 
+    def test_calculate_scenario_impact_route(self, client, create_user, create_organization, dependency_overrides):
+        org = create_organization(name="Scenario Calc Org")
+        user = create_user(email="calc@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+
+        payload = {
+            "variables": {
+                "gaba_red_price": 32.0,
+                "gaba_black_price": 34.0,
+                "gaba_gold_price": 48.0,
+                "production_volume": 115.0,
+                "material_costs": 97.0,
+                "labor_efficiency": 105.0,
+            }
+        }
+
+        response = client.post("/api/fpa/what-if/calculate", json=payload)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["baseline"]["revenue"] == pytest.approx(10_760_000.0)
+        assert data["metrics"]["revenue"] != pytest.approx(data["baseline"]["revenue"])
+        assert data["metrics"]["gross_margin"] > 0
+
+    def test_predefined_scenarios_and_apply(self, client, create_user, create_organization, dependency_overrides):
+        org = create_organization(name="Preset Org")
+        user = create_user(email="preset@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+
+        presets_resp = client.get("/api/fpa/what-if/presets")
+        assert presets_resp.status_code == 200
+        presets = presets_resp.json()
+        assert len(presets) == 4
+        aggressive = next(p for p in presets if p["id"] == "aggressive-growth")
+        assert aggressive["variables"]["production_volume"] == pytest.approx(120.0)
+
+        apply_resp = client.post("/api/fpa/what-if/apply", json={"scenario_id": "aggressive-growth"})
+        assert apply_resp.status_code == 200
+        body = apply_resp.json()
+        assert body["scenario"]["id"] == "aggressive-growth"
+        assert body["metrics"]["revenue"] != body["baseline"]["revenue"]
+
+    def test_apply_scenario_not_found(self, client, create_user, create_organization, dependency_overrides):
+        org = create_organization(name="Preset Org Missing")
+        user = create_user(email="preset-missing@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+
+        response = client.post("/api/fpa/what-if/apply", json={"scenario_id": "missing"})
+        assert response.status_code == 404
+

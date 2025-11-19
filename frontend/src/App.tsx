@@ -121,8 +121,8 @@ const AdminPanel = lazyNamed(() => import("./modules/fpa/pages/AdminPanel"), "Ad
 const PMIProjectList = lazyNamed(() => import("./modules/pmi/pages/PMIProjectList"), "PMIProjectList")
 const PMIProjectDetail = lazyNamed(() => import("./modules/pmi/pages/PMIProjectDetail"), "PMIProjectDetail")
 const PMIProjectCreate = lazyNamed(() => import("./modules/pmi/pages/PMIProjectCreate"), "PMIProjectCreate")
-const BlogAdminEditor = lazyNamed(() => import("./pages/admin/BlogAdminEditor"), "BlogAdminEditor")
-const TestBlogAdminPage = lazyDefault(() => import("./pages/test/TestBlogAdminPage"))
+// Temporarily disabled - missing blogService functions (createBlogPost, updateBlogPost, publishBlogPost, getBlogPost)
+// const BlogAdminEditor = lazyNamed(() => import("./pages/admin/BlogAdminEditor"), "BlogAdminEditor")
 
 // Feature flag check for Master Admin Portal (enabled by default unless explicitly disabled)
 const isMasterAdminEnabled = import.meta.env.VITE_ENABLE_MASTER_ADMIN !== 'false'

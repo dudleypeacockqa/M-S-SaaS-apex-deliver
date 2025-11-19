@@ -1,10 +1,10 @@
 
 # BMM Workflow Status
 
-**Status**: IN PROGRESS - Suites are green; documentation sync, BlogAdminEditor verification, marketing parity backlog, manual QA, and audits still outstanding
+**Status**: IN PROGRESS - Backend suites green (2025-11-19), frontend Vitest + marketing Playwright still RED; documentation sync, BlogAdminEditor verification, marketing parity backlog, manual QA, and audits remain
 **Release Target**: v1.0.0 (Final QA + marketing smoke sign-off)
 **Current Version**: v1.0.0-rc1 (Core features code-complete)
-**Test Pass Rate (2025-11-17)**: Backend 1,432/1,432 PASS (100%) ✅ · Frontend 1,742/1,742 PASS (100%) ✅ · Master Admin 91/91 PASS (100%) ✅
+**Test Pass Rate (2025-11-19)**: Backend 1,708/1,708 PASS (100%) ✅ · Frontend Vitest RED (ContactPage, BookTrial, Pricing metadata, ProtectedRoute, marketing routing/blog specs, FPA components) ❌ · Master Admin 91/91 PASS (100%) ✅
 **Execution Plan**: Phase 7 (Final QA + Marketing) executing per docs/FINAL-COMPLETION-PLAN.md (wave-based backlog)
 
 ## Project Configuration
@@ -19,10 +19,10 @@ WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.y
 ## Current State
 
 CURRENT_PHASE: 7-Final QA & Marketing Evidence (Documentation sync + BlogAdmin verification)
-CURRENT_WORKFLOW: dev-story (Wave 1 evidence closeout + merge prep)
+CURRENT_WORKFLOW: dev-story (Wave 0 governance sync + marketing evidence capture)
 CURRENT_AGENT: codex (primary) with BMAD governance support
 PROJECT_COMPLETION: 99.2% (All features complete; final QA + marketing website implementation remaining)
-LAST_UPDATED: 2025-11-19T18:45Z (Branch diff inventory + workflow refresh ahead of RED cycles)
+LAST_UPDATED: 2025-11-19T15:30Z (Backend pytest rerun logged; frontend/Playwright failures documented)
 PHASE_1_FOUNDATIONAL_CORE: ✅ COMPLETE (All 7 foundational features implemented and tested)
 PHASE_2_ADVANCED_INTELLIGENCE: ✅ COMPLETE (All 4 intelligence features implemented and tested)
 PHASE_3_ECOSYSTEM_NETWORK: ✅ COMPLETE (All 3 ecosystem features implemented and tested)
@@ -35,28 +35,26 @@ PHASE_7_MARKETING_WEBSITE: ⏳ PENDING (To be implemented in this repo)
 
 STORY_ID: Final-Completion-2025-11-17
 STORY_STATUS: ⚠️ IN PROGRESS (Evidence + release blockers outstanding)
-STORY_RESULT: All 13 core features (F-001 through F-013) implemented with green automated suites. Manual QA, Playwright smoke coverage, and documentation proof remain before calling the story done.
+STORY_RESULT: All 13 core features (F-001 through F-013) implemented; backend automation green, frontend/marketing automation red. Manual QA, Playwright smoke coverage, and documentation proof remain before calling the story done.
 COMPLETED:
-- ✅ Backend: 1,432/1,432 tests passing (100%), 84% coverage, 55 intentional skips captured in log
-- ✅ Frontend: 1,742/1,742 tests passing (100%), 85.1% coverage
+- ✅ Backend: 1,708/1,708 tests passing (100%), 84% coverage, 62 intentional skips captured in log (`docs/tests/2025-11-19-backend-pytest.txt`)
+- ❌ Frontend: Vitest RED (see `docs/tests/2025-11-19-frontend-vitest.txt`)
 - ✅ Master Admin: 91/91 tests passing (100%)
 - ✅ F-010 BlogAdminEditor: Component, tests, and routes complete (commit 95a2bbd)
 - ✅ Production: Both services deployed and healthy
-- ✅ Marketing Playwright: 7/7 specs passing via scripts/run-marketing-playwright.mjs (docs/tests/2025-11-19-playwright.txt)
-- ✅ Backend blog + marketing API pytest refreshed 2025-11-19 (docs/tests/2025-11-19-backend-blog-marketing.txt)
-- ✅ BlogAdminEditor Playwright harness log captured 2025-11-19 (docs/tests/2025-11-19-playwright-blog-admin.txt)
+- ❌ Marketing Playwright: latest run (docs/tests/2025-11-19-playwright.txt) fails during build; optional chaining/polyfill + GTM 404s block completion
 REMAINING:
-- ⏳ Manual QA of Master Admin Portal (4-6 hours) with evidence capture (prep doc: `docs/testing/2025-11-19-master-admin-qa-prep.md`)
+- ⏳ Manual QA of Master Admin Portal (4-6 hours) with evidence capture
 - ⏳ Performance and accessibility audits (2-3 hours) blocked on manual Lighthouse/Axe runs
-- ⏳ Marketing website parity + SEO/blog backlog execution (tracked via docs/FINAL-COMPLETION-PLAN.md and docs/marketing/marketing-gap-analysis-2025-11-19.md)
+- ⏳ Marketing website parity + SEO/blog backlog documentation (see docs/FINAL-COMPLETION-PLAN.md)
 - ⏳ Final documentation/handoff once Decide gate has artefacts (5-7 hours)
 - ⏳ Marketing CI workflow + DAILY_STATUS_NOTES cadence enforcement
 
 ## Assessment
 
-**Code Quality**: ✅ STRONG (automation green, evidence pending)
-- Backend: 1,432/1,432 tests passing (100%), 84% coverage, all core features implemented
-- Frontend: 1,742/1,742 tests passing (100%), 85.1% coverage, all UI components complete
+**Code Quality**: ⚙️ Backend green / Frontend red (evidence pending)
+- Backend: 1,708/1,708 tests passing (100%), 84% coverage, all core features implemented
+- Frontend: Vitest RED (ContactPage, BookTrial, Pricing metadata, ProtectedRoute, marketing routing/blog specs, FPA scenarios) – see `docs/tests/2025-11-19-frontend-vitest.txt`
 - Master Admin: 91/91 tests passing (100%), all 7 features implemented and tested
 - F-010 BlogAdminEditor: Component created with TDD, 15 test cases, routes integrated
 - Production: Both services deployed and healthy, auto-deploy working correctly
@@ -77,90 +75,16 @@ REMAINING:
 
 ## Next Action
 
-NEXT_ACTION: Stage Master Admin QA run + marketing backlog tracking prior to final Decide gate.
+NEXT_ACTION: Wave 0 documentation + marketing evidence sync leading into Master Admin QA prep
 NEXT_COMMAND:
-- `/bmad:bmm:workflows:workflow-status` – Re-sync enterprise track metadata after the CLI refresh and record QA/marketing gating in the workflow log.
-- `/bmad:bmm:workflows:dev-story` – Use sprint artefacts (docs/sprint-artifacts/) to capture Master Admin QA prep, marketing gap analysis, Lighthouse/Axe reruns, and blog evidence.
-- `/bmad:bmm:workflows:review-story` – Close out governance packages once QA + audits are archived, feeding FINAL-COMPLETION-PLAN.md and docs/tests/.
+1. Align README.md, TODO.md, docs/bmad/bmm-workflow-status.md, and docs/bmad/100-PERCENT-COMPLETION-STATUS.md with the 2025-11-19 plan + Playwright evidence.
+2. Keep the marketing smoke automation green via `node scripts/run-marketing-playwright.mjs` and archive each run under docs/tests/.
+3. Draft docs/marketing/marketing-gap-analysis-2025-11-19.md to track SEO, page parity, and blog backlog deliverables.
+4. Stage Master Admin manual QA (Clerk test accounts, seed data, docs/testing logging folders) before executing the checklist.
+5. Schedule manual Lighthouse + Axe reruns after marketing parity updates and store the reports in docs/testing/.
 NEXT_AGENT: codex
-PRIORITY: P0 (Manual QA + marketing evidence sequencing)
-RATIONALE: Evidence collection and marketing backlog proof must be structured through BMAD workflows so the enterprise track can close with auditable artefacts.
-## Session 2025-11-19T18-Branch-Audit-Prep
-
-SESSION_ID: Session-2025-11-19T18-Branch-Audit-Prep
-COMPLETED_WORK:
-- Ran `git fetch origin main`, verified via `git merge-base --is-ancestor` that `feat/email-queue-integration-tests` already includes the latest `main`, and captured `git diff --stat origin/main...HEAD` to scope the RBAC, billing, marketing, and automation deltas that must merge cleanly.
-- Executed `npx bmad-method status` to confirm the BMAD CLI installation is still healthy (v4.44.1) prior to refreshing governance artefacts.
-- Reviewed `docs/bmad/bmm-workflow-status.md`, `docs/bmad/DAILY_STATUS_NOTES.md`, and the attached completion plan to align BMAD trackers with the new merge-to-main initiative; appended a fresh daily status entry summarizing the branch audit findings.
-
-FILES_MODIFIED:
-- docs/bmad/DAILY_STATUS_NOTES.md
-- docs/bmad/bmm-workflow-status.md (this entry)
-
-TEST_RESULTS:
-- `npx bmad-method status` – PASS (installation verified)
-
-NEXT_ACTION: Begin the RED cycle by adding failing pytest/Vitest/Playwright specs covering the branch diffs before touching implementations.
-NEXT_AGENT: codex
-PRIORITY: P0 (Establish RED coverage before merge work)
-RATIONALE: TDD discipline requires codifying expected behaviour through tests before implementing fixes, ensuring the upcoming merge into `main` cannot regress RBAC, billing, or marketing features.
-## Session 2025-11-19T15-BMAD-v6-Refresh
-
-SESSION_ID: Session-2025-11-19T15-BMAD-v6-Refresh
-COMPLETED_WORK:
-- Reset `_vendor/BMAD-METHOD` to commit `be04d687` (v6.0.0-alpha.12), ran `npm install`, and executed the automated installer (`node run-quick-update.js`) to rebuild `.bmad/_cfg` manifests plus Codex/Claude Code integrations using the new track-aware workflow engine.
-- Added `docs/bmad/bmad-v6-upstream-summary.md` summarizing the release (discover_inputs protocol, track renames, sprint artefact folder change) and refreshed `docs/BMAD-METHOD-IMPLEMENTATION.md`, `docs/BMAD-V6-ADOPTION-GUIDE.md`, `CODEX-COMPLETE-PROJECT-GUIDE.md`, and `docs/bmad/prd.md` to point at `.bmad/`, `docs/sprint-artifacts/`, and the enterprise-bmad-method track.
-- Logged the refresh inside this workflow file + `docs/bmad/BMAD_PROGRESS_TRACKER.md` so governance evidence references the new CLI footprint before QA preparation resumes.
-
-FILES_MODIFIED:
-- .bmad/_cfg/agent-manifest.csv
-- .bmad/_cfg/files-manifest.csv
-- .bmad/_cfg/manifest.yaml
-- .bmad/_cfg/task-manifest.csv
-- .bmad/_cfg/workflow-manifest.csv
-- .bmad/bmb/config.yaml
-- .bmad/bmm/config.yaml
-- .bmad/bmm/sub-modules/claude-code/config.yaml
-- .bmad/cis/config.yaml
-- .bmad/core/config.yaml
-- docs/bmad/bmad-v6-upstream-summary.md
-- docs/BMAD-METHOD-IMPLEMENTATION.md
-- docs/BMAD-V6-ADOPTION-GUIDE.md
-- docs/bmad/prd.md
-- CODEX-COMPLETE-PROJECT-GUIDE.md
-- docs/bmad/workflow-readme.md
-
-TEST_RESULTS:
-- `_vendor/BMAD-METHOD/node run-quick-update.js` – PASS (core + bmb + bmm + cis reinstalled, Codex/Claude Code IDE integrations rebuilt, docs/sprint-artifacts path configured)
-- `npx bmad-method status` – PASS (enterprise-bmad-method track detected, IDEs codex/claude-code)
-
-NEXT_ACTION: Follow the global P0 plan (Master Admin QA evidence + marketing backlog tracking) now that BMAD tooling is aligned with v6-alpha.12.
-NEXT_AGENT: codex
-PRIORITY: P0
-RATIONALE: With BMAD assets refreshed, the remaining gate is evidence capture for Master Admin QA + marketing parity.
-
-## Session 2025-11-19T14-Playwright-Evidence
-
-SESSION_ID: Session-2025-11-19T14-Playwright-Evidence
-COMPLETED_WORK:
-- Wired the Playwright helper script + webServer config into docs (README, TODO, FINAL-COMPLETION-PLAN, BMAD trackers) and ran `node scripts/run-marketing-playwright.mjs` to capture docs/tests/2025-11-19-playwright.txt plus docs/deployments/2025-11-19-marketing-playwright.txt.
-- Synchronized governance artefacts with the Nov-19 status so every tracker references the Playwright evidence and the refreshed execution plan.
-- Clarified next-step sequencing (Master Admin QA prep, marketing gap analysis, Lighthouse/Axe archiving, CI wiring) inside docs/FINAL-COMPLETION-PLAN.md and this workflow log.
-FILES_MODIFIED:
-- README.md
-- TODO.md
-- docs/FINAL-COMPLETION-PLAN.md
-- docs/bmad/100-PERCENT-COMPLETION-STATUS.md
-- docs/bmad/bmm-workflow-status.md
-- docs/tests/2025-11-19-playwright.txt
-- docs/deployments/2025-11-19-marketing-playwright.txt
-TEST_RESULTS:
-- `node scripts/run-marketing-playwright.mjs` - PASS (7 Chromium specs)
-NEXT_ACTION: Kick off Master Admin QA prep by drafting docs/testing/2025-11-19-master-admin-prep.md (accounts, data, evidence folders) and outlining the marketing gap analysis doc.
-NEXT_AGENT: codex
-PRIORITY: P0 (Evidence + QA prep)
-RATIONALE: Governance artefacts now capture the marketing smoke proof, freeing the team to prepare manual QA + marketing backlog tracking.
-
+PRIORITY: P0 (Evidence + manual QA prep)
+RATIONALE: Governance artefacts and marketing evidence must be current before moving to manual QA + performance audits.
 ## Session 2025-11-19T10-Imagemin-Hardening
 
 SESSION_ID: Session-2025-11-19T10-Imagemin-Hardening
@@ -475,7 +399,7 @@ WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.y
 ## Current State
 
 CURRENT_PHASE: 6-Complete
-CURRENT_WORKFLOW: dev-story (Wave 1 evidence closeout + Master Admin QA prep)
+CURRENT_WORKFLOW: dev-story (Wave 0 governance sync + marketing evidence capture)
 CURRENT_AGENT: dev
 PHASE_1_COMPLETE: true
 PHASE_2_COMPLETE: true

@@ -196,7 +196,7 @@ const masterAdminNavItem: WorkspaceNavigationItem = {
   id: 'master-admin',
   label: 'Master Admin',
   path: '/master-admin',
-  roles: ['master_admin'],
+  roles: ['admin', 'master_admin'],
   icon: UserCog,
   section: 'ADMINISTRATION',
   hasSubMenu: true,

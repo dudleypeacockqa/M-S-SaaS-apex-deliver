@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user
+from app.core.ownership import require_template_access
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.pipeline_template import (
@@ -41,20 +42,14 @@ def create_template(
     return template
 
 
-def _get_template_or_404(template_id: str, current_user: User, db: Session):
-    template = pipeline_template_service.get_template(db, template_id, current_user.organization_id)
-    if not template:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pipeline template not found")
-    return template
-
-
 @router.get("/{template_id}", response_model=PipelineTemplateResponse)
 def get_template(
     template_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return _get_template_or_404(template_id, current_user, db)
+    template = require_template_access(template_id=template_id, current_user=current_user, db=db)
+    return template
 
 
 @router.put("/{template_id}", response_model=PipelineTemplateResponse)
@@ -64,7 +59,7 @@ def update_template(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    template = _get_template_or_404(template_id, current_user, db)
+    template = require_template_access(template_id=template_id, current_user=current_user, db=db)
     return pipeline_template_service.update_template(db=db, template=template, data=payload)
 
 
@@ -74,6 +69,6 @@ def delete_template(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    template = _get_template_or_404(template_id, current_user, db)
+    template = require_template_access(template_id=template_id, current_user=current_user, db=db)
     pipeline_template_service.delete_template(db, template)
     return {"status": "deleted"}

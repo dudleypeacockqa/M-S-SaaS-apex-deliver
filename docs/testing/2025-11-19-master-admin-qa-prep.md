@@ -178,3 +178,4 @@ http --form POST "$BACKEND_URL/api/master-admin/collateral"   Authorization:"Bea
 
 Document every created ID inside `data/records.json` so screenshots and notes can reference real records during the QA run. Pair the entries with screenshots/log snippets when executing the checklist.
 
+

@@ -3,9 +3,10 @@
 > **⚠️ DOCUMENT SUPERSEDED**: Original checklist reflects 2025-11-01 state. Active guidance lives in [docs/FINAL-COMPLETION-PLAN.md](docs/FINAL-COMPLETION-PLAN.md).
 >
 > **Reality Check (2025-11-19)**:
-> - ✅ Backend targeted pytest (blog + marketing APIs) refreshed; see `docs/tests/2025-11-19-backend-blog-marketing.txt` (15 PASS).
-> - ✅ Frontend Vitest/Playwright evidence captured Nov 19 (`docs/tests/2025-11-19-playwright.txt` + `docs/deployments/2025-11-19-marketing-playwright.txt`).
-> - ⏳ Remaining: Master Admin QA, BlogAdmin proof, Lighthouse/Axe reruns, marketing backlog tracked in [docs/marketing/marketing-gap-analysis-2025-11-19.md](docs/marketing/marketing-gap-analysis-2025-11-19.md).
+> - ✅ Backend full pytest rerun (1,708 PASS / 62 SKIP) logged at `docs/tests/2025-11-19-backend-pytest.txt`; rbac_audit_service coverage restored.
+> - ❌ Frontend Vitest still RED (ContactPage, BookTrial, Pricing metadata, ProtectedRoute, ProductionTracking, Scenario components, blog routing). See `docs/tests/2025-11-19-frontend-vitest.txt` for failure list.
+> - ❌ Marketing Playwright smoke blocked: `scripts/run-marketing-playwright.mjs` fails during build (optional chaining/polyfill + GTM 404). Evidence at `docs/tests/2025-11-19-playwright.txt`.
+> - ⏳ Remaining Decide gates: Master Admin QA, BlogAdmin proof, Lighthouse/Axe reruns, marketing backlog per [docs/marketing/marketing-gap-analysis-2025-11-19.md](docs/marketing/marketing-gap-analysis-2025-11-19.md).
 
 ---
 
@@ -13,7 +14,7 @@
 **Historical Date:** 2025-11-01 [Session 2C Complete]
 **Methodology:** BMAD-METHOD v6 + TDD
 **Current Phase:** Sprint 1-B – Master Admin Frontend + Deploy Verification
-**Test Coverage:** Backend ~84% (1,487 specs, 55 skipped), Frontend ~85% (1,743 specs)
+**Test Coverage:** Backend ~84% (1,708 specs, 62 skipped), Frontend ~85% (1,743 specs when green)
 **Deployment:** Render (services live; verification/log capture scheduled)
 
 ---
@@ -22,7 +23,7 @@
 
 | Wave | Focus | Key Deliverables | Owner Notes |
 | --- | --- | --- | --- |
-| Wave 0 | Governance & automation prep | Sync README, TODO, BMAD trackers, 100%-status files; document marketing Playwright helper + log capture; refresh pytest + vitest smoke evidence | IN PROGRESS – this edit plus README refresh close the doc-sync portion |
+| Wave 0 | Governance & automation prep | Sync README, TODO, BMAD trackers, 100%-status files; document marketing Playwright helper + log capture; refresh pytest + vitest smoke evidence | IN PROGRESS – backend log captured; frontend/playwright failures documented |
 | Wave 1 | Evidence scaffolding | Draft docs/marketing/marketing-gap-analysis-2025-11-19.md, extend master-admin QA prep (accounts, data, evidence folders), outline Lighthouse/Axe capture runbook, wire Playwright helper into CI | QUEUED |
 | Wave 2 | Manual QA + BlogAdmin proof | Execute Master Admin checklist, capture `/admin/blog/*` screenshots/logs, publish outcomes into docs/testing + README | BLOCKED until Wave 1 artifacts ready |
 | Wave 3 | Marketing parity | Implement remaining marketing pages/content/SEO/integrations, expand Vitest + Playwright suites, archive logs | NOT STARTED |

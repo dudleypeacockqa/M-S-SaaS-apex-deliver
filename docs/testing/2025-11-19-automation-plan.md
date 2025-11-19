@@ -20,7 +20,7 @@ The next QA wave requires fresh automation evidence plus Render deploy logs once
 - **Focus**: Ensure the RED suites called out in `docs/tests/2025-11-19-frontend-vitest.txt` are resolved; keep MSW fixtures updated so logs remain deterministic.
 - **Evidence**: Store the rerun output under `docs/tests/2025-11-19-frontend-vitest-rerun.txt` and link it inside README + BMAD trackers after it passes.
 
-## Playwright Smoke (Helper Script)
+## Master Admin API Smoke\n- **Command**:\n  `ash\n  python -m pytest backend/tests/test_master_admin_api.py | tee docs/tests/2025-11-19-backend-master-admin.txt\n  `\n- **Purpose**: Ensure the 14 primary Master Admin routes stay green after seeding or QA-driven data changes.\n- **Evidence**: Attach docs/tests/2025-11-19-backend-master-admin.txt (and future reruns) to README + FINAL plan whenever data or permissions change.\n\n## Playwright Smoke (Helper Script)
 - **Command**:
   ```bash
   node scripts/run-marketing-playwright.mjs | tee docs/tests/2025-11-19-playwright-rerun.txt
@@ -67,4 +67,5 @@ The next QA wave requires fresh automation evidence plus Render deploy logs once
 - `docs/testing/lighthouse/<date>/` — created automatically by `scripts/run-lighthouse-axe.mjs`.
 - `docs/tests/` — backend/frontend/playwright rerun logs (see commands above).
 - `docs/deployments/` — Render trigger + verify logs per redeploy.
+
 
