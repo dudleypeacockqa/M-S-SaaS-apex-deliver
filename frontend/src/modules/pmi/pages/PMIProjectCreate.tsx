@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCreatePMIProject } from '../hooks/usePMIProject';
 import { ArrowLeft, Calendar } from 'lucide-react';
+import { WorkspaceContainer } from '@/components/layout/WorkspaceContainer';
 
 export const PMIProjectCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ export const PMIProjectCreate: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <WorkspaceContainer maxWidth="3xl" className="p-6">
       <button
         onClick={() => navigate('/pmi/projects')}
         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
@@ -227,7 +228,7 @@ export const PMIProjectCreate: React.FC = () => {
           </div>
         </form>
       </div>
-    </div>
+    </WorkspaceContainer>
   );
 };
 

@@ -6,13 +6,14 @@
 import React from 'react'
 import { useUser } from '@clerk/clerk-react'
 import { Card, CardHeader, CardBody } from '../../components/ui'
+import { WorkspaceContainer } from '@/components/layout/WorkspaceContainer'
 
 export const CustomerAccount: React.FC = () => {
   const { user } = useUser()
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <WorkspaceContainer maxWidth="4xl" className="space-y-6">
         <h1 className="text-3xl font-bold text-gray-900">Account Management</h1>
 
         <Card>
@@ -57,7 +58,7 @@ export const CustomerAccount: React.FC = () => {
             </div>
           </CardBody>
         </Card>
-      </div>
+      </WorkspaceContainer>
     </div>
   )
 }

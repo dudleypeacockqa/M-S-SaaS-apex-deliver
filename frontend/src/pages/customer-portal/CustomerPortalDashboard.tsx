@@ -7,13 +7,14 @@ import React from 'react'
 import { useUser } from '@clerk/clerk-react'
 import { Link } from 'react-router-dom'
 import { Card, CardHeader, CardBody } from '../../components/ui'
+import { WorkspaceContainer } from '@/components/layout/WorkspaceContainer'
 
 export const CustomerPortalDashboard: React.FC = () => {
   const { user } = useUser()
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <WorkspaceContainer className="space-y-6">
         {/* Welcome Section */}
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-8 text-white shadow-lg">
           <h1 className="text-3xl font-bold mb-2">
@@ -81,7 +82,7 @@ export const CustomerPortalDashboard: React.FC = () => {
             <p className="text-gray-600">No recent activity to display.</p>
           </CardBody>
         </Card>
-      </div>
+      </WorkspaceContainer>
     </div>
   )
 }

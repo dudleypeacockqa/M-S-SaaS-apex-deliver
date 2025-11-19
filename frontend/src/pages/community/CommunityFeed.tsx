@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { PostCard } from '../../components/community/PostCard'
 import { CreatePostModal } from '../../components/community/CreatePostModal'
 import { HelpTooltip } from '../../components/common/HelpTooltip'
+import { WorkspaceContainer } from '@/components/layout/WorkspaceContainer'
 import {
   listPosts,
   createPost,
@@ -83,16 +84,16 @@ export const CommunityFeed: React.FC = () => {
 
   if (error) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+      <WorkspaceContainer maxWidth="4xl" className="p-6">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <p className="text-red-800">Error loading posts. Please try again later.</p>
         </div>
-      </div>
+      </WorkspaceContainer>
     )
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <WorkspaceContainer maxWidth="4xl" className="p-6">
       {/* Header */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-4">
@@ -222,6 +223,6 @@ export const CommunityFeed: React.FC = () => {
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreatePost}
       />
-    </div>
+    </WorkspaceContainer>
   )
 }

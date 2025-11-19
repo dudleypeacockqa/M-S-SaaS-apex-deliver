@@ -1,25 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
-import { useUser } from '@clerk/clerk-react';
-import { entitlementService } from '../../../services/api/entitlements';
+import { useFeatureAccess } from '../../../hooks/useFeatureAccess'
 
 /**
  * Hook to check PMI module access
  */
 export function usePMIAccess() {
-  const { user } = useUser();
-
-  const { data: hasAccess, isLoading } = useQuery({
-    queryKey: ['pmi', 'access', user?.id],
-    queryFn: async () => {
-      if (!user) return false;
-      return entitlementService.checkFeatureAccess('pmi_module');
-    },
-    enabled: !!user,
-  });
+  const access = useFeatureAccess({ feature: 'pmi_module' })
 
   return {
-    hasAccess: hasAccess ?? false,
-    isLoading,
-  };
+    hasAccess: access.hasAccess,
+    isLoading: access.isLoading,
+    error: access.error,
+    requiredTier: access.requiredTier,
+    upgradeMessage: access.upgradeMessage,
+    upgradeCtaUrl: access.upgradeCtaUrl ?? '/pricing',
+  }
 }
 

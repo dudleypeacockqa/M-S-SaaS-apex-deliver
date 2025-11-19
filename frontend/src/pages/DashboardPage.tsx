@@ -27,6 +27,7 @@ import {
 } from '@/lib/icons'
 import { Card, CardHeader, CardBody, Badge, Button, Spinner } from '../components/ui'
 import { GridSystem } from '../components/layout'
+import { WorkspaceContainer } from '@/components/layout/WorkspaceContainer'
 import {
   listDeals,
   type DealStage,
@@ -124,7 +125,7 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <WorkspaceContainer className="space-y-6">
         {/* Welcome Section */}
         <WelcomeSection userName={user?.firstName || 'User'} dealsData={dealsData} dealsLoading={dealsLoading} />
 
@@ -144,7 +145,7 @@ export const DashboardPage: React.FC = () => {
         </GridSystem>
 
         <FinancialInsightsWidget dealsData={dealsData} dealsLoading={dealsLoading} />
-      </div>
+      </WorkspaceContainer>
     </div>
   )
 }

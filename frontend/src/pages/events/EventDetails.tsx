@@ -22,6 +22,7 @@ import {
   type EventAnalytics,
 } from '../../services/api/events'
 import { Card, CardHeader, CardBody, Button, Spinner } from '../../components/ui'
+import { WorkspaceContainer } from '@/components/layout/WorkspaceContainer'
 
 export const EventDetails: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>()
@@ -122,7 +123,7 @@ export const EventDetails: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <WorkspaceContainer className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -448,7 +449,7 @@ export const EventDetails: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+      </WorkspaceContainer>
     </div>
   )
 }

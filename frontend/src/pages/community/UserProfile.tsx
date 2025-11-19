@@ -9,6 +9,7 @@ import {
   unfollowUser,
   type ReactionType,
 } from '../../services/api/community'
+import { WorkspaceContainer } from '@/components/layout/WorkspaceContainer'
 
 export const UserProfile: React.FC = () => {
   const { userId } = useParams<{ userId: string }>()
@@ -66,7 +67,7 @@ export const UserProfile: React.FC = () => {
   const isLoading = postsLoading || statsLoading
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <WorkspaceContainer maxWidth="4xl" className="p-6">
       {/* Profile Header */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="flex justify-between items-start">
@@ -135,6 +136,6 @@ export const UserProfile: React.FC = () => {
           </>
         )}
       </div>
-    </div>
+    </WorkspaceContainer>
   )
 }

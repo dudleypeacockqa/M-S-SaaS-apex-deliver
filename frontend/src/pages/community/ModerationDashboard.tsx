@@ -7,6 +7,7 @@ import {
   type ModerationActionType,
   type TargetType,
 } from '../../services/api/community'
+import { WorkspaceContainer } from '@/components/layout/WorkspaceContainer'
 
 export const ModerationDashboard: React.FC = () => {
   const queryClient = useQueryClient()
@@ -44,7 +45,7 @@ export const ModerationDashboard: React.FC = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <WorkspaceContainer maxWidth="6xl" className="p-6">
       <h1 className="text-3xl font-bold text-gray-900 mb-6" data-testid="moderation-title">
         Moderation Dashboard
       </h1>
@@ -126,6 +127,6 @@ export const ModerationDashboard: React.FC = () => {
           </>
         )}
       </div>
-    </div>
+    </WorkspaceContainer>
   )
 }

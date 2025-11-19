@@ -18,6 +18,7 @@ import { CreateEpisodeModal } from '../../components/podcast/CreateEpisodeModal'
 import { EditEpisodeModal } from '../../components/podcast/EditEpisodeModal';
 import { DeleteEpisodeModal } from '../../components/podcast/DeleteEpisodeModal';
 import VideoUploadModal from '../../components/podcast/VideoUploadModal';
+import VideoPlayerModal from '../../components/podcast/VideoPlayerModal';
 import { YouTubePublishModal } from '../../components/podcast/YouTubePublishModal';
 import LiveStreamManager from '../../components/podcast/LiveStreamManager';
 import { EpisodeTranscriptPanel } from '../../components/podcast/EpisodeTranscriptPanel';
@@ -286,6 +287,17 @@ function PodcastStudioContent() {
     [initiateYouTubeOAuthMutation],
   );
 
+  const handleWatchVideo = React.useCallback(
+    (episode: PodcastEpisode) => {
+      if (!episode.video_file_url) {
+        pushNotification('info', 'Upload a video before previewing playback.');
+        return;
+      }
+      setVideoPlayerEpisode(episode);
+    },
+    [pushNotification],
+  );
+
   const isQuotaExceeded = Boolean(
     quota && !quota.isUnlimited && (quota.remaining ?? 0) <= 0,
   );
@@ -461,6 +473,7 @@ function PodcastStudioContent() {
               onDelete={(episode) => setDeleteTarget(episode)}
               onNotify={pushNotification}
               onVideoUpload={(episode) => setVideoUploadEpisode(episode)}
+              onWatchVideo={handleWatchVideo}
             />
           </SectionErrorBoundary>
         </>
@@ -553,6 +566,14 @@ function PodcastStudioContent() {
               closeVideoUploadModal();
               return response;
             }}
+          />
+        )}
+        {videoPlayerEpisode && (
+          <VideoPlayerModal
+            open={Boolean(videoPlayerEpisode)}
+            onClose={closeVideoPlayerModal}
+            episodeName={videoPlayerEpisode.title}
+            videoUrl={videoPlayerEpisode.video_file_url ?? null}
           />
         )}
       </FeatureGate>
@@ -851,6 +872,7 @@ function EpisodesList({
             onDelete={onDelete}
             onNotify={onNotify}
             onVideoUpload={onVideoUpload}
+            onWatchVideo={onWatchVideo}
           />
         ))}
       </ul>
@@ -1029,14 +1051,25 @@ function EpisodeListItem({
               lockedDescription="Upload studio-quality video episodes with a Premium plan."
               ctaLabel="Upgrade for video uploads"
             >
-              <div className="flex flex-col items-end gap-1">
-                <button
-                  type="button"
-                  onClick={() => onVideoUpload(episode)}
-                  className="inline-flex items-center px-3 py-2 border border-purple-300 shadow-sm text-sm leading-4 font-medium rounded-md text-purple-700 bg-white hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                >
-                  Upload video
-                </button>
+              <div className="flex flex-col items-end gap-2">
+                <div className="flex flex-wrap justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onVideoUpload(episode)}
+                    className="inline-flex items-center px-3 py-2 border border-purple-300 shadow-sm text-sm leading-4 font-medium rounded-md text-purple-700 bg-white hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                  >
+                    Upload video
+                  </button>
+                  {episode.video_file_url ? (
+                    <button
+                      type="button"
+                      onClick={() => onWatchVideo(episode)}
+                      className="inline-flex items-center px-3 py-2 border border-purple-600 text-sm font-medium leading-4 rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                    >
+                      Watch video
+                    </button>
+                  ) : null}
+                </div>
                 {episode.video_file_url ? (
                   <a
                     href={episode.video_file_url}
@@ -1148,8 +1181,3 @@ function EpisodeListItem({
     </li>
   );
 }
-
-
-
-
-

@@ -9,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { listEvents, deleteEvent, type Event } from '../../services/api/events'
 import { Card, CardHeader, CardBody, Button, Spinner } from '../../components/ui'
 import { HelpTooltip } from '../../components/common/HelpTooltip'
+import { WorkspaceContainer } from '@/components/layout/WorkspaceContainer'
 
 export const EventDashboard: React.FC = () => {
   const navigate = useNavigate()
@@ -66,7 +67,7 @@ export const EventDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <WorkspaceContainer className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -124,7 +125,7 @@ export const EventDashboard: React.FC = () => {
         </div>
 
         {/* Events Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {events && events.length > 0 ? (
             events.map((event) => (
               <Card key={event.id} className="hover:shadow-lg transition-shadow">
@@ -184,7 +185,7 @@ export const EventDashboard: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+      </WorkspaceContainer>
     </div>
   )
 }

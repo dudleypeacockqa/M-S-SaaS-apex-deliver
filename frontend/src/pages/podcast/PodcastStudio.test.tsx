@@ -617,6 +617,40 @@ describe('PodcastStudio', () => {
     });
   });
 
+  describe('Video playback', () => {
+    beforeEach(() => {
+      setSubscriptionTier('premium');
+      vi.mocked(podcastApi.getQuotaSummary).mockResolvedValue(defaultQuota);
+      vi.mocked(podcastApi.listEpisodes).mockResolvedValue([
+        buildEpisode({
+          id: 'ep-video-playback',
+          title: 'Investor Insights',
+          video_file_url: 'https://cdn.example.com/video.mp4',
+        }),
+      ]);
+    });
+
+    it('shows watch video button for episodes with uploaded video', async () => {
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const watchButton = await screen.findByRole('button', { name: /watch video/i }, { timeout: 5000 });
+      expect(watchButton).toBeEnabled();
+    });
+
+    it('opens the video player modal when watch video is clicked', async () => {
+      const user = userEvent.setup();
+      render(<PodcastStudio />, { wrapper: createWrapper() });
+
+      const watchButton = await screen.findByRole('button', { name: /watch video/i }, { timeout: 5000 });
+      await user.click(watchButton);
+
+      const modal = await screen.findByTestId('video-player-modal');
+      expect(modal).toBeInTheDocument();
+      expect(screen.getByText(/video playback/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /investor insights/i })).toBeInTheDocument();
+    });
+  });
+
   describe('YouTube Integration', () => {
     const audioAccess = {
       feature: 'podcast_audio',
