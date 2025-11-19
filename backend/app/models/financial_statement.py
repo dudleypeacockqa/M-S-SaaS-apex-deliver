@@ -55,7 +55,7 @@ class FinancialStatement(Base):
     other_non_current_assets = Column(Numeric(precision=15, scale=2), nullable=True)
     fixed_assets = Column(Numeric(precision=15, scale=2), nullable=True)
 
-    total_assets = Column(Numeric(precision=15, scale=2), nullable=True)
+    total_assets = Column(Numeric(precision=20, scale=3), nullable=True)
 
     # Current Liabilities
     accounts_payable = Column(Numeric(precision=15, scale=2), nullable=True)
@@ -68,13 +68,13 @@ class FinancialStatement(Base):
     # Non-Current Liabilities
     long_term_debt = Column(Numeric(precision=15, scale=2), nullable=True)
     other_non_current_liabilities = Column(Numeric(precision=15, scale=2), nullable=True)
-    total_liabilities = Column(Numeric(precision=15, scale=2), nullable=True)
+    total_liabilities = Column(Numeric(precision=20, scale=3), nullable=True)
 
     # Equity
     share_capital = Column(Numeric(precision=15, scale=2), nullable=True)
     retained_earnings = Column(Numeric(precision=15, scale=2), nullable=True)
     other_equity = Column(Numeric(precision=15, scale=2), nullable=True)
-    total_equity = Column(Numeric(precision=15, scale=2), nullable=True)
+    total_equity = Column(Numeric(precision=20, scale=3), nullable=True)
 
     # Income Statement line items
     revenue = Column(Numeric(precision=15, scale=2), nullable=True)
@@ -132,3 +132,21 @@ class FinancialStatement(Base):
 
     def __repr__(self):
         return f"<FinancialStatement(id={self.id}, type={self.statement_type}, period={self.period_end})>"
+
+    # Backwards compatibility alias for older code/tests
+    @property
+    def financial_connection_id(self) -> str:
+        return self.connection_id
+
+    @financial_connection_id.setter
+    def financial_connection_id(self, value: str) -> None:
+        self.connection_id = value
+
+    @property
+    def statement_date(self):
+        return self.period_end
+
+    @statement_date.setter
+    def statement_date(self, value):
+        self.period_start = value
+        self.period_end = value

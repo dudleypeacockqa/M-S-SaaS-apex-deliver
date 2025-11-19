@@ -406,14 +406,13 @@ class ValuationExportService:
 
         from importlib import import_module
 
-        global HTML  # type: ignore
-        if HTML is None:
-            try:
-                HTML = import_module("weasyprint").HTML  # type: ignore
-            except Exception as exc:
-                raise ImportError("weasyprint is not installed") from exc
+        try:
+            weasyprint_module = import_module("weasyprint")
+        except Exception as exc:
+            raise ImportError("weasyprint is not installed") from exc
 
-        html = HTML(string=html_content)
+        html_cls = getattr(weasyprint_module, "HTML")
+        html = html_cls(string=html_content)
         pdf_bytes = html.write_pdf()
         return pdf_bytes
 

@@ -129,6 +129,8 @@ class PMIReportService:
         days_into_pmi = (datetime.now(timezone.utc) - project.close_date).days if project.close_date else 0
         days_remaining = (project.target_completion_date - datetime.now(timezone.utc)).days if project.target_completion_date else 0
         
+        percent_value = (srr * Decimal("100")).quantize(Decimal("0.01"))
+
         html = f"""
         <!DOCTYPE html>
         <html>
@@ -489,7 +491,7 @@ class PMIReportService:
             <table>
                 <tr><th>Total Planned Value</th><td>£{total_planned:,.2f}</td></tr>
                 <tr><th>Total Realized Value</th><td>£{total_realized:,.2f}</td></tr>
-                <tr><th>Synergy Realization Rate (SRR)</th><td>{srr:.2f}%</td></tr>
+                <tr><th>Synergy Realization Rate (SRR)</th><td>{percent_value:.2f}%</td></tr>
             </table>
             
             <h2>Synergy Details</h2>

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime, timezone, timedelta
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from typing import Optional, List, Tuple
 
 from sqlalchemy import select, func, and_, or_
@@ -376,7 +376,7 @@ def calculate_synergy_realization_rate(project_id: str, organization_id: str, db
     """
     Calculate synergy realization rate (SRR).
 
-    SRR = (Cumulative Realized Synergies / Total Projected Synergies) * 100%
+    SRR = Cumulative Realized Synergies / Total Projected Synergies
 
     Args:
         project_id: PMI project ID
@@ -384,7 +384,7 @@ def calculate_synergy_realization_rate(project_id: str, organization_id: str, db
         db: Database session
 
     Returns:
-        SRR as Decimal (0-100)
+        SRR as Decimal ratio (0-1)
     """
     synergies = list_synergies(project_id, organization_id, db)
 
@@ -392,13 +392,16 @@ def calculate_synergy_realization_rate(project_id: str, organization_id: str, db
         return Decimal("0")
 
     total_planned = sum(s.planned_value for s in synergies)
-    total_realized = sum(s.realized_value or Decimal("0") for s in synergies if s.realized_value)
+    total_realized = sum(
+        s.realized_value or Decimal("0") for s in synergies if s.realized_value
+    )
 
     if total_planned == 0:
         return Decimal("0")
 
-    srr = (total_realized / total_planned) * Decimal("100")
-    return min(srr, Decimal("100"))  # Cap at 100%
+    srr = total_realized / total_planned
+    capped = min(srr, Decimal("1"))
+    return capped.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
 
 # PMI Metric Services
@@ -665,7 +668,10 @@ def get_pmi_dashboard(project_id: str, organization_id: str, db: Session) -> PMI
 
     if project.day_one_date:
         now = datetime.now(timezone.utc)
-        days_since_day_one = (now - project.day_one_date).days
+        day_one_date = project.day_one_date
+        if day_one_date.tzinfo is None:
+            day_one_date = day_one_date.replace(tzinfo=timezone.utc)
+        days_since_day_one = (now - day_one_date).days
 
         if days_since_day_one <= 30:
             current_phase = PMIPhase.stabilization

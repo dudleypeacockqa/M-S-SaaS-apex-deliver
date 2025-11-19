@@ -9,7 +9,7 @@ Enterprise Market Focus: 15% of target market uses NetSuite
 import os
 import secrets
 from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from decimal import Decimal
 from sqlalchemy.orm import Session
 from sqlalchemy import select
@@ -511,20 +511,17 @@ def _parse_netsuite_balance_sheet(
         Created FinancialStatement record
     """
     # Calculate totals
-    total_assets = sum(
-        Decimal(str(account["Balance"]))
-        for account in balance_sheet.get("Assets", [])
-    )
+    def _safe_balance(account: Dict[str, Any]) -> Decimal:
+        value = account.get("Balance", 0) or 0
+        return Decimal(str(value))
+
+    total_assets = sum(_safe_balance(account) for account in balance_sheet.get("Assets", []))
 
     total_liabilities = sum(
-        Decimal(str(account["Balance"]))
-        for account in balance_sheet.get("Liabilities", [])
+        _safe_balance(account) for account in balance_sheet.get("Liabilities", [])
     )
 
-    total_equity = sum(
-        Decimal(str(account["Balance"]))
-        for account in balance_sheet.get("Equity", [])
-    )
+    total_equity = sum(_safe_balance(account) for account in balance_sheet.get("Equity", []))
 
     # Create financial statement
     today = datetime.now(timezone.utc).date()

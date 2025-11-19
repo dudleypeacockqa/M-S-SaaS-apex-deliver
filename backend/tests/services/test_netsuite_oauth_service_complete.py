@@ -925,7 +925,7 @@ class TestNetSuiteErrorHandling:
             )
 
     @patch('app.services.netsuite_oauth_service.netsuite_client')
-    def test_import_token_refresh_failure(self, mock_client, db_session):
+    def test_import_token_refresh_failure(self, mock_client, db_session, test_deal):
         """
         TDD RED: Should propagate error if token refresh fails for expired token
         Expected: PASS - raises exception
@@ -946,8 +946,8 @@ class TestNetSuiteErrorHandling:
             """),
             {
                 "id": connection_id,
-                "deal_id": "test-deal-id",
-                "organization_id": "test-org",
+                "deal_id": str(test_deal.id),
+                "organization_id": test_deal.organization_id,
                 "platform": "netsuite",
                 "access_token": "expired",
                 "refresh_token": "refresh",

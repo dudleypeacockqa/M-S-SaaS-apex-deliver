@@ -6,10 +6,10 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from app.api.dependencies.auth import get_current_user
+from app.api.dependencies.auth import get_current_user, require_min_role
 from app.db.session import get_db
 from app.models.community import PostCategory, PostStatus, ReactionType, TargetType
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.schemas.community import (
     CommentCreate,
     CommentResponse,
@@ -426,7 +426,7 @@ def get_following(
 @router.post("/moderation/actions", response_model=ModerationActionResponse, status_code=status.HTTP_201_CREATED)
 def moderate_content(
     moderation: ModerationActionCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_min_role(UserRole.admin)),
     db: Session = Depends(get_db),
 ):
     """
@@ -448,7 +448,7 @@ def moderate_content(
 
 @router.get("/moderation/flagged", response_model=list[FlaggedContent])
 def get_flagged_content(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_min_role(UserRole.admin)),
     db: Session = Depends(get_db),
 ):
     """
