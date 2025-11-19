@@ -30,20 +30,37 @@ export const colors = {
     900: '#0f172a',
   },
   success: {
+    50: '#f0fdf4',
+    100: '#dcfce7',
     500: '#10b981',
     600: '#059669',
+    700: '#047857',
     DEFAULT: '#10b981',
   },
   warning: {
+    50: '#fff7ed',
+    100: '#ffedd5',
     500: '#f97316',
     600: '#ea580c',
+    700: '#c2410c',
     DEFAULT: '#f97316',
   },
   danger: {
+    50: '#fef2f2',
+    100: '#fee2e2',
     500: '#ef4444',
     600: '#dc2626',
+    700: '#b91c1c',
     DEFAULT: '#ef4444',
   },
+  info: {
+    50: '#eff6ff',
+    100: '#dbeafe',
+    500: '#3b82f6',
+    600: '#2563eb',
+    700: '#1d4ed8',
+    DEFAULT: '#3b82f6',
+  }
 }
 
 export const spacing = {
@@ -52,24 +69,49 @@ export const spacing = {
   md: '1rem',
   lg: '1.5rem',
   xl: '2rem',
+  '2xl': '3rem',
+  '3xl': '4rem',
 }
 
 export const radii = {
   sm: '0.375rem',
   md: '0.75rem',
   lg: '1rem',
+  xl: '1.5rem',
   pill: '999px',
+  circle: '50%',
 }
 
 export const shadows = {
-  sm: '0 1px 2px rgba(15, 23, 42, 0.08)',
-  md: '0 10px 25px rgba(15, 23, 42, 0.08)',
-  lg: '0 25px 50px rgba(15, 23, 42, 0.06)',
+  sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+  DEFAULT: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+  md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+  lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+  xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+  inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
 }
 
-export const gradients = {
-  brand: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #0ea5e9 100%)',
-  slate: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+export const typography = {
+  fonts: {
+    sans: 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+    mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+  },
+  sizes: {
+    xs: '0.75rem',
+    sm: '0.875rem',
+    base: '1rem',
+    lg: '1.125rem',
+    xl: '1.25rem',
+    '2xl': '1.5rem',
+    '3xl': '1.875rem',
+    '4xl': '2.25rem',
+  },
+  weights: {
+    normal: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+  }
 }
 
 /**
@@ -79,4 +121,4 @@ export const cn = (...classes: (string | undefined | null | false)[]): string =>
   return classes.filter(Boolean).join(' ')
 }
 
-export default { colors, spacing, radii, shadows, gradients, cn }
+export default { colors, spacing, radii, shadows, typography, cn }
