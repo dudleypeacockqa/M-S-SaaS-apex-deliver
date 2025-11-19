@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { PricingPage } from './PricingPage';
 import { useAuth } from '@clerk/clerk-react';
 import { billingService } from '../../services/billingService';
+import { HelmetProvider } from 'react-helmet-async';
 
 vi.mock('@clerk/clerk-react', () => ({
   useAuth: vi.fn(),
@@ -18,9 +19,11 @@ vi.mock('../../services/billingService', () => ({
 
 const renderPricing = () =>
   render(
+    <HelmetProvider>
     <MemoryRouter>
       <PricingPage />
     </MemoryRouter>
+    </HelmetProvider>
   );
 
 const setAuthState = (signedIn: boolean) => {
@@ -53,10 +56,10 @@ describe('PricingPage', () => {
     });
 
     ['£598', '£1,598', '£2,997'].forEach((price) => {
-      expect(screen.getAllByText(price)[0]).toBeInTheDocument();
+      expect(screen.getAllByText(new RegExp(price))).not.toHaveLength(0);
     });
 
-    expect(screen.getAllByText(/Contact/i)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/Contact sales/i)[0]).toBeInTheDocument();
   });
 
   it('redirects unauthenticated users to sign-in when clicking Get Started', async () => {
@@ -79,7 +82,7 @@ describe('PricingPage', () => {
 
     await user.click(screen.getByTestId('pricing-cta-starter'));
 
-    expect(billingService.redirectToCheckout).toHaveBeenCalledWith('starter');
+    expect(billingService.redirectToCheckout).toHaveBeenCalledWith('starter', 'monthly');
     expect(openSpy).not.toHaveBeenCalled();
     openSpy.mockRestore();
   });
@@ -91,7 +94,7 @@ describe('PricingPage', () => {
 
     await user.click(screen.getByTestId('pricing-cta-professional'));
 
-    expect(billingService.redirectToCheckout).toHaveBeenCalledWith('professional');
+    expect(billingService.redirectToCheckout).toHaveBeenCalledWith('professional', 'monthly');
   });
 
   it('shows loading state while redirect promise pending', async () => {
@@ -127,12 +130,14 @@ describe('PricingPage', () => {
     expect(screen.getByTestId('pricing-cta-starter')).toBeEnabled();
   });
 
-  it('publishes canonical and og:url metadata for the 100daysandbeyond.com domain', () => {
+  it('publishes canonical and og:url metadata for the 100daysandbeyond.com domain', async () => {
     renderPricing();
 
+    await waitFor(() => {
     const canonical = document.querySelector('link[rel="canonical"]');
     expect(canonical).not.toBeNull();
     expect(canonical?.getAttribute('href')).toBe('https://100daysandbeyond.com/pricing');
+    });
 
     const ogUrlMeta = document.querySelector('meta[property="og:url"]');
     expect(ogUrlMeta).not.toBeNull();
@@ -148,7 +153,7 @@ describe('PricingPage', () => {
     expect(schema['@type']).toBe('Product');
     expect(schema.url).toBe('https://100daysandbeyond.com/pricing');
     expect(Array.isArray(schema.offers)).toBe(true);
-    expect(schema.offers).toHaveLength(3);
+    expect(schema.offers).toHaveLength(6);
     expect(schema.offers[0].url).toBe('https://100daysandbeyond.com/pricing');
   });
 });

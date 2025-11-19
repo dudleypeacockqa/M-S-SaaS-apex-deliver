@@ -57,21 +57,6 @@ jobs:
         run: npm run test -- --run src/pages/admin/BlogAdminEditor.test.tsx src/tests/integration/routing.test.tsx
         working-directory: frontend
 
-      - name: Start marketing preview server
-        run: nohup npm run preview:test > preview.log 2>&1 &
-        working-directory: frontend
-
-      - name: Wait for preview server
-        run: |
-          for i in {1..30}; do
-            if curl -sSf http://127.0.0.1:4173 > /dev/null; then
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "Preview server never became reachable" >&2
-          exit 1
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -92,11 +77,21 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run Playwright marketing smoke tests
-        run: npx playwright test --config playwright.dev.config.ts
-
-      - name: Stop preview server
-        if: always()
+      - name: Run marketing Playwright smoke (helper script)
+        env:
+          MARKETING_BASE_URL: ${{ env.MARKETING_BASE_URL }}
+          PLAYWRIGHT_REPORTER: html,line
+          PLAYWRIGHT_HTML_REPORT: playwright-report
         run: |
-          pkill -f "vite preview" || true
-          pkill -f "frontend/node_modules" || true
+          node scripts/run-marketing-playwright.mjs | tee marketing-playwright.log
+
+      - name: Upload marketing Playwright artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: marketing-playwright-${{ github.run_id }}
+          path: |
+            marketing-playwright.log
+            playwright-report
+            test-results
+          if-no-files-found: ignore

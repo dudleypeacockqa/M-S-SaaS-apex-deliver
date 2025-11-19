@@ -10,6 +10,7 @@ import { apiClient } from './api/client';
 // ============================================================================
 
 export type SubscriptionTier = 'starter' | 'professional' | 'enterprise' | 'community';
+export type BillingCycle = 'monthly' | 'annual';
 export type SubscriptionStatus = 'trial' | 'active' | 'past_due' | 'canceled' | 'incomplete';
 
 export interface Subscription {
@@ -84,6 +85,7 @@ export type BillingDashboardResponse = BillingDashboard;
 
 export interface CheckoutSessionRequest {
   tier: SubscriptionTier;
+  billing_cycle?: BillingCycle;
   success_url?: string;
   cancel_url?: string;
 }
@@ -148,9 +150,10 @@ export const billingService = {
   cancelSubscription: cancelSubscriptionRequest,
   getAllTiers: getAllTiersRequest,
   getCustomerPortalUrl: getCustomerPortalUrlRequest,
-  async redirectToCheckout(tier: SubscriptionTier): Promise<void> {
+  async redirectToCheckout(tier: SubscriptionTier, billingCycle: BillingCycle = 'monthly'): Promise<void> {
     const session = await createCheckoutSessionRequest({
       tier,
+      billing_cycle: billingCycle,
       success_url: `${window.location.origin}/checkout/success`,
       cancel_url: `${window.location.origin}/checkout/cancel`,
     });

@@ -94,11 +94,12 @@ To elevate the platform’s access controls to an enterprise-ready posture, exec
    - Apply `require_feature("deal_matching")` and `require_min_role(UserRole.growth)` where appropriate.
    - Expand entitlement matrix tests to cover new feature gates.
 3. **Cross-service RBAC middleware**
-   - Build a `PermissionRegistry` or policy engine (e.g., Oso/Casbin style) so services declare capabilities and dependencies inject a central authorization check rather than ad hoc code.
-   - Provide convenience decorators for “organization owner”, “resource collaborator”, etc.
+   - ✅ Introduce a centralized permission registry (`app/core/permissions.py`) plus `require_permission(...)` dependency; billing endpoints now consume `Permission.BILLING_VIEW` / `Permission.BILLING_MANAGE`.
+   - ✅ Permission denials now emit RBAC audit entries (`permission_denied`) so SOC teams can trace unauthorized attempts.
+   - Provide convenience decorators for “organization owner”, “resource collaborator”, etc., and expand the registry to additional modules.
 4. **Tenant scoping upgrades**
-   - Require explicit tenant headers for master admin impersonation and log header usage in `rbac_audit_logs`.
-   - Add throttling/alerting when impersonation headers are used to detect abuse.
+   - ✅ Log every impersonation header usage in `rbac_audit_logs` (actions `impersonation`, `permission_denied`) so SOC operations can trace cross-tenant access and blocked attempts.
+   - Require explicit tenant headers for master admin impersonation and build throttling/alerting for suspicious usage.
 
 ### Phase 2 – Data & Audit Enhancements
 1. **Comprehensive audit trail**

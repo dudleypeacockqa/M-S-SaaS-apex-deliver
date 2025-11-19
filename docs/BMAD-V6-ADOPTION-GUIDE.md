@@ -2,20 +2,20 @@
 
 **Quick Reference**: When and how to migrate from BMAD v4 to v6-alpha
 
-**Last Updated**: October 28, 2025
-**Current Status**: v6-alpha CLI installed (core + bmb + bmm + cis) & active
+**Last Updated**: November 19, 2025
+**Current Status**: v6-alpha CLI (6.0.0-alpha.12) installed (core + bmb + bmm + cis) & active
 **Target**: Sustain & iterate on v6-alpha workflows
 
 ---
 
 ## Executive Summary
 
-**Current State**: BMAD-METHOD v6-alpha modules (core, bmb, bmm, cis) installed on 2025-10-28; manifests and IDE exports regenerated.
+**Current State**: BMAD-METHOD v6-alpha modules (core, bmb, bmm, cis) refreshed on 2025-11-19 (6.0.0-alpha.12); manifests and IDE exports regenerated into `.bmad/`.
 
 **What Changed**:
-- Compiled agents + manifests refreshed via Installer/ManifestGenerator scripts
-- Codex + Claude Code integrations rebuilt (bmad/docs/*-instructions.md)
-- docs/bmad/bmm-workflow-status.md activated for Level 4 greenfield tracking
+- Compiled agents + manifests refreshed via installer + ManifestGenerator scripts
+- Codex + Claude Code integrations rebuilt (`.bmad/docs/*-instructions.md`)
+- `docs/bmad/bmm-workflow-status.md` aligned to the new track system (`PROJECT_TRACK=enterprise-bmad-method`)
 
 **Next Actions**:
 1. Keep workflow status file in sync with ongoing phases
@@ -24,13 +24,13 @@
 
 ---
 
-## Migration Snapshot (October 28, 2025)
+## Migration Snapshot (November 19, 2025)
 
-- CLI install path: _vendor/BMAD-METHOD › project root mad/
-- Modules active: core, bmb, bmm, cis (bmd preserved)
-- IDE coverage: Codex CLI, Claude Code
-- Support scripts: installer.compileAgents + ManifestGenerator snippets recorded in CLAUDE.md
-- Status file: docs/bmad/bmm-workflow-status.md now authoritative
+- CLI install path: `_vendor/BMAD-METHOD` → `.bmad/`
+- Modules active: core, bmb, bmm, cis (maintainer module retired upstream)
+- IDE coverage: Codex CLI, Claude Code (Cursor optional via `.cursorrules`)
+- Support scripts: programmatic quick-update + ManifestGenerator snippets recorded in CLAUDE.md
+- Status file: `docs/bmad/bmm-workflow-status.md` now stores `PROJECT_TRACK=enterprise-bmad-method`
 
 ---
 
@@ -44,7 +44,7 @@
 - ✅ Project in maintenance mode
 
 ### Consider v6-Alpha If:
-- 🎯 Need scale-adaptive workflows (Levels 0-4)
+- 🎯 Need scale-adaptive tracks (Quick Flow / BMad Method / Enterprise BMad Method)
 - 🎯 Want automated story management
 - 🎯 Building custom domain agents
 - 🎯 Multi-project environment with varying complexity
@@ -56,17 +56,15 @@
 ## Key v6-Alpha Benefits
 
 ### 1. Scale-Adaptive Workflow Engine™
-**What it does**: Automatically routes projects to appropriate documentation based on complexity
+**What it does**: Automatically routes projects to the right planning track.
 
-| Level | Stories | Documentation | Example |
-|-------|---------|---------------|---------|
-| 0 | 1 | Atomic change | Fix typo |
-| 1 | 1-10 | Brief PRD | Add button |
-| 2 | 5-15 | Focused PRD | User profile |
-| 3 | 12-40 | Full PRD + Arch | Payment system |
-| 4 | 40+ | Comprehensive | Enterprise platform |
+| Track | Scope | Documentation | Example |
+|-------|-------|---------------|---------|
+| Quick Flow | 1-3 related fixes | Tech-spec only | Hotfix/blog tweak |
+| BMad Method | Multi-feature product work | PRD + Architecture + UX | DEV-011 valuation suite |
+| Enterprise BMad Method | Platform-scale programs | Full planning + governance | Final completion plan |
 
-**Current Project**: Level 3-4 (already comprehensive in v4)
+**Current Project**: `PROJECT_TRACK = enterprise-bmad-method` (full PRD + architecture already complete)
 
 ### 2. Automated Story Management
 **v4 (Current)**:
@@ -85,7 +83,7 @@
 **Benefit**: Consistency, automation, built-in templates
 
 ### 3. Update-Safe Customization
-**Sidecar Files**: `bmad/_cfg/agents/[agent]-sidecar.md`
+**Sidecar Files**: `.bmad/_cfg/agents/[agent]-sidecar.md`
 
 Customize agents without editing source:
 - Communication style
@@ -133,48 +131,32 @@ npm run install:bmad
 # - Module selection (BMM for software dev)
 ```
 
-**Result**: Creates `bmad/` folder with modular structure
+**Result**: Creates `.bmad/` folder with modular structure
 
 ### Content Migration (2-4 hours)
 
 #### 1. Migrate PRD
 ```bash
-# Old: docs/bmad/prd.md
-# New: bmad/docs/prd.md
+# Location: docs/bmad/prd.md  (remains canonical)
 
 # Update format:
-# - Add scale level indicator (Level 3-4)
+# - Add scale track indicator (enterprise-bmad-method)
 # - Restructure to v6 sections
 # - Reference: _vendor/BMAD-METHOD/src/modules/bmm/templates/
 ```
 
 #### 2. Create Story Status File
 ```bash
-# Create: bmad/docs/status.md
-
-## BACKLOG
-- [ ] DEV-012-next-feature
-- [ ] DEV-013-another-feature
-
-## TODO
-- [ ] DEV-011-current-focus
-
-## IN PROGRESS
-- [x] DEV-010-active-work
-
-## DONE
-- [x] DEV-001-completed
-- [x] DEV-002-completed
-...
+# Maintain: docs/bmad/bmm-workflow-status.md
+# (Use BMAD workflow-status workflow to keep NEXT_ACTION/NEXT_AGENT synced)
 ```
 
 #### 3. Migrate Stories
 ```bash
-# Old: docs/bmad/stories/DEV-*.md
-# New: bmad/docs/stories/DEV-*.md
+# Location: docs/bmad/stories/DEV-*.md (remains canonical)
 
 # Update each story:
-# - Follow v6 template
+# - Follow v6 template (from _vendor/BMAD-METHOD/src/modules/bmm/workflows/4-implementation/create-story/)
 # - Add state machine references
 # - Include workflow commands
 ```
@@ -185,7 +167,7 @@ npm run install:bmad
 **Methodology**: BMAD v6-alpha (BMM Module) with TDD
 
 # Update commands section to v6 syntax
-# Add reference to bmad/ folder
+# Add reference to .bmad/ folder
 ```
 
 ### Post-Migration Testing (1-2 hours)

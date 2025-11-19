@@ -54,20 +54,20 @@ export const SEO: React.FC<SEOProps> = ({
   canonical,
   structuredData,
 }) => {
-  // Helper to optimize image URLs (auto-convert to WebP)
-  const optimizeImageUrl = (url: string | undefined): string | undefined => {
-    if (!url) return undefined;
-    // Convert PNG/JPG to WebP for better performance
-    // Social media platforms (Twitter, Facebook, LinkedIn) support WebP
-    return convertToWebP(url);
-  };
+    // Helper to optimize image URLs (auto-convert to WebP)
+    const optimizeImageUrl = (url: string | undefined): string | undefined => {
+      if (!url) return undefined;
+      // Convert PNG/JPG to WebP for better performance
+      // Social media platforms (Twitter, Facebook, LinkedIn) support WebP
+      return convertToWebP(url);
+    };
 
   const optimizedOgImage = optimizeImageUrl(ogImage) || ogImage;
   const optimizedTwitterImage = optimizeImageUrl(twitterImage || ogImage) || twitterImage || ogImage;
 
   const dataWithContext = structuredData ? {
-    '@context': 'https://schema.org',
-    ...structuredData,
+        '@context': 'https://schema.org',
+        ...structuredData,
   } : null;
 
   return (

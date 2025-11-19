@@ -3,7 +3,7 @@
 **Project**: M&A Intelligence SaaS Platform
 **Methodology**: BMAD v6-alpha (core + bmb + bmm + cis) with Test-Driven Development
 **Created**: 2025-10-26
-**Last Updated**: 2025-10-28
+**Last Updated**: 2025-11-19
 
 ---
 
@@ -11,24 +11,28 @@
 
 ### First Time Setup (Once Per Environment)
 
-BMAD v6-alpha is already vendored in this repository. To set up your development environment:
+BMAD v6-alpha (currently `6.0.0-alpha.12`) is already vendored in this repository. To set up your development environment:
 
 ```bash
 # Navigate to vendored BMAD CLI
 cd _vendor/BMAD-METHOD
 
-# Run installation (one-time setup)
-npx bmad-method install
+# Install CLI dependencies once
+npm install
+
+# Run the interactive installer (one-time setup per machine)
+npm run install:bmad
 
 # Confirm installation succeeded
 npx bmad-method status
 ```
 
 **What this does:**
-- Compiles YAML agents to Markdown (bmad/<module>/agents/*.md)
-- Generates CSV manifests for workflows, agents, tasks (bmad/_cfg/*.csv)
+- Compiles YAML agents to Markdown (`.bmad/<module>/agents/*.md`)
+- Generates CSV manifests for workflows, agents, tasks (`.bmad/_cfg/*.csv`)
 - Creates IDE integration configs for Codex and Claude Code
-- Validates bmad/ directory structure is correct
+- Routes sprint artefacts to `docs/sprint-artifacts/` (replaces legacy `.bmad-ephemeral`)
+- Validates `.bmad/` directory structure is correct
 
 **Note**: This command only needs to be run **once per development environment** (e.g., once per developer machine, once per CI/CD runner).
 
@@ -81,20 +85,20 @@ BMAD workflows enforce this discipline at every step. The `dev-story` workflow w
 
 ## ✅ Official Adoption Summary
 
-The project now runs on the official **BMAD-METHOD v6-alpha** toolchain. The full CLI install was refreshed from `_vendor/BMAD-METHOD` and compiled directly into the repository-level `bmad/` directory. All CLI assets, manifests, and IDE integrations have been generated for both **Codex CLI** and **Claude Code**, enabling agent-driven workflows end-to-end.
+The project now runs on the official **BMAD-METHOD v6-alpha.12** toolchain. The vendored CLI in `_vendor/BMAD-METHOD` installs directly into the repository-level `.bmad/` directory. All CLI assets, manifests, sprint artefact folders, and IDE integrations have been regenerated for both **Codex CLI** and **Claude Code**, enabling agent-driven workflows end-to-end without touching the upstream repo.
 
 ### Installed Modules
 - **core** – platform scaffolding, master orchestrator, workflow status engine
 - **bmb** – builder toolchain for creating/maintaining BMAD agents & workflows
 - **bmm** – full software delivery framework (analysis → planning → solutioning → implementation)
 - **cis** – Creative Intelligence Suite for ideation, storytelling, and innovation workshops
-- **bmd** – maintainer tooling for BMAD framework stewardship (carried forward from prior install)
 
 ### Generated Artefacts
-- `bmad/_cfg/manifest.yaml` recorded the refreshed installation (modules + ides)
-- `bmad/_cfg/*.csv` manifests rebuilt (agents, workflows, tasks, files, tools)
-- Markdown agents compiled for all modules (`bmad/<module>/agents/*.md`)
-- Creative suite resources added under `bmad/cis/`
+- `.bmad/_cfg/manifest.yaml` recorded the refreshed installation (modules + ides)
+- `.bmad/_cfg/*.csv` manifests rebuilt (agents, workflows, tasks, files, tools)
+- Markdown agents compiled for all modules (`.bmad/<module>/agents/*.md`)
+- Creative suite resources added under `.bmad/cis/`
+- Sprint artefacts redirected to `docs/sprint-artifacts/` per v6 migration guidance
 
 ---
 
@@ -104,30 +108,27 @@ The project now runs on the official **BMAD-METHOD v6-alpha** toolchain. The ful
 cd _vendor/BMAD-METHOD
 npm install                          # once per environment
 npm run install:bmad                 # follow prompts
-  • Target: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
-  • Choose "Modify BMAD Installation"
-  • Modules: bmb, bmm, cis (core auto-included, bmd preserved)
+  • Target directory: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+  • Select "Modify BMAD Installation" (updates existing .bmad/)
+  • Modules: bmb, bmm, cis (core auto-included)
   • IDEs: Codex, Claude Code (others optional)
+  • Sprint artefact folder: docs/sprint-artifacts (accept default unless you need docs/stories/)
 ```
 
-> **Non-interactive maintenance**: For agent rebuilds inside automation, patch the CLI UI to skip IDE prompts, then call:
+> **Non-interactive maintenance**: When CI needs to re-vendor without prompts, reuse the existing `.bmad/*/config.yaml` values and call the installer programmatically:
 >
 > ```bash
-> node -e "const path=require('node:path');
-> const ui=require('./tools/cli/lib/ui');
-> ui.UI.prototype.promptToolSelection = async () => ({ skipIde: true, ides: ['codex','claude-code'] });
-> const {Installer}=require('./tools/cli/installers/lib/core/installer');
-> (async()=>{const installer=new Installer();
->   await installer.compileAgents({ directory: path.resolve('..','..') });})();"
+> cd _vendor/BMAD-METHOD
+> node -e "const path=require('node:path');const fs=require('fs-extra');const yaml=require('js-yaml');const {Installer}=require('./tools/cli/installers/lib/core/installer');(async()=>{const project=path.resolve('..','..');const installer=new Installer();const modules=['bmb','bmm','cis'];const configs={};for(const moduleName of ['core',...modules]){const cfg=path.join(project,'.bmad',moduleName,'config.yaml');configs[moduleName]=yaml.load(await fs.readFile(cfg,'utf8'));}const version=require('./package.json').version;installer.configCollector.collectedConfig={...configs,_meta:{version,installDate:new Date().toISOString(),lastModified:new Date().toISOString()}};installer.configCollector.allAnswers={};for(const [moduleName,values] of Object.entries(configs)){for(const [key,value] of Object.entries(values||{})){installer.configCollector.allAnswers[`${moduleName}_${key}`]=value;}}await installer.install({actionType:'update',directory:project,installCore:true,modules,ides:['codex','claude-code'],_quickUpdate:true,_savedIdeConfigs:{'codex':{_alreadyConfigured:true},'claude-code':{_alreadyConfigured:true}},coreConfig:configs.core});})();"
 > ```
 
 ### Recompiling / Regenerating Manifests
 ```
 cd _vendor/BMAD-METHOD
 node -e "const path=require('node:path');const {ManifestGenerator}=require('./tools/cli/installers/lib/core/manifest-generator');
-(async()=>{const project=path.resolve('..','..');const bmad=path.join(project,'bmad');
+(async()=>{const project=path.resolve('..','..');const bmad=path.join(project,'.bmad');
   const gen=new ManifestGenerator();
-  await gen.generateManifests(bmad,['bmb','bmm','cis'],[],{ ides:['codex','claude-code'], preservedModules:['bmd']});})();"
+  await gen.generateManifests(bmad,['bmb','bmm','cis'],[],{ ides:['codex','claude-code']});})();"
 ```
 (Use after copying fresh module sources or editing YAML agents.)
 
@@ -137,12 +138,11 @@ node -e "const path=require('node:path');const {ManifestGenerator}=require('./to
 
 ```
 M-S-SaaS-apex-deliver/
-├── bmad/
+├── .bmad/
 │   ├── core/                 # master orchestrator + templates
 │   ├── bmb/                  # agent/workflow builder utilities
 │   ├── bmm/                  # primary method workflows & agents
 │   ├── cis/                  # creative intelligence agents & teams
-│   ├── bmd/                  # maintainer agents (carried forward)
 │   ├── docs/                 # IDE usage instructions (Codex, Claude)
 │   └── _cfg/                 # manifest + IDE metadata
 │       ├── manifest.yaml
@@ -151,6 +151,7 @@ M-S-SaaS-apex-deliver/
 │       ├── files-manifest.csv
 │       ├── task-manifest.csv
 │       └── tool-manifest.csv
+├── docs/sprint-artifacts/    # Phase-4 artefacts (stories, sprint plans, reviews)
 └── docs/bmad/                # PRD, architecture, stories, progress artefacts
 ```
 
@@ -161,8 +162,8 @@ M-S-SaaS-apex-deliver/
 ## 🔁 BMAD Delivery Workflow (v6-alpha)
 
 1. **Workflow Status** (`/bmad:bmm:workflows:workflow-status`)
-   - Detects project type/level (Level 4 greenfield)
-   - Routes agents to the next required workflow
+   - Detects `PROJECT_TRACK` (quick-flow · bmad-method · enterprise-bmad-method) plus brownfield/greenfield context
+   - Routes agents to the next required workflow YAML under `.bmad/bmm/workflows/workflow-status/paths/`
 2. **Planning & Solutioning**
    - `/bmad:bmm:workflows:prd`
    - `/bmad:bmm:workflows:tech-spec`
@@ -185,22 +186,22 @@ All workflows read/write status in `docs/bmad/bmm-workflow-status.md` ensuring e
 ```
 PROJECT_NAME: M&A Intelligence Platform
 PROJECT_TYPE: software
-PROJECT_LEVEL: 4
+PROJECT_TRACK: enterprise-bmad-method
 FIELD_TYPE: greenfield
 START_DATE: 2025-10-28
-WORKFLOW_PATH: bmad/bmm/workflows/workflow-status/paths/greenfield-level-4.yaml
+WORKFLOW_PATH: .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.yaml
 
-CURRENT_PHASE: 2-Planning
-CURRENT_WORKFLOW: prd
-CURRENT_AGENT: pm
+CURRENT_PHASE: 3-Solutioning
+CURRENT_WORKFLOW: architecture
+CURRENT_AGENT: architect
 PHASE_1_COMPLETE: true
-PHASE_2_COMPLETE: false
+PHASE_2_COMPLETE: true
 PHASE_3_COMPLETE: false
 PHASE_4_COMPLETE: false
 
-NEXT_ACTION: Draft or update PRD using pm agent
-NEXT_COMMAND: /bmad:bmm:workflows:prd
-NEXT_AGENT: pm
+NEXT_ACTION: Finalize architecture decisions for enterprise track
+NEXT_COMMAND: /bmad:bmm:workflows:architecture
+NEXT_AGENT: architect
 
 LAST_UPDATED: 2025-10-28T09:45:30Z
 ```
@@ -242,7 +243,7 @@ Progress tracking remains in `docs/bmad/BMAD_PROGRESS_TRACKER.md`.
 - `npm run install:bmad` when adding/removing modules or IDEs
 - Re-run agent compilation script after editing YAML agents or custom sidecars
 - Regenerate manifests after copying module sources (`ManifestGenerator` snippet above)
-- Review `bmad/_cfg/files-manifest.csv` before commits to ensure hashes capture new artefacts
+- Review `.bmad/_cfg/files-manifest.csv` before commits to ensure hashes capture new artefacts
 
 ---
 
@@ -251,7 +252,7 @@ Progress tracking remains in `docs/bmad/BMAD_PROGRESS_TRACKER.md`.
 1. Align BMAD workflow status with active sprint ceremonies (update when moving to Phase 3/4)
 2. Backfill story documents using `/bmad:bmm:workflows:create-story`
 3. Expand IDE exports if new assistants are introduced (Cursor, Windsurf, etc.)
-4. Keep `CLAUDE.md` and `docs/BMAD-V6-ADOPTION-GUIDE.md` in sync with new practices
+4. Keep `CLAUDE.md`, `docs/BMAD-V6-ADOPTION-GUIDE.md`, and `docs/bmad/bmad-v6-upstream-summary.md` in sync with new practices
 
 ---
 

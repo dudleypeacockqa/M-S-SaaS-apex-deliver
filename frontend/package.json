@@ -19,7 +19,7 @@
     "audit:local": "npm run lighthouse:local && npm run axe:local",
     "audit:help": "echo 'Usage: VITE_CLERK_PUBLISHABLE_KEY=<key> npm run preview:test (in one terminal), then npm run audit:local (in another)'",
     "verify:lucide": "node scripts/verify-lucide-chunk.mjs",
-    "postbuild": "react-snap"
+    "postbuild": "node ../scripts/run-react-snap.mjs"
   },
   "reactSnap": {
     "source": "dist",

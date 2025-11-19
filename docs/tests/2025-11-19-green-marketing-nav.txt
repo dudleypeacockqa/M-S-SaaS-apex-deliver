@@ -1,0 +1,17 @@
+
+> ma-saas-frontend@1.1.0 test
+> node scripts/run-vitest.mjs run src/components/marketing/MarketingNav.test.tsx
+
+
+ RUN  v4.0.10 C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend
+
+ Γ£ô src/components/marketing/MarketingNav.test.tsx (11 tests) 2733ms
+     Γ£ô displays navigation links  578ms
+     Γ£ô supports keyboard navigation for desktop dropdowns  434ms
+     Γ£ô traps focus inside the mobile menu when open  604ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  15:44:30
+   Duration  5.46s (transform 375ms, setup 688ms, collect 521ms, tests 2.73s, environment 1.18s, prepare 1.38s)
+

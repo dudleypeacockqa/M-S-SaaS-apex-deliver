@@ -57,12 +57,14 @@ This project uses **BMAD v6-alpha** (Build-Measure-Adapt-Deploy) methodology for
 
 ```bash
 cd _vendor/BMAD-METHOD
-npx bmad-method install
+npm install
+npm run install:bmad       # follow prompts, choose Codex + Claude Code
+npx bmad-method status     # verify installation footprint
 ```
 
 This generates:
-- Agent manifests in `bmad/_cfg/` (CSV files)
-- Compiled agent markdown files in `bmad/<module>/agents/`
+- Agent manifests in `.bmad/_cfg/` (CSV files)
+- Compiled agent markdown files in `.bmad/<module>/agents/`
 - IDE integration configs for Codex and Claude Code
 - Workflow templates and task definitions
 
@@ -101,6 +103,7 @@ All BMAD workflows include TDD checkpoints and reminders. The `dev-story` workfl
 
 - **`docs/BMAD-METHOD-IMPLEMENTATION.md`** - Complete installation record and troubleshooting
 - **`docs/BMAD-V6-ADOPTION-GUIDE.md`** - Comprehensive adoption guide with examples
+- **`docs/bmad/bmad-v6-upstream-summary.md`** - Highlights from the upstream repo (v6-alpha.12)
 - **`.bmad-core/user-guide.md`** - Workflow diagrams (planning → execution cycles)
 - **`_vendor/BMAD-METHOD/README.md`** - Official BMAD CLI documentation
 

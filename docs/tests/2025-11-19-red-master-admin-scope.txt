@@ -1,0 +1,80 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-4.1.0
+asyncio: mode=Mode.STRICT
+collected 7 items / 6 deselected / 1 selected
+
+backend\tests\test_master_admin_scope.py F                               [100%]
+
+================================== FAILURES ===================================
+_____________ test_impersonation_attempt_by_non_master_is_audited _____________
+
+client = <starlette.testclient.TestClient object at 0x0000021958C0A310>
+create_user = <function create_user.<locals>._create_user at 0x0000021958C88A40>
+create_organization = <function create_organization.<locals>._create_org at 0x0000021958C88B80>
+dependency_overrides = <function dependency_overrides.<locals>._override at 0x0000021958C88CC0>
+db_session = <sqlalchemy.orm.session.Session object at 0x00000219571B3C10>
+
+    def test_impersonation_attempt_by_non_master_is_audited(
+        client: TestClient,
+        create_user,
+        create_organization,
+        dependency_overrides,
+        db_session,
+    ):
+        """
+        Non-master attempts to impersonate should emit a permission_denied audit record.
+        """
+        org = create_organization(name="Primary Org", subscription_tier="starter")
+        intruder = create_user(
+            email="intruder-audit@example.com",
+            role=UserRole.admin,
+            organization_id=str(org.id),
+        )
+        other_org = create_organization(name="Blocked Org", subscription_tier="growth")
+    
+        dependency_overrides(get_current_user, lambda: intruder)
+    
+        response = client.get(
+            "/api/billing/me",
+            headers={
+                "Authorization": "Bearer admin_token",
+                "X-Master-Tenant-Id": str(other_org.id),
+            },
+        )
+    
+        assert response.status_code == 403
+    
+        logs = (
+            db_session.query(RBACAuditLog)
+            .filter(
+                RBACAuditLog.actor_user_id == intruder.id,
+                RBACAuditLog.action == RBACAuditAction.PERMISSION_DENIED.value,
+            )
+            .all()
+        )
+>       assert len(logs) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+backend\tests\test_master_admin_scope.py:148: AssertionError
+============================== warnings summary ===============================
+backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291
+backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291
+backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291
+backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291
+backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291
+backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.8/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+backend/tests/test_master_admin_scope.py::test_impersonation_attempt_by_non_master_is_audited
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED backend/tests/test_master_admin_scope.py::test_impersonation_attempt_by_non_master_is_audited
+================= 1 failed, 6 deselected, 7 warnings in 1.45s =================

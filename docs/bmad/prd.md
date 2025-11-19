@@ -2,7 +2,8 @@
 
 **Author:** Dudley Peacock
 **Date:** 2025-10-28
-**Project Level:** 4
+**Project Track:** enterprise-bmad-method (greenfield)
+**BMAD Workflow Path:** .bmad/bmm/workflows/workflow-status/paths/enterprise-greenfield.yaml
 **Target Scale:** Enterprise multi-tenant SaaS platform
 
 ---

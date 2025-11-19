@@ -1,0 +1,143 @@
+
+> ma-saas-frontend@1.1.0 build
+> npx vite build && npm run verify:lucide
+
+[dotenv@17.2.3] injecting env (1) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+[dotenv@17.2.3] injecting env (3) from .env.production -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+[dotenv@17.2.3] injecting env (0) from .env.production.local -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 3018 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                                       [39m[1m[2m  4.73 kB[22m[1m[22m[2m │ gzip:   1.71 kB[22m
+[2mdist/[22m[35massets/css/index-CeUR2xRv.css                    [39m[1m[2m 96.84 kB[22m[1m[22m[2m │ gzip:  14.20 kB[22m
+[2mdist/[22m[36massets/js/tiny-invariant-BM5KeS_Z.js             [39m[1m[2m  0.07 kB[22m[1m[22m[2m │ gzip:   0.09 kB[22m
+[2mdist/[22m[36massets/js/DocumentRoomPage-DUjwfZ4B.js           [39m[1m[2m  0.32 kB[22m[1m[22m[2m │ gzip:   0.23 kB[22m
+[2mdist/[22m[36massets/js/personSchema-v0r4f8E-.js               [39m[1m[2m  0.35 kB[22m[1m[22m[2m │ gzip:   0.23 kB[22m
+[2mdist/[22m[36massets/js/usePMIProject-C9Jzbyn9.js              [39m[1m[2m  0.45 kB[22m[1m[22m[2m │ gzip:   0.28 kB[22m
+[2mdist/[22m[36massets/js/billingService-p5Dx20eY.js             [39m[1m[2m  0.70 kB[22m[1m[22m[2m │ gzip:   0.37 kB[22m
+[2mdist/[22m[36massets/js/SignUpPage-CNQEIa04.js                 [39m[1m[2m  0.77 kB[22m[1m[22m[2m │ gzip:   0.46 kB[22m
+[2mdist/[22m[36massets/js/TestBlogAdminPage-CjV0CISS.js          [39m[1m[2m  0.86 kB[22m[1m[22m[2m │ gzip:   0.53 kB[22m
+[2mdist/[22m[36massets/js/admin-BTMaUCsc.js                      [39m[1m[2m  1.11 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
+[2mdist/[22m[36massets/js/fpaApi-D1wIGzto.js                     [39m[1m[2m  1.17 kB[22m[1m[22m[2m │ gzip:   0.51 kB[22m
+[2mdist/[22m[36massets/js/organizationSchema-B8tda4O_.js         [39m[1m[2m  1.29 kB[22m[1m[22m[2m │ gzip:   0.70 kB[22m
+[2mdist/[22m[36massets/js/blogService-CiVGQdXv.js                [39m[1m[2m  1.48 kB[22m[1m[22m[2m │ gzip:   0.77 kB[22m
+[2mdist/[22m[36massets/js/CustomerInvoices-CIwKmf3r.js           [39m[1m[2m  1.51 kB[22m[1m[22m[2m │ gzip:   0.50 kB[22m
+[2mdist/[22m[36massets/js/FeatureNotAvailable-CHoftPEw.js        [39m[1m[2m  1.54 kB[22m[1m[22m[2m │ gzip:   0.71 kB[22m
+[2mdist/[22m[36massets/js/CheckoutSuccess-B8dvIjQc.js            [39m[1m[2m  1.56 kB[22m[1m[22m[2m │ gzip:   0.70 kB[22m
+[2mdist/[22m[36massets/js/CustomerAccount-BRaCwaPq.js            [39m[1m[2m  1.61 kB[22m[1m[22m[2m │ gzip:   0.57 kB[22m
+[2mdist/[22m[36massets/js/CheckoutCancel-D-xpZE-r.js             [39m[1m[2m  1.67 kB[22m[1m[22m[2m │ gzip:   0.78 kB[22m
+[2mdist/[22m[36massets/js/DataRoom-DNW24wUd.js                   [39m[1m[2m  2.05 kB[22m[1m[22m[2m │ gzip:   0.95 kB[22m
+[2mdist/[22m[36massets/js/DataImport-DJobANKu.js                 [39m[1m[2m  2.08 kB[22m[1m[22m[2m │ gzip:   1.01 kB[22m
+[2mdist/[22m[36massets/js/CustomerPortalDashboard-CpM6HIYB.js    [39m[1m[2m  2.11 kB[22m[1m[22m[2m │ gzip:   0.68 kB[22m
+[2mdist/[22m[36massets/js/FinancialReports-CP1yQe9w.js           [39m[1m[2m  2.21 kB[22m[1m[22m[2m │ gzip:   0.98 kB[22m
+[2mdist/[22m[36massets/js/pricing-2XjUabhC.js                    [39m[1m[2m  2.26 kB[22m[1m[22m[2m │ gzip:   1.18 kB[22m
+[2mdist/[22m[36massets/js/useScores-Bany_y4B.js                  [39m[1m[2m  2.53 kB[22m[1m[22m[2m │ gzip:   1.08 kB[22m
+[2mdist/[22m[36massets/js/SignInPage-Cx4_TjcY.js                 [39m[1m[2m  2.59 kB[22m[1m[22m[2m │ gzip:   0.99 kB[22m
+[2mdist/[22m[36massets/js/CTASection-De6vQyvK.js                 [39m[1m[2m  2.79 kB[22m[1m[22m[2m │ gzip:   0.97 kB[22m
+[2mdist/[22m[36massets/js/AdminPanel-DN_NTrkr.js                 [39m[1m[2m  2.81 kB[22m[1m[22m[2m │ gzip:   1.02 kB[22m
+[2mdist/[22m[36massets/js/CustomerSettings-1aTvSKy8.js           [39m[1m[2m  2.89 kB[22m[1m[22m[2m │ gzip:   0.78 kB[22m
+[2mdist/[22m[36massets/js/WorkingCapital-CYnsPHFU.js             [39m[1m[2m  3.16 kB[22m[1m[22m[2m │ gzip:   0.96 kB[22m
+[2mdist/[22m[36massets/js/PMIProjectList-DlkMshLm.js             [39m[1m[2m  3.26 kB[22m[1m[22m[2m │ gzip:   1.18 kB[22m
+[2mdist/[22m[36massets/js/QualityControl-C_FFRoEu.js             [39m[1m[2m  3.57 kB[22m[1m[22m[2m │ gzip:   1.25 kB[22m
+[2mdist/[22m[36massets/js/SolutionDealTeam-DNZlmPPC.js           [39m[1m[2m  3.93 kB[22m[1m[22m[2m │ gzip:   1.53 kB[22m
+[2mdist/[22m[36massets/js/pmiApi-BO4hGFWJ.js                     [39m[1m[2m  3.95 kB[22m[1m[22m[2m │ gzip:   0.99 kB[22m
+[2mdist/[22m[36massets/js/ProductionTracking-DsoSrrfD.js         [39m[1m[2m  4.59 kB[22m[1m[22m[2m │ gzip:   1.38 kB[22m
+[2mdist/[22m[36massets/js/SolutionCFO-B8E4azUF.js                [39m[1m[2m  4.66 kB[22m[1m[22m[2m │ gzip:   1.74 kB[22m
+[2mdist/[22m[36massets/js/MidaxoAlternative-DVJk6QO5.js          [39m[1m[2m  4.79 kB[22m[1m[22m[2m │ gzip:   1.79 kB[22m
+[2mdist/[22m[36massets/js/DealRoomAlternative-Dup0Kl2w.js        [39m[1m[2m  4.79 kB[22m[1m[22m[2m │ gzip:   1.75 kB[22m
+[2mdist/[22m[36massets/js/PodcastPage-nhKKi6yT.js                [39m[1m[2m  4.91 kB[22m[1m[22m[2m │ gzip:   1.68 kB[22m
+[2mdist/[22m[36massets/js/InventoryManagement-CBMyFcwW.js        [39m[1m[2m  5.19 kB[22m[1m[22m[2m │ gzip:   1.60 kB[22m
+[2mdist/[22m[36massets/js/TeamPage-CNPtuHbY.js                   [39m[1m[2m  5.48 kB[22m[1m[22m[2m │ gzip:   2.13 kB[22m
+[2mdist/[22m[36massets/js/masterAdmin-BYTpn1nt.js                [39m[1m[2m  5.50 kB[22m[1m[22m[2m │ gzip:   1.40 kB[22m
+[2mdist/[22m[36massets/js/DealWorkspaceDirectory-CoBOCov_.js     [39m[1m[2m  5.62 kB[22m[1m[22m[2m │ gzip:   2.10 kB[22m
+[2mdist/[22m[36massets/js/PMIProjectCreate-Bivlt1Cb.js           [39m[1m[2m  5.71 kB[22m[1m[22m[2m │ gzip:   1.64 kB[22m
+[2mdist/[22m[36massets/js/BlogListingPage-DTnoDy9H.js            [39m[1m[2m  6.38 kB[22m[1m[22m[2m │ gzip:   2.41 kB[22m
+[2mdist/[22m[36massets/js/DemandForecasting-DObrhQlF.js          [39m[1m[2m  6.50 kB[22m[1m[22m[2m │ gzip:   1.87 kB[22m
+[2mdist/[22m[36massets/js/MasterAdminDashboard-CBzr5Ruj.js       [39m[1m[2m  6.56 kB[22m[1m[22m[2m │ gzip:   2.04 kB[22m
+[2mdist/[22m[36massets/js/AdminDashboard-BFaXaXPu.js             [39m[1m[2m  6.73 kB[22m[1m[22m[2m │ gzip:   1.64 kB[22m
+[2mdist/[22m[36massets/js/BookTrial-BOukFhxW.js                  [39m[1m[2m  7.04 kB[22m[1m[22m[2m │ gzip:   2.19 kB[22m
+[2mdist/[22m[36massets/js/FinancialDashboard-nasS9x2Y.js         [39m[1m[2m  7.07 kB[22m[1m[22m[2m │ gzip:   1.96 kB[22m
+[2mdist/[22m[36massets/js/BlogAdminEditor-BDtRSlE7.js            [39m[1m[2m  7.12 kB[22m[1m[22m[2m │ gzip:   2.47 kB[22m
+[2mdist/[22m[36massets/js/SystemHealth-DQyR2hCf.js               [39m[1m[2m  7.23 kB[22m[1m[22m[2m │ gzip:   1.62 kB[22m
+[2mdist/[22m[36massets/js/LeadCapture-Ds-2CK9G.js                [39m[1m[2m  7.57 kB[22m[1m[22m[2m │ gzip:   2.23 kB[22m
+[2mdist/[22m[36massets/js/OrganizationManagement-llS93un0.js     [39m[1m[2m  7.60 kB[22m[1m[22m[2m │ gzip:   2.04 kB[22m
+[2mdist/[22m[36massets/js/NewDealPage-DMXtHti-.js                [39m[1m[2m  7.64 kB[22m[1m[22m[2m │ gzip:   2.23 kB[22m
+[2mdist/[22m[36massets/js/ExecutiveDashboard-BRjV2sXd.js         [39m[1m[2m  7.80 kB[22m[1m[22m[2m │ gzip:   1.91 kB[22m
+[2mdist/[22m[36massets/js/TemplateManager-CjUDCmEn.js            [39m[1m[2m  8.15 kB[22m[1m[22m[2m │ gzip:   2.46 kB[22m
+[2mdist/[22m[36massets/js/DealPipeline-DHLnsgpG.js               [39m[1m[2m  8.40 kB[22m[1m[22m[2m │ gzip:   3.02 kB[22m
+[2mdist/[22m[36massets/js/ContactPage-DZpyKbJq.js                [39m[1m[2m  9.02 kB[22m[1m[22m[2m │ gzip:   2.63 kB[22m
+[2mdist/[22m[36massets/js/VoiceCampaign-CVCt6nG9.js              [39m[1m[2m  9.05 kB[22m[1m[22m[2m │ gzip:   2.23 kB[22m
+[2mdist/[22m[36massets/js/SalesCollateral-B5yRswsY.js            [39m[1m[2m  9.07 kB[22m[1m[22m[2m │ gzip:   2.61 kB[22m
+[2mdist/[22m[36massets/js/SecurityPage-BPtLmaVZ.js               [39m[1m[2m  9.22 kB[22m[1m[22m[2m │ gzip:   3.13 kB[22m
+[2mdist/[22m[36massets/js/AboutPage-DnV3_BGV.js                  [39m[1m[2m  9.61 kB[22m[1m[22m[2m │ gzip:   3.08 kB[22m
+[2mdist/[22m[36massets/js/DashboardLayout-Mo7-BwWI.js            [39m[1m[2m  9.73 kB[22m[1m[22m[2m │ gzip:   3.28 kB[22m
+[2mdist/[22m[36massets/js/CookiePolicy-C4gzBeAh.js               [39m[1m[2m  9.86 kB[22m[1m[22m[2m │ gzip:   2.59 kB[22m
+[2mdist/[22m[36massets/js/TermsOfService-TA7XQvHt.js             [39m[1m[2m 10.72 kB[22m[1m[22m[2m │ gzip:   3.44 kB[22m
+[2mdist/[22m[36massets/js/CaseStudiesPage-BqYncAfK.js            [39m[1m[2m 11.02 kB[22m[1m[22m[2m │ gzip:   3.51 kB[22m
+[2mdist/[22m[36massets/js/CampaignManager-D3NvNaoC.js            [39m[1m[2m 11.62 kB[22m[1m[22m[2m │ gzip:   3.03 kB[22m
+[2mdist/[22m[36massets/js/react-redux-BpcAR2Jg.js                [39m[1m[2m 11.79 kB[22m[1m[22m[2m │ gzip:   4.46 kB[22m
+[2mdist/[22m[36massets/js/FAQPage-C7DYrS3u.js                    [39m[1m[2m 12.05 kB[22m[1m[22m[2m │ gzip:   4.95 kB[22m
+[2mdist/[22m[36massets/js/FourStageCyclePage-du9YmUyM.js         [39m[1m[2m 12.28 kB[22m[1m[22m[2m │ gzip:   4.16 kB[22m
+[2mdist/[22m[36massets/js/WhatIfAnalysis-DbrkSESS.js             [39m[1m[2m 13.46 kB[22m[1m[22m[2m │ gzip:   3.65 kB[22m
+[2mdist/[22m[36massets/js/PrivacyPolicy-DiGRH5jq.js              [39m[1m[2m 13.84 kB[22m[1m[22m[2m │ gzip:   3.61 kB[22m
+[2mdist/[22m[36massets/js/CapLiquifyFPAPage-ClVqjIGz.js          [39m[1m[2m 14.68 kB[22m[1m[22m[2m │ gzip:   4.57 kB[22m
+[2mdist/[22m[36massets/js/UserManagement-Dkz9iEd6.js             [39m[1m[2m 16.00 kB[22m[1m[22m[2m │ gzip:   4.08 kB[22m
+[2mdist/[22m[36massets/js/BillingDashboard-DV9SQjJL.js           [39m[1m[2m 16.38 kB[22m[1m[22m[2m │ gzip:   4.26 kB[22m
+[2mdist/[22m[36massets/js/BarChart-CWVZsVxx.js                   [39m[1m[2m 16.53 kB[22m[1m[22m[2m │ gzip:   5.41 kB[22m
+[2mdist/[22m[36massets/js/SalesPromotionPricingPage-D7qCqxMu.js  [39m[1m[2m 17.00 kB[22m[1m[22m[2m │ gzip:   5.06 kB[22m
+[2mdist/[22m[36massets/js/FeaturesPage-zsTZaJ-l.js               [39m[1m[2m 17.35 kB[22m[1m[22m[2m │ gzip:   3.38 kB[22m
+[2mdist/[22m[36massets/js/DashboardPage-BO2GCPPR.js              [39m[1m[2m 17.60 kB[22m[1m[22m[2m │ gzip:   5.03 kB[22m
+[2mdist/[22m[36massets/js/LineChart-BGbJu0Sy.js                  [39m[1m[2m 17.70 kB[22m[1m[22m[2m │ gzip:   5.41 kB[22m
+[2mdist/[22m[36massets/js/SEO-2D2TmejF.js                        [39m[1m[2m 18.00 kB[22m[1m[22m[2m │ gzip:   5.76 kB[22m
+[2mdist/[22m[36massets/js/ActivityTracker-B1MttQiP.js            [39m[1m[2m 20.43 kB[22m[1m[22m[2m │ gzip:   5.07 kB[22m
+[2mdist/[22m[36massets/js/DealDetails-DhPxyYXK.js                [39m[1m[2m 21.07 kB[22m[1m[22m[2m │ gzip:   4.84 kB[22m
+[2mdist/[22m[36massets/js/ContentStudio-yJsjaE67.js              [39m[1m[2m 25.63 kB[22m[1m[22m[2m │ gzip:   4.51 kB[22m
+[2mdist/[22m[36massets/js/PricingPage-dGWd874Z.js                [39m[1m[2m 25.71 kB[22m[1m[22m[2m │ gzip:   5.42 kB[22m
+[2mdist/[22m[36massets/js/DocumentEditor-X7RtRegU.js             [39m[1m[2m 29.27 kB[22m[1m[22m[2m │ gzip:   7.63 kB[22m
+[2mdist/[22m[36massets/js/ProspectPipeline-o8cwZHo3.js           [39m[1m[2m 30.73 kB[22m[1m[22m[2m │ gzip:   6.64 kB[22m
+[2mdist/[22m[36massets/js/TaskBoard-DSqjbu4c.js                  [39m[1m[2m 32.09 kB[22m[1m[22m[2m │ gzip:   7.24 kB[22m
+[2mdist/[22m[36massets/js/PMIProjectDetail-56G4XLsL.js           [39m[1m[2m 37.41 kB[22m[1m[22m[2m │ gzip:   7.12 kB[22m
+[2mdist/[22m[36massets/js/MatchingWorkspace-DpAMlFh3.js          [39m[1m[2m 45.49 kB[22m[1m[22m[2m │ gzip:  10.74 kB[22m
+[2mdist/[22m[36massets/js/index-tkjEFdNW.js                      [39m[1m[2m 45.95 kB[22m[1m[22m[2m │ gzip:  10.27 kB[22m
+[2mdist/[22m[36massets/js/EnhancedLandingPage-D6Yqkb1D.js        [39m[1m[2m 47.96 kB[22m[1m[22m[2m │ gzip:  12.55 kB[22m
+[2mdist/[22m[36massets/js/valuation-suite-SewKt2A7.js            [39m[1m[2m 49.90 kB[22m[1m[22m[2m │ gzip:  10.60 kB[22m
+[2mdist/[22m[36massets/js/DocumentWorkspace-DLkkw0l8.js          [39m[1m[2m 70.46 kB[22m[1m[22m[2m │ gzip:  18.43 kB[22m
+[2mdist/[22m[36massets/js/dnd.esm-CCRLIjgi.js                    [39m[1m[2m 84.32 kB[22m[1m[22m[2m │ gzip:  24.96 kB[22m
+[2mdist/[22m[36massets/js/BlogPostPage-Bh7M6beV.js               [39m[1m[2m122.38 kB[22m[1m[22m[2m │ gzip:  36.65 kB[22m
+[2mdist/[22m[36massets/js/podcast-studio-DlZ9Ey_S.js             [39m[1m[2m122.48 kB[22m[1m[22m[2m │ gzip:  34.14 kB[22m
+[2mdist/[22m[36massets/js/index-CnUEhZlY.js                      [39m[1m[2m146.94 kB[22m[1m[22m[2m │ gzip:  35.51 kB[22m
+[2mdist/[22m[36massets/js/events-FuHvbZdr.js                     [39m[1m[2m156.08 kB[22m[1m[22m[2m │ gzip:  43.20 kB[22m
+[2mdist/[22m[36massets/js/index-CI8mJizg.js                      [39m[1m[2m251.62 kB[22m[1m[22m[2m │ gzip:  78.03 kB[22m
+[2mdist/[22m[36massets/js/CartesianChart-D41-2jOJ.js             [39m[1m[2m304.43 kB[22m[1m[22m[2m │ gzip:  88.42 kB[22m
+[2mdist/[22m[36massets/js/community-B2eoD1fr.js                  [39m[1m[2m622.65 kB[22m[1m[22m[2m │ gzip: 163.31 kB[22m
+[32m✓ built in 18.16s[39m
+
+> ma-saas-frontend@1.1.0 verify:lucide
+> node scripts/verify-lucide-chunk.mjs
+
+✅ Lucide bundle verification passed!
+
+Verified:
+  - No lucide-specific chunks in dist/assets/js/
+  - index.html does not reference lucide-vendor chunks
+  - Icons will load synchronously with main bundle
+
+> ma-saas-frontend@1.1.0 postbuild
+> node ../scripts/run-react-snap.mjs
+
+[react-snap] Skipped (test routes or REACT_SNAP_SKIP flag).
+
+
+Running 2 tests using 1 worker
+
+[1A[2K[1/2] [chromium] › tests\blog-admin.spec.ts:9:7 › Blog Admin Editor (test harness) › creates and publishes a post via the test route
+[1A[2K[2/2] [chromium] › tests\blog-admin.spec.ts:52:7 › Blog Admin Editor (test harness) › loads an existing post and saves a draft update
+[1A[2K  2 passed (7.9s)
+
+To open last HTML report run:
+[36m[39m
+[36m  npx playwright show-report[39m
+[36m[39m

@@ -207,21 +207,24 @@ class TestRBACAuditService:
         self,
         db_session: Session,
         create_user,
+        create_organization,
     ):
         """Test log_impersonation records impersonation metadata."""
         master_admin = create_user(email="master@example.com")
+        tenant_org = create_organization(name="Tenant 123")
+        tenant_id = str(tenant_org.id)
         entry = log_impersonation(
             db_session,
             actor_user_id=master_admin.id,
-            organization_id="tenant-123",
-            tenant_id="tenant-123",
+            organization_id=tenant_id,
+            tenant_id=tenant_id,
             customer_id="user-789",
         )
 
         assert entry.action == RBACAuditAction.IMPERSONATION.value
-        assert entry.organization_id == "tenant-123"
+        assert entry.organization_id == tenant_id
         assert entry.detail is not None
-        assert "tenant-123" in entry.detail
+        assert tenant_id in entry.detail
         assert "user-789" in entry.detail
     
     def test_log_claim_mismatch_handles_empty_claim_snapshot(

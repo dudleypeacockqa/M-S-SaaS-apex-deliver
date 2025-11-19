@@ -91,6 +91,12 @@ The project was executed in five distinct phases:
 *   **Schema Alignment:** Ensured Pydantic models (Backend) match TypeScript interfaces (Frontend) for the new FP&A features.
 *   **API Completeness:** Verified endpoints for the What-If analysis engine and data retrieval.
 
+### 3.7 Email & Notification Infrastructure (19 Nov 2025)
+*   **Celery Queue Hardening:** Introduced `app/tasks/email_tasks.py` with `emails.process_queue` and `emails.retry_failed` tasks that wrap the asynchronous `queue_email`/`retry_failed_email` helpers. Both tasks reuse a patched `SessionLocal` factory and expose `processed/sent/failed/skipped` telemetry for BMAD observability.
+*   **Service Refactor:** `app/services/email_service.py` now centralizes rendering/sending via `process_email_entry`, ensuring `retry_count`, `sent_at`, and `error_message` are updated atomically for both initial sends and retries.
+*   **Test Coverage:** Added `tests/test_email_tasks.py` (AsyncMock-driven) to exercise queue draining and retry ceilings. The full backend suite, executed via `pytest --cov=app --cov-report=term`, produced 1,685 passing tests / 85 skips with 82% aggregate coverage (see `docs/tests/2025-11-19-backend-pytest.txt`).
+*   **Compliance Hooks:** Marketing and master-admin flows now respect `UserNotificationPreferences` before enqueueing, and a new `CLERK_BYPASS_TIERS` flag in `tests/conftest.py` isolates Clerk traffic during automated runs while still allowing targeted subscription-tier tests to hit the mocked SDK.
+
 ### 3.6 Master Admin Access Scope
 *   **AccessScope Dependency:** Introduced a centralized FastAPI dependency (`app/api/dependencies/tenant_scope.py`) that interprets `X-Master-Tenant-Id` and `X-Master-Customer-Id` headers, returning an `AccessScope` object for every request. Master admins can now impersonate any tenant/customer without mutating their own organization record, while non-master users are automatically blocked if they attempt to pass the override headers.
 *   **Org-Scoped Routes Updated:** Key backend surfaces (`/api/billing/*`, `/api/deals/*`, `/api/deals/{deal_id}/tasks/*`, `/api/document-generation/*`, `/api/deals/{deal_id}/documents/*`) were refactored to depend on the scoped organization ID rather than the raw `current_user.organization_id`. This ensures the master admin portal can manage any subscriber’s pipeline, documents, tasks, and billing context through the same RBAC code paths.
@@ -109,7 +115,7 @@ The project was executed in five distinct phases:
 - [x] Module Verification (Tasks, Docs, Events, Community)
 
 ### 4.1 Quality Gate Status (19 Nov 2025)
-- **Backend (`pytest --cov=backend/app`)**: Targeted runs of `test_pmi_integration.py` and `test_document_ai_and_versions.py` passed successfully. Full suite execution pending final CI run.
+- **Backend (`pytest --cov=app --cov-report=term`)**: ✅ 1,685 passed / 85 skipped / 0 failed with 82% aggregate coverage. Raw output archived at `docs/tests/2025-11-19-backend-pytest.txt`; key deltas include new `tests/test_email_tasks.py` and the Celery queue processing path.
 - **Frontend lint (`npm run lint`)**: Fails immediately because the repo still relies on `.eslintignore` and references the deprecated `typescript-eslint` meta package. `eslint.config.mjs` needs to be updated to use `@eslint/js` + `@typescript-eslint/eslint-plugin` and the `ignores` property per ESLint v9 migration guidance.
 - **Frontend unit tests (`npm run test`)**: Key components (`BlogAdminEditor`, `usePMIAccess`) verified with passing tests. `vitest` environment configured correctly.
 

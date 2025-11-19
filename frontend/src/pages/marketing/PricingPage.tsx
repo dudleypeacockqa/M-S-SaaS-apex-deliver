@@ -3,17 +3,19 @@ import { PricingCard } from '../../components/marketing/PricingCard';
 import { CTASection } from '../../components/marketing/CTASection';
 import { SEO } from '../../components/common/SEO';
 import { useAuth } from '@clerk/clerk-react';
-import { useState } from 'react';
-import { billingService, type SubscriptionTier } from '../../services/billingService';
+import { useCallback, useMemo, useState } from 'react';
+import { billingService, type SubscriptionTier, type BillingCycle } from '../../services/billingService';
 import { createProductWithOffersSchema } from '../../utils/schemas/offerSchema';
 import { StructuredData } from '../../components/common/StructuredData';
+import { ANNUAL_DISCOUNT_RATE, basePricingTiers, calculateAnnualPrice, formatCurrency } from '../../data/pricing';
 
 export const PricingPage: React.FC = () => {
   const { isSignedIn } = useAuth();
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const [errorTier, setErrorTier] = useState<string | null>(null);
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
 
-  const handleGetStarted = async (tierName: string) => {
+  const handleGetStarted = useCallback(async (tierName: string) => {
     if (!isSignedIn) {
       window.open('/sign-in', '_self');
       return;
@@ -34,126 +36,104 @@ export const PricingPage: React.FC = () => {
       if (!tier) {
         throw new Error('Unknown tier selection.');
       }
-      await billingService.redirectToCheckout(tier);
+      await billingService.redirectToCheckout(tier, billingCycle);
     } catch (error) {
       setErrorTier('Failed to create checkout session. Please try again.');
       setLoadingTier(null);
     }
-  };
-  const pricingTiers = [
-    {
-      testId: 'starter',
-      name: 'CapLiquify FP&A',
-      price: 598,
-      currency: '£',
-      period: 'month',
-      setupFee: 2500,
-      description: 'For finance teams needing immediate cash flow visibility and working capital control',
-      features: [
-        '13-Week Direct Cash Forecasting',
-        'Working Capital Drivers (DSO/DPO/DIO)',
-        'AR/AP Roll-Forwards & Ageing',
-        'Multi-Scenario Modeling',
-        'Lender-Ready PDF Pack Generation',
-        'ERP Integration (Sage Intacct, Odoo, CSV)',
-        'Single Entity/Currency',
-        'Email & Chat Support',
-      ],
-      cta: 'Get Started',
-      highlighted: false,
-    },
-    {
-      testId: 'professional',
-      name: 'ApexDeliver Professional',
-      price: 1598,
-      currency: '£',
-      period: 'month',
-      setupFee: 7500,
-      description: 'For active dealmakers managing multiple M&A projects',
-      features: [
-        'Everything in CapLiquify FP&A',
-        'Unlimited M&A Deals',
-        'AI-Powered Deal Sourcing & Matching',
-        'Secure Data Room (100GB, watermarking)',
-        'Multi-Method Valuation Suite (DCF, Comps, Precedents)',
-        'Financial Intelligence Engine (47+ ratios)',
-        'Deal Pipeline & Collaboration',
-        'Task & Workflow Automation',
-        'Up to 3 Entities',
-        'Priority Support',
-      ],
-      cta: 'Get Started',
-      highlighted: true,
-    },
-    {
-      testId: 'enterprise',
-      name: 'ApexDeliver Enterprise',
-      price: 2997,
-      currency: '£',
-      period: 'month',
-      setupFee: 15000,
-      description: 'For large organizations and PE firms',
-      features: [
-        'Everything in Professional',
-        'Unlimited Team Members & Entities',
-        'PMI Finance Ops Stabilisation (Option B)',
-        'Advanced RBAC & Permissions',
-        'Custom Workflow Templates',
-        'Automated Document Generation',
-        'API Access & iPaaS Integrations',
-        'Unlimited Storage',
-        'SSO (SAML/OAuth) & Advanced Security',
-        'Dedicated Account Manager',
-        '99.95% Uptime SLA',
-      ],
-      cta: 'Contact Sales',
-      ctaLink: '/contact',
-      highlighted: false,
-    },
-    {
-      testId: 'community',
-      name: 'Portfolio / Community Leader',
+  }, [billingCycle, isSignedIn]);
+
+  const pricingTiers = useMemo(() => {
+    return basePricingTiers.map((tier) => {
+      if (!tier.monthlyPrice) {
+        return {
+          testId: tier.id,
+          name: tier.name,
       price: 'Contact',
       currency: '',
       period: '',
-      setupFee: 30000,
-      description: 'For PE/FO managing portfolios of businesses',
-      features: [
-        'Everything in Enterprise',
-        'Centralized Portfolio Dashboard',
-        'Cross-Company Analytics & Consolidation',
-        'Multi-Currency Support',
-        'Covenant Libraries by Lender',
-        'Content Creation & Podcast Studio',
-        'Private Community Hosting',
-        'Custom Branding & White-Label',
-        'White-Glove Onboarding',
-        'Quarterly Business Reviews',
-      ],
-      cta: 'Contact Sales',
-      ctaLink: '/contact',
-      highlighted: false,
+          setupFee: tier.setupFee,
+          description: tier.description,
+          features: tier.features,
+          cta: tier.ctaLabel ?? 'Contact Sales',
+          ctaLink: tier.ctaLink ?? '/contact',
+          highlighted: tier.highlighted,
+          priceDisplay: {
+            primary: 'Contact us for pricing',
+            secondary: 'Tailored programs for multi-brand portfolios',
+          },
+        };
+      }
+
+      const monthlyPrice = tier.monthlyPrice;
+      const annualPrice = calculateAnnualPrice(monthlyPrice);
+      const isAnnual = billingCycle === 'annual';
+      const displayValue = isAnnual ? annualPrice : monthlyPrice;
+      const periodLabel = isAnnual ? '/year' : '/month';
+      const badge = isAnnual ? 'Save 17% vs monthly' : undefined;
+      const secondary = isAnnual
+        ? `Equivalent to £${formatCurrency(Math.round(annualPrice / 12))}/month`
+        : 'Billed monthly';
+
+      return {
+        testId: tier.id,
+        name: tier.name,
+        price: displayValue,
+        currency: '£',
+        period: isAnnual ? 'year' : 'month',
+        setupFee: tier.setupFee,
+        description: tier.description,
+        features: tier.features,
+        cta: tier.ctaLabel ?? 'Get Started',
+        ctaLink: tier.ctaLink,
+        highlighted: tier.highlighted,
+        onGetStarted: tier.cta === 'get-started' ? () => handleGetStarted(tier.name) : undefined,
+        priceDisplay: {
+          primary: `£${formatCurrency(displayValue)} ${periodLabel}`,
+          secondary,
+          badge,
     },
-  ];
+      };
+    });
+  }, [billingCycle, handleGetStarted]);
 
   // Generate Product + Offer structured data for SEO
-  const pricingSchema = createProductWithOffersSchema(
+  const pricingSchema = useMemo(
+    () =>
+      createProductWithOffersSchema(
     {
       name: 'ApexDeliver + CapLiquify',
-      description: 'End-to-end M&A intelligence platform for deal flow management, financial analysis, and secure collaboration',
+          description:
+            'End-to-end M&A intelligence platform for deal flow management, financial analysis, and secure collaboration',
       brand: 'ApexDeliver',
       url: 'https://100daysandbeyond.com/pricing',
     },
-    pricingTiers
-      .filter((tier) => typeof tier.price === 'number')
-      .map((tier) => ({
-        name: tier.name,
-        price: tier.price as number,
+        basePricingTiers
+          .filter((tier) => typeof tier.monthlyPrice === 'number')
+          .flatMap((tier) => {
+            const monthly = tier.monthlyPrice as number;
+            const annual = calculateAnnualPrice(monthly);
+            return [
+              {
+                name: `${tier.name} Monthly`,
+                price: monthly,
         currency: 'GBP',
         billingPeriod: 'MONTH' as const,
         description: tier.description,
         url: 'https://100daysandbeyond.com/pricing',
-      }))
+              },
+              {
+                name: `${tier.name} Annual`,
+                price: annual,
+                currency: 'GBP',
+                billingPeriod: 'YEAR' as const,
+                description: tier.description,
+                url: 'https://100daysandbeyond.com/pricing',
+              },
+            ];
+          })
+      ),
+    []
   );
 
   return (
@@ -184,25 +164,55 @@ export const PricingPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Billing Toggle */}
+      <section className="bg-white py-6">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center gap-3 bg-indigo-50 rounded-full p-2 w-full sm:w-auto mx-auto">
+            {(['monthly', 'annual'] as BillingCycle[]).map((cycle) => {
+              const isActive = billingCycle === cycle;
+              const label = cycle === 'monthly' ? 'Monthly billing' : 'Annual billing (save 17%)';
+              return (
+                <button
+                  key={cycle}
+                  type="button"
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                    isActive ? 'bg-white text-indigo-900 shadow' : 'text-indigo-600 hover:text-indigo-900'
+                  }`}
+                  onClick={() => setBillingCycle(cycle)}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Pricing Cards */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {pricingTiers.map((tier, index) => {
-              const { testId, ...tierProps } = tier;
+              const { testId, onGetStarted, ...tierProps } = tier;
 
               return (
                 <PricingCard
                   key={index}
                   {...tierProps}
-                  onGetStarted={tier.cta === 'Get Started' ? () => handleGetStarted(tier.name) : undefined}
+                  onGetStarted={onGetStarted}
                   loading={loadingTier === tier.name}
                   disabled={loadingTier !== null && loadingTier !== tier.name}
                   ctaTestId={`pricing-cta-${testId ?? tier.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  setupFeeNote="Setup fee invoiced separately after contract selection."
                 />
               );
             })}
           </div>
+
+          <p className="mt-8 text-center text-sm text-gray-600">
+            Annual billing reflects a {Math.round(ANNUAL_DISCOUNT_RATE * 100)}% discount vs monthly. Setup fees are billed via
+            separate invoice following contract signature.
+          </p>
 
           {errorTier && (
             <div className="mt-6 text-center text-red-600 font-medium" role="alert">
@@ -489,7 +499,7 @@ export const PricingPage: React.FC = () => {
             <div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Is there a discount for annual billing?</h3>
               <p className="text-gray-600">
-                Yes, annual subscriptions receive a 20% discount compared to monthly billing. Contact sales for annual pricing details.
+                Yes, annual subscriptions receive a 17% discount compared to paying monthly. Choose the annual toggle to see the adjusted price.
               </p>
             </div>
 

@@ -96,3 +96,45 @@ def log_claim_mismatch(
         detail=detail,
         claim_snapshot=claim_snapshot,
     )
+
+
+def log_permission_denied(
+    db: Session,
+    *,
+    actor_user_id: str,
+    organization_id: str | None,
+    permission: str,
+) -> RBACAuditLog:
+    detail = f"Permission '{permission}' denied"
+    return _persist_log(
+        db,
+        actor_user_id=actor_user_id,
+        target_user_id=actor_user_id,
+        organization_id=organization_id,
+        action=RBACAuditAction.PERMISSION_DENIED,
+        detail=detail,
+    )
+
+
+def log_impersonation(
+    db: Session,
+    *,
+    actor_user_id: str,
+    organization_id: str | None,
+    tenant_id: str | None,
+    customer_id: str | None,
+) -> RBACAuditLog:
+    parts: list[str] = []
+    if tenant_id:
+        parts.append(f"tenant={tenant_id}")
+    if customer_id:
+        parts.append(f"customer={customer_id}")
+    detail = "Scoped via headers: " + ", ".join(parts) if parts else "Scoped via headers"
+    return _persist_log(
+        db,
+        actor_user_id=actor_user_id,
+        target_user_id=actor_user_id,
+        organization_id=organization_id or tenant_id,
+        action=RBACAuditAction.IMPERSONATION,
+        detail=detail,
+    )

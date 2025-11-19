@@ -62,7 +62,9 @@ class ProspectStatus(str, PyEnum):
     PROPOSAL = "proposal"
     NEGOTIATION = "negotiation"
     CLOSED_WON = "closed_won"
+    WON = CLOSED_WON  # backward-compat alias
     CLOSED_LOST = "closed_lost"
+    LOST = CLOSED_LOST  # backward-compat alias
 
 
 class AdminDealStage(str, PyEnum):
@@ -110,6 +112,7 @@ class ContentType(str, PyEnum):
     PODCAST = "podcast"
     BLOG = "blog"
     SOCIAL = "social"
+    VIDEO = YOUTUBE  # legacy alias
 
 
 class ContentStatus(str, PyEnum):

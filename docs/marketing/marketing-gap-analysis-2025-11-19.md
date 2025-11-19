@@ -1,49 +1,53 @@
-# Marketing Gap Analysis — 2025-11-19
+# Marketing Gap Analysis – 2025-11-19
 
-## Source Inputs
-- `docs/FINAL-COMPLETION-PLAN.md:33-140` documents the wave-based plan and explicitly calls for a marketing gap analysis plus SEO/integration deliverables.
-- `MARKETING_WEBSITE_STATUS.md:5-110` captures the prior Nov 12 snapshot (90% complete, mobile nav polish + 38-post backlog still open).
-- `COMPLETION-PLAN-2025-11-17.md:100-193` enumerates the integrations (chatbot, newsletter, lead capture, YouTube) and SEO artefacts (sitemap, robots, OG/Twitter, structured data) that must be implemented.
-- `docs/CRITICAL_BUGS_REPORT.md:17-24` highlights unresolved contact/newsletter notification gaps and schema mismatches.
-- Fresh automation proof for Playwright lives in `docs/tests/2025-11-19-playwright.txt:1-90` with the summary in `docs/deployments/2025-11-19-marketing-playwright.txt:1-15`; the broader Vitest log (with RED cases) is `docs/tests/2025-11-19-frontend-vitest.txt:1-200`.
+**Scope**: Identify the remaining work required to bring https://100daysandbeyond.com to parity with the ApexDeliver + CapLiquify positioning described in `MARKETING_WEBSITE_STATUS.md`, README, and `docs/FINAL-COMPLETION-PLAN.md` (Wave 3).
 
-## Parity Snapshot
+## Snapshot
+| Dimension | Current Evidence | Status | Gap |
+| --- | --- | --- | --- |
+| Navigation & Layout | Enhanced dropdown nav, CapLiquify hero (Nov 12) | ✅ Desktop done | ❌ Mobile dropdown focus/animation polish still outstanding |
+| Content Depth | 12/50 long-form posts, CapLiquify FP&A / 4-stage cycle / Sales Promotion pages | ⚠️ Partial | ❌ Need 38 more posts + imagery, refreshed case studies, testimonial overlays |
+| Lead Capture & Integrations | Contact + book trial forms wired to local handlers | ⚠️ Partial | ❌ Missing GoHighLevel + newsletter/chatbot hand-off confirmations |
+| SEO / Performance | 2025-11-12 Lighthouse + axe reports | ⚠️ Stale | ❌ Need reruns post-navigation rebuild + sitemap/robots/structured-data audit |
+| Automation Evidence | Marketing Playwright log (docs/tests/2025-11-19-playwright.txt) | ✅ Logged | ➖ Keep log cadence as UI gaps close |
 
-| Surface / Capability | Implementation Evidence | Remaining Gap |
+## Navigation & Layout Tasks
+| Area | Current State | Required Action |
 | --- | --- | --- |
-| Global layout, structured data, nav | `frontend/src/components/marketing/MarketingLayout.tsx:10-48` wraps every marketing page with skip links, org schema, `MarketingNav`, `Footer`, and the opt-in popup. | Mobile nav focus/animation polish plus final QA for dropdown accessibility remain open per `MARKETING_WEBSITE_STATUS.md:84-90`.
-| Core marketing pages | Landing, pricing, solutions, and trust pages are live: `frontend/src/pages/marketing/EnhancedLandingPage.tsx:1-400`, `PricingPage.tsx:1-250`, `CapLiquifyFPAPage.tsx:1-220`, `SalesPromotionPricingPage.tsx:1-330`, `FourStageCyclePage.tsx:1-260`, `FeaturesPage.tsx:1-280`, `SecurityPage.tsx:1-260`, `FAQPage.tsx:1-210`, `AboutPage.tsx:1-200`, `TeamPage.tsx:1-260`, `CaseStudiesPage.tsx:1-140`, `PodcastPage.tsx:1-220`, and `ContactPage.tsx:1-280`. Each route includes matching Vitest coverage under `frontend/src/pages/marketing/*.test.tsx`. | Need updated screenshots, SEO artefacts (sitemap/robots), and parity verification against the apexdeliver-marketing reference before claiming 100%. Several Vitest specs (BlogListingPage, BookTrial, PodcastStudioRouting) are still red in `docs/tests/2025-11-19-frontend-vitest.txt:20-160`.
-| Interactive proof components | Financial storytelling widgets ship in `frontend/src/components/marketing/CashFlowCalculator.tsx:4-170`, `DynamicPricingSimulator.tsx:4-200`, and `InteractiveTimeline.tsx:1-150` with focused tests (`*.test.tsx`). Case studies are typed + rendered via `frontend/src/data/caseStudies.ts:1-120` and `CaseStudy.tsx:9-96`. | The calculators currently render randomised data and lack analytics capture. Case study data covers five accounts; parity requires 38+ blog posts and fresh imagery (`MARKETING_WEBSITE_STATUS.md:91-110`).
-| Blog + CMS backing | Frontend listing/search/filter implemented in `frontend/src/pages/marketing/BlogListingPage.tsx:1-220`; backend API provides CRUD + slug safeguards within `backend/app/api/routes/blog.py:1-410` and tests in `backend/tests/api/test_blog_api.py:1-210`. Playwright `tests/blog-smoke.spec.ts:1-16` keeps the route alive. | Only 12/50 posts exist, imagery is missing, and the Vitest suite for BlogListingPage currently hits a real API (500) per `docs/tests/2025-11-19-frontend-vitest.txt:40-80`. Need MSW fixtures + content backlog execution.
-| Lead capture + newsletter | Contact form posts to `/api/marketing/contact` through `frontend/src/services/contactService.ts:1-18`, newsletter opt-in posts to `/api/marketing/subscribe` via `frontend/src/services/newsletterService.ts:1-20`, and both endpoints are covered by `backend/tests/api/test_marketing.py:1-90` plus Playwright specs `tests/contact-flow.spec.ts:1-26` and `tests/optin-popup.spec.ts:1-38`. | Notifications/ESP hand-offs remain stubs (`docs/CRITICAL_BUGS_REPORT.md:17-24`). We still need GoHighLevel/chatbot integrations and analytics hooks per `COMPLETION-PLAN-2025-11-17.md:100-110`.
-| Automation + smoke evidence | `scripts/run-marketing-playwright.mjs:1-55` builds the frontend then executes `playwright.dev.config.ts:1-45`, producing trace/screenshot artefacts logged in `docs/tests/2025-11-19-playwright.txt:1-70`. | Command is manual; CI wiring, screenshot archival, and Lighthouse/Axe refreshes (older than Nov-13) are still pending (`docs/FINAL-COMPLETION-PLAN.md:60-110`).
+| Mobile dropdowns | Keyboard-friendly desktop dropdown exists; mobile animation/focus still TODO | Implement slide/fade animation + focus traps, document testing strategy, add Vitest stories |
+| Sticky CTA / ROI widgets | Enhanced hero shows ROI chips but lacks sales-engine CTA on scroll | Add sticky CTA component referencing ROI/benchmark data |
+| Solutions/Product mega panels | Present but not linked from marketing compare/solutions sub-routes | Link `/marketing/compare/*` + `/marketing/solutions/*` pages inside nav and cover them in routing tests |
 
-## Gap Buckets
+## Content Backlog
+1. **Blog**: 38 new posts (remaining mix: 7 M&A Strategy, 8 FP&A, 8 PMI, 7 Working Capital, 8 Pricing). Each needs hero art + og:image metadata stored in `frontend/src/data/caseStudies.ts` or blog service.
+2. **Case Studies**: Update `frontend/src/data/caseStudies.ts` with metrics, logos, and CTA copy; ensure Playwright smoke covers new cards.
+3. **Testimonials & Social Proof**: Extend `LandingPage` and `PricingPage` with customer quotes, metrics, and logos (align with README differentiators).
+4. **Compare/Solutions Pages**: `/marketing/compare` and `/marketing/solutions` directories exist but content is MVP; add graphics + CTA flows per page and cover with Vitest + Playwright.
 
-### 1. Navigation & Accessibility
-- Mobile dropdown focus, animation timing, and touch targets remain unfinished (`MARKETING_WEBSITE_STATUS.md:86-88`). MarketingNav currently handles desktop hover/focus but lacks explicit ARIA state management for the mobile sheet.
-- Need to rerun manual keyboard/VO testing once the nav polish ships, then capture evidence under `docs/testing/` per the final plan (`docs/FINAL-COMPLETION-PLAN.md:70-95`).
+## Lead Capture / Integrations
+| Feature | Current Behaviour | Gap & Plan |
+| --- | --- | --- |
+| Contact form (`/contact`) | Local handler logs payload; no CRM hand-off | Wire to GoHighLevel (per README), capture API response, add Playwright coverage + docs/tests log |
+| Newsletter | CTA present but no backend endpoint | Add `/api/marketing/newsletter` + Supabase/ESP integration, show success/failure toast |
+| Book Trial / Chatbot | Buttons open static modal | Integrate with Intercom/Drift or placeholder script, ensure fallback CTA for no-script |
+| Podcast/Video embeds | Static placeholders | Add actual embed URLs + loading skeletons, expand tests |
 
-### 2. Content Throughput & Blog Backlog
-- `frontend/src/data/caseStudies.ts:22-110` only lists five customers; MARK-002 requires 38 additional blog posts plus imagery per `MARKETING_WEBSITE_STATUS.md:91-105`.
-- BlogListingPage Vitest expectations currently fail because MSW does not stub the `/api/blog` request, leading to 500s (`docs/tests/2025-11-19-frontend-vitest.txt:40-80`). Need local fixtures plus broader marketing content seeding so Playwright/Vitest can assert deterministic cards.
+## SEO & Performance Items
+- Generate up-to-date `sitemap.xml` + `robots.txt` (ensure Sales Promotion, CapLiquify pages included).
+- Add structured data (FAQ, Article, Breadcrumb) for new posts/case studies.
+- Re-run Lighthouse + axe after Wave 3 and store outputs (`docs/testing/lighthouse/<date>/`).
+- Ensure `<head>` metadata (OG/Twitter) references CapLiquify copy; link to blog cover art once imagery lands.
 
-### 3. Forms, Chatbot, and ESP Integrations
-- Contact + subscribe endpoints persist payloads but ops still lacks notifications or CRM sync (`docs/CRITICAL_BUGS_REPORT.md:17-24`). The backlog also calls for GoHighLevel chatbot, YouTube embeds, and lead capture wiring (`COMPLETION-PLAN-2025-11-17.md:100-107`).
-- Need background tasks + environment docs that describe where submissions go, plus Playwright coverage that hits the real API (with MSW fallbacks) instead of mocked routes.
+## Evidence & Test Coverage
+| Artifact | Location |
+| --- | --- |
+| Marketing Playwright log | `docs/tests/2025-11-19-playwright.txt` |
+| Backend blog/marketing API smoke log | `docs/tests/2025-11-19-backend-blog-marketing.txt` |
+| Upcoming Lighthouse/Axe runs | `docs/testing/lighthouse/<date>/` via `scripts/run-lighthouse-axe.mjs` |
 
-### 4. SEO, Performance, and Evidence Currency
-- Sitemap, robots, OG/Twitter parity, and structured data roll-ups called out in `COMPLETION-PLAN-2025-11-17.md:109-120` do not yet exist in the repo. Canonicals are hard-coded per page, but we have no generated `public/sitemap.xml` nor `public/robots.txt`.
-- Lighthouse/Axe artefacts under `docs/marketing/lighthouse-report.html` date back to 2025-11-12; Cloudflare-exempt manual reruns plus remediation tickets are required before final handoff (`docs/FINAL-COMPLETION-PLAN.md:70-110`).
-
-### 5. QA & Automation
-- Playwright smoke now runs via `scripts/run-marketing-playwright.mjs`, but there is no CI job uploading traces/screenshots or enforcing MARKETING_BASE_URL per commit (`docs/deployments/2025-11-19-marketing-playwright.txt:1-10`).
-- Vitest log shows four RED suites (ProtectedRoute, BlogListingPage, BookTrial contact CTA, PodcastStudioRouting) that must be fixed before claiming 100% (`docs/tests/2025-11-19-frontend-vitest.txt:10-120`). Backend pytest evidence is older than Nov-17; reruns plus log archival are required once marketing work lands.
-
-## Next Steps (Wave 2 Priorities)
-1. **Document parity backlog** — Keep this analysis in lockstep with README/FINAL plan by linking it in those artefacts and updating after each marketing change (`docs/FINAL-COMPLETION-PLAN.md:60-90`).
-2. **Ship nav + accessibility polish** — Implement mobile dropdown focus + animation states, rerun manual QA, and archive the evidence referenced by `MARKETING_WEBSITE_STATUS.md:84-90`.
-3. **Execute content backlog** — Generate the remaining 38 blog posts + imagery, seed them via the Blog API (`backend/app/api/routes/blog.py:250-380`), and refresh BlogListingPage Vitest/MSW fixtures.
-4. **Complete integrations** — Wire contact/newsletter submissions to the real ESP/CRM, add GoHighLevel chatbot + newsletter embeds, and document the flows per `COMPLETION-PLAN-2025-11-17.md:100-110`.
-5. **SEO + performance** — Add sitemap/robots/OG/Twitter automation, rerun Lighthouse + Axe, and store the Nov-19+ reports under `docs/marketing/`.
-6. **Automation hardening** — Move `scripts/run-marketing-playwright.mjs` into CI, publish artifacts, and rerun backend/frontend suites so `docs/tests/` only contains green evidence.
+## Next Actions
+1. Implement mobile nav polish + record Vitest/Playwright updates.
+2. Draft content plan for the remaining 38 blog posts (outline + owner + ETA) and begin populating CMS/BogAdminEditor.
+3. Connect contact/newsletter forms to GoHighLevel (or Supabase) and document API keys in `ApexDeliver Environment Variables - Master Reference.md`.
+4. Build ROI widget + testimonial overlays on Landing/Pricing pages.
+5. Add SEO artefacts (sitemap, robots, structured data) and schedule Lighthouse/Axe rerun using the new script/runbook.

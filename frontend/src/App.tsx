@@ -121,11 +121,12 @@ const AdminPanel = lazyNamed(() => import("./modules/fpa/pages/AdminPanel"), "Ad
 const PMIProjectList = lazyNamed(() => import("./modules/pmi/pages/PMIProjectList"), "PMIProjectList")
 const PMIProjectDetail = lazyNamed(() => import("./modules/pmi/pages/PMIProjectDetail"), "PMIProjectDetail")
 const PMIProjectCreate = lazyNamed(() => import("./modules/pmi/pages/PMIProjectCreate"), "PMIProjectCreate")
-// Temporarily disabled - missing blogService functions (createBlogPost, updateBlogPost, publishBlogPost, getBlogPost)
-// const BlogAdminEditor = lazyNamed(() => import("./pages/admin/BlogAdminEditor"), "BlogAdminEditor")
+const BlogAdminEditor = lazyNamed(() => import("./pages/admin/BlogAdminEditor"), "BlogAdminEditor")
+const TestBlogAdminPage = lazyDefault(() => import("./pages/test/TestBlogAdminPage"))
 
 // Feature flag check for Master Admin Portal (enabled by default unless explicitly disabled)
 const isMasterAdminEnabled = import.meta.env.VITE_ENABLE_MASTER_ADMIN !== 'false'
+const enableTestRoutes = import.meta.env.VITE_ENABLE_TEST_ROUTES === 'true'
 
 // Master Admin route wrapper - shows "Not Available" if feature disabled
 const MasterAdminRoute = ({ children }: { children: React.ReactElement }) => {
@@ -207,6 +208,13 @@ export const AppRoutes = () => {
       <Route path="solutions/cfo" element={<SolutionCFO />} />
       <Route path="solutions/deal-team" element={<SolutionDealTeam />} />
 
+      {enableTestRoutes && (
+        <>
+          <Route path="__tests__/admin/blog/new" element={<TestBlogAdminPage />} />
+          <Route path="__tests__/admin/blog/:id/edit" element={<TestBlogAdminPage />} />
+        </>
+      )}
+
       {/* Authentication Routes (uses RootLayout - sign-in/sign-up only) */}
       <Route element={<RootLayout />}>
         <Route path="sign-in/*" element={<SignInPage />} />
@@ -222,9 +230,8 @@ export const AppRoutes = () => {
         <Route path="admin/users" element={<UserManagement />} />
         <Route path="admin/organizations" element={<OrganizationManagement />} />
         <Route path="admin/system" element={<SystemHealth />} />
-        {/* Temporarily disabled - BlogAdminEditor needs blogService functions implemented */}
-        {/* <Route path="admin/blog/new" element={<BlogAdminEditor />} /> */}
-        {/* <Route path="admin/blog/:id/edit" element={<BlogAdminEditor />} /> */}
+        <Route path="admin/blog/new" element={<BlogAdminEditor />} />
+        <Route path="admin/blog/:id/edit" element={<BlogAdminEditor />} />
 
         {/* Master Admin Portal Routes (Feature-Flagged) */}
         <Route path="master-admin" element={<MasterAdminRoute><MasterAdminDashboard /></MasterAdminRoute>} />

@@ -1,0 +1,199 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-4.1.0
+asyncio: mode=Mode.STRICT
+collected 1770 items
+
+tests\test_additional_ratios.py ...............                          [  0%]
+tests\test_api_middleware.py ...............                             [  1%]
+tests\test_audio_chunking_service.py .................                   [  2%]
+tests\test_auth_dependencies_edge_cases.py ...............               [  3%]
+tests\test_auth_helpers.py .....................                         [  4%]
+tests\test_billing_endpoints.py ................                         [  5%]
+tests\test_billing_simple.py ...                                         [  5%]
+tests\test_blog_api_errors.py .......                                    [  6%]
+tests\test_caching.py ...............                                    [  7%]
+tests\test_campaign_schema_migration.py ......................s          [  8%]
+tests\test_campaign_service.py .........                                 [  8%]
+tests\test_clerk_auth_complete.py ..........................             [ 10%]
+tests\test_community_api.py ........................                     [ 11%]
+tests\test_community_models.py .............                             [ 12%]
+tests\test_community_service.py .............................            [ 14%]
+tests\test_core_edge_cases.py ...s...................                    [ 15%]
+tests\test_dashboard_api.py ......                                       [ 15%]
+tests\test_database_infrastructure.py ............                       [ 16%]
+tests\test_database_reset.py ..                                          [ 16%]
+tests\test_deal_endpoints.py .........................                   [ 17%]
+tests\test_deal_matching_api.py ..................                       [ 18%]
+tests\test_deal_matching_models.py ........                              [ 19%]
+tests\test_deal_matching_service.py ...............                      [ 20%]
+tests\test_document_ai_and_versions.py .....                             [ 20%]
+tests\test_document_endpoints.py ....................................... [ 22%]
+.....                                                                    [ 22%]
+tests\test_document_export_jobs_api.py ....                              [ 23%]
+tests\test_document_generation_api.py ....................               [ 24%]
+tests\test_document_generation_api_errors.py ............                [ 24%]
+tests\test_document_generation_models.py ..........                      [ 25%]
+tests\test_document_service.py ....                                      [ 25%]
+tests\test_document_service_error_paths.py .......                       [ 26%]
+tests\test_email_service.py .......                                      [ 26%]
+tests\test_email_tasks.py ..                                             [ 26%]
+tests\test_entitlement.py ...........................................    [ 29%]
+tests\test_entitlement_service_complete.py ..................            [ 30%]
+tests\test_event_models.py ...........                                   [ 30%]
+tests\test_event_notification_service.py ..                              [ 30%]
+tests\test_event_payment_api.py .......                                  [ 31%]
+tests\test_event_payment_service.py ..........                           [ 31%]
+tests\test_event_reminder_service.py ..                                  [ 31%]
+tests\test_event_service.py ..............                               [ 32%]
+tests\test_events_api_errors.py .......                                  [ 33%]
+tests\test_financial_api.py ..................................           [ 35%]
+tests\test_financial_api_errors.py ........                              [ 35%]
+tests\test_financial_models_sync.py ..........                           [ 36%]
+tests\test_financial_narrative_service.py ...........                    [ 36%]
+tests\test_financial_ratios.py ...........................               [ 38%]
+tests\test_financial_xero_integration.py s                               [ 38%]
+tests\test_fpa_api.py ...                                                [ 38%]
+tests\test_fpa_routes.py ...                                             [ 38%]
+tests\test_invite_service.py ................                            [ 39%]
+tests\test_isolation_guards.py ....                                      [ 39%]
+tests\test_marketing_api_errors.py .........                             [ 40%]
+tests\test_master_admin_api.py ..............                            [ 41%]
+tests\test_master_admin_models.py .....ss..........ss..s.                [ 42%]
+tests\test_master_admin_scope.py .....                                   [ 42%]
+tests\test_models_financial_connection.py ......                         [ 42%]
+tests\test_netsuite_integration.py ssssssssss                            [ 43%]
+tests\test_notification_service.py ...............                       [ 44%]
+tests\test_notifications_api.py ......                                   [ 44%]
+tests\test_organization_service.py ............................          [ 46%]
+tests\test_path_safety.py ....                                           [ 46%]
+tests\test_permissions.py ....                                           [ 46%]
+tests\test_pipeline_template_api.py ...                                  [ 46%]
+tests\test_pipeline_template_api_errors.py .......                       [ 47%]
+tests\test_pipeline_template_schemas.py ....                             [ 47%]
+tests\test_pmi_integration.py .......                                    [ 47%]
+tests\test_pmi_routes.py .........................                       [ 49%]
+tests\test_pmi_service.py .................................              [ 51%]
+tests\test_podcast_api.py .............................................. [ 53%]
+........                                                                 [ 54%]
+tests\test_podcast_feature_access.py .                                   [ 54%]
+tests\test_podcast_service.py ...........                                [ 54%]
+tests\test_quickbooks_integration.py sssssssss                           [ 55%]
+tests\test_quickbooks_oauth_service_complete.py ........................ [ 56%]
+...................                                                      [ 57%]
+tests\test_quota_service.py .............................                [ 59%]
+tests\test_rbac.py ..........                                            [ 60%]
+tests\test_rbac_audit_service.py .........                               [ 60%]
+tests\test_rbac_imports.py ..                                            [ 60%]
+tests\test_s3_storage_service.py .....................                   [ 61%]
+tests\test_sage_integration.py sssssssss                                 [ 62%]
+tests\test_sage_oauth_service.py ........................                [ 63%]
+tests\test_security_utils.py ...........                                 [ 64%]
+tests\test_seed_service.py ...                                           [ 64%]
+tests\test_storage_factory.py .....                                      [ 64%]
+tests\test_subscription.py .................                             [ 65%]
+tests\test_subscription_core.py ..............                           [ 66%]
+tests\test_subscription_error_paths.py ............ssss....              [ 67%]
+tests\test_subscription_model.py .............                           [ 68%]
+tests\test_subscription_service_edge_cases.py .......................... [ 69%]
+..                                                                       [ 70%]
+tests\test_task_automation.py .....                                      [ 70%]
+tests\test_task_crud.py ......                                           [ 70%]
+tests\test_tasks_api_complete.py ..............                          [ 71%]
+tests\test_template_service.py ........                                  [ 71%]
+tests\test_thumbnail_service.py ................                         [ 72%]
+tests\test_user_service_helpers.py .............................         [ 74%]
+tests\test_valuation_api.py ....................                         [ 75%]
+tests\test_valuation_api_errors.py .............                         [ 76%]
+tests\test_valuation_crud.py .................                           [ 77%]
+tests\test_valuation_export_service.py ..........                        [ 77%]
+tests\test_valuation_service.py ........................................ [ 80%]
+..........                                                               [ 80%]
+tests\test_voice_service.py .........                                    [ 81%]
+tests\test_xero_integration.py sssssssss                                 [ 81%]
+tests\test_xero_oauth_service.py ...........                             [ 82%]
+tests\test_youtube_service.py ...                                        [ 82%]
+tests\api\test_blog.py ................                                  [ 83%]
+tests\api\test_blog_api.py ...........                                   [ 83%]
+tests\api\test_campaigns.py ..........                                   [ 84%]
+tests\api\test_dashboard_metrics.py ......                               [ 84%]
+tests\api\test_document_sharing.py ........                              [ 85%]
+tests\api\test_event_api.py ..........................                   [ 86%]
+tests\api\test_marketing.py ....                                         [ 87%]
+tests\api\test_templates.py .....                                        [ 87%]
+tests\api\test_voice.py ....                                             [ 87%]
+tests\api\test_webhooks.py ssssss                                        [ 87%]
+tests\master_admin\test_models.py ............................           [ 89%]
+tests\master_admin\test_schemas.py ..................................... [ 91%]
+.                                                                        [ 91%]
+tests\services\test_document_export_service.py ......................... [ 92%]
+.....                                                                    [ 93%]
+tests\services\test_netsuite_oauth_mocked.py ....................        [ 94%]
+tests\services\test_netsuite_oauth_service_complete.py ................. [ 95%]
+................                                                         [ 96%]
+tests\services\test_quickbooks_oauth_mocked.py ....................      [ 97%]
+tests\services\test_rbac_permissions.py .........sss..s                  [ 98%]
+tests\services\test_sage_oauth_mocked.py ....................            [ 99%]
+tests\test_migrations\test_user_foreign_keys.py ...sss.....              [100%]
+
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_campaign_schema_migration.py:212: Enum introspection only supported on PostgreSQL in tests
+SKIPPED [1] tests\test_core_edge_cases.py:58: Database module uses lazy initialization; connection errors are handled at connection-time by SQLAlchemy engine, not in get_db()
+SKIPPED [1] tests\test_financial_xero_integration.py:9: To be implemented in ratio engine phase
+SKIPPED [1] tests\test_master_admin_models.py:134: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:148: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:335: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:348: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_master_admin_models.py:405: SQLite doesn't enforce enum constraints - test with PostgreSQL
+SKIPPED [1] tests\test_netsuite_integration.py:30: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:42: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:59: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:97: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:114: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:132: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:153: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:209: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:229: NetSuite credentials not configured (set NETSUITE_CLIENT_ID, NETSUITE_CLIENT_SECRET, NETSUITE_ACCOUNT_ID)
+SKIPPED [1] tests\test_netsuite_integration.py:249: Requires real NetSuite sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_quickbooks_integration.py:29: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:49: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:66: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:104: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:121: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:143: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:164: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:219: QuickBooks credentials not configured (set QUICKBOOKS_CLIENT_ID and QUICKBOOKS_CLIENT_SECRET)
+SKIPPED [1] tests\test_quickbooks_integration.py:238: Requires real QuickBooks sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_sage_integration.py:28: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:40: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:57: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:95: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:112: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:130: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:151: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:206: Sage credentials not configured (set SAGE_CLIENT_ID and SAGE_CLIENT_SECRET)
+SKIPPED [1] tests\test_sage_integration.py:226: Requires real Sage sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_subscription_error_paths.py:373: Stripe module imported inside function - mocking complex, error handling already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:397: Stripe module imported inside function - mocking complex, error handling already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:425: Stripe module imported inside function - mocking complex, event routing already verified in code
+SKIPPED [1] tests\test_subscription_error_paths.py:468: Stripe module imported inside function - mocking complex, exception handling already verified in code
+SKIPPED [1] tests\test_xero_integration.py:30: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:47: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:63: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:104: Requires real Xero sandbox OAuth flow - manual test
+SKIPPED [1] tests\test_xero_integration.py:136: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:153: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:175: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:196: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [1] tests\test_xero_integration.py:284: Xero credentials not configured (set XERO_CLIENT_ID and XERO_CLIENT_SECRET)
+SKIPPED [6] venv\Lib\site-packages\_pytest\python.py:184: async def function and no async plugin installed (see warnings)
+SKIPPED [1] tests\services\test_rbac_permissions.py:223: Auth dependency integration test - requires auth.py mocking
+SKIPPED [1] tests\services\test_rbac_permissions.py:234: Auth dependency integration test - requires auth.py mocking
+SKIPPED [1] tests\services\test_rbac_permissions.py:238: Auth dependency integration test - requires FastAPI request context
+SKIPPED [1] tests\services\test_rbac_permissions.py:269: Entitlement service test - covered in test_entitlement.py
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:150: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:167: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+SKIPPED [1] tests\test_migrations\test_user_foreign_keys.py:189: SQLite doesn't enforce FK constraints by default - test requires PostgreSQL
+========= 1708 passed, 62 skipped, 647 warnings in 428.85s (0:07:08) ==========

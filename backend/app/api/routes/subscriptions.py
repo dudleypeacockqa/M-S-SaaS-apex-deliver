@@ -16,6 +16,7 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.tenant_scope import AccessScope, get_access_scope
+from app.core.permissions import Permission, require_permission
 from app.db.session import get_db
 from app.models.organization import Organization
 from app.models.subscription import Invoice, Subscription, SubscriptionTier
@@ -44,6 +45,7 @@ router = APIRouter(prefix="/billing", tags=["billing", "subscriptions"])
 def create_checkout_session(
     subscription_data: SubscriptionCreate,
     scope: AccessScope = Depends(get_access_scope),
+    _: User = Depends(require_permission(Permission.BILLING_VIEW)),
     db: Session = Depends(get_db),
 ):
     """Create a Stripe Checkout Session for subscription purchase."""
@@ -67,6 +69,7 @@ def create_checkout_session(
 @router.get("/customer-portal", response_model=CustomerPortalResponse)
 def create_customer_portal_session(
     scope: AccessScope = Depends(get_access_scope),
+    _: User = Depends(require_permission(Permission.BILLING_VIEW)),
     db: Session = Depends(get_db),
 ):
     """Create a Stripe Billing Portal session so customers can manage payment methods."""
@@ -87,6 +90,7 @@ def create_customer_portal_session(
 @router.get("/me", response_model=SubscriptionResponse)
 def get_my_subscription(
     scope: AccessScope = Depends(get_access_scope),
+    _: User = Depends(require_permission(Permission.BILLING_VIEW)),
     db: Session = Depends(get_db),
 ):
     """Get current user's subscription details."""
@@ -100,6 +104,7 @@ def get_my_subscription(
 @router.get("/billing-dashboard", response_model=BillingDashboardResponse)
 def get_billing_dashboard(
     scope: AccessScope = Depends(get_access_scope),
+    _: User = Depends(require_permission(Permission.BILLING_VIEW)),
     db: Session = Depends(get_db),
 ):
     """Get complete billing dashboard data."""
@@ -178,6 +183,7 @@ def get_billing_dashboard(
 def change_subscription_tier(
     tier_update: SubscriptionUpdate,
     scope: AccessScope = Depends(get_access_scope),
+    _: User = Depends(require_permission(Permission.BILLING_MANAGE)),
     db: Session = Depends(get_db),
 ):
     """Change subscription tier (upgrade or downgrade)."""
@@ -200,6 +206,7 @@ def change_subscription_tier(
 def cancel_my_subscription(
     cancel_request: CancelSubscriptionRequest,
     scope: AccessScope = Depends(get_access_scope),
+    _: User = Depends(require_permission(Permission.BILLING_MANAGE)),
     db: Session = Depends(get_db),
 ):
     """Cancel the current subscription."""

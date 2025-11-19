@@ -1,3 +1,34 @@
+## Session 2025-11-19T15-BMAD-v6-Refresh – Vendor Update + Doc Alignment
+
+**Status**: ✅ COMPLETE – BMAD CLI refreshed to 6.0.0-alpha.12, docs aligned
+**Duration**: 1.25 hours
+**Priority**: P0 – Keep enterprise track artefacts in sync with upstream release
+**Version**: v1.0.0-rc1 (Final QA + marketing evidence)
+
+### Objective
+Rebase the vendored BMAD CLI to the latest v6-alpha.12 release, regenerate `.bmad/` manifests/agents, and update every methodology/runbook reference (implementation guide, adoption guide, PRD, CODEX guide) so the enterprise track points to the correct track names, sprint artefact locations, and installation steps.
+
+### Accomplishments
+
+- Pulled `_vendor/BMAD-METHOD` to commit `be04d687` and ran `npm install` + the automated installer (`node run-quick-update.js`) to rebuild `.bmad/_cfg/*.csv`, module configs, and Codex/Claude Code integrations without interactive prompts.
+- Authored `docs/bmad/bmad-v6-upstream-summary.md` capturing discover_inputs, track renames, sprint artefact path changes, and impact areas for ApexDeliver.
+- Updated `docs/BMAD-METHOD-IMPLEMENTATION.md`, `docs/BMAD-V6-ADOPTION-GUIDE.md`, `docs/bmad/prd.md`, `CODEX-COMPLETE-PROJECT-GUIDE.md`, and the new `docs/bmad/workflow-readme.md` to reference `.bmad/`, `docs/sprint-artifacts/`, the enterprise-bmad-method track, and the non-interactive installer snippet.
+- Synced `docs/bmad/bmm-workflow-status.md` so NEXT_ACTION/NEXT_COMMAND reference `/bmad:bmm:*` workflows and logged the refresh in this tracker before resuming QA preparation.
+
+### Evidence
+
+- `_vendor/BMAD-METHOD/node run-quick-update.js` log (core + bmb + bmm + cis reinstall, Codex/Claude Code IDEs configured).
+- `npx bmad-method status` output showing enterprise-bmad-method track + IDEs codex/claude-code.
+- Git diff: `.bmad/_cfg/*.csv`, `.bmad/*/config.yaml`, `docs/bmad/bmad-v6-upstream-summary.md`, methodology docs listed above.
+
+### Next Steps
+
+1. Execute `/bmad:bmm:workflows:workflow-status` to log the refreshed CLI info plus Master Admin QA gating.
+2. Prep Master Admin QA accounts/data and marketing backlog artefacts under `docs/sprint-artifacts/` via `/bmad:bmm:workflows:dev-story`.
+3. After QA + audits finish, run `/bmad:bmm:workflows:review-story` to consolidate evidence into FINAL-COMPLETION-PLAN.md and docs/tests/.
+
+---
+
 ## Session 2025-11-17T14-Toolchain-Verification – Reset CLI + Prep RED Baselines
 
 **Status**: 🔄 IN PROGRESS – BMAD CLI operational, awaiting backend/frontend test reruns

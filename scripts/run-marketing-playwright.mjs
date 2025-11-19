@@ -32,11 +32,18 @@ if (!env.MARKETING_BASE_URL) {
   env.MARKETING_BASE_URL = 'http://127.0.0.1:4173'
 }
 
+if (!env.VITE_ENABLE_TEST_ROUTES) {
+  env.VITE_ENABLE_TEST_ROUTES = env.PLAYWRIGHT_ENABLE_TEST_ROUTES === 'true' ? 'true' : 'false'
+}
+
+const reporter = env.PLAYWRIGHT_REPORTER ?? 'html,line'
+const extraArgs = process.argv.slice(2).join(' ')
+
 const configPath = path.join(projectRoot, 'playwright.dev.config.ts')
 
 try {
   await run(`${npmCmd} run build`, { cwd: frontendDir, env })
-  await run(`${npxCmd} playwright test --config "${configPath}"`, {
+  await run(`${npxCmd} playwright test --config "${configPath}" --reporter=${reporter} ${extraArgs}`.trim(), {
     cwd: projectRoot,
     env,
   })

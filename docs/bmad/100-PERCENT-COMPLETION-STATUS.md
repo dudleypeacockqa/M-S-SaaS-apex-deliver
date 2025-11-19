@@ -2,7 +2,7 @@
 
 **Repository**: `main` (local HEAD 0f04225f)
 **Last Updated**: 2025-11-19 14:10 UTC (docs synced + marketing Playwright log archived + QA prep planning)
-**Audited Artifacts**: backend/tests/test-results-2025-11-17.txt, frontend/test-results-2025-11-17.txt, docs/tests/2025-11-19-playwright.txt, docs/deployments/2025-11-19-marketing-playwright.txt, docs/bmad/DAILY_STATUS_NOTES.md
+**Audited Artifacts**: backend/tests/test-results-2025-11-17.txt, frontend/test-results-2025-11-17.txt, docs/tests/2025-11-19-playwright.txt, docs/deployments/2025-11-19-marketing-playwright.txt, docs/tests/2025-11-19-backend-blog-marketing.txt, docs/bmad/DAILY_STATUS_NOTES.md, docs/marketing/marketing-gap-analysis-2025-11-19.md
 
 ---
 
@@ -22,7 +22,7 @@
 | Backend quality | ✅ 1,432/1,432 passing; 55 skips; 84% coverage | `backend/tests/test-results-2025-11-17.txt` |
 | Frontend quality | ✅ 1,742/1,742 passing; 85.1% coverage | `frontend/test-results-2025-11-17.txt` |
 | Deployment health | ✅ Render backend verified via `verify_deployment.py`; frontend 200 OK | `docs/deployments/2025-11-17-backend-verify.txt` |
-| Governance docs | ✅ Synced 2025-11-19 (README/BMAD plan reference the Playwright evidence + next steps) | README.md, `docs/bmad/bmm-workflow-status.md`, this file |
+| Governance docs | ✅ Synced 2025-11-19 (README/TODO/BMAD trackers + marketing gap analysis reference the Nov-19 evidence) | README.md, `docs/bmad/bmm-workflow-status.md`, this file, `docs/marketing/marketing-gap-analysis-2025-11-19.md` |
 | BlogAdminEditor verification | ⚠️ Needs `/admin/blog/new` + `/admin/blog/:id/edit` E2E capture | `COMPLETION-PLAN-2025-11-17.md` §1.2 |
 | Master Admin manual QA | ⚠️ Pending 7-surface walkthrough + screenshots | `docs/testing/2025-11-17-MASTER-ADMIN-VALIDATION-CHECKLIST.md` |
 | Performance & accessibility | ⚠️ Manual Lighthouse/Axe runs blocked by Cloudflare; needs manual capture | README.md §Remaining Work, `docs/FINAL-COMPLETION-PLAN.md` |
@@ -37,12 +37,14 @@
 3. ✅ BMAD CLI installed (v4.44.1) and `npx bmad-method status` executed before this update.
 4. ✅ Documentation assets refreshed: `COMPLETION-PLAN-2025-11-17.md`, `TODO.md`, BMAD progress tracker, DAILY_STATUS_NOTES baseline.
 5. ✅ Marketing Playwright helper script + embedded preview server landed, and the first green run was captured on 2025-11-19 (docs/tests/2025-11-19-playwright.txt).
+6. ✅ Targeted blog + marketing API pytest re-run 2025-11-19 (docs/tests/2025-11-19-backend-blog-marketing.txt).
+7. ✅ BlogAdminEditor test harness Playwright proof captured 2025-11-19 (docs/tests/2025-11-19-playwright-blog-admin.txt).
 
 ---
 
 ## Outstanding Gating Items
 
-1. **Governance Sync** – Update README.md, `docs/bmad/bmm-workflow-status.md`, and this file with the live 2025-11-17 evidence so no artifact prematurely claims 100%.
+1. **Governance Sync** – Keep README.md, TODO.md, `docs/bmad/bmm-workflow-status.md`, this file, and the marketing gap analysis aligned with the Nov-19 evidence/logs so no artifact prematurely claims 100%.
 2. **BlogAdminEditor E2E Proof** – Extend backend + Playwright/Vitest coverage for `/admin/blog/new` and `/admin/blog/:id/edit`, capture RED logs, fix flows, and archive screenshots/logs confirming production behaviour.
 3. **Master Admin Manual QA** – Execute the seven-module checklist (Dashboard, Activity, Pipeline, Campaigns, Content Studio, Lead Capture, Sales Collateral) using a Clerk-authenticated tester; store notes + media in `docs/testing/` and track prerequisites in `docs/testing/2025-11-19-master-admin-qa-prep.md`.
 4. **Manual Lighthouse & Axe Audits** – Run DevTools Lighthouse and Axe DevTools on https://100daysandbeyond.com, document scores, and record any remediation tickets (Cloudflare prevents automated CI runs).
@@ -55,7 +57,7 @@
 
 | # | Gap | Impact | Effort | Priority |
 |---|-----|--------|--------|----------|
-| 1 | Governance docs unsynced | ✅ Synced 2025-11-19 (Docs now reference Nov-19 evidence); monitor future updates | -- | P0 |
+| 1 | Governance docs + marketing backlog tracking | ✅ Synced 2025-11-19 (Docs now reference Nov-19 backend/blog API + Playwright evidence; marketing gap analysis added); monitor future updates | -- | P0 |
 | 2 | BlogAdminEditor lacks E2E verification | Can’t claim F-010 complete without proof of `/admin/blog/*` flows | 2-3 hrs | P0 |
 | 3 | Master Admin manual QA missing | No screenshots/evidence for 7 production modules | 4-6 hrs | P0 |
 | 4 | Performance & accessibility audits stale | No Lighthouse/Axe data post Cloudflare tightening | 2-3 hrs | P1 |

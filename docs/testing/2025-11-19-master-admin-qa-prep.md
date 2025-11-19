@@ -21,8 +21,8 @@ The 7-surface Master Admin manual test run still lacks evidence. This prep note 
    - Hit `GET /api/master-admin/prospects` with the master admin token to confirm a tenant is selected via the `X-Master-Tenant-Id` header.
    - Use `backend/tests/conftest.py::master_admin_headers` as the contract for required headers (Auth + tenant scope).
 3. **Seed demo records for each surface** (Prospects, Pipeline, Campaigns, Content, Lead Capture, Collateral).
-   - Use the existing fixtures from `backend/tests/test_master_admin_api.py`, `backend/tests/test_campaign_service.py`, and `backend/tests/test_seed_service.py` as templates.
-   - When running locally, drop into an interactive shell and call service helpers:
+   - Preferred: run `python scripts/seed_master_admin_demo.py` after exporting `MASTER_ADMIN_USER_ID`, `MASTER_ADMIN_ORG_ID`, and optional `MASTER_ADMIN_SEED_OUTPUT=docs/testing/master-admin/2025-11-19/data/records.json`. The script uses the new `app.services.master_admin_seed_service` helpers to populate the minimum data set and emits the created IDs as JSON.
+   - Manual fallback: use the existing fixtures from `backend/tests/test_master_admin_api.py`, `backend/tests/test_campaign_service.py`, and `backend/tests/test_seed_service.py` as templates. Drop into an interactive shell and call `ensure_tenant_admin` (see snippet below) before posting to the `/api/master-admin/*` endpoints.
      ```python
      from app.db.session import SessionLocal
      from app.services.seed_service import TenantSeedConfig, ensure_tenant_admin
@@ -31,7 +31,7 @@ The 7-surface Master Admin manual test run still lacks evidence. This prep note 
      ```
    - Populate at least:
      - 3 prospects spread across deal stages.
-     - 2 campaigns with scheduled + completed states so campaign analytics render.
+     - 2 campaigns with scheduled + sent states so campaign analytics render.
      - A few content pieces (video, blog, script) to exercise Content Studio filters.
      - Lead capture submissions so charts and GoHighLevel sync indicators populate.
      - 1-2 files in Sales Collateral to validate upload/download flows.
@@ -71,3 +71,110 @@ docs/testing/master-admin/2025-11-19/
 2. [ ] Document how to switch tenants via `X-Master-Tenant-Id` (include sample header values).
 3. [ ] Attach links to the marketing Playwright log (`docs/tests/2025-11-19-playwright.txt`) so reviewers know automation was green before QA started.
 4. [ ] Once the above are in place, begin executing `docs/testing/2025-11-17-MASTER-ADMIN-VALIDATION-CHECKLIST.md` and capture evidence under `docs/testing/master-admin/2025-11-19/`.
+## 6. Test Account Registry
+| Role | Email | Organization ID | Notes |
+| --- | --- | --- | --- |
+| master_admin | dudley@qamarketing.com | `qa-dge-master` | Created by `backend/scripts/setup_master_admin.py`; has platform scope (no org required) |
+| tenant_admin | dudley.peacock@icloud.com | `qa-dge-tenant` | Used for comparison when validating that admins cannot access master-admin routes |
+| growth_user | growth.qa@apexdeliver.com | `qa-dge-tenant` | Useful for validating scoped views while impersonation header is present |
+
+Store the canonical list (with Clerk user IDs) in 1Password or the secure secret manager referenced in `ApexDeliver Environment Variables - Master Reference.md`, and paste masked IDs into `docs/testing/master-admin/2025-11-19/notes.md` when the run begins.
+
+## 7. Tenant Scope & Header Template
+All master-admin API calls must include both the Clerk auth header and the impersonation header. Reference snippet:
+
+```http
+GET /api/master-admin/prospects HTTP/1.1
+Host: localhost:8000
+Authorization: Bearer <CLERK_JWT>
+X-Master-Tenant-Id: qa-dge-tenant
+```
+
+When testing via the UI, open DevTools → Network and confirm the header is present before logging results. If a different tenant is needed, request the ID via `/api/master-admin/tenants` or query the `organizations` table in Postgres.
+
+## 8. Seed Data Expectations
+Populate the following minimum records before test execution and list their identifiers in `docs/testing/master-admin/2025-11-19/notes.md`:
+
+| Surface | Minimum Records | Source |
+| --- | --- | --- |
+| Prospects & Pipeline | 3 prospects across `qualified`, `negotiation`, `won`; at least 1 deal per stage | `seed_service.ensure_tenant_admin`, `test_master_admin_api` payloads |
+| Campaigns | 2 campaigns (one scheduled, one completed) + ≥3 recipients | `seed_service.seed_campaigns` or manual POSTs |
+| Content Studio | 1 script + 2 content pieces (video + blog) | Use `/api/master-admin/content-scripts` & `/content-pieces` endpoints |
+| Lead Capture | 2 submissions with unique emails | POST `/api/master-admin/lead-captures` |
+| Sales Collateral | 1 uploaded asset | POST to `/api/master-admin/collateral` (S3 mock acceptable locally) |
+
+Document record IDs + titles so QA can reference them without re-querying the database.
+
+## 9. Evidence Folder Checklist
+Add the following placeholders before testing starts:
+- `docs/testing/master-admin/2025-11-19/headers.md` – paste sanitized curl commands or HTTPie snippets showing the required headers.
+- `docs/testing/master-admin/2025-11-19/data/records.json` – dump of seeded IDs (prospects, campaigns, scripts, collateral).
+- `docs/testing/master-admin/2025-11-19/logs/` – copy of backend + frontend console output captured during the run.
+
+Updating these ahead of time keeps the QA session focused on validation rather than scrambling for artefacts.
+## 10. Evidence Folder Inventory
+Created `docs/testing/master-admin/2025-11-19/` with ready-made placeholders:
+- `notes.md` – per-surface execution log template
+- `headers.md` – auth + tenant header cheat sheet
+- `data/records.json` – fill with seeded record IDs before running scenarios
+- `screenshots/` – drop numbered PNGs referenced in README/TODO
+- `logs/.gitkeep` – place backend/frontend console captures here
+
+Update README/TODO once screenshots + logs exist so Wave 2 evidence links straight into this folder.
+
+
+## 11. API Call Recipes
+Use the following `curl`/HTTPie commands (replace tokens/IDs) to seed each surface before executing the checklist. Record the returned IDs inside `docs/testing/master-admin/2025-11-19/data/records.json` and reference them in `notes.md`.
+
+### Prospects & Deals
+```bash
+# Create prospect
+curl -X POST "$BACKEND_URL/api/master-admin/prospects"   -H "Authorization: Bearer $MASTER_ADMIN_TOKEN"   -H "X-Master-Tenant-Id: qa-dge-tenant"   -H "Content-Type: application/json"   -d '{
+        "name": "Atlas Industrial QA",
+        "stage": "qualified",
+        "deal_value": 12000000,
+        "probability": 0.35
+      }'
+
+# Create pipeline entry for the prospect
+curl -X POST "$BACKEND_URL/api/master-admin/deals"   -H "Authorization: Bearer $MASTER_ADMIN_TOKEN"   -H "X-Master-Tenant-Id: qa-dge-tenant"   -H "Content-Type: application/json"   -d '{
+        "prospect_id": "<prospect-id>",
+        "stage": "negotiation",
+        "close_date": "2025-12-15"
+      }'
+```
+
+### Campaign Manager
+```bash
+curl -X POST "$BACKEND_URL/api/master-admin/campaigns"   -H "Authorization: Bearer $MASTER_ADMIN_TOKEN"   -H "X-Master-Tenant-Id: qa-dge-tenant"   -H "Content-Type: application/json"   -d '{
+        "name": "QA Warm Outreach",
+        "channel": "email",
+        "schedule_at": "2025-11-20T14:00:00Z",
+        "recipients": ["jamie@example.com"]
+      }'
+```
+
+### Content Studio
+```bash
+curl -X POST "$BACKEND_URL/api/master-admin/content-scripts"   -H "Authorization: Bearer $MASTER_ADMIN_TOKEN"   -H "X-Master-Tenant-Id: qa-dge-tenant"   -H "Content-Type: application/json"   -d '{
+        "title": "Integration Readiness Script",
+        "channel": "video",
+        "body": "Intro + CTA for portfolio CEOs",
+        "status": "draft"
+      }'
+```
+
+### Lead Capture & Collateral
+```bash
+# Lead capture submission
+curl -X POST "$BACKEND_URL/api/master-admin/lead-captures"   -H "Authorization: Bearer $MASTER_ADMIN_TOKEN"   -H "X-Master-Tenant-Id: qa-dge-tenant"   -H "Content-Type: application/json"   -d '{
+        "email": "marketing.qa+lead@example.com",
+        "source": "pricing-cta"
+      }'
+
+# Collateral upload (HTTPie example for multipart)
+http --form POST "$BACKEND_URL/api/master-admin/collateral"   Authorization:"Bearer $MASTER_ADMIN_TOKEN"   X-Master-Tenant-Id:qa-dge-tenant   file@docs/testing/master-admin/2025-11-19/data/sample.pdf
+```
+
+Document every created ID inside `data/records.json` so screenshots and notes can reference real records during the QA run. Pair the entries with screenshots/log snippets when executing the checklist.
+

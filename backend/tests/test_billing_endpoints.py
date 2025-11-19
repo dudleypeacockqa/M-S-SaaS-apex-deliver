@@ -3,6 +3,7 @@ import pytest
 from unittest.mock import Mock, patch
 from starlette.testclient import TestClient
 from datetime import datetime, timezone
+from fastapi import status
 
 from app.models.user import User, UserRole
 from app.models.organization import Organization
@@ -291,7 +292,11 @@ def test_update_subscription_tier_upgrade(
 ):
     """Test upgrading subscription tier."""
     org = create_organization(name="Upgrade Org")
-    user = create_user(email="user@upgrade.org", organization_id=str(org.id))
+    user = create_user(
+        email="user@upgrade.org",
+        role=UserRole.admin,
+        organization_id=str(org.id),
+    )
 
     # Create existing subscription
     from uuid import uuid4
@@ -336,6 +341,42 @@ def test_update_subscription_tier_upgrade(
     assert data["tier"] == "professional"
 
 
+def test_change_tier_requires_manage_permission(
+    client: TestClient,
+    db_session,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
+    """Ensure non-admin users cannot change tiers."""
+    org = create_organization(name="Permission Org")
+    growth_user = create_user(email="growth@org.com", role=UserRole.growth, organization_id=str(org.id))
+
+    from uuid import uuid4
+    subscription = Subscription(
+        id=str(uuid4()),
+        organization_id=str(org.id),
+        stripe_customer_id="cus_perm",
+        stripe_subscription_id="sub_perm",
+        tier=SubscriptionTier.STARTER,
+        status=SubscriptionStatus.ACTIVE,
+    )
+    db_session.add(subscription)
+    db_session.commit()
+
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: growth_user)
+
+    response = client.put(
+        "/api/billing/change-tier",
+        json={"new_tier": "enterprise", "prorate": True},
+        headers={"Authorization": "Bearer growth_token"},
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert "billing:manage" in response.json()["detail"]
+
+
 def test_update_subscription_tier_downgrade(
     client: TestClient,
     db_session,
@@ -345,7 +386,11 @@ def test_update_subscription_tier_downgrade(
 ):
     """Test downgrading subscription tier (at period end)."""
     org = create_organization(name="Downgrade Org")
-    user = create_user(email="user@downgrade.org", organization_id=str(org.id))
+    user = create_user(
+        email="user@downgrade.org",
+        role=UserRole.admin,
+        organization_id=str(org.id),
+    )
 
     from uuid import uuid4
     subscription = Subscription(
@@ -393,7 +438,11 @@ def test_cancel_subscription_at_period_end(
 ):
     """Test canceling subscription at end of billing period."""
     org = create_organization(name="Cancel Org")
-    user = create_user(email="user@cancel.org", organization_id=str(org.id))
+    user = create_user(
+        email="user@cancel.org",
+        role=UserRole.admin,
+        organization_id=str(org.id),
+    )
 
     from uuid import uuid4
     subscription = Subscription(
@@ -437,7 +486,11 @@ def test_cancel_subscription_immediately(
 ):
     """Test canceling subscription immediately."""
     org = create_organization(name="Immediate Cancel Org")
-    user = create_user(email="user@immediate.org", organization_id=str(org.id))
+    user = create_user(
+        email="user@immediate.org",
+        role=UserRole.admin,
+        organization_id=str(org.id),
+    )
 
     from uuid import uuid4
     subscription = Subscription(
@@ -472,15 +525,62 @@ def test_cancel_subscription_immediately(
     assert data["status"] == "canceled"
 
 
-def test_cancel_subscription_requires_active_subscription(client: TestClient, auth_headers_solo: dict, create_user, create_organization):
-    """Test canceling requires an active subscription."""
-    org = create_organization(name="No Active Sub")
-    user = create_user(email="user@noactive.org", organization_id=str(org.id))
+def test_cancel_subscription_requires_manage_permission(
+    client: TestClient,
+    db_session,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
+    org = create_organization(name="NoManage Org")
+    growth_user = create_user(email="growth@nomg.org", role=UserRole.growth, organization_id=str(org.id))
+
+    from uuid import uuid4
+    subscription = Subscription(
+        id=str(uuid4()),
+        organization_id=str(org.id),
+        stripe_customer_id="cus_nomg",
+        stripe_subscription_id="sub_nomg",
+        tier=SubscriptionTier.STARTER,
+        status=SubscriptionStatus.ACTIVE,
+    )
+    db_session.add(subscription)
+    db_session.commit()
+
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: growth_user)
 
     response = client.post(
         "/api/billing/cancel",
         json={"immediately": False},
-        headers=auth_headers_solo
+        headers={"Authorization": "Bearer growth_token"},
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert "billing:manage" in response.json()["detail"]
+
+
+def test_cancel_subscription_requires_active_subscription(
+    client: TestClient,
+    create_user,
+    create_organization,
+    dependency_overrides,
+):
+    """Test canceling requires an active subscription."""
+    org = create_organization(name="No Active Sub")
+    admin_user = create_user(
+        email="admin@noactive.org",
+        role=UserRole.admin,
+        organization_id=str(org.id),
+    )
+
+    from app.api.dependencies.auth import get_current_user
+    dependency_overrides(get_current_user, lambda: admin_user)
+
+    response = client.post(
+        "/api/billing/cancel",
+        json={"immediately": False},
+        headers={"Authorization": "Bearer admin_token"},
     )
 
     assert response.status_code in [400, 404]

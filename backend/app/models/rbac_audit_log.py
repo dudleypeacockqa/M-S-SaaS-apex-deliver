@@ -19,6 +19,8 @@ class RBACAuditAction(str, enum.Enum):
     USER_DELETED = "user_deleted"
     USER_RESTORED = "user_restored"
     CLAIM_MISMATCH = "claim_mismatch"
+    PERMISSION_DENIED = "permission_denied"
+    IMPERSONATION = "impersonation"
 
 
 class RBACAuditLog(Base):

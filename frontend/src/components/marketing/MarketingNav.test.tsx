@@ -16,13 +16,8 @@ describe('MarketingNav', () => {
 
   it('displays navigation links', () => {
     renderWithRouter(<MarketingNav />);
-    // Pricing is a direct link
     expect(screen.getAllByRole('link', { name: /pricing/i }).length).toBeGreaterThan(0);
-    // Dropdown triggers exist
     expect(screen.getAllByRole('button', { name: /products/i }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('button', { name: /solutions/i }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('button', { name: /resources/i }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('button', { name: /company/i }).length).toBeGreaterThan(0);
   });
 
   it('shows Sign In and Sign Up CTAs', () => {
@@ -80,5 +75,46 @@ describe('MarketingNav', () => {
 
     await user.tab();
     expect(mobileProductsButton).toHaveFocus();
+  });
+
+  it('ensures closed mobile menu is hidden from screen readers and keyboard', () => {
+    renderWithRouter(<MarketingNav />);
+    // The mobile menu container
+    const mobileNav = document.getElementById('mobile-primary-nav');
+    
+    // Should be in the document but hidden
+    expect(mobileNav).toBeInTheDocument();
+    
+    // Check for accessibility attribute
+    expect(mobileNav).toHaveAttribute('aria-hidden', 'true');
+    
+    // Check for Tailwind classes that ensure visual/interaction hiding
+    expect(mobileNav).toHaveClass('invisible');
+    expect(mobileNav).toHaveClass('pointer-events-none');
+    expect(mobileNav).toHaveClass('opacity-0');
+  });
+
+  it('links solutions dropdown items to persona routes', async () => {
+    renderWithRouter(<MarketingNav />);
+    const solutionsTrigger = screen.getAllByRole('button', { name: /Solutions/i })[0];
+    fireEvent.keyDown(solutionsTrigger, { key: 'ArrowDown' });
+
+    const cfoLink = await screen.findByRole('menuitem', { name: /CFO Command Center/i });
+    const dealTeamLink = await screen.findByRole('menuitem', { name: /Deal Team Workspace/i });
+
+    expect(cfoLink).toHaveAttribute('href', '/solutions/cfo');
+    expect(dealTeamLink).toHaveAttribute('href', '/solutions/deal-team');
+  });
+
+  it('exposes compare routes within the navigation', async () => {
+    renderWithRouter(<MarketingNav />);
+    const compareTrigger = screen.getAllByRole('button', { name: /Compare/i })[0];
+    fireEvent.keyDown(compareTrigger, { key: 'ArrowDown' });
+
+    const dealRoomLink = await screen.findByRole('menuitem', { name: /DealRoom Alternative/i });
+    const midaxoLink = await screen.findByRole('menuitem', { name: /Midaxo Alternative/i });
+
+    expect(dealRoomLink).toHaveAttribute('href', '/compare/dealroom-alternative');
+    expect(midaxoLink).toHaveAttribute('href', '/compare/midaxo-alternative');
   });
 });

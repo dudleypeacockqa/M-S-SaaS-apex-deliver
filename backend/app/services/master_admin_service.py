@@ -910,7 +910,7 @@ def create_admin_campaign(campaign_data: AdminCampaignCreate, user: User, db: Se
         status=campaign_data.status,
         subject=campaign_data.subject,
         content=campaign_data.content,
-        scheduled_at=campaign_data.scheduled_at,
+        schedule_at=campaign_data.schedule_at,
     )
     db.add(campaign)
     db.commit()

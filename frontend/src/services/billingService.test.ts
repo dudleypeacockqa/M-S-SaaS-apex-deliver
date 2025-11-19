@@ -110,7 +110,7 @@ describe('billingService', () => {
 
     expect(mockedApi.post).toHaveBeenCalledWith(
       '/billing/create-checkout-session',
-      expect.objectContaining({ tier: 'starter' })
+      expect.objectContaining({ tier: 'starter', billing_cycle: 'monthly' })
     )
   })
 })

@@ -9,6 +9,7 @@
 **Methodology**: BMAD v6-alpha + TDD
 
 > 2025-11-15 Update: Event registration confirmations implemented via SendGrid (`backend/app/services/event_notification_service.py`). Reminder scheduler and dashboard preferences UI now live (`frontend/src/pages/dashboard/Settings.tsx`).
+> 2025-11-19 Update: Email queue now backed by Celery tasks (`app/tasks/email_tasks.py`) with TDD coverage in `tests/test_email_tasks.py`. Evidence captured via `pytest --cov=app` (1678 passed / 85 skipped / 82% overall) and stored in `docs/tests/2025-11-19-backend-pytest.txt`. Marketing consent is enforced through `UserNotificationPreferences` snapshots before any email is queued.
 
 ---
 
@@ -269,6 +270,32 @@ CREATE TABLE email_queue (
 - Store email delivery status for debugging
 - Consider implementing email batching for bulk notifications
 - Ensure GDPR compliance (opt-in/opt-out)
+
+---
+
+## Email Queue Runbook (2025-11-19)
+
+1. **Queueing (`queue_email`)**
+   - Asynchronous helper persists `EmailQueue` rows with serialized template data and pending status.
+   - Called directly by routers/services or via campaign tasks using `asyncio.run`.
+   - All callers must pass users filtered through `UserNotificationPreferences`; opt‑out records must never reach the queue.
+
+2. **Delivery Tasks**
+   - `process_email_queue_task` (`emails.process_queue`) drains oldest `pending` rows, invoking `retry_failed_email` inside a fresh event loop.
+   - `retry_failed_emails_task` (`emails.retry_failed`) replays items stuck in `failed` state while respecting `MAX_RETRY_ATTEMPTS`.
+   - Both tasks summarize `processed/sent/failed/skipped` counts for observability and reuse the same DB session helper.
+
+3. **Retry/Render Logic**
+   - `retry_failed_email` delegates to `process_email_entry`, rendering templates and updating status/`sent_at` timestamps atomically.
+   - Error messages are persisted on failure for later inspection; successes clear previous error text.
+
+4. **Monitoring & Evidence**
+   - `tests/test_email_tasks.py` covers happy-path queue draining plus retry skipping when attempts exhausted.
+   - Coverage: `pytest --cov=app --cov-report=term` (see `docs/tests/2025-11-19-backend-pytest.txt`) and Celery task tests ensure BMAD RED→GREEN→REFACTOR compliance.
+
+5. **Compliance & Telemetry**
+   - Marketing forms set opt-in flags consumed by notification service before calling `queue_email`.
+   - Audit logs for impersonation/emails reference `rbac_audit_logs`; ensure `CLERK_BYPASS_TIERS` remains enabled in tests unless explicitly overwritten.
 
 ---
 

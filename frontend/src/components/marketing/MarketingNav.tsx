@@ -44,6 +44,16 @@ const navItems: NavItem[] = [
     label: 'Solutions',
     dropdown: [
       {
+        label: 'CFO Command Center',
+        href: '/solutions/cfo',
+        description: 'Cash runway, 13-week forecasts, and lender-ready packs',
+      },
+      {
+        label: 'Deal Team Workspace',
+        href: '/solutions/deal-team',
+        description: 'AI co-pilot for sourcing, diligence, and PMI',
+      },
+      {
         label: '4-Stage M&A Cycle',
         href: '/4-stage-cycle',
         description: 'Evaluation → Pre-Deal → Post-Deal → Ongoing Ops',
@@ -57,6 +67,21 @@ const navItems: NavItem[] = [
         label: 'Security',
         href: '/security',
         description: 'Enterprise-grade security & compliance',
+      },
+    ],
+  },
+  {
+    label: 'Compare',
+    dropdown: [
+      {
+        label: 'DealRoom Alternative',
+        href: '/compare/dealroom-alternative',
+        description: 'Deal flow + FP&A automation vs. DealRoom data rooms',
+      },
+      {
+        label: 'Midaxo Alternative',
+        href: '/compare/midaxo-alternative',
+        description: 'Finance-first platform compared to Midaxo suites',
       },
     ],
   },
@@ -375,8 +400,9 @@ export const MarketingNav: React.FC = () => {
           id="mobile-primary-nav"
           ref={mobileMenuRef}
           className={`lg:hidden border-t border-gray-200 transition-all duration-300 origin-top ${
-            mobileMenuOpen ? 'max-h-[1200px] opacity-100 scale-y-100 py-4' : 'max-h-0 opacity-0 scale-y-95 pointer-events-none'
+            mobileMenuOpen ? 'max-h-[1200px] opacity-100 scale-y-100 py-4 visible' : 'max-h-0 opacity-0 scale-y-95 pointer-events-none invisible'
           }`}
+          aria-hidden={!mobileMenuOpen}
           onKeyDown={handleMobileKeyDown}
         >
           <div className="overflow-hidden">
@@ -412,7 +438,7 @@ export const MarketingNav: React.FC = () => {
                       <div
                         id={`mobile-dropdown-${item.label}`}
                         className={`pl-4 mt-2 space-y-2 transition-all duration-200 ${
-                          mobileDropdown === item.label ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
+                          mobileDropdown === item.label ? 'max-h-96 opacity-100 visible' : 'max-h-0 opacity-0 pointer-events-none invisible'
                         }`}
                       >
                         {item.dropdown.map((dropdownItem) => (

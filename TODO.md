@@ -2,14 +2,14 @@
 
 > **⚠️ DOCUMENT SUPERSEDED**: Original checklist reflects 2025-11-01 state. Active guidance lives in [docs/FINAL-COMPLETION-PLAN.md](docs/FINAL-COMPLETION-PLAN.md).
 >
-> **Reality Check (2025-11-17)**:
-> - ✅ Backend pytest: 1,487 specs run (1,432 pass / 0 fail / 55 skipped — external OAuth/Postgres suites)
-> - ✅ Frontend Vitest: 1,743 specs pass with ~85% coverage (see frontend/test-results-2025-11-17.txt)
-> - ⏳ Remaining: Master Admin manual QA, deployment smoke logs (verify_deployment.py), Lighthouse/Axe reruns, documentation resets so nothing claims 100% without evidence.
+> **Reality Check (2025-11-19)**:
+> - ✅ Backend targeted pytest (blog + marketing APIs) refreshed; see `docs/tests/2025-11-19-backend-blog-marketing.txt` (15 PASS).
+> - ✅ Frontend Vitest/Playwright evidence captured Nov 19 (`docs/tests/2025-11-19-playwright.txt` + `docs/deployments/2025-11-19-marketing-playwright.txt`).
+> - ⏳ Remaining: Master Admin QA, BlogAdmin proof, Lighthouse/Axe reruns, marketing backlog tracked in [docs/marketing/marketing-gap-analysis-2025-11-19.md](docs/marketing/marketing-gap-analysis-2025-11-19.md).
 
 ---
 
-**Last Updated:** 2025-11-17 [78% Complete – Docs & Deploy evidence pending]
+**Last Updated:** 2025-11-19 [Wave 0 doc sync in progress – automation refreshed, evidence gaps tracked]
 **Historical Date:** 2025-11-01 [Session 2C Complete]
 **Methodology:** BMAD-METHOD v6 + TDD
 **Current Phase:** Sprint 1-B – Master Admin Frontend + Deploy Verification
@@ -17,6 +17,23 @@
 **Deployment:** Render (services live; verification/log capture scheduled)
 
 ---
+
+## Wave Execution Tracker (2025-11-19)
+
+| Wave | Focus | Key Deliverables | Owner Notes |
+| --- | --- | --- | --- |
+| Wave 0 | Governance & automation prep | Sync README, TODO, BMAD trackers, 100%-status files; document marketing Playwright helper + log capture; refresh pytest + vitest smoke evidence | IN PROGRESS – this edit plus README refresh close the doc-sync portion |
+| Wave 1 | Evidence scaffolding | Draft docs/marketing/marketing-gap-analysis-2025-11-19.md, extend master-admin QA prep (accounts, data, evidence folders), outline Lighthouse/Axe capture runbook, wire Playwright helper into CI | QUEUED |
+| Wave 2 | Manual QA + BlogAdmin proof | Execute Master Admin checklist, capture `/admin/blog/*` screenshots/logs, publish outcomes into docs/testing + README | BLOCKED until Wave 1 artifacts ready |
+| Wave 3 | Marketing parity | Implement remaining marketing pages/content/SEO/integrations, expand Vitest + Playwright suites, archive logs | NOT STARTED |
+| Wave 4 | Audits + automation reruns | Run Lighthouse/Axe on production, rerun pytest/vitest/playwright, store logs under docs/tests/, raise remediation tickets | NOT STARTED |
+| Wave 5 | Final documentation & handoff | Update README/BMAD trackers to 100%, produce completion certificate + ops handoff + marketing evidence packet | NOT STARTED |
+
+### Immediate Next Actions (Wave 0 → Wave 1)
+1. Finish README/TODO/BMAD governance sync (this change) and note it in `docs/bmad/DAILY_STATUS_NOTES.md`.
+2. Scaffold `docs/marketing/marketing-gap-analysis-2025-11-19.md` for marketing backlog tracking.
+3. Extend `docs/testing/2025-11-19-master-admin-qa-prep.md` with Clerk account + data setup details plus evidence folder structure.
+4. Draft a manual Lighthouse + Axe capture guide so Wave 4 has zero ambiguity.
 
 ## 🎯 Current Sprint: Master Admin Portal Completion
 
@@ -603,3 +620,4 @@
 - [ ] Create comprehensive handoff document
 - [ ] Update all BMAD trackers
 - [ ] Mark project 100% complete
+

@@ -38,9 +38,15 @@ interface BlogPostForm {
 
 interface BlogAdminEditorProps {
   autoSaveIntervalMs?: number;
+  enableAutoSave?: boolean;
+  navigateOnPublish?: boolean;
 }
 
-const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({ autoSaveIntervalMs = 30000 }) => {
+const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({
+  autoSaveIntervalMs = 30000,
+  enableAutoSave = true,
+  navigateOnPublish = true,
+}) => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -96,14 +102,14 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({ autoSaveIntervalMs = 
 
   // Auto-save draft on interval
   useEffect(() => {
-    if (!formData.title || isLoadingPost) return;
+    if (!enableAutoSave || !formData.title || isLoadingPost) return;
 
     const interval = setInterval(() => {
       saveDraftMutation.mutate({ ...formData, status: 'draft', publishedAt: undefined });
     }, autoSaveIntervalMs);
 
     return () => clearInterval(interval);
-  }, [formData, autoSaveIntervalMs, isLoadingPost]);
+  }, [formData, autoSaveIntervalMs, enableAutoSave, isLoadingPost]);
 
   const loadExistingPost = useCallback(async () => {
     if (!id) return;
@@ -165,7 +171,9 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({ autoSaveIntervalMs = 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogPosts'] });
-      navigate('/admin/blog');
+      if (navigateOnPublish) {
+        navigate('/admin/blog');
+      }
     },
   });
 

@@ -34,3 +34,4 @@ Fill this document while performing the manual walkthrough defined in `docs/test
 - Screenshots folder: `docs/testing/master-admin/2025-11-19/screenshots/`
 - Console logs: `docs/testing/master-admin/2025-11-19/console/`
 - Data exports: `docs/testing/master-admin/2025-11-19/data/`
+

@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
@@ -648,8 +648,7 @@ describe('PodcastStudio', () => {
       const modal = await screen.findByRole('dialog');
       expect(modal).toBeInTheDocument();
       expect(screen.getByText(/video playback/i)).toBeInTheDocument();
-      const investorHeadings = within(modal).getAllByRole('heading', { name: /investor insights/i });
-      expect(investorHeadings.length).toBeGreaterThan(0);
+      expect(screen.getByRole('heading', { name: /investor insights/i })).toBeInTheDocument();
     });
   });
 

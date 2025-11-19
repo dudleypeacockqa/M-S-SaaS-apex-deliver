@@ -6,6 +6,12 @@ export interface PricingCardProps {
   currency: string;
   period: string;
   setupFee?: number;
+  setupFeeNote?: string;
+  priceDisplay?: {
+    primary: string;
+    secondary?: string;
+    badge?: string;
+  };
   description: string;
   features: string[];
   cta: string;
@@ -23,6 +29,8 @@ export const PricingCard: React.FC<PricingCardProps> = ({
   currency,
   period,
   setupFee,
+  setupFeeNote,
+  priceDisplay,
   description,
   features,
   cta,
@@ -76,16 +84,34 @@ export const PricingCard: React.FC<PricingCardProps> = ({
         </div>
         {/* Price */}
         <div className="text-center mb-6">
+          {priceDisplay ? (
+            <>
+              <div className="text-4xl font-extrabold text-gray-900">{priceDisplay.primary}</div>
+              {priceDisplay.badge && (
+                <div className="mt-2 inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+                  {priceDisplay.badge}
+                </div>
+              )}
+              {priceDisplay.secondary && <p className="text-sm text-gray-600 mt-2">{priceDisplay.secondary}</p>}
+            </>
+          ) : (
           <div className="flex items-baseline justify-center">
-            <span className="text-4xl font-extrabold text-gray-900">{currency}{typeof price === 'number' ? price.toLocaleString() : price}</span>
+              <span className="text-4xl font-extrabold text-gray-900">
+                {currency}
+                {typeof price === 'number' ? price.toLocaleString() : price}
+              </span>
             {period && <span className="text-gray-600 ml-2">/ {period}</span>}
           </div>
+          )}
           {setupFee && (
             <div className="mt-4 pt-4 border-t border-gray-200">
               <div className="text-sm font-semibold text-gray-700">One-Time Setup Fee</div>
               <div className="text-2xl font-bold text-gray-900 mt-1">
                 £{setupFee.toLocaleString()}{setupFee >= 30000 && '+'}
               </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {setupFeeNote || 'Invoiced separately after contract signature.'}
+              </p>
             </div>
           )}
         </div>
@@ -119,16 +145,34 @@ export const PricingCard: React.FC<PricingCardProps> = ({
       </div>
       {/* Price */}
       <div className="text-center mb-6">
+        {priceDisplay ? (
+          <>
+            <div className="text-4xl font-extrabold text-gray-900">{priceDisplay.primary}</div>
+            {priceDisplay.badge && (
+              <div className="mt-2 inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+                {priceDisplay.badge}
+              </div>
+            )}
+            {priceDisplay.secondary && <p className="text-sm text-gray-600 mt-2">{priceDisplay.secondary}</p>}
+          </>
+        ) : (
         <div className="flex items-baseline justify-center">
-          <span className="text-4xl font-extrabold text-gray-900">{currency}{typeof price === 'number' ? price.toLocaleString() : price}</span>
+            <span className="text-4xl font-extrabold text-gray-900">
+              {currency}
+              {typeof price === 'number' ? price.toLocaleString() : price}
+            </span>
           {period && <span className="text-gray-600 ml-2">/ {period}</span>}
         </div>
+        )}
         {setupFee && (
           <div className="mt-4 pt-4 border-t border-gray-200">
             <div className="text-sm font-semibold text-gray-700">One-Time Setup Fee</div>
             <div className="text-2xl font-bold text-gray-900 mt-1">
               £{setupFee.toLocaleString()}{setupFee >= 30000 && '+'}
             </div>
+            <p className="text-xs text-gray-500 mt-1">
+              {setupFeeNote || 'Invoiced separately after contract signature.'}
+            </p>
           </div>
         )}
       </div>

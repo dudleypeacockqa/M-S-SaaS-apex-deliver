@@ -1,0 +1,25 @@
+
+> ma-saas-frontend@1.1.0 test
+> node scripts/run-vitest.mjs run src/components/marketing/MarketingNav.test.tsx
+
+
+ RUN  v4.0.10 C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend
+
+ Γ¥» src/components/marketing/MarketingNav.test.tsx (11 tests | 2 failed) 3112ms
+     Γ£ô renders logo and brand name 65ms
+     Γ£ô displays navigation links  342ms
+     Γ£ô shows Sign In and Sign Up CTAs 138ms
+     Γ£ô renders navigation as nav element for accessibility 25ms
+     Γ£ô opens the mobile menu and exposes links 31ms
+     Γ£ô toggles mobile dropdown panels 117ms
+     Γ£ô supports keyboard navigation for desktop dropdowns 156ms
+     Γ£ô traps focus inside the mobile menu when open  422ms
+     Γ£ô ensures closed mobile menu is hidden from screen readers and keyboard 18ms
+     ├ù links solutions dropdown items to persona routes 1125ms
+     ├ù exposes compare routes within the navigation 669ms
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 9 passed (11)
+   Start at  15:41:04
+   Duration  6.86s (transform 312ms, setup 630ms, collect 409ms, tests 3.11s, environment 1.28s, prepare 1.44s)
+

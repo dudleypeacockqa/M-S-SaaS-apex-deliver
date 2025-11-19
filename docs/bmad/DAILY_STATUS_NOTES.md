@@ -18,3 +18,30 @@
 - **Analyze**: Verified the helper script sets MARKETING_BASE_URL automatically, confirmed the new Playwright config reuses preview servers, and documented remaining gaps (marketing parity, Master Admin QA prep, Lighthouse/Axe storage).
 - **Decide**: Move into Master Admin QA preparation + marketing gap analysis next, then wire the Playwright script into marketing-ci.yml and stand up the manual Lighthouse/Axe evidence folders.
 
+
+## 2025-11-19 - Governance Sync + Backend Marketing Smoke
+- **Build**: Re-ran targeted pytest for the marketing/blog APIs (pytest tests/api/test_blog_api.py tests/api/test_marketing.py) and captured the log under docs/tests/2025-11-19-backend-blog-marketing.txt. Drafted docs/marketing/marketing-gap-analysis-2025-11-19.md to centralize nav/content/SEO/integration gaps per the final completion plan.
+- **Measure**: Updated README.md, TODO.md, and docs/bmad/100-PERCENT-COMPLETION-STATUS.md to reference the Nov-19 backend log + Playwright evidence; refreshed docs/bmad/bmm-workflow-status.md timestamps and completed-work list with the new log; added the backend log to Documentation Evidence in README.
+- **Analyze**: Automation remains green (backend/blog marketing API smoke + marketing Playwright). Governance artefacts now pin to the Nov-19 evidence, and the marketing gap analysis provides a single backlog for Wave 3 deliverables. Manual QA, BlogAdmin proof, Lighthouse/Axe, and CI wiring remain the critical blockers.
+- **Decide**: Move into Wave 1 by expanding the QA prep doc, wiring the Playwright helper into CI, and staging RED specs for BlogAdminEditor verification; keep logging new evidence in docs/tests/ + docs/bmad/DAILY_STATUS_NOTES.md as cycles complete.
+
+## 2025-11-19 - Wave 1 Evidence & Automation Prep
+- **Build**: Authored `docs/marketing/marketing-gap-analysis-2025-11-19.md` to centralize marketing deliverables, added `scripts/run-lighthouse-axe.mjs`, and updated `.github/workflows/marketing-ci.yml` so Playwright smoke runs via the helper with artifact uploads.
+- **Measure**: Documented the new Lighthouse/Axe capture flow in `docs/marketing/ACCESSIBILITY_AUDIT_PROCESS.md` and created `docs/testing/2025-11-19-automation-plan.md` so pytest/vitest/playwright reruns plus Render deploys write logs straight into `docs/tests/` and `docs/deployments/`.
+- **Analyze**: Confirmed Wave 1 doc tasks (gap analysis, manual audit plan, CI wiring) are now completed; remaining risks before QA include seeded marketing content and MSW fixtures for the RED Vitest suites.
+- **Decide**: Move on to Master Admin QA prep (execute the new checklist + seed data) while scheduling backend/frontend smoke reruns per the automation plan before triggering Render redeploys.
+
+
+## 2025-11-19 - BlogAdminEditor Playwright Proof
+- **Build**: Re-enabled /admin/blog/* routes, added the VITE_ENABLE_TEST_ROUTES harness route (/__tests__/admin/blog/...), and taught scripts/run-marketing-playwright.mjs to accept extra args/env so we can run the BlogAdmin spec independently. Added TestBlogAdminPage and optional props to BlogAdminEditor to disable auto-save/navigation during tests.
+- **Measure**: Authored 	ests/blog-admin.spec.ts (two scenarios covering create + edit) and captured the log at docs/tests/2025-11-19-playwright-blog-admin.txt using PLAYWRIGHT_ENABLE_TEST_ROUTES=true. Build now skips 
+eact-snap automatically whenever test routes are on.
+- **Analyze**: RED→GREEN cycle complete for /admin/blog/new + /admin/blog/:id/edit test coverage; Playwright evidence now exists alongside backend/blog API logs. Remaining work for F-010 is production screenshots + README linkage once Playwright runs against Render.
+- **Decide**: Proceed to Master Admin QA prep (Wave 2) and keep Playwright harness wired into marketing-ci so /admin/blog/* proof reruns after future UI/content changes.
+
+## 2025-11-19 - Branch Alignment + Workflow Refresh
+- **Build**: Captured a fresh `git diff --stat origin/main...HEAD` plus merge-base verification so we know exactly which backend RBAC, marketing, and scripting files diverge before the next RED cycle. Confirmed BMAD CLI health via `npx bmad-method status` ahead of workflow doc updates.
+- **Measure**: Logged the completion plan under `finish.plan.md` (attached) and reviewed `docs/bmad/bmm-workflow-status.md` + allied trackers to understand current NEXT_ACTION commitments before editing.
+- **Analyze**: Determined that all merge blockers map to four domains (RBAC audit logging, subscription/billing APIs, marketing parity, automation scripts). Suites haven’t run since 19 Nov morning, so we will author new failing pytest/Vitest/Playwright specs per domain before touching implementations.
+- **Decide**: Update bmm-workflow-status with the branch audit summary and redirect NEXT_ACTION to the TDD diff cycle (test-first, then fixes) so we can proceed to Wave 1 execution and merge into main.
+

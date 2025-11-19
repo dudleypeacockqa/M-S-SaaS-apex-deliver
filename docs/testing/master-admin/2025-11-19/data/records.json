@@ -1,0 +1,28 @@
+{
+  "prospects": [
+    1,
+    2
+  ],
+  "deals": [
+    1
+  ],
+  "campaigns": [
+    1
+  ],
+  "campaign_recipients": [
+    1,
+    2
+  ],
+  "content_scripts": [
+    1
+  ],
+  "content_pieces": [
+    1
+  ],
+  "lead_captures": [
+    1
+  ],
+  "collateral": [
+    1
+  ]
+}

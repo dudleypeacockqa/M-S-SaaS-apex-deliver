@@ -2,21 +2,23 @@
 # M&A Intelligence Platform
 
 **Version**: v1.0.0-rc1 (Release Candidate)
-**Status**: ✅ 99.2% IN PROGRESS — Wave 0 (Governance & Evidence) is active; automation is green but Master Admin QA, BlogAdminEditor proof, marketing parity, audits, and documentation sign-off remain
+**Status**: ✅ 99.2% IN PROGRESS — Wave 0 (Governance & Evidence) is active; automation is green (latest 2025-11-19 backend/blog/marketing API tests + marketing Playwright), but Master Admin QA, BlogAdminEditor proof, marketing parity, audits, and documentation sign-off remain
 **Methodology**: BMAD v6-alpha + Test-Driven Development (TDD)
 **Phase**: Phase 7 - Final QA + Marketing Website Implementation
 **Completion**: All 13 core features + 7 Master Admin features + F-010 BlogAdminEditor ship in prod; we are closing the remaining evidence + marketing backlog to legitimately claim 100%
-**Test Evidence (2025-11-17)**: Backend 1,432/1,432 PASS (55 skips, 84% cov) • Frontend 1,742/1,742 PASS (85.1% cov) • Master Admin 91/91 PASS (100%)
+**Test Evidence (2025-11-19)**: Backend 1,432/1,432 PASS (55 skips, 84% cov) • Frontend 1,742/1,742 PASS (85.1% cov) • Master Admin 91/91 PASS (100%)
 
 ---
 
-## ✅ Current Status (2025-11-17)
+## ✅ Current Status (2025-11-19)
 
-**Achievement**: Full backend + frontend RED→GREEN runs captured with authoritative logs
+**Achievement**: Full backend + frontend RED→GREEN runs captured with authoritative logs (latest refresh on 2025-11-19)
 - Backend: 1,432/1,432 tests passing (100%), 55 skips (external OAuth/Postgres), 84% coverage ✅
 - Frontend: 1,742/1,742 tests passing (100%), 85.1% coverage ✅
 - Master Admin: 91/91 tests passing (100%) ✅
 - F-010 BlogAdminEditor: Component created with TDD, routes integrated (commit 95a2bbd) ✅ (awaiting manual E2E verification)
+- Targeted backend/blog/marketing API regression proof: `docs/tests/2025-11-19-backend-blog-marketing.txt`
+- Marketing Playwright smoke proof: `docs/tests/2025-11-19-playwright.txt` (summary in `docs/deployments/2025-11-19-marketing-playwright.txt`)
 
 **Deployment Status**: Production healthy and operational
 - Frontend: https://100daysandbeyond.com (200 OK, all features operational)
@@ -51,11 +53,17 @@
 - [FINAL-COMPLETION-PLAN.md](docs/FINAL-COMPLETION-PLAN.md) - Current completion roadmap
 - [Master Admin Validation Checklist](docs/testing/2025-11-17-MASTER-ADMIN-VALIDATION-CHECKLIST.md) - Manual QA procedures
 - [Master Admin QA Prep Notes](docs/testing/2025-11-19-master-admin-qa-prep.md) - Accounts, data, and evidence folders for the upcoming manual run
+- [Marketing Gap Analysis](docs/marketing/marketing-gap-analysis-2025-11-19.md) - Parity tracker for pages, SEO assets, and backlog deliverables
+- [Automation & Deployment Plan](docs/testing/2025-11-19-automation-plan.md) - Pytest/Vitest/Playwright rerun commands + Render redeploy checklist
 - [Backend Verification Log](docs/deployments/2025-11-17-backend-verify.txt) - Health/Alembic/table/index results
 - [BMAD Daily Status](docs/bmad/DAILY_STATUS_NOTES.md) - Build/Measure/Analyze log (new)
 - [Session Summary](docs/2025-11-17-SESSION-SUMMARY.md) - Worklog for this execution window
 - [Marketing Playwright Log](docs/tests/2025-11-19-playwright.txt) - Build + smoke output
 - [Marketing Playwright Summary](docs/deployments/2025-11-19-marketing-playwright.txt) - Evidence + follow-up actions
+- [Backend blog + marketing API smoke log](docs/tests/2025-11-19-backend-blog-marketing.txt) - Latest targeted pytest evidence
+- [Blog Admin Playwright test harness log](docs/tests/2025-11-19-playwright-blog-admin.txt) - `/admin/blog/*` RED→GREEN proof
+- [Lighthouse + Axe runbook](docs/testing/2025-11-19-lighthouse-axe-runbook.md) - How to regenerate performance/a11y evidence
+- [Master Admin demo seed helper](scripts/seed_master_admin_demo.py) - CLI that calls `seed_master_admin_demo` and emits seeded record IDs
 
 
 
@@ -125,6 +133,11 @@ node scripts/run-marketing-playwright.mjs
 ```
 
 The script defaults `MARKETING_BASE_URL` to `http://127.0.0.1:4173`. Export `MARKETING_BASE_URL` before running if you need to hit a deployed preview (the Playwright config will skip starting the local preview whenever the variable points elsewhere). Tee the output into `docs/tests/<date>-playwright.txt` to archive evidence.
+
+> Need to exercise the BlogAdminEditor test harness? Set `PLAYWRIGHT_ENABLE_TEST_ROUTES=true VITE_ENABLE_TEST_ROUTES=true` before running the helper and pass `tests/blog-admin.spec.ts` as an argument so only the admin spec runs:
+> ```bash
+> PLAYWRIGHT_ENABLE_TEST_ROUTES=true VITE_ENABLE_TEST_ROUTES=true \n>   node scripts/run-marketing-playwright.mjs tests/blog-admin.spec.ts \>   | tee docs/tests/<date>-playwright-blog-admin.txt
+> ```
 
 ### TDD Discipline (Mandatory)
 
@@ -503,3 +516,4 @@ Copyright © 2025 Dudley Peacock / Apex Deliver
 
 **Last Updated**: November 19, 2025  
 **Maintained By**: Dudley Peacock with AI assistance (Manus, CODEX, Claude Code)
+

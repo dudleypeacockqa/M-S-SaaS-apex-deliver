@@ -21,7 +21,7 @@ export const ScenarioSlider: React.FC<ScenarioSliderProps> = ({
   formatValue,
   onChange,
 }) => {
-  const sliderId = useId();
+  const sliderId = useId()
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseFloat(e.target.value);
     onChange(newValue);

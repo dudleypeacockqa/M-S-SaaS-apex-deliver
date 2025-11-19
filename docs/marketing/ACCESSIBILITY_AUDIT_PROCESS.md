@@ -110,6 +110,27 @@ open frontend/docs/testing/lighthouse-report.html   # macOS
 xdg-open frontend/docs/testing/lighthouse-report.html # Linux
 ```
 
+### Evidence Capture Template (2025-11-19+)
+
+To keep Decide artefacts synchronized with README/FINAL-COMPLETION-PLAN, run the helper script whenever you need to archive a manual audit:
+
+```bash
+# From repo root
+node scripts/run-lighthouse-axe.mjs
+
+# Optional: override defaults
+LIGHTHOUSE_AUDIT_URL=https://100daysandbeyond.com/ \
+LIGHTHOUSE_AUDIT_LABEL=prod \
+AUDIT_OUTPUT_DIR=docs/testing/lighthouse/2025-11-19-prod \
+node scripts/run-lighthouse-axe.mjs
+```
+
+- The script expects a running site at `LIGHTHOUSE_AUDIT_URL` (start `npm run preview:test` locally or tunnel to production).
+- Outputs live under `docs/testing/lighthouse/<date>/` by default, alongside a `metadata.json` file that records the URL, label, and timestamp. Reference these files directly from README/BMAD once you finish the run.
+- Because reports live in `docs/testing`, they version cleanly with the rest of the evidence—no more overwriting `frontend/docs/testing/lighthouse-report.html` each time.
+
+> Heads up: the helper does not start a preview server for you. Pair it with a terminal running `npm run preview:test` (local) or set `LIGHTHOUSE_AUDIT_URL` to the deployed marketing host.
+
 ---
 
 ## Running Production Audits Manually

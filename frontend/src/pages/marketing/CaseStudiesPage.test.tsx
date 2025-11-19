@@ -4,8 +4,6 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import type { ReactElement } from 'react';
-import { HelmetProvider } from 'react-helmet-async';
 import { CaseStudiesPage } from './CaseStudiesPage';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -14,12 +12,8 @@ vi.mock('../../lib/analytics', () => ({
   trackCtaClick: vi.fn(),
 }));
 
-const renderWithRouter = (component: ReactElement) => {
-  return render(
-    <HelmetProvider>
-      <BrowserRouter>{component}</BrowserRouter>
-    </HelmetProvider>
-  );
+const renderWithRouter = (component: React.ReactElement) => {
+  return render(<BrowserRouter>{component}</BrowserRouter>);
 };
 
 describe('CaseStudiesPage', () => {

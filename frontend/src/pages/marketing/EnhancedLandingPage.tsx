@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { FeatureCard } from '../../components/marketing/FeatureCard';
@@ -11,6 +11,7 @@ import { ExitIntentPopup } from '../../components/marketing/ExitIntentPopup';
 import { StickyCTABar } from '../../components/marketing/StickyCTABar';
 import { trackCtaClick } from '../../lib/analytics';
 import { DashboardMockup } from '../../components/marketing/DashboardMockup';
+import { basePricingTiers, calculateAnnualPrice, formatCurrency, type BillingCycle, ANNUAL_DISCOUNT_RATE } from '../../data/pricing';
 
 const heroPillars = [
   { label: 'CapLiquify FP&A Control Tower' },
@@ -213,6 +214,44 @@ export const EnhancedLandingPage: React.FC = () => {
       },
     }),
     [],
+  );
+
+  const [marketingBillingCycle, setMarketingBillingCycle] = useState<BillingCycle>('monthly');
+
+  const marketingPricingTiers = useMemo(
+    () =>
+      basePricingTiers.map((tier) => {
+        if (!tier.monthlyPrice) {
+          return {
+            name: tier.name,
+            price: 'Contact sales',
+            setup: tier.setupFee ? `£${formatCurrency(tier.setupFee)} setup` : 'Custom onboarding',
+            description: tier.description,
+            features: tier.features.slice(0, 4),
+            subtext: 'Tailored multi-entity deployment',
+            badge: undefined,
+          };
+        }
+
+        const monthly = tier.monthlyPrice;
+        const annual = calculateAnnualPrice(monthly);
+        const isAnnual = marketingBillingCycle === 'annual';
+        const displayPrice = isAnnual ? `£${formatCurrency(annual)}/yr` : `£${formatCurrency(monthly)}/mo`;
+        const secondary = isAnnual
+          ? `Equivalent to £${formatCurrency(Math.round(annual / 12))}/mo`
+          : 'Billed monthly';
+
+        return {
+          name: tier.name,
+          price: displayPrice,
+          setup: tier.setupFee ? `£${formatCurrency(tier.setupFee)} setup` : undefined,
+          description: tier.description,
+          features: tier.features.slice(0, 4),
+          subtext: secondary,
+          badge: isAnnual ? 'Save 17%' : undefined,
+        };
+      }),
+    [marketingBillingCycle],
   );
 
   return (
@@ -517,7 +556,7 @@ export const EnhancedLandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Pricing Teaser Section */}
+      {/* Pricing Section */}
       <section className="py-20 bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -525,11 +564,61 @@ export const EnhancedLandingPage: React.FC = () => {
               Powerful, Transparent Pricing That Scales With You
             </h2>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Whether you're a solo dealmaker, a growing firm, or a large enterprise, we have a plan that fits your needs. Start with our powerful CapLiquify FP&A tools and expand to the full ApexDeliver M&A platform as you grow. All plans start with a risk-free 14-day trial.
+              Whether you're a solo dealmaker, a growing firm, or a large enterprise, we have a plan that fits your needs.
+              Start with CapLiquify FP&A and expand to the full ApexDeliver stack as you grow.
             </p>
           </div>
 
-          <div className="text-center">
+          <div className="flex justify-center mb-8">
+            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-full p-1">
+              {(['monthly', 'annual'] as BillingCycle[]).map((cycle) => {
+                const active = marketingBillingCycle === cycle;
+                const label = cycle === 'monthly' ? 'Monthly billing' : 'Annual (save 17%)';
+                return (
+                  <button
+                    key={cycle}
+                    type="button"
+                    className={`px-4 py-2 text-sm font-semibold rounded-full transition ${
+                      active ? 'bg-indigo-900 text-white shadow' : 'text-gray-700 hover:text-gray-900'
+                    }`}
+                    onClick={() => setMarketingBillingCycle(cycle)}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {marketingPricingTiers.map((tier) => (
+              <div key={tier.name} className="bg-white border border-gray-200 rounded-3xl shadow-lg p-6 flex flex-col">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-2xl font-bold text-gray-900">{tier.name}</h3>
+                  {tier.badge && (
+                    <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">{tier.badge}</span>
+                  )}
+                </div>
+                <p className="text-2xl font-extrabold text-indigo-900">{tier.price}</p>
+                {tier.subtext && <p className="text-sm text-gray-500">{tier.subtext}</p>}
+                {tier.setup && <p className="text-xs uppercase tracking-wide text-gray-500 mt-2">{tier.setup}</p>}
+                <p className="text-sm text-gray-600 my-4 flex-1">{tier.description}</p>
+                <ul className="space-y-2 text-sm text-gray-700 mb-6">
+                  {tier.features.map((feature) => (
+                    <li key={feature} className="flex gap-2">
+                      <span>•</span>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-gray-500">
+                  Setup fees are invoiced separately with your deployment plan.
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-10">
             <Link
               to="/pricing"
               className="inline-block bg-indigo-900 hover:bg-indigo-800 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-xl"
@@ -538,6 +627,9 @@ export const EnhancedLandingPage: React.FC = () => {
               View Full Pricing & Features -&gt;
             </Link>
           </div>
+          <p className="text-center text-xs text-gray-500 mt-4">
+            Annual billing reflects a {Math.round(ANNUAL_DISCOUNT_RATE * 100)}% discount compared to monthly pricing.
+          </p>
         </div>
       </section>
 
