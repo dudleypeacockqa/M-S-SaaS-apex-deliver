@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import fs from 'node:fs'
 import path from 'node:path'
 import dotenv from 'dotenv'
 
@@ -17,6 +18,10 @@ const buildId =
   process.env.GIT_COMMIT_SHA ||
   process.env.VERCEL_GIT_COMMIT_SHA ||
   new Date().toISOString().replace(/[-:.TZ]/g, '')
+
+// Ensure outDir exists before plugins write auxiliary files (e.g., sitemap/robots.txt)
+const outDir = 'dist'
+fs.mkdirSync(path.resolve(__dirname, outDir), { recursive: true })
 
 // Validate required environment variables at build time
 const validateBuildEnv = () => {

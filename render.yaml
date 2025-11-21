@@ -5,7 +5,7 @@ services:
     env: python
     region: frankfurt
     buildCommand: "cd backend && pip install -r requirements.txt"
-    startCommand: "unset SKIP_MIGRATIONS; export RENDER_PRESTART_RUN_MIGRATIONS=1; sed -i 's/\\r$//' prestart.sh && bash prestart.sh && cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    startCommand: "unset SKIP_MIGRATIONS; export RENDER_PRESTART_RUN_MIGRATIONS=1; perl -pi -e 's/\\r//g' prestart.sh && bash prestart.sh && cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     healthCheckPath: /health
     healthCheckGracePeriod: 300
     envVars:
