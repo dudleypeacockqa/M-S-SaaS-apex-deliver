@@ -164,7 +164,7 @@ export const BookTrial: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-blue-900 text-sm">Can't find a suitable time?</h4>
                       <p className="text-sm text-blue-700 mt-1">
-                        Email us at <a href="mailto:dudley@financeflo.ai" className="underline font-medium">dudley@financeflo.ai</a> and we'll arrange a custom time that works for you.
+                        Email us at <a href="mailto:dudley@apexdeliver.com" className="underline font-medium">dudley@apexdeliver.com</a> and we'll arrange a custom time that works for you.
                       </p>
                     </div>
                   </div>
@@ -179,3 +179,4 @@ export const BookTrial: React.FC = () => {
 };
 
 export default BookTrial;
+

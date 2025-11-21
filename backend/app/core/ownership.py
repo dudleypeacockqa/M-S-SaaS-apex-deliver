@@ -13,7 +13,7 @@ from app.models.document import Document
 from app.models.pipeline_template import PipelineTemplate
 from app.models.user import User
 from app.schemas.document import PermissionLevel
-from app.services import document_service, pipeline_template_service
+from app.services import document_service, pipeline_template_service, rbac_audit_service
 
 
 def require_deal_access(
@@ -32,6 +32,13 @@ def require_deal_access(
         )
 
     return deal
+
+
+def _deal_not_found() -> None:
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail={"code": "DEAL_NOT_FOUND", "message": "Deal not found"},
+    )
 
 
 def require_template_access(
@@ -57,16 +64,26 @@ def require_document_access(
 ) -> Document:
     """Ensure the current user can access a specific document within a deal."""
 
-    document = (
-        db.query(Document)
-        .filter(
-            Document.id == document_id,
-            Document.organization_id == organization_id,
-            Document.deal_id == deal_id,
-        )
-        .one_or_none()
-    )
+    requested_org = str(organization_id)
+    requested_deal = str(deal_id)
+    document = db.get(Document, document_id)
     if document is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document not found",
+        )
+
+    actual_org = str(document.organization_id)
+    actual_deal = str(document.deal_id)
+    if actual_org != requested_org or actual_deal != requested_deal:
+        rbac_audit_service.log_resource_scope_violation(
+            db,
+            actor_user_id=str(current_user.id),
+            organization_id=requested_org,
+            resource_type="document",
+            resource_id=str(document.id),
+            detail=f"expected deal {requested_deal} / org {requested_org}, actual deal {actual_deal} / org {actual_org}",
+        )
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Document not found",

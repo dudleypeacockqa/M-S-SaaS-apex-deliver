@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { StickyCTABar } from './StickyCTABar'
 
@@ -26,10 +26,22 @@ describe('StickyCTABar', () => {
       value: 2000,
     })
 
+    Object.defineProperty(document.documentElement, 'clientHeight', {
+      writable: true,
+      configurable: true,
+      value: 1000,
+    })
+
     Object.defineProperty(window, 'innerHeight', {
       writable: true,
       configurable: true,
       value: 1000,
+    })
+
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 1024,
     })
   })
 
@@ -48,7 +60,7 @@ describe('StickyCTABar', () => {
     expect(container).toHaveClass('translate-y-full')
   })
 
-  it('should show after scrolling past 80%', () => {
+  it('should show after scrolling past 80%', async () => {
     renderWithRouter(<StickyCTABar />)
 
     // Simulate scrolling past 80%
@@ -63,11 +75,13 @@ describe('StickyCTABar', () => {
 
     fireEvent.scroll(window)
 
-    const container = document.querySelector('.fixed.bottom-0') as HTMLElement
-    expect(container).toHaveClass('translate-y-0')
+    await waitFor(() => {
+      const container = document.querySelector('.fixed.bottom-0') as HTMLElement
+      expect(container).toHaveClass('translate-y-0')
+    })
   })
 
-  it('should hide when scrolling back to top', () => {
+  it('should hide when scrolling back to top', async () => {
     renderWithRouter(<StickyCTABar />)
 
     // Scroll down first (past 80%)
@@ -86,8 +100,10 @@ describe('StickyCTABar', () => {
     })
     fireEvent.scroll(window)
 
-    const container = document.querySelector('.fixed.bottom-0') as HTMLElement
-    expect(container).toHaveClass('translate-y-full')
+    await waitFor(() => {
+      const container = document.querySelector('.fixed.bottom-0') as HTMLElement
+      expect(container).toHaveClass('translate-y-full')
+    })
   })
 
   it('should render all required elements', () => {

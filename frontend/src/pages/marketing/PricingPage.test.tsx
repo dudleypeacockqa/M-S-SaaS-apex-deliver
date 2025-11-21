@@ -5,7 +5,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { PricingPage } from './PricingPage';
 import { useAuth } from '@clerk/clerk-react';
 import { billingService } from '../../services/billingService';
-import { HelmetProvider } from 'react-helmet-async';
 
 vi.mock('@clerk/clerk-react', () => ({
   useAuth: vi.fn(),
@@ -19,11 +18,9 @@ vi.mock('../../services/billingService', () => ({
 
 const renderPricing = () =>
   render(
-    <HelmetProvider>
     <MemoryRouter>
       <PricingPage />
     </MemoryRouter>
-    </HelmetProvider>
   );
 
 const setAuthState = (signedIn: boolean) => {

@@ -9,7 +9,7 @@ export default function MarketingFooter() {
     product: [
       { name: "Features", href: "/features" },
       { name: "Pricing", href: "/pricing" },
-      { name: "Podcast", href: "/podcast" },
+      { name: "Podcast", href: "https://100daysandbeyond.com", external: true },
       { name: "Blog", href: "/blog" },
     ],
     company: [
@@ -36,7 +36,7 @@ export default function MarketingFooter() {
               <span className="text-xl font-bold">{APP_TITLE}</span>
             </Link>
             <p className="text-sm text-primary-foreground/80 mb-6 max-w-sm">
-              The end-to-end M&A intelligence platform. From deal flow to cash flow, we unify your entire M&A lifecycle into a single, intelligent, and automated platform.
+              The end-to-end M&amp;A intelligence platform for the 100 Days &amp; Beyond era—ApexDeliver + CapLiquify helps ambitious teams own their first 100 days by unifying FP&amp;A, deal rooms, valuations, and revenue execution.
             </p>
             <div className="flex gap-4">
               <a
@@ -75,12 +75,23 @@ export default function MarketingFooter() {
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    {link.name}
-                  </Link>
+                  {link.external ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                    >
+                      {link.name}
+                    </a>
+                  ) : (
+                    <Link
+                      to={link.href}
+                      className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

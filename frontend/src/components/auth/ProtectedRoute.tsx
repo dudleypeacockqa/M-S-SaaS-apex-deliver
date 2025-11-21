@@ -19,10 +19,6 @@ const resolveRole = (role: unknown): UserRole => {
 }
 
 const hasRequiredRole = (userRole: UserRole, requirement?: UserRole | UserRole[]): boolean => {
-  // Master admin has access to everything
-  if (userRole === 'master_admin') {
-    return true
-  }
   if (!requirement) {
     return true
   }

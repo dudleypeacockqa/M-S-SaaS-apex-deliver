@@ -1,0 +1,736 @@
+
+> ma-saas-frontend@1.1.0 test
+> node scripts/run-vitest.mjs run --run
+
+
+ RUN  v4.0.10 C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend
+
+(node:198052) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ Γ£ô src/hooks/useUploadProgress.test.ts (13 tests) 118ms
+ Γ£ô src/components/auth/AuthErrorBoundary.test.tsx (3 tests) 365ms
+ Γ£ô src/services/api.test.ts (5 tests) 22ms
+ Γ¥» src/tests/domainConfig.test.ts (3 tests | 1 failed) 18ms
+     Γ£ô uses https://100daysandbeyond.com in sitemap.xml 2ms
+     Γ£ô points robots.txt sitemap to 100daysandbeyond.com 1ms
+     ├ù renders canonical and og:url tags for 100daysandbeyond.com in index.html 5ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ Γ£ô src/utils/imageUtils.test.ts (25 tests) 22ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ Γ£ô src/__tests__/imageminPluginLoader.test.ts (4 tests) 15ms
+ Γ£ô src/utils/dateFormat.test.ts (3 tests) 102ms
+ Γ£ô src/hooks/useFeatureAccess.test.ts (5 tests) 186ms
+ Γ£ô src/hooks/useDealMatches.test.tsx (2 tests) 126ms
+ Γ£ô src/const.test.ts (1 test) 403ms
+     Γ£ô only exposes master admin navigation to master_admin role  398ms
+ Γ£ô src/components/auth/ProtectedRoute.test.tsx (5 tests) 163ms
+stdout | src/App.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+stdout | src/components/MarketingFooter.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/services/blogService.test.ts (5 tests) 31ms
+ Γ£ô src/components/billing/CancelSubscriptionModal.test.tsx (6 tests) 659ms
+stdout | src/components/deals/CreateDealModal.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/components/common/SEO.test.tsx (8 tests) 142ms
+ Γ£ô src/components/common/OptimizedImage.test.tsx (21 tests) 219ms
+Not implemented: navigation to another Document
+ Γ£ô src/services/billingService.test.ts (5 tests) 72ms
+stdout | src/components/deals/DealKanbanBoard.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/components/billing/ChangeTierModal.test.tsx (6 tests) 1486ms
+     Γ£ô should display loading state while changing tier  906ms
+ Γ£ô src/components/common/HelpTooltip.test.tsx (2 tests) 870ms
+     Γ£ô renders accessible trigger and hides content by default  388ms
+     Γ£ô reveals tooltip content on hover and focus  477ms
+stdout | src/components/deals/DealCard.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+stdout | src/components/deals/DealFilters.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/components/deal-matching/IntroductionRequestModal.test.tsx (8 tests) 587ms
+ Γ¥» src/components/MarketingFooter.test.tsx (8 tests | 1 failed) 2248ms
+       ├ù should render app title 2008ms
+       Γ£ô should render brand description 76ms
+       Γ£ô should render Features link 15ms
+       Γ£ô should render Pricing link 43ms
+       Γ£ô should render Blog link 17ms
+       Γ£ô should render Privacy Policy link 41ms
+       Γ£ô should render Terms of Service link 16ms
+       Γ£ô should render social media icons 21ms
+ Γ£ô src/components/deals/DealKanbanBoard.test.tsx (18 tests) 881ms
+ Γ£ô src/components/deal-matching/MatchScoreBadge.test.tsx (4 tests) 91ms
+ Γ£ô src/components/deal-matching/RequestIntroButton.test.tsx (2 tests) 51ms
+ Γ£ô src/components/deal-matching/PassMatchButton.test.tsx (2 tests) 181ms
+ Γ£ô src/components/deals/DealCard.test.tsx (28 tests) 1449ms
+       Γ£ô should call onClick handler when clicked  425ms
+ Γ£ô src/components/deal-matching/SaveMatchButton.test.tsx (2 tests) 67ms
+ Γ£ô src/components/financial/DealReadinessScore.test.tsx (8 tests) 106ms
+ Γ£ô src/components/common/Breadcrumbs.test.tsx (7 tests) 146ms
+ Γ£ô src/components/deal-matching/MatchDetailModal.test.tsx (9 tests) 993ms
+stdout | src/components/layout/AppHeader.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/components/deal-matching/MatchCard.test.tsx (8 tests) 531ms
+ Γ£ô src/components/financial/FinancialOverview.test.tsx (6 tests) 320ms
+ Γ£ô src/components/layout/ContentContainer.test.tsx (11 tests) 98ms
+ Γ£ô src/components/layout/PageSection.test.tsx (16 tests) 111ms
+stdout | src/components/layout/Sidebar.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/components/layout/AppHeader.test.tsx (3 tests) 564ms
+ Γ£ô src/components/financial/FinancialNarrativeDisplay.test.tsx (9 tests) 274ms
+stdout | src/components/layout/SidebarNavigation.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/components/layout/SidebarNavigation.test.tsx (2 tests) 167ms
+ Γ£ô src/components/layout/Sidebar.test.tsx (2 tests) 604ms
+     Γ£ô hides master admin links for tenant admins  437ms
+ Γ£ô src/components/financial/FinancialRatiosDashboard.test.tsx (10 tests) 600ms
+     Γ£ô should display ratio descriptions on hover or click  437ms
+Not implemented: navigation to another Document
+ Γ£ô src/components/deal-matching/CriteriaBuilderModal.test.tsx (14 tests) 3334ms
+     Γ£ô should render modal when isOpen is true  889ms
+     Γ£ô submits create payload with dynamic fields  593ms
+     Γ£ô shows loading state during submission  487ms
+ Γ£ô src/components/documents/AccessLogDrawer.test.tsx (6 tests) 581ms
+ Γ£ô src/components/documents/BulkActions.test.tsx (15 tests) 720ms
+ Γ£ô src/components/documents/DocumentQuestionsPanel.test.tsx (4 tests) 450ms
+ Γ£ô src/components/documents/BulkActionsToolbar.test.tsx (10 tests) 723ms
+ Γ£ô src/components/layout/Breadcrumbs.test.tsx (4 tests) 804ms
+     Γ£ô renders breadcrumb trail for top-level route  509ms
+ Γ£ô src/components/deals/DealFilters.test.tsx (21 tests) 4133ms
+       Γ£ô should render clear filters button  474ms
+       Γ£ô should call onSearchChange when typing in search input  661ms
+       Γ£ô should debounce search input (not call on every keystroke)  538ms
+       Γ£ô should clear search when clear button is clicked  323ms
+       Γ£ô should clear stage filter when clear button is clicked  316ms
+       Γ£ô should handle both search and stage filter simultaneously  629ms
+       Γ£ô should clear both filters when clear button is clicked  395ms
+ Γ£ô src/components/documents/ShareLinkModal.test.tsx (3 tests) 261ms
+ Γ£ô src/components/documents/DocumentExportQueuePanel.test.tsx (4 tests) 860ms
+     Γ£ô queues an export and polls until ready  409ms
+ Γ£ô src/components/marketing/AnalyticsProvider.test.tsx (10 tests) 120ms
+ Γ£ô src/components/documents/FolderTree.test.tsx (13 tests) 1381ms
+     Γ£ô lazy loads child folders when expanded  388ms
+Not implemented: navigation to another Document
+stdout | src/components/documents/UploadPanel.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+stdout | src/components/documents/UploadPanel.enhanced.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/components/documents/UploadPanel.test.tsx (10 tests) 368ms
+ Γ£ô src/components/marketing/CashFlowCalculator.test.tsx (5 tests) 210ms
+ Γ£ô src/components/documents/VersionHistory.test.tsx (19 tests) 713ms
+ Γ£ô src/components/documents/DocumentExporter.test.tsx (23 tests) 2387ms
+     Γ£ô calls onExport with customized options  740ms
+ Γ£ô src/components/marketing/CTASection.test.tsx (11 tests) 165ms
+ Γ£ô src/components/marketing/DynamicPricingSimulator.test.tsx (5 tests) 173ms
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+ Γ£ô src/components/deals/CreateDealModal.test.tsx (29 tests) 7155ms
+       Γ£ô should show error for empty target company  551ms
+       Γ£ô should not show errors when all required fields are filled  730ms
+       Γ£ô should call onCreate when form is submitted with valid data  1258ms
+       Γ£ô should call onSuccess after successful creation  532ms
+       Γ£ô should close modal after successful creation  667ms
+       Γ£ô should disable submit button while submitting  657ms
+       Γ£ô should call onUpdate when editing existing deal  368ms
+       Γ£ô should trap focus within modal  652ms
+ Γ£ô src/components/marketing/ComparisonTable.test.tsx (40 tests) 1045ms
+ Γ£ô src/components/marketing/CaseStudy.test.tsx (4 tests) 266ms
+ Γ£ô src/components/documents/DocumentList.test.tsx (21 tests) 2929ms
+ Γ£ô src/components/documents/PermissionModal.test.tsx (14 tests) 1556ms
+ Γ£ô src/components/marketing/DashboardMockup.test.tsx (6 tests) 189ms
+ Γ£ô src/components/marketing/InteractiveTimeline.test.tsx (5 tests) 134ms
+ Γ£ô src/components/documents/AISuggestionPanel.test.tsx (21 tests) 2647ms
+     Γ£ô calls onContextChange when textarea value changes  350ms
+     Γ£ô renders accept button for each suggestion with proper ARIA label  510ms
+     Γ£ô renders reject button for each suggestion with proper ARIA label  324ms
+Not implemented: navigation to another Document
+ Γ£ô src/components/marketing/ExitIntentPopup.test.tsx (10 tests) 209ms
+ Γ£ô src/components/documents/TemplateSelector.test.tsx (14 tests) 1554ms
+     Γ£ô renders "Use template" button for each template  347ms
+ Γ£ô src/components/documents/UploadPanel.enhanced.test.tsx (35 tests) 1909ms
+ Γ£ô src/components/marketing/FeatureCard.test.tsx (4 tests) 77ms
+ Γ£ô src/components/marketing/EnhancedHeroSection.test.tsx (6 tests) 432ms
+ Γ£ô src/components/marketing/MarketingLayout.test.tsx (8 tests) 87ms
+ Γ£ô src/components/marketing/HeroSection.test.tsx (5 tests) 177ms
+ Γ£ô src/components/marketing/FAQSection.test.tsx (41 tests) 1196ms
+ Γ£ô src/components/marketing/Footer.test.tsx (10 tests) 865ms
+ Γ£ô src/components/marketing/PricingCard.test.tsx (6 tests) 134ms
+ Γ£ô src/components/marketing/EnhancedTestimonials.test.tsx (36 tests) 966ms
+ Γ¥» src/components/marketing/StickyCTABar.test.tsx (9 tests | 2 failed) 175ms
+     Γ£ô should not render if dismissed in session 57ms
+     Γ£ô should be hidden initially (before scrolling) 9ms
+     ├ù should show after scrolling past 80% 14ms
+     ├ù should hide when scrolling back to top 8ms
+     Γ£ô should render all required elements 33ms
+     Γ£ô should have Get Started button linking to /sign-up 12ms
+     Γ£ô should dismiss and set sessionStorage when close button clicked 13ms
+     Γ£ô should not re-render after dismissal 8ms
+     Γ£ô should have responsive design (icon should exist) 10ms
+ Γ£ô src/components/podcast/QuotaWarning.test.tsx (5 tests) 93ms
+stderr | src/components/marketing/OptInPopup.test.tsx > OptInPopup > shows an error message when subscription fails
+Failed to subscribe: Error: network
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/components/marketing/OptInPopup.test.tsx:49:43
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:157:11
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:753:26
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1602:10)
+    at runTest (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1309:12)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runFiles (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1526:3)
+
+ Γ£ô src/components/podcast/CreateEpisodeModal.test.tsx (2 tests) 108ms
+ Γ£ô src/components/marketing/OptInPopup.test.tsx (2 tests) 1227ms
+     Γ£ô becomes visible after the delay and submits successfully  716ms
+     Γ£ô shows an error message when subscription fails  489ms
+ Γ£ô src/components/podcast/EpisodeTranscriptPanel.test.tsx (2 tests) 259ms
+ Γ£ô src/components/podcast/FeatureGate.test.tsx (8 tests) 252ms
+ Γ¥» src/components/marketing/MarketingLayout.domain.test.tsx (1 test | 1 failed) 444ms
+     ├ù exposes organization structured data for 100daysandbeyond.com 434ms
+ Γ£ô src/components/podcast/VideoPlayer.test.tsx (19 tests) 180ms
+ Γ£ô src/components/podcast/AudioUploadModal.test.tsx (16 tests) 832ms
+ Γ£ô src/components/podcast/DeleteEpisodeModal.test.tsx (22 tests) 794ms
+ Γ£ô src/components/podcast/YouTubeStatusBadge.test.tsx (19 tests) 96ms
+ Γ£ô src/components/podcast/VideoPlayerModal.test.tsx (5 tests) 193ms
+stderr | src/components/marketing/MarketingNav.test.tsx > MarketingNav > supports keyboard navigation for desktop dropdowns
+An update to MarketingNav inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ Γ£ô src/components/ui/Spinner.test.tsx (6 tests) 51ms
+ Γ£ô src/components/ui/Button.test.tsx (3 tests) 48ms
+stdout | src/features/auth/Auth.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/pages/checkout/CheckoutCancel.test.tsx (3 tests) 104ms
+ Γ£ô src/components/podcast/VideoUploadModal.test.tsx (16 tests) 1285ms
+       Γ£ô should display file size  754ms
+ Γ£ô src/components/podcast/YouTubePublishButton.test.tsx (22 tests) 874ms
+ Γ£ô src/components/podcast/LiveStreamManager.test.tsx (15 tests) 1762ms
+ Γ£ô src/pages/checkout/CheckoutSuccess.test.tsx (3 tests) 85ms
+ Γ£ô src/components/marketing/ROICalculator.test.tsx (33 tests) 1870ms
+     Γ£ô updates deal count when slider changes  550ms
+ Γ£ô src/pages/deals/DocumentRoomPage.test.tsx (2 tests) 32ms
+ Γ£ô src/pages/deals/DataRoom.test.tsx (4 tests) 170ms
+ Γ£ô src/pages/dashboard/BillingDashboard.test.tsx (8 tests) 661ms
+ Γ£ô src/components/marketing/MarketingNav.test.tsx (11 tests) 3809ms
+     Γ£ô displays navigation links  553ms
+     Γ£ô shows Sign In and Sign Up CTAs  434ms
+     Γ£ô toggles mobile dropdown panels  349ms
+     Γ£ô supports keyboard navigation for desktop dropdowns  492ms
+     Γ£ô traps focus inside the mobile menu when open  760ms
+     Γ£ô links solutions dropdown items to persona routes  560ms
+     Γ£ô exposes compare routes within the navigation  398ms
+ Γ£ô src/pages/dashboard/Settings.test.tsx (3 tests) 261ms
+ Γ£ô src/components/podcast/EditEpisodeModal.test.tsx (26 tests) 3411ms
+     Γ£ô updates title field when user types  412ms
+     Γ£ô updates description field when user types  393ms
+     Γ£ô updates show notes field when user types  343ms
+     Γ£ô calls onSubmit with updated data when form submitted  462ms
+     Γ£ô allows form submission after correcting validation errors  432ms
+ Γ£ô src/pages/deals/DealPipeline.test.tsx (10 tests) 452ms
+ Γ£ô src/components/tasks/TaskTemplateModal.test.tsx (6 tests) 2053ms
+     Γ£ô creates template when form is valid  1615ms
+ Γ£ô src/pages/deals/DealDocuments.test.tsx (3 tests) 534ms
+     Γ£ô renders document rows with formatted size, version badge, and action buttons  330ms
+stdout | src/pages/deals/MatchingWorkspace.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+stdout | src/pages/marketing/Blog.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ¥» src/pages/marketing/AboutPage.test.tsx (3 tests | 3 failed) 193ms
+     ├ù sets the document title and renders the hero heading 101ms
+     ├ù displays mission, vision, and founder story content 42ms
+     ├ù includes value statements and call to action 43ms
+ Γ£ô src/components/marketing/TrustBadges.test.tsx (47 tests) 3215ms
+     Γ£ô renders without crashing  383ms
+     Γ£ô displays all 6 integration logos  561ms
+ Γ¥» src/pages/marketing/AboutPage.meta.test.tsx (1 test | 1 failed) 134ms
+     ├ù sets canonical and og:url to 100daysandbeyond.com 130ms
+stderr | src/pages/admin/BlogAdminEditor.test.tsx > BlogAdminEditor > AC-10.2: Draft/Publish Workflow > publishes post with timestamp after confirmation
+No routes matched location "/admin/blog" 
+
+stderr | src/pages/marketing/BlogListingPage.test.tsx > BlogListingPage > shows a friendly error message when the API call fails
+Failed to load blog posts Error: Network error
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/BlogListingPage.test.tsx:55:48
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:157:11
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:753:26
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1602:10)
+    at runTest (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1309:12)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runFiles (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1526:3)
+
+ Γ£ô src/components/tasks/TaskTemplateSelector.test.tsx (7 tests) 1404ms
+     Γ£ô calls onTemplateSelect when a template is clicked  435ms
+     Γ£ô calls onClose when close button is clicked  464ms
+ Γ£ô src/pages/marketing/BlogListingPage.test.tsx (4 tests) 503ms
+stdout | src/pages/marketing/BlogPost.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/pages/marketing/BlogPost.test.tsx (1 test) 195ms
+ Γ£ô src/pages/admin/BlogAdminEditor.test.tsx (14 tests) 4086ms
+       Γ£ô supports rich text formatting (bold, italic, links)  455ms
+       Γ£ô saves post as draft by default  668ms
+       Γ£ô shows publish confirmation dialog with guardrails  599ms
+       Γ£ô publishes post with timestamp after confirmation  720ms
+       Γ£ô generates URL slug from title  414ms
+       Γ£ô allows custom meta description  449ms
+stderr | src/pages/marketing/Blog.test.tsx > Blog Listing Page > Interactions > should render error banner when fetch fails
+Error fetching blog posts: Error: Failed to fetch blog posts: Internal Server Error
+    at fetchPosts (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/Blog.tsx:118:17)
+
+ Γ£ô src/pages/deals/DealDetails.test.tsx (19 tests) 4098ms
+     Γ£ô should enter edit mode when Edit button is clicked  313ms
+     Γ£ô should call updateDeal API when saving changes  377ms
+       Γ£ô should render tab navigation with Overview, Financials, Documents, and Team tabs  450ms
+       Γ£ô should switch to Financials tab when clicked  374ms
+       Γ£ô should switch to Documents tab when clicked  491ms
+       Γ£ô should switch to Team tab when clicked  418ms
+       Γ£ô should persist active tab when re-rendering  517ms
+ Γ£ô src/pages/deals/TaskBoard.test.tsx (9 tests) 2492ms
+     Γ£ô creates a new task when form is submitted  1254ms
+     Γ£ô updates task status when moved to different column  597ms
+ Γ£ô src/pages/marketing/Blog.test.tsx (10 tests) 2419ms
+       Γ£ô should request posts for selected category  519ms
+       Γ£ô should clear filters and search when clicking Clear Filters  686ms
+ Γ£ô src/pages/deals/FinancialDashboard.test.tsx (10 tests) 1111ms
+     Γ£ô should display financial ratios grouped by category  361ms
+stderr | src/pages/marketing/BlogPostPage.test.tsx > BlogPostPage > Error Handling > should display error message when post not found
+Error fetching blog post: Error: Post not found
+    at fetchPost (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/BlogPostPage.tsx:42:17)
+
+ Γ£ô src/pages/marketing/CaseStudiesPage.test.tsx (8 tests) 1142ms
+stderr | src/pages/marketing/BlogPostPage.test.tsx > BlogPostPage > Error Handling > should show "Back to Blog" link when post not found
+Error fetching blog post: Error: Post not found
+    at fetchPost (C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/BlogPostPage.tsx:42:17)
+
+ Γ£ô src/pages/marketing/BookTrial.test.tsx (10 tests) 903ms
+ Γ£ô src/pages/marketing/BlogPostPage.test.tsx (13 tests) 1927ms
+       Γ£ô should display breadcrumb navigation with "Back to Blog" link  506ms
+       Γ£ô should show "Back to Blog" link when post not found  427ms
+ Γ£ô src/pages/marketing/EnhancedLandingPage.meta.test.tsx (1 test) 142ms
+stdout | src/pages/marketing/NotFound.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/pages/documents/DocumentEditor.test.tsx (10 tests) 5517ms
+     Γ£ô loads the document and supports rich text editing with autosave  942ms
+     Γ£ô applies a selected template and updates the editor content  558ms
+     Γ£ô surfaces AI suggestions and handles accept, reject, and regenerate flows  1100ms
+     Γ£ô lists version history and restores a selected version into the editor  404ms
+     Γ£ô handles save errors gracefully and displays retry messaging  616ms
+     Γ£ô updates context for AI suggestions when the user provides additional details  1422ms
+ Γ£ô src/pages/marketing/PodcastPage.test.tsx (11 tests) 530ms
+ Γ£ô src/pages/marketing/NotFound.test.tsx (5 tests) 313ms
+stderr | src/pages/deals/NewDealPage.test.tsx > NewDealPage > displays backend error when createDeal rejects
+Error creating deal: Error: Failed to create deal
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/deals/NewDealPage.test.tsx:87:42
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:157:11
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:753:26
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1602:10)
+    at runTest (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1309:12)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runFiles (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1526:3)
+
+ Γ£ô src/pages/deals/NewDealPage.test.tsx (3 tests) 5620ms
+     Γ£ô shows validation errors when required fields missing  524ms
+     Γ£ô submits payload and navigates to deal details on success  3824ms
+     Γ£ô displays backend error when createDeal rejects  1260ms
+ Γ£ô src/pages/marketing/FAQPage.test.tsx (16 tests) 1395ms
+ Γ£ô src/pages/marketing/FeaturesPage.test.tsx (6 tests) 1141ms
+     Γ£ô contains CTA to pricing  500ms
+ Γ£ô src/pages/marketing/LandingPage.meta.test.tsx (1 test) 585ms
+     Γ£ô sets canonical and og:url to 100daysandbeyond.com  573ms
+ Γ£ô src/components/podcast/YouTubePublisher.test.tsx (11 tests) 9048ms
+     Γ£ô prefills metadata form with episode details and enforces title length  3866ms
+     Γ£ô submits publish payload with metadata and schedule  3438ms
+     Γ£ô allows disconnecting the connected channel  303ms
+ Γ£ô src/pages/marketing/FourStageCyclePage.test.tsx (8 tests) 1078ms
+ Γ¥» src/pages/marketing/PricingPage.test.tsx (8 tests | 3 failed) 1488ms
+     Γ£ô renders all 4 pricing tiers with correct headings and prices 257ms
+     Γ£ô redirects unauthenticated users to sign-in when clicking Get Started 150ms
+     ├ù calls redirectToCheckout for authenticated users selecting Starter 214ms
+     ├ù uses correct tier mapping for Professional plan 186ms
+     ├ù shows loading state while redirect promise pending 268ms
+     Γ£ô shows error message when redirect fails 237ms
+     Γ£ô publishes canonical and og:url metadata for the 100daysandbeyond.com domain 101ms
+     Γ£ô publishes structured data for product offers using the 100daysandbeyond.com domain 68ms
+stdout | src/pages/master-admin/ActivityTracker.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/services/api/documents.test.ts (11 tests) 36ms
+ Γ£ô src/pages/master-admin/ActivityTracker.test.tsx (3 tests) 263ms
+ Γ£ô src/pages/master-admin/MasterAdminDashboard.test.tsx (3 tests) 326ms
+ Γ£ô src/services/api/financial.test.ts (4 tests) 15ms
+ Γ£ô src/services/api/masterAdmin.test.ts (16 tests) 29ms
+stdout | src/pages/master-admin/ProspectPipeline.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/pages/marketing/TeamPage.test.tsx (9 tests) 868ms
+ Γ£ô src/pages/marketing/LandingPage.test.tsx (13 tests) 3336ms
+     Γ£ô renders the enhanced hero section headline  327ms
+     Γ£ô adds quantified social proof stats and logos  316ms
+     Γ£ô maintains CTA section at the end  670ms
+ Γ£ô src/pages/marketing/EnhancedLandingPage.test.tsx (21 tests) 3834ms
+     Γ£ô renders How It Works section  401ms
+     Γ£ô renders final CTA section  462ms
+stdout | src/tests/integration/routing.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+stderr | src/pages/marketing/ContactPage.test.tsx > ContactPage > shows error state when submission fails
+Error submitting contact form: Error: Network error
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/pages/marketing/ContactPage.test.tsx:64:51
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:157:11
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:753:26
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1602:10)
+    at runTest (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1309:12)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runFiles (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1526:3)
+
+stdout | src/tests/integration/PodcastStudioRouting.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/pages/marketing/ContactPage.test.tsx (5 tests) 5340ms
+     Γ£ô validates required fields before submission  335ms
+     Γ£ô submits form and shows confirmation message  2676ms
+     Γ£ô shows error state when submission fails  2092ms
+ Γ£ô src/tests/integration/dealPipelineWorkflow.test.tsx (2 tests) 384ms
+ Γ£ô src/utils/schemas/offerSchema.test.ts (7 tests) 14ms
+ Γ£ô src/pages/marketing/SecurityPage.test.tsx (21 tests) 2314ms
+ Γ£ô src/utils/schemas/breadcrumbSchema.test.ts (5 tests) 17ms
+ Γ£ô src/utils/schemas/organizationSchema.test.ts (4 tests) 11ms
+ Γ£ô src/utils/schemas/blogPostSchema.test.ts (6 tests) 30ms
+ Γ£ô src/components/deal-matching/analytics/MatchScoreDistribution.test.tsx (2 tests) 34ms
+ Γ£ô src/tests/msw/documentsHandlers.test.ts (13 tests) 128ms
+ Γ£ô src/pages/podcast/PodcastStudio.featureGates.test.tsx (9 tests) 2009ms
+     Γ£ô shows audio controls but locks video uploads for Professional tier  379ms
+     Γ£ô shows live streaming upgrade call-to-action when feature is locked  383ms
+ Γ£ô src/utils/schemas/personSchema.test.ts (7 tests) 18ms
+ Γ£ô src/tests/integration/whatIfAnalysisWorkflow.test.tsx (2 tests) 794ms
+     Γ£ô syncs metrics when production volume slider is adjusted  509ms
+ Γ£ô src/components/deal-matching/analytics/MatchingActivity.test.tsx (2 tests) 52ms
+ Γ£ô src/components/deal-matching/analytics/RecentMatches.test.tsx (2 tests) 42ms
+ Γ£ô src/components/deal-matching/analytics/MatchSuccessRate.test.tsx (2 tests) 58ms
+ Γ£ô src/components/deal-matching/__tests__/MatchInsights.test.tsx (3 tests) 37ms
+ Γ£ô src/pages/master-admin/ProspectPipeline.test.tsx (5 tests) 2269ms
+     Γ£ô renders default kanban view and toggles to list  874ms
+     Γ£ô navigates back to dashboard  387ms
+     Γ£ô opens add prospect modal from header button and closes via cancel  549ms
+     Γ£ô opens and closes prospect detail modal when a card is clicked  332ms
+ Γ£ô src/components/community/__tests__/CreatePostModal.test.tsx (12 tests) 348ms
+stdout | src/components/master-admin/activity/FocusTimer.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+stdout | src/components/master-admin/activity/ActivityForm.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+stdout | src/components/master-admin/activity/NudgePanel.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+stdout | src/components/master-admin/activity/ActivityList.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+stdout | src/components/master-admin/shared/StatCard.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+stdout | src/components/master-admin/activity/GoalCard.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/components/community/__tests__/PostCard.test.tsx (18 tests) 618ms
+ Γ£ô src/components/master-admin/activity/FocusTimer.test.tsx (10 tests) 307ms
+ Γ£ô src/modules/pmi/components/DayOneChecklist.test.tsx (2 tests) 63ms
+ Γ£ô src/components/master-admin/shared/StatCard.test.tsx (8 tests) 112ms
+ Γ£ô src/components/master-admin/activity/NudgePanel.test.tsx (11 tests) 470ms
+ Γ£ô src/modules/pmi/components/SynergyTracker.test.tsx (2 tests) 50ms
+ Γ£ô src/modules/pmi/hooks/usePMIAccess.test.tsx (2 tests) 41ms
+ Γ£ô src/modules/pmi/components/TimelineView.test.tsx (2 tests) 57ms
+ Γ£ô src/modules/pmi/components/WorkstreamBoard.test.tsx (6 tests) 94ms
+ Γ£ô src/components/master-admin/activity/ActivityList.test.tsx (15 tests) 1215ms
+       Γ£ô should filter activities by date range  485ms
+ Γ¥» src/pages/deals/MatchingWorkspace.test.tsx (17 tests | 1 failed) 11652ms
+       Γ£ô renders workspace with title and tabs 114ms
+       Γ£ô shows loading state during initial fetch 5ms
+       Γ£ô renders error message when fetch fails 38ms
+       Γ£ô lists saved criteria presets 33ms
+       Γ£ô shows new criteria button 48ms
+       Γ£ô displays criteria details including custom filters 43ms
+       Γ£ô renders match results with scores 75ms
+       Γ£ô shows confidence badges 61ms
+       Γ£ô shows empty state when no matches 89ms
+       Γ£ô allows switching between tabs 101ms
+       Γ£ô triggers find matches using selected preset 169ms
+       Γ£ô records view action and opens detail modal 257ms
+       Γ£ô records save and pass actions from match cards 155ms
+       Γ£ô opens introduction request modal from detail view 256ms
+       ├ù displays analytics widgets summarising matches 10112ms
+       Γ£ô shows upgrade prompt for starter tier 21ms
+       Γ£ô allows access for professional tier 64ms
+ Γ£ô src/modules/pmi/pages/PMIProjectList.test.tsx (2 tests) 53ms
+ Γ£ô src/modules/pmi/components/RiskRegister.test.tsx (3 tests) 301ms
+ Γ£ô src/pages/community/__tests__/CommunityFeed.help.test.tsx (1 test) 80ms
+ Γ£ô src/modules/pmi/pages/PMIProjectDetail.test.tsx (3 tests) 184ms
+ Γ£ô src/pages/community/__tests__/ModerationDashboard.test.tsx (1 test) 59ms
+ Γ£ô src/pages/community/__tests__/CommunityModerationScreening.test.tsx (1 test) 56ms
+ Γ£ô src/pages/community/__tests__/CommunityFeed.test.tsx (5 tests) 138ms
+ Γ£ô src/modules/pmi/pages/PMIProjectCreate.test.tsx (2 tests) 784ms
+     Γ£ô should handle form submission  716ms
+ Γ£ô src/pages/community/__tests__/UserProfile.test.tsx (2 tests) 51ms
+ Γ£ô src/components/community/__tests__/CommentThread.test.tsx (16 tests) 2415ms
+     Γ£ô should show reply button for each comment  362ms
+     Γ£ô should call onAddComment when submitting a reply  510ms
+ Γ£ô src/components/master-admin/activity/GoalCard.test.tsx (16 tests) 2207ms
+       Γ£ô should update input values when changed  308ms
+       Γ£ô should call updateGoal mutation when saving existing goal  341ms
+       Γ£ô should call createGoal mutation when saving new goal  646ms
+ Γ£ô src/services/api/__tests__/documentGeneration.integration.test.ts (10 tests) 17ms
+stderr | src/components/master-admin/activity/ActivityForm.test.tsx > ActivityForm > Form Submission > should not reset form if submission fails
+Failed to create activity: Error: Failed to create
+    at C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/src/components/master-admin/activity/ActivityForm.test.tsx:302:60
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:157:11
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:753:26
+    at file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1636:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1602:10)
+    at runTest (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1309:12)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+    at runSuite (file:///C:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend/node_modules/@vitest/runner/dist/index.js:1468:8)
+
+stdout | src/pages/master-admin/__tests__/CampaignManager.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/components/master-admin/activity/ActivityForm.test.tsx (20 tests) 3091ms
+       Γ£ô should submit form with all field values  986ms
+       Γ£ô should reset form after successful submission  582ms
+       Γ£ô should not reset form if submission fails  324ms
+stdout | src/pages/master-admin/__tests__/TemplateManager.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/pages/tasks/TaskBoard.test.tsx (14 tests) 6894ms
+     Γ£ô renders task board with required columns and tasks  418ms
+     Γ£ô filters tasks by assignee, status, priority, and due date  963ms
+     Γ£ô sorts tasks by due date and priority  820ms
+     Γ£ô opens task creation modal and validates required fields  1489ms
+     Γ£ô updates task details from detail modal  1212ms
+     Γ£ô assigns a task from the detail modal  444ms
+     Γ£ô deletes a task from the detail modal  518ms
+stdout | src/pages/master-admin/__tests__/VoiceCampaign.test.tsx
+[Icons] Lucide React initialized: 5647 exports
+
+ Γ£ô src/pages/events/__tests__/EventDashboard.test.tsx (5 tests) 250ms
+ Γ£ô src/pages/marketing/__tests__/ContactPage.form.test.tsx (1 test) 144ms
+ Γ£ô src/pages/master-admin/__tests__/CampaignManager.test.tsx (3 tests) 518ms
+     Γ£ô allows creating a campaign through the modal form  301ms
+ Γ£ô src/pages/marketing/legal/LegalMeta.test.tsx (3 tests) 263ms
+ Γ£ô src/pages/master-admin/__tests__/TemplateManager.test.tsx (3 tests) 620ms
+ Γ£ô src/pages/master-admin/__tests__/VoiceCampaign.test.tsx (3 tests) 635ms
+stderr | src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx > BlogListingPage contract > shows a friendly outage message when the blog API fails
+Failed to load blog posts AxiosError {
+  message: 'Request failed with status code 500',
+  name: 'AxiosError',
+  code: 'ERR_BAD_RESPONSE',
+  config: {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    baseURL: 'http://localhost:8000/api',
+    method: 'get',
+    url: '/blog?limit=100',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: XMLHttpRequest {
+    open: [Function: open],
+    setRequestHeader: [Function: setRequestHeader],
+    send: [Function: send],
+    abort: [Function: abort],
+    getResponseHeader: [Function (anonymous)],
+    getAllResponseHeaders: [Function (anonymous)],
+    overrideMimeType: [Function: overrideMimeType],
+    onreadystatechange: [Getter/Setter],
+    readyState: 4,
+    timeout: [Getter/Setter],
+    withCredentials: [Getter/Setter],
+    upload: XMLHttpRequestUpload {},
+    responseURL: 'http://localhost:8000/api/blog?limit=100',
+    status: 500,
+    statusText: 'Internal Server Error',
+    responseType: [Getter/Setter],
+    response: [Getter],
+    responseText: [Getter],
+    responseXML: [Getter],
+    UNSENT: 0,
+    OPENED: 1,
+    HEADERS_RECEIVED: 2,
+    LOADING: 3,
+    DONE: 4,
+    Symbol(SameObject caches): [Object: null prototype] { upload: XMLHttpRequestUpload {} }
+  },
+  response: {
+    data: {
+      detail: 'Internal server error',
+      message: 'Internal server error'
+    },
+    status: 500,
+    statusText: 'Internal Server Error',
+    headers: Object [AxiosHeaders] {
+      'content-length': '68',
+      'content-type': 'application/json'
+    },
+    config: {
+      transitional: [Object],
+      adapter: [Array],
+      transformRequest: [Array],
+      transformResponse: [Array],
+      timeout: 0,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+      maxContentLength: -1,
+      maxBodyLength: -1,
+      env: [Object],
+      validateStatus: [Function: validateStatus],
+      headers: [Object [AxiosHeaders]],
+      baseURL: 'http://localhost:8000/api',
+      method: 'get',
+      url: '/blog?limit=100',
+      allowAbsoluteUrls: true,
+      data: undefined
+    },
+    request: XMLHttpRequest {
+      open: [Function: open],
+      setRequestHeader: [Function: setRequestHeader],
+      send: [Function: send],
+      abort: [Function: abort],
+      getResponseHeader: [Function (anonymous)],
+      getAllResponseHeaders: [Function (anonymous)],
+      overrideMimeType: [Function: overrideMimeType],
+      onreadystatechange: [Getter/Setter],
+      readyState: 4,
+      timeout: [Getter/Setter],
+      withCredentials: [Getter/Setter],
+      upload: XMLHttpRequestUpload {},
+      responseURL: 'http://localhost:8000/api/blog?limit=100',
+      status: 500,
+      statusText: 'Internal Server Error',
+      responseType: [Getter/Setter],
+      response: [Getter],
+      responseText: [Getter],
+      responseXML: [Getter],
+      UNSENT: 0,
+      OPENED: 1,
+      HEADERS_RECEIVED: 2,
+      LOADING: 3,
+      DONE: 4,
+      Symbol(SameObject caches): [Object: null prototype]
+    }
+  },
+  status: 500
+}
+
+ Γ£ô src/modules/fpa/components/__tests__/FPAAccessGuard.test.tsx (3 tests) 111ms
+ Γ£ô src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx (1 test) 419ms
+     Γ£ô shows a friendly outage message when the blog API fails  410ms
+ Γ£ô src/modules/fpa/components/__tests__/ScenarioComponents.test.tsx (4 tests) 373ms
+ Γ£ô src/pages/deals/valuation/__tests__/ValuationCharts.test.tsx (5 tests) 120ms
+ Γ£ô src/modules/fpa/pages/__tests__/ProductionTracking.test.tsx (2 tests) 96ms
+ Γ£ô src/pages/marketing/__tests__/TeamPage.assets.test.tsx (1 test) 114ms
+ Γ£ô src/pages/deals/valuation/__tests__/ValuationExport.test.tsx (4 tests) 87ms
+ Γ£ô src/modules/pmi/pages/__tests__/PMIProjectList.help.test.tsx (1 test) 126ms
+Not implemented: navigation to another Document
+ Γ£ô src/pages/marketing/legal/__tests__/LegalPages.test.tsx (3 tests) 610ms
+ Γ£ô src/pages/events/__tests__/EventDetails.test.tsx (15 tests) 2574ms
+     Γ£ô should load and display sessions when sessions tab clicked  302ms
+     Γ£ô should export registrations when export button clicked  331ms
+     Γ£ô should show empty states for no sessions, tickets, registrations  344ms
+ Γ¥» src/pages/podcast/PodcastStudio.test.tsx (32 tests | 1 failed) 10793ms
+       Γ£ô should show upgrade prompt when user lacks podcast_audio access  368ms
+       Γ£ô should render episode list when user has access 235ms
+       Γ£ô renders podcast help tooltip when data is available 171ms
+       Γ£ô should display quota usage for Professional tier 52ms
+       Γ£ô should show approaching quota banner when usage reaches warning threshold 130ms
+       Γ£ô should show critical quota banner when usage reaches critical threshold 278ms
+       Γ£ô should display billing cycle with reset range when provided 155ms
+       Γ£ô should disable new episode creation and show upgrade CTA when quota requires upgrade  348ms
+       Γ£ô should display "Unlimited" for Premium tier 168ms
+       Γ£ô should surface upgrade CTA when quota requires upgrade  333ms
+       Γ£ô should show transcribe button when transcript missing  525ms
+       Γ£ô should call API and show success message when transcription completes  685ms
+       Γ£ô should indicate when transcript is ready  408ms
+       Γ£ô should provide transcript download links when transcript ready 270ms
+       Γ£ô should display "No episodes" when list is empty 82ms
+       Γ£ô should display list of episodes with titles 129ms
+       Γ£ô should show episode status badges 47ms
+       Γ£ô shows thumbnail when thumbnail_url present 96ms
+       Γ£ô renders placeholder when thumbnail missing 40ms
+       Γ£ô shows watch video button for episodes with uploaded video 179ms
+       ├ù opens the video player modal when watch video is clicked 530ms
+       Γ£ô allows editing metadata before publishing to YouTube when integration access granted  2403ms
+       Γ£ô initiates OAuth connect flow when YouTube account is not connected  384ms
+       Γ£ô should show upgrade button when youtube integration access denied 131ms
+       Γ£ô should render "New Episode" button 83ms
+       Γ£ô should disable "New Episode" button when quota exceeded 92ms
+       Γ£ô should open Create Episode modal when New Episode button clicked 130ms
+       Γ£ô should create episode when form submitted with valid data  1166ms
+       Γ£ô should open Edit modal when Edit button clicked on episode 150ms
+       Γ£ô should update episode when edit form submitted  546ms
+       Γ£ô should show delete confirmation when delete button clicked 226ms
+       Γ£ô should delete episode when deletion confirmed 242ms
+ Γ£ô src/pages/events/__tests__/EventCreator.test.tsx (11 tests) 6448ms
+     Γ£ô should render event creation form  628ms
+     Γ£ô should show virtual link field when event type is virtual  601ms
+     Γ£ô should submit form with valid data  1984ms
+     Γ£ô should handle API errors gracefully  1106ms
+     Γ£ô should support different event types  323ms
+     Γ£ô should disable submit button while submitting  1085ms
+ Γ£ô src/pages/deals/valuation/ValuationSuite.test.tsx (18 tests) 6605ms
+     Γ£ô submits new valuation when form completed  675ms
+     Γ£ô allows adding comparable company to selected valuation  676ms
+     Γ£ô allows adding precedent transaction to selected valuation  1221ms
+     Γ£ô allows creating a new scenario with JSON assumptions  1035ms
+     Γ£ô shows validation error when scenario assumptions JSON is invalid  646ms
+     Γ£ô displays export template selector with PDF, DOCX, and HTML options  332ms
+     Γ£ô allows selecting export template (executive summary, detailed, custom)  357ms
+     Γ£ô runs Monte Carlo simulation and displays percentile summary  407ms

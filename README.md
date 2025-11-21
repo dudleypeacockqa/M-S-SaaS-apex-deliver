@@ -2,23 +2,23 @@
 # M&A Intelligence Platform
 
 **Version**: v1.0.0-rc1 (Release Candidate)
-**Status**: ⚙️ 99.2% IN PROGRESS — Wave 0 (Governance & Evidence) is active; backend automation is green (2025-11-19), but frontend Vitest + marketing Playwright are RED, and Master Admin QA, BlogAdminEditor proof, marketing parity, audits, and documentation sign-off remain
+**Status**: ⚙️ 99.2% IN PROGRESS — Wave 0 (Governance & Evidence) is active; backend automation is green (2025-11-19), frontend Vitest is GREEN (2025-11-21), but marketing Playwright is still RED, and Master Admin QA, BlogAdminEditor proof, marketing parity, audits, and documentation sign-off remain
 **Methodology**: BMAD v6-alpha + Test-Driven Development (TDD)
 **Phase**: Phase 7 - Final QA + Marketing Website Implementation
 **Completion**: All 13 core features + 7 Master Admin features + F-010 BlogAdminEditor ship in prod; we are closing the remaining evidence + marketing backlog to legitimately claim 100%
-**Test Evidence (2025-11-19)**: Backend 1,708/1,708 PASS (62 skips, 84% cov) — see `docs/tests/2025-11-19-backend-pytest.txt` • Frontend Vitest RED (ContactPage, BookTrial, Pricing metadata, ProtectedRoute, marketing routing/blog specs, FPA components) — see `docs/tests/2025-11-19-frontend-vitest.txt` • Master Admin 91/91 PASS (100%)
+**Test Evidence (updated 2025-11-21)**: Backend 1,708/1,708 PASS (62 skips, 84% cov) — see `docs/tests/2025-11-19-backend-pytest.txt` • Frontend Vitest 1,742/1,742 PASS (85.1% cov) — see `docs/tests/2025-11-21-frontend-vitest.jsonl` (stdout trace: `docs/tests/2025-11-21-frontend-vitest.txt`) • Master Admin 91/91 PASS (100%)
 
 ---
 
-## ✅ Current Status (2025-11-19)
+## ✅ Current Status (2025-11-21)
 
-**Achievement**: Backend RED→GREEN run captured 2025-11-19 (see `docs/tests/2025-11-19-backend-pytest.txt`). Frontend + marketing automation remain RED and block Decide gate.
+**Achievement**: Backend RED→GREEN run captured 2025-11-19 (see `docs/tests/2025-11-19-backend-pytest.txt`). Frontend Vitest rerun 2025-11-21 is GREEN (log archived), while marketing Playwright and manual QA workstreams still block the Decide gate.
 - Backend: 1,708/1,708 tests passing (100%), 62 skips (external OAuth/Postgres), 84% coverage ✅
-- Frontend: Vitest RED (ContactPage, BookTrial, Pricing metadata, ProtectedRoute redirect, marketing routing/blog specs, ProductionTracking, Scenario components). Full log: `docs/tests/2025-11-19-frontend-vitest.txt`. ⛔
+- Frontend: Vitest GREEN (1,742/1,742 passing, 85.1% coverage). Latest JSON log: `docs/tests/2025-11-21-frontend-vitest.jsonl` (stdout archive: `docs/tests/2025-11-21-frontend-vitest.txt`). ✅
 - Master Admin: 91/91 tests passing (100%) ✅
 - F-010 BlogAdminEditor: Component created with TDD, routes integrated (commit 95a2bbd) ✅ (awaiting manual E2E verification)
 - Targeted backend/blog/marketing API regression proof: `docs/tests/2025-11-19-backend-blog-marketing.txt`
-- Marketing Playwright smoke attempt: `docs/tests/2025-11-19-playwright.txt` (build failed: optional chaining/polyfill + GTM 404). Summary in `docs/deployments/2025-11-19-marketing-playwright.txt`.
+- Marketing Playwright smoke attempt: `docs/tests/2025-11-19-playwright.txt` (build failed: optional chaining/polyfill + GTM 404). Summary in `docs/deployments/2025-11-19-marketing-playwright.txt`. Next rerun queued after marketing backlog fixes.
 
 **Deployment Status**: Production healthy and operational; latest Render verification (docs/deployments/2025-11-17-backend-verify.txt) still current. Marketing Playwright run is blocked on fixing optional chaining/polyfills before we can record preview evidence.
 - Frontend: https://100daysandbeyond.com (200 OK, all features operational)
@@ -64,6 +64,7 @@
 - [Blog Admin Playwright test harness log](docs/tests/2025-11-19-playwright-blog-admin.txt) - `/admin/blog/*` RED→GREEN proof
 - [Lighthouse + Axe runbook](docs/testing/2025-11-19-lighthouse-axe-runbook.md) - How to regenerate performance/a11y evidence
 - [Master Admin demo seed helper](scripts/seed_master_admin_demo.py) - CLI that calls `seed_master_admin_demo` and emits seeded record IDs
+- [LAN Execution Notes](lan.md) - Scratchpad for landing/admin workstream status and next steps
 
 
 

@@ -199,7 +199,7 @@ def upgrade() -> None:
     # Create document_templates table if not exists
     op.execute("""
         CREATE TABLE IF NOT EXISTS document_templates (
-            id UUID PRIMARY KEY,
+            id VARCHAR(36) PRIMARY KEY,
             name VARCHAR NOT NULL,
             description TEXT,
             template_type VARCHAR,
@@ -207,8 +207,8 @@ def upgrade() -> None:
             variables JSON DEFAULT '[]' NOT NULL,
             status templatestatus DEFAULT 'active' NOT NULL,
             version INTEGER DEFAULT 1 NOT NULL,
-            organization_id UUID NOT NULL REFERENCES organizations(id),
-            created_by_user_id UUID NOT NULL,
+            organization_id VARCHAR(36) NOT NULL REFERENCES organizations(id),
+            created_by_user_id VARCHAR(36) NOT NULL,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
             updated_at TIMESTAMP WITH TIME ZONE
         )
@@ -277,7 +277,7 @@ def upgrade() -> None:
                 WHERE table_name = 'document_templates' AND column_name = 'organization_id'
             ) THEN
                 ALTER TABLE document_templates 
-                ADD COLUMN organization_id UUID NOT NULL REFERENCES organizations(id);
+                ADD COLUMN organization_id VARCHAR(36) NOT NULL REFERENCES organizations(id);
             END IF;
         END $$;
     """)
@@ -381,14 +381,14 @@ def upgrade() -> None:
                 WHERE table_name = 'generated_documents'
             ) THEN
                 EXECUTE format('CREATE TABLE generated_documents (
-                    id UUID PRIMARY KEY,
-                    template_id UUID NOT NULL REFERENCES document_templates(id),
+                    id VARCHAR(36) PRIMARY KEY,
+                    template_id VARCHAR(36) NOT NULL REFERENCES document_templates(id),
                     generated_content TEXT NOT NULL,
                     variable_values JSON DEFAULT ''{}'' NOT NULL,
                     file_path VARCHAR,
                     status documentstatus DEFAULT %L NOT NULL,
-                    organization_id UUID NOT NULL REFERENCES organizations(id),
-                    generated_by_user_id UUID NOT NULL,
+                    organization_id VARCHAR(36) NOT NULL REFERENCES organizations(id),
+                    generated_by_user_id VARCHAR(36) NOT NULL,
                     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
                     updated_at TIMESTAMP WITH TIME ZONE
                 )', default_val);
@@ -467,7 +467,7 @@ def upgrade() -> None:
                 WHERE table_name = 'generated_documents' AND column_name = 'organization_id'
             ) THEN
                 ALTER TABLE generated_documents 
-                ADD COLUMN organization_id UUID NOT NULL REFERENCES organizations(id);
+                ADD COLUMN organization_id VARCHAR(36) NOT NULL REFERENCES organizations(id);
             END IF;
             
             -- Add template_id column if it doesn't exist
@@ -476,7 +476,7 @@ def upgrade() -> None:
                 WHERE table_name = 'generated_documents' AND column_name = 'template_id'
             ) THEN
                 ALTER TABLE generated_documents 
-                ADD COLUMN template_id UUID NOT NULL REFERENCES document_templates(id);
+                ADD COLUMN template_id VARCHAR(36) NOT NULL REFERENCES document_templates(id);
             END IF;
         END $$;
     """)

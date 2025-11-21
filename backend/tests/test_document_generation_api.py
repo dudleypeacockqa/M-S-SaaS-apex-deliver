@@ -356,6 +356,191 @@ class TestDocumentGenerationEndpoints:
         assert "2025-11-13" in data["generated_content"]
         assert data["status"] == "generated"
 
+    def test_generate_document_with_source_deal(
+        self,
+        client,
+        create_deal_for_org,
+        db_session: Session,
+        dependency_overrides,
+    ):
+        """Associate generated documents with an originating deal."""
+        deal, owner, org = create_deal_for_org()
+
+        template = DocumentTemplate(
+            name="Deal Summary",
+            content="Summary for {{deal_name}}",
+            variables=["deal_name"],
+            organization_id=str(org.id),
+            created_by_user_id=owner.id,
+        )
+        db_session.add(template)
+        db_session.commit()
+        db_session.refresh(template)
+
+        from app.api.dependencies.auth import get_current_user
+        dependency_overrides(get_current_user, lambda: owner)
+
+        response = client.post(
+            f"/api/document-generation/templates/{template.id}/generate",
+            json={
+                "variable_values": {"deal_name": "Big Deal"},
+                "source_deal_id": str(deal.id),
+            },
+        )
+
+        assert response.status_code == 201
+        payload = response.json()
+        assert payload["source_deal_id"] == str(deal.id)
+
+        generated = db_session.get(GeneratedDocument, payload["generated_document_id"])
+        assert generated is not None
+        assert generated.source_deal_id == str(deal.id)
+
+    def test_list_generated_documents_filters_by_source_deal(
+        self,
+        client,
+        create_deal_for_org,
+        db_session: Session,
+        dependency_overrides,
+    ):
+        deal, owner, org = create_deal_for_org()
+        other_deal, _, _ = create_deal_for_org(organization=org, owner=owner, name="Other")
+
+        template = DocumentTemplate(
+            name="Deal Template",
+            content="Summary",
+            organization_id=str(org.id),
+            created_by_user_id=owner.id,
+        )
+        db_session.add(template)
+        db_session.flush()
+
+        doc_with_deal = GeneratedDocument(
+            template_id=template.id,
+            generated_content="Deal 1",
+            variable_values={},
+            organization_id=str(org.id),
+            generated_by_user_id=owner.id,
+            source_deal_id=str(deal.id),
+        )
+        doc_without_deal = GeneratedDocument(
+            template_id=template.id,
+            generated_content="Deal 2",
+            variable_values={},
+            organization_id=str(org.id),
+            generated_by_user_id=owner.id,
+            source_deal_id=str(other_deal.id),
+        )
+        db_session.add_all([doc_with_deal, doc_without_deal])
+        db_session.commit()
+
+        from app.api.dependencies.auth import get_current_user
+        dependency_overrides(get_current_user, lambda: owner)
+
+        response = client.get(
+            "/api/document-generation/documents",
+            params={"source_deal_id": str(deal.id)},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 1
+        assert data[0]["source_deal_id"] == str(deal.id)
+
+    def test_document_versions_require_matching_deal(
+        self,
+        client,
+        create_deal_for_org,
+        db_session: Session,
+        dependency_overrides,
+    ):
+        deal, owner, org = create_deal_for_org()
+        other_deal, _, _ = create_deal_for_org(organization=org, owner=owner, name="Other Deal")
+
+        template = DocumentTemplate(
+            name="Deal Template",
+            content="Summary",
+            organization_id=str(org.id),
+            created_by_user_id=owner.id,
+        )
+        db_session.add(template)
+        db_session.flush()
+
+        document = GeneratedDocument(
+            template_id=template.id,
+            generated_content="Deal content",
+            variable_values={},
+            organization_id=str(org.id),
+            generated_by_user_id=owner.id,
+            source_deal_id=str(deal.id),
+        )
+        db_session.add(document)
+        db_session.commit()
+
+        from app.api.dependencies.auth import get_current_user
+        dependency_overrides(get_current_user, lambda: owner)
+
+        mismatch = client.get(
+            f"/api/document-generation/documents/{document.id}/versions",
+            params={"source_deal_id": str(other_deal.id)},
+        )
+        assert mismatch.status_code == 404
+
+        missing = client.get(f"/api/document-generation/documents/{document.id}/versions")
+        assert missing.status_code == 404
+
+        ok = client.get(
+            f"/api/document-generation/documents/{document.id}/versions",
+            params={"source_deal_id": str(deal.id)},
+        )
+        assert ok.status_code == 200
+
+    def test_download_document_requires_matching_deal(
+        self,
+        client,
+        create_deal_for_org,
+        db_session: Session,
+        dependency_overrides,
+    ):
+        deal, owner, org = create_deal_for_org()
+        other_deal, _, _ = create_deal_for_org(organization=org, owner=owner, name="Other")
+
+        template = DocumentTemplate(
+            name="Download Template",
+            content="{{name}}",
+            variables=["name"],
+            organization_id=str(org.id),
+            created_by_user_id=owner.id,
+        )
+        db_session.add(template)
+        db_session.flush()
+
+        document = GeneratedDocument(
+            template_id=template.id,
+            generated_content="Doc",
+            variable_values={"name": "Doc"},
+            organization_id=str(org.id),
+            generated_by_user_id=owner.id,
+            source_deal_id=str(deal.id),
+        )
+        document.file_path = "fake-key|pdf"
+        db_session.add(document)
+        db_session.commit()
+
+        from app.api.dependencies.auth import get_current_user
+        dependency_overrides(get_current_user, lambda: owner)
+
+        mismatch = client.get(
+            f"/api/document-generation/documents/{document.id}/download",
+            params={"source_deal_id": str(other_deal.id)},
+        )
+        assert mismatch.status_code == 404
+
+        missing = client.get(
+            f"/api/document-generation/documents/{document.id}/download",
+        )
+        assert missing.status_code == 404
+
     def test_generate_document_with_file_artifact(
         self,
         client,

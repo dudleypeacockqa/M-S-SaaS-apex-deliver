@@ -21,6 +21,7 @@ class RBACAuditAction(str, enum.Enum):
     CLAIM_MISMATCH = "claim_mismatch"
     PERMISSION_DENIED = "permission_denied"
     IMPERSONATION = "impersonation"
+    RESOURCE_SCOPE_VIOLATION = "resource_scope_violation"
 
 
 class RBACAuditLog(Base):

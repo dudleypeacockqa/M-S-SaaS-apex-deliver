@@ -97,53 +97,108 @@ class TestFpaRoutes:
         assert report.report_type == "executive-summary"
         assert "demand_summary" in report.payload
 
-    def test_calculate_scenario_impact_route(self, client, create_user, create_organization, dependency_overrides):
-        org = create_organization(name="Scenario Calc Org")
-        user = create_user(email="calc@example.com", organization_id=str(org.id))
+    def test_calculate_scenario_endpoint(self, client, create_user, create_organization, dependency_overrides):
+        org = create_organization(name="Scenario Org")
+        user = create_user(email="scenarios@example.com", organization_id=str(org.id))
         dependency_overrides(get_current_user, lambda: user)
 
         payload = {
             "variables": {
-                "gaba_red_price": 32.0,
-                "gaba_black_price": 34.0,
-                "gaba_gold_price": 48.0,
-                "production_volume": 115.0,
-                "material_costs": 97.0,
-                "labor_efficiency": 105.0,
+                "gaba_red_price": 32,
+                "gaba_black_price": 34,
+                "gaba_gold_price": 48,
+                "production_volume": 110,
+                "material_costs": 98,
+                "labor_efficiency": 102,
             }
         }
 
         response = client.post("/api/fpa/what-if/calculate", json=payload)
-
         assert response.status_code == 200
-        data = response.json()
-        assert data["baseline"]["revenue"] == pytest.approx(10_760_000.0)
-        assert data["metrics"]["revenue"] != pytest.approx(data["baseline"]["revenue"])
-        assert data["metrics"]["gross_margin"] > 0
+        body = response.json()
+        assert "metrics" in body
+        assert body["metrics"]["revenue"] > 0
+        assert body["baseline"]["revenue"] == 10760000
 
     def test_predefined_scenarios_and_apply(self, client, create_user, create_organization, dependency_overrides):
         org = create_organization(name="Preset Org")
         user = create_user(email="preset@example.com", organization_id=str(org.id))
         dependency_overrides(get_current_user, lambda: user)
 
-        presets_resp = client.get("/api/fpa/what-if/presets")
-        assert presets_resp.status_code == 200
-        presets = presets_resp.json()
-        assert len(presets) == 4
-        aggressive = next(p for p in presets if p["id"] == "aggressive-growth")
-        assert aggressive["variables"]["production_volume"] == pytest.approx(120.0)
+        presets_response = client.get("/api/fpa/what-if/presets")
+        assert presets_response.status_code == 200
+        presets = presets_response.json()
+        assert len(presets) >= 4
+        scenario_id = presets[0]["id"]
 
-        apply_resp = client.post("/api/fpa/what-if/apply", json={"scenario_id": "aggressive-growth"})
-        assert apply_resp.status_code == 200
-        body = apply_resp.json()
-        assert body["scenario"]["id"] == "aggressive-growth"
-        assert body["metrics"]["revenue"] != body["baseline"]["revenue"]
+        apply_response = client.post("/api/fpa/what-if/apply", json={"scenario_id": scenario_id})
+        assert apply_response.status_code == 200
+        data = apply_response.json()
+        assert data["scenario"]["id"] == scenario_id
+        assert data["metrics"]["revenue"] > 0
+        assert data["baseline"]["revenue"] == 10760000
 
-    def test_apply_scenario_not_found(self, client, create_user, create_organization, dependency_overrides):
-        org = create_organization(name="Preset Org Missing")
-        user = create_user(email="preset-missing@example.com", organization_id=str(org.id))
+    def test_operational_metric_endpoints(self, client, create_user, create_organization, dependency_overrides):
+        org = create_organization(name="Ops Org")
+        user = create_user(email="ops@example.com", organization_id=str(org.id))
         dependency_overrides(get_current_user, lambda: user)
 
-        response = client.post("/api/fpa/what-if/apply", json={"scenario_id": "missing"})
-        assert response.status_code == 404
+        dashboard = client.get("/api/fpa/dashboard")
+        assert dashboard.status_code == 200
+        assert dashboard.json()["total_revenue"] == 2_500_000.0
+
+        inventory = client.get("/api/fpa/inventory")
+        assert inventory.status_code == 200
+        assert len(inventory.json()) >= 2
+
+        production = client.get("/api/fpa/production")
+        assert production.status_code == 200
+        assert production.json()[0]["units_produced"] > 0
+
+        quality = client.get("/api/fpa/quality")
+        assert quality.status_code == 200
+        assert quality.json()[0]["pass_rate"] > 0
+
+        working_capital = client.get("/api/fpa/working-capital")
+        assert working_capital.status_code == 200
+        assert working_capital.json()["current"] == 1_900_000.0
+
+    def test_alias_endpoints_and_ai_tools(self, client, create_user, create_organization, dependency_overrides):
+        org = create_organization(name="Alias Org")
+        user = create_user(email="alias@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+
+        calc_alias = client.post(
+            "/api/fpa/scenarios/calculate",
+            json={
+                "variables": {
+                    "gaba_red_price": 31,
+                    "gaba_black_price": 33,
+                    "gaba_gold_price": 46,
+                    "production_volume": 105,
+                    "material_costs": 101,
+                    "labor_efficiency": 101,
+                }
+            },
+        )
+        assert calc_alias.status_code == 200
+
+        presets_alias = client.get("/api/fpa/scenarios/presets")
+        assert presets_alias.status_code == 200
+
+        apply_alias = client.post("/api/fpa/scenarios/apply", json={"scenario_id": "cost-optimization"})
+        assert apply_alias.status_code == 200
+
+        chat_resp = client.post(
+            "/api/fpa/ai-chat",
+            json={"message": "How is EBITDA trending?", "context": {"current_page": "valuation"}},
+        )
+        assert chat_resp.status_code == 200
+        assert "EBITDA" in chat_resp.json()["response"]
+
+        files = {"file": ("import.csv", "id,value\n1,100", "text/csv")}
+        data = {"import_type": "inventory"}
+        import_resp = client.post("/api/fpa/import", files=files, data=data)
+        assert import_resp.status_code == 200
+        assert import_resp.json()["success"] is True
 

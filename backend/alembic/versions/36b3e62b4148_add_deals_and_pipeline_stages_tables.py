@@ -9,6 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy import inspect
 
 
 # revision identifiers, used by Alembic.
@@ -25,7 +26,11 @@ def upgrade() -> None:
     # This ensures FK type constraints match on PostgreSQL
 
     # STEP 1: Modify users table (convert UUID to String(36))
-    op.add_column('users', sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True))
+    bind = op.get_bind()
+    inspector = inspect(bind)
+    user_columns = {column["name"] for column in inspector.get_columns("users")}
+    if "deleted_at" not in user_columns:
+        op.add_column('users', sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True))
     op.alter_column('users', 'id',
                existing_type=sa.UUID(),
                type_=sa.String(length=36),

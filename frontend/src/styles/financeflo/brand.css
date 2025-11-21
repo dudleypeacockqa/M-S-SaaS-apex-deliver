@@ -1,0 +1,323 @@
+/* FinanceFlo.ai Brand Styles - Comprehensive Design System */
+
+/* Brand Navigation */
+.brand-nav {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid hsl(var(--border));
+  box-shadow: var(--shadow-sm);
+}
+
+/* Navigation Link Styles */
+.nav-link {
+  color: hsl(var(--foreground));
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  color: hsl(var(--primary));
+}
+
+.nav-link.active {
+  color: hsl(var(--primary));
+  border-bottom: 2px solid hsl(var(--primary));
+}
+
+/* Brand Dropdown Styles */
+.dropdown-content {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.dropdown-item {
+  color: hsl(var(--foreground));
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: var(--gradient-subtle);
+  color: hsl(var(--primary));
+}
+
+/* Brand Typography */
+.brand-heading {
+  color: hsl(var(--foreground));
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.brand-heading-xl {
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1.1;
+}
+
+.brand-heading-lg {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  line-height: 1.2;
+}
+
+.brand-heading-md {
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  line-height: 1.3;
+}
+
+.brand-heading-sm {
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  line-height: 1.4;
+}
+
+.brand-body {
+  color: hsl(var(--foreground) / 0.8);
+  line-height: 1.7;
+  font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.brand-body-lg {
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+}
+
+.brand-body-md {
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+}
+
+/* Brand Buttons */
+.brand-button-primary {
+  background: var(--gradient-primary);
+  color: white;
+  font-weight: 600;
+  border-radius: var(--radius);
+  padding: 0.75rem 1.5rem;
+  box-shadow: var(--shadow-md);
+  transition: var(--ease-in-out);
+}
+
+.brand-button-primary:hover {
+  opacity: 0.9;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+.brand-button-secondary {
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: 1px solid hsl(var(--border));
+  font-weight: 600;
+  border-radius: var(--radius);
+  padding: 0.75rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--ease-in-out);
+}
+
+.brand-button-secondary:hover {
+  background: hsl(var(--muted));
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.brand-button-outline {
+  background: transparent;
+  color: hsl(var(--primary));
+  border: 2px solid hsl(var(--primary));
+  font-weight: 600;
+  border-radius: var(--radius);
+  padding: 0.75rem 1.5rem;
+  transition: var(--ease-in-out);
+}
+
+.brand-button-outline:hover {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  transform: translateY(-1px);
+}
+
+.brand-button-cta {
+  background: var(--gradient-accent);
+  color: white;
+  font-weight: 700;
+  border-radius: var(--radius);
+  padding: 1rem 2rem;
+  box-shadow: var(--shadow-lg);
+  transition: var(--ease-in-out);
+  transform: scale(1);
+}
+
+.brand-button-cta:hover {
+  opacity: 0.9;
+  box-shadow: var(--shadow-xl);
+  transform: scale(1.05) translateY(-2px);
+}
+
+/* Brand Cards */
+.brand-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.brand-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.brand-card-elevated {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.brand-card-elevated:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Brand Sections */
+.brand-section {
+  padding: 4rem 1rem;
+}
+
+.brand-section-lg {
+  padding: 5rem 1rem;
+}
+
+.brand-section-hero {
+  background: var(--gradient-hero);
+  color: white;
+  padding: 3rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .brand-section-hero {
+    padding: 4rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .brand-section-hero {
+    padding: 6rem 2rem;
+  }
+}
+
+/* Brand Containers */
+.brand-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.brand-container-sm {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.brand-container-xs {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .brand-container,
+  .brand-container-sm,
+  .brand-container-xs {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .brand-container,
+  .brand-container-sm,
+  .brand-container-xs {
+    padding: 0 2rem;
+  }
+}
+
+/* Brand CTAs */
+.brand-cta-section {
+  background: var(--gradient-hero);
+  color: white;
+  padding: 5rem 1rem;
+  text-align: center;
+}
+
+.brand-cta-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.brand-cta-description {
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.brand-cta-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (min-width: 640px) {
+  .brand-cta-buttons {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+}
+
+/* Brand Gradients */
+.brand-gradient-text {
+  background: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Brand Logo */
+.brand-logo {
+  height: 3rem;
+  width: auto;
+  transition: all 0.3s ease;
+}
+
+.brand-logo:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* Hero Specific */
+.brand-hero-title {
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+}
+
+.brand-hero-subtitle {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+.brand-hero-description {
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 3rem;
+  line-height: 1.7;
+}

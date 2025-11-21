@@ -68,11 +68,15 @@ describe('BlogListingPage', () => {
     expect(screen.getByPlaceholderText(/search blog posts/i)).toBeInTheDocument()
   })
 
-  it('renders category filter buttons', () => {
+  it('renders category filter buttons', async () => {
     mockedFetchBlogPosts.mockResolvedValueOnce([])
     renderWithRouter()
-    expect(screen.getByText(/all posts/i)).toBeInTheDocument()
-    expect(screen.getByText(/m&a strategy/i)).toBeInTheDocument()
-    expect(screen.getByText(/financial planning/i)).toBeInTheDocument()
+    
+    // Wait for "All Posts" to appear - this confirms rendering has happened
+    expect(await screen.findByText(/all posts/i)).toBeInTheDocument()
+
+    // Check for other categories
+    expect(screen.getAllByText(/m&a strategy/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/financial planning/i).length).toBeGreaterThan(0)
   })
 })

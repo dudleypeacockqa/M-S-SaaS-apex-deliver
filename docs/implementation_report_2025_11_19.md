@@ -136,6 +136,12 @@ The project was executed in five distinct phases:
 - **Deal Pipeline workflow:** Added `src/tests/integration/dealPipelineWorkflow.test.tsx` to validate the Kanban summary header, total pipeline value, navigation to `/deals/new`, and the optimistic stage mutation path. The test stubs the Kanban board to trigger `onDealMove`, confirming `updateDealStage` receives the correct deal id/stage and that the QueryClient invalidation path remains stable.
 - **Execution:** Both new suites run via `npm --prefix frontend run test -- src/tests/integration/<file>.test.tsx` and pass under the repaired CLI shell.
 
+### 4.5 Backend Coverage & Regression Fixes (21 Nov 2025)
+- **Document bulk delete resiliency:** `/api/deals/{id}/documents/bulk-delete` now tolerates stray or already-deleted document IDs. `_validate_bulk_document_ids` skips 404s so the handler can return a mixed-success payload instead of short-circuiting with a 404, restoring `tests/test_document_endpoints.py::test_bulk_delete_partial_failure`.
+- **Valuation/ownership guard:** Introduced `_deal_not_found()` inside `app/core/ownership.py` and wired the valuation routes to call it, eliminating the NameError surfaced by `tests/test_valuation_api_errors.py::test_list_valuations_deal_not_found`.
+- **FP&A endpoint coverage:** Expanded `backend/tests/test_fpa_routes.py` to cover scenario calculations, presets/apply flow, operational metric GETs, alias endpoints, AI chat, and import stubs. Running `pytest tests/test_fpa_routes.py --cov=app.api.routes.fpa --cov=app.services.fpa_service --cov-report=term-missing` now reports 96% coverage for both the router and service modules (was ~70% previously).
+- **Full-suite verification:** `pytest --cov=app` (13m run) currently reports 83% overall coverage. The delta is driven by legacy PMI/voice/task services that sit idle in the test matrix; these need either targeted tests or coverage exclusions before we can raise the entire backend above the 90% gate. A follow-up ticket should scope that hardening while keeping the new FP&A surfaces fully exercised.
+
 ### Pending / Recommended Next Actions
 1.  **Comprehensive Testing:**
     *   Run the full test suite (`npm test` and `pytest`) to ensure no regressions from the deep refactoring.

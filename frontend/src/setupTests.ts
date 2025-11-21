@@ -3,19 +3,10 @@ import './test/shims/polyfills'
 import { beforeAll, afterAll, beforeEach, vi, expect} from 'vitest'
 import { render } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import React, { ReactElement, Fragment } from 'react'
+import React, { ReactElement } from 'react'
 import { installClerkMock } from './test/shims/clerk'
 import { setupServer } from 'msw/node'
 import { mswHandlers, resetDocumentRoomFixtures, resetPodcastFixtures } from './tests/msw/server'
-
-vi.mock('react-helmet-async', () => {
-  const Helmet = ({ children = null }: { children?: React.ReactNode }) => React.createElement(Fragment, null, children)
-  const HelmetProvider = ({ children = null }: { children?: React.ReactNode }) => React.createElement(Fragment, null, children)
-  return {
-    Helmet,
-    HelmetProvider,
-  }
-})
 
 const server = setupServer(...mswHandlers)
 
@@ -47,6 +38,73 @@ Object.defineProperty(window, 'localStorage', {
   configurable: true,
   value: localStorageMock,
 })
+
+class IntersectionObserverMock implements IntersectionObserver {
+  readonly root: Element | Document | null
+  readonly rootMargin: string
+  readonly thresholds: ReadonlyArray<number>
+  private callback: IntersectionObserverCallback
+
+  constructor(callback: IntersectionObserverCallback, options: IntersectionObserverInit = {}) {
+    this.callback = callback
+    this.root = options.root ?? null
+    this.rootMargin = options.rootMargin ?? '0px'
+    this.thresholds = Array.isArray(options.threshold) ? options.threshold : [options.threshold ?? 0]
+  }
+
+  observe(target: Element) {
+    this.callback(
+      [
+        {
+          isIntersecting: true,
+          target,
+          intersectionRatio: 1,
+          time: Date.now(),
+          boundingClientRect: target.getBoundingClientRect(),
+          intersectionRect: target.getBoundingClientRect(),
+          rootBounds: this.root instanceof Element ? this.root.getBoundingClientRect() : null,
+        } as IntersectionObserverEntry,
+      ],
+      this,
+    )
+  }
+
+  unobserve() {}
+  disconnect() {}
+  takeRecords(): IntersectionObserverEntry[] {
+    return []
+  }
+}
+
+if (!('IntersectionObserver' in window)) {
+  Object.defineProperty(window, 'IntersectionObserver', {
+    configurable: true,
+    writable: true,
+    value: IntersectionObserverMock,
+  })
+}
+
+if (!('IntersectionObserver' in globalThis)) {
+  ;(globalThis as any).IntersectionObserver = IntersectionObserverMock
+}
+
+class ResizeObserverMock implements ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+if (!('ResizeObserver' in window)) {
+  Object.defineProperty(window, 'ResizeObserver', {
+    configurable: true,
+    writable: true,
+    value: ResizeObserverMock,
+  })
+}
+
+if (!('ResizeObserver' in globalThis)) {
+  ;(globalThis as any).ResizeObserver = ResizeObserverMock
+}
 
 beforeEach(() => {
   localStorageMock = createLocalStorageMock()

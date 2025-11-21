@@ -1,7 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { ClerkProvider } from "@clerk/clerk-react"
-import { HelmetProvider } from "react-helmet-async"
 import App from "./App"
 import "./index.css"
 // CRITICAL: Import icons to force initialization (prevents "Cannot set properties of undefined" error)
@@ -52,11 +51,9 @@ const Root = () => {
   // Always wrap App in ClerkProvider - even with invalid key, it initializes (auth just won't work)
   // This prevents SignedIn/SignedOut components from crashing with "must be used within ClerkProvider" errors
   return (
-    <HelmetProvider>
-      <ClerkProvider publishableKey={keyToUse}>
-        <App />
-      </ClerkProvider>
-    </HelmetProvider>
+    <ClerkProvider publishableKey={keyToUse}>
+      <App />
+    </ClerkProvider>
   )
 }
 

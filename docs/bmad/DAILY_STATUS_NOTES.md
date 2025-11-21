@@ -51,3 +51,14 @@ eact-snap automatically whenever test routes are on.
 - **Analyze**: Backend remains stable (1,708 PASS / 62 SKIP). Frontend/marketing blockers cluster around marketing pages (forms, metadata, routing) and optional chaining/polyfill gaps. Governance artefacts now reflect the RED status so no document claims 100% without evidence.
 - **Decide**: Advance to Wave 1 tasks (BlogAdminEditor verification + QA prep) only after triaging the RED Vitest suites; keep `docs/tests/` updated with every run so Decide gates have auditable artifacts.
 
+## 2025-11-21 - Frontend Vitest GREEN + LAN Scratchpad
+- **Build**: Authored `lan.md` to capture day-to-day landing/admin execution status (mirrors plan.md but keeps tactical notes at repo root) and re-ran the full Vitest suite via `npm run test -- --reporter=json` to prove marketing + product specs are passing after the ProductionTracking copy fixes.
+- **Measure**: Archived the JSON reporter output to `docs/tests/2025-11-21-frontend-vitest.jsonl`, updated README/TODO with the new evidence references, and recorded the change in LAN notes plus the governance section.
+- **Analyze**: Frontend automation is now green again (1,742 PASS / 0 FAIL / 85.1% coverage). Remaining Decide blockers are unchanged: marketing Playwright build, Master Admin manual QA execution, Lighthouse/Axe reruns, and marketing backlog delivery.
+- **Decide**: Keep Wave 0 open while propagating the new evidence through README/TODO/BMAD docs, then resume Wave 2 prep (Master Admin QA + marketing backlog fixes) before attempting the next Playwright + Lighthouse runs.
+
+## 2025-11-21 - Frontend Vitest Evidence Refresh
+- **Build**: Added the missing analytics exports used by the FinanceFlo calculator components (`frontend/src/lib/analytics.ts`) and installed `@testing-library/dom` so Vitest could bundle the expanded marketing surface; reran `npm run test -- --run` under the vmThreads runner to capture the latest Wave 0 baseline.
+- **Measure**: Archived stdout to `docs/tests/2025-11-21-frontend-vitest.txt`, appended a JSON summary line in `docs/tests/2025-11-21-frontend-vitest.jsonl`, and propagated the evidence references through README.md, TODO.md, and lan.md.
+- **Analyze**: Confirmed the full suite is green again (1,742 specs, 85.1% cov). Remaining Decide blockers stay the same: marketing Playwright build issues, Master Admin manual QA capture, Lighthouse/Axe reruns, and BlogAdminEditor production proof.
+- **Decide**: Close Wave 0 governance sync, then proceed to Wave 1 by prepping Master Admin QA data + marketing parity fixes before the next Playwright run.

@@ -272,7 +272,7 @@ async def calculate_scenario_impact_alias(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return await calculate_scenario_impact(request, current_user, db)
+    return await calculate_scenario_impact_route(request, current_user, db)
 
 
 @router.get("/scenarios/presets", response_model=List[PredefinedScenario])

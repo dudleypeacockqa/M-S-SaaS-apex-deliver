@@ -67,6 +67,10 @@ class GeneratedDocumentBase(BaseModel):
     generated_content: str = Field(..., min_length=1)
     variable_values: Dict[str, Any] = Field(default_factory=dict)
     file_path: Optional[str] = None
+    source_deal_id: Optional[str] = Field(
+        default=None,
+        description="Optional deal id associated with this generated document",
+    )
 
 
 class GeneratedDocumentCreate(GeneratedDocumentBase):
@@ -112,6 +116,11 @@ class TemplateRenderRequest(BaseModel):
     variable_values: Dict[str, Any] = Field(..., description="Variable name to value mapping")
     generate_file: bool = Field(default=False, description="Whether to generate PDF/DOCX file")
     file_format: Optional[str] = Field(default="pdf", pattern="^(pdf|docx)$")
+    source_deal_id: Optional[str] = Field(
+        default=None,
+        min_length=1,
+        description="Optional deal id used to associate the generated document with a deal",
+    )
 
 
 class TemplateRenderResponse(BaseModel):
@@ -120,6 +129,7 @@ class TemplateRenderResponse(BaseModel):
     generated_content: str
     file_path: Optional[str] = None
     status: str
+    source_deal_id: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 

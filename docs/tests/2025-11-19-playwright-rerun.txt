@@ -1,0 +1,462 @@
+
+> ma-saas-frontend@1.1.0 build
+> npx vite build && npm run verify:lucide
+
+[dotenv@17.2.3] injecting env (1) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (3) from .env.production -- tip: ⚙️  enable debug logging with { debug: true }
+[dotenv@17.2.3] injecting env (0) from .env.production.local -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 3663 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                                          [39m[1m[2m  4.67 kB[22m[1m[22m[2m │ gzip:   1.69 kB[22m
+[2mdist/[22m[35massets/css/Navigation-ClHLZTtz.css                  [39m[1m[2m  4.82 kB[22m[1m[22m[2m │ gzip:   1.20 kB[22m
+[2mdist/[22m[35massets/css/index-1UdN8nsa.css                       [39m[1m[2m182.24 kB[22m[1m[22m[2m │ gzip:  24.95 kB[22m
+[2mdist/[22m[36massets/js/tiny-invariant-BM5KeS_Z.js                [39m[1m[2m  0.07 kB[22m[1m[22m[2m │ gzip:   0.09 kB[22m
+[2mdist/[22m[36massets/js/utils-CZLsE1o_.js                         [39m[1m[2m  0.13 kB[22m[1m[22m[2m │ gzip:   0.13 kB[22m
+[2mdist/[22m[36massets/js/Input-BpBQWfoY.js                         [39m[1m[2m  0.31 kB[22m[1m[22m[2m │ gzip:   0.24 kB[22m
+[2mdist/[22m[36massets/js/DocumentRoomPage-D6gJuG6P.js              [39m[1m[2m  0.32 kB[22m[1m[22m[2m │ gzip:   0.23 kB[22m
+[2mdist/[22m[36massets/js/clsx-BeLtu-UY.js                          [39m[1m[2m  0.37 kB[22m[1m[22m[2m │ gzip:   0.24 kB[22m
+[2mdist/[22m[36massets/js/usePMIProject-nHoJzIS0.js                 [39m[1m[2m  0.45 kB[22m[1m[22m[2m │ gzip:   0.28 kB[22m
+[2mdist/[22m[36massets/js/textarea-ehfipgfn.js                      [39m[1m[2m  0.52 kB[22m[1m[22m[2m │ gzip:   0.34 kB[22m
+[2mdist/[22m[36massets/js/billingService-CGDwSTfm.js                [39m[1m[2m  0.70 kB[22m[1m[22m[2m │ gzip:   0.37 kB[22m
+[2mdist/[22m[36massets/js/analytics-ONlW62oa.js                     [39m[1m[2m  0.73 kB[22m[1m[22m[2m │ gzip:   0.34 kB[22m
+[2mdist/[22m[36massets/js/SignUpPage-_v7ZU_SQ.js                    [39m[1m[2m  0.77 kB[22m[1m[22m[2m │ gzip:   0.46 kB[22m
+[2mdist/[22m[36massets/js/badge-DlUlgXgq.js                         [39m[1m[2m  0.78 kB[22m[1m[22m[2m │ gzip:   0.41 kB[22m
+[2mdist/[22m[36massets/js/card-DP9R0un_.js                          [39m[1m[2m  1.02 kB[22m[1m[22m[2m │ gzip:   0.40 kB[22m
+[2mdist/[22m[36massets/js/admin-DW2JpUKt.js                         [39m[1m[2m  1.11 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
+[2mdist/[22m[36massets/js/fpaApi-DcDN2U6d.js                        [39m[1m[2m  1.17 kB[22m[1m[22m[2m │ gzip:   0.51 kB[22m
+[2mdist/[22m[36massets/js/logger-DU1519eE.js                        [39m[1m[2m  1.20 kB[22m[1m[22m[2m │ gzip:   0.53 kB[22m
+[2mdist/[22m[36massets/js/blogService-ChjL3DEw.js                   [39m[1m[2m  1.25 kB[22m[1m[22m[2m │ gzip:   0.67 kB[22m
+[2mdist/[22m[36massets/js/organizationSchema-B8tda4O_.js            [39m[1m[2m  1.29 kB[22m[1m[22m[2m │ gzip:   0.70 kB[22m
+[2mdist/[22m[36massets/js/CustomerInvoices-CcNLqepQ.js              [39m[1m[2m  1.51 kB[22m[1m[22m[2m │ gzip:   0.50 kB[22m
+[2mdist/[22m[36massets/js/FeatureNotAvailable-BOEk6qAi.js           [39m[1m[2m  1.54 kB[22m[1m[22m[2m │ gzip:   0.71 kB[22m
+[2mdist/[22m[36massets/js/CheckoutSuccess-M9FA-7wc.js               [39m[1m[2m  1.56 kB[22m[1m[22m[2m │ gzip:   0.70 kB[22m
+[2mdist/[22m[36massets/js/CustomerAccount-JxV94OSN.js               [39m[1m[2m  1.61 kB[22m[1m[22m[2m │ gzip:   0.58 kB[22m
+[2mdist/[22m[36massets/js/CheckoutCancel-CFPvlXpW.js                [39m[1m[2m  1.67 kB[22m[1m[22m[2m │ gzip:   0.79 kB[22m
+[2mdist/[22m[36massets/js/enhanced-button-DqO0eozv.js               [39m[1m[2m  1.90 kB[22m[1m[22m[2m │ gzip:   0.81 kB[22m
+[2mdist/[22m[36massets/js/DataRoom-CpQzJQgv.js                      [39m[1m[2m  2.09 kB[22m[1m[22m[2m │ gzip:   0.97 kB[22m
+[2mdist/[22m[36massets/js/DataImport-BURcboS8.js                    [39m[1m[2m  2.10 kB[22m[1m[22m[2m │ gzip:   1.02 kB[22m
+[2mdist/[22m[36massets/js/CustomerPortalDashboard-BZ7ELAx7.js       [39m[1m[2m  2.11 kB[22m[1m[22m[2m │ gzip:   0.68 kB[22m
+[2mdist/[22m[36massets/js/ghl-CXh_DoyK.js                           [39m[1m[2m  2.21 kB[22m[1m[22m[2m │ gzip:   1.16 kB[22m
+[2mdist/[22m[36massets/js/FinancialReports-5dHKvIgW.js              [39m[1m[2m  2.21 kB[22m[1m[22m[2m │ gzip:   0.98 kB[22m
+[2mdist/[22m[36massets/js/useScores-IE9LJUQz.js                     [39m[1m[2m  2.53 kB[22m[1m[22m[2m │ gzip:   1.08 kB[22m
+[2mdist/[22m[36massets/js/SignInPage-CTGZYk9h.js                    [39m[1m[2m  2.59 kB[22m[1m[22m[2m │ gzip:   1.00 kB[22m
+[2mdist/[22m[36massets/js/SEO-Og2lZ48s.js                           [39m[1m[2m  2.79 kB[22m[1m[22m[2m │ gzip:   1.20 kB[22m
+[2mdist/[22m[36massets/js/AdminPanel-C_DlsD4R.js                    [39m[1m[2m  2.81 kB[22m[1m[22m[2m │ gzip:   1.02 kB[22m
+[2mdist/[22m[36massets/js/CustomerSettings-DXecXKZC.js              [39m[1m[2m  2.90 kB[22m[1m[22m[2m │ gzip:   0.79 kB[22m
+[2mdist/[22m[36massets/js/CTASection-DOv-03HS.js                    [39m[1m[2m  2.91 kB[22m[1m[22m[2m │ gzip:   1.04 kB[22m
+[2mdist/[22m[36massets/js/WorkingCapital-DWhw3Bg_.js                [39m[1m[2m  3.16 kB[22m[1m[22m[2m │ gzip:   0.96 kB[22m
+[2mdist/[22m[36massets/js/PMIProjectList-rX9MzoCv.js                [39m[1m[2m  3.26 kB[22m[1m[22m[2m │ gzip:   1.18 kB[22m
+[2mdist/[22m[36massets/js/tabs-Do0eMTqF.js                          [39m[1m[2m  3.30 kB[22m[1m[22m[2m │ gzip:   1.41 kB[22m
+[2mdist/[22m[36massets/js/progress-CDrlkpRn.js                      [39m[1m[2m  3.39 kB[22m[1m[22m[2m │ gzip:   1.58 kB[22m
+[2mdist/[22m[36massets/js/QualityControl-DN2bOnkN.js                [39m[1m[2m  3.58 kB[22m[1m[22m[2m │ gzip:   1.25 kB[22m
+[2mdist/[22m[36massets/js/pmiApi-DrN0r-_I.js                        [39m[1m[2m  3.95 kB[22m[1m[22m[2m │ gzip:   0.99 kB[22m
+[2mdist/[22m[36massets/js/SolutionDealTeam-CgivktUy.js              [39m[1m[2m  3.98 kB[22m[1m[22m[2m │ gzip:   1.56 kB[22m
+[2mdist/[22m[36massets/js/SolutionCFO-K-iCulEL.js                   [39m[1m[2m  4.71 kB[22m[1m[22m[2m │ gzip:   1.77 kB[22m
+[2mdist/[22m[36massets/js/ProductionTracking-BvsAZN7C.js            [39m[1m[2m  4.79 kB[22m[1m[22m[2m │ gzip:   1.44 kB[22m
+[2mdist/[22m[36massets/js/MidaxoAlternative-Dz8Sn9zx.js             [39m[1m[2m  4.83 kB[22m[1m[22m[2m │ gzip:   1.82 kB[22m
+[2mdist/[22m[36massets/js/DealRoomAlternative-D4-mTK77.js           [39m[1m[2m  4.84 kB[22m[1m[22m[2m │ gzip:   1.77 kB[22m
+[2mdist/[22m[36massets/js/PodcastPage-BwhiwO25.js                   [39m[1m[2m  4.97 kB[22m[1m[22m[2m │ gzip:   1.72 kB[22m
+[2mdist/[22m[36massets/js/HealthcareVSL-XaE6z610.js                 [39m[1m[2m  5.03 kB[22m[1m[22m[2m │ gzip:   1.51 kB[22m
+[2mdist/[22m[36massets/js/EcommerceVSL-DCzW1aDM.js                  [39m[1m[2m  5.07 kB[22m[1m[22m[2m │ gzip:   1.53 kB[22m
+[2mdist/[22m[36massets/js/DemoVideoGrid-ChdZHgqo.js                 [39m[1m[2m  5.11 kB[22m[1m[22m[2m │ gzip:   1.60 kB[22m
+[2mdist/[22m[36massets/js/AboutPage-BGUmLpy3.js                     [39m[1m[2m  5.14 kB[22m[1m[22m[2m │ gzip:   1.95 kB[22m
+[2mdist/[22m[36massets/js/InventoryManagement-DGcbjAst.js           [39m[1m[2m  5.20 kB[22m[1m[22m[2m │ gzip:   1.61 kB[22m
+[2mdist/[22m[36massets/js/masterAdmin-KsKWuqmB.js                   [39m[1m[2m  5.50 kB[22m[1m[22m[2m │ gzip:   1.40 kB[22m
+[2mdist/[22m[36massets/js/button-w7vx_r6X.js                        [39m[1m[2m  5.61 kB[22m[1m[22m[2m │ gzip:   2.03 kB[22m
+[2mdist/[22m[36massets/js/DealWorkspaceDirectory-P5FkwHt1.js        [39m[1m[2m  5.70 kB[22m[1m[22m[2m │ gzip:   2.13 kB[22m
+[2mdist/[22m[36massets/js/PMIProjectCreate-KOHz2hS5.js              [39m[1m[2m  5.71 kB[22m[1m[22m[2m │ gzip:   1.64 kB[22m
+[2mdist/[22m[36massets/js/TeamPage-CZuW3Bwx.js                      [39m[1m[2m  5.79 kB[22m[1m[22m[2m │ gzip:   2.27 kB[22m
+[2mdist/[22m[36massets/js/EnhancedVSLPlayer-BbxOforB.js             [39m[1m[2m  6.04 kB[22m[1m[22m[2m │ gzip:   2.31 kB[22m
+[2mdist/[22m[36massets/js/BlogListingPage-CKQSk9LQ.js               [39m[1m[2m  6.43 kB[22m[1m[22m[2m │ gzip:   2.44 kB[22m
+[2mdist/[22m[36massets/js/SubscriptionBusinessIndustry-BPMaR27-.js  [39m[1m[2m  6.43 kB[22m[1m[22m[2m │ gzip:   1.62 kB[22m
+[2mdist/[22m[36massets/js/InsuranceIndustry-eumYziZf.js             [39m[1m[2m  6.47 kB[22m[1m[22m[2m │ gzip:   1.63 kB[22m
+[2mdist/[22m[36massets/js/CapitalMarketsIndustry-DHjJl5uc.js        [39m[1m[2m  6.49 kB[22m[1m[22m[2m │ gzip:   1.60 kB[22m
+[2mdist/[22m[36massets/js/InvestmentBankingIndustry-BDfK1J9I.js     [39m[1m[2m  6.50 kB[22m[1m[22m[2m │ gzip:   1.60 kB[22m
+[2mdist/[22m[36massets/js/FamilyOfficeIndustry-Bu35ABiX.js          [39m[1m[2m  6.51 kB[22m[1m[22m[2m │ gzip:   1.69 kB[22m
+[2mdist/[22m[36massets/js/ProfessionalServicesIndustry-BNmpIAbx.js  [39m[1m[2m  6.52 kB[22m[1m[22m[2m │ gzip:   1.65 kB[22m
+[2mdist/[22m[36massets/js/DemandForecasting-u5l6ZNS_.js             [39m[1m[2m  6.53 kB[22m[1m[22m[2m │ gzip:   1.89 kB[22m
+[2mdist/[22m[36massets/js/BlogPostPage-QR6rSITg.js                  [39m[1m[2m  6.66 kB[22m[1m[22m[2m │ gzip:   2.59 kB[22m
+[2mdist/[22m[36massets/js/MasterAdminDashboard-DVEnH7X4.js          [39m[1m[2m  6.67 kB[22m[1m[22m[2m │ gzip:   2.12 kB[22m
+[2mdist/[22m[36massets/js/AdminDashboard-0q0Z2Ahj.js                [39m[1m[2m  6.73 kB[22m[1m[22m[2m │ gzip:   1.64 kB[22m
+[2mdist/[22m[36massets/js/BlogAdminEditor-BjX-zNqp.js               [39m[1m[2m  6.95 kB[22m[1m[22m[2m │ gzip:   2.46 kB[22m
+[2mdist/[22m[36massets/js/FinancialDashboard-BkYziszG.js            [39m[1m[2m  7.07 kB[22m[1m[22m[2m │ gzip:   1.97 kB[22m
+[2mdist/[22m[36massets/js/BookTrial-4oRduFb0.js                     [39m[1m[2m  7.09 kB[22m[1m[22m[2m │ gzip:   2.22 kB[22m
+[2mdist/[22m[36massets/js/SystemHealth-FqAOj5VR.js                  [39m[1m[2m  7.23 kB[22m[1m[22m[2m │ gzip:   1.62 kB[22m
+[2mdist/[22m[36massets/js/FinanceFloLogo-Dq5HcT8y.js                [39m[1m[2m  7.31 kB[22m[1m[22m[2m │ gzip:   2.97 kB[22m
+[2mdist/[22m[36massets/js/ManufacturingVSL-DaFt3O8U.js              [39m[1m[2m  7.35 kB[22m[1m[22m[2m │ gzip:   2.38 kB[22m
+[2mdist/[22m[36massets/js/LeadCapture-CdsrZHYQ.js                   [39m[1m[2m  7.57 kB[22m[1m[22m[2m │ gzip:   2.23 kB[22m
+[2mdist/[22m[36massets/js/OrganizationManagement-Bfn-I7Zx.js        [39m[1m[2m  7.60 kB[22m[1m[22m[2m │ gzip:   2.04 kB[22m
+[2mdist/[22m[36massets/js/ConstructionVSL-BXCcvjxP.js               [39m[1m[2m  7.63 kB[22m[1m[22m[2m │ gzip:   2.47 kB[22m
+[2mdist/[22m[36massets/js/NewDealPage-CsOEqh7t.js                   [39m[1m[2m  7.64 kB[22m[1m[22m[2m │ gzip:   2.24 kB[22m
+[2mdist/[22m[36massets/js/EcommerceIndustry-B2OO6JMR.js             [39m[1m[2m  7.65 kB[22m[1m[22m[2m │ gzip:   1.88 kB[22m
+[2mdist/[22m[36massets/js/CaseStudiesPage-Cz_BoBuI.js               [39m[1m[2m  7.69 kB[22m[1m[22m[2m │ gzip:   2.30 kB[22m
+[2mdist/[22m[36massets/js/ExecutiveDashboard-BhW6R55W.js            [39m[1m[2m  7.80 kB[22m[1m[22m[2m │ gzip:   1.91 kB[22m
+[2mdist/[22m[36massets/js/TemplateManager-mANY9lwM.js               [39m[1m[2m  8.15 kB[22m[1m[22m[2m │ gzip:   2.46 kB[22m
+[2mdist/[22m[36massets/js/DealPipeline-Bu3E8rlr.js                  [39m[1m[2m  8.43 kB[22m[1m[22m[2m │ gzip:   3.03 kB[22m
+[2mdist/[22m[36massets/js/loadBlogPosts-BKtTSIEL.js                 [39m[1m[2m  8.69 kB[22m[1m[22m[2m │ gzip:   2.71 kB[22m
+[2mdist/[22m[36massets/js/BlogPage-CUyB81jq.js                      [39m[1m[2m  8.96 kB[22m[1m[22m[2m │ gzip:   2.54 kB[22m
+[2mdist/[22m[36massets/js/VoiceCampaign-DUvNGYl9.js                 [39m[1m[2m  9.05 kB[22m[1m[22m[2m │ gzip:   2.24 kB[22m
+[2mdist/[22m[36massets/js/ContactPage-DBLWrg9M.js                   [39m[1m[2m  9.07 kB[22m[1m[22m[2m │ gzip:   2.65 kB[22m
+[2mdist/[22m[36massets/js/SalesCollateral-CVcMbKsV.js               [39m[1m[2m  9.07 kB[22m[1m[22m[2m │ gzip:   2.61 kB[22m
+[2mdist/[22m[36massets/js/SecurityPage-CMjtlHkX.js                  [39m[1m[2m  9.26 kB[22m[1m[22m[2m │ gzip:   3.16 kB[22m
+[2mdist/[22m[36massets/js/InteractiveDemoPage-aPfunF5U.js           [39m[1m[2m  9.36 kB[22m[1m[22m[2m │ gzip:   2.07 kB[22m
+[2mdist/[22m[36massets/js/ROICalculatorPage-J1OEMg6b.js             [39m[1m[2m  9.63 kB[22m[1m[22m[2m │ gzip:   2.38 kB[22m
+[2mdist/[22m[36massets/js/DashboardLayout-CwPwf9BU.js               [39m[1m[2m  9.72 kB[22m[1m[22m[2m │ gzip:   3.28 kB[22m
+[2mdist/[22m[36massets/js/CookiePolicy-BjRPXa4N.js                  [39m[1m[2m  9.91 kB[22m[1m[22m[2m │ gzip:   2.61 kB[22m
+[2mdist/[22m[36massets/js/TermsOfService-Ddpzkt87.js                [39m[1m[2m 10.77 kB[22m[1m[22m[2m │ gzip:   3.46 kB[22m
+[2mdist/[22m[36massets/js/CaseStudiesPage-DT6d5sPf.js               [39m[1m[2m 11.07 kB[22m[1m[22m[2m │ gzip:   3.54 kB[22m
+[2mdist/[22m[36massets/js/CampaignManager-BAYqdlak.js               [39m[1m[2m 11.62 kB[22m[1m[22m[2m │ gzip:   3.04 kB[22m
+[2mdist/[22m[36massets/js/react-redux-D688OVPj.js                   [39m[1m[2m 11.80 kB[22m[1m[22m[2m │ gzip:   4.48 kB[22m
+[2mdist/[22m[36massets/js/FAQPage-Buy0sdnD.js                       [39m[1m[2m 12.10 kB[22m[1m[22m[2m │ gzip:   4.97 kB[22m
+[2mdist/[22m[36massets/js/FourStageCyclePage-Dane2YFK.js            [39m[1m[2m 12.33 kB[22m[1m[22m[2m │ gzip:   4.19 kB[22m
+[2mdist/[22m[36massets/js/FinancialServicesIndustry-CM-ZEyqV.js     [39m[1m[2m 13.07 kB[22m[1m[22m[2m │ gzip:   3.02 kB[22m
+[2mdist/[22m[36massets/js/PrivacyPolicy-Cl8WB7KN.js                 [39m[1m[2m 13.88 kB[22m[1m[22m[2m │ gzip:   3.63 kB[22m
+[2mdist/[22m[36massets/js/OdooERP-C77e8Pt0.js                       [39m[1m[2m 14.00 kB[22m[1m[22m[2m │ gzip:   2.76 kB[22m
+[2mdist/[22m[36massets/js/WhatIfAnalysis-CIx8_aGC.js                [39m[1m[2m 14.04 kB[22m[1m[22m[2m │ gzip:   3.88 kB[22m
+[2mdist/[22m[36massets/js/index.esm-BwNKfoyf.js                     [39m[1m[2m 14.07 kB[22m[1m[22m[2m │ gzip:   5.26 kB[22m
+[2mdist/[22m[36massets/js/SageX3ERP-DgZ099cA.js                     [39m[1m[2m 14.07 kB[22m[1m[22m[2m │ gzip:   2.78 kB[22m
+[2mdist/[22m[36massets/js/AcumaticaERP-Bx89M2Qz.js                  [39m[1m[2m 14.10 kB[22m[1m[22m[2m │ gzip:   2.87 kB[22m
+[2mdist/[22m[36massets/js/SageIntacctERP-CCwk3CQX.js                [39m[1m[2m 14.22 kB[22m[1m[22m[2m │ gzip:   2.91 kB[22m
+[2mdist/[22m[36massets/js/HealthcareIndustry-BR4PNvRR.js            [39m[1m[2m 14.50 kB[22m[1m[22m[2m │ gzip:   3.25 kB[22m
+[2mdist/[22m[36massets/js/CapLiquifyFPAPage-Dq3SH4_8.js             [39m[1m[2m 14.76 kB[22m[1m[22m[2m │ gzip:   4.61 kB[22m
+[2mdist/[22m[36massets/js/UserManagement-CQfMgdzP.js                [39m[1m[2m 16.03 kB[22m[1m[22m[2m │ gzip:   4.09 kB[22m
+[2mdist/[22m[36massets/js/SageX3Implementation-D0IzF7TT.js          [39m[1m[2m 16.13 kB[22m[1m[22m[2m │ gzip:   3.89 kB[22m
+[2mdist/[22m[36massets/js/MarketingLayout-Bj1h8_HG.js               [39m[1m[2m 16.29 kB[22m[1m[22m[2m │ gzip:   5.19 kB[22m
+[2mdist/[22m[36massets/js/BillingDashboard-CdRXJZQm.js              [39m[1m[2m 16.39 kB[22m[1m[22m[2m │ gzip:   4.27 kB[22m
+[2mdist/[22m[36massets/js/TeamPage-BNCbCCNn.js                      [39m[1m[2m 16.56 kB[22m[1m[22m[2m │ gzip:   4.98 kB[22m
+[2mdist/[22m[36massets/js/BarChart-BKtV2Ksc.js                      [39m[1m[2m 16.57 kB[22m[1m[22m[2m │ gzip:   5.42 kB[22m
+[2mdist/[22m[36massets/js/OdooAI-CzJ1e2PL.js                        [39m[1m[2m 16.96 kB[22m[1m[22m[2m │ gzip:   3.15 kB[22m
+[2mdist/[22m[36massets/js/AcumaticaAI-DVFOzWUI.js                   [39m[1m[2m 16.97 kB[22m[1m[22m[2m │ gzip:   3.20 kB[22m
+[2mdist/[22m[36massets/js/SageX3AI-CJ2mE972.js                      [39m[1m[2m 17.03 kB[22m[1m[22m[2m │ gzip:   3.16 kB[22m
+[2mdist/[22m[36massets/js/SalesPromotionPricingPage-DMYfOjby.js     [39m[1m[2m 17.08 kB[22m[1m[22m[2m │ gzip:   5.10 kB[22m
+[2mdist/[22m[36massets/js/SageIntacctAI-Bf-OLv7Q.js                 [39m[1m[2m 17.12 kB[22m[1m[22m[2m │ gzip:   3.38 kB[22m
+[2mdist/[22m[36massets/js/EcommerceApplicationPage-C3KYsW8r.js      [39m[1m[2m 17.51 kB[22m[1m[22m[2m │ gzip:   4.65 kB[22m
+[2mdist/[22m[36massets/js/LineChart-DohImeqH.js                     [39m[1m[2m 17.72 kB[22m[1m[22m[2m │ gzip:   5.42 kB[22m
+[2mdist/[22m[36massets/js/ReadinessAssessmentPage-CU1nyZc0.js       [39m[1m[2m 17.73 kB[22m[1m[22m[2m │ gzip:   5.34 kB[22m
+[2mdist/[22m[36massets/js/DashboardPage-DyMdBXcP.js                 [39m[1m[2m 19.15 kB[22m[1m[22m[2m │ gzip:   5.29 kB[22m
+[2mdist/[22m[36massets/js/PricingPage-WXkDWeVI.js                   [39m[1m[2m 19.71 kB[22m[1m[22m[2m │ gzip:   3.74 kB[22m
+[2mdist/[22m[36massets/js/Footer-DgWtYfGb.js                        [39m[1m[2m 20.42 kB[22m[1m[22m[2m │ gzip:   5.82 kB[22m
+[2mdist/[22m[36massets/js/ActivityTracker-DkH3ZiFB.js               [39m[1m[2m 20.48 kB[22m[1m[22m[2m │ gzip:   5.10 kB[22m
+[2mdist/[22m[36massets/js/DealDetails-DNadXCj-.js                   [39m[1m[2m 21.08 kB[22m[1m[22m[2m │ gzip:   4.85 kB[22m
+[2mdist/[22m[36massets/js/EnterpriseROICalculatorPage-oM2bNr-g.js   [39m[1m[2m 21.21 kB[22m[1m[22m[2m │ gzip:   5.09 kB[22m
+[2mdist/[22m[36massets/js/select-S0M5M-Aj.js                        [39m[1m[2m 22.69 kB[22m[1m[22m[2m │ gzip:   7.77 kB[22m
+[2mdist/[22m[36massets/js/ContentStudio-BEE9YN9K.js                 [39m[1m[2m 25.63 kB[22m[1m[22m[2m │ gzip:   4.52 kB[22m
+[2mdist/[22m[36massets/js/ConstructionIndustry-RU2IVuaa.js          [39m[1m[2m 25.91 kB[22m[1m[22m[2m │ gzip:   6.60 kB[22m
+[2mdist/[22m[36massets/js/bundle-mjs-CdnLHXED.js                    [39m[1m[2m 26.01 kB[22m[1m[22m[2m │ gzip:   7.88 kB[22m
+[2mdist/[22m[36massets/js/PricingPage-zNYzC84X.js                   [39m[1m[2m 27.96 kB[22m[1m[22m[2m │ gzip:   6.29 kB[22m
+[2mdist/[22m[36massets/js/DocumentEditor-CW_UIGQ5.js                [39m[1m[2m 29.43 kB[22m[1m[22m[2m │ gzip:   7.72 kB[22m
+[2mdist/[22m[36massets/js/SageIntacctImplementation-Dw_qK-si.js     [39m[1m[2m 30.70 kB[22m[1m[22m[2m │ gzip:   6.23 kB[22m
+[2mdist/[22m[36massets/js/ProspectPipeline-C0GSrzP3.js              [39m[1m[2m 30.73 kB[22m[1m[22m[2m │ gzip:   6.64 kB[22m
+[2mdist/[22m[36massets/js/TaskBoard-IULSE9E6.js                     [39m[1m[2m 32.70 kB[22m[1m[22m[2m │ gzip:   7.46 kB[22m
+[2mdist/[22m[36massets/js/OdooImplementation-CswIEshe.js            [39m[1m[2m 36.11 kB[22m[1m[22m[2m │ gzip:   6.70 kB[22m
+[2mdist/[22m[36massets/js/CalculatorPage-CA4_OQHb.js                [39m[1m[2m 37.05 kB[22m[1m[22m[2m │ gzip:   9.69 kB[22m
+[2mdist/[22m[36massets/js/PMIProjectDetail-CDelIJlF.js              [39m[1m[2m 37.41 kB[22m[1m[22m[2m │ gzip:   7.12 kB[22m
+[2mdist/[22m[36massets/js/AcumaticaImplementation-DcL4FNFY.js       [39m[1m[2m 37.42 kB[22m[1m[22m[2m │ gzip:   7.09 kB[22m
+[2mdist/[22m[36massets/js/ContactPage-DrNdHHtJ.js                   [39m[1m[2m 38.97 kB[22m[1m[22m[2m │ gzip:   9.64 kB[22m
+[2mdist/[22m[36massets/js/WorkingCapitalCalculatorPage-CGvaugaD.js  [39m[1m[2m 43.62 kB[22m[1m[22m[2m │ gzip:  10.83 kB[22m
+[2mdist/[22m[36massets/js/MatchingWorkspace-xzr9HjP4.js             [39m[1m[2m 45.97 kB[22m[1m[22m[2m │ gzip:  10.92 kB[22m
+[2mdist/[22m[36massets/js/BlogPostPage-CqKMxAD3.js                  [39m[1m[2m 48.09 kB[22m[1m[22m[2m │ gzip:  14.01 kB[22m
+[2mdist/[22m[36massets/js/valuation-suite-JyECAtl4.js               [39m[1m[2m 50.12 kB[22m[1m[22m[2m │ gzip:  10.69 kB[22m
+[2mdist/[22m[36massets/js/FeaturesPage-BqeDqaB4.js                  [39m[1m[2m 53.15 kB[22m[1m[22m[2m │ gzip:  12.00 kB[22m
+[2mdist/[22m[36massets/js/EnhancedIndex-DO91_0UE.js                 [39m[1m[2m 61.24 kB[22m[1m[22m[2m │ gzip:  15.55 kB[22m
+[2mdist/[22m[36massets/js/DocumentWorkspace-CLxbbfjP.js             [39m[1m[2m 71.17 kB[22m[1m[22m[2m │ gzip:  18.71 kB[22m
+[2mdist/[22m[36massets/js/dnd.esm-BZQUhWJd.js                       [39m[1m[2m 84.32 kB[22m[1m[22m[2m │ gzip:  24.96 kB[22m
+[2mdist/[22m[36massets/js/Navigation-DxluqgoK.js                    [39m[1m[2m 91.93 kB[22m[1m[22m[2m │ gzip:  28.06 kB[22m
+[2mdist/[22m[36massets/js/proxy-BwaoaWiK.js                         [39m[1m[2m111.55 kB[22m[1m[22m[2m │ gzip:  35.61 kB[22m
+[2mdist/[22m[36massets/js/index-eLhyxw51.js                         [39m[1m[2m116.00 kB[22m[1m[22m[2m │ gzip:  34.40 kB[22m
+[2mdist/[22m[36massets/js/podcast-studio-CgBXMPiu.js                [39m[1m[2m123.71 kB[22m[1m[22m[2m │ gzip:  34.65 kB[22m
+[2mdist/[22m[36massets/js/index-DufkMTSU.js                         [39m[1m[2m147.00 kB[22m[1m[22m[2m │ gzip:  35.49 kB[22m
+[2mdist/[22m[36massets/js/events-C2ZUR5z-.js                        [39m[1m[2m156.31 kB[22m[1m[22m[2m │ gzip:  43.30 kB[22m
+[2mdist/[22m[36massets/js/index-DclsBzO0.js                         [39m[1m[2m249.24 kB[22m[1m[22m[2m │ gzip:  75.91 kB[22m
+[2mdist/[22m[36massets/js/CartesianChart-B-Ruau4f.js                [39m[1m[2m303.98 kB[22m[1m[22m[2m │ gzip:  88.23 kB[22m
+[2mdist/[22m[36massets/js/community-pwPG9AJf.js                     [39m[1m[2m623.30 kB[22m[1m[22m[2m │ gzip: 163.64 kB[22m
+[32m✓ built in 57.04s[39m
+
+> ma-saas-frontend@1.1.0 verify:lucide
+> node scripts/verify-lucide-chunk.mjs
+
+✅ Lucide bundle verification passed!
+
+Verified:
+  - No lucide-specific chunks in dist/assets/js/
+  - index.html does not reference lucide-vendor chunks
+  - Icons will load synchronously with main bundle
+
+> ma-saas-frontend@1.1.0 postbuild
+> node ../scripts/run-react-snap.mjs
+
+[react-snap] Skipped (test routes or REACT_SNAP_SKIP flag).
+
+
+Running 9 tests using 6 workers
+
+[1A[2K[1/9] [chromium] › tests\blog-admin.spec.ts:9:7 › Blog Admin Editor (test harness) › creates and publishes a post via the test route
+[1A[2K[2/9] [chromium] › tests\blog-admin.spec.ts:52:7 › Blog Admin Editor (test harness) › loads an existing post and saves a draft update
+[1A[2K[3/9] [chromium] › tests\seo-meta.spec.ts:13:9 › SEO meta › sets canonical + og:url for /
+[1A[2K[4/9] [chromium] › tests\blog-smoke.spec.ts:6:7 › Blog smoke › renders marketing blog listing with hero content
+[1A[2K[5/9] [chromium] › tests\contact-flow.spec.ts:6:7 › Contact flow › submits the marketing contact form
+[1A[2K[6/9] [chromium] › tests\optin-popup.spec.ts:6:7 › Opt-in popup › allows visitors to subscribe to the newsletter
+[1A[2K[7/9] [chromium] › tests\integrations-link.spec.ts:6:7 › Integrations visibility › highlights iPaaS integrations on the pricing page
+[1A[2K[8/9] [chromium] › tests\seo-meta.spec.ts:13:9 › SEO meta › sets canonical + og:url for /contact
+[1A[2K  1) [chromium] › tests\blog-smoke.spec.ts:6:7 › Blog smoke › renders marketing blog listing with hero content 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /M&A Success/i })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /M&A Success/i })[22m
+
+
+       9 |     expect(response?.ok()).toBeTruthy();
+      10 |
+    > 11 |     await expect(page.getByRole("heading", { name: /M&A Success/i })).toBeVisible();
+         |                                                                       ^
+      12 |     await expect(page.getByRole('textbox', { name: /search blog posts/i })).toBeVisible();
+      13 |   });
+      14 | });
+        at C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\tests\blog-smoke.spec.ts:11:71
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\blog-smoke-Blog-smoke-rend-d8e51-g-listing-with-hero-content-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\blog-smoke-Blog-smoke-rend-d8e51-g-listing-with-hero-content-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\blog-smoke-Blog-smoke-rend-d8e51-g-listing-with-hero-content-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\blog-smoke-Blog-smoke-rend-d8e51-g-listing-with-hero-content-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\blog-smoke-Blog-smoke-rend-d8e51-g-listing-with-hero-content-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K  2) [chromium] › tests\optin-popup.spec.ts:6:7 › Opt-in popup › allows visitors to subscribe to the newsletter 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Get Expert M&A Insights/i })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Get Expert M&A Insights/i })[22m
+
+
+      28 |     expect(response?.ok()).toBeTruthy()
+      29 |
+    > 30 |     await expect(page.getByRole('heading', { name: /Get Expert M&A Insights/i })).toBeVisible()
+         |                                                                                   ^
+      31 |     const emailField = page.locator('form input[type="email"]')
+      32 |     await emailField.fill('marketing-qa@example.com')
+      33 |     await page.getByRole('button', { name: /Get Free Insights/i }).click()
+        at C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\tests\optin-popup.spec.ts:30:83
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\optin-popup-Opt-in-popup-a-efe0b-subscribe-to-the-newsletter-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\optin-popup-Opt-in-popup-a-efe0b-subscribe-to-the-newsletter-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\optin-popup-Opt-in-popup-a-efe0b-subscribe-to-the-newsletter-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\optin-popup-Opt-in-popup-a-efe0b-subscribe-to-the-newsletter-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\optin-popup-Opt-in-popup-a-efe0b-subscribe-to-the-newsletter-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K  3) [chromium] › tests\seo-meta.spec.ts:13:9 › SEO meta › sets canonical + og:url for /contact ────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveAttribute[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('link[rel="canonical"]')
+    Expected: [32m"https://100daysandbeyond.com/[7mcontact[27m"[39m
+    Received: [31m"https://100daysandbeyond.com/"[39m
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toHaveAttribute" with timeout 10000ms[22m
+    [2m  - waiting for locator('link[rel="canonical"]')[22m
+    [2m    14 × locator resolved to <link rel="canonical" href="https://100daysandbeyond.com/"/>[22m
+    [2m       - unexpected value "https://100daysandbeyond.com/"[22m
+
+
+      17 |
+      18 |       const canonical = page.locator('link[rel="canonical"]');
+    > 19 |       await expect(canonical).toHaveAttribute('href', pageConfig.canonical);
+         |                               ^
+      20 |
+      21 |       const ogUrl = page.locator('meta[property="og:url"]');
+      22 |       await expect(ogUrl).toHaveAttribute('content', pageConfig.canonical);
+        at C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\tests\seo-meta.spec.ts:19:31
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-contact-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-contact-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-contact-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-contact-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-contact-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[9/9] [chromium] › tests\seo-meta.spec.ts:13:9 › SEO meta › sets canonical + og:url for /team
+[1A[2K  4) [chromium] › tests\seo-meta.spec.ts:13:9 › SEO meta › sets canonical + og:url for /team ───────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveAttribute[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('link[rel="canonical"]')
+    Expected: [32m"https://100daysandbeyond.com/[7mteam[27m"[39m
+    Received: [31m"https://100daysandbeyond.com/"[39m
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toHaveAttribute" with timeout 10000ms[22m
+    [2m  - waiting for locator('link[rel="canonical"]')[22m
+    [2m    13 × locator resolved to <link rel="canonical" href="https://100daysandbeyond.com/"/>[22m
+    [2m       - unexpected value "https://100daysandbeyond.com/"[22m
+
+
+      17 |
+      18 |       const canonical = page.locator('link[rel="canonical"]');
+    > 19 |       await expect(canonical).toHaveAttribute('href', pageConfig.canonical);
+         |                               ^
+      20 |
+      21 |       const ogUrl = page.locator('meta[property="og:url"]');
+      22 |       await expect(ogUrl).toHaveAttribute('content', pageConfig.canonical);
+        at C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\tests\seo-meta.spec.ts:19:31
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-team-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-team-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-team-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-team-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\seo-meta-SEO-meta-sets-canonical-og-url-for-team-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K  5) [chromium] › tests\integrations-link.spec.ts:6:7 › Integrations visibility › highlights iPaaS integrations on the pricing page 
+
+    [31mTest timeout of 60000ms exceeded.[39m
+
+    Error: locator.scrollIntoViewIfNeeded: Test timeout of 60000ms exceeded.
+    Call log:
+    [2m  - waiting for getByText('API Access & iPaaS Integrations')[22m
+
+
+      10 |
+      11 |     const integrationBenefit = page.getByText('API Access & iPaaS Integrations');
+    > 12 |     await integrationBenefit.scrollIntoViewIfNeeded();
+         |                              ^
+      13 |     await expect(integrationBenefit).toBeVisible();
+      14 |     await expect(page.getByTestId('pricing-cta-enterprise')).toBeVisible();
+      15 |     await expect(page.getByTestId('pricing-cta-community')).toBeVisible();
+        at C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\tests\integrations-link.spec.ts:12:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\integrations-link-Integrat-8f45a-rations-on-the-pricing-page-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\integrations-link-Integrat-8f45a-rations-on-the-pricing-page-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\integrations-link-Integrat-8f45a-rations-on-the-pricing-page-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\integrations-link-Integrat-8f45a-rations-on-the-pricing-page-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\integrations-link-Integrat-8f45a-rations-on-the-pricing-page-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K  6) [chromium] › tests\contact-flow.spec.ts:6:7 › Contact flow › submits the marketing contact form 
+
+    [31mTest timeout of 60000ms exceeded.[39m
+
+    Error: page.fill: Test timeout of 60000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#name')[22m
+
+
+      17 |     expect(response?.ok()).toBeTruthy()
+      18 |
+    > 19 |     await page.fill('#name', 'BMAD QA')
+         |                ^
+      20 |     await page.fill('#email', 'qa@example.com')
+      21 |     await page.selectOption('#subject', 'demo')
+      22 |     await page.fill('#message', 'Verifying BMAD contact flow via Playwright smoke test.')
+        at C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\tests\contact-flow.spec.ts:19:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\contact-flow-Contact-flow-submits-the-marketing-contact-form-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\contact-flow-Contact-flow-submits-the-marketing-contact-form-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\contact-flow-Contact-flow-submits-the-marketing-contact-form-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\contact-flow-Contact-flow-submits-the-marketing-contact-form-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\contact-flow-Contact-flow-submits-the-marketing-contact-form-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K  6 failed
+    [chromium] › tests\blog-smoke.spec.ts:6:7 › Blog smoke › renders marketing blog listing with hero content 
+    [chromium] › tests\contact-flow.spec.ts:6:7 › Contact flow › submits the marketing contact form 
+    [chromium] › tests\integrations-link.spec.ts:6:7 › Integrations visibility › highlights iPaaS integrations on the pricing page 
+    [chromium] › tests\optin-popup.spec.ts:6:7 › Opt-in popup › allows visitors to subscribe to the newsletter 
+    [chromium] › tests\seo-meta.spec.ts:13:9 › SEO meta › sets canonical + og:url for /contact ─────
+    [chromium] › tests\seo-meta.spec.ts:13:9 › SEO meta › sets canonical + og:url for /team ────────
+  2 skipped
+  1 passed (1.2m)
+
+[36m  Serving HTML report at http://localhost:61613. Press Ctrl+C to quit.[39m

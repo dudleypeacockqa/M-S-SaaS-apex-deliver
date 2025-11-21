@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
+import React from "react"
 
 import App from "../../App"
 import { setMockClerkState } from "../../test/mocks/clerk"
@@ -11,12 +12,12 @@ vi.mock("@clerk/clerk-react", async () => {
   return createClerkMock()
 })
 // Blog admin API mocks (prevent real network calls while routing tests load editor)
-const mockBlogService = {
+const mockBlogService = vi.hoisted(() => ({
   createBlogPost: vi.fn(),
   updateBlogPost: vi.fn(),
   publishBlogPost: vi.fn(),
   getBlogPost: vi.fn(),
-}
+}))
 
 const buildMockBlogPost = (overrides: Partial<import('@/services/blogService').BlogPost> = {}) => ({
   id: 'blog-post-1',
@@ -45,6 +46,15 @@ vi.mock('@/services/blogService', async () => {
     ...mockBlogService,
   }
 })
+
+vi.mock("../../pages/marketing/financeflo/EnhancedIndex", () => ({
+  default: () => (
+    <div>
+      <h1>From deal flow to cash flow</h1>
+      <a href="/sign-in">Sign In</a>
+    </div>
+  ),
+}))
 
 
 describe("Integration: routing", () => {
@@ -88,23 +98,24 @@ describe("Integration: routing", () => {
   }, 20000)
 
   it("displays the dashboard when the user is authenticated", async () => {
-     setMockClerkState({
-       isSignedIn: true,
-       isLoaded: true,
-       user: { firstName: "Taylor", id: "user-1" },
-       organization: { name: "Test Org", id: "org-1" },
-     })
-     window.history.replaceState({}, "Test", "/dashboard")
+    setMockClerkState({
+      isSignedIn: true,
+      isLoaded: true,
+      user: { firstName: "Taylor", id: "user-1" },
+      organization: { name: "Test Org", id: "org-1" },
+    })
+    window.history.replaceState({}, "Test", "/dashboard")
 
-     render(<App />)
+    render(<App />)
 
-    // When authenticated, user should NOT be redirected to sign-in page
-    // The dashboard may show loading state or actual dashboard content
-    await screen.findByText(/preparing the apexdeliver experience/i, undefined, { timeout: 15000 })
+    // When authenticated, ensure the dashboard shell loads instead of redirecting
+    expect(
+      await screen.findByRole("heading", { name: /workflow shortcuts/i }, { timeout: 20000 })
+    ).toBeInTheDocument()
 
     // Verify we're not seeing the sign-in page
     expect(screen.queryByText(/sign in to apexdeliver/i)).not.toBeInTheDocument()
-  }, 15000)
+  }, 20000)
 
   it("renders the rich sign-in page without redirecting", async () => {
     window.history.replaceState({}, "Test", "/sign-in")

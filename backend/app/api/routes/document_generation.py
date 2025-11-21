@@ -4,7 +4,7 @@ Feature: F-009 Automated Document Generation
 """
 from typing import List, Optional
 from datetime import datetime, UTC
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 import asyncio
@@ -67,11 +67,10 @@ def create_template(
 
     Requires authentication and organization membership.
     """
-    # Ensure user can only create templates for their organization
     if template_data.organization_id != organization_id:
-        raise HTTPException(status_code=403, detail="Cannot create template for another organization")
-
-    # Override created_by_user_id with current user
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cannot create template for another organization")
+    # Force the scoped organization/user onto the payload
+    template_data.organization_id = organization_id
     template_data.created_by_user_id = current_user.id
 
     template = DocumentGenerationService.create_template(db, template_data)
@@ -209,6 +208,7 @@ def generate_document(
         generated_content=generated.generated_content,
         file_path=generated.file_path,
         status=generated.status.value,
+        source_deal_id=generated.source_deal_id,
     )
 
 
@@ -220,6 +220,7 @@ def generate_document(
 def list_generated_documents(
     template_id: Optional[str] = None,
     status: Optional[str] = Query(None, pattern="^(draft|generated|finalized|sent)$"),
+    source_deal_id: Optional[str] = Query(None, description="Filter by originating deal"),
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
     current_user: User = Depends(get_current_user),
@@ -238,6 +239,7 @@ def list_generated_documents(
         organization_id=organization_id,
         template_id=template_id,
         status=status,
+        source_deal_id=source_deal_id,
         skip=skip,
         limit=limit,
     )
@@ -256,6 +258,7 @@ def get_generated_document(
         db,
         document_id=document_id,
         organization_id=organization_id,
+        actor_user_id=current_user.id,
     )
 
     if not document:
@@ -278,6 +281,7 @@ def update_document_status(
         document_id=document_id,
         organization_id=organization_id,
         new_status=DocumentStatus(status),
+        actor_user_id=current_user.id,
     )
 
     if not document:
@@ -329,6 +333,7 @@ class ExportResponse(BaseModel):
 async def export_document(
     document_id: str,
     export_request: ExportRequest,
+    source_deal_id: Optional[str] = Query(None, description="Optional originating deal id"),
     current_user: User = Depends(get_current_user),
     organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
@@ -343,6 +348,8 @@ async def export_document(
         db,
         document_id=document_id,
         organization_id=organization_id,
+        actor_user_id=current_user.id,
+        required_source_deal_id=source_deal_id,
     )
 
     if not document:
@@ -438,7 +445,7 @@ async def export_document(
         updated_document = DocumentGenerationService.update_generated_document(
             db,
             document_id=document_id,
-            organization_id=current_user.organization_id,
+            organization_id=organization_id,
             update_data=update_data,
             user_id=current_user.id,
         )
@@ -473,7 +480,9 @@ async def export_document(
 @router.get("/documents/{document_id}/download")
 async def download_exported_document(
     document_id: str,
+    source_deal_id: Optional[str] = Query(None, description="Optional originating deal id"),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -485,7 +494,9 @@ async def download_exported_document(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
+        actor_user_id=current_user.id,
+        required_source_deal_id=source_deal_id,
     )
 
     if not document:
@@ -512,8 +523,8 @@ async def download_exported_document(
     try:
         file_path = await storage.get_file_path(
             file_key=file_key,
-            organization_id=current_user.organization_id,
-        )
+            organization_id=organization_id,
+    )
     except FileNotFoundError:
         raise HTTPException(
             status_code=404,
@@ -547,6 +558,7 @@ async def fetch_ai_suggestions(
     document_id: str,
     request: FetchSuggestionRequest,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -558,7 +570,8 @@ async def fetch_ai_suggestions(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
+        actor_user_id=current_user.id,
     )
 
     if not document:
@@ -568,7 +581,7 @@ async def fetch_ai_suggestions(
         suggestions = await DocumentAIService.generate_suggestions(
             db,
             document_id=document_id,
-            organization_id=current_user.organization_id,
+            organization_id=organization_id,
             user_id=current_user.id,
             context=request.context,
             content=request.content,
@@ -591,6 +604,7 @@ def accept_ai_suggestion(
     document_id: str,
     suggestion_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -602,7 +616,8 @@ def accept_ai_suggestion(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
+        actor_user_id=current_user.id,
     )
 
     if not document:
@@ -611,7 +626,7 @@ def accept_ai_suggestion(
     suggestion = DocumentAIService.accept_suggestion(
         db,
         suggestion_id=suggestion_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not suggestion:
@@ -625,6 +640,7 @@ def reject_ai_suggestion(
     document_id: str,
     suggestion_id: str,
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -636,7 +652,8 @@ def reject_ai_suggestion(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
+        actor_user_id=current_user.id,
     )
 
     if not document:
@@ -645,7 +662,7 @@ def reject_ai_suggestion(
     suggestion = DocumentAIService.reject_suggestion(
         db,
         suggestion_id=suggestion_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
     )
 
     if not suggestion:
@@ -661,7 +678,9 @@ def reject_ai_suggestion(
 @router.get("/documents/{document_id}/versions", response_model=List[DocumentVersionSummary])
 def list_document_versions(
     document_id: str,
+    source_deal_id: Optional[str] = Query(None, description="Optional originating deal id"),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -673,7 +692,9 @@ def list_document_versions(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
+        actor_user_id=current_user.id,
+        required_source_deal_id=source_deal_id,
     )
 
     if not document:
@@ -685,7 +706,7 @@ def list_document_versions(
         select(DocumentVersion)
         .where(
             DocumentVersion.document_id == document_id,
-            DocumentVersion.organization_id == current_user.organization_id,
+            DocumentVersion.organization_id == organization_id,
         )
         .order_by(desc(DocumentVersion.version_number))
     ).all()
@@ -717,7 +738,9 @@ def list_document_versions(
 def restore_document_version(
     document_id: str,
     version_id: str,
+    source_deal_id: Optional[str] = Query(None, description="Optional originating deal id"),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -729,7 +752,9 @@ def restore_document_version(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
+        actor_user_id=current_user.id,
+        required_source_deal_id=source_deal_id,
     )
 
     if not document:
@@ -741,7 +766,7 @@ def restore_document_version(
         select(DocumentVersion).where(
             DocumentVersion.id == version_id,
             DocumentVersion.document_id == document_id,
-            DocumentVersion.organization_id == current_user.organization_id,
+            DocumentVersion.organization_id == organization_id,
         )
     )
 
@@ -765,7 +790,7 @@ def restore_document_version(
         content=version.content,
         label=f"Restored from v{version.version_number}",
         summary=f"Restored from version {version.version_number}",
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         created_by_user_id=current_user.id,
     )
     db.add(new_version)
@@ -789,7 +814,9 @@ def restore_document_version(
 def queue_export_job(
     document_id: str,
     export_request: ExportJobCreate,
+    source_deal_id: Optional[str] = Query(None, description="Optional originating deal id"),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -802,7 +829,9 @@ def queue_export_job(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
+        actor_user_id=current_user.id,
+        required_source_deal_id=source_deal_id,
     )
 
     if not document:
@@ -811,7 +840,7 @@ def queue_export_job(
     # Create export job
     export_job = DocumentExportJob(
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         requested_by_user_id=current_user.id,
         format=export_request.format,
         options=export_request.options or {},
@@ -821,7 +850,7 @@ def queue_export_job(
     db.add(export_job)
     audit_entry = DocumentAccessLog(
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
         user_id=current_user.id,
         action="export",
         metadata_json={"format": export_job.format},
@@ -851,7 +880,9 @@ def queue_export_job(
 def get_export_job_status(
     document_id: str,
     job_id: str,
+    source_deal_id: Optional[str] = Query(None, description="Optional originating deal id"),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -863,7 +894,9 @@ def get_export_job_status(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
+        actor_user_id=current_user.id,
+        required_source_deal_id=source_deal_id,
     )
 
     if not document:
@@ -875,7 +908,7 @@ def get_export_job_status(
         select(DocumentExportJob).where(
             DocumentExportJob.id == job_id,
             DocumentExportJob.document_id == document_id,
-            DocumentExportJob.organization_id == current_user.organization_id,
+            DocumentExportJob.organization_id == organization_id,
         )
     )
 
@@ -899,7 +932,9 @@ def get_export_job_status(
 @router.get("/documents/{document_id}/export-jobs", response_model=List[ExportJobResponse])
 def list_export_jobs(
     document_id: str,
+    source_deal_id: Optional[str] = Query(None, description="Optional originating deal id"),
     current_user: User = Depends(get_current_user),
+    organization_id: str = Depends(require_scoped_organization_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -911,7 +946,9 @@ def list_export_jobs(
     document = DocumentGenerationService.get_generated_document(
         db,
         document_id=document_id,
-        organization_id=current_user.organization_id,
+        organization_id=organization_id,
+        actor_user_id=current_user.id,
+        required_source_deal_id=source_deal_id,
     )
 
     if not document:
@@ -922,7 +959,7 @@ def list_export_jobs(
     export_jobs = db.scalars(
         select(DocumentExportJob).where(
             DocumentExportJob.document_id == document_id,
-            DocumentExportJob.organization_id == current_user.organization_id,
+            DocumentExportJob.organization_id == organization_id,
         ).order_by(desc(DocumentExportJob.queued_at))
     ).all()
 

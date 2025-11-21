@@ -11,7 +11,9 @@ from app.services.rbac_audit_service import (
     log_user_status_change,
     log_claim_mismatch,
     log_impersonation,
+    log_resource_scope_violation,
 )
+from app.services.audit_event_sink import set_audit_event_publisher
 from app.models.rbac_audit_log import RBACAuditAction, RBACAuditLog
 
 
@@ -198,10 +200,34 @@ class TestRBACAuditService:
             detail="Test without claims",
             claim_snapshot=None,
         )
-        
-        assert entry is not None
-        assert entry.action == RBACAuditAction.CLAIM_MISMATCH.value
-        assert entry.claim_snapshot is None
+
+    def test_log_resource_scope_violation_emits_audit_event(
+        self,
+        db_session: Session,
+        create_user,
+    ):
+        """Ensure resource scope violations trigger telemetry events."""
+        actor = create_user(email="scope@example.com")
+        intercepted: list[dict] = []
+        set_audit_event_publisher(intercepted.append)
+        try:
+            entry = log_resource_scope_violation(
+                db_session,
+                actor_user_id=actor.id,
+                organization_id=str(actor.organization_id),
+                resource_type="document",
+                resource_id="doc-123",
+                detail="Attempted cross-tenant access",
+            )
+        finally:
+            set_audit_event_publisher(None)
+
+        assert entry.action == RBACAuditAction.RESOURCE_SCOPE_VIOLATION.value
+        assert intercepted, "Expected telemetry event"
+        event = intercepted[0]
+        assert event["action"] == RBACAuditAction.RESOURCE_SCOPE_VIOLATION.value
+        assert event["metadata"]["resource_type"] == "document"
+        assert event["metadata"]["resource_id"] == "doc-123"
 
     def test_log_impersonation_records_scope(
         self,

@@ -57,6 +57,6 @@ describe('MatchInsights component', () => {
 
     expect(screen.getByText('12')).toBeInTheDocument()
     expect(screen.getByText('84')).toBeInTheDocument()
-    expect(container.querySelector('[data-testid="match-success-rate"]')).not.toBeNull()
+    expect(container.querySelector('[data-testid="match-insights"]')).not.toBeNull()
   })
 })

@@ -1,0 +1,7 @@
+# Render redeploy log - 2025-11-21T10:30:06
+## Service inventory
+ma-saas-backend (web, srv-d3ii9qk9c44c73aqsli0, region=frankfurt, health path /health)
+ma-saas-platform (static/web, srv-d3ihptbipnbc73e72ne0, region=frankfurt, routes /* -> /index.html)
+
+[2025-11-21T10:37:51] Triggered backend redeploy (srv-d3ii9qk9c44c73aqsli0); see docs/deployments/2025-11-21-backend-redeploy.txt for response.
+[2025-11-21T10:50:47] Triggered frontend redeploy (srv-d3ihptbipnbc73e72ne0); see docs/deployments/2025-11-21-frontend-redeploy.txt for response.

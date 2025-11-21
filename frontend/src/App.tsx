@@ -1,10 +1,11 @@
-import { Suspense, lazy, useState, type ComponentType, type LazyExoticComponent } from "react"
+import { Suspense, lazy, useState, type ComponentType, type LazyExoticComponent, type ReactNode } from "react"
 import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom"
 import { RootLayout } from "./layouts/RootLayout"
 import { ProtectedLayout } from "./layouts/ProtectedLayout"
 import { SignedIn, SignedOut } from "@clerk/clerk-react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ProtectedRoute } from "./components/auth/ProtectedRoute"
+import { HelmetProvider } from "react-helmet-async"
 
 // CACHE BUST: Force fresh Render build - 2025-11-17T16:10Z
 import { ErrorBoundary } from "./components/common"
@@ -14,7 +15,6 @@ import { useCurrentUser } from "./hooks/useCurrentUser"
 import { AnalyticsProvider } from "./components/marketing/AnalyticsProvider"
 import { FeatureGate } from "./components/subscription/FeatureGate"
 import { EnhancedLandingPage } from "./pages/marketing/EnhancedLandingPage"
-import BlogAdminEditor from "./pages/admin/BlogAdminEditor"
 
 const lazyNamed = <T extends ComponentType<any>>(
   importer: () => Promise<Record<string, unknown>>,
@@ -33,8 +33,57 @@ const lazyNamed = <T extends ComponentType<any>>(
 
 const lazyDefault = (importer: () => Promise<{ default: ComponentType<any> }>) => lazy(importer)
 
+// FinanceFlo Pages
+const FinanceFloContact = lazyDefault(() => import("./pages/marketing/financeflo/ContactPage"))
+const FinanceFloPricing = lazyDefault(() => import("./pages/marketing/financeflo/PricingPage"))
+const FinanceFloTeam = lazyDefault(() => import("./pages/marketing/financeflo/TeamPage"))
+const FinanceFloBlog = lazyDefault(() => import("./pages/marketing/financeflo/BlogPage"))
+const FinanceFloBlogPost = lazyDefault(() => import("./pages/marketing/financeflo/BlogPostPage"))
+const FinanceFloCaseStudies = lazyDefault(() => import("./pages/marketing/financeflo/CaseStudiesPage"))
+const WorkingCapitalCalculatorPage = lazyDefault(() => import("./pages/marketing/financeflo/WorkingCapitalCalculatorPage"))
+const ReadinessAssessmentPage = lazyDefault(() => import("./pages/marketing/financeflo/ReadinessAssessmentPage"))
+const ROICalculatorPage = lazyDefault(() => import("./pages/marketing/financeflo/ROICalculatorPage"))
+const InteractiveDemoPage = lazyDefault(() => import("./pages/marketing/financeflo/InteractiveDemoPage"))
+const EnterpriseROICalculatorPage = lazyDefault(() => import("./pages/marketing/financeflo/EnterpriseROICalculatorPage"))
+const EcommerceApplicationPage = lazyDefault(() => import("./pages/marketing/financeflo/ecommerce-application/EcommerceApplicationPage"))
+
+// FinanceFlo Industries
+const ConstructionIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/ConstructionIndustry"))
+const FinancialServicesIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/FinancialServicesIndustry"))
+const HealthcareIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/HealthcareIndustry"))
+const InvestmentBankingIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/InvestmentBankingIndustry"))
+const FamilyOfficeIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/FamilyOfficeIndustry"))
+const InsuranceIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/InsuranceIndustry"))
+const CapitalMarketsIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/CapitalMarketsIndustry"))
+const ProfessionalServicesIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/ProfessionalServicesIndustry"))
+const SubscriptionBusinessIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/SubscriptionBusinessIndustry"))
+const EcommerceIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/EcommerceIndustry"))
+
+// FinanceFlo Solutions & ERP
+const SageIntacctERP = lazyDefault(() => import("./pages/marketing/financeflo/erp/SageIntacctERP"))
+const AcumaticaERP = lazyDefault(() => import("./pages/marketing/financeflo/erp/AcumaticaERP"))
+const OdooERP = lazyDefault(() => import("./pages/marketing/financeflo/erp/OdooERP"))
+const SageX3ERP = lazyDefault(() => import("./pages/marketing/financeflo/erp/SageX3ERP"))
+
+const SageIntacctAI = lazyDefault(() => import("./pages/marketing/financeflo/ai-enhancement/SageIntacctAI"))
+const AcumaticaAI = lazyDefault(() => import("./pages/marketing/financeflo/ai-enhancement/AcumaticaAI"))
+const OdooAI = lazyDefault(() => import("./pages/marketing/financeflo/ai-enhancement/OdooAI"))
+const SageX3AI = lazyDefault(() => import("./pages/marketing/financeflo/ai-enhancement/SageX3AI"))
+
+const SageIntacctImpl = lazyDefault(() => import("./pages/marketing/financeflo/implementation/SageIntacctImplementation"))
+const AcumaticaImpl = lazyDefault(() => import("./pages/marketing/financeflo/implementation/AcumaticaImplementation"))
+const OdooImpl = lazyDefault(() => import("./pages/marketing/financeflo/implementation/OdooImplementation"))
+const SageX3Impl = lazyDefault(() => import("./pages/marketing/financeflo/implementation/SageX3Implementation"))
+
+// FinanceFlo VSLs
+const ConstructionVSL = lazyDefault(() => import("./pages/marketing/financeflo/vsl/ConstructionVSL"))
+const HealthcareVSL = lazyDefault(() => import("./pages/marketing/financeflo/vsl/HealthcareVSL"))
+const ManufacturingVSL = lazyDefault(() => import("./pages/marketing/financeflo/vsl/ManufacturingVSL"))
+const EcommerceVSL = lazyDefault(() => import("./pages/marketing/financeflo/vsl/EcommerceVSL"))
+
 const RouteLoader = () => <BrandedLoader />
 
+const FinanceFloIndex = lazyDefault(() => import("./pages/marketing/financeflo/EnhancedIndex"))
 const SignInPage = lazyNamed(() => import("./pages/SignInPage"), "SignInPage")
 const SignUpPage = lazyNamed(() => import("./pages/SignUpPage"), "SignUpPage")
 const DashboardPage = lazyNamed(() => import("./pages/DashboardPage"), "DashboardPage")
@@ -67,6 +116,8 @@ const FourStageCyclePage = lazyNamed(() => import("./pages/marketing/FourStageCy
 const SalesPromotionPricingPage = lazyNamed(() => import("./pages/marketing/SalesPromotionPricingPage"), "SalesPromotionPricingPage");
 const CaseStudiesPage = lazyNamed(() => import("./pages/marketing/CaseStudiesPage"), "CaseStudiesPage");
 const BookTrial = lazyNamed(() => import("./pages/marketing/BookTrial"), "BookTrial");
+const BlogAdminEditor = lazyDefault(() => import("./pages/admin/BlogAdminEditor"));
+const CalculatorPage = lazyNamed(() => import("./pages/marketing/CalculatorPage"), "CalculatorPage");
 const TermsOfService = lazyNamed(() => import("./pages/marketing/legal/TermsOfService"), "TermsOfService")
 const PrivacyPolicy = lazyNamed(() => import("./pages/marketing/legal/PrivacyPolicy"), "PrivacyPolicy")
 const CookiePolicy = lazyNamed(() => import("./pages/marketing/legal/CookiePolicy"), "CookiePolicy")
@@ -172,25 +223,141 @@ const DocumentEditorRoute = () => {
 export const AppRoutes = () => {
   usePageAnalytics()
 
+  const getHostSuggestedBrand = (): "financeflo" | undefined => {
+    if (typeof window === "undefined") {
+      return undefined
+    }
+    const host = window.location.hostname.toLowerCase()
+    return host.includes("financeflo") || host.includes("flo-finance") || host.includes("lovable.app")
+      ? "financeflo"
+      : undefined
+  }
+
+  const getQueryBrand = (): "financeflo" | "apexdeliver" | undefined => {
+    if (typeof window === "undefined") {
+      return undefined
+    }
+    const brandParam = new URLSearchParams(window.location.search).get("brand")?.toLowerCase()
+    return brandParam === "financeflo" || brandParam === "apexdeliver" ? brandParam : undefined
+  }
+
+  const normalizedEnvBrand = (import.meta.env.VITE_MARKETING_BRAND ?? "")
+    .toString()
+    .trim()
+    .toLowerCase()
+  const envBrand = normalizedEnvBrand === "apexdeliver" ? "apexdeliver" : undefined
+  const queryBrand = getQueryBrand()
+  const hostBrand = getHostSuggestedBrand()
+
+  const marketingBrand = queryBrand ?? hostBrand ?? envBrand ?? "apexdeliver"
+  const useFinanceFloMarketing = marketingBrand === "financeflo"
+
+  const withRouteLoader = (node: ReactNode) => <Suspense fallback={<RouteLoader />}>{node}</Suspense>
+  const marketingElement = (apexElement: ReactNode, financeFloElement: ReactNode) =>
+    useFinanceFloMarketing ? financeFloElement : apexElement
+
+  if (typeof window !== "undefined") {
+    ;(window as typeof window & { __MARKETING_BRAND_ACTIVE__?: string }).__MARKETING_BRAND_ACTIVE__ =
+      useFinanceFloMarketing ? "financeflo" : "apexdeliver"
+  }
+
   return (
     <Routes>
       {/* Marketing Routes (No RootLayout - uses MarketingLayout) */}
-      <Route index element={<EnhancedLandingPage />} />
-      <Route path="pricing" element={<PricingPage />} />
+      <Route
+        index
+        element={marketingElement(
+          <EnhancedLandingPage />,
+          withRouteLoader(<FinanceFloIndex />),
+        )}
+      />
+      <Route
+        path="pricing"
+        element={marketingElement(<PricingPage />, withRouteLoader(<FinanceFloPricing />))}
+      />
+      <Route
+        path="contact"
+        element={marketingElement(<ContactPage />, withRouteLoader(<FinanceFloContact />))}
+      />
+      <Route
+        path="team"
+        element={marketingElement(<TeamPage />, withRouteLoader(<FinanceFloTeam />))}
+      />
+      <Route
+        path="blog"
+        element={marketingElement(<BlogListingPage />, withRouteLoader(<FinanceFloBlog />))}
+      />
+      <Route
+        path="blog/:slug"
+        element={marketingElement(<BlogPostPage />, withRouteLoader(<FinanceFloBlogPost />))}
+      />
+      <Route path="case-studies" element={<Suspense fallback={<RouteLoader />}><FinanceFloCaseStudies /></Suspense>} />
+      <Route path="calculator" element={<Suspense fallback={<RouteLoader />}><WorkingCapitalCalculatorPage /></Suspense>} />
+      <Route path="assessment" element={<Suspense fallback={<RouteLoader />}><ReadinessAssessmentPage /></Suspense>} />
+      <Route path="resources/roi-calculator" element={<Suspense fallback={<RouteLoader />}><ROICalculatorPage /></Suspense>} />
+      <Route path="demo" element={<Suspense fallback={<RouteLoader />}><InteractiveDemoPage /></Suspense>} />
+      <Route path="enterprise-roi" element={<Suspense fallback={<RouteLoader />}><EnterpriseROICalculatorPage /></Suspense>} />
+      <Route path="ecommerce-application" element={<Suspense fallback={<RouteLoader />}><EcommerceApplicationPage /></Suspense>} />
+
+      {/* FinanceFlo preview routes */}
+      <Route path="financeflo" element={withRouteLoader(<FinanceFloIndex />)} />
+      <Route path="financeflo/pricing" element={withRouteLoader(<FinanceFloPricing />)} />
+      <Route path="financeflo/contact" element={withRouteLoader(<FinanceFloContact />)} />
+      <Route path="financeflo/team" element={withRouteLoader(<FinanceFloTeam />)} />
+      <Route path="financeflo/blog" element={withRouteLoader(<FinanceFloBlog />)} />
+      <Route path="financeflo/blog/:slug" element={withRouteLoader(<FinanceFloBlogPost />)} />
+      <Route path="financeflo/case-studies" element={withRouteLoader(<FinanceFloCaseStudies />)} />
+
+      {/* Industries */}
+      <Route path="industries/construction" element={<Suspense fallback={<RouteLoader />}><ConstructionIndustry /></Suspense>} />
+      <Route path="industries/financial-services" element={<Suspense fallback={<RouteLoader />}><FinancialServicesIndustry /></Suspense>} />
+      <Route path="industries/healthcare" element={<Suspense fallback={<RouteLoader />}><HealthcareIndustry /></Suspense>} />
+      <Route path="industries/investment-banking" element={<Suspense fallback={<RouteLoader />}><InvestmentBankingIndustry /></Suspense>} />
+      <Route path="industries/family-office" element={<Suspense fallback={<RouteLoader />}><FamilyOfficeIndustry /></Suspense>} />
+      <Route path="industries/insurance" element={<Suspense fallback={<RouteLoader />}><InsuranceIndustry /></Suspense>} />
+      <Route path="industries/capital-markets" element={<Suspense fallback={<RouteLoader />}><CapitalMarketsIndustry /></Suspense>} />
+      <Route path="industries/professional-services" element={<Suspense fallback={<RouteLoader />}><ProfessionalServicesIndustry /></Suspense>} />
+      <Route path="industries/subscription-business" element={<Suspense fallback={<RouteLoader />}><SubscriptionBusinessIndustry /></Suspense>} />
+      <Route path="industries/ecommerce" element={<Suspense fallback={<RouteLoader />}><EcommerceIndustry /></Suspense>} />
+
+      {/* ERP & Solutions */}
+      <Route path="erp/sage-intacct" element={<Suspense fallback={<RouteLoader />}><SageIntacctERP /></Suspense>} />
+      <Route path="erp/acumatica" element={<Suspense fallback={<RouteLoader />}><AcumaticaERP /></Suspense>} />
+      <Route path="erp/odoo" element={<Suspense fallback={<RouteLoader />}><OdooERP /></Suspense>} />
+      <Route path="erp/sage-x3" element={<Suspense fallback={<RouteLoader />}><SageX3ERP /></Suspense>} />
+
+      <Route path="ai-enhancement/sage-intacct" element={<Suspense fallback={<RouteLoader />}><SageIntacctAI /></Suspense>} />
+      <Route path="ai-enhancement/acumatica" element={<Suspense fallback={<RouteLoader />}><AcumaticaAI /></Suspense>} />
+      <Route path="ai-enhancement/odoo" element={<Suspense fallback={<RouteLoader />}><OdooAI /></Suspense>} />
+      <Route path="ai-enhancement/sage-x3" element={<Suspense fallback={<RouteLoader />}><SageX3AI /></Suspense>} />
+
+      <Route path="implementation/sage-intacct" element={<Suspense fallback={<RouteLoader />}><SageIntacctImpl /></Suspense>} />
+      <Route path="implementation/acumatica" element={<Suspense fallback={<RouteLoader />}><AcumaticaImpl /></Suspense>} />
+      <Route path="implementation/odoo" element={<Suspense fallback={<RouteLoader />}><OdooImpl /></Suspense>} />
+      <Route path="implementation/sage-x3" element={<Suspense fallback={<RouteLoader />}><SageX3Impl /></Suspense>} />
+
+      {/* VSLs */}
+      <Route path="vsl/construction/*" element={<Suspense fallback={<RouteLoader />}><ConstructionVSL /></Suspense>} />
+      <Route path="vsl/healthcare/*" element={<Suspense fallback={<RouteLoader />}><HealthcareVSL /></Suspense>} />
+      <Route path="vsl/manufacturing/*" element={<Suspense fallback={<RouteLoader />}><ManufacturingVSL /></Suspense>} />
+      <Route path="vsl/ecommerce/*" element={<Suspense fallback={<RouteLoader />}><EcommerceVSL /></Suspense>} />
+
+      {/* Legacy/SaaS Routes */}
       <Route path="features" element={<FeaturesPage />} />
       <Route path="about" element={<AboutPage />} />
-      <Route path="contact" element={<ContactPage />} />
-      <Route path="team" element={<TeamPage />} />
+      {/* <Route path="contact" element={<ContactPage />} /> */}
+      {/* <Route path="team" element={<TeamPage />} /> */}
       <Route path="podcast" element={<PodcastPage />} />
       <Route path="security" element={<SecurityPage />} />
-      <Route path="blog" element={<BlogListingPage />} />
-      <Route path="blog/:slug" element={<BlogPostPage />} />
+      {/* <Route path="blog" element={<BlogListingPage />} /> */}
+      {/* <Route path="blog/:slug" element={<BlogPostPage />} /> */}
       <Route path="faq" element={<FAQPage />} />
       <Route path="capliquify-fpa" element={<CapLiquifyFPAPage />} />
       <Route path="4-stage-cycle" element={<FourStageCyclePage />} />
       <Route path="sales-promotion-pricing" element={<SalesPromotionPricingPage />} />
       <Route path="case-studies" element={<CaseStudiesPage />} />
       <Route path="book-trial" element={<BookTrial />} />
+      <Route path="calculator" element={<CalculatorPage />} />
       <Route path="legal/terms" element={<TermsOfService />} />
       <Route path="legal/privacy" element={<PrivacyPolicy />} />
       <Route path="legal/cookies" element={<CookiePolicy />} />
@@ -435,19 +602,21 @@ const App = () => {
       })
   )
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <AnalyticsProvider>
-          <BrowserRouter>
-            <ErrorBoundary>
-              <Suspense fallback={<RouteLoader />}>
-                <AppRoutes />
-              </Suspense>
-            </ErrorBoundary>
-          </BrowserRouter>
-        </AnalyticsProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <HelmetProvider>
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <AnalyticsProvider>
+            <BrowserRouter>
+              <ErrorBoundary>
+                <Suspense fallback={<RouteLoader />}>
+                  <AppRoutes />
+                </Suspense>
+              </ErrorBoundary>
+            </BrowserRouter>
+          </AnalyticsProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </HelmetProvider>
   )
 }
 

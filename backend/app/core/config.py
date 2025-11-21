@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
 
     # CORS - will be converted to list after init
-    cors_origins: Any = "http://localhost:5173,http://localhost:3000,https://ma-saas-platform.onrender.com,https://ma-saas-backend.onrender.com,https://100daysandbeyond.com,https://www.100daysandbeyond.com,https://apexdeliver.com"
+    cors_origins: Any = "http://localhost:5173,http://localhost:3000,https://ma-saas-platform.onrender.com,https://ma-saas-backend.onrender.com,https://financeflo.ai,https://www.financeflo.ai,https://100daysandbeyond.com,https://www.100daysandbeyond.com,https://apexdeliver.com"
 
     @model_validator(mode="after")
     def parse_cors_origins(self) -> "Settings":
@@ -67,6 +67,7 @@ class Settings(BaseSettings):
     enable_analytics: bool = True
     enable_rate_limiting: bool = True
     rate_limit_per_minute: int = 60
+    audit_event_webhook_url: str = ""
 
 
 @lru_cache

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user
 from app.models.document import Document
+from app.models.rbac_audit_log import RBACAuditAction, RBACAuditLog
 
 def _create_document(db_session: Session, deal, org, uploader, name="doc.pdf") -> Document:
     document = Document(
@@ -141,6 +142,12 @@ def test_bulk_download_returns_404_when_document_not_in_deal(
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Document not found"
+
+    logs = db_session.query(RBACAuditLog).all()
+    assert len(logs) == 1
+    log_entry = logs[0]
+    assert log_entry.action == RBACAuditAction.RESOURCE_SCOPE_VIOLATION.value
+    assert str(document.id) in (log_entry.detail or "")
 
 
 def test_bulk_delete_returns_404_when_document_not_in_deal(

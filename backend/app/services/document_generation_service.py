@@ -15,6 +15,7 @@ from app.models.document_generation import (
     TemplateStatus,
     DocumentStatus,
 )
+from app.models.deal import Deal
 from app.schemas.document_generation import (
     DocumentTemplateCreate,
     DocumentTemplateUpdate,
@@ -22,6 +23,7 @@ from app.schemas.document_generation import (
     TemplateRenderRequest,
 )
 from app.core.config import settings
+from app.services import rbac_audit_service
 
 
 class DocumentGenerationService:
@@ -204,6 +206,16 @@ class DocumentGenerationService:
             render_request.variable_values,
         )
 
+        source_deal_id: Optional[str] = None
+        if render_request.source_deal_id:
+            source_deal = db.get(Deal, render_request.source_deal_id)
+            if (
+                source_deal is None
+                or str(source_deal.organization_id) != organization_id
+            ):
+                raise ValueError("Deal not found or does not belong to this organization")
+            source_deal_id = str(source_deal.id)
+
         # Create generated document
         generated = GeneratedDocument(
             template_id=template_id,
@@ -212,6 +224,7 @@ class DocumentGenerationService:
             organization_id=organization_id,
             generated_by_user_id=generated_by_user_id,
             status=DocumentStatus.GENERATED,
+            source_deal_id=source_deal_id,
         )
 
         # TODO: If generate_file is True, generate PDF/DOCX and set file_path
@@ -253,14 +266,45 @@ class DocumentGenerationService:
         db: Session,
         document_id: str,
         organization_id: str,
+        *,
+        actor_user_id: Optional[str] = None,
+        required_source_deal_id: Optional[str] = None,
     ) -> Optional[GeneratedDocument]:
-        """Get a generated document by ID (with organization check)"""
-        return db.scalar(
+        """Get a generated document by ID (with organization check)."""
+        document = db.scalar(
             select(GeneratedDocument).where(
                 GeneratedDocument.id == document_id,
                 GeneratedDocument.organization_id == organization_id,
             )
         )
+        if document is None:
+            if actor_user_id is not None:
+                raw_document = db.get(GeneratedDocument, document_id)
+                if raw_document and str(raw_document.organization_id) != str(organization_id):
+                    rbac_audit_service.log_resource_scope_violation(
+                        db,
+                        actor_user_id=str(actor_user_id),
+                        organization_id=organization_id,
+                        resource_type="generated_document",
+                        resource_id=str(document_id),
+                        detail=f"expected org {organization_id}, actual org {raw_document.organization_id}",
+                    )
+            return None
+
+        if document.source_deal_id:
+            if not required_source_deal_id or str(document.source_deal_id) != str(required_source_deal_id):
+                if actor_user_id is not None:
+                    rbac_audit_service.log_resource_scope_violation(
+                        db,
+                        actor_user_id=str(actor_user_id),
+                        organization_id=organization_id,
+                        resource_type="generated_document",
+                        resource_id=str(document_id),
+                        detail="source_deal_id mismatch",
+                    )
+                return None
+
+        return document
 
     @staticmethod
     def list_generated_documents(
@@ -268,6 +312,7 @@ class DocumentGenerationService:
         organization_id: str,
         template_id: Optional[str] = None,
         status: Optional[str] = None,
+        source_deal_id: Optional[str] = None,
         skip: int = 0,
         limit: int = 100,
     ) -> List[GeneratedDocument]:
@@ -280,6 +325,8 @@ class DocumentGenerationService:
             query = query.where(GeneratedDocument.template_id == template_id)
         if status:
             query = query.where(GeneratedDocument.status == status)
+        if source_deal_id:
+            query = query.where(GeneratedDocument.source_deal_id == source_deal_id)
 
         query = query.order_by(GeneratedDocument.created_at.desc())
         query = query.offset(skip).limit(limit)
@@ -292,10 +339,12 @@ class DocumentGenerationService:
         document_id: str,
         organization_id: str,
         new_status: DocumentStatus,
+        *,
+        actor_user_id: Optional[str] = None,
     ) -> Optional[GeneratedDocument]:
         """Update the status of a generated document"""
         document = DocumentGenerationService.get_generated_document(
-            db, document_id, organization_id
+            db, document_id, organization_id, actor_user_id=actor_user_id
         )
         if not document:
             return None
@@ -320,7 +369,7 @@ class DocumentGenerationService:
         from sqlalchemy import select, desc
         
         document = DocumentGenerationService.get_generated_document(
-            db, document_id, organization_id
+            db, document_id, organization_id, actor_user_id=user_id
         )
         if not document:
             return None

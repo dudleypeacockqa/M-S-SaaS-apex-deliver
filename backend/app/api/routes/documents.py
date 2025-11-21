@@ -26,6 +26,7 @@ except ImportError:  # pragma: no cover - dependency optional in some runtimes
     _tenant_scope_org_dependency = None
 from app.db.session import get_db
 from app.models.user import User
+from app.models.document import Document
 from app.schemas.document import (
     BulkDeleteRequest,
     BulkDeleteResponse,
@@ -84,9 +85,18 @@ def _validate_bulk_document_ids(
     organization_id: str,
     current_user: User,
     db: Session,
+    skip_missing: bool = False,
 ) -> None:
     """Ensure every document id belongs to the scoped deal without enforcing permission levels."""
     for document_id in document_ids:
+        document = db.get(Document, document_id)
+        if document is None:
+            if skip_missing:
+                continue
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Document not found",
+            )
         require_document_access(
             document_id=document_id,
             deal_id=deal_id,
@@ -986,6 +996,7 @@ def bulk_delete_documents(
         organization_id=organization_id,
         current_user=current_user,
         db=db,
+        skip_missing=True,
     )
 
     deleted_ids, failed_ids, failed_reasons = document_service.bulk_delete_documents(

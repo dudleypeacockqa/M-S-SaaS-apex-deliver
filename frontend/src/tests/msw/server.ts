@@ -1169,6 +1169,38 @@ const blogDetailHandler = http.get(`${API_BASE_URL}/api/blog/:slug`, ({ params }
   return HttpResponse.json(post)
 })
 
+const dashboardTasksHandler = http.get(`${API_BASE_URL}/api/dashboard/tasks`, () => {
+  const base = Date.now()
+  const toDueDate = (daysFromNow: number) => new Date(base + daysFromNow * 24 * 60 * 60 * 1000).toISOString()
+
+  return HttpResponse.json({
+    items: [
+      {
+        id: 'upcoming-task-1',
+        title: 'Prepare investment committee brief',
+        due_date: toDueDate(1),
+        priority: 'high',
+        status: 'in_progress',
+      },
+      {
+        id: 'upcoming-task-2',
+        title: 'Review diligence uploads',
+        due_date: toDueDate(2),
+        priority: 'medium',
+        status: 'pending',
+      },
+      {
+        id: 'upcoming-task-3',
+        title: 'Sync with revenue ops on promo launch',
+        due_date: toDueDate(4),
+        priority: 'low',
+        status: 'pending',
+      },
+    ],
+    total: 3,
+  })
+})
+
 const contactHandler = http.post(`${API_BASE_URL}/marketing/contact`, async ({ request }) => {
   try {
     await request.json()
@@ -1224,6 +1256,7 @@ const getDealHandler = http.get(`${API_BASE_URL}/api/deals/:dealId`, ({ params }
 export const mswHandlers = [
   listDealsHandler,
   getDealHandler,
+  dashboardTasksHandler,
   ...documentHandlers,
   ...podcastHandlers,
   blogListHandler,

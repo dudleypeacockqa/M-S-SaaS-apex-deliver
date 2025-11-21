@@ -110,4 +110,17 @@ describe('ProtectedRoute', () => {
 
     expect(screen.getByTestId('protected-content')).toBeInTheDocument()
   })
+
+  it('blocks master admins when requirement is admin-only', () => {
+    mockAuthState.isSignedIn = true
+    mockUserState.user = { publicMetadata: { role: 'master_admin' } }
+
+    renderRoute(
+      <ProtectedRoute requiredRole="admin">
+        <ProtectedContent />
+      </ProtectedRoute>,
+    )
+
+    expect(screen.getByTestId('unauthorized-message')).toBeInTheDocument()
+  })
 })

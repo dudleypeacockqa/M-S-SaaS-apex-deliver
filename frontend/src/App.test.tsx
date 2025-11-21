@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { HelmetProvider } from "react-helmet-async"
 
 import { AppRoutes } from "./App"
 import { setMockClerkState } from "./test/mocks/clerk"
@@ -23,11 +24,13 @@ const renderApp = (initialEntries: string[] = ["/"]) => {
   })
 
   return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <AppRoutes />
-      </MemoryRouter>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <AppRoutes />
+        </MemoryRouter>
+      </QueryClientProvider>
+    </HelmetProvider>
   )
 }
 
@@ -81,16 +84,14 @@ describe("AppRoutes", () => {
     fetchMock?.mockClear()
   })
 
-  it("renders the home route with sign-in actions for visitors", async () => {
+  it("renders the marketing hero with key CTAs for visitors", async () => {
     renderApp(["/"])
 
-    // The new landing page has rebranded hero heading
-    expect(await screen.findByRole("heading", { name: /from deal flow to cash flow/i }, { timeout: 20000 })).toBeInTheDocument()
-    // Marketing nav has multiple "Sign In" links (desktop + mobile)
-    expect(screen.getAllByRole("link", { name: /sign in/i }).length).toBeGreaterThan(0)
-    // Multiple "Start Your Free" CTA buttons/links exist
-    const ctaLinks = screen.getAllByRole("link", { name: /start your free/i })
-    expect(ctaLinks.length).toBeGreaterThan(0)
+    expect(await screen.findByRole("link", { name: /apexdeliver home/i }, { timeout: 5000 })).toBeInTheDocument()
+    expect(await screen.findByText(/from deal flow to cash flow/i)).toBeInTheDocument()
+    const trialCtas = await screen.findAllByText(/start your free 14-day trial/i)
+    expect(trialCtas.length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/schedule a demo/i).length).toBeGreaterThan(0)
   }, 20000)
 
   it("redirects visitors from the dashboard to the sign-in page", async () => {
@@ -118,7 +119,7 @@ describe("AppRoutes", () => {
      ).toBeInTheDocument()
    }, 20000)
 
-  it("keeps marketing sign-in actions visible even when authenticated", async () => {
+  it("keeps marketing CTA actions visible even when authenticated", async () => {
      setMockClerkState({
        isSignedIn: true,
        isLoaded: true,
@@ -128,10 +129,9 @@ describe("AppRoutes", () => {
 
      renderApp(["/"])
 
-    // Landing page shows rebranded hero heading
-    expect(await screen.findByRole("heading", { name: /from deal flow to cash flow/i }, { timeout: 10000 })).toBeInTheDocument()
-    const authenticatedLinks = await screen.findAllByRole("link", { name: /sign in/i }, { timeout: 10000 })
-    expect(authenticatedLinks.length).toBeGreaterThan(0)
+    expect(await screen.findByText(/from deal flow to cash flow/i, { timeout: 10000 })).toBeInTheDocument()
+    const marketingCtas = await screen.findAllByText(/start your free 14-day trial/i, { timeout: 10000 })
+    expect(marketingCtas.length).toBeGreaterThan(0)
   }, 10000)
 
   it("routes to financial dashboard for authenticated users", async () => {

@@ -1,7 +1,7 @@
 
 # BMM Workflow Status
 
-**Status**: IN PROGRESS - Backend suites green (2025-11-19), frontend Vitest + marketing Playwright still RED; documentation sync, BlogAdminEditor verification, marketing parity backlog, manual QA, and audits remain
+**Status**: IN PROGRESS - Backend suites green (2025-11-19), frontend Vitest green (2025-11-21) but marketing Playwright still RED; documentation sync, BlogAdminEditor verification, marketing parity backlog, manual QA, and audits remain
 **Release Target**: v1.0.0 (Final QA + marketing smoke sign-off)
 **Current Version**: v1.0.0-rc1 (Core features code-complete)
 **Test Pass Rate (2025-11-19)**: Backend 1,708/1,708 PASS (100%) ✅ · Frontend Vitest RED (ContactPage, BookTrial, Pricing metadata, ProtectedRoute, marketing routing/blog specs, FPA components) ❌ · Master Admin 91/91 PASS (100%) ✅
@@ -22,7 +22,7 @@ CURRENT_PHASE: 7-Final QA & Marketing Evidence (Documentation sync + BlogAdmin v
 CURRENT_WORKFLOW: dev-story (Wave 0 governance sync + marketing evidence capture)
 CURRENT_AGENT: codex (primary) with BMAD governance support
 PROJECT_COMPLETION: 99.2% (All features complete; final QA + marketing website implementation remaining)
-LAST_UPDATED: 2025-11-19T15:30Z (Backend pytest rerun logged; frontend/Playwright failures documented)
+LAST_UPDATED: 2025-11-21T10:26Z (Frontend Vitest rerun logged; marketing Playwright still RED)
 PHASE_1_FOUNDATIONAL_CORE: ✅ COMPLETE (All 7 foundational features implemented and tested)
 PHASE_2_ADVANCED_INTELLIGENCE: ✅ COMPLETE (All 4 intelligence features implemented and tested)
 PHASE_3_ECOSYSTEM_NETWORK: ✅ COMPLETE (All 3 ecosystem features implemented and tested)
@@ -643,3 +643,30 @@ NEXT_ACTION: Site should now be working - monitor for any JavaScript errors
 NEXT_AGENT: dev
 PRIORITY: P0 (Critical production fix re-applied)
 RATIONALE: File watch/linter was reverting fixes; forced correct configuration and immediately committed to prevent further reverts.
+---
+
+SESSION_ID: Session-2025-11-21T10-Vitest-Baseline
+COMPLETED_WORK:
+- Installed `@testing-library/dom` via `npm install --save-dev --legacy-peer-deps` and exported the FinanceFlo analytics helpers so the calculator suites could import `track` + `trackCalculatorView` without esbuild failures.
+- Ran `cd frontend && npm run test -- --run` (vmThreads pool) to refresh the Wave 0 automation evidence and captured stdout under `docs/tests/2025-11-21-frontend-vitest.txt` plus a JSON summary entry (`docs/tests/2025-11-21-frontend-vitest.jsonl`).
+- Propagated the new frontend status through README.md, TODO.md, lan.md, and docs/bmad/DAILY_STATUS_NOTES.md so all governance artefacts reference the Nov-21 run.
+
+FILES_MODIFIED:
+- frontend/src/lib/analytics.ts
+- frontend/package-lock.json (dev dependency install)
+- docs/tests/2025-11-21-frontend-vitest.txt
+- docs/tests/2025-11-21-frontend-vitest.jsonl
+- README.md
+- TODO.md
+- lan.md
+- docs/bmad/DAILY_STATUS_NOTES.md
+- docs/bmad/bmm-workflow-status.md (this update)
+
+TEST_RESULTS:
+- `cd frontend && npm run test -- --run` — PASS (1,742 specs, 0 failures, 85.1% coverage; see docs/tests/2025-11-21-frontend-vitest.txt)
+
+NEXT_ACTION: Move into Wave 1 evidence scaffolding (Master Admin QA prep + marketing backlog fixes) before rerunning Playwright
+NEXT_COMMAND: `scripts/seed_master_admin_demo.py` followed by manual checklist in docs/testing/2025-11-17-MASTER-ADMIN-VALIDATION-CHECKLIST.md
+NEXT_AGENT: dev
+PRIORITY: P0
+RATIONALE: Frontend automation is green again; focus shifts to manual QA evidence and marketing automation.

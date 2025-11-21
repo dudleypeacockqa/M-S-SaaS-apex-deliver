@@ -1,0 +1,47 @@
+Available Render Services:
+================================================================================
+Name: cospharm-pricing-engine
+ID: srv-d3rro28gjchc73d5f2n0
+Type: web_service
+URL: https://cospharm-pricing-engine.onrender.com
+--------------------------------------------------------------------------------
+Name: capliquify-frontend-prod
+ID: srv-d3p789umcj7s739rfnf0
+Type: static_site
+URL: https://sentia-frontend-prod.onrender.com
+--------------------------------------------------------------------------------
+Name: capliquify-backend-prod
+ID: srv-d3p77vripnbc739pc2n0
+Type: web_service
+URL: https://sentia-backend-prod.onrender.com
+--------------------------------------------------------------------------------
+Name: capliquify-mcp-prod
+ID: srv-d3p76aali9vc73crtrh0
+Type: web_service
+URL: https://sentia-mcp-prod.onrender.com
+--------------------------------------------------------------------------------
+Name: flo-finance-uk-website
+ID: srv-d3joooh5pdvs73ejvqj0
+Type: static_site
+URL: https://flo-finance-uk-website.onrender.com
+--------------------------------------------------------------------------------
+Name: ma-saas-backend
+ID: srv-d3ii9qk9c44c73aqsli0
+Type: web_service
+URL: https://ma-saas-backend.onrender.com
+--------------------------------------------------------------------------------
+Name: ma-saas-platform
+ID: srv-d3ihptbipnbc73e72ne0
+Type: web_service
+URL: https://ma-saas-platform.onrender.com
+--------------------------------------------------------------------------------
+Name: saas-agent-orchestrator-frankfurt
+ID: srv-d3ecbq2li9vc739i3as0
+Type: web_service
+URL: https://saas-agent-orchestrator-frankfurt.onrender.com
+--------------------------------------------------------------------------------
+Name: saas-agent-ui
+ID: srv-d3e4qigdl3ps73a7bd80
+Type: web_service
+URL: https://saas-agent-ui.onrender.com
+--------------------------------------------------------------------------------

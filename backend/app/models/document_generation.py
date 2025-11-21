@@ -71,6 +71,7 @@ class GeneratedDocument(Base):
     variable_values = Column(JSON, default=dict)  # Actual values used for variables
     file_path = Column(String)  # Path to generated PDF/DOCX (stores file_key|format)
     status = Column(SQLEnum(DocumentStatus), default=DocumentStatus.GENERATED, nullable=False)
+    source_deal_id = Column(String(36), ForeignKey("deals.id"), nullable=True)
 
     # Multi-tenancy
     organization_id = Column(GUID, ForeignKey("organizations.id"), nullable=False)

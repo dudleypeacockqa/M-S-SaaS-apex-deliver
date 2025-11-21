@@ -14,6 +14,8 @@ from app.models.document_generation import (
     DocumentVersion,
     SuggestionStatus,
 )
+from app.models.rbac_audit_log import RBACAuditAction, RBACAuditLog
+from app.models.user import UserRole
 
 dependency_overrides = None
 
@@ -197,6 +199,89 @@ class TestAISuggestionEndpoints:
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "rejected"
+
+
+class TestDocumentVersionScoping:
+    """Scoping rules for version endpoints."""
+
+    def _create_generated_document(self, db_session, org, user):
+        template = DocumentTemplate(
+            name="Scoped Template",
+            content="Test Content",
+            organization_id=str(org.id),
+            created_by_user_id=user.id,
+        )
+        db_session.add(template)
+        db_session.flush()
+
+        document = GeneratedDocument(
+            template_id=template.id,
+            generated_content="Versioned content",
+            organization_id=str(org.id),
+            generated_by_user_id=user.id,
+        )
+        db_session.add(document)
+        db_session.flush()
+
+        version = DocumentVersion(
+            document_id=document.id,
+            version_number=1,
+            content="Version 1",
+            organization_id=str(org.id),
+            created_by_user_id=user.id,
+        )
+        db_session.add(version)
+        db_session.commit()
+        return document
+
+    def test_list_versions_returns_404_for_other_org(
+        self,
+        client,
+        create_user,
+        create_organization,
+        db_session: Session,
+        dependency_overrides,
+    ):
+        org = create_organization(name="Org A")
+        user = create_user(organization_id=str(org.id))
+        document = self._create_generated_document(db_session, org, user)
+
+        other_org = create_organization(name="Org B")
+        other_user = create_user(email="other@example.com", organization_id=str(other_org.id))
+        dependency_overrides(get_current_user, lambda: other_user)
+
+        response = client.get(f"/api/document-generation/documents/{document.id}/versions")
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Generated document not found"
+
+        logs = db_session.query(RBACAuditLog).all()
+        assert len(logs) == 1
+        entry = logs[0]
+        assert entry.action == RBACAuditAction.RESOURCE_SCOPE_VIOLATION.value
+        assert str(document.id) in (entry.detail or "")
+
+    def test_master_admin_can_scope_into_tenant_for_versions(
+        self,
+        client,
+        create_user,
+        create_organization,
+        db_session: Session,
+        dependency_overrides,
+    ):
+        org = create_organization(name="Scoped Org")
+        tenant_user = create_user(organization_id=str(org.id))
+        document = self._create_generated_document(db_session, org, tenant_user)
+
+        master_admin = create_user(role=UserRole.master_admin, organization_id=None)
+        dependency_overrides(get_current_user, lambda: master_admin)
+
+        response = client.get(
+            f"/api/document-generation/documents/{document.id}/versions",
+            headers={"X-Master-Tenant-Id": str(org.id)},
+        )
+
+        assert response.status_code == 200
+        assert isinstance(response.json(), list)
 
 
 

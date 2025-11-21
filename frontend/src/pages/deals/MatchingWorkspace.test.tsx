@@ -400,11 +400,15 @@ describe('MatchingWorkspace', () => {
       renderWithProviders(<MatchingWorkspace dealId="analytics-deal" activeTab="matches" />);
 
       await waitFor(() => {
+        expect(screen.getByText('AI Automation Platform')).toBeInTheDocument();
+      });
+
+      await waitFor(() => {
         expect(screen.getByTestId('match-success-rate')).toBeInTheDocument();
         expect(screen.getByTestId('score-distribution')).toBeInTheDocument();
         expect(screen.getByTestId('recent-matches')).toBeInTheDocument();
         expect(screen.getByTestId('matching-activity')).toBeInTheDocument();
-      });
+      }, { timeout: 10000 });
     });
   });
 

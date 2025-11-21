@@ -1,5 +1,4 @@
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import { useEffect, type FC } from 'react';
 import { convertToWebP } from '../../utils/imageUtils';
 
 export interface StructuredDataArticle {
@@ -36,10 +35,12 @@ export interface SEOProps {
   twitterDescription?: string;
   twitterImage?: string;
   canonical?: string;
-  structuredData?: StructuredDataArticle | Record<string, any>;
+  structuredData?: StructuredDataArticle | Record<string, unknown>;
 }
 
-export const SEO: React.FC<SEOProps> = ({
+const STRUCTURED_DATA_ID = 'seo-structured-data';
+
+export const SEO: FC<SEOProps> = ({
   title,
   description,
   keywords,
@@ -54,53 +55,186 @@ export const SEO: React.FC<SEOProps> = ({
   canonical,
   structuredData,
 }) => {
-    // Helper to optimize image URLs (auto-convert to WebP)
-    const optimizeImageUrl = (url: string | undefined): string | undefined => {
-      if (!url) return undefined;
-      // Convert PNG/JPG to WebP for better performance
-      // Social media platforms (Twitter, Facebook, LinkedIn) support WebP
-      return convertToWebP(url);
-    };
+  const optimizeImageUrl = (url: string | undefined): string | undefined => {
+    if (!url) {
+      return undefined;
+    }
+    return convertToWebP(url);
+  };
 
-  const optimizedOgImage = optimizeImageUrl(ogImage) || ogImage;
-  const optimizedTwitterImage = optimizeImageUrl(twitterImage || ogImage) || twitterImage || ogImage;
+  const optimizedOgImage = optimizeImageUrl(ogImage) ?? ogImage;
+  const optimizedTwitterImage =
+    optimizeImageUrl(twitterImage ?? ogImage) ?? twitterImage ?? ogImage;
 
-  const dataWithContext = structuredData ? {
+  const dataWithContext = structuredData
+    ? {
         '@context': 'https://schema.org',
         ...structuredData,
-  } : null;
+      }
+    : null;
 
-  return (
-    <Helmet>
-      {/* Set document title */}
-      <title>{title}</title>
+  const structuredDataPayload = dataWithContext ? JSON.stringify(dataWithContext) : null;
 
-      {/* Set basic meta tags */}
-      <meta name="description" content={description} />
-      {keywords && <meta name="keywords" content={keywords} />}
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return;
+    }
 
-      {/* Set OpenGraph tags */}
-      <meta property="og:title" content={ogTitle || title} />
-      <meta property="og:description" content={ogDescription || description} />
-      <meta property="og:type" content="website" />
-      {optimizedOgImage && <meta property="og:image" content={optimizedOgImage} />}
-      {ogUrl && <meta property="og:url" content={ogUrl} />}
+    const previousTitle = document.title;
+    document.title = title;
 
-      {/* Set Twitter Card tags */}
-      <meta name="twitter:card" content={twitterCard} />
-      <meta name="twitter:title" content={twitterTitle || ogTitle || title} />
-      <meta name="twitter:description" content={twitterDescription || ogDescription || description} />
-      {optimizedTwitterImage && <meta name="twitter:image" content={optimizedTwitterImage} />}
+    const cleanups: Array<() => void> = [];
 
-      {/* Set canonical URL */}
-      {canonical && <link rel="canonical" href={canonical} />}
+    const setMetaTag = (
+      attribute: 'name' | 'property',
+      key: string,
+      content?: string,
+    ) => {
+      if (!content) {
+        return;
+      }
 
-      {/* Add structured data (JSON-LD) */}
-      {dataWithContext && (
-        <script type="application/ld+json">
-          {JSON.stringify(dataWithContext)}
-        </script>
-      )}
-    </Helmet>
-  );
+      const selector =
+        attribute === 'name'
+          ? `meta[name="${key}"]`
+          : `meta[property="${key}"]`;
+
+      let element = document.head.querySelector(selector) as HTMLMetaElement | null;
+
+      if (element) {
+        const previousContent = element.getAttribute('content');
+        element.setAttribute('content', content);
+        cleanups.push(() => {
+          if (previousContent !== null) {
+            element!.setAttribute('content', previousContent);
+          } else {
+            element!.remove();
+          }
+        });
+      } else {
+        element = document.createElement('meta');
+        element.setAttribute(attribute, key);
+        element.setAttribute('content', content);
+        document.head.appendChild(element);
+        const createdElement = element;
+        cleanups.push(() => {
+          createdElement.remove();
+        });
+      }
+    };
+
+    const setLinkTag = (rel: string, href?: string) => {
+      if (!href) {
+        return;
+      }
+
+      const selector = `link[rel="${rel}"]`;
+      let element = document.head.querySelector(selector) as HTMLLinkElement | null;
+
+      if (element) {
+        const previousHref = element.getAttribute('href');
+        element.setAttribute('href', href);
+        cleanups.push(() => {
+          if (previousHref !== null) {
+            element!.setAttribute('href', previousHref);
+          } else {
+            element!.remove();
+          }
+        });
+      } else {
+        element = document.createElement('link');
+        element.setAttribute('rel', rel);
+        element.setAttribute('href', href);
+        document.head.appendChild(element);
+        const createdElement = element;
+        cleanups.push(() => {
+          createdElement.remove();
+        });
+      }
+    };
+
+    const existingStructured = document.getElementById(
+      STRUCTURED_DATA_ID,
+    ) as HTMLScriptElement | null;
+
+    const applyStructuredData = (payload: string | null) => {
+      if (!payload) {
+        if (existingStructured) {
+          const elementRef = existingStructured;
+          const previousContent = elementRef.textContent;
+          elementRef.remove();
+          cleanups.push(() => {
+            if (previousContent !== null) {
+              elementRef.textContent = previousContent;
+              document.head.appendChild(elementRef);
+            }
+          });
+        }
+        return;
+      }
+
+      if (existingStructured) {
+        const previousContent = existingStructured.textContent;
+        existingStructured.textContent = payload;
+        cleanups.push(() => {
+          if (previousContent !== null) {
+            existingStructured.textContent = previousContent;
+          } else {
+            existingStructured.remove();
+          }
+        });
+      } else {
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.id = STRUCTURED_DATA_ID;
+        script.textContent = payload;
+        document.head.appendChild(script);
+        cleanups.push(() => {
+          script.remove();
+        });
+      }
+    };
+
+    setMetaTag('name', 'description', description);
+    setMetaTag('name', 'keywords', keywords);
+    setMetaTag('property', 'og:title', ogTitle ?? title);
+    setMetaTag('property', 'og:description', ogDescription ?? description);
+    setMetaTag('property', 'og:type', 'website');
+    setMetaTag('property', 'og:image', optimizedOgImage);
+    setMetaTag('property', 'og:url', ogUrl);
+    setMetaTag('name', 'twitter:card', twitterCard);
+    setMetaTag('name', 'twitter:title', twitterTitle ?? ogTitle ?? title);
+    setMetaTag(
+      'name',
+      'twitter:description',
+      twitterDescription ?? ogDescription ?? description,
+    );
+    setMetaTag('name', 'twitter:image', optimizedTwitterImage);
+    setLinkTag('canonical', canonical);
+    applyStructuredData(structuredDataPayload);
+
+    return () => {
+      document.title = previousTitle;
+      while (cleanups.length > 0) {
+        const cleanup = cleanups.pop();
+        cleanup?.();
+      }
+    };
+  }, [
+    title,
+    description,
+    keywords,
+    ogTitle,
+    ogDescription,
+    optimizedOgImage,
+    ogUrl,
+    twitterCard,
+    twitterTitle,
+    twitterDescription,
+    optimizedTwitterImage,
+    canonical,
+    structuredDataPayload,
+  ]);
+
+  return null;
 };

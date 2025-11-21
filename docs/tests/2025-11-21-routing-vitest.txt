@@ -1,0 +1,23 @@
+
+> ma-saas-frontend@1.1.0 test
+> node scripts/run-vitest.mjs run --run src/pages/marketing/AboutPage.test.tsx src/tests/integration/routing.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.10 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+[90mstdout[2m | src/tests/integration/routing.test.tsx
+[22m[39m[Icons] Lucide React initialized: [33m5647[39m exports
+
+ [32m✓[39m src/pages/marketing/AboutPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1333[2mms[22m[39m
+     [33m[2m✓[22m[39m sets the document title and renders the hero heading [33m 624[2mms[22m[39m
+     [33m[2m✓[22m[39m includes value statements and call to action [33m 546[2mms[22m[39m
+ [32m✓[39m src/tests/integration/routing.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 2310[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the landing page for visitors [33m 1083[2mms[22m[39m
+     [33m[2m✓[22m[39m displays the dashboard when the user is authenticated [33m 515[2mms[22m[39m
+     [33m[2m✓[22m[39m allows authenticated admins to reach /admin/blog/new [33m 350[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m9 passed[39m[22m[90m (9)[39m
+[2m   Start at [22m 06:29:38
+[2m   Duration [22m 7.91s[2m (transform 2.57s, setup 1.98s, collect 3.81s, tests 3.64s, environment 3.24s, prepare 3.71s)[22m
+

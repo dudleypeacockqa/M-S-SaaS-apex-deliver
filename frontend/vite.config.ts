@@ -2,9 +2,9 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'node:path'
 import dotenv from 'dotenv'
-import Sitemap from 'vite-plugin-sitemap'
 
 import { resolveImageminPlugin } from './config/imageminPluginLoader'
+import { resolveSitemapPlugin } from './config/sitemapPluginLoader'
 
 // Load local env files before validating required keys
 ['.env', '.env.local', '.env.production', '.env.production.local'].forEach(file => {
@@ -66,33 +66,44 @@ validateBuildEnv()
 // https://vitejs.dev/config/
 const shouldOptimizeImages = process.env.VITE_DISABLE_IMAGE_MIN !== 'true'
 const imageminPluginFactory = resolveImageminPlugin(shouldOptimizeImages)
+const sitemapPluginFactory = resolveSitemapPlugin()
+const sitemapHostname = process.env.VITE_SITEMAP_HOSTNAME || 'https://100daysandbeyond.com'
+
+const plugins = [react()]
+if (sitemapPluginFactory) {
+  plugins.push(
+    sitemapPluginFactory({
+      hostname: sitemapHostname,
+    }),
+  )
+}
+if (imageminPluginFactory) {
+  plugins.push(
+    imageminPluginFactory({
+      gifsicle: {
+        optimizationLevel: 3,
+      },
+      optipng: {
+        optimizationLevel: 5,
+      },
+      mozjpeg: {
+        quality: 75,
+      },
+      svgo: {
+        plugins: [
+          { name: 'removeViewBox', active: false },
+          { name: 'removeDimensions', active: true },
+        ],
+      },
+    }),
+  )
+}
 
 export default defineConfig({
   define: {
     __APP_BUILD_ID__: JSON.stringify(buildId),
   },
-  plugins: [
-    react(),
-    Sitemap({ hostname: 'https://100daysandbeyond.com' }),
-    imageminPluginFactory &&
-      imageminPluginFactory({
-        gifsicle: {
-          optimizationLevel: 3,
-        },
-        optipng: {
-          optimizationLevel: 5,
-        },
-        mozjpeg: {
-          quality: 75,
-        },
-        svgo: {
-          plugins: [
-            { name: 'removeViewBox', active: false },
-            { name: 'removeDimensions', active: true },
-          ],
-        },
-      }),
-  ].filter(Boolean),
+  plugins,
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

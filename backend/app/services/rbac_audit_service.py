@@ -6,6 +6,7 @@ from typing import Any, Mapping
 from sqlalchemy.orm import Session
 
 from app.models.rbac_audit_log import RBACAuditAction, RBACAuditLog
+from app.services.audit_event_sink import emit_audit_event
 
 CLAIM_SNAPSHOT_KEYS = ("sub", "org_id", "org_role", "sid", "iss", "session_id")
 
@@ -138,3 +139,32 @@ def log_impersonation(
         action=RBACAuditAction.IMPERSONATION,
         detail=detail,
     )
+
+
+def log_resource_scope_violation(
+    db: Session,
+    *,
+    actor_user_id: str,
+    organization_id: str | None,
+    resource_type: str,
+    resource_id: str,
+    detail: str | None = None,
+) -> RBACAuditLog:
+    message = detail or "resource scope violation"
+    full_detail = f"{resource_type}({resource_id}) scope violation: {message}"
+    entry = _persist_log(
+        db,
+        actor_user_id=actor_user_id,
+        target_user_id=actor_user_id,
+        organization_id=organization_id,
+        action=RBACAuditAction.RESOURCE_SCOPE_VIOLATION,
+        detail=full_detail,
+    )
+    emit_audit_event(
+        RBACAuditAction.RESOURCE_SCOPE_VIOLATION.value,
+        actor_user_id=actor_user_id,
+        organization_id=organization_id,
+        detail=full_detail,
+        metadata={"resource_type": resource_type, "resource_id": resource_id},
+    )
+    return entry

@@ -2,9 +2,9 @@
 
 > **⚠️ DOCUMENT SUPERSEDED**: Original checklist reflects 2025-11-01 state. Active guidance lives in [docs/FINAL-COMPLETION-PLAN.md](docs/FINAL-COMPLETION-PLAN.md).
 >
-> **Reality Check (2025-11-19)**:
+> **Reality Check (2025-11-21)**:
 > - ✅ Backend full pytest rerun (1,708 PASS / 62 SKIP) logged at `docs/tests/2025-11-19-backend-pytest.txt`; rbac_audit_service coverage restored.
-> - ❌ Frontend Vitest still RED (ContactPage, BookTrial, Pricing metadata, ProtectedRoute, ProductionTracking, Scenario components, blog routing). See `docs/tests/2025-11-19-frontend-vitest.txt` for failure list.
+> - ✅ Frontend Vitest now GREEN (1,742 PASS / 0 FAIL / 85.1% cov). Latest JSON reporter log: `docs/tests/2025-11-21-frontend-vitest.jsonl` (stdout: `docs/tests/2025-11-21-frontend-vitest.txt`).
 > - ❌ Marketing Playwright smoke blocked: `scripts/run-marketing-playwright.mjs` fails during build (optional chaining/polyfill + GTM 404). Evidence at `docs/tests/2025-11-19-playwright.txt`.
 > - ⏳ Remaining Decide gates: Master Admin QA, BlogAdmin proof, Lighthouse/Axe reruns, marketing backlog per [docs/marketing/marketing-gap-analysis-2025-11-19.md](docs/marketing/marketing-gap-analysis-2025-11-19.md).
 
@@ -31,10 +31,10 @@
 | Wave 5 | Final documentation & handoff | Update README/BMAD trackers to 100%, produce completion certificate + ops handoff + marketing evidence packet | NOT STARTED |
 
 ### Immediate Next Actions (Wave 0 → Wave 1)
-1. Finish README/TODO/BMAD governance sync (this change) and note it in `docs/bmad/DAILY_STATUS_NOTES.md`.
-2. Scaffold `docs/marketing/marketing-gap-analysis-2025-11-19.md` for marketing backlog tracking.
-3. Extend `docs/testing/2025-11-19-master-admin-qa-prep.md` with Clerk account + data setup details plus evidence folder structure.
-4. Draft a manual Lighthouse + Axe capture guide so Wave 4 has zero ambiguity.
+1. Finish README/TODO/BMAD governance sync (update status + link new Vitest evidence) and note it in `docs/bmad/DAILY_STATUS_NOTES.md`.
+2. Keep the LAN execution scratchpad (`lan.md`) current alongside `plan.md` so doc + evidence references stay centralized.
+3. Reconfirm marketing backlog tracker (`docs/marketing/marketing-gap-analysis-2025-11-19.md`) captures BookTrial/contact SEO actions before the next Playwright rerun.
+4. Extend `docs/testing/2025-11-19-master-admin-qa-prep.md` with any new credentials/data requirements discovered while prepping Wave 2, then proceed to Lighthouse + Axe runbook once marketing fixes land.
 
 ## 🎯 Current Sprint: Master Admin Portal Completion
 

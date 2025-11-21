@@ -1,0 +1,37 @@
+{
+  "manufacturing": {
+    "industry": "Manufacturing",
+    "revenuePerEmployee": 120000,
+    "debtorDays": 45,
+    "creditorDays": 30,
+    "inventoryTurns": 6
+  },
+  "wholesale": {
+    "industry": "Wholesale & Distribution",
+    "revenuePerEmployee": 150000,
+    "debtorDays": 35,
+    "creditorDays": 25,
+    "inventoryTurns": 8
+  },
+  "professional_services": {
+    "industry": "Professional Services",
+    "revenuePerEmployee": 180000,
+    "debtorDays": 30,
+    "creditorDays": 15,
+    "inventoryTurns": null
+  },
+  "construction": {
+    "industry": "Construction",
+    "revenuePerEmployee": 100000,
+    "debtorDays": 60,
+    "creditorDays": 45,
+    "inventoryTurns": 4
+  },
+  "tech": {
+    "industry": "Technology",
+    "revenuePerEmployee": 200000,
+    "debtorDays": 25,
+    "creditorDays": 20,
+    "inventoryTurns": null
+  }
+}

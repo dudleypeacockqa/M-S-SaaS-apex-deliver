@@ -76,7 +76,7 @@ interface MatchInsightsProps {
 
 export const MatchInsights: React.FC<MatchInsightsProps> = ({ insights }) => {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5" data-testid="match-success-rate">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5" data-testid="match-insights">
       {insightCards.map((card) => {
         const value = insights[card.key]
         const displayValue =

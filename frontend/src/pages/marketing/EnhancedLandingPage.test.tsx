@@ -1,10 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { EnhancedLandingPage } from './EnhancedLandingPage';
 
 const RouterWrapper = ({ children }: { children: React.ReactNode }) => (
-  <BrowserRouter>{children}</BrowserRouter>
+  <HelmetProvider>
+    <BrowserRouter>{children}</BrowserRouter>
+  </HelmetProvider>
 );
 
 const renderLandingPage = async () => {
@@ -32,7 +35,8 @@ describe('EnhancedLandingPage', () => {
         name: /From Deal Flow to Cash Flow/i,
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/ApexDeliver, powered by CapLiquify/i)).toBeInTheDocument();
+    // Use a flexible matcher for text that might be split across nodes or lines
+    expect(screen.getByText((content) => content.includes('ApexDeliver, powered by CapLiquify'))).toBeInTheDocument();
     expect(screen.getAllByText(/Start Your Free 14-Day Trial/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Schedule a Demo/i).length).toBeGreaterThan(0);
   });
@@ -160,13 +164,13 @@ describe('EnhancedLandingPage', () => {
 
   it('renders final CTA section', async () => {
     await renderLandingPage();
-    expect(screen.getByText(/Ready to Transform Your M&A Workflow\?/i)).toBeInTheDocument();
+    const ctaHeading = await screen.findByRole('heading', { name: /Ready to Transform Your M&A and Finance Operations/i });
+    expect(ctaHeading).toBeInTheDocument();
   });
 
   it('includes Schedule a Demo CTA in final section', async () => {
     await renderLandingPage();
-    const demoLinks = screen.getAllByText(/Schedule a Demo/i);
-    // Should have at least 2: one in hero, one in CTASection
-    expect(demoLinks.length).toBeGreaterThanOrEqual(2);
+    // Check for Talk to an Expert from final CTA
+    expect(screen.getAllByText(/Talk to an Expert/i).length).toBeGreaterThan(0);
   });
 });

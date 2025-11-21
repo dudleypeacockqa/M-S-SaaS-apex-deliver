@@ -72,7 +72,9 @@ describe('BookTrial Page', () => {
 
     it('should render contact email for custom times', () => {
       renderWithRouter(<BookTrial />);
-      expect(screen.getByText(/dudley@apexdeliver\.com/i)).toBeInTheDocument();
+      const link = screen.getByText(/dudley@apexdeliver\.com/i);
+      expect(link).toBeInTheDocument();
+      expect(link.closest('a')).toBeInTheDocument();
     });
   });
 });

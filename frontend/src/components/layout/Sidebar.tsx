@@ -17,7 +17,7 @@ import type { UserRole } from '../auth/ProtectedRoute'
 import { APP_TITLE } from '../../const'
 
 const resolveRole = (role: unknown): UserRole => {
-  if (role === 'growth' || role === 'enterprise' || role === 'admin') {
+  if (role === 'growth' || role === 'enterprise' || role === 'admin' || role === 'master_admin') {
     return role
   }
   return 'solo'
@@ -105,7 +105,7 @@ const navSections: NavSection[] = [
   {
     id: 'administration',
     label: 'ADMINISTRATION',
-    roles: ['admin'],
+    roles: ['admin', 'master_admin'],
     items: [
       {
         id: 'admin',
@@ -117,7 +117,7 @@ const navSections: NavSection[] = [
         id: 'master-admin',
         label: 'Master Admin',
         path: '/master-admin',
-        roles: ['admin'],
+        roles: ['master_admin'],
       },
     ],
   },
@@ -142,10 +142,14 @@ export const Sidebar: React.FC = () => {
     }))
   }
 
-  const visibleSections = navSections.filter((section) =>
-    section.roles.includes(role) &&
-    section.items?.some((item) => item.roles.includes(role))
-  )
+  const visibleSections = navSections
+    .map((section) => ({
+      ...section,
+      items: (section.items ?? []).filter((item) => item.roles.includes(role)),
+    }))
+    .filter(
+      (section) => section.roles.includes(role) && section.items && section.items.length > 0,
+    )
 
   return (
     <aside

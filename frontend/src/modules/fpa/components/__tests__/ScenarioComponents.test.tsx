@@ -66,6 +66,36 @@ describe('ScenarioImpactCards', () => {
 
 describe('PredefinedScenarios', () => {
   it('renders four scenario cards and fires apply callback', () => {
+    const scenarios = [
+      {
+        id: 'aggressive-growth',
+        name: 'Aggressive Growth',
+        description: 'Accelerate customer acquisition with larger GTM investment.',
+        revenueImpact: 12.5,
+        ebitdaImpact: -2.1,
+      },
+      {
+        id: 'efficiency-focus',
+        name: 'Efficiency Focus',
+        description: 'Tighten cost controls and focus on operational leverage.',
+        revenueImpact: 4.2,
+        ebitdaImpact: 3.8,
+      },
+      {
+        id: 'balanced-optimization',
+        name: 'Balanced Optimization',
+        description: 'Blend revenue growth and cost optimisation initiatives.',
+        revenueImpact: 8.3,
+        ebitdaImpact: 1.4,
+      },
+      {
+        id: 'defensive-mode',
+        name: 'Defensive Mode',
+        description: 'Conserve cash and protect core EBITDA amid volatility.',
+        revenueImpact: -3.6,
+        ebitdaImpact: -1.2,
+      },
+    ];
     const onApplyScenario = vi.fn();
     const scenarios = [
       { id: 'aggressive-growth', name: 'Aggressive Growth', description: 'Stretch top-line performance', revenueImpact: 10, ebitdaImpact: 3 },

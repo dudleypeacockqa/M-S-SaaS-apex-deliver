@@ -1,9 +1,11 @@
 import { spawnSync } from 'node:child_process'
 
-const shouldSkip = process.env.REACT_SNAP_SKIP === 'true' || process.env.VITE_ENABLE_TEST_ROUTES === 'true'
+const shouldSkip =
+  (process.env.REACT_SNAP_SKIP ?? 'true') === 'true' ||
+  process.env.VITE_ENABLE_TEST_ROUTES === 'true'
 
 if (shouldSkip) {
-  console.log('[react-snap] Skipped (test routes or REACT_SNAP_SKIP flag).')
+  console.log('[react-snap] Skipped (set REACT_SNAP_SKIP=false to enable).')
   process.exit(0)
 }
 

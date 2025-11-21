@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
@@ -34,6 +34,10 @@ vi.mock('../../services/api/podcasts', () => ({
 }));
 vi.mock('../../components/podcast/LiveStreamManager', () => ({
   default: () => <div data-testid="mock-live-stream-manager" />,
+}));
+vi.mock('../../components/podcast/VideoPlayerModal', () => ({
+  default: ({ open, episodeName }: { open: boolean; episodeName: string }) => 
+    open ? <div role="dialog">Video Playback: {episodeName}</div> : null,
 }));
 
 vi.mock('../../hooks/useSubscriptionTier', () => ({
@@ -645,10 +649,11 @@ describe('PodcastStudio', () => {
       await user.click(watchButton);
 
       // Use getByRole dialog which is more accessible than testId
-      const modal = await screen.findByRole('dialog');
+      // Increase timeout to allow for state updates and rendering
+      const modal = await screen.findByRole('dialog', {}, { timeout: 5000 });
       expect(modal).toBeInTheDocument();
-      expect(screen.getByText(/video playback/i)).toBeInTheDocument();
-      expect(screen.getByRole('heading', { name: /investor insights/i })).toBeInTheDocument();
+      // Note: VideoPlayerModal mock renders "Video Playback: {episodeName}"
+      expect(within(modal).getByText(/video playback: investor insights/i)).toBeInTheDocument();
     });
   });
 

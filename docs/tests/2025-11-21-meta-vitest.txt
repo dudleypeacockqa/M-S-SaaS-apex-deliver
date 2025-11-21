@@ -1,0 +1,19 @@
+
+> ma-saas-frontend@1.1.0 test
+> node scripts/run-vitest.mjs run --run src/pages/marketing/AboutPage.test.tsx src/pages/marketing/AboutPage.meta.test.tsx src/pages/marketing/EnhancedLandingPage.meta.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.10 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+
+ [32m✓[39m src/pages/marketing/AboutPage.meta.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 176[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/EnhancedLandingPage.meta.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 315[2mms[22m[39m
+     [33m[2m✓[22m[39m sets canonical and og:url to 100daysandbeyond.com [33m 309[2mms[22m[39m
+ [32m✓[39m src/pages/marketing/AboutPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 800[2mms[22m[39m
+     [33m[2m✓[22m[39m sets the document title and renders the hero heading [33m 396[2mms[22m[39m
+     [33m[2m✓[22m[39m includes value statements and call to action [33m 327[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 07:32:42
+[2m   Duration [22m 4.71s[2m (transform 1.32s, setup 2.33s, collect 2.73s, tests 1.29s, environment 5.76s, prepare 6.49s)[22m
+

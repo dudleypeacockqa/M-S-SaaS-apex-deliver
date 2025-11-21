@@ -16,7 +16,7 @@ import {
   KanbanSquare,
 } from 'lucide-react'
 
-export const APP_LOGO = '/logo.svg'
+export const APP_LOGO = '/assets/brand/apexdeliver-wordmark.svg'
 export const APP_TITLE = 'ApexDeliver'
 
 export type WorkspaceNavId =
@@ -196,7 +196,7 @@ const masterAdminNavItem: WorkspaceNavigationItem = {
   id: 'master-admin',
   label: 'Master Admin',
   path: '/master-admin',
-  roles: ['admin', 'master_admin'],
+  roles: ['master_admin'],
   icon: UserCog,
   section: 'ADMINISTRATION',
   hasSubMenu: true,

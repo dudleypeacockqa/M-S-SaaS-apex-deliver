@@ -1,0 +1,1 @@
+{"timestamp":"2025-11-21T10:26:36.5222943Z","command":"npm run test -- --run","result":"passed","log":"docs/tests/2025-11-21-frontend-vitest.txt","notes":"Vitest JSON reporter output suppressed by vmThreads runner; see text log for details."}
