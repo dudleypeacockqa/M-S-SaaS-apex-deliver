@@ -10,7 +10,8 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "tailwind-merge": ["src/lib/tailwind-merge-shim"]
     },
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
@@ -28,4 +29,3 @@
   "exclude": ["**/*.test.tsx", "**/*.test.ts", "**/*.spec.tsx", "**/*.spec.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
-
