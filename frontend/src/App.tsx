@@ -8,11 +8,13 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute"
 
 // CACHE BUST: Force fresh Render build - 2025-11-17T16:10Z
 import { ErrorBoundary } from "./components/common"
-import { LoadingSpinner } from "./components/common/LoadingSpinner"
+import { BrandedLoader } from "./components/common/BrandedLoader"
 import { usePageAnalytics } from "./hooks/usePageAnalytics"
 import { useCurrentUser } from "./hooks/useCurrentUser"
 import { AnalyticsProvider } from "./components/marketing/AnalyticsProvider"
 import { FeatureGate } from "./components/subscription/FeatureGate"
+import { EnhancedLandingPage } from "./pages/marketing/EnhancedLandingPage"
+import BlogAdminEditor from "./pages/admin/BlogAdminEditor"
 
 const lazyNamed = <T extends ComponentType<any>>(
   importer: () => Promise<Record<string, unknown>>,
@@ -31,16 +33,7 @@ const lazyNamed = <T extends ComponentType<any>>(
 
 const lazyDefault = (importer: () => Promise<{ default: ComponentType<any> }>) => lazy(importer)
 
-const RouteLoader = () => (
-  <div
-    className="flex min-h-[40vh] flex-col items-center justify-center gap-3 bg-gradient-to-br from-slate-50 via-white to-indigo-50"
-    role="status"
-    aria-live="polite"
-  >
-    <LoadingSpinner size="lg" />
-    <span className="text-base font-medium text-slate-600">Preparing the ApexDeliver experience…</span>
-  </div>
-)
+const RouteLoader = () => <BrandedLoader />
 
 const SignInPage = lazyNamed(() => import("./pages/SignInPage"), "SignInPage")
 const SignUpPage = lazyNamed(() => import("./pages/SignUpPage"), "SignUpPage")
@@ -59,7 +52,6 @@ const FinancialDashboard = lazyDefault(() => import("./pages/deals/FinancialDash
 const BillingDashboard = lazyNamed(() => import("./pages/dashboard/BillingDashboard"), "BillingDashboard")
 const CheckoutSuccess = lazyNamed(() => import("./pages/checkout/CheckoutSuccess"), "CheckoutSuccess")
 const CheckoutCancel = lazyNamed(() => import("./pages/checkout/CheckoutCancel"), "CheckoutCancel")
-const EnhancedLandingPage = lazyNamed(() => import("./pages/marketing/EnhancedLandingPage"), "EnhancedLandingPage")
 const PricingPage = lazyNamed(() => import("./pages/marketing/PricingPage"), "PricingPage")
 const FeaturesPage = lazyNamed(() => import("./pages/marketing/FeaturesPage"), "FeaturesPage")
 const AboutPage = lazyNamed(() => import("./pages/marketing/AboutPage"), "AboutPage")
@@ -122,7 +114,6 @@ const AdminPanel = lazyNamed(() => import("./modules/fpa/pages/AdminPanel"), "Ad
 const PMIProjectList = lazyNamed(() => import("./modules/pmi/pages/PMIProjectList"), "PMIProjectList")
 const PMIProjectDetail = lazyNamed(() => import("./modules/pmi/pages/PMIProjectDetail"), "PMIProjectDetail")
 const PMIProjectCreate = lazyNamed(() => import("./modules/pmi/pages/PMIProjectCreate"), "PMIProjectCreate")
-const BlogAdminEditor = lazyDefault(() => import("./pages/admin/BlogAdminEditor"))
 
 // Feature flag check for Master Admin Portal (enabled by default unless explicitly disabled)
 const isMasterAdminEnabled = import.meta.env.VITE_ENABLE_MASTER_ADMIN !== 'false'
@@ -210,8 +201,8 @@ export const AppRoutes = () => {
 
       {enableTestRoutes && (
         <>
-          <Route path="__tests__/admin/blog/new" element={<TestBlogAdminPage />} />
-          <Route path="__tests__/admin/blog/:id/edit" element={<TestBlogAdminPage />} />
+          {/* <Route path="__tests__/admin/blog/new" element={<TestBlogAdminPage />} /> */}
+          {/* <Route path="__tests__/admin/blog/:id/edit" element={<TestBlogAdminPage />} /> */}
         </>
       )}
 
@@ -462,3 +453,4 @@ const App = () => {
 
 export default App
 // Render cache bust - fresh build without lucide-vendor chunk - 20251117154200
+

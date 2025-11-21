@@ -67,20 +67,26 @@ describe('ScenarioImpactCards', () => {
 describe('PredefinedScenarios', () => {
   it('renders four scenario cards and fires apply callback', () => {
     const onApplyScenario = vi.fn();
+    const scenarios = [
+      { id: 'aggressive-growth', name: 'Aggressive Growth', description: 'Stretch top-line performance', revenueImpact: 10, ebitdaImpact: 3 },
+      { id: 'efficiency-focus', name: 'Efficiency Focus', description: 'Optimize margins via opex discipline', revenueImpact: 4, ebitdaImpact: 5 },
+      { id: 'defensive-mode', name: 'Defensive Mode', description: 'Protect EBITDA during downturns', revenueImpact: -2, ebitdaImpact: 2 },
+      { id: 'platform-investment', name: 'Platform Investment', description: 'Invest in future-state automation', revenueImpact: 6, ebitdaImpact: -1 },
+    ];
+
     render(
       <PredefinedScenarios
         baseline={{ revenue: 1_000_000, ebitda: 400_000 }}
+        scenarios={scenarios}
         onApplyScenario={onApplyScenario}
       />
     );
 
     const applyButtons = screen.getAllByRole('button', { name: /apply scenario/i });
-    expect(applyButtons).toHaveLength(4);
+    expect(applyButtons).toHaveLength(scenarios.length);
 
     fireEvent.click(applyButtons[0]);
-    expect(onApplyScenario).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'aggressive-growth' })
-    );
+    expect(onApplyScenario).toHaveBeenCalledWith('aggressive-growth');
   });
 });
 

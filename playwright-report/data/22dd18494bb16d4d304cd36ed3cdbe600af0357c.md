@@ -1,0 +1,138 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#app-root"
+  - generic [ref=e3]:
+    - heading "100 Days & Beyond M&A Intelligence Platform" [level=1] [ref=e4]
+    - generic [ref=e6]:
+      - link "Skip to main content" [ref=e7] [cursor=pointer]:
+        - /url: "#main-content"
+      - navigation "Primary" [ref=e8]:
+        - generic [ref=e10]:
+          - link "ApexDeliver home" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e13]: ApexDeliver
+            - generic [ref=e14]: + CapLiquify
+          - generic [ref=e15]:
+            - button "Products" [ref=e17] [cursor=pointer]:
+              - text: Products
+              - img [ref=e18]
+            - button "Solutions" [ref=e21] [cursor=pointer]:
+              - text: Solutions
+              - img [ref=e22]
+            - button "Compare" [ref=e25] [cursor=pointer]:
+              - text: Compare
+              - img [ref=e26]
+            - button "Resources" [ref=e29] [cursor=pointer]:
+              - text: Resources
+              - img [ref=e30]
+            - button "Company" [ref=e33] [cursor=pointer]:
+              - text: Company
+              - img [ref=e34]
+            - link "Pricing" [ref=e37] [cursor=pointer]:
+              - /url: /pricing
+          - generic [ref=e38]:
+            - link "Sign In" [ref=e39] [cursor=pointer]:
+              - /url: /sign-in
+            - link "Start Free Trial" [ref=e40] [cursor=pointer]:
+              - /url: /sign-up
+      - main "Main content" [ref=e41]:
+        - generic [ref=e43]:
+          - heading "Meet the Experts Behind Your Success" [level=1] [ref=e44]
+          - paragraph [ref=e45]: Our world-class team combines decades of ERP expertise with cutting-edge AI innovation to deliver transformational results for finance leaders across the globe.
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - generic [ref=e52]: DP
+            - heading "Dudley Peacock" [level=3] [ref=e53]
+            - paragraph [ref=e54]: Founder & CEO
+            - paragraph [ref=e55]: M&A professional and entrepreneur with a vision to democratize access to enterprise-grade deal intelligence tools. Dudley brings decades of experience in finance, technology, and business transformation.
+          - generic [ref=e56]:
+            - generic [ref=e59]: SP
+            - heading "Sandra Peacock" [level=3] [ref=e60]
+            - paragraph [ref=e61]: Managing Director
+            - paragraph [ref=e62]: Strategic leader with extensive experience in operations management and business development. Sandra ensures operational excellence and client success across all ApexDeliver initiatives.
+          - generic [ref=e63]:
+            - generic [ref=e66]: MC
+            - heading "Matthew Collins" [level=3] [ref=e67]
+            - paragraph [ref=e68]: CFO
+            - paragraph [ref=e69]: Financial strategist with deep expertise in corporate finance, M&A transactions, and financial modeling. Matthew oversees all financial operations and strategic planning.
+          - generic [ref=e70]:
+            - generic [ref=e73]: AP
+            - heading "Adam Pavitt" [level=3] [ref=e74]
+            - paragraph [ref=e75]: Director of Operations
+            - paragraph [ref=e76]: Operations expert focused on process optimization and scalability. Adam ensures ApexDeliver delivers exceptional service and platform reliability to all clients.
+          - generic [ref=e77]:
+            - generic [ref=e80]: SE
+            - heading "Shaun Evertse" [level=3] [ref=e81]
+            - paragraph [ref=e82]: E-Commerce, Warehousing & Supply Chain Expert
+            - paragraph [ref=e83]: Supply chain and logistics specialist with extensive experience in e-commerce operations, warehousing, and inventory management. Shaun brings operational excellence to our platform.
+          - generic [ref=e84]:
+            - generic [ref=e87]: HV
+            - heading "Heike Venter" [level=3] [ref=e88]
+            - paragraph [ref=e89]: ERP Sales Manager
+            - paragraph [ref=e90]: ERP solutions expert with a proven track record in enterprise software sales and client relationship management. Heike helps businesses leverage technology for growth.
+        - generic [ref=e92]:
+          - heading "Experience That Drives Results" [level=2] [ref=e93]
+          - paragraph [ref=e94]: Our team brings together over 20 years of combined experience in ERP implementation, financial planning, M&A execution, and AI-powered business intelligence. We've successfully guided over 230 businesses through complex transformations, delivering an average ROI of 300-500%.
+          - paragraph [ref=e95]: When you work with ApexDeliver + CapLiquify, you're not just getting software—you're getting a team of seasoned professionals who understand your challenges and are committed to your success.
+        - generic [ref=e97]:
+          - heading "Ready to Transform Your M&A Workflow?" [level=2] [ref=e98]
+          - paragraph [ref=e99]: Join hundreds of dealmakers who are closing deals faster with AI-powered intelligence and professional-grade tools.
+          - generic [ref=e100]:
+            - link "Start Your Free Trial" [ref=e101] [cursor=pointer]:
+              - /url: /sign-up
+            - link "Schedule a Demo" [ref=e102] [cursor=pointer]:
+              - /url: /contact
+          - generic [ref=e103]:
+            - generic [ref=e104]:
+              - img [ref=e106]
+              - generic [ref=e109]: Bank-Grade Security
+            - generic [ref=e110]:
+              - img [ref=e112]
+              - generic [ref=e114]: GDPR Compliant
+            - generic [ref=e115]:
+              - img [ref=e117]
+              - generic [ref=e119]: No Credit Card Required
+      - contentinfo [ref=e120]:
+        - generic [ref=e121]:
+          - generic [ref=e122]:
+            - generic [ref=e123]:
+              - heading "ApexDeliver" [level=3] [ref=e124]
+              - paragraph [ref=e125]: Professional M&A intelligence platform for dealmakers worldwide.
+            - generic [ref=e126]:
+              - heading "Product" [level=4] [ref=e127]
+              - list [ref=e128]:
+                - listitem [ref=e129]:
+                  - link "Features" [ref=e130] [cursor=pointer]:
+                    - /url: /features
+                - listitem [ref=e131]:
+                  - link "Pricing" [ref=e132] [cursor=pointer]:
+                    - /url: /pricing
+                - listitem [ref=e133]:
+                  - link "Get Started" [ref=e134] [cursor=pointer]:
+                    - /url: /sign-up
+            - generic [ref=e135]:
+              - heading "Company" [level=4] [ref=e136]
+              - list [ref=e137]:
+                - listitem [ref=e138]:
+                  - link "About Us" [ref=e139] [cursor=pointer]:
+                    - /url: /about
+                - listitem [ref=e140]:
+                  - link "Contact" [ref=e141] [cursor=pointer]:
+                    - /url: /contact
+            - generic [ref=e142]:
+              - heading "Legal" [level=4] [ref=e143]
+              - list [ref=e144]:
+                - listitem [ref=e145]:
+                  - link "Terms of Service" [ref=e146] [cursor=pointer]:
+                    - /url: /legal/terms
+                - listitem [ref=e147]:
+                  - link "Privacy Policy" [ref=e148] [cursor=pointer]:
+                    - /url: /legal/privacy
+                - listitem [ref=e149]:
+                  - link "Cookie Policy" [ref=e150] [cursor=pointer]:
+                    - /url: /legal/cookies
+          - paragraph [ref=e152]: © 2025 ApexDeliver. All rights reserved.
+```

@@ -1,0 +1,148 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#app-root"
+  - generic [ref=e3]:
+    - heading "100 Days & Beyond M&A Intelligence Platform" [level=1] [ref=e4]
+    - generic [ref=e6]:
+      - link "Skip to main content" [ref=e7] [cursor=pointer]:
+        - /url: "#main-content"
+      - navigation "Primary" [ref=e8]:
+        - generic [ref=e10]:
+          - link "ApexDeliver home" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e13]: ApexDeliver
+            - generic [ref=e14]: + CapLiquify
+          - generic [ref=e15]:
+            - button "Products" [ref=e17] [cursor=pointer]:
+              - text: Products
+              - img [ref=e18]
+            - button "Solutions" [ref=e21] [cursor=pointer]:
+              - text: Solutions
+              - img [ref=e22]
+            - button "Compare" [ref=e25] [cursor=pointer]:
+              - text: Compare
+              - img [ref=e26]
+            - button "Resources" [ref=e29] [cursor=pointer]:
+              - text: Resources
+              - img [ref=e30]
+            - button "Company" [ref=e33] [cursor=pointer]:
+              - text: Company
+              - img [ref=e34]
+            - link "Pricing" [ref=e37] [cursor=pointer]:
+              - /url: /pricing
+          - generic [ref=e38]:
+            - link "Sign In" [ref=e39] [cursor=pointer]:
+              - /url: /sign-in
+            - link "Start Free Trial" [ref=e40] [cursor=pointer]:
+              - /url: /sign-up
+      - main "Main content" [ref=e41]:
+        - generic [ref=e43]:
+          - heading "Let's Talk About Your Growth Journey" [level=1] [ref=e44]
+          - paragraph [ref=e45]: Whether you need a demo, have questions about pricing, or want to discuss how ApexDeliver + CapLiquify can transform your operations, we're here to help.
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - heading "Send us a Message" [level=2] [ref=e50]
+            - generic [ref=e51]:
+              - generic [ref=e52]:
+                - generic [ref=e53]: Name *
+                - textbox "Name *" [ref=e54]:
+                  - /placeholder: Your full name
+              - generic [ref=e55]:
+                - generic [ref=e56]: Email *
+                - textbox "Email *" [ref=e57]:
+                  - /placeholder: your.email@example.com
+              - generic [ref=e58]:
+                - generic [ref=e59]: Subject *
+                - combobox "Subject *" [ref=e60]:
+                  - option "General Inquiry" [selected]
+                  - option "Request a Demo"
+                  - option "Sales Inquiry"
+                  - option "Technical Support"
+                  - option "Partnership Opportunity"
+                  - option "Feedback"
+              - generic [ref=e61]:
+                - generic [ref=e62]: Message *
+                - textbox "Message *" [ref=e63]:
+                  - /placeholder: Tell us more about your inquiry...
+              - button "Send Message" [ref=e64] [cursor=pointer]
+          - generic [ref=e65]:
+            - heading "Contact Information" [level=2] [ref=e66]
+            - generic [ref=e67]:
+              - generic [ref=e68]:
+                - generic [ref=e69]: 📧
+                - generic [ref=e70]:
+                  - heading "Email" [level=3] [ref=e71]
+                  - paragraph [ref=e72]: support@apexdeliver.com
+                  - paragraph [ref=e73]: We respond within 24 hours
+              - generic [ref=e74]:
+                - generic [ref=e75]: 🕐
+                - generic [ref=e76]:
+                  - heading "Support Hours" [level=3] [ref=e77]
+                  - paragraph [ref=e78]: "Monday - Friday: 9:00 AM - 6:00 PM GMT"
+                  - paragraph [ref=e79]: "Saturday - Sunday: Closed"
+              - generic [ref=e80]:
+                - generic [ref=e81]: 💼
+                - generic [ref=e82]:
+                  - heading "Enterprise Sales" [level=3] [ref=e83]
+                  - paragraph [ref=e84]: sales@apexdeliver.com
+                  - paragraph [ref=e85]: For Enterprise and Community Leader tiers
+              - generic [ref=e86]:
+                - generic [ref=e87]: 🔒
+                - generic [ref=e88]:
+                  - heading "Data Protection Officer" [level=3] [ref=e89]
+                  - paragraph [ref=e90]: privacy@apexdeliver.com
+                  - paragraph [ref=e91]: For GDPR and privacy inquiries
+            - generic [ref=e92]:
+              - heading "Looking for Answers?" [level=3] [ref=e93]
+              - paragraph [ref=e94]: Check out our pricing page FAQ for common questions about subscriptions, billing, and features.
+              - link "View Pricing FAQ →" [ref=e95] [cursor=pointer]:
+                - /url: /pricing
+        - generic [ref=e97]:
+          - heading "Prefer to Schedule a Call?" [level=2] [ref=e98]
+          - paragraph [ref=e99]: For Enterprise and Community Leader inquiries, schedule a personalized demo with our team.
+          - link "Request a Demo" [ref=e100] [cursor=pointer]:
+            - /url: mailto:sales@apexdeliver.com?subject=Demo%20Request
+      - contentinfo [ref=e101]:
+        - generic [ref=e102]:
+          - generic [ref=e103]:
+            - generic [ref=e104]:
+              - heading "ApexDeliver" [level=3] [ref=e105]
+              - paragraph [ref=e106]: Professional M&A intelligence platform for dealmakers worldwide.
+            - generic [ref=e107]:
+              - heading "Product" [level=4] [ref=e108]
+              - list [ref=e109]:
+                - listitem [ref=e110]:
+                  - link "Features" [ref=e111] [cursor=pointer]:
+                    - /url: /features
+                - listitem [ref=e112]:
+                  - link "Pricing" [ref=e113] [cursor=pointer]:
+                    - /url: /pricing
+                - listitem [ref=e114]:
+                  - link "Get Started" [ref=e115] [cursor=pointer]:
+                    - /url: /sign-up
+            - generic [ref=e116]:
+              - heading "Company" [level=4] [ref=e117]
+              - list [ref=e118]:
+                - listitem [ref=e119]:
+                  - link "About Us" [ref=e120] [cursor=pointer]:
+                    - /url: /about
+                - listitem [ref=e121]:
+                  - link "Contact" [ref=e122] [cursor=pointer]:
+                    - /url: /contact
+            - generic [ref=e123]:
+              - heading "Legal" [level=4] [ref=e124]
+              - list [ref=e125]:
+                - listitem [ref=e126]:
+                  - link "Terms of Service" [ref=e127] [cursor=pointer]:
+                    - /url: /legal/terms
+                - listitem [ref=e128]:
+                  - link "Privacy Policy" [ref=e129] [cursor=pointer]:
+                    - /url: /legal/privacy
+                - listitem [ref=e130]:
+                  - link "Cookie Policy" [ref=e131] [cursor=pointer]:
+                    - /url: /legal/cookies
+          - paragraph [ref=e133]: © 2025 ApexDeliver. All rights reserved.
+```

@@ -1,6 +1,14 @@
 import React from 'react'
 import { ArrowUpRight, ArrowDownRight, Sparkles } from 'lucide-react'
 
+const DEFAULT_SCENARIOS: PredefinedScenarioCard[] = [
+  { id: 'aggressive-growth', name: 'Aggressive Growth', description: 'Double pipeline velocity with expanded demand gen', revenueImpact: 12, ebitdaImpact: 4 },
+  { id: 'efficiency-focus', name: 'Efficiency Focus', description: 'Lean execution with targeted opex reductions', revenueImpact: 4, ebitdaImpact: 6 },
+  { id: 'defensive-mode', name: 'Defensive Mode', description: 'Preserve cash during macro slowdowns', revenueImpact: -3, ebitdaImpact: 2 },
+  { id: 'platform-investment', name: 'Platform Investment', description: 'Fund platform upgrades for strategic accounts', revenueImpact: 7, ebitdaImpact: -1 },
+]
+
+
 export interface PredefinedScenarioCard {
   id: string
   name: string
@@ -14,7 +22,7 @@ interface PredefinedScenariosProps {
     revenue: number
     ebitda: number
   }
-  scenarios: PredefinedScenarioCard[]
+  scenarios?: PredefinedScenarioCard[]
   onApplyScenario: (scenarioId: string) => void
   isApplying?: boolean
 }
@@ -33,7 +41,7 @@ const formatPercent = (value: number) => `${value >= 0 ? '+' : ''}${value.toFixe
 
 export const PredefinedScenarios: React.FC<PredefinedScenariosProps> = ({
   baseline,
-  scenarios,
+  scenarios = DEFAULT_SCENARIOS,
   onApplyScenario,
   isApplying,
 }) => {

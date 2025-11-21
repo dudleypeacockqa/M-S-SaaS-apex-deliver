@@ -26,7 +26,7 @@ const run = (command, options = {}) =>
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(__dirname, '..')
 const frontendDir = path.join(projectRoot, 'frontend')
-const env = { ...process.env }
+    const env = { ...process.env, REACT_SNAP_SKIP: 'true' }
 
 if (!env.MARKETING_BASE_URL) {
   env.MARKETING_BASE_URL = 'http://127.0.0.1:4173'

@@ -1,30 +1,46 @@
 import { Link } from 'react-router-dom'
 import { trackCtaClick } from '../../lib/analytics'
 
-export const CTASection: React.FC = () => {
+interface CTASectionProps {
+  headline?: string
+  description?: string
+  primaryCtaText?: string
+  primaryCtaLink?: string
+  secondaryCtaText?: string
+  secondaryCtaLink?: string
+}
+
+export const CTASection: React.FC<CTASectionProps> = ({
+  headline = "Ready to Transform Your M&A Workflow?",
+  description = "Join hundreds of dealmakers who are closing deals faster with AI-powered intelligence and professional-grade tools.",
+  primaryCtaText = "Start Your Free Trial",
+  primaryCtaLink = "/sign-up",
+  secondaryCtaText = "Schedule a Demo",
+  secondaryCtaLink = "/contact"
+}) => {
   return (
     <section className="bg-indigo-900 text-white py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-          Ready to Transform Your M&A Workflow?
+          {headline}
         </h2>
         <p className="text-xl text-indigo-200 mb-8 max-w-2xl mx-auto">
-          Join hundreds of dealmakers who are closing deals faster with AI-powered intelligence and professional-grade tools.
+          {description}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
-            to="/sign-up"
+            to={primaryCtaLink}
             className="bg-yellow-400 text-indigo-900 px-8 py-4 rounded-lg text-lg font-bold hover:bg-yellow-300 transition-all transform hover:scale-105 shadow-lg"
             onClick={() => trackCtaClick('start-free-trial', 'cta-section')}
           >
-            Start Your Free Trial
+            {primaryCtaText}
           </Link>
           <Link
-            to="/contact"
+            to={secondaryCtaLink}
             className="bg-white/10 backdrop-blur-sm text-white border-2 border-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/20 transition-all"
             onClick={() => trackCtaClick('schedule-demo', 'cta-section')}
           >
-            Schedule a Demo
+            {secondaryCtaText}
           </Link>
         </div>
 

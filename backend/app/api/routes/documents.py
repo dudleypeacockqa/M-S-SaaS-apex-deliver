@@ -77,6 +77,26 @@ else:
         return organization_id
 
 
+def _validate_bulk_document_ids(
+    document_ids: list[str],
+    *,
+    deal_id: str,
+    organization_id: str,
+    current_user: User,
+    db: Session,
+) -> None:
+    """Ensure every document id belongs to the scoped deal without enforcing permission levels."""
+    for document_id in document_ids:
+        require_document_access(
+            document_id=document_id,
+            deal_id=deal_id,
+            organization_id=organization_id,
+            current_user=current_user,
+            db=db,
+            minimum_level=None,
+        )
+
+
 # ============================================================================
 # FOLDER ENDPOINTS
 # ============================================================================
@@ -387,9 +407,18 @@ async def bulk_download_documents(
 ):
     """Download multiple documents as a single ZIP archive (DEV-008)."""
 
+    document_ids = [str(doc_id) for doc_id in payload.document_ids]
+    _validate_bulk_document_ids(
+        document_ids,
+        deal_id=deal_id,
+        organization_id=organization_id,
+        current_user=current_user,
+        db=db,
+    )
+
     zip_bytes, filename = await document_service.bulk_download_documents(
         db=db,
-        document_ids=[str(doc_id) for doc_id in payload.document_ids],
+        document_ids=document_ids,
         organization_id=organization_id,
         current_user=current_user,
     )
@@ -911,6 +940,13 @@ async def bulk_download_documents(
     from fastapi.responses import Response
 
     document_ids = [str(doc_id) for doc_id in request.document_ids]
+    _validate_bulk_document_ids(
+        document_ids,
+        deal_id=deal_id,
+        organization_id=organization_id,
+        current_user=current_user,
+        db=db,
+    )
 
     zip_content, filename = await document_service.bulk_download_documents(
         db=db,
@@ -944,6 +980,13 @@ def bulk_delete_documents(
     Returns 403 if all documents fail due to insufficient permissions.
     """
     document_ids = [str(doc_id) for doc_id in request.document_ids]
+    _validate_bulk_document_ids(
+        document_ids,
+        deal_id=deal_id,
+        organization_id=organization_id,
+        current_user=current_user,
+        db=db,
+    )
 
     deleted_ids, failed_ids, failed_reasons = document_service.bulk_delete_documents(
         db=db,

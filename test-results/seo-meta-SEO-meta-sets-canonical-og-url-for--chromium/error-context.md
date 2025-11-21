@@ -1,0 +1,660 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#app-root"
+  - generic [ref=e3]:
+    - heading "100 Days & Beyond M&A Intelligence Platform" [level=1] [ref=e4]
+    - generic [ref=e6]:
+      - link "Skip to main content" [ref=e7] [cursor=pointer]:
+        - /url: "#main-content"
+      - navigation "Primary" [ref=e8]:
+        - generic [ref=e10]:
+          - link "ApexDeliver home" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e13]: ApexDeliver
+            - generic [ref=e14]: + CapLiquify
+          - generic [ref=e15]:
+            - button "Products" [ref=e17] [cursor=pointer]:
+              - text: Products
+              - img [ref=e18]
+            - button "Solutions" [ref=e21] [cursor=pointer]:
+              - text: Solutions
+              - img [ref=e22]
+            - button "Compare" [ref=e25] [cursor=pointer]:
+              - text: Compare
+              - img [ref=e26]
+            - button "Resources" [ref=e29] [cursor=pointer]:
+              - text: Resources
+              - img [ref=e30]
+            - button "Company" [ref=e33] [cursor=pointer]:
+              - text: Company
+              - img [ref=e34]
+            - link "Pricing" [ref=e37] [cursor=pointer]:
+              - /url: /pricing
+          - generic [ref=e38]:
+            - link "Sign In" [ref=e39] [cursor=pointer]:
+              - /url: /sign-in
+            - link "Start Free Trial" [ref=e40] [cursor=pointer]:
+              - /url: /sign-up
+      - main "Main content" [ref=e41]:
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - img [ref=e48]
+            - generic [ref=e51]:
+              - heading "Start Your 14-Day Free Trial Today" [level=2] [ref=e52]
+              - paragraph [ref=e53]: Join 500+ M&A professionals · No credit card required
+          - generic [ref=e54]:
+            - link "Get Started →" [ref=e55] [cursor=pointer]:
+              - /url: /sign-up
+              - button "Get Started →" [ref=e56]
+            - button "Close" [ref=e57] [cursor=pointer]:
+              - img [ref=e58]
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - generic [ref=e64]:
+              - generic [ref=e65]: 100 Days & Beyond Platform
+              - generic [ref=e66]: New GTM + Finance OS
+            - 'heading "From Deal Flow to Cash Flow: The End-to-End M&A Intelligence Platform" [level=1] [ref=e67]'
+            - paragraph [ref=e68]: Stop juggling spreadsheets and disconnected tools. ApexDeliver, powered by CapLiquify, now ships one connected operating system that covers valuations, diligence rooms, FP&A, sales & promotion pricing, portals, events, and community.
+            - paragraph [ref=e69]: Close deals faster, spin up revenue experiences in hours, and walk into every board or lender meeting with banker-grade numbers. Every plan includes the 14-day free trial plus a guided go-live inside your first 100 days.
+            - generic [ref=e70]:
+              - link "Start Your Free 14-Day Trial" [ref=e71] [cursor=pointer]:
+                - /url: /sign-up
+              - link "Schedule a Demo" [ref=e72] [cursor=pointer]:
+                - /url: /contact
+            - paragraph [ref=e73]: 14-day trial - Guided onboarding - No credit card required
+            - generic [ref=e74]:
+              - generic [ref=e76]: CapLiquify FP&A Control Tower
+              - generic [ref=e78]: ApexDeliver Deal Cloud
+              - generic [ref=e79]:
+                - generic [ref=e80]: Sales & Promotion Pricing Studio
+                - generic [ref=e81]: New
+              - generic [ref=e83]: Customer & Partner Command Center
+              - generic [ref=e84]:
+                - generic [ref=e85]: Events + Community Engine
+                - generic [ref=e86]: New
+            - generic [ref=e87]:
+              - generic [ref=e88]:
+                - generic [ref=e89]: 14 days
+                - generic [ref=e90]: to full FP&A control tower
+                - generic [ref=e91]: CapLiquify onboarding sprint
+              - generic [ref=e92]:
+                - generic [ref=e93]: 40%
+                - generic [ref=e94]: faster deal velocity
+                - generic [ref=e95]: Deal rooms + valuations in ApexDeliver
+              - generic [ref=e96]:
+                - generic [ref=e97]: 3x
+                - generic [ref=e98]: promo conversion lift
+                - generic [ref=e99]: Sales & Promotion Pricing Studio
+              - generic [ref=e100]:
+                - generic [ref=e101]: GBP 2.8M
+                - generic [ref=e102]: working capital unlocked
+                - generic [ref=e103]: Average per portfolio in year one
+            - paragraph [ref=e104]: Trusted by dealmakers, finance leaders, and private equity firms worldwide. Backed by 20+ years of experience and over 230+ successful business transformations-now with GTM, customer, and community teams in the same command center.
+          - generic [ref=e105]:
+            - generic [ref=e106]:
+              - generic [ref=e112]: app.capliquify.com/cash-forecast
+              - generic [ref=e113]:
+                - generic [ref=e114]:
+                  - generic [ref=e115]:
+                    - heading "13-Week Cash Forecast" [level=2] [ref=e116]
+                    - paragraph [ref=e117]: Updated 2 hours ago • 95.8% accuracy
+                  - generic [ref=e118]:
+                    - button "Export PDF" [ref=e119] [cursor=pointer]
+                    - button "Share" [ref=e120] [cursor=pointer]
+                - generic [ref=e121]:
+                  - generic [ref=e122]:
+                    - generic [ref=e123]: Current Cash
+                    - generic [ref=e124]: £2.4M
+                    - generic [ref=e125]: ↑ 12% vs last week
+                  - generic [ref=e126]:
+                    - generic [ref=e127]: Week 13 Cash
+                    - generic [ref=e128]: £3.1M
+                    - generic [ref=e129]: Forecast
+                  - generic [ref=e130]:
+                    - generic [ref=e131]: DSO
+                    - generic [ref=e132]: 42 days
+                    - generic [ref=e133]: ↓ 5 days improved
+                  - generic [ref=e134]:
+                    - generic [ref=e135]: DPO
+                    - generic [ref=e136]: 38 days
+                    - generic [ref=e137]: Optimized
+                - generic [ref=e138]:
+                  - generic [ref=e139]:
+                    - generic [ref=e140]: Cash Position Trend
+                    - generic [ref=e141]:
+                      - generic [ref=e144]: Actual
+                      - generic [ref=e147]: Forecast
+                  - generic [ref=e169]:
+                    - generic [ref=e170]: W1
+                    - generic [ref=e171]: W4
+                    - generic [ref=e172]: W7
+                    - generic [ref=e173]: W10
+                    - generic [ref=e174]: W13
+                - generic [ref=e175]:
+                  - generic [ref=e177]:
+                    - generic [ref=e178]: "!"
+                    - generic [ref=e179]:
+                      - generic [ref=e180]: Action Required
+                      - generic [ref=e181]: 3 invoices overdue by 15+ days. Review AR aging.
+                  - generic [ref=e183]:
+                    - generic [ref=e184]: ✓
+                    - generic [ref=e185]:
+                      - generic [ref=e186]: On Track
+                      - generic [ref=e187]: "Cash runway: 18 months. Working capital optimized."
+            - generic [ref=e189]:
+              - generic [ref=e190]:
+                - paragraph [ref=e191]: 14-Day Go-Live
+                - paragraph [ref=e192]: CapLiquify + Pricing Studio staffed with operator playbooks.
+              - generic [ref=e193]:
+                - paragraph [ref=e194]: New Launches
+                - paragraph [ref=e195]: Events, community, and customer command center deploy in weeks.
+        - generic [ref=e197]:
+          - generic [ref=e198]:
+            - generic [ref=e199]:
+              - heading "Enterprise-Grade Security & Compliance" [level=2] [ref=e200]
+              - paragraph [ref=e201]: Your data is protected by the same security standards used by Fortune 500 companies
+            - generic [ref=e202]:
+              - generic [ref=e203]:
+                - img [ref=e205]
+                - heading "GDPR Compliant" [level=3] [ref=e207]
+                - paragraph [ref=e208]: Full compliance with EU data protection regulations
+              - generic [ref=e209]:
+                - img [ref=e211]
+                - heading "Bank-Grade Security" [level=3] [ref=e213]
+                - paragraph [ref=e214]: AES-256 encryption for all data
+              - generic [ref=e215]:
+                - img [ref=e217]
+                - heading "SOC 2 Type II" [level=3] [ref=e220]
+                - paragraph [ref=e221]: Certified security controls and processes
+              - generic [ref=e222]:
+                - img [ref=e224]
+                - heading "ISO 27001" [level=3] [ref=e226]
+                - paragraph [ref=e227]: Information security management certified
+              - generic [ref=e228]:
+                - img [ref=e230]
+                - heading "99.9% Uptime" [level=3] [ref=e232]
+                - paragraph [ref=e233]: Enterprise-grade reliability SLA
+              - generic [ref=e234]:
+                - img [ref=e236]
+                - heading "PCI DSS" [level=3] [ref=e239]
+                - paragraph [ref=e240]: Secure payment processing standards
+            - generic [ref=e241]:
+              - generic [ref=e243]:
+                - img [ref=e245]
+                - generic [ref=e247]:
+                  - heading "Data Encryption" [level=4] [ref=e248]
+                  - paragraph [ref=e249]: End-to-end encryption for data in transit and at rest using AES-256 and TLS 1.3
+              - generic [ref=e251]:
+                - img [ref=e253]
+                - generic [ref=e255]:
+                  - heading "Regular Audits" [level=4] [ref=e256]
+                  - paragraph [ref=e257]: Third-party security audits, penetration testing, and vulnerability assessments
+              - generic [ref=e259]:
+                - img [ref=e261]
+                - generic [ref=e263]:
+                  - heading "Backup & Recovery" [level=4] [ref=e264]
+                  - paragraph [ref=e265]: Daily encrypted backups with 30-day retention and disaster recovery procedures
+          - generic [ref=e266]:
+            - generic [ref=e267]:
+              - heading "Seamless Integrations" [level=2] [ref=e268]
+              - paragraph [ref=e269]: Connect with the tools you already use
+            - generic [ref=e270]:
+              - generic [ref=e271]:
+                - img "Xero accounting integration" [ref=e273] [cursor=pointer]
+                - img "QuickBooks accounting integration" [ref=e275] [cursor=pointer]
+                - img "Sage accounting integration" [ref=e277] [cursor=pointer]
+                - img "NetSuite ERP integration" [ref=e279] [cursor=pointer]
+                - img "Stripe payment integration" [ref=e281] [cursor=pointer]
+                - img "Slack collaboration integration" [ref=e283] [cursor=pointer]
+              - generic [ref=e284]:
+                - paragraph [ref=e285]: Need a custom integration?
+                - link "View all integrations" [ref=e286] [cursor=pointer]:
+                  - /url: /integrations
+                  - text: View all integrations
+                  - img [ref=e287]
+        - generic [ref=e290]:
+          - generic [ref=e291]:
+            - paragraph [ref=e292]: Platform blueprint
+            - heading "Every module you need to win the first 100 days and beyond" [level=2] [ref=e293]
+            - paragraph [ref=e294]: Land with CapLiquify FP&A, expand into ApexDeliver for deals, and now layer in Sales & Promotion Pricing, customer portals, events, and community without bolting on point tools.
+          - generic [ref=e295]:
+            - generic [ref=e296]:
+              - generic [ref=e297]:
+                - heading "CapLiquify FP&A Control Tower" [level=3] [ref=e298]
+                - generic [ref=e299]: Foundation
+              - paragraph [ref=e300]: 13-week cash, working-capital automation, and scenario planning with lender-grade exports.
+              - list [ref=e301]:
+                - listitem [ref=e302]:
+                  - generic [ref=e303]: "-"
+                  - generic [ref=e304]: Automated actuals ingestion from Sage, NetSuite, Xero, and CSV uploads
+                - listitem [ref=e305]:
+                  - generic [ref=e306]: "-"
+                  - generic [ref=e307]: Variance explanations + guardrail alerts across DSO/DPO/DIO
+                - listitem [ref=e308]:
+                  - generic [ref=e309]: "-"
+                  - generic [ref=e310]: Drag-and-drop scenario builder with presentation-ready decks
+              - link "See FP&A playbook" [ref=e311] [cursor=pointer]:
+                - /url: /capliquify-fpa
+                - text: See FP&A playbook
+                - generic [ref=e312]: "->"
+            - generic [ref=e313]:
+              - generic [ref=e314]:
+                - heading "ApexDeliver Deal Cloud" [level=3] [ref=e315]
+                - generic [ref=e316]: Deal velocity
+              - paragraph [ref=e317]: Deal pipeline, valuations, diligence workflows, and PMI handoffs in one command center.
+              - list [ref=e318]:
+                - listitem [ref=e319]:
+                  - generic [ref=e320]: "-"
+                  - generic [ref=e321]: Unified Kanban, list, and calendar views mapped to your IC stages
+                - listitem [ref=e322]:
+                  - generic [ref=e323]: "-"
+                  - generic [ref=e324]: 47+ ratio valuation suite with AI commentary for IC and boards
+                - listitem [ref=e325]:
+                  - generic [ref=e326]: "-"
+                  - generic [ref=e327]: Secure data rooms with watermarking, redaction, and approvals
+              - link "Explore deal workflow" [ref=e328] [cursor=pointer]:
+                - /url: /features
+                - text: Explore deal workflow
+                - generic [ref=e329]: "->"
+            - generic [ref=e330]:
+              - generic [ref=e331]:
+                - heading "Sales & Promotion Pricing Studio" [level=3] [ref=e332]
+                - generic [ref=e333]: New
+              - paragraph [ref=e334]: Launch targeted promos, quote portals, and pricing guardrails tied directly to cash forecasts.
+              - list [ref=e335]:
+                - listitem [ref=e336]:
+                  - generic [ref=e337]: "-"
+                  - generic [ref=e338]: Promo templates with floor/ceiling guardrails and approval routing
+                - listitem [ref=e339]:
+                  - generic [ref=e340]: "-"
+                  - generic [ref=e341]: Self-service quote + contract workflows for distributed teams and partners
+                - listitem [ref=e342]:
+                  - generic [ref=e343]: "-"
+                  - generic [ref=e344]: Campaign analytics tied to CapLiquify so you see working-capital impact
+              - link "View pricing studio" [ref=e345] [cursor=pointer]:
+                - /url: /sales-promotion-pricing
+                - text: View pricing studio
+                - generic [ref=e346]: "->"
+            - generic [ref=e347]:
+              - heading "Customer & Partner Command Center" [level=3] [ref=e349]
+              - paragraph [ref=e350]: B2B2C portals for orders, invoices, project updates, and secure document exchange.
+              - list [ref=e351]:
+                - listitem [ref=e352]:
+                  - generic [ref=e353]: "-"
+                  - generic [ref=e354]: Real-time order tracking, billing status, and collaboration threads
+                - listitem [ref=e355]:
+                  - generic [ref=e356]: "-"
+                  - generic [ref=e357]: Embedded document signing + watermarking with granular permissions
+                - listitem [ref=e358]:
+                  - generic [ref=e359]: "-"
+                  - generic [ref=e360]: White-label themes so every portfolio brand looks on-message day one
+              - link "Launch portals" [ref=e361] [cursor=pointer]:
+                - /url: /features
+                - text: Launch portals
+                - generic [ref=e362]: "->"
+            - generic [ref=e363]:
+              - generic [ref=e364]:
+                - heading "Events + Community Engine" [level=3] [ref=e365]
+                - generic [ref=e366]: New
+              - paragraph [ref=e367]: Plan summits, masterclasses, and podcast drops tied to deals and GTM plays.
+              - list [ref=e368]:
+                - listitem [ref=e369]:
+                  - generic [ref=e370]: "-"
+                  - generic [ref=e371]: Multi-track agendas, ticketing, sponsors, and speaker workflows
+                - listitem [ref=e372]:
+                  - generic [ref=e373]: "-"
+                  - generic [ref=e374]: Member feeds, moderation, reactions, and analytics baked in
+                - listitem [ref=e375]:
+                  - generic [ref=e376]: "-"
+                  - generic [ref=e377]: Auto-publish podcasts, recaps, and nurture cadences from one place
+              - link "Grow your community" [ref=e378] [cursor=pointer]:
+                - /url: /podcast
+                - text: Grow your community
+                - generic [ref=e379]: "->"
+            - generic [ref=e380]:
+              - heading "Enterprise Governance & Intelligence" [level=3] [ref=e382]
+              - paragraph [ref=e383]: Master admin controls, entitlements, and explainable AI copilots for every workflow.
+              - list [ref=e384]:
+                - listitem [ref=e385]:
+                  - generic [ref=e386]: "-"
+                  - generic [ref=e387]: Role-based entitlements with region-specific data residency
+                - listitem [ref=e388]:
+                  - generic [ref=e389]: "-"
+                  - generic [ref=e390]: Immutable audit trails, watermarking, and SOC 2 / ISO 27001 alignment
+                - listitem [ref=e391]:
+                  - generic [ref=e392]: "-"
+                  - generic [ref=e393]: Embedded copilots with citation links and opt-out controls
+              - link "Review security stack" [ref=e394] [cursor=pointer]:
+                - /url: /security
+                - text: Review security stack
+                - generic [ref=e395]: "->"
+        - generic [ref=e397]:
+          - generic [ref=e398]:
+            - paragraph [ref=e399]: New this quarter
+            - heading "The newest revenue, event, and community launches" [level=2] [ref=e400]
+            - paragraph [ref=e401]: We keep shipping go-to-market power-ups so your teams can monetize faster while finance keeps the guardrails tight.
+          - generic [ref=e402]:
+            - generic [ref=e403]:
+              - paragraph [ref=e404]: Launch
+              - heading "Sales & Promotion Pricing Studio" [level=3] [ref=e405]
+              - paragraph [ref=e406]: Bundle-level rules, partner promos, and revenue experiments that roll straight into CapLiquify forecasts.
+              - paragraph [ref=e407]: +32% promo ROI lift across beta customers in eight weeks.
+            - generic [ref=e408]:
+              - paragraph [ref=e409]: Launch
+              - heading "Event Management Hub" [level=3] [ref=e410]
+              - paragraph [ref=e411]: Plan summits, manage sponsors, track tickets, and sync actuals back into ApexDeliver and CapLiquify.
+              - paragraph [ref=e412]: Launch multi-track events in under 48 hours with reusable templates.
+            - generic [ref=e413]:
+              - paragraph [ref=e414]: Launch
+              - heading "Community + Podcast Network" [level=3] [ref=e415]
+              - paragraph [ref=e416]: Host gated feeds, audio drops, and leadership content that convert into pipeline and renewals.
+              - paragraph [ref=e417]: 5,000+ member invites processed this quarter with built-in moderation.
+        - generic [ref=e419]:
+          - generic [ref=e420]:
+            - paragraph [ref=e421]: First 100 days playbook
+            - heading "Four value sprints to land, expand, and scale" [level=2] [ref=e422]
+            - paragraph [ref=e423]: Every engagement includes a sprint-by-sprint rollout so your finance, deal, revenue, and CX teams see value inside two weeks.
+          - generic [ref=e424]:
+            - generic [ref=e425]:
+              - generic [ref=e426]:
+                - paragraph [ref=e427]: Days 0-14
+                - generic [ref=e428]: Sprint 01 - Visibility
+              - paragraph [ref=e429]: Stand up CapLiquify, stabilize cash, and publish the 13-week view.
+              - list [ref=e430]:
+                - listitem [ref=e431]:
+                  - generic [ref=e432]: ">"
+                  - generic [ref=e433]: System connections + ledger normalization
+                - listitem [ref=e434]:
+                  - generic [ref=e435]: ">"
+                  - generic [ref=e436]: 13-week direct cash + working-capital cockpit
+                - listitem [ref=e437]:
+                  - generic [ref=e438]: ">"
+                  - generic [ref=e439]: Board-ready "First 100 Days" dashboard
+            - generic [ref=e440]:
+              - generic [ref=e441]:
+                - paragraph [ref=e442]: Days 15-45
+                - generic [ref=e443]: Sprint 02 - Systemise
+              - paragraph [ref=e444]: Digitize diligence, valuations, and promos while automation takes over the busywork.
+              - list [ref=e445]:
+                - listitem [ref=e446]:
+                  - generic [ref=e447]: ">"
+                  - generic [ref=e448]: Deal pipeline + valuation suite live in ApexDeliver
+                - listitem [ref=e449]:
+                  - generic [ref=e450]: ">"
+                  - generic [ref=e451]: Secure document room + approvals running
+                - listitem [ref=e452]:
+                  - generic [ref=e453]: ">"
+                  - generic [ref=e454]: Pricing guardrails + promo calendar activated
+            - generic [ref=e455]:
+              - generic [ref=e456]:
+                - paragraph [ref=e457]: Days 46-70
+                - generic [ref=e458]: Sprint 03 - Scale
+              - paragraph [ref=e459]: Deploy portals, revenue workspaces, and customer communities.
+              - list [ref=e460]:
+                - listitem [ref=e461]:
+                  - generic [ref=e462]: ">"
+                  - generic [ref=e463]: Customer & partner portals branded + launched
+                - listitem [ref=e464]:
+                  - generic [ref=e465]: ">"
+                  - generic [ref=e466]: Revenue campaign analytics tied to cash impact
+                - listitem [ref=e467]:
+                  - generic [ref=e468]: ">"
+                  - generic [ref=e469]: Community + event programming scheduled
+            - generic [ref=e470]:
+              - generic [ref=e471]:
+                - paragraph [ref=e472]: Days 71-100
+                - generic [ref=e473]: Sprint 04 - Signal
+              - paragraph [ref=e474]: Roll up insights for the portfolio, lenders, and GTM teams with repeatable cadences.
+              - list [ref=e475]:
+                - listitem [ref=e476]:
+                  - generic [ref=e477]: ">"
+                  - generic [ref=e478]: Executive reporting cadence + AI copilots
+                - listitem [ref=e479]:
+                  - generic [ref=e480]: ">"
+                  - generic [ref=e481]: Enterprise governance, audit, and compliance guardrails
+                - listitem [ref=e482]:
+                  - generic [ref=e483]: ">"
+                  - generic [ref=e484]: Playbooks for the next acquisition and promotion cycle
+        - generic [ref=e486]:
+          - generic [ref=e487]:
+            - paragraph [ref=e488]: Who we serve
+            - heading "One operating system for every operator" [level=2] [ref=e489]
+            - paragraph [ref=e490]: Private equity portfolio teams, strategics, and fast-moving operators finally share the same data, workflows, and guardrails.
+          - generic [ref=e491]:
+            - generic [ref=e492]:
+              - paragraph [ref=e493]: Portfolio CFOs & Finance Leads
+              - paragraph [ref=e494]: Replace fragile spreadsheets with living models and lender-ready packs.
+              - list [ref=e495]:
+                - listitem [ref=e496]:
+                  - generic [ref=e497]: +
+                  - generic [ref=e498]: 13-week cash with variance narratives baked in
+                - listitem [ref=e499]:
+                  - generic [ref=e500]: +
+                  - generic [ref=e501]: Working-capital cockpit tied to promo + pricing actions
+                - listitem [ref=e502]:
+                  - generic [ref=e503]: +
+                  - generic [ref=e504]: Automated board + lender packs with watermarking
+            - generic [ref=e505]:
+              - paragraph [ref=e506]: Deal & Corporate Development Teams
+              - paragraph [ref=e507]: Source, diligence, and close acquisitions with airtight governance.
+              - list [ref=e508]:
+                - listitem [ref=e509]:
+                  - generic [ref=e510]: +
+                  - generic [ref=e511]: Deal pipeline + scorecards across every stage
+                - listitem [ref=e512]:
+                  - generic [ref=e513]: +
+                  - generic [ref=e514]: Valuation studio with 47+ ratios and scenario exports
+                - listitem [ref=e515]:
+                  - generic [ref=e516]: +
+                  - generic [ref=e517]: Secure data rooms, AI digest, and PMI task orchestration
+            - generic [ref=e518]:
+              - paragraph [ref=e519]: Revenue & Commercial Ops
+              - paragraph [ref=e520]: Spin up promotions, partner pricing, and field quotes without breaking margins.
+              - list [ref=e521]:
+                - listitem [ref=e522]:
+                  - generic [ref=e523]: +
+                  - generic [ref=e524]: Promotion templates with approval routing + guardrails
+                - listitem [ref=e525]:
+                  - generic [ref=e526]: +
+                  - generic [ref=e527]: Quote-to-cash portal with embedded sign + payment options
+                - listitem [ref=e528]:
+                  - generic [ref=e529]: +
+                  - generic [ref=e530]: Real-time lift tracking back to CapLiquify forecasts
+            - generic [ref=e531]:
+              - paragraph [ref=e532]: Customer, Partner & Community Leaders
+              - paragraph [ref=e533]: Deliver modern experiences that retain customers and create pipeline.
+              - list [ref=e534]:
+                - listitem [ref=e535]:
+                  - generic [ref=e536]: +
+                  - generic [ref=e537]: Customer & partner command center with live project status
+                - listitem [ref=e538]:
+                  - generic [ref=e539]: +
+                  - generic [ref=e540]: Event + community programming tied to CRM + deal data
+                - listitem [ref=e541]:
+                  - generic [ref=e542]: +
+                  - generic [ref=e543]: Podcast + content hub to keep audiences engaged
+        - generic [ref=e545]:
+          - heading "Your Entire M&A Workflow, Unified and Automated" [level=2] [ref=e547]
+          - generic [ref=e548]:
+            - generic [ref=e549]:
+              - generic [ref=e550]: "1"
+              - heading "Land with CapLiquify (FP&A and Pricing)" [level=3] [ref=e551]
+              - paragraph [ref=e552]: Gain immediate control over your cash flow and pricing strategy. Use our 13-week cash forecasting, working capital optimization, and advanced pricing engine to stabilize financials and drive profitability from day one. Perfect for post-merger integration or as a standalone FP&A powerhouse.
+            - generic [ref=e553]:
+              - generic [ref=e554]: "2"
+              - heading "Expand to ApexDeliver (Full M&A Lifecycle)" [level=3] [ref=e555]
+              - paragraph [ref=e556]: When you're ready for your next deal, activate the full ApexDeliver suite. Manage your deal pipeline, conduct AI-powered due diligence in a secure document room, build complex valuation models, and execute your M&A strategy with unparalleled precision and efficiency.
+            - generic [ref=e557]:
+              - generic [ref=e558]: "3"
+              - heading "Grow Your Portfolio (Enterprise & B2B2C)" [level=3] [ref=e559]
+              - paragraph [ref=e560]: For private equity firms and strategic acquirers, manage your entire portfolio from a single dashboard. For your operating companies, deploy customer-facing portals for orders, invoices, and self-service, turning your finance function into a growth engine.
+        - generic [ref=e562]:
+          - heading "A Feature for Every Stage of Your Growth Journey" [level=2] [ref=e564]
+          - generic [ref=e565]:
+            - article "CapLiquify FP&A Engine" [ref=e566]:
+              - img "Financial intelligence analytics icon" [ref=e568]
+              - heading "CapLiquify FP&A Engine" [level=3] [ref=e569]
+              - paragraph [ref=e570]: Go beyond traditional accounting with a forward-looking financial planning and analysis engine. Model scenarios, forecast cash with 95%+ accuracy, and generate lender-ready reports in minutes.
+            - article "ApexDeliver M&A Suite" [ref=e571]:
+              - img "Deal pipeline visualization icon" [ref=e573]
+              - heading "ApexDeliver M&A Suite" [level=3] [ref=e574]
+              - paragraph [ref=e575]: From AI-powered deal sourcing and automated due diligence to a valuation suite with 47+ financial ratios, ApexDeliver gives you an unfair advantage in a competitive market. Close deals faster, with more confidence.
+            - article "B2B2C Customer Portals" [ref=e576]:
+              - img "Secure document vault icon" [ref=e578]
+              - heading "B2B2C Customer Portals" [level=3] [ref=e579]
+              - paragraph [ref=e580]: Empower your customers with self-service portals integrated directly with your ERP. Reduce administrative overhead, improve customer satisfaction, and get paid faster.
+          - link "Explore All Features ->" [ref=e582] [cursor=pointer]:
+            - /url: /features
+        - generic [ref=e584]:
+          - generic [ref=e585]:
+            - heading "Powerful, Transparent Pricing That Scales With You" [level=2] [ref=e586]
+            - paragraph [ref=e587]: Whether you're a solo dealmaker, a growing firm, or a large enterprise, we have a plan that fits your needs. Start with CapLiquify FP&A and expand to the full ApexDeliver stack as you grow.
+          - generic [ref=e589]:
+            - button "Monthly billing" [ref=e590] [cursor=pointer]
+            - button "Annual (save 17%)" [ref=e591] [cursor=pointer]
+          - generic [ref=e592]:
+            - generic [ref=e593]:
+              - heading "CapLiquify FP&A" [level=3] [ref=e595]
+              - paragraph [ref=e596]: £598/mo
+              - paragraph [ref=e597]: Billed monthly
+              - paragraph [ref=e598]: £2,500 setup
+              - paragraph [ref=e599]: For finance teams needing immediate cash flow visibility and working capital control
+              - list [ref=e600]:
+                - listitem [ref=e601]:
+                  - generic [ref=e602]: •
+                  - generic [ref=e603]: 13-Week Direct Cash Forecasting
+                - listitem [ref=e604]:
+                  - generic [ref=e605]: •
+                  - generic [ref=e606]: Working Capital Drivers (DSO/DPO/DIO)
+                - listitem [ref=e607]:
+                  - generic [ref=e608]: •
+                  - generic [ref=e609]: AR/AP Roll-Forwards & Ageing
+                - listitem [ref=e610]:
+                  - generic [ref=e611]: •
+                  - generic [ref=e612]: Multi-Scenario Modeling
+              - paragraph [ref=e613]: Setup fees are invoiced separately with your deployment plan.
+            - generic [ref=e614]:
+              - heading "ApexDeliver Professional" [level=3] [ref=e616]
+              - paragraph [ref=e617]: £1,598/mo
+              - paragraph [ref=e618]: Billed monthly
+              - paragraph [ref=e619]: £7,500 setup
+              - paragraph [ref=e620]: For active dealmakers managing multiple M&A projects
+              - list [ref=e621]:
+                - listitem [ref=e622]:
+                  - generic [ref=e623]: •
+                  - generic [ref=e624]: Everything in CapLiquify FP&A
+                - listitem [ref=e625]:
+                  - generic [ref=e626]: •
+                  - generic [ref=e627]: Unlimited M&A Deals
+                - listitem [ref=e628]:
+                  - generic [ref=e629]: •
+                  - generic [ref=e630]: AI-Powered Deal Sourcing & Matching
+                - listitem [ref=e631]:
+                  - generic [ref=e632]: •
+                  - generic [ref=e633]: Secure Data Room (100GB, watermarking)
+              - paragraph [ref=e634]: Setup fees are invoiced separately with your deployment plan.
+            - generic [ref=e635]:
+              - heading "ApexDeliver Enterprise" [level=3] [ref=e637]
+              - paragraph [ref=e638]: £2,997/mo
+              - paragraph [ref=e639]: Billed monthly
+              - paragraph [ref=e640]: £15,000 setup
+              - paragraph [ref=e641]: For large organizations and PE firms
+              - list [ref=e642]:
+                - listitem [ref=e643]:
+                  - generic [ref=e644]: •
+                  - generic [ref=e645]: Everything in Professional
+                - listitem [ref=e646]:
+                  - generic [ref=e647]: •
+                  - generic [ref=e648]: Unlimited Team Members & Entities
+                - listitem [ref=e649]:
+                  - generic [ref=e650]: •
+                  - generic [ref=e651]: PMI Finance Ops Stabilisation (Option B)
+                - listitem [ref=e652]:
+                  - generic [ref=e653]: •
+                  - generic [ref=e654]: Advanced RBAC & Permissions
+              - paragraph [ref=e655]: Setup fees are invoiced separately with your deployment plan.
+            - generic [ref=e656]:
+              - heading "Portfolio / Community Leader" [level=3] [ref=e658]
+              - paragraph [ref=e659]: Contact sales
+              - paragraph [ref=e660]: Tailored multi-entity deployment
+              - paragraph [ref=e661]: £30,000 setup
+              - paragraph [ref=e662]: For PE/FO managing portfolios of businesses
+              - list [ref=e663]:
+                - listitem [ref=e664]:
+                  - generic [ref=e665]: •
+                  - generic [ref=e666]: Everything in Enterprise
+                - listitem [ref=e667]:
+                  - generic [ref=e668]: •
+                  - generic [ref=e669]: Centralized Portfolio Dashboard
+                - listitem [ref=e670]:
+                  - generic [ref=e671]: •
+                  - generic [ref=e672]: Cross-Company Analytics & Consolidation
+                - listitem [ref=e673]:
+                  - generic [ref=e674]: •
+                  - generic [ref=e675]: Multi-Currency Support
+              - paragraph [ref=e676]: Setup fees are invoiced separately with your deployment plan.
+          - link "View Full Pricing & Features ->" [ref=e678] [cursor=pointer]:
+            - /url: /pricing
+          - paragraph [ref=e679]: Annual billing reflects a 17% discount compared to monthly pricing.
+        - generic [ref=e681]:
+          - heading "Ready to Transform Your M&A and Finance Operations?" [level=2] [ref=e682]
+          - paragraph [ref=e683]: Take the first step towards a more intelligent, automated, and profitable future. Start your free trial today and experience the power of a truly unified platform.
+          - generic [ref=e684]:
+            - link "Start Your Free 14-Day Trial" [ref=e685] [cursor=pointer]:
+              - /url: /sign-up
+            - link "Talk to an Expert" [ref=e686] [cursor=pointer]:
+              - /url: /contact
+          - generic [ref=e687]:
+            - generic [ref=e688]:
+              - img [ref=e690]
+              - generic [ref=e693]: Bank-Grade Security
+            - generic [ref=e694]:
+              - img [ref=e696]
+              - generic [ref=e698]: GDPR Compliant
+            - generic [ref=e699]:
+              - img [ref=e701]
+              - generic [ref=e703]: No Credit Card Required
+      - contentinfo [ref=e704]:
+        - generic [ref=e705]:
+          - generic [ref=e706]:
+            - generic [ref=e707]:
+              - heading "ApexDeliver" [level=3] [ref=e708]
+              - paragraph [ref=e709]: Professional M&A intelligence platform for dealmakers worldwide.
+            - generic [ref=e710]:
+              - heading "Product" [level=4] [ref=e711]
+              - list [ref=e712]:
+                - listitem [ref=e713]:
+                  - link "Features" [ref=e714] [cursor=pointer]:
+                    - /url: /features
+                - listitem [ref=e715]:
+                  - link "Pricing" [ref=e716] [cursor=pointer]:
+                    - /url: /pricing
+                - listitem [ref=e717]:
+                  - link "Get Started" [ref=e718] [cursor=pointer]:
+                    - /url: /sign-up
+            - generic [ref=e719]:
+              - heading "Company" [level=4] [ref=e720]
+              - list [ref=e721]:
+                - listitem [ref=e722]:
+                  - link "About Us" [ref=e723] [cursor=pointer]:
+                    - /url: /about
+                - listitem [ref=e724]:
+                  - link "Contact" [ref=e725] [cursor=pointer]:
+                    - /url: /contact
+            - generic [ref=e726]:
+              - heading "Legal" [level=4] [ref=e727]
+              - list [ref=e728]:
+                - listitem [ref=e729]:
+                  - link "Terms of Service" [ref=e730] [cursor=pointer]:
+                    - /url: /legal/terms
+                - listitem [ref=e731]:
+                  - link "Privacy Policy" [ref=e732] [cursor=pointer]:
+                    - /url: /legal/privacy
+                - listitem [ref=e733]:
+                  - link "Cookie Policy" [ref=e734] [cursor=pointer]:
+                    - /url: /legal/cookies
+          - paragraph [ref=e736]: © 2025 ApexDeliver. All rights reserved.
+```

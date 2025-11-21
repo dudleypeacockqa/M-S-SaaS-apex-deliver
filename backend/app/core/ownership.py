@@ -1,6 +1,8 @@
 """Helpers for enforcing resource ownership."""
 from __future__ import annotations
 
+from typing import Optional
+
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -50,6 +52,8 @@ def require_document_access(
     organization_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    minimum_level: Optional[str | PermissionLevel] = PermissionLevel.VIEWER,
+    allow_editor_for_own: bool = True,
 ) -> Document:
     """Ensure the current user can access a specific document within a deal."""
 
@@ -68,13 +72,19 @@ def require_document_access(
             detail="Document not found",
         )
 
-    document_service.ensure_document_permission(
-        db=db,
-        document=document,
-        user=current_user,
-        minimum_level=PermissionLevel.VIEWER,
-        allow_editor_for_own=True,
-    )
+    if minimum_level:
+        required_level = (
+            minimum_level.value
+            if isinstance(minimum_level, PermissionLevel)
+            else str(minimum_level)
+        )
+        document_service.ensure_document_permission(
+            db=db,
+            document=document,
+            user=current_user,
+            minimum_level=required_level,
+            allow_editor_for_own=allow_editor_for_own,
+        )
     return document
 
 

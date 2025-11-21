@@ -107,6 +107,7 @@ export default defineConfig({
     host: true,
   },
   build: {
+    target: 'es2018',
     outDir: 'dist',
     sourcemap: false,
     // Increase chunk size warning limit for large vendor bundles

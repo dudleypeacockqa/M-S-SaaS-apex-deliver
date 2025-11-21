@@ -128,7 +128,7 @@ export const SidebarNavigation: React.FC = () => {
       )}
 
       <aside
-        className={`relative fixed left-0 top-0 z-40 flex h-full flex-col border-r border-white/10 bg-gradient-to-b from-slate-950/95 via-slate-950/80 to-slate-950/90 text-white shadow-[0_25px_120px_rgba(2,6,23,0.55)] backdrop-blur-2xl transition-[width,transform] duration-300 ease-out ${sidebarTranslation} ${sidebarWidthClass}`}
+        className={`fixed left-0 top-0 z-40 flex h-full flex-col border-r border-white/10 bg-gradient-to-b from-slate-950/95 via-slate-950/80 to-slate-950/90 text-white shadow-[0_25px_120px_rgba(2,6,23,0.55)] backdrop-blur-2xl transition-[width,transform] duration-300 ease-out ${sidebarTranslation} ${sidebarWidthClass}`}
         data-collapsed={isCollapsed}
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/10 via-white/5 to-transparent" aria-hidden="true" />

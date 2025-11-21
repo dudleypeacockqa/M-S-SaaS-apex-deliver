@@ -120,3 +120,66 @@ def test_access_log_creation_returns_404_when_deal_id_mismatch(
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Document not found"
+
+
+def test_bulk_download_returns_404_when_document_not_in_deal(
+    client: TestClient,
+    create_deal_for_org,
+    create_user,
+    dependency_overrides,
+    db_session: Session,
+):
+    deal, owner, org = create_deal_for_org()
+    other_deal, _, _ = create_deal_for_org(organization=org, owner=owner, name="Other Deal")
+    document = _create_document(db_session, deal, org, owner)
+
+    dependency_overrides(get_current_user, lambda: owner)
+    response = client.post(
+        f"/api/deals/{other_deal.id}/documents/bulk-download",
+        json={"document_ids": [str(document.id)]},
+    )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Document not found"
+
+
+def test_bulk_delete_returns_404_when_document_not_in_deal(
+    client: TestClient,
+    create_deal_for_org,
+    create_user,
+    dependency_overrides,
+    db_session: Session,
+):
+    deal, owner, org = create_deal_for_org()
+    other_deal, _, _ = create_deal_for_org(organization=org, owner=owner, name="Other Deal")
+    document = _create_document(db_session, deal, org, owner)
+
+    dependency_overrides(get_current_user, lambda: owner)
+    response = client.post(
+        f"/api/deals/{other_deal.id}/documents/bulk-delete",
+        json={"document_ids": [str(document.id)]},
+    )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Document not found"
+
+
+def test_bulk_delete_returns_403_when_user_lacks_owner_permission(
+    client: TestClient,
+    create_deal_for_org,
+    create_user,
+    dependency_overrides,
+    db_session: Session,
+):
+    deal, owner, org = create_deal_for_org()
+    document = _create_document(db_session, deal, org, owner)
+    other_user = create_user(email="reviewer@example.com", organization_id=str(org.id))
+
+    dependency_overrides(get_current_user, lambda: other_user)
+    response = client.post(
+        f"/api/deals/{deal.id}/documents/bulk-delete",
+        json={"document_ids": [str(document.id)]},
+    )
+
+    assert response.status_code == 403
+    assert "Insufficient permissions" in response.json()["detail"]

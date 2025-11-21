@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { useAuth, useUser } from '@clerk/clerk-react'
 import { Navigate, useLocation } from 'react-router-dom'
 
-import { LoadingSpinner } from '../common/LoadingSpinner'
+import { BrandedLoader } from '../common/BrandedLoader'
 
 export type UserRole = 'solo' | 'growth' | 'enterprise' | 'admin' | 'master_admin'
 
@@ -41,18 +41,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const location = useLocation()
 
   if (!isLoaded) {
-    return (
-      <div
-        style={{
-          minHeight: '60vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <LoadingSpinner size="lg" />
-      </div>
-    )
+    return <BrandedLoader />
   }
 
   if (!isSignedIn) {

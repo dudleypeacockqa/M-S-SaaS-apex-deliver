@@ -20,6 +20,8 @@ export const ProductionTracking: React.FC = () => {
     queryFn: () => fpaApi.getProductionMetrics(),
   })
 
+  const hasMetrics = (metrics?.length ?? 0) > 0
+
   const summary = useMemo(() => {
     const items = metrics ?? []
     if (items.length === 0) {
@@ -41,7 +43,7 @@ export const ProductionTracking: React.FC = () => {
 
         <section className='grid gap-4 md:grid-cols-3'>
           <div className='rounded-2xl border border-slate-200 p-4 shadow-sm'>
-            <p className='text-sm text-slate-500'>Units Produced (7d)</p>
+            <p className='text-sm text-slate-500'>Units Produced (period)</p>
             <p className='text-3xl font-bold text-slate-900'>{summary.totalUnits.toLocaleString()}</p>
           </div>
           <div className='rounded-2xl border border-slate-200 p-4 shadow-sm'>
@@ -57,10 +59,12 @@ export const ProductionTracking: React.FC = () => {
         <section className='rounded-2xl border border-slate-100 p-6 shadow-sm'>
           <div className='mb-4 flex items-center gap-2'>
             <Factory className='h-5 w-5 text-indigo-600' />
-            <h2 className='text-xl font-semibold text-gray-900'>Daily Production Metrics</h2>
+            <h2 className='text-xl font-semibold text-gray-900'>Recent production runs</h2>
           </div>
           {isLoading ? (
             <p className='text-sm text-slate-500'>Loading production metrics…</p>
+          ) : !hasMetrics ? (
+            <p className='text-sm text-slate-500'>No production data available yet. Connect your MES feed to begin tracking throughput.</p>
           ) : (
             <div className='overflow-x-auto'>
               <table className='min-w-full'>
