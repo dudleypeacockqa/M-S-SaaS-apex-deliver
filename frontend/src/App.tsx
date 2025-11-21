@@ -245,7 +245,10 @@ export const AppRoutes = () => {
     .toString()
     .trim()
     .toLowerCase()
-  const envBrand = normalizedEnvBrand === "apexdeliver" ? "apexdeliver" : undefined
+  const allowedBrands: ReadonlySet<"apexdeliver" | "financeflo"> = new Set(["apexdeliver", "financeflo"])
+  const envBrand = allowedBrands.has(normalizedEnvBrand as "apexdeliver" | "financeflo")
+    ? (normalizedEnvBrand as "apexdeliver" | "financeflo")
+    : undefined
   const queryBrand = getQueryBrand()
   const hostBrand = getHostSuggestedBrand()
 

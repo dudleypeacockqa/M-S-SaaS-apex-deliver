@@ -54,3 +54,5 @@ services:
         value: true
       - key: VITE_PODCAST_PLAYLIST_ID
         sync: false
+      - key: NPM_CONFIG_LEGACY_PEER_DEPS
+        value: "true"
