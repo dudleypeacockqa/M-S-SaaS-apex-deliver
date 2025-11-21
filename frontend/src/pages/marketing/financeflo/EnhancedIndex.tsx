@@ -10,7 +10,7 @@ import FreeBookOffer from "@/components/marketing/financeflo/FreeBookOffer";
 import ADAPTProcess from "@/components/marketing/financeflo/ADAPTProcess";
 import SEOOptimizer from "@/components/marketing/financeflo/SEOOptimizer";
 import PerformanceOptimizer from "@/components/marketing/financeflo/PerformanceOptimizer";
-import { Button } from "@/components/marketing/financeflo/ui/Button";
+import { Button } from "@/components/marketing/financeflo/ui/button";
 import { useSecureNavigation } from "@/hooks/marketing/financeflo/useSecureNavigation";
 import { 
   ArrowRight, 
