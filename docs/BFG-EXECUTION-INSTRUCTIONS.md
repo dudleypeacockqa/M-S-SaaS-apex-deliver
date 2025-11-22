@@ -48,12 +48,21 @@ The `secrets-to-remove.txt` file is already in the repository. Verify it exists:
 cat secrets-to-remove.txt
 ```
 
-It should contain:
+It should contain placeholders like:
 ```
-[REDACTED - Use .env file]==>[REDACTED - Use .env file]
-[REDACTED - Use .env file]==>[REDACTED - Use .env file]
-...
+# IMPORTANT: Replace these placeholders with actual secrets from your secure storage
+# Format: old_secret==>replacement_text
+sk_live_YOUR_ACTUAL_SECRET_KEY==>[REDACTED - Use .env file]
+rk_live_YOUR_ACTUAL_RESTRICTED_KEY==>[REDACTED - Use .env file]
+sk-proj-YOUR_ACTUAL_OPENAI_KEY==>[REDACTED - Use .env file]
+sk-ant-api03-YOUR_ACTUAL_ANTHROPIC_KEY==>[REDACTED - Use .env file]
+SG.YOUR_ACTUAL_SENDGRID_KEY==>[REDACTED - Use .env file]
 ```
+
+**Note**: The actual secret values are NOT stored in this repository. You must retrieve them from:
+- Render Dashboard environment variables
+- Your secure password manager
+- The original commit history (before redaction)
 
 ### Step 4: Run BFG
 
@@ -81,7 +90,8 @@ git gc --prune=now --aggressive
 git log --all --source --full-history | Select-String -Pattern "REDACTED"
 
 # Verify no actual secrets remain (should return nothing)
-git log --all --source --full-history | Select-String -Pattern "[REDACTED - Use .env file]"
+# Replace with your actual secret pattern:
+git log --all --source --full-history | Select-String -Pattern "sk_live_YOUR_ACTUAL_SECRET"
 ```
 
 ### Step 7: Force Push
