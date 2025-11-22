@@ -105,6 +105,7 @@ export const BlogListingPage: React.FC = () => {
                 placeholder="Search blog posts..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="Search blog posts"
                 className="w-full px-4 py-3 pl-10 pr-4 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
