@@ -11,7 +11,7 @@
 1. **Clerk Sign-In Token**: Generate a new sign-in token via Clerk API:
    ```bash
    curl -X POST "https://api.clerk.com/v1/sign_in_tokens" \
-     -H "Authorization: Bearer sk_live_REDACTED" \
+     -H "Authorization: Bearer [REDACTED - Use Render Dashboard]" \
      -H "Content-Type: application/json" \
      -d '{"user_id":"user_35gkQKcoVJ3hpFnp6GDx39e9h8E"}'
    ```
