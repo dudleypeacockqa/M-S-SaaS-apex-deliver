@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { useAuth } from '@clerk/clerk-react'
+import { useAuth } from '@/lib/clerk'
 import { getCurrentUser, type User } from '../services/api'
 
 interface UseCurrentUserResult {

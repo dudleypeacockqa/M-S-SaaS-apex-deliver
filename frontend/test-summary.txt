@@ -1,9 +1,7 @@
-=== FRONTEND TEST SUMMARY ===
 
-=== FAILING TESTS ===
-[31m     [31m×[31m should render with negative trend[39m[32m 16[2mms[22m[39m
-[31m     [31m×[31m should apply custom className[39m[32m 5[2mms[22m[39m
-[31m     [31m×[31m shows loading state during actions[39m[32m 284[2mms[22m[39m
- [31m❯[39m src/pages/marketing/__tests__/ContactPage.form.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 271[2mms[22m[39m
-[31m     [31m×[31m emits schema metadata using the 100daysandbeyond.com domain[39m[32m 265[2mms[22m[39m
-[31m     [31m×[31m displays transcript status and download links when transcript exists[39m[33m 1064[2mms[22m[39m
+> ma-saas-frontend@1.1.0 test
+> node scripts/run-vitest.mjs run --run
+
+
+[1m[46m RUN [49m[22m [36mv4.0.10 [39m[90mC:/Projects/ma-saas-platform/M-S-SaaS-apex-deliver/frontend[39m
+

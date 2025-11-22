@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { UserButton } from '@clerk/clerk-react';
+import { UserButton } from '@/lib/clerk';
 import { getDashboardMetrics, DashboardMetrics } from '../../services/api/admin';
 
 export const AdminDashboard: React.FC = () => {

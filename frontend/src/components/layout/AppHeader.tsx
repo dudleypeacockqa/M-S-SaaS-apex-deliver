@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { UserButton } from '@clerk/clerk-react'
+import { UserButton } from '@/lib/clerk'
 import {
   Bell,
   CalendarPlus,

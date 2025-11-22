@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { useUser } from '@clerk/clerk-react'
+import { useUser } from '@/lib/clerk'
 import { Card, CardHeader, CardBody } from '../../components/ui'
 import { WorkspaceContainer } from '@/components/layout/WorkspaceContainer'
 

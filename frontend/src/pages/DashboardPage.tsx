@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { useUser } from '@clerk/clerk-react'
+import { useUser } from '@/lib/clerk'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth } from '@/lib/clerk';
 import { Navigate } from 'react-router-dom';
 
 export const BookTrial: React.FC = () => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { useUser, UserButton } from '@clerk/clerk-react'
+import { useUser, UserButton } from '@/lib/clerk'
 import {
   ChevronDown,
   ChevronRight,

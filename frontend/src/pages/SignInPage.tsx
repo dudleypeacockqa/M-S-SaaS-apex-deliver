@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { SignIn, SignedIn, SignedOut } from "@clerk/clerk-react"
+import { SignIn, SignedIn, SignedOut } from "@/lib/clerk"
 
 export const SignInPage: React.FC = () => {
   return (

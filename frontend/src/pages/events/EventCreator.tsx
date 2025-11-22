@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createEvent, type EventCreate } from '../../services/api/events'
-import { useUser } from '@clerk/clerk-react'
+import { useUser } from '@/lib/clerk'
 import { Button, Spinner } from '../../components/ui'
 import { WorkspaceContainer } from '@/components/layout/WorkspaceContainer'
 

@@ -3,10 +3,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { PricingPage } from './PricingPage';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth } from '../../lib/clerk';
 import { billingService } from '../../services/billingService';
 
-vi.mock('@clerk/clerk-react', () => ({
+vi.mock('../../lib/clerk', () => ({
   useAuth: vi.fn(),
 }));
 

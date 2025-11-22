@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useAuth, useUser } from '@clerk/clerk-react'
+import { useAuth, useUser } from '@/lib/clerk'
 import { Navigate, useLocation } from 'react-router-dom'
 
 import { BrandedLoader } from '../common/BrandedLoader'

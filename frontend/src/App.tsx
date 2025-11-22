@@ -2,7 +2,7 @@ import { Suspense, lazy, useState, type ComponentType, type LazyExoticComponent,
 import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom"
 import { RootLayout } from "./layouts/RootLayout"
 import { ProtectedLayout } from "./layouts/ProtectedLayout"
-import { SignedIn, SignedOut } from "@clerk/clerk-react"
+import { SignedIn, SignedOut } from "./lib/clerk"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ProtectedRoute } from "./components/auth/ProtectedRoute"
 import { HelmetProvider } from "react-helmet-async"

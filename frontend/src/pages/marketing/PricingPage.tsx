@@ -2,7 +2,7 @@ import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { PricingCard } from '../../components/marketing/PricingCard';
 import { CTASection } from '../../components/marketing/CTASection';
 import { SEO } from '../../components/common/SEO';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth } from '../../lib/clerk';
 import { useCallback, useMemo, useState } from 'react';
 import { billingService, type SubscriptionTier, type BillingCycle } from '../../services/billingService';
 import { createProductWithOffersSchema } from '../../utils/schemas/offerSchema';

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useOrganization, useUser } from '@clerk/clerk-react';
+import { useOrganization, useUser } from '@/lib/clerk';
 
 export type SubscriptionTier = 'starter' | 'professional' | 'premium' | 'enterprise';
 
