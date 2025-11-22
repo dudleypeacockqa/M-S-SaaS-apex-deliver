@@ -17,6 +17,7 @@ Execute Render 100% completion plan autonomously using BMAD-method and TDD metho
 - **Mobile Navigation**: Verified accessibility features (12 tests ✅)
 - **Sticky CTA**: Verified component functionality (9 tests ✅)
 - **React Snap Validation**: Validated build process and configuration (9 tests ✅)
+- **Render Migration Guardrails**: Added backend start-script assertions plus Docker-gated Alembic double-upgrade test (3 pass + 1 skip when Docker daemon unavailable)
 - **Production Build**: Successfully built and validated frontend bundle
 - **Evidence Scripts**: Prepared Master Admin CRUD, BlogAdmin proof, Lighthouse/Axe audit scripts
 
@@ -28,9 +29,9 @@ Execute Render 100% completion plan autonomously using BMAD-method and TDD metho
 
 ### Evidence
 
-- Test files: `frontend/src/__tests__/seo-validation.test.ts`, `sitemap-validation.test.ts`, `react-snap-validation.test.ts`, `frontend/src/pages/marketing/__tests__/seo-metadata-consistency.test.tsx`, `frontend/src/services/__tests__/newsletterService.integration.test.ts`, `frontend/src/components/marketing/__tests__/MarketingNav.mobile.test.tsx`
+- Test files: `frontend/src/__tests__/seo-validation.test.ts`, `sitemap-validation.test.ts`, `react-snap-validation.test.ts`, `frontend/src/pages/marketing/__tests__/seo-metadata-consistency.test.tsx`, `frontend/src/services/__tests__/newsletterService.integration.test.ts`, `frontend/src/components/marketing/__tests__/MarketingNav.mobile.test.tsx`, `backend/tests/test_render_start_script.py`, `backend/tests/test_migration_idempotency.py`
 - Documentation: `docs/bmad/2025-11-22-TDD-PROGRESS.md`, `docs/bmad/2025-11-22-FINAL-COMPLETION-SUMMARY.md`, `docs/tests/2025-11-22-react-snap-validation.md`, `docs/testing/lighthouse/2025-11-22/EXECUTION_STATUS.md`
-- Scripts: `scripts/run-lighthouse-axe.mjs` (updated), `scripts/exercise-master-admin-crud.mjs`, `scripts/capture-blogadmin-proof.mjs`
+- Scripts & Logs: `scripts/run-lighthouse-axe.mjs` (updated), `scripts/exercise-master-admin-crud.mjs`, `scripts/capture-blogadmin-proof.mjs`, `docs/evidence/2025-11-22/migration-idempotency.log`
 
 ### Next Steps
 

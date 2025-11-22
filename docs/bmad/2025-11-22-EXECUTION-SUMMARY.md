@@ -42,11 +42,18 @@
 - **Status**: Verified StickyCTABar component works correctly
 - **Test File**: `frontend/src/components/marketing/StickyCTABar.test.tsx`
 
+### 6. Migration Guardrails ✅
+- **Tests**: 4 specs (3 pass + 1 Docker-gated skip)
+- **Changes**:
+  - Added `backend/tests/test_migration_idempotency.py` to run `alembic upgrade head` twice inside the Docker harness from `scripts/test_migrations.py`
+  - Extended `backend/tests/test_render_start_script.py` to guard CRLF sanitization, env flags, and ordering of `/tmp/prestart` before `uvicorn`
+- **Evidence**: `docs/evidence/2025-11-22/migration-idempotency.log`
+
 ---
 
 ## ⏳ Pending Phase
 
-### 6. Evidence Collection Execution
+### 7. Evidence Collection Execution
 **Status**: Requires external resources
 - **Master Admin CRUD**: Script ready (`scripts/exercise-master-admin-crud.mjs`), needs Clerk sign-in token
 - **BlogAdmin Proof**: Script ready (`scripts/capture-blogadmin-proof.mjs`), needs preview server + test routes
@@ -57,8 +64,8 @@
 
 ## 📊 Test Statistics
 
-**Total Tests Created/Verified**: 39 tests  
-**Total Tests Passing**: 39/39 (100%)  
+**Total Tests Created/Verified**: 42 tests  
+**Total Tests Passing**: 41/41 (100%) + 1 Docker-gated skip  
 **Test Coverage**: All critical paths covered
 
 ### Breakdown by Phase:
@@ -67,6 +74,7 @@
 - Newsletter Integration: 4 tests ✅
 - Mobile Navigation: 12 tests ✅
 - Sticky CTA: 9 tests ✅
+- Migration Guardrails: 3 script assertions + 1 Docker-only Alembic re-run ✅
 
 ---
 
