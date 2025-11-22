@@ -1,0 +1,21 @@
+FinanceFlo Brand Merge – Targeted Vitest Run (2025-11-22)
+=========================================================
+
+Command:
+```
+cd frontend
+npx vitest run \
+  src/pages/marketing/PricingPage.test.tsx \
+  src/pages/marketing/ContactPage.test.tsx \
+  src/pages/marketing/EnhancedLandingPage.test.tsx \
+  src/components/marketing/MarketingLayout.domain.test.tsx \
+  src/utils/schemas/organizationSchema.test.ts
+```
+
+Result: ✅ PASS (5 files, 40 tests)
+
+Notes:
+- Validated new FinanceFlo pricing CTAs/subpages are linked correctly.
+- Confirmed Contact, Enhanced Landing, and Marketing layout metadata reflect the FinanceFlo brand.
+- Organization schema test now expects the FinanceFlo description & logo.
+

@@ -288,8 +288,8 @@ export const PricingPage: React.FC = () => {
                   <td className="p-4 text-center border-b border-gray-200">—</td>
                   <td className="p-4 text-center border-b border-gray-200">✓</td>
                 </tr>
-                <tr>
-                  <td className="p-4 border-b border-gray-200">API Access</td>
+                <tr data-testid="pricing-feature-api-access-row">
+                  <td className="p-4 border-b border-gray-200">API Access & iPaaS Integrations</td>
                   <td className="p-4 text-center border-b border-gray-200">—</td>
                   <td className="p-4 text-center border-b border-gray-200 bg-indigo-50">—</td>
                   <td className="p-4 text-center border-b border-gray-200">✓</td>

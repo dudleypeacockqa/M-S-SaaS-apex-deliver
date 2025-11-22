@@ -41,7 +41,7 @@ The repo is a monorepo containing:
 | `ma-saas-platform-v2/` | Legacy snapshot retained for historical reference—do not edit unless migrating history |
 | `blog_content/`, `blog_images/`, `blog_posts_for_database*.json` | Blog import assets feeding marketing site |
 | `render.yaml` & `prestart.sh` | Render deployment config + migration prestart script |
-| `ApexDeliver Environment Variables - Master Reference.md` | Single source of truth for secrets |
+| `FinanceFlo Environment Variables - Master Reference.md` | Single source of truth for secrets |
 
 ## Additional Notes
 

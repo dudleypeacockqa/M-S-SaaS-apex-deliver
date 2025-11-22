@@ -1,6 +1,6 @@
 # Marketing Gap Analysis – 2025-11-19
 
-**Scope**: Identify the remaining work required to bring https://100daysandbeyond.com to parity with the ApexDeliver + CapLiquify positioning described in `MARKETING_WEBSITE_STATUS.md`, README, and `docs/FINAL-COMPLETION-PLAN.md` (Wave 3).
+**Scope**: Identify the remaining work required to bring https://financeflo.ai to parity with the FinanceFlo + CapLiquify positioning described in `MARKETING_WEBSITE_STATUS.md`, README, and `docs/FINAL-COMPLETION-PLAN.md` (Wave 3).
 
 ## Snapshot
 | Dimension | Current Evidence | Status | Gap |
@@ -48,6 +48,6 @@
 ## Next Actions
 1. Implement mobile nav polish + record Vitest/Playwright updates.
 2. Draft content plan for the remaining 38 blog posts (outline + owner + ETA) and begin populating CMS/BogAdminEditor.
-3. Connect contact/newsletter forms to GoHighLevel (or Supabase) and document API keys in `ApexDeliver Environment Variables - Master Reference.md`.
+3. Connect contact/newsletter forms to GoHighLevel (or Supabase) and document API keys in `FinanceFlo Environment Variables - Master Reference.md`.
 4. Build ROI widget + testimonial overlays on Landing/Pricing pages.
 5. Add SEO artefacts (sitemap, robots, structured data) and schedule Lighthouse/Axe rerun using the new script/runbook.

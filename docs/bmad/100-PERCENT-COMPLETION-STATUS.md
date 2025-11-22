@@ -47,7 +47,7 @@
 1. **Governance Sync** – Keep README.md, TODO.md, `docs/bmad/bmm-workflow-status.md`, this file, and the marketing gap analysis aligned with the Nov-19 evidence/logs so no artifact prematurely claims 100%.
 2. **BlogAdminEditor E2E Proof** – Extend backend + Playwright/Vitest coverage for `/admin/blog/new` and `/admin/blog/:id/edit`, capture RED logs, fix flows, and archive screenshots/logs confirming production behaviour.
 3. **Master Admin Manual QA** – Execute the seven-module checklist (Dashboard, Activity, Pipeline, Campaigns, Content Studio, Lead Capture, Sales Collateral) using a Clerk-authenticated tester; store notes + media in `docs/testing/` and track prerequisites in `docs/testing/2025-11-19-master-admin-qa-prep.md`.
-4. **Manual Lighthouse & Axe Audits** – Run DevTools Lighthouse and Axe DevTools on https://100daysandbeyond.com, document scores, and record any remediation tickets (Cloudflare prevents automated CI runs).
+4. **Manual Lighthouse & Axe Audits** – Run DevTools Lighthouse and Axe DevTools on https://financeflo.ai, document scores, and record any remediation tickets (Cloudflare prevents automated CI runs).
 5. **Marketing Website Completion** – Finish mobile dropdown focus management, implement marketing forms/chatbot/newsletter flows, publish the remaining 38 blog posts with imagery, wire SEO assets (sitemap, robots, OG/Twitter/meta tags, structured data), and keep the marketing Playwright smoke suite green (wire script into CI).
 6. **Final Documentation & Handoff** – Generate completion certificate, feature inventory, API/user guides, deployment runbook, troubleshooting guide, and ops handoff package once the above gates are cleared.
 
@@ -81,7 +81,7 @@
 - Store pass/fail evidence + remediation tickets.
 
 ### Phase 3 – Performance & Accessibility Baselines (PENDING)
-- Run Lighthouse (Perf ≥90, A11y ≥95, BP ≥90, SEO ≥90) and Axe DevTools scans on https://100daysandbeyond.com.
+- Run Lighthouse (Perf ≥90, A11y ≥95, BP ≥90, SEO ≥90) and Axe DevTools scans on https://financeflo.ai.
 - Archive reports under `docs/marketing/` with timestamps and note any follow-up tasks.
 
 ### Phase 4 – Marketing Website Finalization (PENDING)

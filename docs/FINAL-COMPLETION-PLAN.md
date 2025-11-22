@@ -23,7 +23,7 @@ Prod Frontend: https://100daysandbeyond.com (last manual check 2025-11-17)
 - Performance & accessibility audits record 2025-11-13 data only; Lighthouse/Axe reruns pending (Cloudflare requires manual driver)
 - Marketing Playwright workflow captured its first green run (docs/tests/2025-11-19-playwright.txt) but CI wiring + screenshot/video artifacts still pending
 - BlogAdminEditor (F-010) lacks end-to-end validation notes
-- Marketing website parity vs. apexdeliver-marketing repo is now tracked in `docs/marketing/marketing-gap-analysis-2025-11-19.md`, but delivery remains outstanding
+- Marketing website parity vs. the legacy marketing repo is now tracked in `docs/marketing/marketing-gap-analysis-2025-11-19.md`, but delivery remains outstanding
 - BMAD trackers and README still reference 99.2% state; they do not track marketing deliverables or manual QA evidence
 
 ---
@@ -54,7 +54,14 @@ Prod Frontend: https://100daysandbeyond.com (last manual check 2025-11-17)
 2. Run backend + frontend targeted smoke suites (existing commands) and archive latest logs to prove nothing regressed while enabling Playwright. [gear] (backend blog/marketing APIs refreshed 2025-11-19 -> `docs/tests/2025-11-19-backend-blog-marketing.txt`; rerun focused frontend stack after nav/backlog fixes)
 3. Stand up documentation automation: update `docs/bmad/DAILY_STATUS_NOTES.md` and create `docs/deployments/2025-11-19-marketing-playwright.txt` summarizing evidence. [done] (deployment summary + Nov-19 daily note recorded)
 
-### Wave 2 - Manual QA & Marketing Implementation\n1. Seed the QA tenant via python scripts/seed_master_admin_demo.py (set MASTER_ADMIN_USER_ID/ORG_ID and capture output in docs/testing/master-admin/2025-11-19/data/records.json).\n2. Execute the seven-surface checklist, capturing screenshots/logs in docs/testing/master-admin/2025-11-19/; create BMAD stories for defects.\n3. Inventory marketing pages vs. apexdeliver-marketing feature list; produce docs/marketing/marketing-gap-analysis-2025-11-19.md.\n4. Implement missing marketing UI/SEO/backlog items (see COMPLETION-PLAN-2025-11-17 §2) using TDD (component specs + Playwright).\n5. Generate/publish outstanding blog posts via BlogAdminEditor and store IDs/cover imagery for evidence.\n\n### Wave 3 - Audits & Final Wrap
+### Wave 2 - Manual QA & Marketing Implementation
+1. Seed the QA tenant via `python scripts/seed_master_admin_demo.py` (set `MASTER_ADMIN_USER_ID/ORG_ID` and capture output in `docs/testing/master-admin/2025-11-19/data/records.json`).
+2. Execute the seven-surface checklist, capturing screenshots/logs in `docs/testing/master-admin/2025-11-19/`; create BMAD stories for defects.
+3. Inventory marketing pages against the FinanceFlo backlog documented in `docs/marketing/marketing-gap-analysis-2025-11-19.md`.
+4. Implement missing marketing UI/SEO/backlog items (see `COMPLETION-PLAN-2025-11-17` §2) using TDD (component specs + Playwright).
+5. Generate/publish outstanding blog posts via BlogAdminEditor and store IDs/cover imagery for evidence.
+
+### Wave 3 - Audits & Final Wrap
 1. After UI/content updates, re-run Lighthouse + Axe; attach HTML/JSON + summary markdown under `docs/testing/`.
 2. Re-run Playwright + vitest + pytest to lock in final green logs; store coverage summaries.
 3. Update BMAD trackers with final completion %, NEXT_ACTION set to `final-signoff`, and produce completion certificate + executive summary.
@@ -62,7 +69,7 @@ Prod Frontend: https://100daysandbeyond.com (last manual check 2025-11-17)
 ---
 
 ## Dependencies & Access
-- `.env` contains Render API keys, Clerk keys, and marketing secrets; keep synchronized via `ApexDeliver Environment Variables - Master Reference.md`.
+- `.env` contains Render API keys, Clerk keys, and marketing secrets; keep synchronized via `FinanceFlo Environment Variables - Master Reference.md`.
 - Playwright and Lighthouse flows require Vite preview service listening on `127.0.0.1:4173` (strict port). Ensure ports are free before running automation.
 - Manual QA requires seeded data + at least one organization with Prospect/Campaign/Content records. Use fixtures in `backend/tests/conftest.py` or seed via API.
 

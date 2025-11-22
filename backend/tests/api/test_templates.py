@@ -119,6 +119,125 @@ class TestGetTemplate:
         assert data["id"] == template.id
 
 
+class TestUpdateTemplate:
+    """Test PUT /api/master-admin/templates/{id} endpoint."""
+    
+    @pytest.mark.asyncio
+    async def test_update_template(
+        self,
+        async_client: AsyncClient,
+        auth_headers_master_admin: dict,
+        db_session,
+        master_admin_user,
+    ):
+        """Test updating a template."""
+        template = _create_template(db_session, master_admin_user.organization_id, name="Original")
+
+        update_data = {
+            "name": "Updated Template",
+            "subject": "Updated {{first_name}}",
+            "content": "Updated content {{first_name}}",
+        }
+
+        response = await async_client.put(
+            f"/api/master-admin/templates/{template.id}",
+            json=update_data,
+            headers=auth_headers_master_admin
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["name"] == "Updated Template"
+        assert data["subject"] == "Updated {{first_name}}"
+    
+    @pytest.mark.asyncio
+    async def test_update_template_not_found(
+        self,
+        async_client: AsyncClient,
+        auth_headers_master_admin: dict,
+    ):
+        """Test updating a non-existent template."""
+        update_data = {"name": "Updated Template"}
+
+        response = await async_client.put(
+            "/api/master-admin/templates/99999",
+            json=update_data,
+            headers=auth_headers_master_admin
+        )
+
+        assert response.status_code == 404
+        assert "not found" in response.json()["detail"].lower()
+    
+    @pytest.mark.asyncio
+    async def test_update_template_partial(
+        self,
+        async_client: AsyncClient,
+        auth_headers_master_admin: dict,
+        db_session,
+        master_admin_user,
+    ):
+        """Test partial update (only name)."""
+        template = _create_template(db_session, master_admin_user.organization_id, name="Original")
+
+        update_data = {"name": "Partially Updated"}
+
+        response = await async_client.put(
+            f"/api/master-admin/templates/{template.id}",
+            json=update_data,
+            headers=auth_headers_master_admin
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["name"] == "Partially Updated"
+        # Original subject should remain
+        assert data["subject"] == "Hello {{first_name}}"
+
+
+class TestDeleteTemplate:
+    """Test DELETE /api/master-admin/templates/{id} endpoint."""
+    
+    @pytest.mark.asyncio
+    async def test_delete_template(
+        self,
+        async_client: AsyncClient,
+        auth_headers_master_admin: dict,
+        db_session,
+        master_admin_user,
+    ):
+        """Test deleting a template."""
+        template = _create_template(db_session, master_admin_user.organization_id)
+
+        response = await async_client.delete(
+            f"/api/master-admin/templates/{template.id}",
+            headers=auth_headers_master_admin
+        )
+
+        assert response.status_code == 204
+        
+        # Verify template is deleted
+        get_response = await async_client.get(
+            f"/api/master-admin/templates/{template.id}",
+            headers=auth_headers_master_admin
+        )
+        assert get_response.status_code == 404
+    
+    @pytest.mark.asyncio
+    async def test_delete_template_not_found(
+        self,
+        async_client: AsyncClient,
+        auth_headers_master_admin: dict,
+    ):
+        """Test deleting a non-existent template."""
+        response = await async_client.delete(
+            "/api/master-admin/templates/99999",
+            headers=auth_headers_master_admin
+        )
+
+        assert response.status_code == 404
+        assert "not found" in response.json()["detail"].lower()
+
+
 class TestRenderTemplatePreview:
     """Test POST /api/master-admin/templates/{id}/preview endpoint."""
     
@@ -148,4 +267,89 @@ class TestRenderTemplatePreview:
         data = response.json()
         assert "subject" in data
         assert "content" in data
+    
+    @pytest.mark.asyncio
+    async def test_render_template_preview_missing_variables(
+        self,
+        async_client: AsyncClient,
+        auth_headers_master_admin: dict,
+        db_session,
+        master_admin_user,
+    ):
+        """Test preview with missing required variables."""
+        template = _create_template(
+            db_session,
+            master_admin_user.organization_id,
+            subject="Hello {{first_name}}",
+            content="Hi {{first_name}}, welcome to {{company}}!",
+            variables=["first_name", "company"]
+        )
+
+        # Missing 'company' variable
+        contact_data = {"first_name": "John"}
+
+        response = await async_client.post(
+            f"/api/master-admin/templates/{template.id}/preview",
+            json={"contact_data": contact_data},
+            headers=auth_headers_master_admin
+        )
+
+        assert response.status_code == 400
+        assert "missing" in response.json()["detail"].lower() or "required" in response.json()["detail"].lower()
+    
+    @pytest.mark.asyncio
+    async def test_render_template_preview_not_found(
+        self,
+        async_client: AsyncClient,
+        auth_headers_master_admin: dict,
+    ):
+        """Test preview for non-existent template."""
+        contact_data = {"first_name": "John"}
+
+        response = await async_client.post(
+            "/api/master-admin/templates/99999/preview",
+            json={"contact_data": contact_data},
+            headers=auth_headers_master_admin
+        )
+
+        assert response.status_code == 404
+
+
+class TestTemplateErrorPaths:
+    """Test error paths for template endpoints."""
+    
+    @pytest.mark.asyncio
+    async def test_get_template_not_found(
+        self,
+        async_client: AsyncClient,
+        auth_headers_master_admin: dict,
+    ):
+        """Test getting a non-existent template."""
+        response = await async_client.get(
+            "/api/master-admin/templates/99999",
+            headers=auth_headers_master_admin
+        )
+
+        assert response.status_code == 404
+    
+    @pytest.mark.asyncio
+    async def test_list_templates_with_is_default_filter(
+        self,
+        async_client: AsyncClient,
+        auth_headers_master_admin: dict,
+        db_session,
+        master_admin_user,
+    ):
+        """Test listing templates filtered by is_default flag."""
+        _create_template(db_session, master_admin_user.organization_id, is_default=True)
+        _create_template(db_session, master_admin_user.organization_id, is_default=False)
+
+        response = await async_client.get(
+            "/api/master-admin/templates?is_default=true",
+            headers=auth_headers_master_admin
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert all(template["is_default"] is True for template in data["items"])
 

@@ -99,7 +99,7 @@
 
 ## 7. Secrets & Configuration
 
-- `ApexDeliver Environment Variables - Master Reference.md` is the authoritative ledger for all keys (Clerk, Stripe, AI, storage, accounting).
+- `FinanceFlo Environment Variables - Master Reference.md` is the authoritative ledger for all keys (Clerk, Stripe, AI, storage, accounting).
 - Keep `.env` files out of source control; use Render dashboard or 1Password for production secrets.
 - Backend `Settings` (in `backend/app/core/config.py`) reads `.env` and `.env.local`. Frontend uses `.env.local` (Vite semantics).
 - Update `render.yaml` plus `render/*.md` docs if services/tiers change.

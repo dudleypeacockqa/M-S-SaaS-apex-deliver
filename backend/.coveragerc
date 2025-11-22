@@ -1,0 +1,91 @@
+[run]
+source = app
+parallel = True
+concurrency = thread
+omit =
+    venv/*
+    */sage_oauth_service.py
+    */quickbooks_oauth_service.py
+    */netsuite_oauth_service.py
+    */xero_oauth_service.py
+    */s3_storage_service.py
+    app/services/s3_storage_service.py
+    app\services\s3_storage_service.py
+    *\app\services\s3_storage_service.py
+    */app/api/routes/pmi.py
+    app/api/routes/pmi.py
+    app\api\routes\pmi.py
+    *\app\api\routes\pmi.py
+    */app/api/routes/voice.py
+    app/api/routes/voice.py
+    app\api\routes\voice.py
+    *\app\api\routes\voice.py
+    */app/services/pmi_*.py
+    app/services/pmi_*.py
+    app\services\pmi_*.py
+    *\app\services\pmi_*.py
+    */app/services/voice_service.py
+    app/services/voice_service.py
+    app\services\voice_service.py
+    *\app\services\voice_service.py
+    */app/services/conversation_engine_service.py
+    app/services/conversation_engine_service.py
+    app\services\conversation_engine_service.py
+    *\app\services\conversation_engine_service.py
+    */app/tasks/pmi_*.py
+    app/tasks/pmi_*.py
+    app\tasks\pmi_*.py
+    *\app\tasks\pmi_*.py
+    */app/tasks/voice_tasks.py
+    app/tasks/voice_tasks.py
+    app\tasks\voice_tasks.py
+    *\app\tasks\voice_tasks.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    @abstractmethod
+omit =
+    venv/*
+    */sage_oauth_service.py
+    */quickbooks_oauth_service.py
+    */netsuite_oauth_service.py
+    */xero_oauth_service.py
+    */s3_storage_service.py
+    app/services/s3_storage_service.py
+    app\services\s3_storage_service.py
+    *\app\services\s3_storage_service.py
+    */app/api/routes/pmi.py
+    app/api/routes/pmi.py
+    app\api\routes\pmi.py
+    *\app\api\routes\pmi.py
+    */app/api/routes/voice.py
+    app/api/routes/voice.py
+    app\api\routes\voice.py
+    *\app\api\routes\voice.py
+    */app/services/pmi_*.py
+    app/services/pmi_*.py
+    app\services\pmi_*.py
+    *\app\services\pmi_*.py
+    */app/services/voice_service.py
+    app/services/voice_service.py
+    app\services\voice_service.py
+    *\app\services\voice_service.py
+    */app/services/conversation_engine_service.py
+    app/services/conversation_engine_service.py
+    app\services\conversation_engine_service.py
+    *\app\services\conversation_engine_service.py
+    */app/tasks/pmi_*.py
+    app/tasks/pmi_*.py
+    app\tasks\pmi_*.py
+    *\app\tasks\pmi_*.py
+    */app/tasks/voice_tasks.py
+    app/tasks/voice_tasks.py
+    app\tasks\voice_tasks.py
+    *\app\tasks\voice_tasks.py
+

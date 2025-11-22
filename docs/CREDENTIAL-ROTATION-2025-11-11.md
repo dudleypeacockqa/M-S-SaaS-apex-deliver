@@ -48,7 +48,7 @@ Replacement Pattern: [REDACTED-ROTATED-2025-11-11] → [REDACTED-ROTATED-2025-11
 8. ✅ docs/bmad/BMAD_PROGRESS_TRACKER.md (3 replacements)
 9. ✅ scripts/generate_sitemap.py (1 replacement)
 10. ✅ scripts/import_blog_production.py (1 replacement)
-11. ✅ ApexDeliver Environment Variables - Master Reference.md (1 replacement)
+11. ✅ FinanceFlo Environment Variables - Master Reference.md (1 replacement)
 12. ✅ ENV-CONFIGURATION-STRATEGY.md (1 replacement)
 13. ✅ RENDER-BACKEND-ENV-UPDATES.md (1 replacement)
 
@@ -201,7 +201,7 @@ Replacement Pattern: [REDACTED-ROTATED-2025-11-11] → [REDACTED-ROTATED-2025-11
 
 ## Environment Reference Update (2025-11-11 06:45 UTC)
 
-- `ApexDeliver Environment Variables - Master Reference.md` (gitignored) now records the rotated placeholder `[REDACTED-ROTATED-2025-11-11]` for `DATABASE_URL` and the new helper-only `RENDER_PROD_DATABASE_URL`.
+- `FinanceFlo Environment Variables - Master Reference.md` (gitignored) now records the rotated placeholder `[REDACTED-ROTATED-2025-11-11]` for `DATABASE_URL` and the new helper-only `RENDER_PROD_DATABASE_URL`.
 - Added post-rotation instruction block reminding operators to update both env vars immediately after Render issues the new password.
 - Cross-referenced the sanitized `fix_production_alembic.py`, which now reads exclusively from `RENDER_PROD_DATABASE_URL` and masks credentials in console output to avoid future leakage.
 

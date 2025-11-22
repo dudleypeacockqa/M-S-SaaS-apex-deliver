@@ -85,7 +85,7 @@ The repository is a multi-part monorepo. `frontend/` serves a marketing funnel p
 
 - **Render Configuration:** `render.yaml` declares `ma-saas-backend` (Python web) and `ma-saas-frontend` (static). Backend `startCommand` runs `bash ./prestart.sh` before `uvicorn` to guarantee migrations. Frontend rewrites `/*` → `/index.html` for SPA routing.
 - **Prestart Script:** `prestart.sh` logs environment info, ensures Alembic is installed, lists heads, and completes `alembic upgrade head` before serving traffic.
-- **Secrets:** Stored in Render dashboard per `ApexDeliver Environment Variables - Master Reference.md`. Local `.env` files mirror required keys.
+- **Secrets:** Stored in Render dashboard per `FinanceFlo Environment Variables - Master Reference.md`. Local `.env` files mirror required keys.
 - **Vendored Tooling:** `_vendor/BMAD-METHOD/` houses BMAD CLI; `backend/venv/` and root `node_modules/` are checked in to aid reproducibility (refresh locally if stale).
 
 ## Security & Compliance
@@ -129,7 +129,7 @@ The repository is a multi-part monorepo. `frontend/` serves a marketing funnel p
 ## Deployment & DevOps (Render via GitHub)
 
 - **Source of Truth:** The `c:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver` repo pushes to GitHub; Render services (`ma-saas-backend`, `ma-saas-frontend`) are configured to auto-deploy from the `main` branch. Every merge to GitHub triggers Render builds (Python web + static) using the repo as the deployment artifact.
-- **Backend Pipeline:** Render clones the repo, runs `bash ./prestart.sh` (which executes Alembic migrations) and then starts `uvicorn`. Secrets (DATABASE_URL, Clerk, Stripe, AI keys) are stored in Render env vars; ensure they are updated in lockstep with `ApexDeliver Environment Variables - Master Reference.md`.
+- **Backend Pipeline:** Render clones the repo, runs `bash ./prestart.sh` (which executes Alembic migrations) and then starts `uvicorn`. Secrets (DATABASE_URL, Clerk, Stripe, AI keys) are stored in Render env vars; ensure they are updated in lockstep with `FinanceFlo Environment Variables - Master Reference.md`.
 - **Frontend Pipeline:** Render’s static site service runs `cd frontend && npm install && npm run build`, publishing `frontend/dist`. SPA routing is enabled via rewrites to `/index.html`.
 - **GitHub Actions & Quality Gates:** Prior to pushing to GitHub (and triggering Render), run `pytest --cov=backend/app` and `npm run test`. Linting (`npm run lint`) applies to the frontend. Optional CI can block merges unless coverage thresholds in AGENTS.md are met.
 - **Rollback Strategy:** Render keeps previous deployments; if a deploy fails, promote the last healthy version from Render dashboard. Database migrations must remain backward compatible or include rollback scripts in `backend/alembic`.

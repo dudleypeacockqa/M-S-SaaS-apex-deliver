@@ -1,0 +1,68 @@
+{
+  "url": "https://ma-saas-platform.onrender.com/api/master-admin/campaigns",
+  "tenant": "qa-dge-tenant",
+  "status": 200,
+  "statusText": "",
+  "headers": [
+    [
+      "accept-ranges",
+      "bytes"
+    ],
+    [
+      "alt-svc",
+      "h3=\":443\"; ma=86400"
+    ],
+    [
+      "cf-cache-status",
+      "DYNAMIC"
+    ],
+    [
+      "cf-ray",
+      "9a25621b1dd9467f-LHR"
+    ],
+    [
+      "content-disposition",
+      "inline; filename=\"index.html\""
+    ],
+    [
+      "content-encoding",
+      "br"
+    ],
+    [
+      "content-type",
+      "text/html; charset=utf-8"
+    ],
+    [
+      "date",
+      "Sat, 22 Nov 2025 03:36:33 GMT"
+    ],
+    [
+      "etag",
+      "\"459573f14deaf48d7c2bad764ab687f2dd99302d\""
+    ],
+    [
+      "priority",
+      "u=1,i"
+    ],
+    [
+      "rndr-id",
+      "8cc2de39-41f0-4911"
+    ],
+    [
+      "server",
+      "cloudflare"
+    ],
+    [
+      "server-timing",
+      "cfExtPri"
+    ],
+    [
+      "vary",
+      "Accept-Encoding"
+    ],
+    [
+      "x-render-origin-server",
+      "Render"
+    ]
+  ]
+}

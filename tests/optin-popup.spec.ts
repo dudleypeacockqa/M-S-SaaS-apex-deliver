@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
-
-const baseUrl = process.env.MARKETING_BASE_URL ?? "http://127.0.0.1:4173";
+import { buildMarketingUrl } from "./utils/marketingUrl";
 
 test.describe("Opt-in popup", () => {
   test("allows visitors to subscribe to the newsletter", async ({ page }) => {
@@ -23,15 +22,19 @@ test.describe("Opt-in popup", () => {
       })
     })
 
-    const response = await page.goto(baseUrl + '/', { waitUntil: 'networkidle' })
+    const instantOptInUrl = new URL(buildMarketingUrl('/'))
+    instantOptInUrl.searchParams.set('optin', 'instant')
+
+    const response = await page.goto(instantOptInUrl.toString(), { waitUntil: 'networkidle' })
     expect(response, 'landing page should respond').toBeTruthy()
     expect(response?.ok()).toBeTruthy()
 
-    await expect(page.getByRole('heading', { name: /Get Expert M&A Insights/i })).toBeVisible()
-    const emailField = page.locator('form input[type="email"]')
-    await emailField.fill('marketing-qa@example.com')
-    await page.getByRole('button', { name: /Get Free Insights/i }).click()
-    await expect(page.getByText("You're All Set!"))
-      .toBeVisible()
+    const popup = page.getByTestId('optin-popup')
+    await expect(popup).toBeVisible()
+    await expect(popup.getByRole('heading', { name: /Get Expert M&A Insights/i })).toBeVisible()
+
+    await popup.getByPlaceholder(/enter your email/i).fill('marketing-qa@example.com')
+    await popup.getByRole('button', { name: /Get Free Insights/i }).click()
+    await expect(popup.getByText("You're All Set!")).toBeVisible()
   })
 })

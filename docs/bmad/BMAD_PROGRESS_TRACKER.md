@@ -11,7 +11,7 @@ Rebase the vendored BMAD CLI to the latest v6-alpha.12 release, regenerate `.bma
 ### Accomplishments
 
 - Pulled `_vendor/BMAD-METHOD` to commit `be04d687` and ran `npm install` + the automated installer (`node run-quick-update.js`) to rebuild `.bmad/_cfg/*.csv`, module configs, and Codex/Claude Code integrations without interactive prompts.
-- Authored `docs/bmad/bmad-v6-upstream-summary.md` capturing discover_inputs, track renames, sprint artefact path changes, and impact areas for ApexDeliver.
+- Authored `docs/bmad/bmad-v6-upstream-summary.md` capturing discover_inputs, track renames, sprint artefact path changes, and impact areas for the FinanceFlo platform.
 - Updated `docs/BMAD-METHOD-IMPLEMENTATION.md`, `docs/BMAD-V6-ADOPTION-GUIDE.md`, `docs/bmad/prd.md`, `CODEX-COMPLETE-PROJECT-GUIDE.md`, and the new `docs/bmad/workflow-readme.md` to reference `.bmad/`, `docs/sprint-artifacts/`, the enterprise-bmad-method track, and the non-interactive installer snippet.
 - Synced `docs/bmad/bmm-workflow-status.md` so NEXT_ACTION/NEXT_COMMAND reference `/bmad:bmm:*` workflows and logged the refresh in this tracker before resuming QA preparation.
 
@@ -6577,7 +6577,7 @@ Pushed to: origin/main ✅
 
 ### Achievements
 - Rewritten `fix_production_alembic.py` to pull the Render prod DB URL from environment variable `RENDER_PROD_DATABASE_URL` instead of hard-coding credentials.
-- Added an incident note to `ApexDeliver Environment Variables - Master Reference.md` instructing immediate password rotation + adoption of the new env var.
+- Added an incident note to `FinanceFlo Environment Variables - Master Reference.md` instructing immediate password rotation + adoption of the new env var.
 - Updated BMAD governance docs (workflow status + tracker) to reflect the ongoing workflow-init+security loop.
 
 ### Testing/TDD Notes

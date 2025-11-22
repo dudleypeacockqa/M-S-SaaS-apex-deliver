@@ -113,7 +113,7 @@ Pattern: [REDACTED-ROTATED-2025-11-11] → [REDACTED-ROTATED-2025-11-11]
 8. docs/bmad/BMAD_PROGRESS_TRACKER.md (3 replacements)
 9. scripts/generate_sitemap.py (1 replacement)
 10. scripts/import_blog_production.py (1 replacement)
-11. ApexDeliver Environment Variables - Master Reference.md (1 replacement) - .gitignored
+11. FinanceFlo Environment Variables - Master Reference.md (1 replacement) - .gitignored
 12. ENV-CONFIGURATION-STRATEGY.md (1 replacement)
 13. RENDER-BACKEND-ENV-UPDATES.md (1 replacement)
 
@@ -219,7 +219,7 @@ Pattern: [REDACTED-ROTATED-2025-11-11] → [REDACTED-ROTATED-2025-11-11]
 
 **Git Ignored & Scrubbed** (2 files):
 - docs/DEPLOYMENT-COMPLETE-RECORD.md
-- ApexDeliver Environment Variables - Master Reference.md
+- FinanceFlo Environment Variables - Master Reference.md
 
 ---
 

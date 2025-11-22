@@ -1,14 +1,10 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
-import { ClerkProvider } from "@clerk/clerk-react"
+import { ClerkProvider, isClerkEnabled } from "@/lib/clerk"
 import App from "./App"
 import "./index.css"
 // CRITICAL: Import icons to force initialization (prevents "Cannot set properties of undefined" error)
 import "@/lib/icons"
-
-const publishableKey =
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ??
-  (import.meta.env.MODE === "test" ? "test-clerk-publishable-key" : undefined)
 
 const appBuildId = import.meta.env.VITE_APP_BUILD_ID ?? (typeof __APP_BUILD_ID__ !== 'undefined' ? __APP_BUILD_ID__ : undefined)
 
@@ -36,22 +32,14 @@ const unregisterLegacyServiceWorkers = () => {
 }
 
 const Root = () => {
-  // Always provide ClerkProvider context to prevent SignedIn/SignedOut component crashes
-  // Use fallback key if real key is missing - this allows app to render
-  const keyToUse = publishableKey && 
-    publishableKey !== 'undefined' && 
-    publishableKey.trim() !== ''
-    ? publishableKey 
-    : "pk_test_fallback-key-prevents-crashes"
-  
-  if (!publishableKey || publishableKey === 'undefined' || publishableKey.trim() === '') {
-    console.warn("Missing or invalid VITE_CLERK_PUBLISHABLE_KEY. Using fallback key to prevent crashes.")
+  if (!isClerkEnabled) {
+    console.warn(
+      "Missing or invalid VITE_CLERK_PUBLISHABLE_KEY. Rendering marketing experience with Clerk disabled.",
+    )
   }
 
-  // Always wrap App in ClerkProvider - even with invalid key, it initializes (auth just won't work)
-  // This prevents SignedIn/SignedOut components from crashing with "must be used within ClerkProvider" errors
   return (
-    <ClerkProvider publishableKey={keyToUse}>
+    <ClerkProvider>
       <App />
     </ClerkProvider>
   )

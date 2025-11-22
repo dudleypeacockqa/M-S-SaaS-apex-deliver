@@ -27,7 +27,7 @@ FILES_TO_SCRUB = [
     "docs/bmad/BMAD_PROGRESS_TRACKER.md",
     "scripts/generate_sitemap.py",
     "scripts/import_blog_production.py",
-    "ApexDeliver Environment Variables - Master Reference.md",
+    "FinanceFlo Environment Variables - Master Reference.md",
     "ENV-CONFIGURATION-STRATEGY.md",
     "RENDER-BACKEND-ENV-UPDATES.md",
 ]

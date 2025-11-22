@@ -1,0 +1,80 @@
+RENDER_API_KEY is not set; export it before running this script.
+
+==== 2025-11-22T01:48:59.8332174+00:00 ==== 
+
+[ERROR] HTTP 401: Unauthorized
+Unauthorized
+======================================================================
+RENDER MANUAL DEPLOYMENT TRIGGER
+======================================================================
+Service ID: srv-d3ihptbipnbc73e72ne0
+
+[INFO] Triggering manual deployment...
+[2025-11-22T01:30Z] Attempted manual redeploy via trigger_render_deploy.py with provided RENDER_API_KEY and service srv-d3ihptbipnbc73e72ne0. Render API responded 401 Unauthorized; key appears invalid for this service. Cannot verify production deployment without correct API token.
+======================================================================
+RENDER MANUAL DEPLOYMENT TRIGGER
+======================================================================
+Service ID: srv-d3ihptbipnbc73e72ne0
+
+[INFO] Triggering manual deployment...
+[SUCCESS] Deployment triggered!
+[
+  {
+    "deploy": {
+      "id": "dep-d4ghee7diees73atd54g",
+      "commit": {
+        "id": "f823df6806c4f258714a3f4ae486657299727936",
+        "message": "chore(frontend): shim tailwind-merge and ensure dist exists; chore(render): run prestart with CR-stripping",
+        "createdAt": "2025-11-21T14:22:59Z"
+      },
+      "status": "build_in_progress",
+      "trigger": "api",
+      "createdAt": "2025-11-22T01:51:53.887027Z",
+      "updatedAt": "2025-11-22T01:51:53.887027Z",
+      "startedAt": "2025-11-22T01:51:53.777865Z"
+    },
+    "cursor": "KlpLjBFDKnxlZTdkaWVlczczYXRkNTRn"
+  }
+]
+[
+  {
+    "deploy": {
+      "id": "dep-d4ghee7diees73atd54g",
+      "commit": {
+        "id": "f823df6806c4f258714a3f4ae486657299727936",
+        "message": "chore(frontend): shim tailwind-merge and ensure dist exists; chore(render): run prestart with CR-stripping",
+        "createdAt": "2025-11-21T14:22:59Z"
+      },
+      "status": "update_in_progress",
+      "trigger": "api",
+      "createdAt": "2025-11-22T01:51:53.887027Z",
+      "updatedAt": "2025-11-22T01:53:04.653728Z",
+      "startedAt": "2025-11-22T01:51:53.777865Z"
+    },
+    "cursor": "KlpLjBFDKnxlZTdkaWVlczczYXRkNTRn"
+  }
+]
+[
+  {
+    "deploy": {
+      "id": "dep-d4ghee7diees73atd54g",
+      "commit": {
+        "id": "f823df6806c4f258714a3f4ae486657299727936",
+        "message": "chore(frontend): shim tailwind-merge and ensure dist exists; chore(render): run prestart with CR-stripping",
+        "createdAt": "2025-11-21T14:22:59Z"
+      },
+      "status": "live",
+      "trigger": "api",
+      "createdAt": "2025-11-22T01:51:53.887027Z",
+      "updatedAt": "2025-11-22T01:53:38.141475Z",
+      "startedAt": "2025-11-22T01:51:53.777865Z",
+      "finishedAt": "2025-11-22T01:53:38.141287Z"
+    },
+    "cursor": "KlpLjBFDKnxlZTdkaWVlczczYXRkNTRn"
+  }
+]
+Frontend health check via curl -I https://ma-saas-platform.onrender.com (200 OK at 2025-11-22T01:54:28.9840175+00:00)
+[2025-11-22T02:05Z] Added missing render-start.sh to repo so Render startCommand can execute without 127 errors on next deploy. Awaiting valid Render API key to trigger redeploy from CLI, or rerun deploy from dashboard after pulling latest commit.
+[2025-11-22T02:20Z] Successfully triggered Render deploy via trigger_render_deploy.py using FinanceFlo API key for service srv-d3ihptbipnbc73e72ne0. Waiting for Render dashboard to finish build.
+[2025-11-22T02:22Z] Render API reports deploy dep-d4ghr3v5r7bs73b92n4g for commit 40d83fd86670e1fa96e33de12889429bf88afdf5 is LIVE (trigger=api, finished 02:21:10Z). Frontend redeploy confirmed.
+[2025-11-22T02:55Z] curl -I https://ma-saas-platform.onrender.com returned 200 OK (cf-ray 9a25268dbecf63b8-LHR) confirming frontend is live with new bundle.

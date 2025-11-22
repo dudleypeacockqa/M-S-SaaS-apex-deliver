@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="FinanceFlo unifies deal sourcing, valuations, secure data rooms, and post-merger execution into a single AI-powered M&A platform." />
+    <meta name="keywords" content="M&A software, deal pipeline, valuation tools, data room, post-merger integration, financial intelligence, FinanceFlo" />
+    <meta name="theme-color" content="#0A1F44" />
+    <meta name="google-site-verification" content="mock-financeflo-verification-token" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="FinanceFlo" />
+    <meta property="og:title" content="FinanceFlo | Complete M&A Lifecycle Platform" />
+    <meta property="og:description" content="Deal sourcing, diligence, valuations, secure collaboration, and post-merger integration delivered in one AI-native platform." />
+    <meta property="og:url" content="https://100daysandbeyond.com/" />
+    <meta property="og:image" content="https://100daysandbeyond.com/assets/dashboard-preview.webp" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@financeflo" />
+    <meta name="twitter:title" content="FinanceFlo | Complete M&A Lifecycle Platform" />
+    <meta name="twitter:description" content="Transform every stage of the M&A lifecycle with AI-powered deal intelligence, valuations, and execution." />
+    <meta name="twitter:image" content="https://100daysandbeyond.com/assets/dashboard-preview.webp" />
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Performance hints: preconnect to external domains -->
+    <link rel="preconnect" href="https://api.clerk.com" crossorigin />
+    <link rel="dns-prefetch" href="https://api.clerk.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-192.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="https://100daysandbeyond.com/" />
+    <title>FinanceFlo | M&A Intelligence Platform</title>
+    <style>
+      .skip-link {
+        position: absolute;
+        left: -1000px;
+        top: auto;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .skip-link:focus {
+        left: 1rem;
+        top: 1rem;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        background: #0f172a;
+        color: #ffffff;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        z-index: 999;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+
+    <script type="module" crossorigin src="/assets/js/index-FQhnlBfZ.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/js/community-BKoNlEZC.js">
+    <link rel="modulepreload" crossorigin href="/assets/js/events-Dg-HgG1m.js">
+    <link rel="modulepreload" crossorigin href="/assets/js/podcast-studio-CvuaCp-1.js">
+    <link rel="modulepreload" crossorigin href="/assets/js/valuation-suite-BqR13so6.js">
+    <link rel="stylesheet" crossorigin href="/assets/css/index-CM6xyaa3.css">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+  </head>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <a class="skip-link" href="#app-root">Skip to main content</a>
+    <div id="app-root" aria-live="polite">
+      <h1 class="sr-only">FinanceFlo M&amp;A Intelligence Platform</h1>
+      <div id="root"></div>
+    </div>
+  </body>
+</html>
+
+

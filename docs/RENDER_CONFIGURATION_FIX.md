@@ -41,10 +41,10 @@
 
 ### Solution 4: Update CORS Origins
 
-1. **Code**: Updated defaults in ackend/app/core/config.py to include production domains.
-2. **.env**: CORS_ORIGINS now lists https://100daysandbeyond.com,https://www.100daysandbeyond.com,https://apexdeliver.com,https://www.apexdeliver.com,https://ma-saas-platform.onrender.com,https://app.100daysandbeyond.com.
+1. **Code**: Updated defaults in `backend/app/core/config.py` to include the FinanceFlo hosts.
+2. **.env**: CORS_ORIGINS now lists https://financeflo.ai,https://www.financeflo.ai,https://app.financeflo.ai,https://ma-saas-platform.onrender.com.
 3. **Render Dashboard**: In **ma-saas-backend → Settings → Environment**, set CORS_ORIGINS to the same comma-separated list and redeploy.
-4. **Verification**: After redeploy, run scripts/run_smoke_tests.sh production or curl -I -H "Origin: https://100daysandbeyond.com" https://ma-saas-backend.onrender.com/api/deals.
+4. **Verification**: After redeploy, run `scripts/run_smoke_tests.sh production` or `curl -I -H "Origin: https://financeflo.ai" https://ma-saas-backend.onrender.com/api/deals`.
 
 ---
 ---
@@ -182,10 +182,9 @@ Your frontend is currently a **Web Service** but should be a **Static Site** for
    - Publish Directory: `dist`
 
 2. **Configure custom domains**:
-   - Add `apexdeliver.com`
-   - Add `100daysandbeyond.com`
-   - Add `www.apexdeliver.com` (redirect)
-   - Add `www.100daysandbeyond.com` (redirect)
+   - Add `financeflo.ai`
+   - Add `www.financeflo.ai`
+   - Add `app.financeflo.ai`
 
 3. **Delete old Web Service**:
    - Go to old `ma-saas-platform` service
@@ -249,7 +248,7 @@ Complete documentation of all Render service settings.
 - [ ] Build command: `npm install && npm run build`
 - [ ] Publish directory: `dist` (Static Site) OR serve command (Web Service)
 - [ ] Deployment successful
-- [ ] Site loading: https://apexdeliver.com
+- [ ] Site loading: https://financeflo.ai
 
 ---
 
@@ -265,7 +264,7 @@ Complete documentation of all Render service settings.
   DATABASE_URL=postgresql://ma_saas_user:***@dpg-d3ii7jjipnbc73e7chfg-a/ma_saas_platform
   CLERK_SECRET_KEY=your_clerk_secret_key
   REDIS_URL=redis://localhost:6379
-  CORS_ORIGINS=https://apexdeliver.com,https://100daysandbeyond.com
+  CORS_ORIGINS=https://financeflo.ai,https://www.financeflo.ai,https://app.financeflo.ai
   ```
 
 ### Frontend (ma-saas-platform)
@@ -275,10 +274,9 @@ Complete documentation of all Render service settings.
 - **Publish Directory**: `dist`
 - **No health check needed**
 - **Custom Domains**:
-  - apexdeliver.com (primary)
-  - www.apexdeliver.com → apexdeliver.com
-  - 100daysandbeyond.com
-  - www.100daysandbeyond.com → 100daysandbeyond.com
+  - financeflo.ai (primary)
+  - www.financeflo.ai → financeflo.ai
+  - app.financeflo.ai
 
 ### Database (ma-saas-db)
 - **Type**: PostgreSQL

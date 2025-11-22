@@ -75,7 +75,7 @@ The frontend authenticates through Clerk, then attaches JWTs to API calls hittin
 
 ### Infrastructure & Ops
 - **Render Deployment:** `render.yaml` defines two Render services (Python web + static site). Backend uses `prestart.sh` to run Alembic migrations each deploy.
-- **Environment Management:** Secrets tracked in `ApexDeliver Environment Variables - Master Reference.md`; `backend/.env.example` and `frontend/.env.example` illustrate local needs.
+- **Environment Management:** Secrets tracked in `FinanceFlo Environment Variables - Master Reference.md`; `backend/.env.example` and `frontend/.env.example` illustrate local needs.
 - **CI Expectations:** GitHub Actions run unit tests; BMAD workflows enforce coverage thresholds (≥90% backend services, ≥85% frontend, ≥90% marketing UI).
 
 ## Development Overview
@@ -122,7 +122,7 @@ The frontend authenticates through Clerk, then attaches JWTs to API calls hittin
 - **This package:** `docs/index.md`, `docs/project-overview.md`, `docs/architecture.md`, `docs/development-guide.md`, `docs/source-tree-analysis.md`.
 - **Product & Planning:** `docs/bmad/prd.md`, `docs/bmad/architecture.md`, `docs/bmad/stories/`, `BMAD_PROGRESS_TRACKER.md`.
 - **AI Context:** `CLAUDE.md`, `CODEX-COMPLETE-PROJECT-GUIDE.md`, `AGENTS.md`.
-- **Operations:** `ApexDeliver Environment Variables - Master Reference.md`, `render.yaml`, `PRODUCTION-DEPLOYMENT-CHECKLIST.md`, `DEPLOYMENT-SESSION-SUMMARY.md`.
+- **Operations:** `FinanceFlo Environment Variables - Master Reference.md`, `render.yaml`, `PRODUCTION-DEPLOYMENT-CHECKLIST.md`, `DEPLOYMENT-SESSION-SUMMARY.md`.
 
 ---
 

@@ -1,0 +1,35 @@
+warning: in the working copy of 'test-results/.last-run.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'test-results/tests-blog-smoke-Blog-smok-f52a5-g-listing-with-hero-content/error-context.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'test-results/tests-contact-flow-Contact-dba89--the-marketing-contact-form/error-context.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'test-results/tests-integrations-link-In-e6617-rations-on-the-pricing-page/error-context.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'test-results/tests-optin-popup-Opt-in-p-e05db-subscribe-to-the-newsletter/error-context.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'test-results/tests-seo-meta-SEO-meta-sets-canonical-og-url-for-contact/error-context.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'test-results/tests-seo-meta-SEO-meta-sets-canonical-og-url-for-team/error-context.md', LF will be replaced by CRLF the next time Git touches it
+ ...62b4148_add_deals_and_pipeline_stages_tables.py |   7 [31m-[m
+ .../verify_deployment.sh                           |   1 [31m-[m
+ docs/bmad/DAILY_STATUS_NOTES.md                    |   5 [32m+[m
+ docs/bmad/bmm-workflow-status.md                   |  18 [32m+[m
+ "docs/bmad/stories/DEV-012-task-automation.md\r"   |   6 [31m-[m
+ frontend/src/App.tsx                               |   2 [32m+[m[31m-[m
+ frontend/src/main.tsx                              |  28 [32m+[m[31m-[m
+ lan.md                                             |   5 [32m+[m[31m-[m
+ test-results/.last-run.json                        |  17 [32m+[m[31m-[m
+ .../error-context.md                               | 660 [31m---------------------[m
+ .../test-failed-1.png                              | Bin [31m377568[m -> [32m0[m bytes
+ .../trace.zip                                      | Bin [31m621764[m -> [32m0[m bytes
+ .../video.webm                                     | Bin [31m67956[m -> [32m0[m bytes
+ .../error-context.md                               | 148 [31m-----[m
+ .../test-failed-1.png                              | Bin [31m198097[m -> [32m0[m bytes
+ .../trace.zip                                      | Bin [31m376523[m -> [32m0[m bytes
+ .../video.webm                                     | Bin [31m48906[m -> [32m0[m bytes
+ .../error-context.md                               | 138 [31m-----[m
+ .../test-failed-1.png                              | Bin [31m226017[m -> [32m0[m bytes
+ .../trace.zip                                      | Bin [31m421281[m -> [32m0[m bytes
+ .../video.webm                                     | Bin [31m55965[m -> [32m0[m bytes
+ .../error-context.md                               |  26 [32m+[m[31m-[m
+ .../error-context.md                               |  26 [32m+[m[31m-[m
+ .../error-context.md                               |  26 [32m+[m[31m-[m
+ .../error-context.md                               |  26 [32m+[m[31m-[m
+ .../error-context.md                               |  26 [32m+[m[31m-[m
+ .../error-context.md                               |  26 [32m+[m[31m-[m
+ 27 files changed, 135 insertions(+), 1056 deletions(-)

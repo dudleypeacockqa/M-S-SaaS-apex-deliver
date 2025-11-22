@@ -62,7 +62,7 @@
 - **Evidence:** Archive Lighthouse/Playwright outputs under `docs/marketing/phase-XX/` per phase; update marketing plan + release notes.
 
 ### 7. Operations & Deployment Hardening (P0/P1)
-- **Secrets & Env:** Cross-check `.env.READY_TO_USE` vs `ApexDeliver Environment Variables - Master Reference.md`; rotate credentials referenced by helper scripts (`fix_production_alembic.py`, etc.).
+- **Secrets & Env:** Cross-check `.env.READY_TO_USE` vs `FinanceFlo Environment Variables - Master Reference.md`; rotate credentials referenced by helper scripts (`fix_production_alembic.py`, etc.).
 - **Deploy cadence:** For every sprint, redeploy backend & frontend via Render API (`scripts/trigger_render_deploy.py`), rerun `scripts/run_smoke_tests.sh production`, `scripts/verify_deployment.py`, and archive outputs (JSON + txt) with timestamps.
 - **Migrations:** Re-run `alembic upgrade head` post-deploy, capture CLI transcript, and log migration IDs inside `docs/DEPLOYMENT_HEALTH.md`.
 - **Evidence:** Update `latest-deploy*.json`, `deployment-health-*.json`, `docs/PRODUCTION-DEPLOYMENT-CHECKLIST.md`, `PRODUCTION-CONFIG-UPDATE.md`.

@@ -6,7 +6,7 @@
 - **Clerk & subscription metadata**: Organizations are mirrored locally with a normalized `subscription_tier` that feeds feature decisions. [`backend/app/services/organization_service.py:8-101`](../backend/app/services/organization_service.py#L8-L101)
 - **Documentation-driven role setup**: Admin runbooks instruct operators to set Clerk public metadata (`{"role":"admin"}`) to unlock `/admin` and `/master-admin`. [`docs/ADMIN-SETUP.md:10-140`](docs/ADMIN-SETUP.md#L10-L140)
 - **Bootstrap scripts**: `backend/scripts/setup_master_admin.py` promotes hard-coded emails to `master_admin` / `admin` roles for seeding the Digital Growth Equity tenant, ensuring at least one privileged actor exists per environment. [`backend/scripts/setup_master_admin.py:1-140`](../backend/scripts/setup_master_admin.py#L1-L140)
-- **Environment reference**: `ApexDeliver Environment Variables - Master Reference.md` stores the live Clerk keys, webhook secrets, and other auth-related values that power production sign-in. (`CLERK_*` block at [`ApexDeliver Environment Variables - Master Reference.md:72-105`](../ApexDeliver%20Environment%20Variables%20-%20Master%20Reference.md#L72-L105))
+- **Environment reference**: `FinanceFlo Environment Variables - Master Reference.md` stores the live Clerk keys, webhook secrets, and other auth-related values that power production sign-in. (`CLERK_*` block at [`FinanceFlo Environment Variables - Master Reference.md:72-105`](../FinanceFlo%20Environment%20Variables%20-%20Master%20Reference.md#L72-L105))
 
 ## Role & Tier Model
 | Role | Intended audience | Default navigation & tier expectations |

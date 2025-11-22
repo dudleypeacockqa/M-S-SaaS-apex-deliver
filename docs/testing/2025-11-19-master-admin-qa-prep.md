@@ -5,7 +5,7 @@ The 7-surface Master Admin manual test run still lacks evidence. This prep note 
 ## 1. Credentials & Environment Variables
 | Item | Location / Value | Notes |
 | --- | --- | --- |
-| Clerk publishable + secret keys | `ApexDeliver Environment Variables - Master Reference.md` (`CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`) | Confirm both are present in `.env` for frontend and backend. Tests expect `VITE_CLERK_PUBLISHABLE_KEY` to match the backend JWT verifier. |
+| Clerk publishable + secret keys | `FinanceFlo Environment Variables - Master Reference.md` (`CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`) | Confirm both are present in `.env` for frontend and backend. Tests expect `VITE_CLERK_PUBLISHABLE_KEY` to match the backend JWT verifier. |
 | Master admin emails | `backend/scripts/setup_master_admin.py` | Script promotes `dudley@qamarketing.com` to `master_admin` and `dudley.peacock@icloud.com` to tenant admin. Update the script if QA will use different test users. |
 | Feature flag toggles | `render.yaml` + `.env` (`VITE_ENABLE_MASTER_ADMIN=true`, `CLERK_SIGN_IN_URL`, `CLERK_SIGN_UP_URL`) | Verify the flag is still enabled in production and in any preview builds used for QA. |
 | Storage + AI API keys | `.env` (`OPENAI_API_KEY`, `REPLICATE_API_TOKEN`, `SUPABASE_*`) | Manual QA touches campaigns/content studio flows that call AI helpers and Supabase storage. Leave the keys populated even if traffic stays in sandbox mode. |
@@ -76,9 +76,9 @@ docs/testing/master-admin/2025-11-19/
 | --- | --- | --- | --- |
 | master_admin | dudley@qamarketing.com | `qa-dge-master` | Created by `backend/scripts/setup_master_admin.py`; has platform scope (no org required) |
 | tenant_admin | dudley.peacock@icloud.com | `qa-dge-tenant` | Used for comparison when validating that admins cannot access master-admin routes |
-| growth_user | growth.qa@apexdeliver.com | `qa-dge-tenant` | Useful for validating scoped views while impersonation header is present |
+| growth_user | growth.qa@financeflo.ai | `qa-dge-tenant` | Useful for validating scoped views while impersonation header is present |
 
-Store the canonical list (with Clerk user IDs) in 1Password or the secure secret manager referenced in `ApexDeliver Environment Variables - Master Reference.md`, and paste masked IDs into `docs/testing/master-admin/2025-11-19/notes.md` when the run begins.
+Store the canonical list (with Clerk user IDs) in 1Password or the secure secret manager referenced in `FinanceFlo Environment Variables - Master Reference.md`, and paste masked IDs into `docs/testing/master-admin/2025-11-19/notes.md` when the run begins.
 
 ## 7. Tenant Scope & Header Template
 All master-admin API calls must include both the Clerk auth header and the impersonation header. Reference snippet:

@@ -1,0 +1,95 @@
+{
+  "tenant": {
+    "id": "qa-dge-tenant",
+    "name": "QA Demo Enterprise",
+    "dataset": "../2025-11-19/data/demo_seed.db"
+  },
+  "users": {
+    "master_admin": {
+      "email": "dudley@qamarketing.com",
+      "clerk_user_id": "qa-master-admin-user",
+      "role": "master_admin"
+    },
+    "tenant_admin": {
+      "email": "dudley.peacock@icloud.com",
+      "clerk_user_id": "qa-tenant-admin-user",
+      "role": "tenant_admin"
+    }
+  },
+  "prospects": [
+    {
+      "id": "qa-prospect-001",
+      "name": "Atlas Industrial QA",
+      "stage": "qualified"
+    },
+    {
+      "id": "qa-prospect-002",
+      "name": "Beacon Energy QA",
+      "stage": "negotiation"
+    },
+    {
+      "id": "qa-prospect-003",
+      "name": "Cobalt Holdings QA",
+      "stage": "won"
+    }
+  ],
+  "deals": [
+    {
+      "id": "qa-deal-001",
+      "prospect_id": "qa-prospect-002",
+      "stage": "negotiation"
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "qa-campaign-001",
+      "name": "QA Warm Outreach",
+      "status": "scheduled"
+    },
+    {
+      "id": "qa-campaign-002",
+      "name": "QA Win-Back",
+      "status": "sent"
+    }
+  ],
+  "content": {
+    "scripts": [
+      {
+        "id": "qa-script-001",
+        "title": "Integration Readiness Script"
+      }
+    ],
+    "pieces": [
+      {
+        "id": "qa-content-001",
+        "title": "FinanceFlo Pitch Deck",
+        "type": "video"
+      },
+      {
+        "id": "qa-content-002",
+        "title": "Post-close Checklist",
+        "type": "blog"
+      }
+    ]
+  },
+  "lead_captures": [
+    {
+      "id": "qa-lead-001",
+      "email": "marketing.qa+lead@example.com",
+      "source": "pricing-cta"
+    },
+    {
+      "id": "qa-lead-002",
+      "email": "marketing.qa+book@example.com",
+      "source": "book-demo"
+    }
+  ],
+  "collateral": [
+    {
+      "id": "qa-collateral-001",
+      "filename": "FinanceFlo-OnePager.pdf"
+    }
+  ]
+}
+
+

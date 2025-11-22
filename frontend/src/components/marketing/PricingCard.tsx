@@ -117,12 +117,17 @@ export const PricingCard: React.FC<PricingCardProps> = ({
         </div>
         {/* Features */}
         <ul className="space-y-3 mb-8">
-          {features.map((feature, index) => (
-            <li key={index} className="flex items-start">
+          {features.map((feature, index) => {
+            const featureTestId = feature.toLowerCase().includes('api access')
+              ? 'pricing-feature-api-access'
+              : undefined
+            return (
+            <li key={index} className="flex items-start" data-testid={featureTestId}>
               <span className="text-green-600 mr-3 flex-shrink-0 mt-0.5">✓</span>
               <span className="text-gray-700">{feature}</span>
             </li>
-          ))}
+            )
+          })}
         </ul>
         {ctaElement}
       </article>
@@ -178,12 +183,17 @@ export const PricingCard: React.FC<PricingCardProps> = ({
       </div>
       {/* Features */}
       <ul className="space-y-3 mb-8">
-        {features.map((feature, index) => (
-          <li key={index} className="flex items-start">
-            <span className="text-green-600 mr-3 flex-shrink-0 mt-0.5">✓</span>
-            <span className="text-gray-700">{feature}</span>
-          </li>
-        ))}
+        {features.map((feature, index) => {
+          const featureTestId = feature.toLowerCase().includes('api access')
+            ? 'pricing-feature-api-access'
+            : undefined
+          return (
+            <li key={index} className="flex items-start" data-testid={featureTestId}>
+              <span className="text-green-600 mr-3 flex-shrink-0 mt-0.5">✓</span>
+              <span className="text-gray-700">{feature}</span>
+            </li>
+          )
+        })}
       </ul>
       {ctaElement}
     </article>

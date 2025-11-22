@@ -114,6 +114,9 @@ const FAQPage = lazyNamed(() => import("./pages/marketing/FAQPage"), "FAQPage");
 const CapLiquifyFPAPage = lazyNamed(() => import("./pages/marketing/CapLiquifyFPAPage"), "CapLiquifyFPAPage");
 const FourStageCyclePage = lazyNamed(() => import("./pages/marketing/FourStageCyclePage"), "FourStageCyclePage");
 const SalesPromotionPricingPage = lazyNamed(() => import("./pages/marketing/SalesPromotionPricingPage"), "SalesPromotionPricingPage");
+const PlatformPricingPage = lazyDefault(() => import("./pages/marketing/pricing/PlatformPricingPage"));
+const CommunityPricingPage = lazyDefault(() => import("./pages/marketing/pricing/CommunityPricingPage"));
+const ServicesPricingPage = lazyDefault(() => import("./pages/marketing/pricing/ServicesPricingPage"));
 const CaseStudiesPage = lazyNamed(() => import("./pages/marketing/CaseStudiesPage"), "CaseStudiesPage");
 const BookTrial = lazyNamed(() => import("./pages/marketing/BookTrial"), "BookTrial");
 const BlogAdminEditor = lazyDefault(() => import("./pages/admin/BlogAdminEditor"));
@@ -277,6 +280,18 @@ export const AppRoutes = () => {
       <Route
         path="pricing"
         element={marketingElement(<PricingPage />, withRouteLoader(<FinanceFloPricing />))}
+      />
+      <Route
+        path="pricing/platform"
+        element={<Suspense fallback={<RouteLoader />}><PlatformPricingPage /></Suspense>}
+      />
+      <Route
+        path="pricing/community"
+        element={<Suspense fallback={<RouteLoader />}><CommunityPricingPage /></Suspense>}
+      />
+      <Route
+        path="pricing/services"
+        element={<Suspense fallback={<RouteLoader />}><ServicesPricingPage /></Suspense>}
       />
       <Route
         path="contact"

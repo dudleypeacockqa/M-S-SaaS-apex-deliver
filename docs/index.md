@@ -75,7 +75,7 @@ Apex Deliver’s “M&A Intelligence Platform” is a brownfield, enterprise Saa
 - `CLAUDE.md` & `CODEX-COMPLETE-PROJECT-GUIDE.md` – AI assistant briefs.
 - `docs/bmad/prd.md` – full PRD and epics.
 - `docs/bmad/architecture.md` – legacy architecture decisions.
-- `ApexDeliver Environment Variables - Master Reference.md` – authoritative env var ledger.
+- `FinanceFlo Environment Variables - Master Reference.md` – authoritative env var ledger.
 
 ## Getting Started
 
@@ -105,7 +105,7 @@ npm run dev
 
 - **Backend/API work:** Load `architecture.md`, `development-guide.md`, `backend/app/services/*`, and relevant pytest files before coding.
 - **Frontend/UX work:** Reference `component` directories, Tailwind tokens in `index.css`, and domain tests inside `src/components/**.test.tsx`.
-- **Full-stack epics:** Combine both plus integration docs; confirm Clerk + Stripe env values via `ApexDeliver Environment Variables - Master Reference.md`.
+- **Full-stack epics:** Combine both plus integration docs; confirm Clerk + Stripe env values via `FinanceFlo Environment Variables - Master Reference.md`.
 - **BMAD Workflow Context:** Workflow status tracked in `docs/bmm-workflow-status.yaml`; new work should only start after this document-project deliverable is recorded.
 
 ---

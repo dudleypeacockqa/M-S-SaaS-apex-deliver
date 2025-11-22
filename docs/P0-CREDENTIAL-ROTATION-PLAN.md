@@ -32,7 +32,7 @@ Database credentials were exposed in repository documentation and scripts during
 9. docs/bmad/BMAD_PROGRESS_TRACKER.md
 10. scripts/generate_sitemap.py
 11. scripts/import_blog_production.py
-12. ApexDeliver Environment Variables - Master Reference.md
+12. FinanceFlo Environment Variables - Master Reference.md
 13. ENV-CONFIGURATION-STRATEGY.md
 14. RENDER-BACKEND-ENV-UPDATES.md
 
@@ -217,7 +217,7 @@ T+0:50  - P0-3 COMPLETE
 11. [scripts/import_blog_production.py](../scripts/import_blog_production.py)
 
 ### Configuration Guides (3)
-12. [ApexDeliver Environment Variables - Master Reference.md](../ApexDeliver%20Environment%20Variables%20-%20Master%20Reference.md)
+12. [FinanceFlo Environment Variables - Master Reference.md](../FinanceFlo%20Environment%20Variables%20-%20Master%20Reference.md)
 13. [ENV-CONFIGURATION-STRATEGY.md](../ENV-CONFIGURATION-STRATEGY.md)
 14. [RENDER-BACKEND-ENV-UPDATES.md](../RENDER-BACKEND-ENV-UPDATES.md)
 

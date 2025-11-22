@@ -1,10 +1,9 @@
 import { test, expect } from "@playwright/test";
-
-const baseUrl = process.env.MARKETING_BASE_URL ?? "http://127.0.0.1:4173";
+import { buildMarketingUrl } from "./utils/marketingUrl";
 
 test.describe("Blog smoke", () => {
   test("renders marketing blog listing with hero content", async ({ page }) => {
-    const response = await page.goto(baseUrl + '/blog', { waitUntil: "networkidle" });
+    const response = await page.goto(buildMarketingUrl('/blog'), { waitUntil: "networkidle" });
     expect(response, "blog page should respond").toBeTruthy();
     expect(response?.ok()).toBeTruthy();
 

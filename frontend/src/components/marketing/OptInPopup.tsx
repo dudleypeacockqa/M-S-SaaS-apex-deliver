@@ -13,22 +13,27 @@ export const OptInPopup: React.FC<OptInPopupProps> = ({ delayMs = 90_000 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const shouldForceInstant =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('optin') === 'instant';
+  const effectiveDelay = shouldForceInstant ? 0 : delayMs;
+
   useEffect(() => {
     // Check if user has already seen/dismissed the popup
     const hasSeenPopup = localStorage.getItem('100days_optin_seen');
     if (hasSeenPopup) return;
 
-    if (delayMs <= 0) {
+    if (effectiveDelay <= 0) {
       setIsVisible(true);
       return;
     }
 
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, delayMs);
+    }, effectiveDelay);
 
     return () => clearTimeout(timer);
-  }, [delayMs]);
+  }, [effectiveDelay]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +67,7 @@ export const OptInPopup: React.FC<OptInPopupProps> = ({ delayMs = 90_000 }) => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" data-testid="optin-popup">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
         {/* Close Button */}
         <button

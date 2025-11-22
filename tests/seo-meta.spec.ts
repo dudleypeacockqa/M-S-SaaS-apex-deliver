@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
-
-const baseUrl = process.env.MARKETING_BASE_URL ?? "http://127.0.0.1:4173";
+import { buildMarketingUrl } from "./utils/marketingUrl";
 
 const seoPages = [
   { path: '/', canonical: 'https://100daysandbeyond.com/' },
@@ -11,7 +10,7 @@ const seoPages = [
 test.describe('SEO meta', () => {
   for (const pageConfig of seoPages) {
     test('sets canonical + og:url for ' + pageConfig.path, async ({ page }) => {
-      const response = await page.goto(baseUrl + pageConfig.path, { waitUntil: 'networkidle' });
+      const response = await page.goto(buildMarketingUrl(pageConfig.path), { waitUntil: 'networkidle' });
       expect(response, 'page should respond').toBeTruthy();
       expect(response?.ok()).toBeTruthy();
 
