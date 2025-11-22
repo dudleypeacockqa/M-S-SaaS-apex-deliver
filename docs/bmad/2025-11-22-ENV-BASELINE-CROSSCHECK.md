@@ -11,7 +11,7 @@
 
 #### Backend (.env-backend.md)
 - ✅ `CLERK_PUBLISHABLE_KEY`: `pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ`
-- ✅ `CLERK_SECRET_KEY`: `[REDACTED - Use .env file]`
+- ✅ `CLERK_SECRET_KEY`: `[REDACTED - Use Render Dashboard]`
 - ✅ `CLERK_WEBHOOK_SECRET`: `whsec_bseycKSp4SpfuTE4dAFdDlJYxveeXe/e`
 
 #### Frontend (.env-frontend.md)
