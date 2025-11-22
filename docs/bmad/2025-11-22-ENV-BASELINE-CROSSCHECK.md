@@ -31,7 +31,7 @@
 
 #### Backend (.env-backend.md)
 - ✅ `STRIPE_PUBLISHABLE_KEY`: `pk_live_51QwSgkFVol9SKsekxmCj4lDnvd1T6XZPi9VWuI7eKkxNopxC1N60ypXZzwQdyk64AuAQJMvQxuIJ1VuLeOdbeWQC00mV7ZDNB1`
-- ✅ `STRIPE_SECRET_KEY`: `[REDACTED - Use .env file]`
+- ✅ `STRIPE_SECRET_KEY`: `[REDACTED - Use Render Dashboard]`
 - ✅ `STRIPE_WEBHOOK_SECRET`: `whsec_placeholder`
 
 #### Frontend (.env-frontend.md)

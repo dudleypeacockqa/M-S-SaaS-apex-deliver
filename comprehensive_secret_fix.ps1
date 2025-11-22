@@ -24,11 +24,13 @@ files=(
 for file in "${files[@]}"; do
     if [ -f "$file" ]; then
         # Replace secrets with redacted placeholders
-        sed -i.bak "s|[REDACTED - Use .env file]|[REDACTED - Use Render Dashboard]|g" "$file" 2>/dev/null
-        sed -i.bak "s|[REDACTED - Use .env file]|[REDACTED - Use Render Dashboard]|g" "$file" 2>/dev/null
-        sed -i.bak "s|[REDACTED - Use .env file]|[REDACTED - Use Render Dashboard]|g" "$file" 2>/dev/null
-        sed -i.bak "s|[REDACTED - Use .env file]|[REDACTED - Use Render Dashboard]|g" "$file" 2>/dev/null
-        sed -i.bak "s|[REDACTED - Use .env file]|[REDACTED - Use Render Dashboard]|g" "$file" 2>/dev/null
+        # Replace secrets with redacted placeholders
+        # Note: Actual secret values should be retrieved from Render Dashboard
+        sed -i.bak "s|\[REDACTED-CLERK-SECRET\]|[REDACTED - Use Render Dashboard]|g" "$file" 2>/dev/null
+        sed -i.bak "s|\[REDACTED-STRIPE-SECRET\]|[REDACTED - Use Render Dashboard]|g" "$file" 2>/dev/null
+        sed -i.bak "s|\[REDACTED-OPENAI-SECRET\]|[REDACTED - Use Render Dashboard]|g" "$file" 2>/dev/null
+        sed -i.bak "s|\[REDACTED-ANTHROPIC-SECRET\]|[REDACTED - Use Render Dashboard]|g" "$file" 2>/dev/null
+        sed -i.bak "s|\[REDACTED-SENDGRID-SECRET\]|[REDACTED - Use Render Dashboard]|g" "$file" 2>/dev/null
         rm -f "$file.bak" 2>/dev/null
     fi
 done

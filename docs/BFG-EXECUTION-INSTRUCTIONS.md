@@ -52,11 +52,11 @@ It should contain placeholders like:
 ```
 # IMPORTANT: Replace these placeholders with actual secrets from your secure storage
 # Format: old_secret==>replacement_text
-sk_live_YOUR_ACTUAL_SECRET_KEY==>[REDACTED - Use .env file]
-rk_live_YOUR_ACTUAL_RESTRICTED_KEY==>[REDACTED - Use .env file]
-sk-proj-YOUR_ACTUAL_OPENAI_KEY==>[REDACTED - Use .env file]
-sk-ant-api03-YOUR_ACTUAL_ANTHROPIC_KEY==>[REDACTED - Use .env file]
-SG.YOUR_ACTUAL_SENDGRID_KEY==>[REDACTED - Use .env file]
+[REDACTED-CLERK-SECRET]==>[REDACTED - Use .env file]
+[REDACTED-STRIPE-SECRET]==>[REDACTED - Use .env file]
+[REDACTED-OPENAI-SECRET]==>[REDACTED - Use .env file]
+[REDACTED-ANTHROPIC-SECRET]==>[REDACTED - Use .env file]
+[REDACTED-SENDGRID-SECRET]==>[REDACTED - Use .env file]
 ```
 
 **Note**: The actual secret values are NOT stored in this repository. You must retrieve them from:
