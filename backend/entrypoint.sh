@@ -11,7 +11,18 @@ echo "========================================="
 # Run prestart script (migrations)
 if [ -f "/app/prestart.sh" ]; then
     echo "Running prestart script..."
-    sh /app/prestart.sh
+    SANITIZED_PRESTART="/tmp/prestart"
+    python - <<'PY'
+from pathlib import Path
+src = Path("/app/prestart.sh")
+dst = Path("/tmp/prestart")
+data = src.read_bytes()
+if b"\r" in data:
+    data = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+dst.write_bytes(data)
+PY
+    chmod +x "${SANITIZED_PRESTART}"
+    "${SANITIZED_PRESTART}"
 else
     echo "WARNING: prestart.sh not found, skipping migrations"
 fi
