@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-11-22T11:19:32.111Z",
+  "operations": [
+    {
+      "operation": "CREATE_ACTIVITY",
+      "request": {
+        "title": "QA Test Activity - CRUD Evidence",
+        "type": "call",
+        "status": "completed",
+        "amount": 1
+      },
+      "response": {
+        "error": "page.evaluate: TypeError: Failed to fetch\n    at eval (eval at evaluate (:290:30), <anonymous>:9:27)\n    at UtilityScript.evaluate (<anonymous>:292:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+      }
+    },
+    {
+      "operation": "LIST_CAMPAIGNS",
+      "response": {
+        "error": "page.evaluate: TypeError: Failed to fetch\n    at eval (eval at evaluate (:290:30), <anonymous>:9:27)\n    at UtilityScript.evaluate (<anonymous>:292:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+      }
+    },
+    {
+      "operation": "CREATE_CONTENT_SCRIPT",
+      "request": {
+        "title": "QA Test Script - CRUD Evidence",
+        "content": "This is a test script for CRUD evidence collection.",
+        "category": "email"
+      },
+      "response": {
+        "error": "page.evaluate: TypeError: Failed to fetch\n    at eval (eval at evaluate (:290:30), <anonymous>:9:27)\n    at UtilityScript.evaluate (<anonymous>:292:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+      }
+    },
+    {
+      "operation": "LIST_COLLATERAL",
+      "response": {
+        "error": "page.evaluate: TypeError: Failed to fetch\n    at eval (eval at evaluate (:290:30), <anonymous>:9:27)\n    at UtilityScript.evaluate (<anonymous>:292:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+      }
+    },
+    {
+      "operation": "COLLATERAL_UPLOAD_DOWNLOAD",
+      "note": "File upload/download requires manual verification with actual files"
+    }
+  ]
+}
