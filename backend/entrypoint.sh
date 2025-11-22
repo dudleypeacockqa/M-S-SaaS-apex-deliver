@@ -11,10 +11,13 @@ echo "========================================="
 # Run prestart script (migrations)
 if [ -f "/app/prestart.sh" ]; then
     echo "Running prestart script..."
+    SANITIZED_PRESTART="/tmp/prestart"
     # Strip Windows line endings (CRLF) before executing
     # This ensures the script works even if checked out with CRLF line endings
-    SANITIZED_PRESTART="/tmp/prestart"
-    tr -d '\r' < /app/prestart.sh > "${SANITIZED_PRESTART}"
+    if ! tr -d '\r' < /app/prestart.sh > "${SANITIZED_PRESTART}"; then
+        echo "ERROR: Failed to sanitize prestart.sh" >&2
+        exit 1
+    fi
     chmod +x "${SANITIZED_PRESTART}"
     bash "${SANITIZED_PRESTART}"
 else

@@ -26,7 +26,7 @@ const gotoOptions = { waitUntil: 'domcontentloaded', timeout: 90000 }
 
 const log = (...args) => console.log('[master-admin-crud]', ...args)
 
-const browser = await chromium.launch({ headless: false })
+const browser = await chromium.launch({ headless: true })
 const context = await browser.newContext()
 const page = await context.newPage()
 
