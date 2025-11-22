@@ -443,6 +443,40 @@ services:
 
 ---
 
+## Security & Secrets Management
+
+### Environment Variables
+
+**Never commit secrets to git!** All sensitive credentials must be stored in environment variables.
+
+1. **Copy example files**:
+   ```bash
+   # Backend
+   cp backend/.env.example backend/.env
+   
+   # Frontend
+   cp frontend/.env.example frontend/.env.local
+   ```
+
+2. **Fill in your actual values** in the `.env` files (these are gitignored)
+
+3. **Production secrets** are stored in:
+   - `.env-backend.md` (gitignored, local reference only)
+   - `.env-frontend.md` (gitignored, local reference only)
+   - `docs/secrets/` directory (gitignored, contains master reference)
+
+4. **For production deployment**: Set environment variables in Render dashboard
+
+### Secret Rotation
+
+If secrets are exposed in git history:
+1. **Immediately rotate** all exposed secrets in their respective services
+2. Update `.env-backend.md` and `.env-frontend.md` with new values
+3. Update Render dashboard with new values
+4. Use BFG Repo-Cleaner to remove secrets from git history (see `secrets-to-remove.txt`)
+
+---
+
 ## Contributing
 
 ### Workflow

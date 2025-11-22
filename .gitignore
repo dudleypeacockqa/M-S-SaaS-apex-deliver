@@ -84,10 +84,22 @@ ma-saas-platform-v2/
 
 # Ignore sensitive configuration files
 ApexDeliver Environment Variables - Master Reference.md
+FinanceFlo Environment Variables - Master Reference.md
 TEMP*.md
 NUL
 nul
 env.READY_TO_USE
+
+# Ignore secrets directory
+docs/secrets/
+
+# Ignore git rewrite operations
+.git-rewrite/
+
+# Ignore secret redaction scripts (contain secrets in patterns)
+redact_secrets.ps1
+replace-secrets.sh
+fix_secrets_history.ps1
 
 # Ignore Render API responses
 render_*.json

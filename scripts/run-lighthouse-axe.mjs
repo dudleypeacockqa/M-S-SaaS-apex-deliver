@@ -45,16 +45,25 @@ const writeMetadata = () => {
 }
 
 try {
+  // Use locally installed lighthouse if available, otherwise npx
+  const lighthouseCmd = fs.existsSync(path.join(projectRoot, 'frontend/node_modules/.bin/lighthouse'))
+    ? path.join(projectRoot, 'frontend/node_modules/.bin/lighthouse')
+    : `${npxCmd} lighthouse`
+  
+  const axeCmd = fs.existsSync(path.join(projectRoot, 'frontend/node_modules/.bin/axe'))
+    ? path.join(projectRoot, 'frontend/node_modules/.bin/axe')
+    : `${npxCmd} axe`
+
   await run(
-    `${npxCmd} lighthouse ${targetUrl} --output html --output-path "${htmlReportPath}"`,
+    `${lighthouseCmd} ${targetUrl} --output html --output-path "${htmlReportPath}"`,
     { cwd: projectRoot, env }
   )
   await run(
-    `${npxCmd} lighthouse ${targetUrl} --output json --output-path "${jsonReportPath}"`,
+    `${lighthouseCmd} ${targetUrl} --output json --output-path "${jsonReportPath}"`,
     { cwd: projectRoot, env }
   )
   await run(
-    `${npxCmd} axe ${targetUrl} --load-delay 5000 --timeout 60000 --save "${axeReportPath}"`,
+    `${axeCmd} ${targetUrl} --load-delay 5000 --timeout 60000 --save "${axeReportPath}"`,
     { cwd: projectRoot, env }
   )
   writeMetadata()

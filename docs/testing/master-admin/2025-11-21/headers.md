@@ -28,7 +28,7 @@ Record the captured JWT identifier + tenant header in this file once the QA sess
 | Checklist link | docs/testing/2025-11-19-MASTER-ADMIN-VALIDATION-CHECKLIST.md | Reference for auditors |
 
 ### Clerk API Notes (2025-11-22)
-- **User discovery**: `GET https://api.clerk.com/v1/users?limit=10` with headers `Authorization: Bearer sk_live_…`, `User-Agent: curl/8.0`, `Accept: application/json`.
+- **User discovery**: `GET https://api.clerk.com/v1/users?limit=10` with headers `Authorization: Bearer [REDACTED]`, `User-Agent: curl/8.0`, `Accept: application/json`.
 - **Sign-in token**: `POST https://api.clerk.com/v1/sign_in_tokens` with `{"user_id":"user_35gkQKcoVJ3hpFnp6GDx39e9h8E"}` returns `token` + `url`. Log stored in `console/clerk-sign-in-token.log`.
 - **UI login**: Launch https://ma-saas-platform.onrender.com/?__clerk_ticket=<token> (valid for ~5 minutes) and immediately hit the master admin routes. Screenshots captured via `node scripts/capture-master-admin-evidence.mjs`.
 - **CRUD Operations**: See CRUD examples below. Execute via `scripts/exercise-master-admin-crud.mjs` with `CLERK_SIGN_IN_TOKEN` env var.
