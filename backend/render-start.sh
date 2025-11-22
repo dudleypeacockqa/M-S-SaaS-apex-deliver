@@ -9,5 +9,5 @@ tr -d '\r' < prestart.sh > /tmp/prestart
 chmod +x /tmp/prestart
 /tmp/prestart
 
-cd backend
 exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-10000}"
+
