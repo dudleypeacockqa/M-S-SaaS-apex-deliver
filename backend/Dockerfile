@@ -30,9 +30,19 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Normalize line endings for shell scripts (CRLF -> LF) and make executable
-RUN python3 -c "import sys; [open(f, 'wb').write(open(f, 'rb').read().replace(b'\r\n', b'\n').replace(b'\r', b'\n')) for f in ['entrypoint.sh', 'prestart.sh']]" && \
-    chmod +x entrypoint.sh prestart.sh
+# Normalize line endings for all shell scripts (CRLF -> LF)
+RUN python3 - <<'PY'
+from pathlib import Path
+
+for path in Path(".").rglob("*.sh"):
+    raw = path.read_bytes()
+    cleaned = raw.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    if cleaned != raw:
+        path.write_bytes(cleaned)
+PY
+
+# Ensure critical scripts are executable
+RUN for f in entrypoint.sh prestart.sh render-start.sh; do [ -f "$f" ] && chmod +x "$f"; done
 
 # Expose port (Render will override with $PORT)
 EXPOSE 8000
