@@ -30,8 +30,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Make scripts executable
-RUN chmod +x entrypoint.sh prestart.sh
+# Normalize line endings for shell scripts (CRLF -> LF) and make executable
+RUN python3 -c "import sys; [open(f, 'wb').write(open(f, 'rb').read().replace(b'\r\n', b'\n').replace(b'\r', b'\n')) for f in ['entrypoint.sh', 'prestart.sh']]" && \
+    chmod +x entrypoint.sh prestart.sh
 
 # Expose port (Render will override with $PORT)
 EXPOSE 8000

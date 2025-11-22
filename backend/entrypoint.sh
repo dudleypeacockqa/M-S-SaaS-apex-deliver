@@ -12,14 +12,23 @@ echo "========================================="
 if [ -f "/app/prestart.sh" ]; then
     echo "Running prestart script..."
     SANITIZED_PRESTART="/tmp/prestart"
-    python - <<'PY'
+    # Use Python to strip CRLF line endings robustly
+    python3 - <<'PY'
+import sys
 from pathlib import Path
+
 src = Path("/app/prestart.sh")
 dst = Path("/tmp/prestart")
-data = src.read_bytes()
-if b"\r" in data:
+
+try:
+    data = src.read_bytes()
+    # Replace CRLF and standalone CR with LF
     data = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
-dst.write_bytes(data)
+    dst.write_bytes(data)
+    print(f"[entrypoint] Sanitized prestart.sh (removed CRLF)")
+except Exception as e:
+    print(f"[entrypoint] ERROR sanitizing prestart.sh: {e}", file=sys.stderr)
+    sys.exit(1)
 PY
     chmod +x "${SANITIZED_PRESTART}"
     "${SANITIZED_PRESTART}"
