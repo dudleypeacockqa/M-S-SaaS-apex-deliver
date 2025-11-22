@@ -36,10 +36,10 @@ export function createBlogPostSchema(post: BlogPost) {
     datePublished: post.publishedAt,
     publisher: {
       '@type': 'Organization',
-      name: 'ApexDeliver',
+      name: 'FinanceFlo',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://apexdeliver.com/logo.png',
+        url: 'https://financeflo.ai/assets/brand/financeflo-wordmark.svg',
       },
     },
   };

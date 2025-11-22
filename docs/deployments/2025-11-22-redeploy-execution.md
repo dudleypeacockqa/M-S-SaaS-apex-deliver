@@ -17,7 +17,7 @@
 
 #### Backend (`ma-saas-backend`)
 - ✅ Verified `CLERK_PUBLISHABLE_KEY` matches `.env-backend.md`: `pk_live_Y2xlcmsuZmluYW5jZWZsby5haSQ`
-- ✅ Verified `CLERK_SECRET_KEY` matches: `[REDACTED - Use .env file]`
+- ✅ Verified `CLERK_SECRET_KEY` matches: `[REDACTED - Use Render Dashboard]`
 - ✅ Verified `CLERK_WEBHOOK_SECRET` matches: `whsec_bseycKSp4SpfuTE4dAFdDlJYxveeXe/e`
 - ✅ Verified `CORS_ORIGINS` includes FinanceFlo domains: `https://financeflo.ai,https://www.financeflo.ai,https://app.financeflo.ai`
 

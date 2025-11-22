@@ -13,23 +13,23 @@ export const MarketingLayout: React.FC<MarketingLayoutProps> = ({ children }) =>
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'ApexDeliver',
-    alternateName: '100 Days & Beyond',
-    url: 'https://100daysandbeyond.com',
-    logo: 'https://100daysandbeyond.com/assets/brand/apexdeliver-wordmark.svg',
+    name: 'FinanceFlo',
+    alternateName: 'FinanceFlo.ai',
+    url: 'https://financeflo.ai',
+    logo: 'https://financeflo.ai/assets/brand/financeflo-wordmark.svg',
     description:
-      'ApexDeliver unites CapLiquify FP&A, deal rooms, valuations, and revenue execution so ambitious teams can own the first 100 days and the next 1,000 from a single operating system.',
+      'FinanceFlo unifies deal sourcing, valuations, secure data rooms, and post-merger execution into a single AI-powered M&A platform.',
     foundingDate: '2024',
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'sales',
-      email: 'sales@apexdeliver.com',
+      email: 'sales@financeflo.ai',
       availableLanguage: ['en-GB', 'en-US'],
     },
     sameAs: [
-      'https://www.linkedin.com/company/apexdeliver',
-      'https://twitter.com/apexdeliver',
-      'https://www.youtube.com/@apexdeliver',
+      'https://www.linkedin.com/company/financeflo',
+      'https://twitter.com/financeflo',
+      'https://www.youtube.com/@financeflo',
     ],
     address: {
       '@type': 'PostalAddress',

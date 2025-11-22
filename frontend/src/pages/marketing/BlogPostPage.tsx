@@ -5,6 +5,8 @@ import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { CTASection } from '../../components/marketing/CTASection';
 import { createBlogPostSchema } from '../../utils/schemas/blogPostSchema';
+import { createBreadcrumbSchema } from '../../utils/schemas/breadcrumbSchema';
+import { StructuredData } from '../../components/common/StructuredData';
 import { OptimizedImage } from '../../components/common/OptimizedImage';
 
 interface BlogPost {
@@ -96,10 +98,17 @@ export const BlogPostPage: React.FC = () => {
     updatedAt: post.updated_at,
     excerpt: post.excerpt,
     featuredImage: post.featured_image_url,
-    url: `https://apexdeliver.com/blog/${post.slug}`,
+    url: `https://financeflo.ai/blog/${post.slug}`,
     tags: [post.category],
     wordCount: Math.ceil(post.content.split(/\s+/).length),
   });
+
+  // Generate BreadcrumbList schema for SEO
+  const breadcrumbSchema = createBreadcrumbSchema([
+    { name: 'Home', url: 'https://financeflo.ai/' },
+    { name: 'Blog', url: 'https://financeflo.ai/blog' },
+    { name: post.title, url: `https://financeflo.ai/blog/${post.slug}` },
+  ]);
 
   return (
     <MarketingLayout>
@@ -113,6 +122,8 @@ export const BlogPostPage: React.FC = () => {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
+      {/* BreadcrumbList Schema for SEO */}
+      <StructuredData json={breadcrumbSchema} id="blog-post-breadcrumbs" />
 
       {/* Article Header */}
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

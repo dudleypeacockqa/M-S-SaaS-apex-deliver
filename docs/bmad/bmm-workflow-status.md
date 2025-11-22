@@ -338,7 +338,9 @@ TEST_RESULTS:
 
 **Phase 0 Status**: T0 evidence refreshed (2025-11-14T12:11Z), T1 COMPLETE, T2 redeploy triggered (dep-d4as4tjuibrs73fbqec0 update_in_progress at 2025-11-14T12:42Z), T3 (Lighthouse/Axe artefacts) pending.
 
----`r`n`r`nSESSION_ID: Session-2025-11-14-Phase0-Codex-Refresh
+---
+
+SESSION_ID: Session-2025-11-14-Phase0-Codex-Refresh
 COMPLETED_WORK:
 - Reviewed governing plan + 100% status docs to reconfirm remaining scope (Event Hub 75%, Community Platform 0%, doc-gen export queue outstanding).
 - Recorded new tracker entry (`docs/bmad/BMAD_PROGRESS_TRACKER.md`) capturing plan refresh + immediate next steps.
@@ -450,9 +452,11 @@ FILES_MODIFIED:
 TEST_RESULTS:
 - `npm run test -- --run --pool=threads src/tests/routing.test.tsx src/features/auth/Auth.test.tsx src/App.test.tsx src/pages/podcast/PodcastStudioRouting.test.tsx src/pages/marketing/__tests__/BlogListingPage.contract.test.tsx` – PASS (5 files / 17 tests, expected MSW/Axios warnings only)
 
-**Phase 0 Status**: T0 evidence refreshed (2025-11-14T12:11Z), T1 COMPLETE, T2 (backend redeploy evidence) + T3 (Lighthouse/Axe artefacts) pending.
+**Phase 0 Status**: T0 evidence refreshed (2025-11-14T12:11Z), T1 COMPLETE, T2 redeploy triggered (dep-d4as4tjuibrs73fbqec0 update_in_progress at 2025-11-14T12:42Z), T3 (Lighthouse/Axe artefacts) pending.
 
----`r`n`r`nSESSION_ID: Session-2025-11-12S-Phase6-Complete
+---
+
+SESSION_ID: Session-2025-11-12S-Phase6-Complete
 COMPLETED_WORK:
 - Fixed PermissionModal owner downgrade validation bug (14/14 tests passing)
 - Fixed backend master_admin test date logic bug (729/729 tests passing)
@@ -482,14 +486,6 @@ TEST_RESULTS:
 ---
 
 _Last Updated: 2025-11-12T09:15:00Z_
-
-
-
-
-
-
-
-
 
 ---
 
@@ -679,3 +675,40 @@ NEXT_COMMAND: `scripts/seed_master_admin_demo.py` followed by manual checklist i
 NEXT_AGENT: dev
 PRIORITY: P0
 RATIONALE: Frontend automation is green again; focus shifts to manual QA evidence and marketing automation.
+
+## Session 2025-11-22T14-Completion-Drive
+
+SESSION_ID: Session-2025-11-22T14-Completion-Drive
+COMPLETED_WORK:
+- **Frontend Stability**: Fixed syntax error in `ScenarioComponents.test.tsx` and resolved a critical crash in `PricingPage.tsx` during Playwright tests (caused by direct `@clerk/clerk-react` import).
+- **Auth Standardization**: Refactored 15+ frontend files (including `App.tsx`, layouts, and dashboards) to use the `@/lib/clerk` wrapper instead of direct imports. This ensures consistent behavior and prevents crashes in test environments where Clerk keys are missing.
+- **Test Verification**:
+  - Re-ran Marketing Playwright suite: **7/7 PASS** (including the previously failing integrations link test).
+  - Verified frontend build: **PASS**.
+- **Master Admin Seeding**: Fixed bugs in `scripts/seed_master_admin_demo.py` (import issues and dataclass serialization) and successfully executed the seed script against the demo database. Confirmed `qa-master-admin-user` has seeded data.
+
+FILES_MODIFIED:
+- frontend/src/pages/marketing/PricingPage.tsx (+ test)
+- frontend/src/App.tsx
+- frontend/src/components/auth/ProtectedRoute.tsx
+- frontend/src/components/layout/{AppHeader.tsx, Sidebar.tsx, SidebarNavigation.tsx}
+- frontend/src/layouts/RootLayout.tsx
+- frontend/src/pages/{DashboardPage.tsx, SignInPage.tsx, SignUpPage.tsx}
+- frontend/src/pages/admin/AdminDashboard.tsx
+- frontend/src/pages/customer-portal/{CustomerAccount.tsx, CustomerPortalDashboard.tsx}
+- frontend/src/pages/deals/FinancialDashboard.tsx
+- frontend/src/pages/events/EventCreator.tsx
+- frontend/src/pages/marketing/BookTrial.tsx
+- frontend/src/hooks/{useCurrentUser.ts, useSubscriptionTier.ts}
+- scripts/seed_master_admin_demo.py
+- docs/bmad/bmm-workflow-status.md (this update)
+
+TEST_RESULTS:
+- `npx playwright test` (marketing) → ✅ PASS (7/7)
+- `scripts/seed_master_admin_demo.py` → ✅ PASS (Data seeded)
+
+NEXT_ACTION: Final Manual QA & Documentation Polish
+NEXT_COMMAND: Manual checklist execution
+NEXT_AGENT: dev
+PRIORITY: P0
+RATIONALE: Automated tests are green and data seeding works. Final manual verification and documentation wrap-up required.

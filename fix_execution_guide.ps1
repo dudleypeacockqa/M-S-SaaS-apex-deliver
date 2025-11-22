@@ -12,7 +12,7 @@ if git ls-files --error-unmatch "$file" >/dev/null 2>&1; then
     git checkout-index --temp "$file" >/tmp/fileinfo 2>/dev/null || true
     if [ -f /tmp/fileinfo ]; then
         tempfile=$(cut -f1 /tmp/fileinfo)
-        sed "s|[REDACTED - Use .env file]|[REDACTED - Use Render Dashboard]|g" "$tempfile" > "$tempfile.new"
+        sed "s|[REDACTED - Use Render Dashboard]|[REDACTED - Use Render Dashboard]|g" "$tempfile" > "$tempfile.new"
         git hash-object -w "$tempfile.new" > /tmp/newhash 2>/dev/null || true
         if [ -f /tmp/newhash ]; then
             newhash=$(cat /tmp/newhash)

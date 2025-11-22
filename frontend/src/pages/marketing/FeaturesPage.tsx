@@ -21,7 +21,7 @@ export const FeaturesPage: React.FC = () => {
       availability: 'https://schema.org/InStock',
     },
     description: 'End-to-end M&A intelligence platform with deal pipeline management, financial analysis, valuation tools, and secure data rooms',
-    url: 'https://100daysandbeyond.com/features',
+    url: 'https://financeflo.ai/features',
     provider,
     featureList: [
       'Deal Pipeline & Flow Management',
@@ -42,14 +42,14 @@ export const FeaturesPage: React.FC = () => {
         title="Features | ApexDeliver + CapLiquify"
         description="From CapLiquify FP&A to full M&A lifecycle management. Explore deal pipeline automation, financial intelligence, valuation tools, secure data rooms, and more."
         keywords="M&A features, deal pipeline, financial intelligence, valuation tools, data room, deal matching, M&A automation"
-        ogUrl="https://100daysandbeyond.com/features"
-        ogTitle="100 Days & Beyond Feature Tour"
+        ogUrl="https://financeflo.ai/features"
+        ogTitle="FinanceFlo Feature Tour"
         ogDescription="Explore deal pipeline automation, AI analytics, valuation workflows, secure data rooms, and professional community features."
-        ogImage="https://100daysandbeyond.com/assets/pmi-integration-graphic.png"
-        twitterTitle="100 Days & Beyond Feature Tour"
-      twitterDescription="From AI-assisted valuations to secure data rooms, see everything the 100 Days & Beyond platform covers."
-      twitterImage="https://100daysandbeyond.com/assets/pmi-integration-graphic.png"
-      canonical="https://100daysandbeyond.com/features"
+        ogImage="https://financeflo.ai/assets/pmi-integration-graphic.png"
+        twitterTitle="FinanceFlo Feature Tour"
+      twitterDescription="From AI-assisted valuations to secure data rooms, see everything the FinanceFlo platform covers."
+      twitterImage="https://financeflo.ai/assets/pmi-integration-graphic.png"
+      canonical="https://financeflo.ai/features"
     />
       <StructuredData json={softwareSchema} id="features-software-schema" />
       {/* Header */}

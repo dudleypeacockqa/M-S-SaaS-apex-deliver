@@ -26,7 +26,7 @@ except ImportError:
 
 # Database connection string
 DATABASE_URL = "postgresql://ma_saas_user:[REDACTED-ROTATED-2025-11-11]@dpg-d3ii7jjipnbc73e7chfg-a.frankfurt-postgres.render.com/ma_saas_platform"
-BASE_URL = "https://100daysandbeyond.com"
+BASE_URL = "https://financeflo.ai"
 
 # Static pages configuration
 STATIC_PAGES = [

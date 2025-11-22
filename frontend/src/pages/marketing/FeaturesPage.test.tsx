@@ -44,26 +44,31 @@ describe('FeaturesPage', () => {
     expect(sections.length).toBeGreaterThan(2);
   });
 
-  it('defines canonical and og:url metadata for 100daysandbeyond.com', () => {
+  it('defines canonical and og:url metadata for financeflo.ai', () => {
     renderWithRouter(<FeaturesPage />);
 
     const canonical = document.querySelector('link[rel="canonical"]');
     expect(canonical).not.toBeNull();
-    expect(canonical?.getAttribute('href')).toBe('https://100daysandbeyond.com/features');
+    expect(canonical?.getAttribute('href')).toBe('https://financeflo.ai/features');
+    expect(canonical?.getAttribute('href')).not.toContain('100daysandbeyond.com');
+    expect(canonical?.getAttribute('href')).not.toContain('apexdeliver.com');
 
     const ogUrlMeta = document.querySelector('meta[property="og:url"]');
     expect(ogUrlMeta).not.toBeNull();
-    expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/features');
+    expect(ogUrlMeta?.getAttribute('content')).toBe('https://financeflo.ai/features');
+    expect(ogUrlMeta?.getAttribute('content')).not.toContain('100daysandbeyond.com');
   });
 
-  it('injects software application structured data referencing 100daysandbeyond.com', async () => {
+  it('injects software application structured data referencing financeflo.ai', async () => {
     renderWithRouter(<FeaturesPage />);
 
     await waitFor(() => {
       const script = document.getElementById('features-software-schema') as HTMLScriptElement | null;
       expect(script).not.toBeNull();
       const schema = JSON.parse(script?.textContent ?? '{}');
-      expect(schema.url).toBe('https://100daysandbeyond.com/features');
+      expect(schema.url).toBe('https://financeflo.ai/features');
+      expect(schema.url).not.toContain('100daysandbeyond.com');
+      expect(schema.url).not.toContain('apexdeliver.com');
       expect(schema.featureList).toContain('Deal Pipeline & Flow Management');
     });
   });

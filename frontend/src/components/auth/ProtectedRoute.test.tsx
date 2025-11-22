@@ -17,10 +17,14 @@ const mockUserState: {
   user: null,
 }
 
-vi.mock('@clerk/clerk-react', () => ({
-  useAuth: () => mockAuthState,
-  useUser: () => mockUserState,
-}))
+vi.mock('@/lib/clerk', async () => {
+  const actual = await vi.importActual<typeof import('@/lib/clerk')>('@/lib/clerk')
+  return {
+    ...actual,
+    useAuth: () => mockAuthState,
+    useUser: () => mockUserState,
+  }
+})
 
 const ProtectedContent = () => <div data-testid="protected-content">Protected</div>
 const LandingPage = () => <div data-testid="landing-page">Landing</div>

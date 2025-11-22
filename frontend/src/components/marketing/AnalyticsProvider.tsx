@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 
 const GA_SCRIPT_ID = 'ga4-script'
 const GA_CONFIG_ID = 'ga4-config'
+const GTM_SCRIPT_ID = 'gtm-script'
 const HOTJAR_SCRIPT_ID = 'hotjar-script'
 const LINKEDIN_SCRIPT_ID = 'linkedin-insight-tag'
 const CLARITY_SCRIPT_ID = 'clarity-script'
@@ -112,6 +113,43 @@ window._hjSettings={hjid:${hotjarId},hjsv:${hotjarVersion}};
 })();`
       return script
     })
+  }, [])
+
+  // Google Tag Manager
+  useEffect(() => {
+    const gtmId = import.meta.env.VITE_GTM_ID
+
+    // Skip if no GTM ID or if it's the placeholder
+    if (!gtmId || gtmId === 'GTM-XXXXXXX') {
+      return
+    }
+
+    // Initialize dataLayer if it doesn't exist
+    if (!Array.isArray(window.dataLayer)) {
+      window.dataLayer = []
+    }
+
+    // Push GTM start event
+    window.dataLayer.push({
+      'gtm.start': new Date().getTime(),
+      event: 'gtm.js',
+    })
+
+    loadScriptOnce(GTM_SCRIPT_ID, () => {
+      const script = document.createElement('script')
+      script.async = true
+      script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`
+      script.setAttribute('data-analytics', 'gtm')
+      return script
+    })
+
+    // Add noscript iframe for GTM
+    if (typeof document !== 'undefined' && !document.getElementById('gtm-noscript')) {
+      const noscript = document.createElement('noscript')
+      noscript.id = 'gtm-noscript'
+      noscript.innerHTML = `<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`
+      document.body.appendChild(noscript)
+    }
   }, [])
 
   // Microsoft Clarity

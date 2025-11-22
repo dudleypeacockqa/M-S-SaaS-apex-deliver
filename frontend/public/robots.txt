@@ -1,5 +1,5 @@
-# robots.txt for 100daysandbeyond.com (ApexDeliver M&A Platform)
-# Last Updated: 2025-10-30
+# robots.txt for financeflo.ai (FinanceFlo M&A Platform)
+# Last Updated: 2025-11-22
 # Purpose: SEO optimization - allow marketing pages, restrict authenticated areas
 
 User-agent: *
@@ -35,7 +35,7 @@ Disallow: /book-trial
 Disallow: /api/
 
 # Sitemap location
-Sitemap: https://100daysandbeyond.com/sitemap.xml
+Sitemap: https://financeflo.ai/sitemap.xml
 
 # Crawl delay for respectful bot behavior
 Crawl-delay: 1

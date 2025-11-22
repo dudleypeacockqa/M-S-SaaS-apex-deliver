@@ -19,9 +19,7 @@ vi.mock('./OptInPopup', () => ({
   OptInPopup: () => <div data-testid="optin-popup">Opt-in Popup</div>,
 }));
 
-vi.mock('../common/StructuredData', () => ({
-  StructuredData: () => null,
-}));
+// Don't mock StructuredData - we need to test the actual schema output
 
 describe('MarketingLayout Component', () => {
   describe('Component Rendering', () => {
@@ -103,6 +101,71 @@ describe('MarketingLayout Component', () => {
       const wrapper = container.firstChild as HTMLElement;
       expect(wrapper.className).toContain('min-h-screen');
       expect(wrapper.className).toContain('flex');
+    });
+  });
+
+  describe('Structured Data - Organization Schema', () => {
+    it('should use FinanceFlo branding in organization schema', () => {
+      render(
+        <MarketingLayout>
+          <div>Content</div>
+        </MarketingLayout>
+      );
+      
+      // Find structured data script tag by ID
+      const schemaScript = document.getElementById('organization-schema');
+      expect(schemaScript).not.toBeNull();
+      
+      const orgSchema = schemaScript?.textContent ? JSON.parse(schemaScript.textContent) : null;
+      expect(orgSchema).not.toBeNull();
+      
+      // Assert FinanceFlo branding
+      expect(orgSchema['@type']).toBe('Organization');
+      expect(orgSchema.name).toBe('FinanceFlo');
+      expect(orgSchema.url).toBe('https://financeflo.ai');
+      expect(orgSchema.url).not.toContain('100daysandbeyond.com');
+      expect(orgSchema.url).not.toContain('apexdeliver.com');
+      expect(orgSchema.logo).toContain('financeflo.ai');
+      expect(orgSchema.description).toContain('FinanceFlo');
+    });
+
+    it('should have FinanceFlo contact information', () => {
+      render(
+        <MarketingLayout>
+          <div>Content</div>
+        </MarketingLayout>
+      );
+      
+      const schemaScript = document.getElementById('organization-schema');
+      const orgSchema = schemaScript?.textContent ? JSON.parse(schemaScript.textContent) : null;
+      
+      // Verify contact point uses FinanceFlo email
+      if (orgSchema?.contactPoint) {
+        const contactPoint = Array.isArray(orgSchema.contactPoint) 
+          ? orgSchema.contactPoint[0] 
+          : orgSchema.contactPoint;
+        expect(contactPoint.email).toContain('financeflo');
+        expect(contactPoint.email).not.toContain('apexdeliver');
+      }
+    });
+
+    it('should have FinanceFlo social media links', () => {
+      render(
+        <MarketingLayout>
+          <div>Content</div>
+        </MarketingLayout>
+      );
+      
+      const schemaScript = document.getElementById('organization-schema');
+      const orgSchema = schemaScript?.textContent ? JSON.parse(schemaScript.textContent) : null;
+      
+      if (orgSchema?.sameAs && Array.isArray(orgSchema.sameAs)) {
+        // Verify social links don't reference legacy domains
+        orgSchema.sameAs.forEach((link: string) => {
+          expect(link).not.toContain('apexdeliver');
+          expect(link).not.toContain('100daysandbeyond');
+        });
+      }
     });
   });
 });

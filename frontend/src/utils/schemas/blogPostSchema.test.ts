@@ -13,8 +13,8 @@ describe('blogPostSchema', () => {
       author: 'Jane Smith',
       publishedAt: '2025-01-15T10:00:00Z',
       excerpt: 'Discover the latest trends shaping M&A in 2025',
-      featuredImage: 'https://apexdeliver.com/images/blog/ma-trends-2025.jpg',
-      url: 'https://apexdeliver.com/blog/ma-trends-2025',
+      featuredImage: 'https://financeflo.ai/images/blog/ma-trends-2025.jpg',
+      url: 'https://financeflo.ai/blog/ma-trends-2025',
     };
 
     const schema = createBlogPostSchema(post);
@@ -27,11 +27,11 @@ describe('blogPostSchema', () => {
       name: 'Jane Smith',
     });
     expect(schema.datePublished).toBe('2025-01-15T10:00:00Z');
-    expect(schema.image).toBe('https://apexdeliver.com/images/blog/ma-trends-2025.jpg');
+    expect(schema.image).toBe('https://financeflo.ai/images/blog/ma-trends-2025.jpg');
     expect(schema.description).toBe('Discover the latest trends shaping M&A in 2025');
   });
 
-  it('should include publisher as Organization', () => {
+  it('should include publisher as Organization with FinanceFlo branding', () => {
     const post = {
       title: 'Test Article',
       author: 'Test Author',
@@ -42,8 +42,13 @@ describe('blogPostSchema', () => {
 
     expect(schema.publisher).toMatchObject({
       '@type': 'Organization',
-      name: 'ApexDeliver',
+      name: 'FinanceFlo',
     });
+    expect(schema.publisher.logo).toMatchObject({
+      '@type': 'ImageObject',
+      url: expect.stringContaining('financeflo.ai'),
+    });
+    expect(schema.publisher.logo.url).not.toContain('apexdeliver.com');
   });
 
   it('should include dateModified if provided', () => {
@@ -100,5 +105,21 @@ describe('blogPostSchema', () => {
     expect(schema.headline).toBe('Minimal Article');
     expect(schema.author.name).toBe('Author');
     // Optional fields should be omitted or have sensible defaults
+  });
+
+  it('should use financeflo.ai URLs in article schema', () => {
+    const post = {
+      title: 'Test Article',
+      author: 'Test Author',
+      publishedAt: '2025-01-01T00:00:00Z',
+      url: 'https://financeflo.ai/blog/test-article',
+    };
+
+    const schema = createBlogPostSchema(post);
+
+    expect(schema.url).toBe('https://financeflo.ai/blog/test-article');
+    expect(schema.url).not.toContain('apexdeliver.com');
+    expect(schema.url).not.toContain('100daysandbeyond.com');
+    expect(schema.mainEntityOfPage['@id']).toBe('https://financeflo.ai/blog/test-article');
   });
 });

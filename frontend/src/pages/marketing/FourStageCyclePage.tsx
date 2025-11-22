@@ -3,6 +3,8 @@ import { SEO } from '../../components/common/SEO';
 import { Link } from 'react-router-dom';
 import { trackCtaClick } from '../../lib/analytics';
 import { InteractiveTimeline } from '../../components/marketing/InteractiveTimeline';
+import { StructuredData } from '../../components/common/StructuredData';
+import { createBreadcrumbSchema } from '../../utils/schemas/breadcrumbSchema';
 
 export const FourStageCyclePage: React.FC = () => {
   const stages = [
@@ -103,6 +105,14 @@ export const FourStageCyclePage: React.FC = () => {
         title="4-Stage M&A Cycle - Evaluation to Exit | CapLiquify + ApexDeliver"
         description="Master every stage of the M&A lifecycle: Evaluation, Pre-Deal, Post-Deal PMI, and Ongoing Operations. Purpose-built for PE firms and active dealmakers."
         keywords="M&A lifecycle, deal evaluation, PMI finance ops, post-merger integration, ongoing operations"
+      />
+      <StructuredData
+        json={createBreadcrumbSchema([
+          { name: 'Home', url: 'https://financeflo.ai/' },
+          { name: 'Solutions', url: 'https://financeflo.ai/solutions' },
+          { name: 'PMI', url: 'https://financeflo.ai/solutions/pmi' },
+        ])}
+        id="four-stage-cycle-breadcrumbs"
       />
 
       {/* Hero Section */}

@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import dataclasses
 from pathlib import Path
 
 possible_backend_dirs = [
@@ -17,7 +18,7 @@ for candidate in possible_backend_dirs:
         break
 
 from app.core.database import init_engine  # type: ignore  # noqa: E402
-from app.db import session as session_module  # type: ignore  # noqa: E402
+import app.core.database as db_core  # type: ignore  # noqa: E402
 from app.models.user import User  # type: ignore  # noqa: E402
 from app.services.master_admin_seed_service import (  # type: ignore  # noqa: E402
     MasterAdminSeedResult,
@@ -32,10 +33,10 @@ def main() -> None:
     if not user_id:
         raise SystemExit("MASTER_ADMIN_USER_ID is required")
 
-    session_factory = session_module.SessionLocal
+    session_factory = db_core.SessionLocal
     if session_factory is None:
         init_engine()
-        session_factory = session_module.SessionLocal
+        session_factory = db_core.SessionLocal
     if session_factory is None:
         raise SystemExit("Database session factory is not configured. Set DATABASE_URL.")
 
@@ -49,7 +50,7 @@ def main() -> None:
         db.close()
 
     print("Master Admin demo data ready:")
-    payload = summary.__dict__
+    payload = dataclasses.asdict(summary)
     print(json.dumps(payload, indent=2))
 
     if output_path:

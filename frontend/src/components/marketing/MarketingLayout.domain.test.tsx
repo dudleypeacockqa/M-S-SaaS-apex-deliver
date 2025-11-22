@@ -14,7 +14,7 @@ describe('MarketingLayout domain configuration', () => {
     resetDocument();
   });
 
-  it('exposes organization structured data for 100daysandbeyond.com', () => {
+  it('exposes organization structured data for financeflo.ai', () => {
     render(
       <BrowserRouter>
         <MarketingLayout>
@@ -28,7 +28,8 @@ describe('MarketingLayout domain configuration', () => {
 
     const payload = schemaScript?.textContent ? JSON.parse(schemaScript.textContent) : null;
     expect(payload).not.toBeNull();
-    expect(payload?.url).toBe('https://100daysandbeyond.com');
-    expect(payload?.logo).toBe('https://100daysandbeyond.com/assets/brand/apexdeliver-wordmark.svg');
+    expect(payload?.url).toBe('https://financeflo.ai');
+    expect(payload?.logo).toContain('financeflo.ai');
+    expect(payload?.name).toBe('FinanceFlo');
   });
 });

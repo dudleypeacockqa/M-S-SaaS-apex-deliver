@@ -301,5 +301,32 @@ describe('BlogPostPage', () => {
         expect(articleSchema).toBeTruthy();
       });
     });
+
+    it('should include BreadcrumbList structured data schema', async () => {
+      renderBlogPost();
+
+      await waitFor(() => {
+        const scripts = document.querySelectorAll('script[type="application/ld+json"]');
+        const breadcrumbSchema = Array.from(scripts).find(script => {
+          try {
+            const json = JSON.parse(script.textContent || '{}');
+            return json['@type'] === 'BreadcrumbList';
+          } catch {
+            return false;
+          }
+        });
+        expect(breadcrumbSchema).toBeTruthy();
+        
+        if (breadcrumbSchema) {
+          const schema = JSON.parse(breadcrumbSchema.textContent || '{}');
+          expect(schema.itemListElement).toBeDefined();
+          expect(schema.itemListElement.length).toBeGreaterThanOrEqual(2);
+          // Should have Home > Blog > Post Title
+          expect(schema.itemListElement[0].name).toBe('Home');
+          expect(schema.itemListElement[0].item).toContain('financeflo.ai');
+          expect(schema.itemListElement[1].name).toBe('Blog');
+        }
+      });
+    });
   });
 });

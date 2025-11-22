@@ -4,6 +4,7 @@ import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { trackCtaClick } from '../../lib/analytics';
 import { StructuredData } from '../../components/common/StructuredData';
+import { createBreadcrumbSchema } from '../../utils/schemas/breadcrumbSchema';
 import { caseStudies } from '../../data/caseStudies';
 import { CaseStudy } from '../../components/marketing/CaseStudy';
 
@@ -18,10 +19,15 @@ export const CaseStudiesPage: React.FC = () => {
         '@type': 'CreativeWork',
         name: `${study.customerName} Case Study`,
         description: `${study.industry}: ${study.challenge}`,
-        url: `https://100daysandbeyond.com/case-studies#case-study-${study.id}`,
+        url: `https://financeflo.ai/case-studies#case-study-${study.id}`,
       },
     })),
   };
+
+  const breadcrumbSchema = createBreadcrumbSchema([
+    { name: 'Home', url: 'https://financeflo.ai/' },
+    { name: 'Case Studies', url: 'https://financeflo.ai/case-studies' },
+  ]);
 
   return (
     <MarketingLayout>
@@ -31,6 +37,7 @@ export const CaseStudiesPage: React.FC = () => {
         keywords="M&A case studies, private equity success stories, cash flow optimization, PMI case studies, buy and build"
       />
       <StructuredData json={caseStudiesSchema} id="case-studies-schema" />
+      <StructuredData json={breadcrumbSchema} id="case-studies-breadcrumbs" />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-900 text-white py-20">

@@ -2,7 +2,10 @@
 # Entrypoint script for Render deployment
 # Simplified version that calls prestart then starts uvicorn
 
-set -e  # Exit on error
+set -euo pipefail  # Exit fast on failures/undefined vars
+
+SANITIZED_PRESTART="/tmp/prestart.sh"
+trap 'rm -f "${SANITIZED_PRESTART}"' EXIT
 
 echo "========================================="
 echo "Starting Render Backend Service"
@@ -11,9 +14,7 @@ echo "========================================="
 # Run prestart script (migrations)
 if [ -f "/app/prestart.sh" ]; then
     echo "Running prestart script..."
-    SANITIZED_PRESTART="/tmp/prestart"
-    # Strip Windows line endings (CRLF) before executing
-    # This ensures the script works even if checked out with CRLF line endings
+    # Strip Windows line endings (CRLF) before executing.
     if ! tr -d '\r' < /app/prestart.sh > "${SANITIZED_PRESTART}"; then
         echo "ERROR: Failed to sanitize prestart.sh" >&2
         exit 1

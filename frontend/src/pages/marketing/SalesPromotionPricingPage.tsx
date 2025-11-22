@@ -2,6 +2,8 @@ import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { Link } from 'react-router-dom';
 import { trackCtaClick } from '../../lib/analytics';
+import { StructuredData } from '../../components/common/StructuredData';
+import { createBreadcrumbSchema } from '../../utils/schemas/breadcrumbSchema';
 
 import { DynamicPricingSimulator } from '../../components/marketing/DynamicPricingSimulator';
 
@@ -108,6 +110,14 @@ export const SalesPromotionPricingPage: React.FC = () => {
         title="Sales and Promotion Pricing Engine + Customer Portals | CapLiquify"
         description="Dynamic pricing engine, promotion management, and B2B2C customer portals for manufacturing, distribution, and professional services businesses."
         keywords="dynamic pricing, promotion management, customer portal, B2B pricing, quote generation"
+      />
+      <StructuredData
+        json={createBreadcrumbSchema([
+          { name: 'Home', url: 'https://financeflo.ai/' },
+          { name: 'Solutions', url: 'https://financeflo.ai/solutions' },
+          { name: 'Pricing', url: 'https://financeflo.ai/solutions/pricing' },
+        ])}
+        id="sales-promotion-pricing-breadcrumbs"
       />
 
       {/* Hero Section */}
