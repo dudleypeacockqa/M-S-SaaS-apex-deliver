@@ -12,7 +12,7 @@ export const MidaxoAlternative: React.FC = () => {
         title="Midaxo Alternative | 100 Days & Beyond vs Midaxo"
         description="Compare 100 Days & Beyond against Midaxo. Discover a more agile, finance-first approach to M&A and post-merger integration."
         keywords="Midaxo alternative, M&A software comparison, PMI software, deal management platform"
-        canonical="https://100daysandbeyond.com/compare/midaxo-alternative"
+        canonical="https://financeflo.ai/compare/midaxo-alternative"
       />
       
       <div className="bg-white py-20">

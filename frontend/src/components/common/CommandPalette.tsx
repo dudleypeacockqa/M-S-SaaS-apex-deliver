@@ -301,7 +301,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
                       `}
                       onClick={() => handleSelect(item)}
                     >
-                      <span className={`rounded-xl p-2 ${activeIndex === index ? 'bg-indigo-500/20 text-indigo-200' : 'bg-white/5 text-slate-400'}`}>
+                      <span className={`rounded-xl p-2 ${activeIndex === index ? 'bg-indigo-500/20 text-indigo-100' : 'bg-white/5 text-slate-400'}`}>
                         {item.icon}
                       </span>
                       <div className="flex-1">

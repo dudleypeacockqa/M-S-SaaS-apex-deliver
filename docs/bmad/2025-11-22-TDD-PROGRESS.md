@@ -139,7 +139,20 @@
 
 2. **Final Documentation** - Update governance docs with completion evidence
 
+3. **FinanceFlo Navigation Coverage** *(NEW 2025-11-24)*
+   - Create RED Vitest cases for the FinanceFlo navigation data + router to enforce the new "M&A & Finance Solutions" grouping
+   - Extend routing tests so `/ipaas` redirect + child routes remain wired for the legacy site merge
+   - Flip GREEN by validating the current implementation, then document evidence in this log
+
 ---
 
-**Last Updated**: 2025-11-22T04:07Z  
+**Last Updated**: 2025-11-24T13:45Z  
 **Progress**: 5/6 phases complete (83%), 39/39 tests passing (100%)
+### Phase 7: Legacy Domain Cleanup – FinanceFlo SEO Components
+- **RED**: Documented failing state where `SEOOptimizer` and `AdvancedSEOOptimizer` defaulted to the Lovable preview domain.
+- **GREEN**: Updated organization schema defaults, publisher metadata, and OG image fallbacks to `https://financeflo.ai` assets across both FinanceFlo + marketing variants.
+- **REFACTOR**: Confirmed no remaining `flo-finance-uk-website.lovable.app` references in `frontend/src`. Next TDD target: add regression coverage for `_redirects` + `App.tsx` to guarantee legacy URLs resolve to FinanceFlo routes.
+
+### 2025-11-24 Checkpoint
+- Ran `node node_modules/vitest/vitest.mjs run src/__tests__/sitemap-validation.test.ts` (pass)
+- Ran `python3 scripts/verify_deployment.py production`: blog APIs still 500, frontend via 100daysandbeyond.com returns 403 (Cloudflare). Next: retest against financeflo.ai and apply blog migration.

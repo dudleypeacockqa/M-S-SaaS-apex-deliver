@@ -127,30 +127,30 @@ describe('PricingPage', () => {
     expect(screen.getByTestId('pricing-cta-starter')).toBeEnabled();
   });
 
-  it('publishes canonical and og:url metadata for the 100daysandbeyond.com domain', async () => {
+  it('publishes canonical and og:url metadata for the financeflo.ai domain', async () => {
     renderPricing();
 
     await waitFor(() => {
     const canonical = document.querySelector('link[rel="canonical"]');
     expect(canonical).not.toBeNull();
-    expect(canonical?.getAttribute('href')).toBe('https://100daysandbeyond.com/pricing');
+    expect(canonical?.getAttribute('href')).toBe('https://financeflo.ai/pricing');
     });
 
     const ogUrlMeta = document.querySelector('meta[property="og:url"]');
     expect(ogUrlMeta).not.toBeNull();
-    expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/pricing');
+    expect(ogUrlMeta?.getAttribute('content')).toBe('https://financeflo.ai/pricing');
   });
 
-  it('publishes structured data for product offers using the 100daysandbeyond.com domain', () => {
+  it('publishes structured data for product offers using the financeflo.ai domain', () => {
     renderPricing();
     const script = document.getElementById('pricing-product-schema') as HTMLScriptElement | null;
     expect(script).not.toBeNull();
 
     const schema = JSON.parse(script?.textContent ?? '{}');
     expect(schema['@type']).toBe('Product');
-    expect(schema.url).toBe('https://100daysandbeyond.com/pricing');
+    expect(schema.url).toBe('https://financeflo.ai/pricing');
     expect(Array.isArray(schema.offers)).toBe(true);
     expect(schema.offers).toHaveLength(6);
-    expect(schema.offers[0].url).toBe('https://100daysandbeyond.com/pricing');
+    expect(schema.offers[0].url).toBe('https://financeflo.ai/pricing');
   });
 });

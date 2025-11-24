@@ -16,27 +16,52 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    label: 'Products',
+    label: 'Services',
+    dropdown: [
+      {
+        label: 'ERP Implementation & Resell',
+        href: '/erp/sage-intacct',
+        description: 'Sage Intacct, Odoo, Microsoft, and NetSuite rollouts with UK support.',
+      },
+      {
+        label: 'AI Consulting & Copilots',
+        href: '/ai-enhancement/sage-intacct',
+        description: 'Process automation, copilots, and AI assurance for finance + ops teams.',
+      },
+      {
+        label: 'Integration & iPaaS Studio',
+        href: '/implementation/sage-intacct',
+        description: 'Connect ERPs, CRMs, commerce, and data warehouses under one roof.',
+      },
+      {
+        label: 'Managed Support & Training',
+        href: '/pricing/services',
+        description: 'Admin-on-demand, enablement pods, and 24/7 support retainers.',
+      },
+    ],
+  },
+  {
+    label: 'Software',
     dropdown: [
       {
         label: 'CapLiquify FP&A',
         href: '/capliquify-fpa',
-        description: '13-week cash forecasting & working capital management',
+        description: '13-week cash, variance guardrails, and lender-ready packs.',
+      },
+      {
+        label: 'ApexDeliver Deal Cloud',
+        href: '/features',
+        description: 'Deal rooms, valuations, PMI automation, and master admin controls.',
       },
       {
         label: 'Sales & Promotion Pricing',
         href: '/sales-promotion-pricing',
-        description: 'Dynamic pricing engine + customer portals',
+        description: 'Pricing guardrails, partner portals, and promotion analytics.',
       },
       {
-        label: 'ApexDeliver Professional',
-        href: '/pricing',
-        description: 'Full M&A deal management platform',
-      },
-      {
-        label: 'ApexDeliver Enterprise',
-        href: '/pricing',
-        description: 'Multi-entity portfolio management',
+        label: 'Community & Event Engine',
+        href: '/podcast',
+        description: 'Summits, podcasts, and community feeds tied to revenue outcomes.',
       },
     ],
   },
@@ -44,62 +69,48 @@ const navItems: NavItem[] = [
     label: 'Solutions',
     dropdown: [
       {
-        label: 'CFO Command Center',
+        label: 'CFO & Finance Control Tower',
         href: '/solutions/cfo',
-        description: 'Cash runway, 13-week forecasts, and lender-ready packs',
+        description: 'CapLiquify + ERP telemetry for finance and operations leaders.',
       },
       {
-        label: 'Deal Team Workspace',
+        label: 'Deal & Corporate Development',
         href: '/solutions/deal-team',
-        description: 'AI co-pilot for sourcing, diligence, and PMI',
+        description: 'Source, diligence, value, and integrate deals with AI guardrails.',
       },
       {
-        label: '4-Stage M&A Cycle',
+        label: '4-Stage Value Creation',
         href: '/4-stage-cycle',
-        description: 'Evaluation → Pre-Deal → Post-Deal → Ongoing Ops',
+        description: 'Evaluation → Pre-Deal → Post-Deal → Ongoing ops.',
       },
       {
-        label: 'Features',
-        href: '/features',
-        description: 'Complete platform capabilities',
-      },
-      {
-        label: 'Security',
+        label: 'Security & Compliance',
         href: '/security',
-        description: 'Enterprise-grade security & compliance',
-      },
-    ],
-  },
-  {
-    label: 'Compare',
-    dropdown: [
-      {
-        label: 'DealRoom Alternative',
-        href: '/compare/dealroom-alternative',
-        description: 'Deal flow + FP&A automation vs. DealRoom data rooms',
+        description: 'SOC 2, GDPR, ISO 27001, and audit trails baked in.',
       },
       {
-        label: 'Midaxo Alternative',
-        href: '/compare/midaxo-alternative',
-        description: 'Finance-first platform compared to Midaxo suites',
+        label: 'Industry Playbooks',
+        href: '/industries/financial-services',
+        description: 'Manufacturing, services, PE, and capital markets templates.',
       },
     ],
   },
   {
     label: 'Resources',
     dropdown: [
-      { label: 'Case Studies', href: '/case-studies', description: 'Customer success stories' },
-      { label: 'Blog', href: '/blog', description: 'M&A insights and best practices' },
-      { label: 'Podcast', href: '/podcast', description: '100 Days and Beyond' },
-      { label: 'FAQ', href: '/faq', description: 'Common questions answered' },
+      { label: 'Case Studies', href: '/case-studies', description: 'ERP + AI wins from UK operators.' },
+      { label: 'Blog', href: '/blog', description: 'Working capital, AI, and dealroom tactics.' },
+      { label: 'Podcast', href: '/podcast', description: '100 Days & Beyond conversations.' },
+      { label: 'FAQ', href: '/faq', description: 'Implementation, pricing, and security answers.' },
+      { label: 'Readiness Assessment', href: '/assessment', description: 'Score your ERP + GTM stack in minutes.' },
     ],
   },
   {
     label: 'Company',
     dropdown: [
-      { label: 'About Us', href: '/about', description: 'Our mission and story' },
-      { label: 'Team', href: '/team', description: 'Meet the experts' },
-      { label: 'Contact', href: '/contact', description: 'Get in touch' },
+      { label: 'About Us', href: '/about', description: 'FinanceFlo story and mission.' },
+      { label: 'Team', href: '/team', description: 'Meet the ERP + AI operators.' },
+      { label: 'Contact', href: '/contact', description: 'Book a blueprint session.' },
     ],
   },
   {
@@ -272,11 +283,11 @@ export const MarketingNav: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2" aria-label="ApexDeliver home">
-              <span className="text-2xl font-bold bg-gradient-to-r from-indigo-900 to-purple-900 bg-clip-text text-transparent">
-                ApexDeliver
+            <Link to="/" className="flex items-center space-x-2" aria-label="FinanceFlo home">
+              <span className="text-2xl font-bold bg-gradient-to-r from-indigo-900 via-purple-900 to-emerald-700 bg-clip-text text-transparent">
+                FinanceFlo
               </span>
-              <span className="text-sm font-semibold text-emerald-700">+ CapLiquify</span>
+              <span className="text-sm font-semibold text-emerald-700">ERP + AI + ApexDeliver</span>
             </Link>
           </div>
 

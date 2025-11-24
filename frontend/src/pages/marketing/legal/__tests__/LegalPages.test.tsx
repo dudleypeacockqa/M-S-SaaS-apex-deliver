@@ -20,7 +20,7 @@ describe('Legal Pages', () => {
     const lastUpdated = screen.getAllByText(/last updated/i)
     expect(lastUpdated[0]).toHaveTextContent(/2025-10-25/i)
     expect(screen.getByRole('heading', { level: 2, name: /acceptance of terms/i })).toBeInTheDocument()
-    const tosSupportContacts = screen.getAllByText(/support@apexdeliver.com/i)
+    const tosSupportContacts = screen.getAllByText(/support@financeflo.ai/i)
     expect(tosSupportContacts.length).toBeGreaterThan(0)
   })
 
@@ -29,7 +29,7 @@ describe('Legal Pages', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: /privacy policy/i })).toBeInTheDocument()
     expect(screen.getByText(/gdpr compliant/i)).toBeInTheDocument()
-    const privacyContacts = screen.getAllByText(/privacy@apexdeliver.com/i)
+    const privacyContacts = screen.getAllByText(/privacy@financeflo.ai/i)
     expect(privacyContacts.length).toBeGreaterThan(0)
     expect(screen.getByRole('heading', { level: 2, name: /data controller/i })).toBeInTheDocument()
   })
@@ -39,7 +39,7 @@ describe('Legal Pages', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: /cookie policy/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: /types of cookies we use/i })).toBeInTheDocument()
-    expect(screen.getByText(/privacy@apexdeliver.com/i)).toBeInTheDocument()
+    expect(screen.getByText(/privacy@financeflo.ai/i)).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: /cookie banner/i })).toBeInTheDocument()
   })
 })

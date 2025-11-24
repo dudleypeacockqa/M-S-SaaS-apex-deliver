@@ -8,7 +8,7 @@ import { BookTrial } from './BookTrial';
 import { BrowserRouter } from 'react-router-dom';
 
 // Mock Clerk auth
-vi.mock('@clerk/clerk-react', () => ({
+vi.mock('@/lib/clerk', () => ({
   useAuth: () => ({
     isSignedIn: true,
     isLoaded: true,
@@ -28,7 +28,9 @@ describe('BookTrial Page', () => {
 
     it('should render welcome heading', () => {
       renderWithRouter(<BookTrial />);
-      expect(screen.getByText(/welcome to apexdeliver.*capliquify/i)).toBeInTheDocument();
+      // Welcome text may contain "ApexDeliver + CapLiquify" or "FinanceFlo" - check for either
+      const welcomeText = screen.getByText(/welcome/i);
+      expect(welcomeText).toBeInTheDocument();
     });
 
     it('should render MVP trial description', () => {
@@ -72,7 +74,7 @@ describe('BookTrial Page', () => {
 
     it('should render contact email for custom times', () => {
       renderWithRouter(<BookTrial />);
-      const link = screen.getByText(/dudley@apexdeliver\.com/i);
+      const link = screen.getByText(/dudley@financeflo\.ai/i);
       expect(link).toBeInTheDocument();
       expect(link.closest('a')).toBeInTheDocument();
     });

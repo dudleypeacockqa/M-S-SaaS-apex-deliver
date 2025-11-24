@@ -52,15 +52,15 @@ export const CaseStudiesPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
               <div>
                 <div className="text-5xl font-bold text-emerald-400">75%</div>
-                <div className="text-indigo-200 mt-2">Faster PMI Cycles</div>
+                <div className="text-indigo-100 mt-2">Faster PMI Cycles</div>
               </div>
               <div>
                 <div className="text-5xl font-bold text-emerald-400">£8.2M</div>
-                <div className="text-indigo-200 mt-2">Avg. Cash Unlocked</div>
+                <div className="text-indigo-100 mt-2">Avg. Cash Unlocked</div>
               </div>
               <div>
                 <div className="text-5xl font-bold text-emerald-400">95%+</div>
-                <div className="text-indigo-200 mt-2">Forecast Accuracy</div>
+                <div className="text-indigo-100 mt-2">Forecast Accuracy</div>
               </div>
             </div>
           </div>

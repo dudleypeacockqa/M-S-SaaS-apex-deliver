@@ -147,3 +147,5 @@ export const DashboardMockup: React.FC = () => {
     </div>
   );
 };
+
+export default DashboardMockup;

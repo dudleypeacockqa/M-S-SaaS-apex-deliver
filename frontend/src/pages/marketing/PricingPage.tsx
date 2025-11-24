@@ -106,7 +106,7 @@ export const PricingPage: React.FC = () => {
           description:
             'End-to-end M&A intelligence platform for deal flow management, financial analysis, and secure collaboration',
       brand: 'ApexDeliver',
-      url: 'https://100daysandbeyond.com/pricing',
+      url: 'https://financeflo.ai/pricing',
     },
         basePricingTiers
           .filter((tier) => typeof tier.monthlyPrice === 'number')
@@ -120,7 +120,7 @@ export const PricingPage: React.FC = () => {
         currency: 'GBP',
         billingPeriod: 'MONTH' as const,
         description: tier.description,
-        url: 'https://100daysandbeyond.com/pricing',
+        url: 'https://financeflo.ai/pricing',
               },
               {
                 name: `${tier.name} Annual`,
@@ -128,7 +128,7 @@ export const PricingPage: React.FC = () => {
                 currency: 'GBP',
                 billingPeriod: 'YEAR' as const,
                 description: tier.description,
-                url: 'https://100daysandbeyond.com/pricing',
+                url: 'https://financeflo.ai/pricing',
               },
             ];
           })
@@ -144,12 +144,12 @@ export const PricingPage: React.FC = () => {
         keywords="M&A software pricing, deal management pricing, M&A platform cost, professional M&A tools pricing"
         ogTitle="100 Days & Beyond Pricing - Professional M&A Tools from £598/month"
         ogDescription="Choose from 4 pricing tiers designed for solo dealmakers to large organizations. All plans include AI-powered intelligence and deal flow management."
-        ogUrl="https://100daysandbeyond.com/pricing"
-        ogImage="https://100daysandbeyond.com/assets/financial-analysis-visual.png"
+        ogUrl="https://financeflo.ai/pricing"
+        ogImage="https://financeflo.ai/assets/financial-analysis-visual.png"
         twitterTitle="100 Days & Beyond Pricing"
         twitterDescription="Flexible plans covering deal pipeline management, valuations, data rooms, and AI-powered matching."
-        twitterImage="https://100daysandbeyond.com/assets/financial-analysis-visual.png"
-        canonical="https://100daysandbeyond.com/pricing"
+        twitterImage="https://financeflo.ai/assets/financial-analysis-visual.png"
+        canonical="https://financeflo.ai/pricing"
       />
       <StructuredData json={pricingSchema} id="pricing-product-schema" />
       {/* Header Section */}

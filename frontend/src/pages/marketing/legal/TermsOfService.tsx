@@ -12,12 +12,12 @@ export const TermsOfService: React.FC = () => {
         keywords="100 Days & Beyond terms of service, M&A software terms, SaaS acceptable use policy"
         ogTitle="100 Days & Beyond Terms of Service"
         ogDescription="Understand the agreements that govern usage of the 100 Days & Beyond M&A lifecycle platform."
-        ogUrl="https://100daysandbeyond.com/legal/terms"
-        ogImage="https://100daysandbeyond.com/assets/dashboard-preview.png"
+        ogUrl="https://financeflo.ai/legal/terms"
+        ogImage="https://financeflo.ai/assets/dashboard-preview.png"
         twitterTitle="100 Days & Beyond Terms of Service"
         twitterDescription="Detailed terms covering subscriptions, data handling, and fair use for the 100 Days & Beyond platform."
-        twitterImage="https://100daysandbeyond.com/assets/dashboard-preview.png"
-        canonical="https://100daysandbeyond.com/legal/terms"
+        twitterImage="https://financeflo.ai/assets/dashboard-preview.png"
+        canonical="https://financeflo.ai/legal/terms"
       />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
@@ -85,7 +85,7 @@ export const TermsOfService: React.FC = () => {
 
             <h3 className="text-xl font-semibold text-gray-900 mb-3">3.5 Refund Policy</h3>
             <p className="text-gray-700">
-              We offer a 30-day money-back guarantee for annual subscriptions. Monthly subscriptions are non-refundable. To request a refund, contact support@apexdeliver.com within 30 days of your initial payment.
+              We offer a 30-day money-back guarantee for annual subscriptions. Monthly subscriptions are non-refundable. To request a refund, contact support@financeflo.ai within 30 days of your initial payment.
             </p>
           </section>
 
@@ -156,7 +156,7 @@ export const TermsOfService: React.FC = () => {
               If you have any questions about these Terms, please contact us:
             </p>
             <ul className="list-none text-gray-700 space-y-1">
-              <li>Email: support@apexdeliver.com</li>
+              <li>Email: support@financeflo.ai</li>
               <li>Address: ApexDeliver Ltd, London, United Kingdom</li>
             </ul>
           </section>

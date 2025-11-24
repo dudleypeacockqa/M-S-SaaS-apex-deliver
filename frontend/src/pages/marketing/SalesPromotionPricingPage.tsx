@@ -141,15 +141,15 @@ export const SalesPromotionPricingPage: React.FC = () => {
               <div className="grid grid-cols-3 gap-6 mb-8 p-6 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-emerald-400">80%</div>
-                  <div className="text-sm text-indigo-200">Faster Quotes</div>
+                  <div className="text-sm text-indigo-100">Faster Quotes</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-emerald-400">60%</div>
-                  <div className="text-sm text-indigo-200">Self-Service Orders</div>
+                  <div className="text-sm text-indigo-100">Self-Service Orders</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-emerald-400">25%</div>
-                  <div className="text-sm text-indigo-200">Price Realization ↑</div>
+                  <div className="text-sm text-indigo-100">Price Realization ↑</div>
                 </div>
               </div>
 
@@ -171,7 +171,7 @@ export const SalesPromotionPricingPage: React.FC = () => {
                 </Link>
               </div>
 
-              <p className="text-sm text-indigo-200 mt-4">
+              <p className="text-sm text-indigo-100 mt-4">
                 Included in CapLiquify FP&A (£598/mo) • Up to 100 customer portals
               </p>
             </div>

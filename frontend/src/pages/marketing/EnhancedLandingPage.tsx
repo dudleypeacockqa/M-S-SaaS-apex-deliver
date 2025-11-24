@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { FeatureCard } from '../../components/marketing/FeatureCard';
@@ -8,8 +8,8 @@ import { TrustBadges } from '../../components/marketing/TrustBadges';
 import { CTASection } from '../../components/marketing/CTASection';
 import { ExitIntentPopup } from '../../components/marketing/ExitIntentPopup';
 import { StickyCTABar } from '../../components/marketing/StickyCTABar';
-import { trackCtaClick } from '../../lib/analytics';
 import { DashboardMockup } from '../../components/marketing/DashboardMockup';
+import { trackCtaClick } from '../../lib/analytics';
 import { basePricingTiers, calculateAnnualPrice, formatCurrency, type BillingCycle, ANNUAL_DISCOUNT_RATE } from '../../data/pricing';
 import {
   heroPillars,
@@ -22,10 +22,37 @@ import {
   structuredData
 } from '../../data/landingPageData';
 
+const serviceStrands = [
+  {
+    title: 'ERP Implementation & Resell',
+    description: 'Certified Sage Intacct, Odoo, Microsoft, and NetSuite rollouts guided by the ADAPT blueprint.',
+    bullets: ['Data migration + entity consolidations', 'Automations, approvals, and reporting packs', 'Admin-on-demand once you go live'],
+    cta: { text: 'Explore ERP programs', link: '/erp/sage-intacct' },
+  },
+  {
+    title: 'CapLiquify + ApexDeliver Stack',
+    description: 'CapLiquify FP&A, ApexDeliver deal + pricing cloud, portals, events, and community in one operator-led stack.',
+    bullets: ['13-week cash + variance guardrails', 'Deal rooms, valuations, pricing studio', 'Portals, podcasts, and community in weeks'],
+    cta: { text: 'See the software', link: '/capliquify-fpa' },
+  },
+  {
+    title: 'AI Consulting & Managed Support',
+    description: 'Copilot design, iPaaS flows, governance, and fractional teams for finance, deal, and GTM leaders.',
+    bullets: ['Process mining + AI assurance frameworks', 'Copilot library with human-in-loop review', 'Enablement pods + 24/7 support retainers'],
+    cta: { text: 'Review AI & support pods', link: '/pricing/services' },
+  },
+];
+
 export const EnhancedLandingPage: React.FC = () => {
   const features = useMemo(() => getFeatures(), []);
 
   const [marketingBillingCycle, setMarketingBillingCycle] = useState<BillingCycle>('monthly');
+  const [isClientReady, setIsClientReady] = useState(false);
+
+  useEffect(() => {
+    const id = window.requestAnimationFrame(() => setIsClientReady(true));
+    return () => window.cancelAnimationFrame(id);
+  }, []);
 
   const marketingPricingTiers = useMemo(
     () =>
@@ -66,21 +93,21 @@ export const EnhancedLandingPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="100 Days & Beyond | ApexDeliver + CapLiquify Revenue & M&A OS"
-        description="Unify CapLiquify FP&A, ApexDeliver deal rooms, Sales & Promotion Pricing, portals, events, and community in one platform. Start your 14-day free trial and own the first 100 days."
-        keywords="M&A platform, FP&A, sales promotion pricing, customer portal, deal room, valuation software, community platform, event management"
-        ogTitle="100 Days & Beyond | ApexDeliver + CapLiquify Revenue & M&A OS"
-        ogDescription="Run deals, FP&A, pricing, customer portals, events, and community from one operating system. Built for the first 100 days and the next 1,000."
-        ogImage="https://100daysandbeyond.com/assets/dashboard-preview.png"
-        ogUrl="https://100daysandbeyond.com/"
-        twitterTitle="100 Days & Beyond | ApexDeliver + CapLiquify"
-        twitterDescription="Deal cloud, FP&A, pricing studio, portals, events, and community-with a 14-day free trial and operator-led onboarding."
-        twitterImage="https://100daysandbeyond.com/assets/dashboard-preview.png"
-        canonical="https://100daysandbeyond.com/"
+        title="FinanceFlo ERP Implementation + CapLiquify & ApexDeliver"
+        description="FinanceFlo is the ERP reseller and AI consulting partner behind CapLiquify FP&A and the ApexDeliver deal cloud—delivering Sage Intacct, Odoo, Microsoft, and NetSuite rollouts with AI copilots, pricing studios, portals, and community."
+        keywords="ERP implementation partner, Sage Intacct reseller, Odoo consultant, CapLiquify FP&A, ApexDeliver deal cloud, AI consulting, pricing studio"
+        ogTitle="FinanceFlo ERP Implementation + CapLiquify & ApexDeliver"
+        ogDescription="Book the FinanceFlo blueprint to unify ERP services, CapLiquify FP&A, ApexDeliver deal rooms, pricing studios, portals, and AI copilots under one partner."
+        ogImage="https://financeflo.ai/assets/dashboard-preview.png"
+        ogUrl="https://financeflo.ai/"
+        twitterTitle="FinanceFlo | ERP Partner + CapLiquify & ApexDeliver"
+        twitterDescription="Sage Intacct, Odoo, Microsoft, and NetSuite rollouts plus CapLiquify FP&A and ApexDeliver deal cloud with AI-managed services."
+        twitterImage="https://financeflo.ai/assets/dashboard-preview.png"
+        canonical="https://financeflo.ai/"
       />
       <StructuredData json={structuredData} id="product-schema" />
-      <ExitIntentPopup />
-      <StickyCTABar />
+      {isClientReady && <ExitIntentPopup />}
+      {isClientReady && <StickyCTABar />}
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-900 text-white py-20 md:py-28">
@@ -88,35 +115,35 @@ export const EnhancedLandingPage: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-sm font-semibold tracking-wide">
-                <span>100 Days &amp; Beyond Platform</span>
-                <span className="text-emerald-300">New GTM + Finance OS</span>
+                <span>FinanceFlo ERP + AI Partner</span>
+                <span className="text-emerald-300">Services + Software Stack</span>
               </div>
               <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
-                From Deal Flow to Cash Flow: The End-to-End M&A Intelligence Platform
+                ERP Implementation + CapLiquify & ApexDeliver in One Program
               </h1>
               <p className="text-lg md:text-xl text-indigo-100 leading-relaxed">
-                Stop juggling spreadsheets and disconnected tools. ApexDeliver, powered by CapLiquify, now ships one connected operating system that covers valuations, diligence rooms, FP&amp;A, sales &amp; promotion pricing, portals, events, and community.
+                FinanceFlo is the ERP reseller and AI consulting partner powering CapLiquify FP&A and the ApexDeliver deal cloud. We blueprint, implement, and manage Sage Intacct, Odoo, Microsoft, or NetSuite environments while shipping the same software stack used for cash, deals, pricing, portals, events, and community.
               </p>
               <p className="text-lg md:text-xl text-indigo-100/90 leading-relaxed">
-                Close deals faster, spin up revenue experiences in hours, and walk into every board or lender meeting with banker-grade numbers. Every plan includes the 14-day free trial plus a guided go-live inside your first 100 days.
+                Book the implementation blueprint to align your ERP, data, and governance, then launch the guided CapLiquify + ApexDeliver trial so boards, lenders, and GTM teams share the same real-time playbook.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
                 <Link
-                  to="/sign-up"
+                  to="/contact"
                   className="bg-emerald-700 hover:bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                  onClick={() => trackCtaClick('start-trial', 'hero')}
+                  onClick={() => trackCtaClick('book-blueprint', 'hero')}
                 >
-                  Start Your Free 14-Day Trial
+                  Book ERP Blueprint Call
                 </Link>
                 <Link
-                  to="/contact"
+                  to="/sign-up"
                   className="bg-white hover:bg-gray-100 text-indigo-900 px-8 py-4 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                  onClick={() => trackCtaClick('schedule-demo', 'hero')}
+                  onClick={() => trackCtaClick('start-trial', 'hero')}
                 >
-                  Schedule a Demo
+                  Start Guided Software Trial
                 </Link>
               </div>
-              <p className="text-sm text-indigo-200">14-day trial - Guided onboarding - No credit card required</p>
+          <p className="text-sm text-indigo-100">ERP blueprint + CapLiquify trial + operator-led go-live</p>
 
               <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
                 {heroPillars.map((pillar) => (
@@ -132,29 +159,77 @@ export const EnhancedLandingPage: React.FC = () => {
                   <div key={stat.label} className="bg-white/10 backdrop-blur-lg border border-white/10 rounded-2xl p-4 text-left">
                     <div className="text-3xl font-extrabold text-white">{stat.value}</div>
                     <div className="text-sm text-indigo-100 font-semibold">{stat.label}</div>
-                    <div className="text-xs text-indigo-200/80 mt-1">{stat.detail}</div>
+                    <div className="text-xs text-indigo-100/80 mt-1">{stat.detail}</div>
                   </div>
                 ))}
               </div>
 
-              <p className="text-indigo-200 text-sm italic">
-                Trusted by dealmakers, finance leaders, and private equity firms worldwide. Backed by 20+ years of experience and over 230+ successful business transformations-now with GTM, customer, and community teams in the same command center.
+              <p className="text-indigo-100 text-sm italic">
+                Trusted by CFOs, CIOs, and deal teams across the UK. 20+ years of ERP rollouts, software resale, and AI consulting experience brought into one FinanceFlo + CapLiquify + ApexDeliver operating system.
               </p>
             </div>
 
             <div className="relative">
-              <DashboardMockup />
-              <div className="absolute -bottom-8 left-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 grid sm:grid-cols-2 gap-4 shadow-2xl">
+              <Suspense
+                fallback={
+                  <div
+                    className="h-[420px] w-full animate-pulse rounded-3xl bg-white/10 border border-white/10"
+                    aria-hidden="true"
+                  />
+                }
+              >
+                <DashboardMockup />
+              </Suspense>
+              <div className="absolute -bottom-8 left-4 right-4 bg-slate-900/85 backdrop-blur-md border border-white/20 rounded-2xl p-4 grid sm:grid-cols-2 gap-4 shadow-2xl">
                 <div>
-                  <p className="text-xs uppercase text-emerald-200 tracking-wide">14-Day Go-Live</p>
-                  <p className="text-sm text-white font-semibold">CapLiquify + Pricing Studio staffed with operator playbooks.</p>
+                  <p className="text-xs uppercase text-white tracking-wide">14-Day Go-Live</p>
+                  <p className="text-sm text-white/90 font-semibold">CapLiquify + Pricing Studio staffed with operator playbooks.</p>
                 </div>
                 <div>
-                  <p className="text-xs uppercase text-indigo-200 tracking-wide">New Launches</p>
-                  <p className="text-sm text-white font-semibold">Events, community, and customer command center deploy in weeks.</p>
+                  <p className="text-xs uppercase text-white tracking-wide">New Launches</p>
+                  <p className="text-sm text-white/90 font-semibold">Events, community, and customer command center deploy in weeks.</p>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services + Software merge */}
+      <section className="py-16 bg-slate-950/90 text-white border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <p className="text-sm font-semibold text-white uppercase tracking-wide mb-2">One partner</p>
+            <h2 className="text-3xl sm:text-4xl font-bold">Services, software, and AI copilots now travel together</h2>
+            <p className="text-lg text-indigo-100/80 max-w-3xl mx-auto">
+              FinanceFlo is still the ERP & software reseller delivering Sage Intacct, Odoo, Microsoft, and NetSuite. Now that same pod deploys CapLiquify FP&A, ApexDeliver deal cloud, and AI-managed services inside the first 100 days.
+            </p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-3">
+            {serviceStrands.map((strand) => (
+              <div key={strand.title} className="bg-white/5 border border-white/10 rounded-3xl p-8 shadow-xl flex flex-col">
+                <div className="text-sm uppercase tracking-[0.3em] text-white mb-3">Focus</div>
+                <h3 className="text-2xl font-semibold mb-3 text-white">{strand.title}</h3>
+                <p className="text-indigo-100/80 mb-5 flex-1">{strand.description}</p>
+                <ul className="space-y-3 text-indigo-100/90 mb-6">
+                  {strand.bullets.map((bullet) => (
+                    <li key={bullet} className="flex items-start gap-2 text-sm">
+                      <span className="text-emerald-50 mt-1">•</span>
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  to={strand.cta.link}
+                  className="inline-flex items-center gap-2 text-white font-semibold"
+                  onClick={() => trackCtaClick('service-strand', strand.title)}
+                >
+                  {strand.cta.text}
+                  <span aria-hidden="true">-&gt;</span>
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -166,10 +241,10 @@ export const EnhancedLandingPage: React.FC = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <p className="text-sm font-semibold text-emerald-600 uppercase tracking-wide mb-2">Platform blueprint</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Every module you need to win the first 100 days and beyond</h2>
+            <p className="text-sm font-semibold text-emerald-700 uppercase tracking-wide mb-2">Platform blueprint</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Every sprint layers services, software, and AI copilots</h2>
             <p className="text-lg text-gray-600">
-              Land with CapLiquify FP&A, expand into ApexDeliver for deals, and now layer in Sales &amp; Promotion Pricing, customer portals, events, and community without bolting on point tools.
+              Start with the FinanceFlo implementation pod, light up CapLiquify FP&A for cash visibility, expand into ApexDeliver for deals and pricing, and keep the AI consulting + managed support desk on retainer.
             </p>
           </div>
 
@@ -207,20 +282,20 @@ export const EnhancedLandingPage: React.FC = () => {
       <section className="py-20 bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <p className="text-sm font-semibold text-emerald-300 uppercase tracking-wide mb-2">New this quarter</p>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">The newest revenue, event, and community launches</h2>
+            <p className="text-sm font-semibold text-white uppercase tracking-wide mb-2">New this quarter</p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">ERP, AI, and GTM launches shipping this quarter</h2>
             <p className="text-lg text-slate-200">
-              We keep shipping go-to-market power-ups so your teams can monetize faster while finance keeps the guardrails tight.
+              Every sprint we publish new ERP accelerators, AI copilots, and GTM experiences so finance, deal, and commercial teams move faster with the same data spine.
             </p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-3">
             {launchHighlights.map((launch) => (
               <div key={launch.title} className="bg-white/5 border border-white/10 rounded-3xl p-6">
-                <p className="text-xs uppercase tracking-[0.2em] text-emerald-200 mb-3">Launch</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-white mb-3">Launch</p>
                 <h3 className="text-xl font-semibold mb-3">{launch.title}</h3>
                 <p className="text-sm text-slate-200 mb-4">{launch.description}</p>
-                <p className="text-sm font-semibold text-emerald-200">{launch.metric}</p>
+                <p className="text-sm font-semibold text-emerald-100">{launch.metric}</p>
               </div>
             ))}
           </div>
@@ -232,8 +307,8 @@ export const EnhancedLandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <p className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">First 100 days playbook</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Four value sprints to land, expand, and scale</h2>
-            <p className="text-lg text-gray-600">Every engagement includes a sprint-by-sprint rollout so your finance, deal, revenue, and CX teams see value inside two weeks.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Four value sprints to blueprint, deploy, automate, and scale</h2>
+            <p className="text-lg text-gray-600">Each FinanceFlo engagement follows the ADAPT plan so ERP, CapLiquify, ApexDeliver, and AI copilots show value within days instead of months.</p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -263,8 +338,8 @@ export const EnhancedLandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <p className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-2">Who we serve</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">One operating system for every operator</h2>
-            <p className="text-lg text-gray-600">Private equity portfolio teams, strategics, and fast-moving operators finally share the same data, workflows, and guardrails.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">One partner for ERP, finance, deal, revenue, and CX leaders</h2>
+            <p className="text-lg text-gray-600">Private equity portfolios, strategics, and fast-moving operators finally share the same data, workflows, and guardrails across services and software.</p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-2">
@@ -291,7 +366,7 @@ export const EnhancedLandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
-              Your Entire M&A Workflow, Unified and Automated
+              How the FinanceFlo blueprint runs end to end
             </h2>
           </div>
 
@@ -302,10 +377,10 @@ export const EnhancedLandingPage: React.FC = () => {
                 1
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">
-                Land with CapLiquify (FP&A and Pricing)
+                Blueprint & Implement ERP
               </h3>
               <p className="text-gray-700 leading-relaxed">
-                Gain immediate control over your cash flow and pricing strategy. Use our 13-week cash forecasting, working capital optimization, and advanced pricing engine to stabilize financials and drive profitability from day one. Perfect for post-merger integration or as a standalone FP&A powerhouse.
+                Run the ADAPT workshop, migrate ledgers, clean master data, and configure Sage Intacct, Odoo, Microsoft, or NetSuite. We publish the governance plan, training cadence, and board-ready reporting pack inside the first two weeks.
               </p>
             </div>
 
@@ -315,10 +390,10 @@ export const EnhancedLandingPage: React.FC = () => {
                 2
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">
-                Expand to ApexDeliver (Full M&A Lifecycle)
+                Activate CapLiquify + ApexDeliver
               </h3>
               <p className="text-gray-700 leading-relaxed">
-                When you're ready for your next deal, activate the full ApexDeliver suite. Manage your deal pipeline, conduct AI-powered due diligence in a secure document room, build complex valuation models, and execute your M&A strategy with unparalleled precision and efficiency.
+                Wire CapLiquify to your ERP actuals for 13-week cash, working-capital guardrails, promo analytics, and board packs. Turn on ApexDeliver for deal rooms, valuations, pricing studios, portals, and community so every team shares the same control tower.
               </p>
             </div>
 
@@ -328,10 +403,10 @@ export const EnhancedLandingPage: React.FC = () => {
                 3
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">
-                Grow Your Portfolio (Enterprise & B2B2C)
+                Scale AI Copilots & Revenue Plays
               </h3>
               <p className="text-gray-700 leading-relaxed">
-                For private equity firms and strategic acquirers, manage your entire portfolio from a single dashboard. For your operating companies, deploy customer-facing portals for orders, invoices, and self-service, turning your finance function into a growth engine.
+                Deploy copilots, iPaaS flows, promotional guardrails, partner portals, events, and communities. Managed support pods keep shipping improvements, and analytics roll up to lenders, boards, and portfolio ops.
               </p>
             </div>
           </div>
@@ -343,7 +418,7 @@ export const EnhancedLandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
-              A Feature for Every Stage of Your Growth Journey
+              Service pods and product modules for every stage
             </h2>
           </div>
 
@@ -370,11 +445,10 @@ export const EnhancedLandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
-              Powerful, Transparent Pricing That Scales With You
+              Services + software pricing that scales with every entity
             </h2>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Whether you're a solo dealmaker, a growing firm, or a large enterprise, we have a plan that fits your needs.
-              Start with CapLiquify FP&A and expand to the full ApexDeliver stack as you grow.
+              Whether you're a single-entity operator or a multi-brand portfolio, start with the FinanceFlo implementation pod + CapLiquify FP&A, then expand into ApexDeliver, pricing studios, and managed services as you grow.
             </p>
           </div>
 
@@ -444,12 +518,12 @@ export const EnhancedLandingPage: React.FC = () => {
 
       {/* Final CTA Section */}
       <CTASection
-        headline="Ready to Transform Your M&A and Finance Operations?"
-        description="Take the first step towards a more intelligent, automated, and profitable future. Start your free trial today and experience the power of a truly unified platform."
-        primaryCtaText="Start Your Free 14-Day Trial"
-        primaryCtaLink="/sign-up"
-        secondaryCtaText="Talk to an Expert"
-        secondaryCtaLink="/contact"
+        headline="Ready to modernise ERP, FP&A, and deal execution with one partner?"
+        description="Book your FinanceFlo blueprint, connect CapLiquify FP&A, and see the ApexDeliver stack in action with the same pod that implements Sage Intacct, Odoo, Microsoft, or NetSuite."
+        primaryCtaText="Book Implementation Blueprint"
+        primaryCtaLink="/contact"
+        secondaryCtaText="Explore CapLiquify + ApexDeliver"
+        secondaryCtaLink="/sign-up"
       />
     </MarketingLayout>
   );

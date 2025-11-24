@@ -47,7 +47,7 @@ describe('CaseStudiesPage', () => {
 
     it('should render testimonial quote', () => {
       renderWithRouter(<CaseStudiesPage />);
-      expect(screen.getByText(/apexdeliver transformed how we manage our deal flow/i)).toBeInTheDocument();
+      expect(screen.getByText(/transformed how we manage our deal flow/i)).toBeInTheDocument();
     });
   });
 

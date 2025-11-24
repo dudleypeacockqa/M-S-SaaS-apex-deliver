@@ -40,8 +40,8 @@ export default function CommunityPricingPage() {
         description="Detailed pricing for Community Leader, media, and event bundles. Launch member portals, podcasts, and sponsor programs from the FinanceFlo OS."
         ogTitle="FinanceFlo Community Pricing"
         ogDescription="Compare Community Leader, media collective, and jumpstart programs to launch member portals, podcast networks, and sponsor pipelines."
-        ogUrl="https://100daysandbeyond.com/pricing/community"
-        canonical="https://100daysandbeyond.com/pricing/community"
+        ogUrl="https://financeflo.ai/pricing/community"
+        canonical="https://financeflo.ai/pricing/community"
       />
       <section className="bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-white py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

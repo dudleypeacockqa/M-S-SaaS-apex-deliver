@@ -46,8 +46,8 @@ const AdvancedSEOOptimizer: React.FC<AdvancedSEOOptimizerProps> = ({ seoData, ch
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "FinanceFlo.ai",
-    "url": "https://flo-finance-uk-website.lovable.app",
-    "logo": "https://flo-finance-uk-website.lovable.app/images/logo.png",
+    "url": "https://financeflo.ai",
+    "logo": "https://financeflo.ai/assets/branding/financeflo-logo-primary.png",
     "description": "AI-powered ERP implementation and financial transformation solutions for UK mid-market businesses",
     "address": {
       "@type": "PostalAddress",
@@ -192,12 +192,12 @@ export const generateArticleStructuredData = (article: {
       "name": "FinanceFlo.ai",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://flo-finance-uk-website.lovable.app/images/logo.png"
+        "url": "https://financeflo.ai/assets/branding/financeflo-logo-primary.png"
       }
     },
     "datePublished": article.datePublished,
     "dateModified": article.dateModified || article.datePublished,
-    "image": article.image || "https://flo-finance-uk-website.lovable.app/images/og-default.jpg",
+    "image": article.image || "https://financeflo.ai/assets/dashboard-preview.png",
     "url": article.url,
     "mainEntityOfPage": {
       "@type": "WebPage",

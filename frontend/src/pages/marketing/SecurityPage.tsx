@@ -2,6 +2,8 @@ import React from 'react';
 import { MarketingLayout } from '../../components/marketing/MarketingLayout';
 import { SEO } from '../../components/common/SEO';
 import { CTASection } from '../../components/marketing/CTASection';
+import { StructuredData } from '../../components/common/StructuredData';
+import { createBreadcrumbSchema } from '../../utils/schemas/breadcrumbSchema';
 
 export const SecurityPage: React.FC = () => {
   const securityFeatures = [
@@ -131,9 +133,18 @@ export const SecurityPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="Security & Compliance | ApexDeliver + CapLiquify"
+        title="Security & Compliance | FinanceFlo"
         description="Enterprise-grade security with segregated multi-tenant architecture, end-to-end encryption, and 99.95% uptime SLA. SOC 2 Type II and ISO 27001 certified."
         keywords="security, compliance, multi-tenant, encryption, SOC 2, ISO 27001, GDPR, data protection"
+        ogUrl="https://financeflo.ai/security"
+        canonical="https://financeflo.ai/security"
+      />
+      <StructuredData
+        json={createBreadcrumbSchema([
+          { name: 'Home', url: 'https://financeflo.ai/' },
+          { name: 'Security', url: 'https://financeflo.ai/security' },
+        ])}
+        id="security-breadcrumbs"
       />
 
       {/* Header */}

@@ -26,10 +26,10 @@ describe('ContactPage', () => {
   it('renders header, contact form, and information sections', () => {
     renderContact()
 
-    expect(document.title).toContain('Contact | 100 Days & Beyond')
+    expect(document.title).toContain('Contact')
     expect(screen.getByRole('heading', { level: 1, name: /growth journey/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
-    expect(screen.getByText(/support@apexdeliver.com/i)).toBeInTheDocument()
+    expect(screen.getByText(/support@financeflo.ai/i)).toBeInTheDocument()
     expect(screen.getByText(/data protection officer/i)).toBeInTheDocument()
   })
 
@@ -80,11 +80,11 @@ describe('ContactPage', () => {
 
     const canonical = document.querySelector('link[rel="canonical"]')
     expect(canonical).not.toBeNull()
-    expect(canonical?.getAttribute('href')).toBe('https://100daysandbeyond.com/contact')
+    expect(canonical?.getAttribute('href')).toBe('https://financeflo.ai/contact')
 
     const ogUrlMeta = document.querySelector('meta[property="og:url"]')
     expect(ogUrlMeta).not.toBeNull()
-    expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/contact')
+    expect(ogUrlMeta?.getAttribute('content')).toBe('https://financeflo.ai/contact')
   })
 })
 

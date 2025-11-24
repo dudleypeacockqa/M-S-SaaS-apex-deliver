@@ -9,7 +9,7 @@ export default function MarketingFooter() {
     product: [
       { name: "Features", href: "/features" },
       { name: "Pricing", href: "/pricing" },
-      { name: "Podcast", href: "https://100daysandbeyond.com", external: true },
+      { name: "Podcast", href: "https://financeflo.ai/podcast", external: false },
       { name: "Blog", href: "/blog" },
     ],
     company: [

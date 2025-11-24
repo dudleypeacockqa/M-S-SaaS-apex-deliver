@@ -58,12 +58,16 @@ const CapitalMarketsIndustry = lazyDefault(() => import("./pages/marketing/finan
 const ProfessionalServicesIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/ProfessionalServicesIndustry"))
 const SubscriptionBusinessIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/SubscriptionBusinessIndustry"))
 const EcommerceIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/EcommerceIndustry"))
+const PrivateEquityIndustry = lazyDefault(() => import("./pages/marketing/financeflo/industries/PrivateEquityIndustry"))
 
 // FinanceFlo Solutions & ERP
 const SageIntacctERP = lazyDefault(() => import("./pages/marketing/financeflo/erp/SageIntacctERP"))
 const AcumaticaERP = lazyDefault(() => import("./pages/marketing/financeflo/erp/AcumaticaERP"))
 const OdooERP = lazyDefault(() => import("./pages/marketing/financeflo/erp/OdooERP"))
 const SageX3ERP = lazyDefault(() => import("./pages/marketing/financeflo/erp/SageX3ERP"))
+const NetSuiteERP = lazyDefault(() => import("./pages/marketing/financeflo/erp/NetSuiteERP"))
+const MicrosoftDynamicsERP = lazyDefault(() => import("./pages/marketing/financeflo/erp/MicrosoftDynamicsERP"))
+const SAPERP = lazyDefault(() => import("./pages/marketing/financeflo/erp/SAPERP"))
 
 const SageIntacctAI = lazyDefault(() => import("./pages/marketing/financeflo/ai-enhancement/SageIntacctAI"))
 const AcumaticaAI = lazyDefault(() => import("./pages/marketing/financeflo/ai-enhancement/AcumaticaAI"))
@@ -74,6 +78,12 @@ const SageIntacctImpl = lazyDefault(() => import("./pages/marketing/financeflo/i
 const AcumaticaImpl = lazyDefault(() => import("./pages/marketing/financeflo/implementation/AcumaticaImplementation"))
 const OdooImpl = lazyDefault(() => import("./pages/marketing/financeflo/implementation/OdooImplementation"))
 const SageX3Impl = lazyDefault(() => import("./pages/marketing/financeflo/implementation/SageX3Implementation"))
+
+// FinanceFlo iPaaS / IntelliFlow
+const IntelliFlowPlatformPage = lazyDefault(() => import("./pages/marketing/financeflo/ipaas/IntelliFlowPartnership"))
+const AIIntegrationStrategyPage = lazyDefault(() => import("./pages/marketing/financeflo/ipaas/IntegrationStrategy"))
+const CustomConnectorsPage = lazyDefault(() => import("./pages/marketing/financeflo/ipaas/CustomConnectors"))
+const APIManagementPage = lazyDefault(() => import("./pages/marketing/financeflo/ipaas/APIManagement"))
 
 // FinanceFlo VSLs
 const ConstructionVSL = lazyDefault(() => import("./pages/marketing/financeflo/vsl/ConstructionVSL"))
@@ -337,12 +347,18 @@ export const AppRoutes = () => {
       <Route path="industries/professional-services" element={<Suspense fallback={<RouteLoader />}><ProfessionalServicesIndustry /></Suspense>} />
       <Route path="industries/subscription-business" element={<Suspense fallback={<RouteLoader />}><SubscriptionBusinessIndustry /></Suspense>} />
       <Route path="industries/ecommerce" element={<Suspense fallback={<RouteLoader />}><EcommerceIndustry /></Suspense>} />
+      <Route path="industries/private-equity" element={<Suspense fallback={<RouteLoader />}><PrivateEquityIndustry /></Suspense>} />
+      {/* Redirect for old manufacturing URL - no page exists, redirect to professional-services */}
+      <Route path="industries/manufacturing" element={<Navigate to="/industries/professional-services" replace />} />
 
       {/* ERP & Solutions */}
       <Route path="erp/sage-intacct" element={<Suspense fallback={<RouteLoader />}><SageIntacctERP /></Suspense>} />
       <Route path="erp/acumatica" element={<Suspense fallback={<RouteLoader />}><AcumaticaERP /></Suspense>} />
       <Route path="erp/odoo" element={<Suspense fallback={<RouteLoader />}><OdooERP /></Suspense>} />
       <Route path="erp/sage-x3" element={<Suspense fallback={<RouteLoader />}><SageX3ERP /></Suspense>} />
+      <Route path="erp/netsuite" element={<Suspense fallback={<RouteLoader />}><NetSuiteERP /></Suspense>} />
+      <Route path="erp/microsoft-dynamics" element={<Suspense fallback={<RouteLoader />}><MicrosoftDynamicsERP /></Suspense>} />
+      <Route path="erp/sap" element={<Suspense fallback={<RouteLoader />}><SAPERP /></Suspense>} />
 
       <Route path="ai-enhancement/sage-intacct" element={<Suspense fallback={<RouteLoader />}><SageIntacctAI /></Suspense>} />
       <Route path="ai-enhancement/acumatica" element={<Suspense fallback={<RouteLoader />}><AcumaticaAI /></Suspense>} />
@@ -353,6 +369,13 @@ export const AppRoutes = () => {
       <Route path="implementation/acumatica" element={<Suspense fallback={<RouteLoader />}><AcumaticaImpl /></Suspense>} />
       <Route path="implementation/odoo" element={<Suspense fallback={<RouteLoader />}><OdooImpl /></Suspense>} />
       <Route path="implementation/sage-x3" element={<Suspense fallback={<RouteLoader />}><SageX3Impl /></Suspense>} />
+
+      {/* IntelliFlow iPaaS */}
+      <Route path="ipaas" element={<Navigate to="/ipaas/intelliflow" replace />} />
+      <Route path="ipaas/intelliflow" element={<Suspense fallback={<RouteLoader />}><IntelliFlowPlatformPage /></Suspense>} />
+      <Route path="ipaas/strategy" element={<Suspense fallback={<RouteLoader />}><AIIntegrationStrategyPage /></Suspense>} />
+      <Route path="ipaas/connectors" element={<Suspense fallback={<RouteLoader />}><CustomConnectorsPage /></Suspense>} />
+      <Route path="ipaas/api-management" element={<Suspense fallback={<RouteLoader />}><APIManagementPage /></Suspense>} />
 
       {/* VSLs */}
       <Route path="vsl/construction/*" element={<Suspense fallback={<RouteLoader />}><ConstructionVSL /></Suspense>} />
@@ -376,9 +399,14 @@ export const AppRoutes = () => {
       <Route path="case-studies" element={<CaseStudiesPage />} />
       <Route path="book-trial" element={<BookTrial />} />
       <Route path="calculator" element={<CalculatorPage />} />
+      {/* Legal pages - with redirects from legacy paths */}
       <Route path="legal/terms" element={<TermsOfService />} />
       <Route path="legal/privacy" element={<PrivacyPolicy />} />
       <Route path="legal/cookies" element={<CookiePolicy />} />
+      {/* Legacy legal page redirects (from old FinanceFlo site) */}
+      <Route path="privacy" element={<Navigate to="/legal/privacy" replace />} />
+      <Route path="terms" element={<Navigate to="/legal/terms" replace />} />
+      <Route path="cookies" element={<Navigate to="/legal/cookies" replace />} />
       <Route path="compare/dealroom-alternative" element={<DealRoomAlternative />} />
       <Route path="compare/midaxo-alternative" element={<MidaxoAlternative />} />
       <Route path="solutions/cfo" element={<SolutionCFO />} />

@@ -12,12 +12,12 @@ export const PrivacyPolicy: React.FC = () => {
         keywords="100 Days & Beyond privacy policy, M&A software GDPR, data protection"
         ogTitle="100 Days & Beyond Privacy Policy"
         ogDescription="Transparency into data collection, storage, and usage within the 100 Days & Beyond ecosystem."
-        ogUrl="https://100daysandbeyond.com/legal/privacy"
-        ogImage="https://100daysandbeyond.com/assets/security-trust-visual.webp"
+        ogUrl="https://financeflo.ai/legal/privacy"
+        ogImage="https://financeflo.ai/assets/security-trust-visual.webp"
         twitterTitle="100 Days & Beyond Privacy Policy"
         twitterDescription="Review data privacy commitments for the 100 Days & Beyond M&A intelligence platform."
-        twitterImage="https://100daysandbeyond.com/assets/security-trust-visual.webp"
-        canonical="https://100daysandbeyond.com/legal/privacy"
+        twitterImage="https://financeflo.ai/assets/security-trust-visual.webp"
+        canonical="https://financeflo.ai/legal/privacy"
       />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Privacy Policy</h1>
@@ -47,8 +47,8 @@ export const PrivacyPolicy: React.FC = () => {
             <ul className="list-none text-gray-700 mb-4 space-y-1">
               <li><strong>Company:</strong> ApexDeliver Ltd</li>
               <li><strong>Address:</strong> London, United Kingdom</li>
-              <li><strong>Email:</strong> privacy@apexdeliver.com</li>
-              <li><strong>Data Protection Officer:</strong> privacy@apexdeliver.com</li>
+              <li><strong>Email:</strong> privacy@financeflo.ai</li>
+              <li><strong>Data Protection Officer:</strong> privacy@financeflo.ai</li>
             </ul>
           </section>
 
@@ -158,7 +158,7 @@ export const PrivacyPolicy: React.FC = () => {
               <li><strong>Right to Withdraw Consent:</strong> Withdraw consent for processing at any time</li>
             </ul>
             <p className="text-gray-700">
-              To exercise these rights, contact privacy@apexdeliver.com. We will respond within 30 days.
+              To exercise these rights, contact privacy@financeflo.ai. We will respond within 30 days.
             </p>
           </section>
 
@@ -191,7 +191,7 @@ export const PrivacyPolicy: React.FC = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">12. Complaints</h2>
             <p className="text-gray-700 mb-4">
-              If you have concerns about how we handle your personal data, please contact our Data Protection Officer at privacy@apexdeliver.com.
+              If you have concerns about how we handle your personal data, please contact our Data Protection Officer at privacy@financeflo.ai.
             </p>
             <p className="text-gray-700">
               You also have the right to lodge a complaint with a supervisory authority:
@@ -208,7 +208,7 @@ export const PrivacyPolicy: React.FC = () => {
               For privacy-related questions or to exercise your rights, contact:
             </p>
             <ul className="list-none text-gray-700 space-y-1">
-              <li>Email: privacy@apexdeliver.com</li>
+              <li>Email: privacy@financeflo.ai</li>
               <li>Address: ApexDeliver Ltd, London, United Kingdom</li>
             </ul>
           </section>

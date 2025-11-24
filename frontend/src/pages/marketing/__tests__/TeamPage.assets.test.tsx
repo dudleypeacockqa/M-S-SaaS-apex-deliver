@@ -33,7 +33,7 @@ describe('TeamPage assets & structured data', () => {
         if (!image) {
           return;
         }
-        expect(image.startsWith('https://100daysandbeyond.com/assets/team/')).toBe(true);
+        expect(image.startsWith('https://financeflo.ai/assets/team/')).toBe(true);
       });
     });
   });

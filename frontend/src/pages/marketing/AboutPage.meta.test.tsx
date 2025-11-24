@@ -10,7 +10,7 @@ beforeEach(() => {
 });
 
 describe('AboutPage metadata', () => {
-  it('sets canonical and og:url to 100daysandbeyond.com', () => {
+  it('sets canonical and og:url to financeflo.ai', () => {
     render(
       <BrowserRouter>
         <AboutPage />
@@ -19,10 +19,10 @@ describe('AboutPage metadata', () => {
 
     const canonical = document.querySelector('link[rel="canonical"]');
     expect(canonical).not.toBeNull();
-    expect(canonical?.getAttribute('href')).toBe('https://100daysandbeyond.com/about');
+    expect(canonical?.getAttribute('href')).toBe('https://financeflo.ai/about');
 
     const ogUrlMeta = document.querySelector('meta[property="og:url"]');
     expect(ogUrlMeta).not.toBeNull();
-    expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/about');
+    expect(ogUrlMeta?.getAttribute('content')).toBe('https://financeflo.ai/about');
   });
 });

@@ -8,10 +8,24 @@ from datetime import datetime
 from typing import Dict, List
 import asyncio
 
-from app.db.session import SessionLocal
+from app.db import session as session_module
 from app.services import campaign_service
 from app.models.user import User
-from app.services.email_service import send_email, render_template
+from app.services.email_service import send_email, render_template, queue_email
+
+
+SessionLocal = None  # legacy alias retained for tests to override
+
+
+def _create_db_session():
+    """Return a Session, ensuring engine/session factory exist even when patched/mocked."""
+    session_factory = SessionLocal or session_module.SessionLocal
+    if session_factory is None:
+        session_module.init_engine()
+        session_factory = session_module.SessionLocal
+    if session_factory is None:
+        raise RuntimeError("Database session factory is not initialized")
+    return session_factory()
 
 
 @shared_task(name="campaigns.execute_campaign")
@@ -23,7 +37,7 @@ def execute_campaign_task(campaign_id: int, user_id: str):
         campaign_id: Campaign ID to execute
         user_id: User ID executing the campaign
     """
-    db = SessionLocal()
+    db = _create_db_session()
     try:
         # Get user
         from sqlalchemy import select
@@ -53,11 +67,8 @@ def queue_campaign_email_task(to_email: str, subject: str, content: str, templat
         content: Email content (HTML)
         template_data: Template data for rendering
     """
-    db = SessionLocal()
+    db = _create_db_session()
     try:
-        import asyncio
-        from app.services.email_service import queue_email
-        
         # Queue email for sending (async function, use asyncio.run in Celery task)
         result = asyncio.run(
             queue_email(
@@ -124,7 +135,7 @@ def update_campaign_analytics_task(campaign_id: int):
     Args:
         campaign_id: Campaign ID
     """
-    db = SessionLocal()
+    db = _create_db_session()
     try:
         analytics = campaign_service.get_campaign_analytics(campaign_id, db)
         return analytics
@@ -140,26 +151,28 @@ def process_scheduled_campaigns_task():
     This task should be run periodically (e.g., every minute) to check for
     campaigns that need to be executed.
     """
-    db = SessionLocal()
+    db = _create_db_session()
     try:
         from sqlalchemy import select, and_
         from app.models.master_admin import AdminCampaign
         from app.models.enums import CampaignStatus
         from app.models.user import User
         
-        from datetime import timezone
+        from datetime import timezone, timedelta
         now = datetime.now(timezone.utc)
+        window_start = now - timedelta(minutes=1)
         
         # Find campaigns scheduled to run now (within the last minute)
         query = select(AdminCampaign).where(
             and_(
                 AdminCampaign.status == CampaignStatus.SCHEDULED,
                 AdminCampaign.schedule_at <= now,
-                AdminCampaign.schedule_at >= datetime(now.year, now.month, now.day, now.hour, now.minute - 1)
+                AdminCampaign.schedule_at >= window_start
             )
         )
         
-        campaigns = list(db.scalars(query).all())
+        result = db.execute(query)
+        campaigns = result.scalars().all()
         
         executed = []
         for campaign in campaigns:

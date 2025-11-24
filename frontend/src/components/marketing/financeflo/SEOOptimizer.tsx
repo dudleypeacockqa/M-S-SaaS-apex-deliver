@@ -47,8 +47,8 @@ const SEOOptimizer: React.FC<SEOOptimizerProps> = ({
     "@type": "Organization",
     "name": "FinanceFlo.ai",
     "description": "AI-Powered Finance Automation for UK Businesses",
-    "url": "https://flo-finance-uk-website.lovable.app",
-    "logo": "https://flo-finance-uk-website.lovable.app/images/logo.png",
+    "url": "https://financeflo.ai",
+    "logo": "https://financeflo.ai/assets/branding/financeflo-logo-primary.png",
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+44-7360-539147",

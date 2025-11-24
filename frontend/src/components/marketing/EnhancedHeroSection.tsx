@@ -27,16 +27,16 @@ const testimonials = [
 ]
 
 const trustIndicators = [
-  '95%+ forecast accuracy',
-  '2-hour weekly update',
-  'Rolling 13-week cash view',
+  'Certified Sage Intacct, Odoo, Microsoft & NetSuite partner',
+  'AI assurance + governance frameworks',
+  'CapLiquify + ApexDeliver in every engagement',
   'SOC 2 • GDPR • ISO 27001',
 ]
 
 const stats = [
-  { value: '95.8%', label: 'Cash forecast accuracy', detail: '13-week rolling variance vs. actuals' },
-  { value: '£2.8M', label: 'Working capital unlocked', detail: 'Average per portfolio in 12 months' },
-  { value: '12 hrs', label: 'Finance hours saved weekly', detail: 'Manual spreadsheet cleanup eliminated' },
+  { value: '450+', label: 'ERP & AI go-lives', detail: 'Finance, deal, and GTM teams powered by FinanceFlo' },
+  { value: '£2.8M', label: 'Working capital unlocked', detail: 'Average per portfolio inside 12 months' },
+  { value: '120+', label: 'Copilots & automations', detail: 'Finance, deal, and revenue workflows' },
 ]
 
 const roiChips = [
@@ -45,7 +45,7 @@ const roiChips = [
   { label: '500% average ROI', color: 'from-purple-500 to-pink-400' },
 ]
 
-const integrations = ['Sage Intacct', 'Odoo', 'CSV Imports', 'ApexDeliver Workspace']
+const integrations = ['Sage Intacct', 'Odoo', 'Microsoft Dynamics', 'NetSuite', 'CapLiquify', 'ApexDeliver']
 
 export const EnhancedHeroSection: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -79,16 +79,15 @@ export const EnhancedHeroSection: React.FC = () => {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className={`text-center lg:text-left space-y-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 shadow-lg">
-              <span className="text-sm font-semibold text-blue-100">CapLiquify FP&A + ApexDeliver Platform</span>
+              <span className="text-sm font-semibold text-blue-100">FinanceFlo ERP + AI Studio</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-              13-Week Cash Forecasting, Working Capital & Deal Execution in One Stack
+              ERP Implementation + CapLiquify & ApexDeliver in One Partner Stack
             </h1>
 
             <p className="text-xl sm:text-2xl text-blue-100 max-w-3xl mx-auto lg:mx-0">
-              CapLiquify FP&A delivers banker-grade forecasts, variance analysis, and scenario planning. Upgrade into ApexDeliver for secure data rooms, valuations, and master admin oversight—starting at{' '}
-              <span className="font-bold text-white">£598/mo + £2,500 setup</span>.
+              FinanceFlo is the UK ERP & software reseller that brings Sage Intacct, Odoo, Microsoft, or NetSuite online, layers CapLiquify FP&A guardrails, and unlocks ApexDeliver deal, pricing, and community workflows—with AI copilots and managed support under one roof.
             </p>
 
             <div className="grid sm:grid-cols-3 gap-4">
@@ -102,29 +101,31 @@ export const EnhancedHeroSection: React.FC = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/sign-up" className="group" onClick={() => trackCtaClick('start-free-trial', 'hero')}>
+              <Link to="/contact" className="group" onClick={() => trackCtaClick('book-blueprint', 'hero')}>
                 <Button
                   variant="primary"
                   btnSize="lg"
-                  className="w-full sm:w-auto text-lg px-8 py-6 shadow-2xl hover:shadow-blue-500/50 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+                  className="w-full sm:w-auto text-lg px-8 py-6 shadow-2xl hover:shadow-emerald-500/50 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700"
                 >
-                  Start Free 14-Day Trial
+                  Book Implementation Blueprint
                   <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </Button>
               </Link>
 
-              <Link to="/pricing" className="group" onClick={() => trackCtaClick('view-pricing', 'hero')}>
+              <Link to="/sign-up" className="group" onClick={() => trackCtaClick('see-demo', 'hero')}>
                 <Button
                   variant="ghost"
                   btnSize="lg"
                   className="w-full sm:w-auto text-lg px-8 py-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 hover:bg-white/20"
                 >
-                  See Pricing & Setup
+                  See CapLiquify + ApexDeliver Demo
                 </Button>
               </Link>
             </div>
+
+            <p className="text-sm text-indigo-100">ERP program kickoff • Guided SaaS trial • Operator-led go-live</p>
 
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 text-blue-200 text-sm">
               {trustIndicators.map((label) => (
@@ -154,7 +155,7 @@ export const EnhancedHeroSection: React.FC = () => {
               ))}
             </div>
 
-            <div className="relative h-20 overflow-hidden">
+            <div className="relative h-24 overflow-hidden">
               {testimonials.map((testimonial, index) => (
                 <div
                   key={testimonial.name}
@@ -179,8 +180,8 @@ export const EnhancedHeroSection: React.FC = () => {
             <DashboardMockup />
             <div className="absolute -bottom-10 left-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-wrap gap-4">
               {[
-                { title: 'Portfolio CFO Mode', detail: 'Roll-ups across every entity in seconds' },
-                { title: 'Scenario Builder', detail: 'Drag revenue or cost drivers, export to deck' },
+                { title: 'Implementation Pod', detail: 'ERP build room + CapLiquify wiring in 14 days' },
+                { title: 'AI Copilot Desk', detail: 'Finance & GTM copilots with human-in-loop review' },
               ].map((item) => (
                 <div key={item.title} className="flex-1 min-w-[180px]">
                   <div className="text-sm font-semibold text-white">{item.title}</div>
@@ -192,7 +193,7 @@ export const EnhancedHeroSection: React.FC = () => {
         </div>
 
         <div className="mt-16 text-center">
-          <p className="text-blue-200 mb-4">Join 500+ deal teams already standardising on CapLiquify + ApexDeliver</p>
+          <p className="text-blue-200 mb-4">Join 500+ ERP, finance, and deal teams already running FinanceFlo + CapLiquify + ApexDeliver</p>
           <div className="flex items-center justify-center gap-2 flex-wrap">
             {['Brookline Partners', 'Northwind Equity', 'Seven Peaks PE', 'Oriant Capital', 'Fjord Holdings'].map((company) => (
               <div key={company} className="px-4 py-2 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 text-xs text-blue-200">

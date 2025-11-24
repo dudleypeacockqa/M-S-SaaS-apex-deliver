@@ -74,12 +74,12 @@ export const BlogListingPage: React.FC = () => {
         keywords="M&A blog, financial planning, merger integration, working capital, pricing strategy"
         ogTitle="100 Days & Beyond Blog"
         ogDescription="Explore strategies, frameworks, and playbooks for every stage of the M&A lifecycle."
-        ogUrl="https://100daysandbeyond.com/blog"
-        ogImage="https://100daysandbeyond.com/assets/financial-analysis-visual.png"
+        ogUrl="https://financeflo.ai/blog"
+        ogImage="https://financeflo.ai/assets/financial-analysis-visual.png"
         twitterTitle="100 Days & Beyond Blog"
         twitterDescription="Stay ahead with insights on M&A, FP&A, and portfolio value creation."
-        twitterImage="https://100daysandbeyond.com/assets/financial-analysis-visual.png"
-        canonical="https://100daysandbeyond.com/blog"
+        twitterImage="https://financeflo.ai/assets/financial-analysis-visual.png"
+        canonical="https://financeflo.ai/blog"
       />
 
       {/* Header */}

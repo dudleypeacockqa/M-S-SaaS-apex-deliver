@@ -3,6 +3,7 @@ import { SEO } from '../../components/common/SEO';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { StructuredData } from '../../components/common/StructuredData';
+import { createBreadcrumbSchema } from '../../utils/schemas/breadcrumbSchema';
 
 export const FAQPage: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -133,11 +134,20 @@ export const FAQPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="Frequently Asked Questions | CapLiquify + ApexDeliver"
-        description="Get answers to common questions about CapLiquify and ApexDeliver: features, pricing, security, integrations, and ROI."
-        keywords="CapLiquify FAQ, ApexDeliver questions, M&A software FAQ, cash flow forecasting FAQ"
+        title="Frequently Asked Questions | FinanceFlo"
+        description="Get answers to common questions about FinanceFlo: features, pricing, security, integrations, and ROI."
+        keywords="FinanceFlo FAQ, M&A software FAQ, cash flow forecasting FAQ"
+        ogUrl="https://financeflo.ai/faq"
+        canonical="https://financeflo.ai/faq"
       />
       <StructuredData json={faqSchema} id="faq-schema" />
+      <StructuredData
+        json={createBreadcrumbSchema([
+          { name: 'Home', url: 'https://financeflo.ai/' },
+          { name: 'FAQ', url: 'https://financeflo.ai/faq' },
+        ])}
+        id="faq-breadcrumbs"
+      />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">

@@ -13,9 +13,18 @@ export const PodcastPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="Podcast: 100 Days and Beyond | ApexDeliver + CapLiquify"
+        title="Podcast: 100 Days and Beyond | FinanceFlo"
         description="Join us for 100 Days and Beyond, where we explore M&A strategies, financial planning, and business transformation with industry experts and successful dealmakers."
         keywords="M&A podcast, business transformation podcast, finance podcast, 100 days and beyond"
+        ogUrl="https://financeflo.ai/podcast"
+        canonical="https://financeflo.ai/podcast"
+      />
+      <StructuredData
+        json={createBreadcrumbSchema([
+          { name: 'Home', url: 'https://financeflo.ai/' },
+          { name: 'Podcast', url: 'https://financeflo.ai/podcast' },
+        ])}
+        id="podcast-breadcrumbs"
       />
 
       {/* Header */}

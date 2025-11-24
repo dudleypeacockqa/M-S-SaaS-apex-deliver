@@ -43,6 +43,14 @@ export const ipaasLinks = [
   { name: "AI-Powered API Management", path: "/ipaas/api-management", description: "Cognitive API strategy and management services" },
 ];
 
+export const maSolutionsLinks = [
+  { name: "CapLiquify FP&A", path: "/capliquify-fpa", description: "13-week cash forecasting and working capital automation" },
+  { name: "ApexDeliver M&A Suite", path: "/features", description: "Deal management, valuations, and PMI execution" },
+  { name: "Post-Merger Integration", path: "/4-stage-cycle", description: "Finance ops stabilisation for Day 100 success" },
+  { name: "Customer Portal Suite", path: "/solutions/cfo", description: "White-label ERP portals for acquisition targets" },
+  { name: "Sales & Pricing Accelerator", path: "/sales-promotion-pricing", description: "Dynamic pricing, promotions, and GTM tooling" },
+];
+
 export const resourceLinks = [
   { name: "Working Capital Calculator", path: "/calculator", description: "Analyze cash flow and unlock working capital potential" },
   { name: "Readiness Assessment", path: "/assessment", description: "Evaluate your business readiness for AI-powered ERP transformation" },
@@ -84,6 +92,12 @@ export const leverageFloLinks = [
 
 // Solutions Menu - Combined top-level menu
 export const solutionsLinks = [
+  {
+    name: "M&A & Finance Solutions",
+    path: "/features",
+    description: "CapLiquify FP&A + ApexDeliver deal execution",
+    subLinks: maSolutionsLinks
+  },
   {
     name: "ERP Solutions",
     path: "/erp/sage-intacct",

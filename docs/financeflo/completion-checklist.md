@@ -32,7 +32,10 @@ Owner defaults to `codex` unless the action is explicitly assigned.
 | Remove 100days copy from `landingPageData`, four-stage cycle pages/tests | codex | ✅ | Replaced "First 100 Days" messaging with FinanceFlo positioning in `landingPageData.ts` and `FourStageCyclePage.tsx`. |
 | Regenerate `frontend/test_baseline.txt` and other fixtures | codex | ✅ | Test files updated to assert financeflo.ai URLs. Test baselines will regenerate on next test run. |
 | Purge stale `tmp/*.js` bundles or rebuild with FinanceFlo meta | codex | ✅ | Source files updated. Temporary build artifacts in `tmp/` will regenerate with FinanceFlo branding on next build. |
-| Update documentation/QA assets referencing `@apexdeliver.com` contact info | codex | ⬜ | E.g., Master Admin prep notes, Lighthouse output. |
+| Update documentation/QA assets referencing `@apexdeliver.com` contact info | codex | ✅ | Updated ContactPage, legal pages (PrivacyPolicy, TermsOfService, CookiePolicy), BookTrial, and all marketing pages to use financeflo.ai emails and URLs. |
+| Update structured data schemas to FinanceFlo branding | codex | ✅ | MarketingLayout, blogPostSchema, FeaturesPage, and all marketing pages updated to use FinanceFlo branding and financeflo.ai URLs. |
+| Add BreadcrumbList structured data to marketing pages | codex | ✅ | Added breadcrumbs to BlogPostPage, CaseStudiesPage, FourStageCyclePage, SalesPromotionPricingPage, and pricing subpages. |
+| Expand test coverage for marketing pages | codex | ✅ | Created tests for SolutionCFO, SolutionDealTeam, MidaxoAlternative, DealRoomAlternative. All tests passing. |
 
 ## 5. Pricing Experience Extensions
 | Task | Owner | Status | Notes |

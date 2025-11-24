@@ -6,6 +6,11 @@
 
 ---
 
+## In-Flight (2025-11-24)
+- Refresh sitemap + vitest proof for FinanceFlo+ApexDeliver merge
+- Rerun deployment verification script and update health logs
+- Align BMAD docs and latest-deploy metadata to current deploy state
+
 ## Current Status (2025-11-22)
 
 ### Test Status

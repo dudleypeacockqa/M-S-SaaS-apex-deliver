@@ -2,24 +2,46 @@ import { marketingFeatureIcons } from '../assets/marketing';
 import React from 'react';
 
 export const heroPillars = [
+  { label: 'ERP Implementation Pods', badge: 'Services' },
   { label: 'CapLiquify FP&A Control Tower' },
-  { label: 'ApexDeliver Deal Cloud' },
-  { label: 'Sales & Promotion Pricing Studio', badge: 'New' },
-  { label: 'Customer & Partner Command Center' },
-  { label: 'Events + Community Engine', badge: 'New' },
+  { label: 'ApexDeliver Deal & GTM Cloud' },
+  { label: 'AI Consulting & Copilots' },
+  { label: 'Managed Support & Training' },
 ];
 
 export const heroStats = [
-  { value: '14 days', label: 'to full FP&A control tower', detail: 'CapLiquify onboarding sprint' },
-  { value: '40%', label: 'faster deal velocity', detail: 'Deal rooms + valuations in ApexDeliver' },
-  { value: '3x', label: 'promo conversion lift', detail: 'Sales & Promotion Pricing Studio' },
-  { value: 'GBP 2.8M', label: 'working capital unlocked', detail: 'Average per portfolio in year one' },
+  { value: '450+', label: 'ERP & AI projects delivered', detail: 'Sage Intacct, Odoo, NetSuite, Microsoft rollouts' },
+  { value: '66%', label: 'manual finance hours removed', detail: 'Automation, copilots, and iPaaS orchestration' },
+  { value: '500%', label: 'average ROI boost', detail: 'Working-capital unlock + new revenue plays' },
+  { value: '20+', label: 'years as operators', detail: 'Led by Dudley Peacock & UK delivery pod' },
 ];
 
 export const platformHighlights = [
   {
+    title: 'ERP Implementation Pods',
+    subtitle: 'Certified Sage Intacct, Odoo, Microsoft, and NetSuite teams who migrate data, build automations, and train your finance org.',
+    bullets: [
+      'ADAPT blueprint that covers people, process, and governance',
+      'Data migration, chart-of-accounts redesign, entity consolidations',
+      'Hypercare plus admin-on-demand once you go live',
+    ],
+    cta: { text: 'See ERP programs', link: '/erp/sage-intacct', event: 'erp' },
+    badge: 'Services',
+  },
+  {
+    title: 'AI Consulting & Copilot Desk',
+    subtitle: 'Process mining, copilots, and AI assurance layered onto finance, deal, and revenue workflows.',
+    bullets: [
+      'AI-readiness workshops and governance guardrails',
+      'Copilots that summarize meetings, build packs, and action workflows',
+      'Prompt library + human-in-the-loop review stations',
+    ],
+    cta: { text: 'Explore AI services', link: '/ai-enhancement/sage-intacct', event: 'ai' },
+    badge: 'AI',
+  },
+  {
     title: 'CapLiquify FP&A Control Tower',
-    subtitle: '13-week cash, working-capital automation, and scenario planning with lender-grade exports.',
+    subtitle: '13-week cash, working-capital automation, and scenario planning tied directly to your ERP actuals.',
     bullets: [
       'Automated actuals ingestion from Sage, NetSuite, Xero, and CSV uploads',
       'Variance explanations + guardrail alerts across DSO/DPO/DIO',
@@ -30,7 +52,7 @@ export const platformHighlights = [
   },
   {
     title: 'ApexDeliver Deal Cloud',
-    subtitle: 'Deal pipeline, valuations, diligence workflows, and PMI handoffs in one command center.',
+    subtitle: 'Deal pipeline, valuations, diligence workflows, and PMI handoffs connected back to ERP and CapLiquify.',
     bullets: [
       'Unified Kanban, list, and calendar views mapped to your IC stages',
       '47+ ratio valuation suite with AI commentary for IC and boards',
@@ -61,17 +83,6 @@ export const platformHighlights = [
     cta: { text: 'Launch portals', link: '/features', event: 'portal' },
   },
   {
-    title: 'Events + Community Engine',
-    subtitle: 'Plan summits, masterclasses, and podcast drops tied to deals and GTM plays.',
-    bullets: [
-      'Multi-track agendas, ticketing, sponsors, and speaker workflows',
-      'Member feeds, moderation, reactions, and analytics baked in',
-      'Auto-publish podcasts, recaps, and nurture cadences from one place',
-    ],
-    cta: { text: 'Grow your community', link: '/podcast', event: 'community' },
-    badge: 'New',
-  },
-  {
     title: 'Enterprise Governance & Intelligence',
     subtitle: 'Master admin controls, entitlements, and explainable AI copilots for every workflow.',
     bullets: [
@@ -85,59 +96,59 @@ export const platformHighlights = [
 
 export const launchHighlights = [
   {
-    title: 'Sales & Promotion Pricing Studio',
-    description: 'Bundle-level rules, partner promos, and revenue experiments that roll straight into CapLiquify forecasts.',
-    metric: '+32% promo ROI lift across beta customers in eight weeks.',
+    title: 'ERP Fast-Start Pod',
+    description: '14-day blueprint that lands Sage Intacct/Odoo, migrates data, and preps CapLiquify for live cash views.',
+    metric: 'Go-live in 30 days with ADAPT playbooks and fractional admins.',
   },
   {
-    title: 'Event Management Hub',
-    description: 'Plan summits, manage sponsors, track tickets, and sync actuals back into ApexDeliver and CapLiquify.',
-    metric: 'Launch multi-track events in under 48 hours with reusable templates.',
+    title: 'Copilot Control Room',
+    description: 'Dedicated AI pod that designs copilots for finance, deal teams, and revenue ops with governance baked in.',
+    metric: '4x faster pack creation + redlines reviewed with human-in-loop guardrails.',
   },
   {
-    title: 'Community + Podcast Network',
-    description: 'Host gated feeds, audio drops, and leadership content that convert into pipeline and renewals.',
-    metric: '5,000+ member invites processed this quarter with built-in moderation.',
+    title: 'Revenue & Community Engine',
+    description: 'Run pricing experiments, customer portals, events, and podcasts that feed the same CRM + ERP spine.',
+    metric: '300% lift in qualified pipeline measured inside CapLiquify.',
   },
 ];
 
 export const valueSprints = [
   {
-    title: 'Sprint 01 - Visibility',
+    title: 'Sprint 01 - Blueprint',
     timeline: 'Days 0-14',
-    focus: 'Stand up CapLiquify, stabilize cash, and publish the 13-week view.',
-    deliverables: ['System connections + ledger normalization', '13-week direct cash + working-capital cockpit', 'Board-ready "First 100 Days" dashboard'],
+    focus: 'Audit ERP + GTM stack, migrate critical data, and stand up CapLiquify for cash visibility.',
+    deliverables: ['ADAPT plan + integration map', '13-week direct cash + working-capital cockpit', 'Implementation charter + risk log'],
   },
   {
-    title: 'Sprint 02 - Systemise',
+    title: 'Sprint 02 - Deploy',
     timeline: 'Days 15-45',
-    focus: 'Digitize diligence, valuations, and promos while automation takes over the busywork.',
-    deliverables: ['Deal pipeline + valuation suite live in ApexDeliver', 'Secure document room + approvals running', 'Pricing guardrails + promo calendar activated'],
+    focus: 'Configure ERP, activate CapLiquify guardrails, and launch the first ApexDeliver workspace.',
+    deliverables: ['Multi-entity ERP configuration + automations', 'Secure document room + valuation suite', 'Pricing guardrails + promo calendar activated'],
   },
   {
-    title: 'Sprint 03 - Scale',
+    title: 'Sprint 03 - Automate',
     timeline: 'Days 46-70',
-    focus: 'Deploy portals, revenue workspaces, and customer communities.',
-    deliverables: ['Customer & partner portals branded + launched', 'Revenue campaign analytics tied to cash impact', 'Community + event programming scheduled'],
+    focus: 'Layer AI copilots, iPaaS flows, and pricing studios that sync with ERP actuals.',
+    deliverables: ['AI copilots + workflow automation', 'Partner/customer portals branded + launched', 'Revenue analytics wired into CapLiquify'],
   },
   {
-    title: 'Sprint 04 - Signal',
+    title: 'Sprint 04 - Scale',
     timeline: 'Days 71-100',
-    focus: 'Roll up insights for the portfolio, lenders, and GTM teams with repeatable cadences.',
-    deliverables: ['Executive reporting cadence + AI copilots', 'Enterprise governance, audit, and compliance guardrails', 'Playbooks for the next acquisition and promotion cycle'],
+    focus: 'Roll up insights for boards, lenders, and GTM teams with repeatable cadences and managed support.',
+    deliverables: ['Executive reporting cadence + managed services plan', 'Enterprise governance + compliance guardrails', 'Playbooks for next acquisition, promo, and hiring cycle'],
   },
 ];
 
 export const personaPlays = [
   {
-    title: 'Portfolio CFOs & Finance Leads',
-    description: 'Replace fragile spreadsheets with living models and lender-ready packs.',
-    bullets: ['13-week cash with variance narratives baked in', 'Working-capital cockpit tied to promo + pricing actions', 'Automated board + lender packs with watermarking'],
+    title: 'ERP, CIO & Transformation Leads',
+    description: 'Bring every ledger, subsidiary, and process into one modern ERP spine.',
+    bullets: ['Certified Sage Intacct/Odoo/NetSuite squads', 'Integration factory with iPaaS guardrails', 'Training + admin-on-demand post go-live'],
   },
   {
-    title: 'Deal & Corporate Development Teams',
-    description: 'Source, diligence, and close acquisitions with airtight governance.',
-    bullets: ['Deal pipeline + scorecards across every stage', 'Valuation studio with 47+ ratios and scenario exports', 'Secure data rooms, AI digest, and PMI task orchestration'],
+    title: 'Finance, CFO & Deal Teams',
+    description: 'Land CapLiquify, automate board packs, and manage deals inside ApexDeliver.',
+    bullets: ['13-week cash + variance narratives baked in', 'Valuation studio with 47+ ratios and scenario exports', 'Secure data rooms, AI digest, and PMI playbooks'],
   },
   {
     title: 'Revenue & Commercial Ops',
@@ -153,41 +164,41 @@ export const personaPlays = [
 
 export const getFeatures = () => [
   {
+    icon: marketingFeatureIcons.workflowAutomation,
+    title: 'ERP Implementation & Support Pods',
+    description:
+      'Certified consultants migrate data, design automations, and run enablement so Sage Intacct, Odoo, Microsoft, or NetSuite rollouts stick the landing.',
+  },
+  {
     icon: marketingFeatureIcons.financialIntelligence,
     title: 'CapLiquify FP&A Engine',
     description:
-      'Go beyond traditional accounting with a forward-looking financial planning and analysis engine. Model scenarios, forecast cash with 95%+ accuracy, and generate lender-ready reports in minutes.',
+      'Model scenarios, forecast cash with 95%+ accuracy, and sync working-capital actions directly back into your ERP.',
   },
   {
     icon: marketingFeatureIcons.dealPipeline,
-    title: 'ApexDeliver M&A Suite',
+    title: 'ApexDeliver Deal & Revenue Cloud',
     description:
-      'From AI-powered deal sourcing and automated due diligence to a valuation suite with 47+ financial ratios, ApexDeliver gives you an unfair advantage in a competitive market. Close deals faster, with more confidence.',
-  },
-  {
-    icon: marketingFeatureIcons.secureDocumentRoom,
-    title: 'B2B2C Customer Portals',
-    description:
-      'Empower your customers with self-service portals integrated directly with your ERP. Reduce administrative overhead, improve customer satisfaction, and get paid faster.',
+      'Run deal rooms, valuations, pricing studios, and post-close GTM workstreams with AI copilots plus enterprise governance.',
   },
 ];
 
 export const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'Product',
-  name: 'ApexDeliver + CapLiquify',
+  name: 'FinanceFlo ERP Services + CapLiquify & ApexDeliver',
   description:
-    'The 100 Days & Beyond operating system unites CapLiquify FP&A, ApexDeliver deal rooms, Sales & Promotion Pricing, customer portals, events, and community inside one automated platform.',
+    'FinanceFlo is the ERP implementation & AI consulting partner behind CapLiquify FP&A and the ApexDeliver deal cloud—uniting services, software, and managed support for the first 100 days and beyond.',
   brand: {
     '@type': 'Organization',
-    name: '100 Days & Beyond',
-    url: 'https://100daysandbeyond.com',
+    name: 'FinanceFlo.ai',
+    url: 'https://financeflo.ai',
   },
   offers: {
     '@type': 'Offer',
     priceCurrency: 'GBP',
     price: '598.00',
-    url: 'https://100daysandbeyond.com/pricing',
+    url: 'https://financeflo.ai/pricing',
     availability: 'https://schema.org/InStock',
   },
   aggregateRating: {
@@ -196,4 +207,3 @@ export const structuredData = {
     reviewCount: '230',
   },
 };
-

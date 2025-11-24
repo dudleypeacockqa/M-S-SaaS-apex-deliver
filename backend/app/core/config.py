@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
 
     # CORS - will be converted to list after init
-    cors_origins: Any = "http://localhost:5173,http://localhost:3000,https://ma-saas-platform.onrender.com,https://ma-saas-backend.onrender.com,https://financeflo.ai,https://www.financeflo.ai,https://100daysandbeyond.com,https://www.100daysandbeyond.com,https://apexdeliver.com"
+    cors_origins: Any = "http://localhost:5173,http://localhost:3000,https://ma-saas-platform.onrender.com,https://ma-saas-backend.onrender.com,https://financeflo.ai,https://www.financeflo.ai,https://apexdeliver.com"
 
     @model_validator(mode="after")
     def parse_cors_origins(self) -> "Settings":
@@ -52,6 +52,10 @@ class Settings(BaseSettings):
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""
     stripe_publishable_key: str = ""
+    
+    # GoHighLevel CRM Integration (optional)
+    gohighlevel_api_key: str = ""
+    gohighlevel_location_id: str = ""
 
     # Storage Configuration
     storage_path: str = "./storage"

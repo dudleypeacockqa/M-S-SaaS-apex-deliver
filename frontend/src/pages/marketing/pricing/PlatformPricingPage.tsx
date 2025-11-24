@@ -58,8 +58,8 @@ export default function PlatformPricingPage() {
         description="Compare CapLiquify FP&A, the FinanceFlo Platform, and Enterprise bundles. Choose the operating system that fits your finance and deal team."
         ogTitle="FinanceFlo Platform Pricing"
         ogDescription="Side-by-side pricing for CapLiquify FP&A, FinanceFlo Platform, and Enterprise bundles with add-ons for pricing, events, and managed services."
-        ogUrl="https://100daysandbeyond.com/pricing/platform"
-        canonical="https://100daysandbeyond.com/pricing/platform"
+        ogUrl="https://financeflo.ai/pricing/platform"
+        canonical="https://financeflo.ai/pricing/platform"
       />
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-900 text-white py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

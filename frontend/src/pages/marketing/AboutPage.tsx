@@ -12,8 +12,8 @@ export const AboutPage: React.FC = () => {
         description="Learn how ApexDeliver + CapLiquify empowers ambitious businesses to own their first 100 days with AI-assisted finance, deal, and revenue operations."
         ogTitle="About 100 Days & Beyond"
         ogDescription="We combine CapLiquify FP&A with ApexDeliver deal execution so ambitious teams can run every motion from a single operating system."
-        ogUrl="https://100daysandbeyond.com/about"
-        canonical="https://100daysandbeyond.com/about"
+        ogUrl="https://financeflo.ai/about"
+        canonical="https://financeflo.ai/about"
       />
 
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-emerald-50">

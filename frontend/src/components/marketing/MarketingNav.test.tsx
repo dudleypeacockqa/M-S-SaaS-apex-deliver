@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { MarketingNav } from './MarketingNav';
@@ -8,16 +8,30 @@ const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };
 
+const setDesktopViewport = () => {
+  Object.defineProperty(window, 'innerWidth', {
+    writable: true,
+    configurable: true,
+    value: 1400,
+  });
+};
+
+const triggerResize = () => {
+  act(() => {
+    window.dispatchEvent(new Event('resize'));
+  });
+};
+
 describe('MarketingNav', () => {
-  it('renders logo and brand name', () => {
+  it('renders FinanceFlo logo and brand name', () => {
     renderWithRouter(<MarketingNav />);
-    expect(screen.getByLabelText(/ApexDeliver home/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/FinanceFlo home/i)).toBeInTheDocument();
   });
 
-  it('displays navigation links', () => {
+  it('displays Services navigation dropdown', () => {
     renderWithRouter(<MarketingNav />);
     expect(screen.getAllByRole('link', { name: /pricing/i }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('button', { name: /products/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('button', { name: /Services/i }).length).toBeGreaterThan(0);
   });
 
   it('shows Sign In and Sign Up CTAs', () => {
@@ -36,28 +50,34 @@ describe('MarketingNav', () => {
     const toggle = screen.getByLabelText(/toggle menu/i);
     fireEvent.click(toggle);
     expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    expect(screen.getAllByText(/CapLiquify FP&A/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/ERP Implementation & Resell/i).length).toBeGreaterThan(0);
   });
 
   it('toggles mobile dropdown panels', () => {
     renderWithRouter(<MarketingNav />);
     fireEvent.click(screen.getByLabelText(/toggle menu/i));
-    const productButtons = screen.getAllByRole('button', { name: /Products/i });
-    fireEvent.click(productButtons[productButtons.length - 1]);
-    expect(screen.getByText(/Sales & Promotion Pricing/i)).toBeInTheDocument();
+    const servicesButtons = screen.getAllByRole('button', { name: /Services/i });
+    fireEvent.click(servicesButtons[servicesButtons.length - 1]);
+    expect(screen.getByText(/AI Consulting & Copilots/i)).toBeInTheDocument();
   });
 
   it('supports keyboard navigation for desktop dropdowns', async () => {
+    setDesktopViewport();
     renderWithRouter(<MarketingNav />);
-    const productsTrigger = screen.getAllByRole('button', { name: /Products/i })[0];
-    productsTrigger.focus();
-    fireEvent.keyDown(productsTrigger, { key: 'ArrowDown' });
+    triggerResize();
+    const servicesTrigger = screen.getAllByRole('button', { name: /Services/i })[0];
+    servicesTrigger.focus();
+    await act(async () => {
+      fireEvent.keyDown(servicesTrigger, { key: 'ArrowDown' });
+    });
 
-    const firstMenuItem = await screen.findByRole('menuitem', { name: /CapLiquify FP&A/i });
+    const firstMenuItem = await screen.findByRole('menuitem', { name: /ERP Implementation & Resell/i });
     await waitFor(() => expect(firstMenuItem).toHaveFocus());
 
-    fireEvent.keyDown(firstMenuItem, { key: 'Escape' });
-    await waitFor(() => expect(productsTrigger).toHaveFocus());
+    await act(async () => {
+      fireEvent.keyDown(firstMenuItem, { key: 'Escape' });
+    });
+    await waitFor(() => expect(servicesTrigger).toHaveFocus());
   });
 
   it('traps focus inside the mobile menu when open', async () => {
@@ -66,15 +86,15 @@ describe('MarketingNav', () => {
     const toggle = screen.getByLabelText(/toggle menu/i);
     await user.click(toggle);
 
-    const mobileProductsButton = screen.getAllByRole('button', { name: /Products/i }).pop()!;
-    await waitFor(() => expect(mobileProductsButton).toHaveFocus());
+    const mobileServicesButton = screen.getAllByRole('button', { name: /Services/i }).pop()!;
+    await waitFor(() => expect(mobileServicesButton).toHaveFocus());
 
     await user.keyboard('{Shift>}{Tab}{/Shift}');
     const startTrialLink = screen.getAllByRole('link', { name: /Start Free Trial/i }).pop()!;
     expect(startTrialLink).toHaveFocus();
 
     await user.tab();
-    expect(mobileProductsButton).toHaveFocus();
+    expect(mobileServicesButton).toHaveFocus();
   });
 
   it('ensures closed mobile menu is hidden from screen readers and keyboard', () => {
@@ -95,26 +115,34 @@ describe('MarketingNav', () => {
   });
 
   it('links solutions dropdown items to persona routes', async () => {
+    const user = userEvent.setup();
     renderWithRouter(<MarketingNav />);
-    const solutionsTrigger = screen.getAllByRole('button', { name: /Solutions/i })[0];
-    fireEvent.keyDown(solutionsTrigger, { key: 'ArrowDown' });
+    const toggle = screen.getByLabelText(/toggle menu/i);
+    await user.click(toggle);
+    const solutionsButtons = screen.getAllByRole('button', { name: /Solutions/i });
+    const mobileSolutions = solutionsButtons[solutionsButtons.length - 1];
+    await user.click(mobileSolutions);
 
-    const cfoLink = await screen.findByRole('menuitem', { name: /CFO Command Center/i });
-    const dealTeamLink = await screen.findByRole('menuitem', { name: /Deal Team Workspace/i });
+    const cfoLink = await screen.findByRole('link', { name: /CFO & Finance Control Tower/i });
+    const dealTeamLink = await screen.findByRole('link', { name: /Deal & Corporate Development/i });
 
     expect(cfoLink).toHaveAttribute('href', '/solutions/cfo');
     expect(dealTeamLink).toHaveAttribute('href', '/solutions/deal-team');
   });
 
-  it('exposes compare routes within the navigation', async () => {
+  it('exposes software routes within the navigation', async () => {
+    const user = userEvent.setup();
     renderWithRouter(<MarketingNav />);
-    const compareTrigger = screen.getAllByRole('button', { name: /Compare/i })[0];
-    fireEvent.keyDown(compareTrigger, { key: 'ArrowDown' });
+    const toggle = screen.getByLabelText(/toggle menu/i);
+    await user.click(toggle);
+    const softwareButtons = screen.getAllByRole('button', { name: /Software/i });
+    const mobileSoftware = softwareButtons[softwareButtons.length - 1];
+    await user.click(mobileSoftware);
 
-    const dealRoomLink = await screen.findByRole('menuitem', { name: /DealRoom Alternative/i });
-    const midaxoLink = await screen.findByRole('menuitem', { name: /Midaxo Alternative/i });
+    const capLink = await screen.findByRole('link', { name: /CapLiquify FP&A/i });
+    const apexLink = await screen.findByRole('link', { name: /ApexDeliver Deal Cloud/i });
 
-    expect(dealRoomLink).toHaveAttribute('href', '/compare/dealroom-alternative');
-    expect(midaxoLink).toHaveAttribute('href', '/compare/midaxo-alternative');
+    expect(capLink).toHaveAttribute('href', '/capliquify-fpa');
+    expect(apexLink).toHaveAttribute('href', '/features');
   });
 });

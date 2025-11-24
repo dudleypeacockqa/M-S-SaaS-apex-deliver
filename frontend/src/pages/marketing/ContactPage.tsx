@@ -11,7 +11,7 @@ export const ContactPage: React.FC = () => {
     '@type': 'ContactPage',
     name: 'Contact 100 Days & Beyond',
     description: 'Get in touch with our team for demos, sales inquiries, or support',
-    url: 'https://100daysandbeyond.com/contact',
+    url: 'https://financeflo.ai/contact',
     mainEntity: createOrganizationSchema(),
   };
   const [formData, setFormData] = useState({
@@ -52,7 +52,7 @@ export const ContactPage: React.FC = () => {
       setSubmitted(true);
     } catch (err) {
       console.error('Error submitting contact form:', err);
-      setError('Failed to send message. Please try again or email us directly at support@100daysandbeyond.com');
+      setError('Failed to send message. Please try again or email us directly at support@financeflo.ai');
     } finally {
       setLoading(false);
     }
@@ -66,12 +66,12 @@ export const ContactPage: React.FC = () => {
         keywords="contact 100 Days & Beyond, M&A platform support, demo request, sales inquiry"
         ogTitle="Contact 100 Days & Beyond"
         ogDescription="Speak with the 100 Days & Beyond team about demos, onboarding, or partnership opportunities."
-        ogUrl="https://100daysandbeyond.com/contact"
-        ogImage="https://100daysandbeyond.com/assets/security-trust-visual.png"
-        twitterTitle="Contact 100 Days & Beyond"
-        twitterDescription="Reach the 100 Days & Beyond team for demos, sales questions, and platform support."
-        twitterImage="https://100daysandbeyond.com/assets/security-trust-visual.png"
-        canonical="https://100daysandbeyond.com/contact"
+        ogUrl="https://financeflo.ai/contact"
+        ogImage="https://financeflo.ai/assets/security-trust-visual.png"
+        twitterTitle="Contact FinanceFlo"
+        twitterDescription="Reach the FinanceFlo team for demos, sales questions, and platform support."
+        twitterImage="https://financeflo.ai/assets/security-trust-visual.png"
+        canonical="https://financeflo.ai/contact"
       />
       {/* ContactPage Schema for SEO */}
       <script
@@ -218,7 +218,7 @@ export const ContactPage: React.FC = () => {
                   <div className="text-2xl mr-4">📧</div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                    <p className="text-gray-600">support@apexdeliver.com</p>
+                    <p className="text-gray-600">support@financeflo.ai</p>
                     <p className="text-sm text-gray-500 mt-1">We respond within 24 hours</p>
                   </div>
                 </div>
@@ -238,7 +238,7 @@ export const ContactPage: React.FC = () => {
                   <div className="text-2xl mr-4">💼</div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Enterprise Sales</h3>
-                    <p className="text-gray-600">sales@apexdeliver.com</p>
+                    <p className="text-gray-600">sales@financeflo.ai</p>
                     <p className="text-sm text-gray-500 mt-1">For Enterprise and Community Leader tiers</p>
                   </div>
                 </div>
@@ -248,7 +248,7 @@ export const ContactPage: React.FC = () => {
                   <div className="text-2xl mr-4">🔒</div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Data Protection Officer</h3>
-                    <p className="text-gray-600">privacy@apexdeliver.com</p>
+                    <p className="text-gray-600">privacy@financeflo.ai</p>
                     <p className="text-sm text-gray-500 mt-1">For GDPR and privacy inquiries</p>
                   </div>
                 </div>
@@ -280,7 +280,7 @@ export const ContactPage: React.FC = () => {
             For Enterprise and Community Leader inquiries, schedule a personalized demo with our team.
           </p>
           <a
-            href="mailto:sales@apexdeliver.com?subject=Demo%20Request"
+            href="mailto:sales@financeflo.ai?subject=Demo%20Request"
             className="inline-block bg-indigo-900 text-white px-8 py-3 rounded-lg font-bold hover:bg-indigo-800 transition-colors"
           >
             Request a Demo

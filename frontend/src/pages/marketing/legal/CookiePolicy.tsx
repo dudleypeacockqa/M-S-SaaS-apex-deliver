@@ -12,12 +12,12 @@ export const CookiePolicy: React.FC = () => {
         keywords="100 Days & Beyond cookie policy, M&A platform cookies, tracking preferences"
         ogTitle="100 Days & Beyond Cookie Policy"
         ogDescription="Details on cookie usage for personalization, analytics, and security across the 100 Days & Beyond platform."
-        ogUrl="https://100daysandbeyond.com/legal/cookies"
-        ogImage="https://100daysandbeyond.com/assets/security-trust-visual.webp"
+        ogUrl="https://financeflo.ai/legal/cookies"
+        ogImage="https://financeflo.ai/assets/security-trust-visual.webp"
         twitterTitle="100 Days & Beyond Cookie Policy"
         twitterDescription="Manage cookie preferences for the 100 Days & Beyond AI-enabled M&A platform."
-        twitterImage="https://100daysandbeyond.com/assets/security-trust-visual.webp"
-        canonical="https://100daysandbeyond.com/legal/cookies"
+        twitterImage="https://financeflo.ai/assets/security-trust-visual.webp"
+        canonical="https://financeflo.ai/legal/cookies"
       />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Cookie Policy</h1>
@@ -157,7 +157,7 @@ export const CookiePolicy: React.FC = () => {
               If you have questions about our use of cookies, please contact:
             </p>
             <ul className="list-none text-gray-700 space-y-1">
-              <li>Email: privacy@apexdeliver.com</li>
+              <li>Email: privacy@financeflo.ai</li>
               <li>Address: ApexDeliver Ltd, London, United Kingdom</li>
             </ul>
           </section>

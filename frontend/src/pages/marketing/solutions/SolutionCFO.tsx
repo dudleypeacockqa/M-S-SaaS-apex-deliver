@@ -12,7 +12,7 @@ export const SolutionCFO: React.FC = () => {
         title="M&A for CFOs | 13-Week Cash Forecasting & Financial Control"
         description="The only M&A platform built for finance leaders. Automate 13-week cash forecasts, manage working capital, and present board-ready financials."
         keywords="CFO software, 13-week cash forecast, working capital management, M&A finance tools"
-        canonical="https://100daysandbeyond.com/solutions/cfo"
+        canonical="https://financeflo.ai/solutions/cfo"
       />
       
       <div className="bg-slate-50 py-20">

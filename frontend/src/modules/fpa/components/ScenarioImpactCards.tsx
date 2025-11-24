@@ -85,7 +85,7 @@ export const ScenarioImpactCards: React.FC<ScenarioImpactCardsProps> = ({
             <div className="mb-4 flex items-center justify-between">
               <Icon className="h-8 w-8 opacity-90" />
               {delta !== null && (
-                <div className={`flex items-center gap-1 text-xs font-semibold ${isPositive ? 'text-emerald-200' : 'text-rose-200'}`}>
+                <div className={`flex items-center gap-1 text-xs font-semibold ${isPositive ? 'text-emerald-100' : 'text-rose-200'}`}>
                   {isPositive ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
                   <span>{card.formatter(Math.abs(delta))}</span>
                 </div>

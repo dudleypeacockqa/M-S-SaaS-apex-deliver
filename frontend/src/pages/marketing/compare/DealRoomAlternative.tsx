@@ -12,7 +12,7 @@ export const DealRoomAlternative: React.FC = () => {
         title="DealRoom Alternative | 100 Days & Beyond vs DealRoom"
         description="Compare 100 Days & Beyond against DealRoom. See why 100 Days & Beyond is the best alternative for integrated M&A and FP&A."
         keywords="DealRoom alternative, M&A software comparison, FP&A integration, data room pricing"
-        canonical="https://100daysandbeyond.com/compare/dealroom-alternative"
+        canonical="https://financeflo.ai/compare/dealroom-alternative"
       />
       
       <div className="bg-white py-20">

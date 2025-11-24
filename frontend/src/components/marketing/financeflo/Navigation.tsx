@@ -8,7 +8,7 @@ import { NavigationDropdown } from "./navigation/NavigationDropdown";
 import { SolutionsDropdown } from "./navigation/SolutionsDropdown";
 import { NavigationActions } from "./navigation/NavigationActions";
 import { MobileNavigationSection } from "./navigation/MobileNavigationSection";
-import { industryLinks, erpLinks, implementationLinks, resourceLinks, vslLinks, getStartedLinks, leverageFloLinks, aiEnhancementLinks, ipaasLinks, solutionsLinks } from "./navigation/navigationData";
+import { industryLinks, erpLinks, implementationLinks, resourceLinks, vslLinks, getStartedLinks, leverageFloLinks, aiEnhancementLinks, ipaasLinks, solutionsLinks, maSolutionsLinks } from "./navigation/navigationData";
 import { FinanceFloLogo } from "./brand/FinanceFloLogo";
 import "@/styles/financeflo/brand.css";
 
@@ -87,6 +87,11 @@ export const Navigation = () => {
             {/* Solutions - Grouped */}
             <div className="py-2">
               <div className="px-3 py-2 text-sm font-semibold text-brand-navy">Solutions</div>
+              <MobileNavigationSection
+                title="M&A & Finance Solutions"
+                links={maSolutionsLinks}
+                onLinkClick={() => setIsOpen(false)}
+              />
               <MobileNavigationSection
                 title="ERP Solutions"
                 links={erpLinks}

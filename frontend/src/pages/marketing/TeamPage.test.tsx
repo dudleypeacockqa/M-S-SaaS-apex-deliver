@@ -77,7 +77,7 @@ describe('TeamPage', () => {
         const script = document.getElementById('team-schema') as HTMLScriptElement | null;
         expect(script).not.toBeNull();
         const schema = JSON.parse(script?.textContent ?? '{}');
-        expect(schema.url).toBe('https://100daysandbeyond.com/team');
+        expect(schema.url).toBe('https://financeflo.ai/team');
         expect(Array.isArray(schema.employee)).toBe(true);
         expect(schema.employee[0].name).toBe('Dudley Peacock');
       });

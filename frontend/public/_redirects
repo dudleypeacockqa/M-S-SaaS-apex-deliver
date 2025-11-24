@@ -1,8 +1,17 @@
-# Render Static Site Redirects
+﻿# Render Static Site Redirects
 # This file configures URL rewrites for the SPA
 
 # Serve static assets directly (don't rewrite)
 # Render automatically serves files that exist at the requested path
+
+# Legacy legal pages from flo-finance-uk-website
+/privacy /legal/privacy 301
+/terms /legal/terms 301
+/cookies /legal/cookies 301
+
+# Legacy IntelliFlow landing pages
+/ipaas /ipaas/intelliflow 301
+/ipaas/* /ipaas/intelliflow 301
 
 # Fallback: All other routes → index.html (for React Router)
 /*    /index.html   200

@@ -24,10 +24,10 @@ describe('Legal page metadata', () => {
     );
 
     const canonical = document.querySelector('link[rel="canonical"]');
-    expect(canonical?.getAttribute('href')).toBe('https://100daysandbeyond.com/legal/terms');
+    expect(canonical?.getAttribute('href')).toBe('https://financeflo.ai/legal/terms');
 
     const ogUrlMeta = document.querySelector('meta[property="og:url"]');
-    expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/legal/terms');
+    expect(ogUrlMeta?.getAttribute('content')).toBe('https://financeflo.ai/legal/terms');
   });
 
   it('Privacy Policy canonical and og:url', () => {
@@ -39,10 +39,10 @@ describe('Legal page metadata', () => {
     );
 
     const canonical = document.querySelector('link[rel="canonical"]');
-    expect(canonical?.getAttribute('href')).toBe('https://100daysandbeyond.com/legal/privacy');
+    expect(canonical?.getAttribute('href')).toBe('https://financeflo.ai/legal/privacy');
 
     const ogUrlMeta = document.querySelector('meta[property="og:url"]');
-    expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/legal/privacy');
+    expect(ogUrlMeta?.getAttribute('content')).toBe('https://financeflo.ai/legal/privacy');
   });
 
   it('Cookie Policy canonical and og:url', () => {
@@ -54,9 +54,9 @@ describe('Legal page metadata', () => {
     );
 
     const canonical = document.querySelector('link[rel="canonical"]');
-    expect(canonical?.getAttribute('href')).toBe('https://100daysandbeyond.com/legal/cookies');
+    expect(canonical?.getAttribute('href')).toBe('https://financeflo.ai/legal/cookies');
 
     const ogUrlMeta = document.querySelector('meta[property="og:url"]');
-    expect(ogUrlMeta?.getAttribute('content')).toBe('https://100daysandbeyond.com/legal/cookies');
+    expect(ogUrlMeta?.getAttribute('content')).toBe('https://financeflo.ai/legal/cookies');
   });
 });

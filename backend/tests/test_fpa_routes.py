@@ -202,3 +202,81 @@ class TestFpaRoutes:
         assert import_resp.status_code == 200
         assert import_resp.json()["success"] is True
 
+
+class TestFpaErrorPaths:
+    """Test FP&A error paths and edge cases."""
+    
+    def test_apply_scenario_not_found(self, client, create_user, create_organization, dependency_overrides):
+        """Test applying a non-existent scenario."""
+        org = create_organization(name="Error Org")
+        user = create_user(email="error@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+        
+        response = client.post("/api/fpa/what-if/apply", json={"scenario_id": "non-existent"})
+        assert response.status_code == 404
+        assert "not found" in response.json()["detail"].lower()
+    
+    def test_generate_report_invalid_type(self, client, create_user, create_organization, dependency_overrides):
+        """Test generating report with invalid type."""
+        org = create_organization(name="Report Error Org")
+        user = create_user(email="reporterror@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+        
+        # Should handle invalid report type gracefully (may return 200 with default report)
+        response = client.get("/api/fpa/reports/invalid-type")
+        # Endpoint may handle gracefully or return error
+        assert response.status_code in [200, 400, 404]
+    
+    def test_get_demand_forecasts_empty(self, client, create_user, create_organization, dependency_overrides):
+        """Test getting demand forecasts when none exist."""
+        org = create_organization(name="Empty Org")
+        user = create_user(email="empty@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+        
+        response = client.get("/api/fpa/demand-forecast")
+        assert response.status_code == 200
+        assert isinstance(response.json(), list)
+    
+    def test_get_what_if_scenarios_empty(self, client, create_user, create_organization, dependency_overrides):
+        """Test getting what-if scenarios when none exist."""
+        org = create_organization(name="Empty Scenario Org")
+        user = create_user(email="emptyscenario@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+        
+        response = client.get("/api/fpa/what-if")
+        assert response.status_code == 200
+        assert isinstance(response.json(), list)
+    
+    def test_calculate_scenario_invalid_variables(self, client, create_user, create_organization, dependency_overrides):
+        """Test calculating scenario with invalid variables."""
+        org = create_organization(name="Invalid Var Org")
+        user = create_user(email="invalidvar@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+        
+        # Missing required variables - service may use defaults
+        response = client.post("/api/fpa/what-if/calculate", json={"variables": {}})
+        # Service may handle gracefully with defaults or return validation error
+        assert response.status_code in [200, 400, 422]
+    
+    def test_ai_chat_empty_message(self, client, create_user, create_organization, dependency_overrides):
+        """Test AI chat with empty message."""
+        org = create_organization(name="Chat Error Org")
+        user = create_user(email="chaterror@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+        
+        response = client.post("/api/fpa/ai-chat", json={"message": "", "context": {}})
+        # Should handle empty message gracefully
+        assert response.status_code in [200, 400, 422]
+    
+    def test_import_invalid_type(self, client, create_user, create_organization, dependency_overrides):
+        """Test import with invalid type."""
+        org = create_organization(name="Import Error Org")
+        user = create_user(email="importerror@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+        
+        files = {"file": ("import.csv", "id,value\n1,100", "text/csv")}
+        data = {"import_type": "invalid_type"}
+        response = client.post("/api/fpa/import", files=files, data=data)
+        # Should handle invalid type gracefully
+        assert response.status_code in [200, 400, 422]
+

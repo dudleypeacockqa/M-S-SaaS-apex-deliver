@@ -19,16 +19,10 @@ const renderFooter = () => {
 
 describe('Footer', () => {
   describe('Layout & Structure', () => {
-    it('should render footer with brand name', () => {
+    it('should render footer with FinanceFlo brand', () => {
       renderFooter();
-      const brandElements = screen.getAllByText(/apexdeliver/i);
-      expect(brandElements.length).toBeGreaterThan(0);
-      expect(brandElements[0]).toBeInTheDocument();
-    });
-
-    it('should render footer description', () => {
-      renderFooter();
-      expect(screen.getByText(/professional m&a intelligence platform/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/financeflo/i).length).toBeGreaterThan(0);
+      expect(screen.getByText(/ERP & software reseller/i)).toBeInTheDocument();
     });
 
     it('should display current year in copyright', () => {
@@ -39,56 +33,70 @@ describe('Footer', () => {
   });
 
   describe('Navigation Sections', () => {
-    it('should render Product section with links', () => {
+    it('should render Services section with ERP and AI links', () => {
       renderFooter();
 
-      expect(screen.getByText(/product/i)).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /features/i })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /pricing/i })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /get started/i })).toBeInTheDocument();
+      expect(screen.getByText(/services/i)).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /ERP Implementation & Resell/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /AI Consulting & Copilots/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /Integration & iPaaS Studio/i })).toBeInTheDocument();
     });
 
-    it('should render Company section with links', () => {
+    it('should render Software section with CapLiquify and ApexDeliver links', () => {
+      renderFooter();
+
+      expect(screen.getByRole('heading', { level: 4, name: /Software/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /CapLiquify FP&A/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /ApexDeliver Deal Cloud/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /Sales & Promotion Pricing Studio/i })).toBeInTheDocument();
+    });
+
+    it('should render Company section with team and case study links', () => {
       renderFooter();
 
       expect(screen.getByText(/company/i)).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /about us/i })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /contact/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /About/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /Team/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /Case Studies/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /Contact & Locations/i })).toBeInTheDocument();
     });
 
-    it('should render Legal section with links', () => {
+    it('should render Legal section with policy links', () => {
       renderFooter();
 
       expect(screen.getByText(/legal/i)).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /terms of service/i })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /privacy policy/i })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /cookie policy/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /Terms of Service/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /Privacy Policy/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /Cookie Policy/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /Security Overview/i })).toBeInTheDocument();
     });
   });
 
   describe('Link Navigation', () => {
-    it('should have correct href for Features link', () => {
+    it('should link ERP Implementation to the Sage Intacct route', () => {
       renderFooter();
-      const featuresLink = screen.getByRole('link', { name: /features/i });
-      expect(featuresLink.getAttribute('href')).toBe('/features');
+      const erpLink = screen.getByRole('link', { name: /ERP Implementation & Resell/i });
+      expect(erpLink.getAttribute('href')).toBe('/erp/sage-intacct');
     });
 
-    it('should have correct href for Privacy Policy link', () => {
+    it('should link AI Consulting to the AI enhancement route', () => {
       renderFooter();
-      const privacyLink = screen.getByRole('link', { name: /privacy policy/i });
-      expect(privacyLink.getAttribute('href')).toBe('/legal/privacy');
+      const aiLink = screen.getByRole('link', { name: /AI Consulting & Copilots/i });
+      expect(aiLink.getAttribute('href')).toBe('/ai-enhancement/sage-intacct');
     });
 
-    it('should have correct href for Terms of Service link', () => {
+    it('should link CapLiquify card to the FP&A page', () => {
       renderFooter();
-      const termsLink = screen.getByRole('link', { name: /terms of service/i });
-      expect(termsLink.getAttribute('href')).toBe('/legal/terms');
+      const capLink = screen.getByRole('link', { name: /CapLiquify FP&A/i });
+      expect(capLink.getAttribute('href')).toBe('/capliquify-fpa');
     });
 
-    it('should have correct href for Cookie Policy link', () => {
+    it('should keep legal links pointing to canonical routes', () => {
       renderFooter();
-      const cookieLink = screen.getByRole('link', { name: /cookie policy/i });
-      expect(cookieLink.getAttribute('href')).toBe('/legal/cookies');
+      expect(screen.getByRole('link', { name: /Terms of Service/i }).getAttribute('href')).toBe('/legal/terms');
+      expect(screen.getByRole('link', { name: /Privacy Policy/i }).getAttribute('href')).toBe('/legal/privacy');
+      expect(screen.getByRole('link', { name: /Cookie Policy/i }).getAttribute('href')).toBe('/legal/cookies');
+      expect(screen.getByRole('link', { name: /Security Overview/i }).getAttribute('href')).toBe('/security');
     });
   });
 });

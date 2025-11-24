@@ -103,13 +103,13 @@ describe('MarketingNav Mobile Navigation', () => {
       });
       
       const mobileMenu = screen.getByRole('navigation').querySelector('#mobile-primary-nav');
-      const productsButton = mobileMenu?.querySelector('button[aria-controls="mobile-dropdown-Products"]') as HTMLButtonElement;
-      expect(productsButton).toBeInTheDocument();
-      
-      fireEvent.click(productsButton!);
-      
+      const servicesButton = mobileMenu?.querySelector('button[aria-controls="mobile-dropdown-Services"]') as HTMLButtonElement;
+      expect(servicesButton).toBeInTheDocument();
+
+      fireEvent.click(servicesButton!);
+
       await waitFor(() => {
-        const dropdown = document.getElementById('mobile-dropdown-Products');
+        const dropdown = document.getElementById('mobile-dropdown-Services');
         expect(dropdown).toHaveClass('max-h-96', 'opacity-100');
       });
     });
@@ -126,21 +126,21 @@ describe('MarketingNav Mobile Navigation', () => {
       });
       
       const mobileMenu = screen.getByRole('navigation').querySelector('#mobile-primary-nav');
-      const productsButton = mobileMenu?.querySelector('button[aria-controls="mobile-dropdown-Products"]') as HTMLButtonElement;
-      
+      const servicesButton = mobileMenu?.querySelector('button[aria-controls="mobile-dropdown-Services"]') as HTMLButtonElement;
+
       // Open dropdown
-      fireEvent.click(productsButton!);
-      
+      fireEvent.click(servicesButton!);
+
       await waitFor(() => {
-        const dropdown = document.getElementById('mobile-dropdown-Products');
+        const dropdown = document.getElementById('mobile-dropdown-Services');
         expect(dropdown).toHaveClass('max-h-96', 'opacity-100');
       });
-      
+
       // Close dropdown
-      fireEvent.click(productsButton!);
-      
+      fireEvent.click(servicesButton!);
+
       await waitFor(() => {
-        const dropdown = document.getElementById('mobile-dropdown-Products');
+        const dropdown = document.getElementById('mobile-dropdown-Services');
         expect(dropdown).toHaveClass('max-h-0', 'opacity-0');
       });
     });
@@ -255,16 +255,15 @@ describe('MarketingNav Mobile Navigation', () => {
       });
       
       const mobileMenu = screen.getByRole('navigation').querySelector('#mobile-primary-nav');
-      const productsButton = mobileMenu?.querySelector('button[aria-controls="mobile-dropdown-Products"]') as HTMLButtonElement;
-      
-      expect(productsButton).toHaveAttribute('aria-expanded', 'false');
-      
-      fireEvent.click(productsButton!);
-      
+      const servicesButton = mobileMenu?.querySelector('button[aria-controls="mobile-dropdown-Services"]') as HTMLButtonElement;
+
+      expect(servicesButton).toHaveAttribute('aria-expanded', 'false');
+
+      fireEvent.click(servicesButton!);
+
       await waitFor(() => {
-        expect(productsButton).toHaveAttribute('aria-expanded', 'true');
+        expect(servicesButton).toHaveAttribute('aria-expanded', 'true');
       });
     });
   });
 });
-

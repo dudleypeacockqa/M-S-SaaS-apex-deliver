@@ -8,11 +8,13 @@ import requests
 from typing import Dict, Callable, TypeVar
 from datetime import datetime, timedelta
 
-from app.db.session import SessionLocal
+from app.db import session as session_module
 from app.models.master_admin import Webhook, WebhookDelivery
 
 
 TaskFunc = TypeVar("TaskFunc", bound=Callable)
+
+SessionLocal = None  # legacy alias retained for tests to override
 
 
 def _ensure_task_delay(task: TaskFunc) -> TaskFunc:
@@ -36,6 +38,17 @@ def _schedule_retry(delivery: WebhookDelivery) -> None:
     delivery.next_retry_at = datetime.utcnow() + timedelta(minutes=2 ** delivery.retry_count)
 
 
+def _create_db_session():
+    """Return a Session, ensuring engine/session factory exist even when patched in tests."""
+    session_factory = SessionLocal or session_module.SessionLocal
+    if session_factory is None:
+        session_module.init_engine()
+        session_factory = session_module.SessionLocal
+    if session_factory is None:
+        raise RuntimeError("Database session factory is not initialized")
+    return session_factory()
+
+
 @shared_task(name="webhooks.deliver_webhook")
 def deliver_webhook_task(webhook_id: int, event_type: str, payload: Dict):
     """
@@ -46,7 +59,7 @@ def deliver_webhook_task(webhook_id: int, event_type: str, payload: Dict):
         event_type: Event type
         payload: Webhook payload
     """
-    db = SessionLocal()
+    db = _create_db_session()
     try:
         from sqlalchemy import select
         
@@ -128,7 +141,7 @@ def retry_failed_deliveries_task():
     
     This task should be run periodically to retry failed webhook deliveries.
     """
-    db = SessionLocal()
+    db = _create_db_session()
     try:
         from sqlalchemy import select, and_
         

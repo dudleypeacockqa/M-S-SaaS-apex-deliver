@@ -11,6 +11,7 @@ from app.core.config import settings
 from app.db.session import get_db
 from app.models.contact_message import ContactMessage
 from app.models.newsletter_subscription import NewsletterSubscription
+from app.services.gohighlevel_service import sync_contact_to_gohighlevel
 
 logger = logging.getLogger(__name__)
 
@@ -139,6 +140,17 @@ def submit_contact_form(
             email=contact.email,
             message=contact.message
         )
+        
+        # Sync to GoHighLevel CRM in background (if configured)
+        if settings.gohighlevel_api_key:
+            background_tasks.add_task(
+                sync_contact_to_gohighlevel,
+                name=contact.name,
+                email=contact.email,
+                phone=contact.phone,
+                company=contact.company,
+                message=contact.message
+            )
 
         return ContactResponse(
             success=True,

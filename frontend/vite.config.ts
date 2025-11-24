@@ -72,7 +72,7 @@ validateBuildEnv()
 const shouldOptimizeImages = process.env.VITE_DISABLE_IMAGE_MIN !== 'true'
 const imageminPluginFactory = resolveImageminPlugin(shouldOptimizeImages)
 const sitemapPluginFactory = resolveSitemapPlugin()
-const sitemapHostname = process.env.VITE_SITEMAP_HOSTNAME || 'https://100daysandbeyond.com'
+const sitemapHostname = process.env.VITE_SITEMAP_HOSTNAME || 'https://financeflo.ai'
 
 const plugins = [react()]
 if (sitemapPluginFactory) {

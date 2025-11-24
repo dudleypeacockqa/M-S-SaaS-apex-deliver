@@ -20,8 +20,8 @@ export const BookTrial: React.FC = () => {
         keywords="M&A software trial, book demo, schedule consultation"
         ogTitle="Book Your Free Trial - ApexDeliver"
         ogDescription="Schedule your requirements planning session and start your 14-day free trial"
-        ogUrl="https://100daysandbeyond.com/book-trial"
-        canonical="https://100daysandbeyond.com/book-trial"
+        ogUrl="https://financeflo.ai/book-trial"
+        canonical="https://financeflo.ai/book-trial"
       />
 
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -164,7 +164,7 @@ export const BookTrial: React.FC = () => {
                     <div>
                       <h4 className="font-semibold text-blue-900 text-sm">Can't find a suitable time?</h4>
                       <p className="text-sm text-blue-700 mt-1">
-                        Email us at <a href="mailto:dudley@apexdeliver.com" className="underline font-medium">dudley@apexdeliver.com</a> and we'll arrange a custom time that works for you.
+                        Email us at <a href="mailto:dudley@financeflo.ai" className="underline font-medium">dudley@financeflo.ai</a> and we'll arrange a custom time that works for you.
                       </p>
                     </div>
                   </div>

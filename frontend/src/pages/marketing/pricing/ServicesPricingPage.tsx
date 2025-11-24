@@ -43,8 +43,8 @@ export default function ServicesPricingPage() {
         description="See how FinanceFlo operators embed alongside your team. Compare operator-in-residence, transformation sprints, and advisory retainers."
         ogTitle="FinanceFlo Services Pricing"
         ogDescription="Operator-in-residence, transformation sprints, and advisory retainers that keep FinanceFlo humming inside your organization."
-        ogUrl="https://100daysandbeyond.com/pricing/services"
-        canonical="https://100daysandbeyond.com/pricing/services"
+        ogUrl="https://financeflo.ai/pricing/services"
+        canonical="https://financeflo.ai/pricing/services"
       />
       <section className="bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-800 text-white py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

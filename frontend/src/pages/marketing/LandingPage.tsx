@@ -149,9 +149,9 @@ export const LandingPage: React.FC = () => {
         keywords="CapLiquify FP&A, cash forecasting software, working capital automation, ApexDeliver platform, M&A intelligence"
         ogTitle="CapLiquify FP&A + ApexDeliver"
         ogDescription="13-week cash forecasting, working-capital automation, and ApexDeliver’s full M&A workspace in one stack."
-        ogUrl="https://100daysandbeyond.com/"
-        ogImage="https://100daysandbeyond.com/assets/dashboard-preview.png"
-        canonical="https://100daysandbeyond.com/"
+        ogUrl="https://financeflo.ai/"
+        ogImage="https://financeflo.ai/assets/dashboard-preview.png"
+        canonical="https://financeflo.ai/"
       />
       <section aria-label="CapLiquify + ApexDeliver overview">
         <EnhancedHeroSection />

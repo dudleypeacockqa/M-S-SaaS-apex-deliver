@@ -43,6 +43,12 @@ The ApexDeliver/CapLiquify/PMI content has been successfully integrated into the
 - Added "M&A & Finance Solutions" section in mobile menu
 - All pages accessible on mobile devices
 
+**Implementation Notes (2025-11-22)**
+- Updated `frontend/src/components/marketing/financeflo/navigation/navigationData.ts` (and the shared FinanceFlo nav data) to export `maSolutionsLinks` so CapLiquify, ApexDeliver, PMI, Customer Portal, and Sales & Pricing pages surface as a cohesive group.
+- Desktop (`SolutionsDropdown`) and mobile navigation (`MobileNavigationSection`) consume the new group via `frontend/src/components/marketing/financeflo/Navigation.tsx`, ensuring consistent behaviour across viewports.
+- Added IntelliFlow/iPaaS routes (`/ipaas`, `/ipaas/intelliflow`, `/ipaas/strategy`, `/ipaas/connectors`, `/ipaas/api-management`) inside `frontend/src/App.tsx` so legacy FinanceFlo URLs now resolve directly.
+- `/ipaas` now performs a client-side redirect to `/ipaas/intelliflow`, matching the canonical URL referenced by old marketing assets.
+
 ## How It Works
 
 The codebase uses a brand detection system:
@@ -65,6 +71,10 @@ All these routes are now accessible from `financeflo.ai`:
 - `/pricing/community` - Community pricing sub-page
 - `/pricing/services` - Services pricing sub-page
 - All other FinanceFlo pages (industries, ERP solutions, etc.)
+- `/ipaas/intelliflow` - IntelliFlow AI platform hero
+- `/ipaas/strategy` - AI integration strategy offer
+- `/ipaas/connectors` - Custom connector program
+- `/ipaas/api-management` - Agentic API management
 
 ## What Remains Unchanged
 
@@ -97,6 +107,10 @@ All these routes are now accessible from `financeflo.ai`:
    - Added import for `maSolutionsLinks`
    - Added mobile navigation section for M&A Solutions
 
+3. `frontend/src/App.tsx`
+   - Added lazy imports + routes for the IntelliFlow/iPaaS experience
+   - Introduced `/ipaas` redirect to keep canonical URLs stable
+
 ## Verification
 
 To verify the integration:
@@ -106,6 +120,8 @@ To verify the integration:
 3. Hover over "M&A & Finance Solutions" to see the dropdown
 4. Click on any of the 5 options to navigate to the pages
 5. Verify all pages load correctly with FinanceFlo navigation header
+6. Visit `/ipaas/intelliflow`, `/ipaas/strategy`, `/ipaas/connectors`, and `/ipaas/api-management` directly and confirm they render without 404s
+7. Visit `/ipaas` (no slug) and confirm it redirects to `/ipaas/intelliflow`
 
 All ApexDeliver/CapLiquify content is now part of your FinanceFlo.ai website! 🎉
 

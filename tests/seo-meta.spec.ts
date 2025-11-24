@@ -2,9 +2,9 @@ import { test, expect } from "@playwright/test";
 import { buildMarketingUrl } from "./utils/marketingUrl";
 
 const seoPages = [
-  { path: '/', canonical: 'https://100daysandbeyond.com/' },
-  { path: '/contact', canonical: 'https://100daysandbeyond.com/contact' },
-  { path: '/team', canonical: 'https://100daysandbeyond.com/team' },
+  { path: '/', canonical: 'https://financeflo.ai/' },
+  { path: '/contact', canonical: 'https://financeflo.ai/contact' },
+  { path: '/team', canonical: 'https://financeflo.ai/team' },
 ];
 
 test.describe('SEO meta', () => {

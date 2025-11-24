@@ -33,7 +33,7 @@ export const HeroSection: React.FC = () => {
           </div>
 
           {/* Trust Indicators */}
-          <div className="mt-12 text-indigo-200 text-sm">
+          <div className="mt-12 text-indigo-100 text-sm">
             <p>Trusted by M&A professionals worldwide • GDPR Compliant • Bank-grade Security</p>
           </div>
         </div>

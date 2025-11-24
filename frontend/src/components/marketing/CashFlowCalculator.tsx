@@ -47,7 +47,7 @@ export const CashFlowCalculator: React.FC = () => {
           <TrendingUp className="h-5 w-5 text-emerald-400" />
           13-Week Cash Flow Simulator
         </h3>
-        <p className="text-indigo-200 text-sm mt-1">
+        <p className="text-indigo-100 text-sm mt-1">
           Visualize your cash runway with our interactive forecasting engine.
         </p>
       </div>

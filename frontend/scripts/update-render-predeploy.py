@@ -185,7 +185,7 @@ def main():
         if trigger_deploy(service_id):
             print(f"\n✅ Deployment initiated successfully!")
             print(f"   Wait 3-5 minutes for build to complete")
-            print(f"   Then visit: https://100daysandbeyond.com")
+            print(f"   Then visit: https://financeflo.ai")
         else:
             print(f"\n⚠️  Deployment trigger failed")
             print("   Please trigger manually from Render dashboard")

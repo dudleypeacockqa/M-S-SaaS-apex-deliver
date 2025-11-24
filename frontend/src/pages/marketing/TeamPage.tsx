@@ -49,13 +49,13 @@ export const TeamPage: React.FC = () => {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'ApexDeliver',
-    url: 'https://100daysandbeyond.com/team',
+    url: 'https://financeflo.ai/team',
     employee: createTeamMembersSchema(
       teamMembers.map((member) => ({
         name: member.name,
         role: member.title,
         company: 'ApexDeliver',
-        image: member.image ? `https://100daysandbeyond.com${member.image}` : undefined,
+        image: member.image ? `https://financeflo.ai${member.image}` : undefined,
       }))
     ),
   };
@@ -66,14 +66,14 @@ export const TeamPage: React.FC = () => {
         title="Team | ApexDeliver + CapLiquify"
         description="Meet the experts behind ApexDeliver + CapLiquify. Our world-class team combines decades of ERP expertise with cutting-edge AI innovation to deliver transformational results."
         keywords="ApexDeliver team, M&A experts, ERP specialists, finance technology team"
-        canonical="https://100daysandbeyond.com/team"
-        ogTitle="Meet the ApexDeliver Team"
+        canonical="https://financeflo.ai/team"
+        ogTitle="Meet the FinanceFlo Team"
         ogDescription="A multidisciplinary leadership team with decades of ERP, finance, and AI experience supporting every client engagement."
-        ogUrl="https://100daysandbeyond.com/team"
-        ogImage="https://100daysandbeyond.com/assets/security-trust-visual.png"
-        twitterTitle="ApexDeliver Leadership Team"
-        twitterDescription="Get to know the ERP, finance, and AI experts guiding ApexDeliver + CapLiquify."
-        twitterImage="https://100daysandbeyond.com/assets/security-trust-visual.png"
+        ogUrl="https://financeflo.ai/team"
+        ogImage="https://financeflo.ai/assets/security-trust-visual.png"
+        twitterTitle="FinanceFlo Leadership Team"
+        twitterDescription="Get to know the ERP, finance, and AI experts guiding FinanceFlo."
+        twitterImage="https://financeflo.ai/assets/security-trust-visual.png"
       />
       <StructuredData json={teamStructuredData} id="team-schema" />
 

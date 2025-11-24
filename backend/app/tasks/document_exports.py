@@ -2,12 +2,12 @@
 from __future__ import annotations
 
 from datetime import datetime, UTC
-from typing import Optional
+from typing import Optional, Callable, TypeVar
 
 from celery import shared_task
 from sqlalchemy import select
 
-from app.db.session import SessionLocal
+from app.db import session as session_module
 from app.models.document_generation import (
     DocumentExportJob,
     DocumentExportStatus,
@@ -16,10 +16,46 @@ from app.models.document_generation import (
 from app.services.document_generation_service import DocumentGenerationService
 
 
+TaskFunc = TypeVar("TaskFunc", bound=Callable)
+
+SessionLocal = None  # legacy alias for existing tests to override
+
+
+def _ensure_task_delay(task: TaskFunc) -> TaskFunc:
+    """
+    Guarantee a `.delay` attribute even when Celery's decorator is stubbed.
+
+    Tests replace `celery.shared_task` with a no-op, so the decorated function
+    no longer exposes `.delay`. Attaching a shim allows code paths that expect
+    celery's API to keep working (e.g., enqueue_export_processing).
+    """
+    if not hasattr(task, "delay"):
+        setattr(task, "delay", lambda *args, **kwargs: task(*args, **kwargs))
+    return task
+
+
+def _create_db_session():
+    """
+    Return a database session using the latest SessionLocal factory.
+
+    During tests the session factory is swapped on the fly; relying on the
+    imported symbol alone would capture the pre-fixture value (often None).
+    This helper always pulls the current factory from the session module and
+    initializes the engine if necessary.
+    """
+    session_factory = SessionLocal or session_module.SessionLocal
+    if session_factory is None:
+        session_module.init_engine()
+        session_factory = session_module.SessionLocal
+    if session_factory is None:
+        raise RuntimeError("Database session factory is not initialized")
+    return session_factory()
+
+
 @shared_task(name="documents.process_export_job")
 def process_document_export_job(job_id: str) -> Optional[str]:
     """Process a queued document export job."""
-    db = SessionLocal()
+    db = _create_db_session()
     try:
         job = db.scalar(
             select(DocumentExportJob).where(DocumentExportJob.id == job_id)
@@ -67,6 +103,9 @@ def process_document_export_job(job_id: str) -> Optional[str]:
         raise
     finally:
         db.close()
+
+
+_ensure_task_delay(process_document_export_job)
 
 
 def enqueue_export_processing(job_id: str) -> None:

@@ -14,13 +14,13 @@ const ERPROICalculatorPage: React.FC = () => {
           content="Free ERP ROI calculator for UK businesses. Calculate implementation costs, payback period, and potential savings. Get instant results and detailed analysis report." 
         />
         <meta name="keywords" content="ERP ROI calculator, ERP implementation cost, return on investment, UK ERP, business calculator" />
-        <link rel="canonical" href="https://flo-finance-uk-website.lovable.app/tools/erp-roi-calculator" />
+        <link rel="canonical" href="https://financeflo.ai/tools/erp-roi-calculator" />
         
         {/* Open Graph tags */}
         <meta property="og:title" content="ERP ROI Calculator - Calculate Your Return on Investment" />
         <meta property="og:description" content="Free ERP ROI calculator for UK businesses. Calculate implementation costs, payback period, and potential savings." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://flo-finance-uk-website.lovable.app/tools/erp-roi-calculator" />
+        <meta property="og:url" content="https://financeflo.ai/tools/erp-roi-calculator" />
         
         {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -34,7 +34,7 @@ const ERPROICalculatorPage: React.FC = () => {
             "@type": "WebApplication",
             "name": "ERP ROI Calculator",
             "description": "Calculate the return on investment for ERP implementation",
-            "url": "https://flo-finance-uk-website.lovable.app/tools/erp-roi-calculator",
+            "url": "https://financeflo.ai/tools/erp-roi-calculator",
             "applicationCategory": "BusinessApplication",
             "operatingSystem": "Web Browser",
             "offers": {
@@ -45,7 +45,7 @@ const ERPROICalculatorPage: React.FC = () => {
             "provider": {
               "@type": "Organization",
               "name": "FinanceFlo.ai",
-              "url": "https://flo-finance-uk-website.lovable.app"
+              "url": "https://financeflo.ai"
             }
           })}
         </script>

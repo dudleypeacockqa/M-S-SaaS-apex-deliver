@@ -11,7 +11,7 @@ export const SolutionDealTeam: React.FC = () => {
         title="M&A Software for Deal Teams | Velocity & Virtual Data Rooms"
         description="Close deals faster with ApexDeliver. AI-powered Virtual Data Rooms, automated diligence checklists, and integrated valuation models."
         keywords="deal team software, VDR, virtual data room, M&A pipeline management, due diligence automation"
-        canonical="https://100daysandbeyond.com/solutions/deal-team"
+        canonical="https://financeflo.ai/solutions/deal-team"
       />
       
       <div className="bg-indigo-900 text-white py-20">

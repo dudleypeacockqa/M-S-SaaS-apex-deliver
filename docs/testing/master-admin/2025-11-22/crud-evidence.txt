@@ -1,0 +1,26 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0
+rootdir: C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver
+configfile: pytest.ini
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-4.1.0
+asyncio: mode=Mode.STRICT
+collected 14 items
+
+backend\tests\test_master_admin_api.py ..............                    [100%]
+
+============================== warnings summary ===============================
+backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291
+backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291
+backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291
+backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291
+backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291
+backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\pydantic\_internal\_config.py:291: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.8/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+backend/tests/test_master_admin_api.py: 14 warnings
+  C:\Projects\ma-saas-platform\M-S-SaaS-apex-deliver\backend\venv\Lib\site-packages\httpx\_client.py:680: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=WSGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 14 passed, 20 warnings in 4.63s =======================

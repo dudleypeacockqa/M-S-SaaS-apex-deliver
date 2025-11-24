@@ -1,6 +1,7 @@
 import { MarketingNav } from './MarketingNav';
 import { Footer } from './Footer';
 import { OptInPopup } from './OptInPopup';
+import { ChatbotWidget } from './ChatbotWidget';
 import { StructuredData } from '../common/StructuredData';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -18,13 +19,14 @@ export const MarketingLayout: React.FC<MarketingLayoutProps> = ({ children }) =>
     url: 'https://financeflo.ai',
     logo: 'https://financeflo.ai/assets/brand/financeflo-wordmark.svg',
     description:
-      'FinanceFlo unifies deal sourcing, valuations, secure data rooms, and post-merger execution into a single AI-powered M&A platform.',
+      'UK-based FinanceFlo pairs ERP implementation & software resale with AI consulting, CapLiquify FP&A, and the ApexDeliver deal workspace so operators get one partner for systems, automation, and revenue execution.',
     foundingDate: '2024',
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'sales',
       email: 'sales@financeflo.ai',
       availableLanguage: ['en-GB', 'en-US'],
+      telephone: '+44 7360 539147',
     },
     sameAs: [
       'https://www.linkedin.com/company/financeflo',
@@ -54,6 +56,7 @@ export const MarketingLayout: React.FC<MarketingLayoutProps> = ({ children }) =>
         </main>
         <Footer />
         <OptInPopup />
+        <ChatbotWidget enabled={true} provider="custom" />
       </div>
     </HelmetProvider>
   );
