@@ -10,7 +10,9 @@ Covers:
 from datetime import datetime, timezone
 
 import pytest
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import session as sa_session
 from starlette.testclient import TestClient
 
 from app.models.blog_post import BlogPost
@@ -288,3 +290,55 @@ def test_blog_list_ordering(client: TestClient, sample_blog_posts):
         current = data[idx]["published_at"]
         next_item = data[idx + 1]["published_at"]
         assert current >= next_item
+
+
+def test_list_blog_posts_returns_fallback_when_db_errors(monkeypatch, client: TestClient):
+    original_execute = sa_session.Session.execute
+
+    def failing_execute(self, clause, *args, **kwargs):
+        sql_text = str(clause)
+        if "SELECT 1 FROM blog_posts" in sql_text:
+            return original_execute(self, clause, *args, **kwargs)
+        raise OperationalError(sql_text, {}, Exception("db down"))
+
+    monkeypatch.setattr(sa_session.Session, "execute", failing_execute)
+
+    response = client.get("/api/blog?limit=5")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) >= 1
+    assert data[0]["slug"] == "pricing-strategy-for-new-product-launches-why-95-get-it-wrong-and-how-to-be-the-5"
+
+
+def test_get_blog_post_by_slug_returns_fallback(monkeypatch, client: TestClient):
+    original_execute = sa_session.Session.execute
+
+    def failing_execute(self, clause, *args, **kwargs):
+        sql_text = str(clause)
+        if "SELECT 1 FROM blog_posts" in sql_text:
+            return original_execute(self, clause, *args, **kwargs)
+        raise OperationalError(sql_text, {}, Exception("db down"))
+
+    monkeypatch.setattr(sa_session.Session, "execute", failing_execute)
+
+    slug = "pricing-strategy-for-new-product-launches-why-95-get-it-wrong-and-how-to-be-the-5"
+    response = client.get(f"/api/blog/{slug}")
+    assert response.status_code == 200
+    assert response.json()["slug"] == slug
+
+
+def test_list_categories_returns_fallback(monkeypatch, client: TestClient):
+    original_execute = sa_session.Session.execute
+
+    def failing_execute(self, clause, *args, **kwargs):
+        sql_text = str(clause)
+        if "SELECT 1 FROM blog_posts" in sql_text:
+            return original_execute(self, clause, *args, **kwargs)
+        raise OperationalError(sql_text, {}, Exception("db down"))
+
+    monkeypatch.setattr(sa_session.Session, "execute", failing_execute)
+
+    response = client.get("/api/blog/categories/list")
+    assert response.status_code == 200
+    categories = response.json()
+    assert "Pricing Strategy" in categories
