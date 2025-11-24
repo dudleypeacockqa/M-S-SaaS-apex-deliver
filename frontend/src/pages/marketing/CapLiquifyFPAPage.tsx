@@ -3,6 +3,9 @@ import { SEO } from '../../components/common/SEO';
 import { Link } from 'react-router-dom';
 import { trackCtaClick } from '../../lib/analytics';
 import { CashFlowCalculator } from '../../components/marketing/CashFlowCalculator';
+import { VideoShowcase } from '../../components/marketing/VideoShowcase';
+import { StructuredData } from '../../components/common/StructuredData';
+import { createBreadcrumbSchema } from '../../utils/schemas/breadcrumbSchema';
 
 export const CapLiquifyFPAPage: React.FC = () => {
   const features = [
@@ -65,6 +68,15 @@ export const CapLiquifyFPAPage: React.FC = () => {
         title="CapLiquify FP&A - Transform Cash Flow Visibility in Hours, Not Days"
         description="13-week direct cash forecasting, working capital management, and lender-ready reporting for PE-backed businesses. Automate what takes 2 days in Excel in just 2 hours."
         keywords="13-week cash forecast, working capital management, DSO DPO DIO, lender reporting, FP&A software"
+        ogUrl="https://financeflo.ai/capliquify-fpa"
+        canonical="https://financeflo.ai/capliquify-fpa"
+      />
+      <StructuredData
+        json={createBreadcrumbSchema([
+          { name: 'Home', url: 'https://financeflo.ai/' },
+          { name: 'CapLiquify FP&A', url: 'https://financeflo.ai/capliquify-fpa' },
+        ])}
+        id="capliquify-fpa-breadcrumbs"
       />
 
       {/* Hero Section with Dashboard Mockup */}
@@ -88,15 +100,15 @@ export const CapLiquifyFPAPage: React.FC = () => {
               <div className="grid grid-cols-3 gap-6 mb-8 p-6 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-emerald-400">95%+</div>
-                  <div className="text-sm text-indigo-200">Forecast Accuracy</div>
+                  <div className="text-sm text-indigo-100">Forecast Accuracy</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-emerald-400">75%</div>
-                  <div className="text-sm text-indigo-200">Time Saved</div>
+                  <div className="text-sm text-indigo-100">Time Saved</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-emerald-400">2 Hours</div>
-                  <div className="text-sm text-indigo-200">Weekly Updates</div>
+                  <div className="text-sm text-indigo-100">Weekly Updates</div>
                 </div>
               </div>
 
@@ -118,7 +130,23 @@ export const CapLiquifyFPAPage: React.FC = () => {
                 </Link>
               </div>
 
-              <p className="text-sm text-indigo-200 mt-4">
+              <button 
+                onClick={() => {
+                  document.getElementById('demo-video')?.scrollIntoView({ behavior: 'smooth' });
+                  trackCtaClick('watch-demo', 'capliquify-hero');
+                }}
+                className="mt-6 flex items-center gap-3 text-emerald-300 hover:text-emerald-200 transition-colors group text-left"
+              >
+                <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform border border-emerald-500/30">
+                   <svg className="w-5 h-5 fill-current ml-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div>
+                  <span className="block font-semibold text-white">See it in action</span>
+                  <span className="text-sm text-emerald-300/80">Watch the 60-second demo video</span>
+                </div>
+              </button>
+
+              <p className="text-sm text-indigo-100 mt-8">
                 £598/month + £2,500 one-time setup • No credit card required for trial
               </p>
             </div>
@@ -137,6 +165,15 @@ export const CapLiquifyFPAPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Video Showcase Section */}
+      <div id="demo-video">
+        <VideoShowcase 
+          title="From Excel Hell to Cash Clarity"
+          description="See how CapLiquify automates your 13-week forecast, connects to your ERP in seconds, and generates board-ready reports without a single broken formula."
+          thumbnailUrl="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2426&q=80"
+        />
+      </div>
 
       {/* Features Grid */}
       <section className="py-16 bg-white">
