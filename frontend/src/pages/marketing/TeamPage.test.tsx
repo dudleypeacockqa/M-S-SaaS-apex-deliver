@@ -16,7 +16,7 @@ describe('TeamPage', () => {
   describe('Header Section', () => {
     it('should render main heading', () => {
       renderWithRouter(<TeamPage />);
-      expect(screen.getByText(/meet the experts behind your success/i)).toBeInTheDocument();
+      expect(screen.getByText(/financeflo operators who own implementation/i)).toBeInTheDocument();
     });
   });
 
@@ -24,25 +24,25 @@ describe('TeamPage', () => {
     it('should render Dudley Peacock with title', () => {
       renderWithRouter(<TeamPage />);
       expect(screen.getByText('Dudley Peacock')).toBeInTheDocument();
-      expect(screen.getByText(/founder & ceo/i)).toBeInTheDocument();
+      expect(screen.getByText(/founder & ceo, erp \+ ai strategy/i)).toBeInTheDocument();
     });
 
     it('should render Sandra Peacock with title', () => {
       renderWithRouter(<TeamPage />);
       expect(screen.getByText('Sandra Peacock')).toBeInTheDocument();
-      expect(screen.getByText(/managing director/i)).toBeInTheDocument();
+      expect(screen.getByText(/managing director, delivery & success/i)).toBeInTheDocument();
     });
 
     it('should render Matthew Collins with title', () => {
       renderWithRouter(<TeamPage />);
       expect(screen.getByText('Matthew Collins')).toBeInTheDocument();
-      expect(screen.getByText(/^cfo$/i)).toBeInTheDocument();
+      expect(screen.getByText(/cfo & capliquify practice lead/i)).toBeInTheDocument();
     });
 
     it('should render Adam Pavitt with title', () => {
       renderWithRouter(<TeamPage />);
       expect(screen.getByText('Adam Pavitt')).toBeInTheDocument();
-      expect(screen.getByText(/director of operations/i)).toBeInTheDocument();
+      expect(screen.getByText(/director of delivery operations/i)).toBeInTheDocument();
     });
 
     it('should render all 6 team members', () => {
@@ -60,12 +60,20 @@ describe('TeamPage', () => {
   describe('Experience Section', () => {
     it('should render "Experience That Drives Results" heading', () => {
       renderWithRouter(<TeamPage />);
-      expect(screen.getByText(/experience that drives results/i)).toBeInTheDocument();
+      expect(screen.getByText(/implementation \+ managed support in one/i)).toBeInTheDocument();
     });
 
     it('should mention team experience and track record', () => {
       renderWithRouter(<TeamPage />);
-      expect(screen.getByText(/over 20 years of combined experience/i)).toBeInTheDocument();
+      expect(screen.getByText(/500\+ ERP entities migrated/i)).toBeInTheDocument();
+    });
+  });
+
+  describe('CTAs', () => {
+    it('should include blueprint and trial CTAs', () => {
+      renderWithRouter(<TeamPage />);
+      expect(screen.getByRole('link', { name: /book implementation blueprint/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /start capliquify \+ apexdeliver trial/i })).toBeInTheDocument();
     });
   });
 

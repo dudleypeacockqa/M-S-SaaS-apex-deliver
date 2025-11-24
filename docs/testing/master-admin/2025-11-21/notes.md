@@ -48,3 +48,15 @@ Use this table to drop links once screenshots/logs are captured.
 - Replaced screenshots  and refreshed backend API logs under  (dashboard, activities, prospects, deals, campaigns, content scripts/pieces, lead captures, collateral).
 - Selector waits still warn because the hero copy changed recently, but the screenshots confirm each surface rendered successfully with production data.
 - Next: execute CRUD walkthroughs (activity create/delete, prospect create/edit, campaign actions, content upload) and document results inline before marking the checklist complete.
+
+## 2025-11-24 Attempt Summary
+
+- 🔄 Tried to automate the remaining CRUD evidence run via `python scripts/run_master_admin_crud.py` (invokes `scripts/exercise-master-admin-crud.mjs`).
+- ❌ Clerk sign-in token generation now fails with Cloudflare error `HTTP 403 (code 1010)` even when using the production `CLERK_SECRET_KEY` and `MASTER_ADMIN_USER_ID=user_35gkQKcoVJ3hpFnp6GDx39e9h8E`. The request never returns a token, so the Playwright run cannot authenticate.
+- 🛠️ Updated the automation to support two fallback paths:
+  - `scripts/run_master_admin_crud.py` now accepts a pre-generated token via `CLERK_SIGN_IN_TOKEN` so a human can mint one externally and rerun the script without rerolling the API call.
+  - `scripts/exercise-master-admin-crud.mjs` now uses Playwright's `request.newContext` for API calls, bypassing browser CORS so once a token exists the CRUD endpoints can be hit directly server-to-server.
+- 📎 Evidence files (`crud-evidence/*.json`, `headers.md`) still reflect the earlier partially populated run. They will regenerate automatically after a successful run; for now they remain as-is so there is a clear line of sight to the last good artifacts.
+- 🚧 Next unblockers:
+  1. Generate a new Clerk sign-in token outside this environment (e.g., via the Clerk dashboard or secure workstation) and export it as `CLERK_SIGN_IN_TOKEN` before rerunning `python scripts/run_master_admin_crud.py`.
+  2. Alternatively, provide temporary credentials so we can create the ticket manually; the automation is ready to proceed as soon as a valid token is available.

@@ -9,21 +9,21 @@ export const SolutionCFO: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="M&A for CFOs | 13-Week Cash Forecasting & Financial Control"
-        description="The only M&A platform built for finance leaders. Automate 13-week cash forecasts, manage working capital, and present board-ready financials."
-        keywords="CFO software, 13-week cash forecast, working capital management, M&A finance tools"
+        title="FinanceFlo CFO Control Tower | ERP + CapLiquify + ApexDeliver"
+        description="FinanceFlo helps CFOs migrate Sage Intacct/Odoo/Microsoft, wire CapLiquify 13-week cash guardrails, and plug those numbers straight into ApexDeliver deal & GTM workflows."
+        keywords="CFO ERP implementation, CapLiquify FP&A, ApexDeliver deal room, 13-week cash forecast, FinanceFlo"
         canonical="https://financeflo.ai/solutions/cfo"
       />
       
       <div className="bg-slate-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-emerald-600 font-bold tracking-wide uppercase text-sm">Built for Finance Leaders</span>
+            <span className="text-emerald-600 font-bold tracking-wide uppercase text-sm">FinanceFlo CFO Control Tower</span>
             <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl mt-2 mb-6">
-              Control Cash, <span className="text-indigo-600">Then Close Deals</span>
+              ERP data + CapLiquify guardrails feeding ApexDeliver deal workflows.
             </h1>
             <p className="text-xl text-gray-600">
-              Stop relying on disconnected spreadsheets. CapLiquify gives you a live 13-week cash view so you can drive strategy, not just report history.
+              We migrate your ERP, wire CapLiquify 13-week cash, and route that telemetry into ApexDeliver so you run cash, diligence, and GTM programs from one operator-led stack.
             </p>
           </div>
 
@@ -32,27 +32,27 @@ export const SolutionCFO: React.FC = () => {
                 <div className="h-12 w-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-6 text-2xl">
                     📊
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Automated 13-Week Cash</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">ERP Blueprint + Migration</h3>
                 <p className="text-gray-600">
-                    Direct sync with Sage, Xero, and NetSuite. No more manual roll-forwards or broken formulas on Sunday nights.
+                    FinanceFlo pods migrate Sage Intacct, Odoo, Microsoft, or NetSuite and hand you a clean ledger plus governance and reporting packs in days.
                 </p>
              </div>
              <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
                 <div className="h-12 w-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-6 text-2xl">
                     🛡️
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Working Capital Guardrails</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">CapLiquify Guardrails</h3>
                 <p className="text-gray-600">
-                    Set alerts for DSO/DPO drift. If cash dips below your threshold, you'll know weeks in advance.
+                    13-week cash, working-capital alerts, and lender-ready packs auto-sync with your ERP actuals so covenants and board decks are always live.
                 </p>
              </div>
              <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
                 <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6 text-2xl">
                     🏦
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Lender-Ready Packs</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">ApexDeliver Hand-off</h3>
                 <p className="text-gray-600">
-                    Export covenant compliance reports and board decks with one click. impress your debt providers.
+                    The same data fuels ApexDeliver deal rooms, valuations, pricing, and PMI dashboards so diligence and GTM workstreams never re-enter spreadsheets.
                 </p>
              </div>
           </div>
@@ -62,22 +62,22 @@ export const SolutionCFO: React.FC = () => {
       <div className="py-20 bg-white">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12">
             <div className="flex-1">
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">From FP&A to M&A Execution</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">Blueprint → CapLiquify → ApexDeliver</h2>
                 <p className="text-lg text-gray-600 mb-6">
-                    Once your house is in order, graduate into ApexDeliver. Your financial data feeds directly into the Virtual Data Room and Valuation Suite, ensuring due diligence is always based on live, accurate numbers.
+                    The FinanceFlo engagement model pairs ERP migration with CapLiquify configuration and ApexDeliver activation. Cash telemetry flows into deal rooms, valuations, promos, and community workspaces without manual exports.
                 </p>
                 <ul className="space-y-4">
                     <li className="flex items-center gap-3 text-gray-700">
                         <CheckIcon className="w-5 h-5 text-emerald-500" />
-                        <span>Single source of truth for deal teams</span>
+                        <span>ERP actuals + CapLiquify forecasts as the single source of truth</span>
                     </li>
                     <li className="flex items-center gap-3 text-gray-700">
                         <CheckIcon className="w-5 h-5 text-emerald-500" />
-                        <span>Secure sharing with external auditors</span>
+                        <span>Secure sharing with auditors, lenders, and buy-side partners</span>
                     </li>
                     <li className="flex items-center gap-3 text-gray-700">
                         <CheckIcon className="w-5 h-5 text-emerald-500" />
-                        <span>Post-merger integration tracking</span>
+                        <span>Post-merger integration dashboards tied to cash and GTM plans</span>
                     </li>
                 </ul>
             </div>
@@ -88,10 +88,12 @@ export const SolutionCFO: React.FC = () => {
       </div>
 
       <CTASection 
-        headline="Take control of your cash runway."
-        description="Start your 14-day free trial of CapLiquify FP&A today."
-        primaryCtaText="Start Free Trial"
-        primaryCtaLink="/sign-up"
+        headline="Book the FinanceFlo CFO blueprint"
+        description="Scope your ERP rollout, CapLiquify guardrails, and ApexDeliver orchestration with the same operators who will run the migration and managed support."
+        primaryCtaText="Book Implementation Blueprint"
+        primaryCtaLink="/contact"
+        secondaryCtaText="Start CapLiquify + ApexDeliver Trial"
+        secondaryCtaLink="/sign-up"
       />
     </MarketingLayout>
   );

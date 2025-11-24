@@ -228,4 +228,25 @@ describe("AppRoutes", () => {
       expect(document.title).toMatch(/AI-First Integration Strategy/i)
     }, { timeout: 5000 })
   }, 15000)
+
+  it("redirects /privacy to the legal privacy page", async () => {
+    renderApp(["/privacy"])
+
+    const matches = await screen.findAllByText(/Privacy Policy/i, { timeout: 5000 })
+    expect(matches.length).toBeGreaterThan(0)
+  })
+
+  it("redirects /terms to the legal terms page", async () => {
+    renderApp(["/terms"])
+
+    const matches = await screen.findAllByText(/Terms of Service/i, { timeout: 5000 })
+    expect(matches.length).toBeGreaterThan(0)
+  })
+
+  it("redirects /cookies to the cookie policy page", async () => {
+    renderApp(["/cookies"])
+
+    const matches = await screen.findAllByText(/Cookie Policy/i, { timeout: 5000 })
+    expect(matches.length).toBeGreaterThan(0)
+  })
 })

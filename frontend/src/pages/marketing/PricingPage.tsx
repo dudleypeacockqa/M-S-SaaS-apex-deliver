@@ -101,13 +101,13 @@ export const PricingPage: React.FC = () => {
   const pricingSchema = useMemo(
     () =>
       createProductWithOffersSchema(
-    {
-      name: 'ApexDeliver + CapLiquify',
-          description:
-            'End-to-end M&A intelligence platform for deal flow management, financial analysis, and secure collaboration',
-      brand: 'ApexDeliver',
-      url: 'https://financeflo.ai/pricing',
-    },
+	{
+	  name: 'FinanceFlo ERP + CapLiquify + ApexDeliver',
+	      description:
+	        'ERP implementation pods plus CapLiquify FP&A and ApexDeliver deal workspaces, backed by managed support',
+	  brand: 'FinanceFlo',
+	  url: 'https://financeflo.ai/pricing',
+	},
         basePricingTiers
           .filter((tier) => typeof tier.monthlyPrice === 'number')
           .flatMap((tier) => {
@@ -139,15 +139,15 @@ export const PricingPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="Pricing | 100 Days & Beyond"
-        description="Find the perfect plan to fuel your growth. Start with what you need today and scale as your ambitions grow. All plans backed by a 14-day money-back guarantee."
-        keywords="M&A software pricing, deal management pricing, M&A platform cost, professional M&A tools pricing"
-        ogTitle="100 Days & Beyond Pricing - Professional M&A Tools from £598/month"
-        ogDescription="Choose from 4 pricing tiers designed for solo dealmakers to large organizations. All plans include AI-powered intelligence and deal flow management."
+        title="FinanceFlo Pricing | ERP + CapLiquify & ApexDeliver Programs"
+        description="Bundle ERP migration, CapLiquify FP&A guardrails, ApexDeliver deal workspaces, and operator-led managed support."
+        keywords="FinanceFlo pricing, ERP implementation pricing, CapLiquify pricing, ApexDeliver cost"
+        ogTitle="FinanceFlo Pricing"
+        ogDescription="Blueprint + subscription tiers that combine ERP pods, CapLiquify, ApexDeliver, and managed support."
         ogUrl="https://financeflo.ai/pricing"
         ogImage="https://financeflo.ai/assets/financial-analysis-visual.png"
-        twitterTitle="100 Days & Beyond Pricing"
-        twitterDescription="Flexible plans covering deal pipeline management, valuations, data rooms, and AI-powered matching."
+        twitterTitle="FinanceFlo ERP + CapLiquify Pricing"
+        twitterDescription="Choose the FinanceFlo blueprint and subscription that matches your ERP, FP&A, and deal execution goals."
         twitterImage="https://financeflo.ai/assets/financial-analysis-visual.png"
         canonical="https://financeflo.ai/pricing"
       />
@@ -156,10 +156,10 @@ export const PricingPage: React.FC = () => {
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">
-            Find the Perfect Plan to Fuel Your Growth
+            FinanceFlo pricing bundles ERP, CapLiquify, and ApexDeliver.
           </h1>
           <p className="text-xl text-indigo-100 max-w-3xl mx-auto">
-            Start with what you need today and scale as your ambitions grow. All plans are backed by our world-class support and a 14-day money-back guarantee.
+            Each tier begins with the FinanceFlo implementation blueprint, includes CapLiquify FP&A guardrails, and unlocks ApexDeliver deal, pricing, portal, and community workflows with managed operator pods.
           </p>
         </div>
       </section>
@@ -521,7 +521,14 @@ export const PricingPage: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <CTASection />
+      <CTASection
+        headline="Book the FinanceFlo pricing blueprint"
+        description="Work with our ERP, CapLiquify, and ApexDeliver operators to scope migrations, guardrails, and managed services—then start the unified software trial."
+        primaryCtaText="Book Implementation Blueprint"
+        primaryCtaLink="/contact"
+        secondaryCtaText="Start CapLiquify + ApexDeliver Trial"
+        secondaryCtaLink="/sign-up"
+      />
     </MarketingLayout>
   );
 };

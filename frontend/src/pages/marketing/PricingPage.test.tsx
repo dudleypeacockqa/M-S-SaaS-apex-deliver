@@ -59,6 +59,19 @@ describe('PricingPage', () => {
     expect(screen.getAllByText(/Contact sales/i)[0]).toBeInTheDocument();
   });
 
+  it('renders FinanceFlo pricing hero copy and CTA text', () => {
+    renderPricing();
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: /financeflo pricing bundles ERP, CapLiquify, and ApexDeliver/i,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/implementation blueprint/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole('link', { name: /book implementation blueprint/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /start capliquify \+ apexdeliver trial/i })).toBeInTheDocument();
+  });
+
   it('redirects unauthenticated users to sign-in when clicking Get Started', async () => {
     renderPricing();
     const user = userEvent.setup();

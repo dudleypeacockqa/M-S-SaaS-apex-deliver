@@ -8,6 +8,7 @@ import urllib.request
 
 CLERK_SECRET = os.environ.get("CLERK_SECRET_KEY", "sk_test_placeholder")
 MASTER_ADMIN_USER_ID = os.environ.get("MASTER_ADMIN_USER_ID", "user_placeholder")
+EXISTING_SIGN_IN_TOKEN = os.environ.get("CLERK_SIGN_IN_TOKEN")
 
 
 def generate_sign_in_token():
@@ -32,7 +33,10 @@ def generate_sign_in_token():
 
 
 def main():
-    token = generate_sign_in_token()
+    if EXISTING_SIGN_IN_TOKEN:
+        token = EXISTING_SIGN_IN_TOKEN
+    else:
+        token = generate_sign_in_token()
     os.environ["CLERK_SIGN_IN_TOKEN"] = token
     os.environ["MASTER_ADMIN_BASE_URL"] = "https://ma-saas-platform.onrender.com"
     os.environ["API_BASE_URL"] = "https://ma-saas-backend.onrender.com"

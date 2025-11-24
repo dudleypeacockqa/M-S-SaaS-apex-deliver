@@ -1,8 +1,9 @@
-> **2025-11-24 13:54 UTC (Verify script rerun)**
+> **2025-11-24 13:58 UTC (Verify script rerun)**
 > - **Backend Health**: ✅ HEALTHY (200 OK)
 > - **Blog API**: ❌ 500 on listing/categories/slug (migration still not applied on prod)
-> - **Frontend (100daysandbeyond.com)**: ❌ 403 on /, /contact, /blog, /pricing (Cloudflare blocking)
-> - **Next actions**: Re-run verify script against financeflo.ai, apply blog migration or reseed table, and retest.
+> - **Frontend (financeflo.ai)**: ✅ 200 on /, /contact, /blog, /pricing
+> - **Frontend (100daysandbeyond.com)**: ❌ 403 (Cloudflare blocking)
+> - **Next actions**: Apply blog migration or reseed table, rerun verify script; optionally remove 100daysandbeyond.com from checks.
 
 > **2025-11-22 14:56 UTC (100% Completion Verification)**
 > - **Backend Health**: ✅ HEALTHY

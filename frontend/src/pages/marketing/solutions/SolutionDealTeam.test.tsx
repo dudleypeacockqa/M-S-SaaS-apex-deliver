@@ -18,9 +18,9 @@ describe('SolutionDealTeam Page', () => {
   });
 
   describe('Page Rendering', () => {
-    it('should render main heading', () => {
+    it('should render FinanceFlo heading', () => {
       renderWithRouter(<SolutionDealTeam />);
-      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /capliquify numbers driving apexdeliver/i })).toBeInTheDocument();
     });
 
     it('should render SEO metadata', () => {
@@ -36,6 +36,19 @@ describe('SolutionDealTeam Page', () => {
         expect(canonical.getAttribute('href')).not.toContain('100daysandbeyond.com');
         expect(canonical.getAttribute('href')).not.toContain('apexdeliver.com');
       }
+    });
+  });
+  describe('Content & CTA', () => {
+    it('mentions FinanceFlo data spine features', () => {
+      renderWithRouter(<SolutionDealTeam />);
+      expect(screen.getByText(/built on financeflo’s data spine/i)).toBeInTheDocument();
+      expect(screen.getByText(/capliquify forecasts/i)).toBeInTheDocument();
+    });
+
+    it('renders blueprint and trial CTAs', () => {
+      renderWithRouter(<SolutionDealTeam />);
+      expect(screen.getByRole('link', { name: /book implementation blueprint/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /start capliquify \+ apexdeliver trial/i })).toBeInTheDocument();
     });
   });
 });

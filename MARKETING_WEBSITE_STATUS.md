@@ -81,6 +81,8 @@
 - [x] **Features Highlight** – Landing page leads with CapLiquify FP&A, Sales & Promotion Pricing, secure data rooms, and AI copilots.
 - [x] **Pricing Teaser** – Shows £598/mo FP&A entry point plus Professional/Enterprise upgrades with setup fees.
 
+- **2025-11-24 FinanceFlo merge:** MarketingLayout/nav/footer now reference FinanceFlo ERP + AI services, About/Team/Solution/Pricing pages updated with blueprint + CapLiquify + ApexDeliver CTAs, and vitest coverage added so copy stays enforced.
+
 ### Remaining Homepage Tasks
 - [x] Layer more social proof (stats, testimonial, customer logos) alongside the hero – shipped 2025-11-12Z, see LandingPage social-proof section.
 - [ ] Finalise mobile navigation animations/focus management for dropdown menus (desktop keyboard access shipped 2025-11-12; mobile animation polish still pending)
