@@ -9,38 +9,38 @@ export const TeamPage: React.FC = () => {
   const teamMembers = [
     {
       name: 'Dudley Peacock',
-      title: 'Founder & CEO',
-      bio: 'M&A professional and entrepreneur with a vision to democratize access to enterprise-grade deal intelligence tools. Dudley brings decades of experience in finance, technology, and business transformation.',
+      title: 'Founder & CEO, ERP + AI Strategy',
+      bio: 'Built ERP programs, pricing studios, and PE value-creation teams for two decades. Leads every FinanceFlo blueprint so CapLiquify FP&A and ApexDeliver land with operator discipline.',
       image: '/assets/team/dudley-peacock.jpg',
     },
     {
       name: 'Sandra Peacock',
-      title: 'Managing Director',
-      bio: 'Strategic leader with extensive experience in operations management and business development. Sandra ensures operational excellence and client success across all ApexDeliver initiatives.',
+      title: 'Managing Director, Delivery & Success',
+      bio: 'Runs the implementation pods that migrate Sage Intacct, Odoo, Microsoft, and NetSuite, while coordinating CapLiquify + ApexDeliver onboarding and managed support retainers.',
       image: '/assets/team/sandra-peacock.jpg',
     },
     {
       name: 'Matthew Collins',
-      title: 'CFO',
-      bio: 'Financial strategist with deep expertise in corporate finance, M&A transactions, and financial modeling. Matthew oversees all financial operations and strategic planning.',
+      title: 'CFO & CapLiquify Practice Lead',
+      bio: 'Guides finance leaders through 13-week cash builds, lender packs, and working-capital guardrails so every engagement ties ERP actuals to board-ready narratives.',
       image: '/assets/team/matthew-collins.jpg',
     },
     {
       name: 'Adam Pavitt',
-      title: 'Director of Operations',
-      bio: 'Operations expert focused on process optimization and scalability. Adam ensures ApexDeliver delivers exceptional service and platform reliability to all clients.',
+      title: 'Director of Delivery Operations',
+      bio: 'Owns project governance, playbooks, and telemetry across ERP migrations, ApexDeliver deployments, and AI rollout so every client sees time-to-value in days.',
       image: '/assets/team/adam-pavitt.jpg',
     },
     {
       name: 'Shaun Evertse',
-      title: 'E-Commerce, Warehousing & Supply Chain Expert',
-      bio: 'Supply chain and logistics specialist with extensive experience in e-commerce operations, warehousing, and inventory management. Shaun brings operational excellence to our platform.',
+      title: 'Commerce, Warehousing & Supply Chain Lead',
+      bio: 'Connects ERP data to pricing, promo, and portal workflows for D2C and distribution brands, ensuring CapLiquify guardrails reflect inventory, fulfillment, and cash cycles.',
       image: '/assets/team/shaun-evertse.jpg',
     },
     {
       name: 'Heike Venter',
-      title: 'ERP Sales Manager',
-      bio: 'ERP solutions expert with a proven track record in enterprise software sales and client relationship management. Heike helps businesses leverage technology for growth.',
+      title: 'ERP & Platform Solutions Manager',
+      bio: 'Partners with CFOs and CIOs to scope multi-entity rollouts, entitlements, and AI copilots so FinanceFlo engagements stay aligned to commercial goals.',
       image: '/assets/team/heike-venter.jpg',
     },
   ];
@@ -48,7 +48,7 @@ export const TeamPage: React.FC = () => {
   const teamStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'ApexDeliver',
+    name: 'FinanceFlo',
     url: 'https://financeflo.ai/team',
     employee: createTeamMembersSchema(
       teamMembers.map((member) => ({
@@ -81,10 +81,10 @@ export const TeamPage: React.FC = () => {
       <section className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">
-            Meet the Experts Behind Your Success
+            FinanceFlo operators who own implementation, automation, and expansion.
           </h1>
           <p className="text-xl text-indigo-100 max-w-3xl mx-auto">
-            Our world-class team combines decades of ERP expertise with cutting-edge AI innovation to deliver transformational results for finance leaders across the globe.
+            We’re the ERP resellers, CapLiquify builders, ApexDeliver product leads, and AI consultants who migrate your systems, wire cash guardrails, and stay on call every time you add an entity, promo, or acquisition.
           </p>
         </div>
       </section>
@@ -116,19 +116,26 @@ export const TeamPage: React.FC = () => {
       <section className="py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            Experience That Drives Results
+            Implementation + managed support in one accountable crew
           </h2>
           <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-            Our team brings together over 20 years of combined experience in ERP implementation, financial planning, M&A execution, and AI-powered business intelligence. We've successfully guided over 230 businesses through complex transformations, delivering an average ROI of 300-500%.
+            500+ ERP entities migrated, 450+ CapLiquify guardrails live, 300% pipeline lifts tracked inside ApexDeliver, and 24/7 managed services pods that keep copilots, promos, and portals tuned to your cash plan.
           </p>
           <p className="text-lg text-gray-700 leading-relaxed">
-            When you work with ApexDeliver + CapLiquify, you're not just getting software—you're getting a team of seasoned professionals who understand your challenges and are committed to your success.
+            Working with FinanceFlo means the same operators build, automate, and measure every motion—no handoffs between agencies, no point-tool stitching, just one partner responsible for outcomes.
           </p>
         </div>
       </section>
 
       {/* CTA Section */}
-      <CTASection />
+      <CTASection
+        headline="Work with FinanceFlo’s ERP + AI operators"
+        description="Book your implementation blueprint to align Sage Intacct, Odoo, Microsoft, or NetSuite with CapLiquify FP&A and ApexDeliver. Start the guided software trial to see the workspace your team will inherit."
+        primaryCtaText="Book Implementation Blueprint"
+        primaryCtaLink="/contact"
+        secondaryCtaText="Start CapLiquify + ApexDeliver Trial"
+        secondaryCtaLink="/sign-up"
+      />
     </MarketingLayout>
   );
 };

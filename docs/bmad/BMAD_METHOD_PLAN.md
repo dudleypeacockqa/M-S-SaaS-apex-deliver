@@ -32,6 +32,18 @@ This document outlines the systematic approach to achieving 100% completion of t
 | **W4 – DEV-018 Deal Matching Intelligence** | Implement scoring analytics, criteria builder refinement, optimistic actions | `npx vitest run src/pages/deals/MatchingWorkspace.test.tsx` + targeted backend contract tests | Update `docs/bmad/stories/DEV-018-deal-matching.md`, share telemetry plan | Commit `feat(dev-018): intelligence workspace complete`, rerun integration smoke |
 | **W5 – MARK-002/OPS Finalization** | Close SEO/Lighthouse gaps, structured data QA, publish remaining content/case studies | `npm --prefix frontend run test && npm --prefix frontend run build && npm --prefix frontend run preview -- --smoke` + Lighthouse CI | Update `docs/marketing/MARKETING-COMPLETION-STATUS-2025-11-11.md`, attach screenshots/video | Trigger Render deploys (`trigger_render_deploy.py`), update `latest-deploy*.json`, run `scripts/run_smoke_tests.sh production` |
 
+### 2025-11-24 Update – FinanceFlo Marketing Merge Loop (W5)
+
+To complete the "main website + software site" unification request we have split W5 into auditable Build→Measure→Analyze→Deploy strands:
+
+| Loop | Build | Measure | Analyze | Deploy |
+|------|-------|---------|---------|--------|
+| **W5A – Brand Foundation** | Refresh MarketingLayout + nav + footer (complete) and continue cascading FinanceFlo ERP/AI positioning through About, Team, Solutions, and Pricing hero copy. | `npx vitest run src/pages/marketing/EnhancedLandingPage.test.tsx src/pages/marketing/AboutPage.test.tsx src/pages/marketing/solutions/SolutionCFO.test.tsx` | Update this plan, `BMAD_PROGRESS_TRACKER.md`, and `MARKETING_WEBSITE_STATUS.md` with coverage + copy deltas. | Commit `feat(marketing): align FinanceFlo brand story` and prep Render preview instructions. |
+| **W5B – Content & SEO Evidence** | Finish canonical/OG/structured data sweep + blog backlog increments (Images + 50 posts). | `npm --prefix frontend run test -- src/pages/marketing/__tests__/seo-metadata-consistency.test.tsx` + Lighthouse. | Attach Lighthouse + axe reports to `docs/marketing/MARKETING-COMPLETION-STATUS-2025-11-11.md`. | Update `latest-frontend-deploys.json`, rerun smoke + screenshot harness. |
+| **W5C – Deployment & Ops** | Lock bm deployment scripts + Render health verification (backend + frontend). | `python verify_deployment.py --target render` (or manual health curl) + smoke scripts. | Update `deployment-health-*.json`, `DEPLOYMENT_STATUS.md`. | Trigger Render redeploys + capture logs, ensuring both services run the FinanceFlo experience. |
+
+**Immediate Focus (W5A.1):** Apply the FinanceFlo ERP + AI messaging to About/Team/Solutions pages with TDD before moving to SEO + deploy validation. This is the loop we are executing now.
+
 This refresh keeps every loop inside BMAD’s Build → Measure → Analyze → Deploy cadence and anchors implementation to explicit TDD guardrails so the project can reach the documented 100% completion target with auditable evidence.
 
 ### Workstream Matrix

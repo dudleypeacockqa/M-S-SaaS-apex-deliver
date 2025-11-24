@@ -5,7 +5,7 @@
  * Usage:
  *   $env:CLERK_SIGN_IN_TOKEN="<token>"; node scripts/exercise-master-admin-crud.mjs
  */
-import { chromium } from 'playwright'
+import { chromium, request as playwrightRequest } from 'playwright'
 import path from 'node:path'
 import fs from 'node:fs'
 
@@ -29,6 +29,7 @@ const log = (...args) => console.log('[master-admin-crud]', ...args)
 const browser = await chromium.launch({ headless: true })
 const context = await browser.newContext()
 const page = await context.newPage()
+let apiRequestContext = null
 
 // Capture JWT token from browser storage after login
 let authToken = null
@@ -58,45 +59,43 @@ if (authToken) {
   authHeaders['Authorization'] = `Bearer ${authToken}`
 }
 
+apiRequestContext = await playwrightRequest.newContext({
+  baseURL: apiBaseUrl,
+  extraHTTPHeaders: authHeaders,
+  timeout: 90000,
+})
+
 // Helper to make API calls
 async function apiCall(method, endpoint, body = null) {
   const url = new URL(endpoint, apiBaseUrl).href
   log(`${method} ${url}`)
-  
+
   try {
-    const result = await page.evaluate(
-      async ({ url, method, headers, body }) => {
-        const options = {
-          method,
-          headers,
-        }
-        if (body) {
-          options.body = JSON.stringify(body)
-        }
-        const res = await fetch(url, options)
-        const text = await res.text()
-        const headers = Array.from(res.headers.entries())
-        return { 
-          status: res.status, 
-          statusText: res.statusText, 
-          text, 
-          headers,
-          ok: res.ok
-        }
-      },
-      { url, method, headers: authHeaders, body }
-    )
-    
-    let parsedBody = null
-    try {
-      parsedBody = JSON.parse(result.text)
-    } catch {
-      parsedBody = result.text
+    const requestOptions = {
+      method,
     }
-    
+
+    if (body) {
+      requestOptions.data = JSON.stringify(body)
+    }
+
+    const response = await apiRequestContext.fetch(endpoint, requestOptions)
+    const text = await response.text()
+    let parsedBody = null
+
+    try {
+      parsedBody = JSON.parse(text)
+    } catch {
+      parsedBody = text
+    }
+
     return {
-      ...result,
-      body: parsedBody
+      status: response.status(),
+      statusText: response.statusText(),
+      ok: response.ok(),
+      headers: response.headersArray(),
+      text,
+      body: parsedBody,
     }
   } catch (error) {
     log(`Error calling ${url}:`, error.message)
@@ -358,5 +357,8 @@ fs.writeFileSync(headersFile, headersContent)
 log(`Headers updated in ${headersFile}`)
 
 await browser.close()
+if (apiRequestContext) {
+  await apiRequestContext.dispose()
+}
 log('CRUD evidence collection complete.')
 

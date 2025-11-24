@@ -18,9 +18,9 @@ describe('SolutionCFO Page', () => {
   });
 
   describe('Page Rendering', () => {
-    it('should render main heading', () => {
+    it('should render main heading with FinanceFlo message', () => {
       renderWithRouter(<SolutionCFO />);
-      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /erp data \+ capliquify guardrails/i })).toBeInTheDocument();
     });
 
     it('should render SEO title', () => {
@@ -39,18 +39,17 @@ describe('SolutionCFO Page', () => {
   });
 
   describe('Content Sections', () => {
-    it('should render feature cards', () => {
+    it('should mention ERP, CapLiquify, and ApexDeliver benefits', () => {
       renderWithRouter(<SolutionCFO />);
-      // Check for feature-related content
-      const headings = screen.getAllByRole('heading');
-      expect(headings.length).toBeGreaterThan(1);
+      expect(screen.getByText(/erp blueprint \+ migration/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/capliquify guardrails/i).length).toBeGreaterThan(0);
+      expect(screen.getByText(/apexdeliver hand-off/i)).toBeInTheDocument();
     });
 
-    it('should render CTA section', () => {
+    it('should render blueprint and trial CTAs', () => {
       renderWithRouter(<SolutionCFO />);
-      // CTA section should be present (check for common CTA text patterns)
-      const ctaLinks = screen.queryAllByRole('link', { name: /get started|start trial|contact|sign up/i });
-      expect(ctaLinks.length).toBeGreaterThan(0);
+      expect(screen.getByRole('link', { name: /book implementation blueprint/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /start capliquify \+ apexdeliver trial/i })).toBeInTheDocument();
     });
   });
 });

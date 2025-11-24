@@ -5,14 +5,19 @@ Tests all Phase 1 critical endpoints to ensure deployment is healthy
 import requests
 import sys
 import io
+import os
 from typing import Tuple, Optional
+
+def get_env_or_default(key: str, default: str) -> str:
+    """Allow overriding default endpoints via environment variables."""
+    return os.environ.get(key, default).strip() or default
 
 # Fix Windows console encoding for Unicode characters
 if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
-BACKEND_URL = "https://ma-saas-backend.onrender.com"
-FRONTEND_URL = "https://100daysandbeyond.com"
+BACKEND_URL = get_env_or_default("BACKEND_URL", "https://ma-saas-backend.onrender.com")
+FRONTEND_URL = get_env_or_default("FRONTEND_URL", "https://financeflo.ai")
 
 
 def test_endpoint(name: str, url: str, expected_status: int = 200,

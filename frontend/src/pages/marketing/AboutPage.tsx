@@ -8,10 +8,10 @@ export const AboutPage: React.FC = () => {
   return (
     <MarketingLayout>
       <SEO
-        title="About 100 Days & Beyond | ApexDeliver + CapLiquify"
-        description="Learn how ApexDeliver + CapLiquify empowers ambitious businesses to own their first 100 days with AI-assisted finance, deal, and revenue operations."
-        ogTitle="About 100 Days & Beyond"
-        ogDescription="We combine CapLiquify FP&A with ApexDeliver deal execution so ambitious teams can run every motion from a single operating system."
+        title="About FinanceFlo | ERP Implementation + CapLiquify & ApexDeliver"
+        description="FinanceFlo is the UK ERP partner behind CapLiquify FP&A and the ApexDeliver deal workspace—delivering Sage Intacct, Odoo, Microsoft, and NetSuite programs with AI consulting and managed support."
+        ogTitle="About FinanceFlo"
+        ogDescription="Meet the ERP implementation pods and AI consultants powering CapLiquify + ApexDeliver for CFOs, deal teams, and GTM leaders."
         ogUrl="https://financeflo.ai/about"
         canonical="https://financeflo.ai/about"
       />
@@ -20,15 +20,15 @@ export const AboutPage: React.FC = () => {
         <section className="pt-20 pb-16 text-center">
           <div className="max-w-4xl mx-auto px-4">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight">
-              Our mission is to empower ambitious businesses to own the first 100 days and the next 1,000.
+              FinanceFlo is the ERP + AI partner behind CapLiquify FP&A and the ApexDeliver deal workspace.
             </h1>
             <p className="mt-6 text-lg md:text-xl text-slate-600">
-              Every business deserves access to the same level of financial and strategic tooling that elite PE-backed operators rely on. We pair modern product strategy with hands-on operators so every customer can turn chaos into momentum.
+              We implement and resell Sage Intacct, Odoo, Microsoft, and NetSuite, wire CapLiquify FP&A guardrails, deploy ApexDeliver deal, pricing, and community modules, and stay on the hook with AI copilots plus managed support so every customer owns their first 100 days and the next 1,000.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <span className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 shadow">
                 <Users className="h-4 w-4 text-emerald-600" />
-                Operator-led onboarding
+                ERP implementation pods
               </span>
               <span className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 shadow">
                 <ShieldCheck className="h-4 w-4 text-indigo-600" />
@@ -43,13 +43,13 @@ export const AboutPage: React.FC = () => {
             <div className="space-y-4">
               <h2 className="text-3xl font-semibold text-slate-900">Mission</h2>
               <p className="text-lg text-slate-600">
-                We envision a future where every business has the financial intelligence, governance, and GTM command center previously reserved for the Fortune 500. Owning the first 100 days means compressing diligence, spinning up portals, and proving cash confidence faster than anyone else.
+                Give every finance, deal, and GTM team the ERP backbone, CapLiquify insights, and ApexDeliver workflows elite PE operators use. Owning the first 100 days starts with stabilising cash, launching portals, and wiring governance on day zero.
               </p>
             </div>
             <div className="space-y-4">
               <h2 className="text-3xl font-semibold text-slate-900">Vision</h2>
               <p className="text-lg text-slate-600">
-                ApexDeliver was founded by Dudley Peacock after two decades of building pricing studios, FP&amp;A teams, and PE value-creation programs. Today we blend that operator DNA with CapLiquify automation so that ambitious teams never have to stitch point tools together again.
+                Founded by Dudley Peacock, FinanceFlo blends two decades of ERP, FP&amp;A, and GTM playbook building with automation. CapLiquify + ApexDeliver become part of every delivery, so customers never stitch point tools or agencies together again.
               </p>
             </div>
           </div>
@@ -60,16 +60,16 @@ export const AboutPage: React.FC = () => {
             <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
-                  title: "User-First Design",
-                  description: "We sweat the small details so CFOs, corp dev, and GTM leads can move without friction across desktop and mobile."
+                  title: "ERP + AI Operators",
+                  description: "Certified Sage Intacct, Odoo, Microsoft, and NetSuite practitioners who also build Copilot and iPaaS flows."
                 },
                 {
                   title: "Security & Trust",
-                  description: "SOC 2 aligned controls, regional data residency, and watermarking mean your most sensitive data always has a bodyguard."
+                  description: "SOC 2 aligned controls, regional data residency, watermarking, and finance-grade audit logs baked into every workspace."
                 },
                 {
-                  title: "Operator Expertise",
-                  description: "Every workflow ships with proven playbooks, checklists, and integration help from real practitioners."
+                  title: "Customer-Ready Playbooks",
+                  description: "Every rollout ships with CapLiquify dashboards, ApexDeliver templates, and checklist libraries proven inside PE value-creation plans."
                 }
               ].map((value) => (
                 <div key={value.title} className="rounded-2xl bg-white p-6 shadow-md border border-slate-100">
@@ -86,17 +86,25 @@ export const AboutPage: React.FC = () => {
 
         <section className="py-20 bg-gradient-to-r from-indigo-900 to-emerald-800 text-white">
           <div className="max-w-4xl mx-auto text-center px-4 space-y-6">
-            <h2 className="text-3xl font-bold">Built for the first 100 days and beyond.</h2>
+            <h2 className="text-3xl font-bold">Built for implementation, automation, and expansion.</h2>
             <p className="text-lg text-indigo-100">
-              Whether you are stabilizing cash, preparing diligence, or orchestrating GTM launches, the ApexDeliver + CapLiquify operating system keeps finance, deal, and revenue teams aligned.
+              Stabilize cash with CapLiquify, execute deals and GTM programs inside ApexDeliver, and keep FinanceFlo operators on call for every new entity, promo, and acquisition.
             </p>
-            <Link
-              to="/sign-up"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-3 text-lg font-semibold text-indigo-900 shadow-xl hover:-translate-y-0.5 transition"
-            >
-              Start Your Free Trial
-              <Sparkles className="h-5 w-5 text-emerald-500" />
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                to="/contact"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-3 text-lg font-semibold text-indigo-900 shadow-xl hover:-translate-y-0.5 transition"
+              >
+                Book Implementation Blueprint
+                <Sparkles className="h-5 w-5 text-emerald-500" />
+              </Link>
+              <Link
+                to="/sign-up"
+                className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white px-8 py-3 text-lg font-semibold text-white/90 hover:bg-white/10 transition"
+              >
+                Start CapLiquify + ApexDeliver Trial
+              </Link>
+            </div>
           </div>
         </section>
       </div>

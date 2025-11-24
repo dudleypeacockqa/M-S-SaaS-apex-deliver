@@ -1,0 +1,19 @@
+Deployment Verification - 2025-11-24 (production, financeflo.ai)
+Command: FRONTEND_URL=https://financeflo.ai python3 scripts/verify_deployment.py production
+
+Backend: https://ma-saas-backend.onrender.com
+Frontend: https://financeflo.ai
+
+Results:
+- Backend Health: 200 OK
+- Blog Listing: 500 (expected 200)
+- Blog Categories: 500 (expected 200)
+- Blog Post by Slug: 500 (expected 200)
+- Contact Endpoint (POST only): 405 (expected)
+- Subscribe Endpoint (POST only): 405 (expected)
+- Frontend Home: 200 OK
+- Contact Page: 200 OK
+- Blog Page: 200 OK
+- Pricing Page: 200 OK
+
+Summary: 7 passed, 3 failed. Frontend healthy on financeflo.ai; blog APIs still returning 500 (migration/table missing).
