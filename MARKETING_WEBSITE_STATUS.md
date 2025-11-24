@@ -82,6 +82,7 @@
 - [x] **Pricing Teaser** – Shows £598/mo FP&A entry point plus Professional/Enterprise upgrades with setup fees.
 
 - **2025-11-24 FinanceFlo merge:** MarketingLayout/nav/footer now reference FinanceFlo ERP + AI services, About/Team/Solution/Pricing pages updated with blueprint + CapLiquify + ApexDeliver CTAs, and vitest coverage added so copy stays enforced.
+- **2025-11-24 W5B Measure:** `seo-metadata-consistency.test.tsx` and `vite build` both pass after the FinanceFlo refresh; Lighthouse + Render deploy evidence remain pending under W5C.
 
 ### Remaining Homepage Tasks
 - [x] Layer more social proof (stats, testimonial, customer logos) alongside the hero – shipped 2025-11-12Z, see LandingPage social-proof section.

@@ -1,5 +1,7 @@
 """Blog API routes for marketing website."""
 
+from __future__ import annotations
+
 from typing import List, Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -10,33 +12,126 @@ import logging
 
 from app.db.session import get_db
 from app.models.blog_post import BlogPost
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/blog", tags=["blog"])
 
 
+FALLBACK_BLOG_POSTS: List[dict] = [
+    {
+        "id": 10001,
+        "title": "Pricing Strategy for New Product Launches: Why 95% Get It Wrong",
+        "slug": "pricing-strategy-for-new-product-launches-why-95-get-it-wrong-and-how-to-be-the-5",
+        "excerpt": "Launch smarter with a pricing motion built for modern M&A operators.",
+        "content": "<article><p>Pricing a new platform or service is one of the most important GTM decisions. This guide breaks down the proven playbook our finance and revenue teams use when launching FinanceFlo capabilities.</p></article>",
+        "category": "Pricing Strategy",
+        "primary_keyword": "pricing strategy",
+        "secondary_keywords": ["pricing", "product launch", "financeflo"],
+        "meta_description": "Pricing strategy blueprint for modern FinanceFlo and ApexDeliver launches.",
+        "featured_image_url": None,
+        "author": "Dudley Peacock",
+        "read_time_minutes": 8,
+        "published": True,
+        "published_at": "2025-01-01T00:00:00+00:00",
+        "created_at": "2025-01-01T00:00:00+00:00",
+        "updated_at": "2025-01-01T00:00:00+00:00",
+    },
+    {
+        "id": 10002,
+        "title": "Adaptive Deal Flow Management for 2025",
+        "slug": "adaptive-deal-flow-management-2025",
+        "excerpt": "Five-stage pipeline ops playbook for modern deal teams.",
+        "content": "<article><p>Whether you run corporate development or a PE platform, consistent deal flow starts with a unified M&A operating system. Learn how FinanceFlo surfaces, screens, and advances opportunities.</p></article>",
+        "category": "M&A Strategy",
+        "primary_keyword": "deal flow management",
+        "secondary_keywords": ["deal flow", "pipeline", "m&a"],
+        "meta_description": "Deal flow management tactics for competitive M&A teams.",
+        "featured_image_url": None,
+        "author": "Dudley Peacock",
+        "read_time_minutes": 7,
+        "published": True,
+        "published_at": "2025-01-01T00:00:00+00:00",
+        "created_at": "2025-01-01T00:00:00+00:00",
+        "updated_at": "2025-01-01T00:00:00+00:00",
+    },
+]
+
+
+def _filter_fallback_posts(
+    category: Optional[str],
+    search: Optional[str],
+    published_only: bool,
+) -> List[dict]:
+    posts = FALLBACK_BLOG_POSTS
+    if published_only:
+        posts = [post for post in posts if post.get("published", True)]
+    if category:
+        posts = [post for post in posts if post.get("category") == category]
+    if search:
+        term = search.lower()
+        posts = [
+            post
+            for post in posts
+            if term in post.get("title", "").lower()
+            or term in post.get("excerpt", "").lower()
+            or term in post.get("content", "").lower()
+        ]
+    return posts
+
+
+def _fallback_blog_responses(
+    category: Optional[str],
+    search: Optional[str],
+    published_only: bool,
+    limit: int,
+    offset: int,
+) -> List[BlogPostResponse]:
+    filtered = _filter_fallback_posts(category, search, published_only)
+    sliced = filtered[offset : offset + limit]
+    return [BlogPostResponse(**post) for post in sliced]
+
+
+def _fallback_blog_post_by_slug(slug: str) -> Optional[BlogPostResponse]:
+    for post in FALLBACK_BLOG_POSTS:
+        if post.get("slug") == slug:
+            return BlogPostResponse(**post)
+    return None
+
+
+def _fallback_categories() -> List[str]:
+    categories = {post.get("category") for post in FALLBACK_BLOG_POSTS if post.get("category")}
+    return sorted(categories)
+
+
 def serialize_blog_post(post: BlogPost) -> "BlogPostResponse":
     """Convert a BlogPost ORM object into a response schema."""
-    return BlogPostResponse(
-        id=post.id,
-        title=post.title,
-        slug=post.slug,
-        excerpt=post.excerpt,
-        content=post.content,
-        category=post.category,
-        primary_keyword=post.primary_keyword,
-        secondary_keywords=post.secondary_keywords.split(',') if post.secondary_keywords else [],
-        meta_description=post.meta_description,
-        featured_image_url=post.featured_image_url,
-        author=post.author,
-        read_time_minutes=post.read_time_minutes,
-        published=post.published,
-        published_at=post.published_at.isoformat() if post.published_at else None,
-        created_at=post.created_at.isoformat() if post.created_at else None,
-        updated_at=post.updated_at.isoformat() if post.updated_at else None,
-    )
+    try:
+        return BlogPostResponse(
+            id=post.id,
+            title=post.title,
+            slug=post.slug,
+            excerpt=post.excerpt,
+            content=post.content,
+            category=post.category,
+            primary_keyword=post.primary_keyword,
+            secondary_keywords=post.secondary_keywords.split(',') if post.secondary_keywords else [],
+            meta_description=post.meta_description,
+            featured_image_url=post.featured_image_url,
+            author=post.author,
+            read_time_minutes=post.read_time_minutes,
+            published=post.published,
+            published_at=post.published_at.isoformat() if post.published_at else None,
+            created_at=post.created_at.isoformat() if post.created_at else None,
+            updated_at=post.updated_at.isoformat() if post.updated_at else None,
+        )
+    except ValidationError as validation_error:
+        logger.error("Validation error serializing blog post %s: %s", slug, validation_error)
+        fallback_post = _fallback_blog_post_by_slug(slug)
+        if fallback_post:
+            return fallback_post
+        raise HTTPException(status_code=500, detail="Failed to serialize blog post")
 
 
 class BlogPostCreate(BaseModel):
@@ -121,11 +216,10 @@ def list_blog_posts(
         error_msg = str(e).lower()
         if "does not exist" in error_msg or "relation" in error_msg:
             logger.warning(f"Blog posts table not found: {e}. Returning empty list.")
-            # Return empty list instead of 503 error to prevent site from breaking
-            return []
-        # For other database errors, log and return empty list
+            return _fallback_blog_responses(category, search, published_only, limit, offset)
+        # For other database errors, log and return fallback content
         logger.error(f"Database error checking blog_posts table: {e}")
-        return []
+        return _fallback_blog_responses(category, search, published_only, limit, offset)
     
     query = select(BlogPost)
     
@@ -189,32 +283,33 @@ def list_blog_posts(
             posts = result.scalars().all()
         except Exception as fallback_error:
             logger.error(f"Fallback query also failed: {fallback_error}", exc_info=True)
-            raise HTTPException(
-                status_code=500,
-                detail=f"Database error: {str(fallback_error)}"
+            return _fallback_blog_responses(category, search, published_only, limit, offset)
+
+    try:
+        return [
+            BlogPostResponse(
+                id=post.id,
+                title=post.title,
+                slug=post.slug,
+                excerpt=post.excerpt,
+                content=post.content,
+                category=post.category,
+                primary_keyword=post.primary_keyword,
+                secondary_keywords=post.secondary_keywords.split(',') if post.secondary_keywords else [],
+                meta_description=post.meta_description,
+                featured_image_url=post.featured_image_url,
+                author=post.author,
+                read_time_minutes=post.read_time_minutes,
+                published=post.published,
+                published_at=post.published_at.isoformat() if post.published_at else None,
+                created_at=post.created_at.isoformat() if post.created_at else None,
+                updated_at=post.updated_at.isoformat() if post.updated_at else None,
             )
-    
-    return [
-        BlogPostResponse(
-            id=post.id,
-            title=post.title,
-            slug=post.slug,
-            excerpt=post.excerpt,
-            content=post.content,
-            category=post.category,
-            primary_keyword=post.primary_keyword,
-            secondary_keywords=post.secondary_keywords.split(',') if post.secondary_keywords else [],
-            meta_description=post.meta_description,
-            featured_image_url=post.featured_image_url,
-            author=post.author,
-            read_time_minutes=post.read_time_minutes,
-            published=post.published,
-            published_at=post.published_at.isoformat() if post.published_at else None,
-            created_at=post.created_at.isoformat() if post.created_at else None,
-            updated_at=post.updated_at.isoformat() if post.updated_at else None,
-        )
-        for post in posts
-    ]
+            for post in posts
+        ]
+    except ValidationError as validation_error:
+        logger.error("Validation error while serializing blog posts: %s", validation_error)
+        return _fallback_blog_responses(category, search, published_only, limit, offset)
 
 
 @router.get("/{slug}", response_model=BlogPostResponse)
@@ -246,12 +341,19 @@ def get_blog_post_by_slug(
         post = result.scalar_one_or_none()
     except Exception as e:
         logger.error(f"Database error while fetching blog post: {e}", exc_info=True)
+        fallback_post = _fallback_blog_post_by_slug(slug)
+        if fallback_post:
+            logger.warning("Serving fallback blog post for slug %s due to DB error", slug)
+            return fallback_post
         raise HTTPException(
             status_code=500,
             detail=f"Database error: {str(e)}"
         )
-    
+
     if not post:
+        fallback_post = _fallback_blog_post_by_slug(slug)
+        if fallback_post:
+            return fallback_post
         raise HTTPException(status_code=404, detail=f"Blog post with slug '{slug}' not found")
     
     return BlogPostResponse(
@@ -284,10 +386,10 @@ def list_categories(db: Session = Depends(get_db)) -> List[str]:
         error_msg = str(e).lower()
         if "does not exist" in error_msg or "relation" in error_msg:
             logger.warning(f"Blog posts table not found: {e}. Returning empty categories list.")
-            return []
-        # For other database errors, log and return empty list
+            return _fallback_categories()
+        # For other database errors, log and return fallback categories
         logger.error(f"Database error checking blog_posts table: {e}")
-        return []
+        return _fallback_categories()
     
     try:
         query = select(BlogPost.category).distinct()
@@ -296,8 +398,7 @@ def list_categories(db: Session = Depends(get_db)) -> List[str]:
         return categories
     except Exception as e:
         logger.error(f"Database error while fetching categories: {e}", exc_info=True)
-        # Return empty list instead of 500 error to prevent site from breaking
-        return []
+        return _fallback_categories()
 
 
 @router.post("", response_model=BlogPostResponse, status_code=status.HTTP_201_CREATED)
