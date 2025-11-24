@@ -64,6 +64,9 @@ Both Render services (backend and frontend) have been successfully deployed and 
 - ✅ Frontend HTTP 200 OK: `curl -I https://ma-saas-platform.onrender.com` → 200 OK
 - ✅ Backend Health Check: `/health` endpoint responding
 - ✅ Cloudflare CDN: Frontend accessible via Cloudflare (cf-ray headers present)
+- ✅ Backend regression suite: `pytest --cov=backend/app` (see `docs/tests/2025-11-22-backend-pytest.txt`)
+- ✅ Targeted frontend suite: `npm run test -- ScenarioComponents` (see `docs/tests/2025-11-22-frontend-vitest-baseline.txt`)
+- ⚠️ Full Vitest run hit a libuv assertion (`Assertion failed: handle->reqs_pending == 0` on Windows) after all feature suites completed; rerunning under `node@20.17` or WSL avoids the env-specific crash. No new functional regressions were observed prior to the crash (logs in `frontend/test-summary.txt`).
 
 ### Manual Verification
 - ✅ Render Dashboard: Both services show LIVE status

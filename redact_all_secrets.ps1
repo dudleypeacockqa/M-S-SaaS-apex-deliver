@@ -1,5 +1,8 @@
-# Script to redact all secrets from git history using git filter-branch
-# This will rewrite all commits from 1fb36d25 to HEAD
+# Script to redact all secrets from git history using git filter-branch.
+# IMPORTANT:
+#   1. Replace the placeholder tokens below with actual values sourced from the Render dashboard.
+#   2. Run this from the repository root and expect a rewritten commit history between 1fb36d25 and HEAD.
+#   3. Force-push with extreme caution after reviewing the rewritten history.
 
 Write-Host "Redacting all secrets from git history..."
 

@@ -5,11 +5,35 @@ Background tasks for delivering webhooks with retry logic.
 """
 from celery import shared_task
 import requests
-from typing import Dict
+from typing import Dict, Callable, TypeVar
 from datetime import datetime, timedelta
 
 from app.db.session import SessionLocal
 from app.models.master_admin import Webhook, WebhookDelivery
+
+
+TaskFunc = TypeVar("TaskFunc", bound=Callable)
+
+
+def _ensure_task_delay(task: TaskFunc) -> TaskFunc:
+    """
+    Attach a `.delay` shim when Celery's decorator has been stubbed out.
+
+    When tests patch `celery.shared_task` to become a no-op, the decorated
+    function will not expose `.delay`, causing AttributeError in code paths
+    that expect it. This helper mirrors Celery's API by falling back to a
+    direct call when the attribute is missing.
+    """
+    if not hasattr(task, "delay"):
+        setattr(task, "delay", lambda *args, **kwargs: task(*args, **kwargs))
+    return task
+
+
+def _schedule_retry(delivery: WebhookDelivery) -> None:
+    """Increment retry counters safely even when defaults are unset."""
+    current_retries = delivery.retry_count or 0
+    delivery.retry_count = current_retries + 1
+    delivery.next_retry_at = datetime.utcnow() + timedelta(minutes=2 ** delivery.retry_count)
 
 
 @shared_task(name="webhooks.deliver_webhook")
@@ -77,8 +101,7 @@ def deliver_webhook_task(webhook_id: int, event_type: str, payload: Dict):
                 status = "delivered"
             else:
                 # Schedule retry
-                delivery.retry_count += 1
-                delivery.next_retry_at = datetime.utcnow() + timedelta(minutes=2 ** delivery.retry_count)
+                _schedule_retry(delivery)
                 status = "failed"
             
             db.commit()
@@ -87,13 +110,15 @@ def deliver_webhook_task(webhook_id: int, event_type: str, payload: Dict):
         except requests.RequestException as e:
             # Update delivery record with error
             delivery.error_message = str(e)
-            delivery.retry_count += 1
-            delivery.next_retry_at = datetime.utcnow() + timedelta(minutes=2 ** delivery.retry_count)
+            _schedule_retry(delivery)
             db.commit()
             
             return {"status": "error", "error": str(e)}
     finally:
         db.close()
+
+
+_ensure_task_delay(deliver_webhook_task)
 
 
 @shared_task(name="webhooks.retry_failed_deliveries")
@@ -118,7 +143,8 @@ def retry_failed_deliveries_task():
             )
         )
         
-        deliveries = list(db.scalars(query).all())
+        result = db.execute(query)
+        deliveries = list(result.scalars().all())
         
         retried = []
         for delivery in deliveries:
@@ -138,4 +164,7 @@ def retry_failed_deliveries_task():
         return {"retried_count": len(retried), "delivery_ids": retried}
     finally:
         db.close()
+
+
+_ensure_task_delay(retry_failed_deliveries_task)
 
