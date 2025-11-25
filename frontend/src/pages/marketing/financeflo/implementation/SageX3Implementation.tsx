@@ -6,37 +6,18 @@ import { Badge } from "@/components/marketing/financeflo/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/marketing/financeflo/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/marketing/financeflo/ui/tabs";
 import { Progress } from "@/components/marketing/financeflo/ui/progress";
-import { 
-  CheckCircle, 
-  ArrowRight, 
-  Users, 
-  TrendingUp, 
-  Shield, 
-  Zap,
+import {
+  CheckCircle,
+  Users,
+  TrendingUp,
+  Shield,
   Clock,
-  Target,
-  Award,
   BarChart3,
   Settings,
-  Globe,
-  Smartphone,
-  Database,
-  Lock,
-  Cpu,
-  Layers,
-  Workflow,
-  PieChart,
   Calendar,
-  FileText,
   DollarSign,
   Factory,
-  Truck,
-  Package,
-  Building2,
   Phone,
-  Mail,
-  MapPin,
-  Star,
   PlayCircle
 } from "lucide-react";
 import { SageX3VSLHero } from "@/components/marketing/financeflo/SageX3VSLHero";

@@ -12,6 +12,11 @@ vi.mock('../../lib/analytics', () => ({
   trackCtaClick: vi.fn(),
 }));
 
+// Mock DynamicPricingSimulator which uses recharts
+vi.mock('../../components/marketing/DynamicPricingSimulator', () => ({
+  DynamicPricingSimulator: () => <div data-testid="dynamic-pricing-simulator">Dynamic Pricing Simulator</div>,
+}));
+
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };

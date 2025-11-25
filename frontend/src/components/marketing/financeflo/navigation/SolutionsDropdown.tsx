@@ -138,7 +138,6 @@ export const SolutionsDropdown = ({ title, links, isOpen, onOpen, onClose }: Sol
             aria-expanded={isOpen}
             ref={triggerRef}
             onClick={handleTriggerClick}
-            onFocus={onOpen}
             onKeyDown={handleKeyDown}
           >
             {title}

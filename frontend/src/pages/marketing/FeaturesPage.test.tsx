@@ -32,9 +32,9 @@ describe('FeaturesPage', () => {
     });
   });
 
-  it('contains CTA to pricing', () => {
+  it('contains CTA to pricing or trial', () => {
     renderWithRouter(<FeaturesPage />);
-    const ctaLinks = screen.getAllByRole('link', { name: /get started|view pricing/i });
+    const ctaLinks = screen.getAllByRole('link', { name: /Start Your Free Trial|Schedule a Demo/i });
     expect(ctaLinks.length).toBeGreaterThan(0);
   });
 

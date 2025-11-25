@@ -1,5 +1,12 @@
 /* FinanceFlo.ai Brand Styles - Comprehensive Design System */
 
+/* Glass Morphism Effect */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
 /* Brand Navigation */
 .brand-nav {
   background: rgba(255, 255, 255, 0.95);

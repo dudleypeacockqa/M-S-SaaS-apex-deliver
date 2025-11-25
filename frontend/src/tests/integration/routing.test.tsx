@@ -56,6 +56,15 @@ vi.mock("../../pages/marketing/financeflo/EnhancedIndex", () => ({
   ),
 }))
 
+vi.mock("../../pages/marketing/EnhancedLandingPage", () => ({
+  EnhancedLandingPage: () => (
+    <div>
+      <h1>ERP Implementation + CapLiquify & ApexDeliver in One Partner Stack</h1>
+      <a href="/sign-in">Sign In</a>
+    </div>
+  ),
+}))
+
 
 describe("Integration: routing", () => {
   beforeEach(() => {
@@ -79,7 +88,7 @@ describe("Integration: routing", () => {
     render(<App />)
 
     expect(
-      await screen.findByRole("heading", { name: /from deal flow to cash flow/i, level: 1 }, { timeout: 20000 })
+      await screen.findByRole("heading", { name: /ERP Implementation \+ CapLiquify & ApexDeliver in One Partner Stack/i, level: 1 }, { timeout: 20000 })
     ).toBeInTheDocument()
     // Marketing nav uses regular links, not Clerk's SignInButton
     expect(screen.getAllByRole("link", { name: /sign in/i }).length).toBeGreaterThan(0)

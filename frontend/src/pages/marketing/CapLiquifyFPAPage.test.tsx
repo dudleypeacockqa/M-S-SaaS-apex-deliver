@@ -12,6 +12,15 @@ vi.mock('../../lib/analytics', () => ({
   trackCtaClick: vi.fn(),
 }));
 
+// Mock components that use recharts
+vi.mock('../../components/marketing/CashFlowCalculator', () => ({
+  CashFlowCalculator: () => <div data-testid="cash-flow-calculator">Cash Flow Calculator</div>,
+}));
+
+vi.mock('../../components/marketing/VideoShowcase', () => ({
+  VideoShowcase: () => <div data-testid="video-showcase">Video Showcase</div>,
+}));
+
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };

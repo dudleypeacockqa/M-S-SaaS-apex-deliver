@@ -1,7 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="320" height="64" viewBox="0 0 320 64">
-  <rect width="320" height="64" fill="#fff"/>
-  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-size="28" fill="#0A1F44" font-weight="600">
-    FinanceFlo
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="48" viewBox="0 0 200 48">
+  <defs>
+    <linearGradient id="iconGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2BB673"/>
+      <stop offset="100%" style="stop-color:#1A7F4D"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Green circular icon with F flow symbol -->
+  <circle cx="24" cy="24" r="20" fill="url(#iconGradientLight)"/>
+  
+  <!-- Stylized F with flow curves -->
+  <path d="M16 14 L16 34 M16 14 L30 14 M16 23 L26 23" 
+        stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M28 18 Q34 24 28 30" 
+        stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.9"/>
+  
+  <!-- FinanceFlo wordmark -->
+  <text x="52" y="32" font-family="Montserrat, -apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="700" fill="#061A2F">
+    <tspan>FinanceFlo</tspan>
+  </text>
+  
+  <!-- .AI suffix -->
+  <text x="166" y="32" font-family="Montserrat, -apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="700" fill="#2BB673">
+    <tspan>.AI</tspan>
   </text>
 </svg>
-

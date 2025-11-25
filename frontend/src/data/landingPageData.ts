@@ -1,3 +1,4 @@
+// Marketing feature icons import
 import { marketingFeatureIcons } from '../assets/marketing';
 import React from 'react';
 
