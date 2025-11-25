@@ -1,6 +1,6 @@
 # FRN-030: Document Workspace Permissions & Audit Flows
 
-**STATUS:** ⏳ PLANNED  
+**STATUS:** ✅ COMPLETE (2025-11-24 - All acceptance criteria met, delete confirmation dialogs implemented)  
 **Story ID:** FRN-030  
 **Epic:** F-003 Secure Document & Data Room  
 **Priority:** High  
