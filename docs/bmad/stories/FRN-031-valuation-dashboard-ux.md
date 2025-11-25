@@ -1,6 +1,6 @@
 # FRN-031: Valuation & Dashboard UX Hardening
 
-**STATUS:** ⏳ PLANNED  
+**STATUS:** ✅ COMPLETE (2025-11-24 - All tests passing, all requirements met)  
 **Story ID:** FRN-031  
 **Epic:** F-006 Financial Intelligence Engine / F-005 Automation & Tasks  
 **Priority:** Medium-High  
