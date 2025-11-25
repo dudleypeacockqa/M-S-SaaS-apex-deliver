@@ -8,7 +8,7 @@ const renderPage = () => render(<BrowserRouter><LandingPage /></BrowserRouter>)
 describe('LandingPage', () => {
   it('renders the enhanced hero section headline', () => {
     renderPage()
-    expect(screen.getByText(/13-Week Cash Forecasting/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /ERP Implementation \+ CapLiquify & ApexDeliver in One Partner Stack/i })).toBeInTheDocument()
   })
 
   it('includes trust badge section', () => {
@@ -44,7 +44,7 @@ describe('LandingPage', () => {
 
   it('maintains CTA section at the end', () => {
     renderPage()
-    expect(screen.getAllByRole('link', { name: /Start Free/i }).length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('link', { name: /Start Your Free Trial/i }).length).toBeGreaterThan(0)
   })
 
   it('renders case study callouts', () => {
