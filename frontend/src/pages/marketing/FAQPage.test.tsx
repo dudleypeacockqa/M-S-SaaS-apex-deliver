@@ -33,7 +33,12 @@ describe('FAQPage', () => {
 
     it('should render "Security & Compliance" category', () => {
       renderWithRouter(<FAQPage />);
-      expect(screen.getByText(/security & compliance/i)).toBeInTheDocument();
+      // Find the category heading (h2 element), not nav links
+      const categoryHeadings = screen.getAllByText(/security & compliance/i);
+      expect(categoryHeadings.length).toBeGreaterThan(0);
+      // Verify at least one is a heading element
+      const heading = categoryHeadings.find((el) => el.tagName === 'H2');
+      expect(heading).toBeInTheDocument();
     });
 
     it('should render "Pricing & ROI" category', () => {
