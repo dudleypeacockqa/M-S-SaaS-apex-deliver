@@ -515,7 +515,7 @@ const ActivityFeedWidget: React.FC<ActivityFeedProps> = ({ dealsData, dealsLoadi
 
 /**
  * Upcoming Tasks Widget
- * TODO: Replace with real task API when backend endpoint is ready
+ * Uses /api/dashboard/tasks endpoint via getUpcomingTasks()
  */
 const UpcomingTasksWidget: React.FC = () => {
   const { data, isLoading, isError } = useQuery({

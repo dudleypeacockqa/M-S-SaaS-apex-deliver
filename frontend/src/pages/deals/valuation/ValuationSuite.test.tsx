@@ -213,7 +213,6 @@ describe('ValuationSuite RED tests', () => {
     }, { timeout: 15000 })
   }, 20000)
 
-  // TODO: Test skipped - need to add analytics view or clarify what this test is checking
   it('displays scenario summary insights with analytics metrics', async () => {
     vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
       { id: 'val-analytics', enterprise_value: 12000000, equity_value: 9000000, deal_id: 'deal-analytics', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
