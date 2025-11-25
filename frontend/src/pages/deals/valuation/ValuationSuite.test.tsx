@@ -563,5 +563,66 @@ describe('ValuationSuite RED tests', () => {
     expect(await screen.findByText('£9,000,000')).toBeInTheDocument()
     expect(await screen.findByText('£15,000,000')).toBeInTheDocument()
   })
+
+  it('displays export history list with status badges and download links', async () => {
+    const user = userEvent.setup()
+    vi.mocked(valuationApi.listValuations).mockResolvedValueOnce([
+      { id: 'val-history', enterprise_value: 10500000, equity_value: 8000000, deal_id: 'deal-history', organization_id: 'org-1', forecast_years: 5, discount_rate: 12, terminal_growth_rate: 2.5, terminal_method: 'gordon_growth', cash_flows: [1000000, 1100000, 1200000, 1300000, 1400000], terminal_cash_flow: 1500000, net_debt: 500000, shares_outstanding: 1000000, implied_share_price: 75.0, created_by: 'user-1', created_at: '2025-01-01', updated_at: null }
+    ])
+    vi.mocked(valuationApi.listExports).mockResolvedValueOnce([
+      {
+        id: 'export-1',
+        valuation_id: 'val-history',
+        organization_id: 'org-1',
+        export_type: 'pdf',
+        export_format: 'summary',
+        status: 'complete',
+        task_id: 'task-1',
+        scenario_id: null,
+        download_url: '/download/export-1.pdf',
+        file_size_bytes: 1024000,
+        exported_by: 'user-1',
+        exported_at: '2025-01-01T10:00:00Z',
+        completed_at: '2025-01-01T10:05:00Z',
+      },
+      {
+        id: 'export-2',
+        valuation_id: 'val-history',
+        organization_id: 'org-1',
+        export_type: 'excel',
+        export_format: 'detailed',
+        status: 'failed',
+        task_id: 'task-2',
+        scenario_id: null,
+        download_url: null,
+        file_size_bytes: null,
+        exported_by: 'user-1',
+        exported_at: '2025-01-01T09:00:00Z',
+        completed_at: null,
+      },
+    ])
+
+    renderSuite('/deals/deal-history/valuations/val-history')
+
+    await waitFor(() => expect(screen.getByText(/£10,500,000/i)).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /exports/i }))
+
+    await waitFor(() => expect(valuationApi.listExports).toHaveBeenCalled())
+    
+    // Check export history section appears
+    expect(await screen.findByText(/export history/i)).toBeInTheDocument()
+    
+    // Check completed export with download link
+    const pdfExport = screen.getByText(/pdf \(summary\)/i).closest('div')
+    expect(pdfExport).toBeInTheDocument()
+    expect(pdfExport?.querySelector('.bg-emerald-100')).toHaveTextContent('complete')
+    const downloadLink = screen.getByRole('link', { name: /download/i })
+    expect(downloadLink).toHaveAttribute('href', '/download/export-1.pdf')
+    
+    // Check failed export
+    const excelExport = screen.getByText(/excel \(detailed\)/i).closest('div')
+    expect(excelExport).toBeInTheDocument()
+    expect(excelExport?.querySelector('.bg-red-100')).toHaveTextContent('failed')
+  })
 })
 
