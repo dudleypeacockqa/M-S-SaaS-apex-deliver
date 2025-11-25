@@ -18,14 +18,10 @@ import {
   bulkMoveDocuments,
   bulkDeleteDocuments,
   restoreArchivedDocuments,
-  listPermissions,
-  updatePermission,
   logDocumentAuditEvent,
   type BulkArchiveResult,
   type BulkMoveResult,
   type BulkDeleteResponse,
-  type DocumentPermission,
-  type PermissionLevel,
 } from '../../services/api/documents'
 
 type ToastType = 'status' | 'alert' | 'progress'
