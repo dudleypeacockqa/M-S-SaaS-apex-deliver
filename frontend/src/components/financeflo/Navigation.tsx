@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ArrowRight } from "lucide-react";
@@ -13,13 +13,45 @@ import { FinanceFloLogo } from "./brand/FinanceFloLogo";
 import "../styles/brand.css";
 
 export const Navigation = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeDesktopMenu, setActiveDesktopMenu] = useState<string | null>(null);
   const location = useLocation();
+  const navRef = useRef<HTMLElement | null>(null);
 
   const isActive = (path: string) => location.pathname === path;
 
+  const handleOpenMenu = useCallback((key: string) => {
+    setActiveDesktopMenu(key);
+  }, []);
+
+  const handleCloseMenu = useCallback((key?: string) => {
+    setActiveDesktopMenu((current) => {
+      if (!current) return null;
+      if (!key || current === key) {
+        return null;
+      }
+      return current;
+    });
+  }, []);
+
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setActiveDesktopMenu(null);
+      }
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, []);
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      setActiveDesktopMenu(null);
+    }
+  }, [mobileMenuOpen]);
+
   return (
-    <nav className="glass-morphism sticky top-0 z-50 w-full border-b border-white/10 shadow-xl">
+    <nav ref={navRef} className="glass-morphism sticky top-0 z-50 w-full border-b border-white/10 shadow-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 sm:h-20 lg:h-24">
           <div className="flex items-center">
@@ -36,16 +68,25 @@ export const Navigation = () => {
                 title="Industries"
                 links={industryLinks}
                 useColumns={true}
+                isOpen={activeDesktopMenu === "industries"}
+                onOpen={() => handleOpenMenu("industries")}
+                onClose={() => handleCloseMenu("industries")}
               />
 
               <SolutionsDropdown
                 title="Solutions"
                 links={solutionsLinks}
+                isOpen={activeDesktopMenu === "solutions"}
+                onOpen={() => handleOpenMenu("solutions")}
+                onClose={() => handleCloseMenu("solutions")}
               />
 
               <NavigationDropdown
                 title="Resources"
                 links={resourceLinks}
+                isOpen={activeDesktopMenu === "resources"}
+                onOpen={() => handleOpenMenu("resources")}
+                onClose={() => handleCloseMenu("resources")}
               />
 
               <Link
@@ -65,23 +106,23 @@ export const Navigation = () => {
           
           <div className="lg:hidden">
             <button
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
               className="nav-link p-2"
             >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </div>
       
       {/* Mobile Menu */}
-      {isOpen && (
+      {mobileMenuOpen && (
         <div className="lg:hidden dropdown-content border-t shadow-lg rounded-b-xl overflow-hidden max-h-[80vh] overflow-y-auto">
           <div className="px-2 pt-2 pb-3 space-y-1 divide-y divide-border">
             <MobileNavigationSection
               title="Industries"
               links={industryLinks.slice(0, 6)}
-              onLinkClick={() => setIsOpen(false)}
+              onLinkClick={() => setMobileMenuOpen(false)}
             />
 
             {/* Solutions - Grouped */}
@@ -90,46 +131,46 @@ export const Navigation = () => {
               <MobileNavigationSection
                 title="M&A & Finance Solutions"
                 links={maSolutionsLinks}
-                onLinkClick={() => setIsOpen(false)}
+                onLinkClick={() => setMobileMenuOpen(false)}
               />
               <MobileNavigationSection
                 title="ERP Solutions"
                 links={erpLinks}
-                onLinkClick={() => setIsOpen(false)}
+                onLinkClick={() => setMobileMenuOpen(false)}
               />
               <MobileNavigationSection
                 title="AI Enhancement"
                 links={aiEnhancementLinks}
-                onLinkClick={() => setIsOpen(false)}
+                onLinkClick={() => setMobileMenuOpen(false)}
               />
               <MobileNavigationSection
                 title="Implementation"
                 links={implementationLinks}
-                onLinkClick={() => setIsOpen(false)}
+                onLinkClick={() => setMobileMenuOpen(false)}
               />
               <MobileNavigationSection
                 title="iPaaS & Integration"
                 links={ipaasLinks}
-                onLinkClick={() => setIsOpen(false)}
+                onLinkClick={() => setMobileMenuOpen(false)}
               />
               <MobileNavigationSection
                 title="LeverageFlo.ai"
                 links={leverageFloLinks.slice(0, 4)}
-                onLinkClick={() => setIsOpen(false)}
+                onLinkClick={() => setMobileMenuOpen(false)}
               />
             </div>
 
             <MobileNavigationSection
               title="Resources"
               links={resourceLinks}
-              onLinkClick={() => setIsOpen(false)}
+              onLinkClick={() => setMobileMenuOpen(false)}
             />
             
             <div className="py-4 space-y-2">
               <Link
                 to="/pricing"
                 className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary"
-                onClick={() => setIsOpen(false)}
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Pricing
               </Link>
@@ -141,7 +182,7 @@ export const Navigation = () => {
                 className="w-full"
                 onClick={() => {
                   window.location.href = "/demo";
-                  setIsOpen(false);
+                  setMobileMenuOpen(false);
                 }}
               >
                 View Demos
@@ -151,7 +192,7 @@ export const Navigation = () => {
                 className="w-full"
                 onClick={() => {
                   window.location.href = "/contact";
-                  setIsOpen(false);
+                  setMobileMenuOpen(false);
                 }}
               >
                 Book Consultation

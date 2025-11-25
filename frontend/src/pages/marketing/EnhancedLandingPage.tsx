@@ -110,7 +110,10 @@ export const EnhancedLandingPage: React.FC = () => {
       {isClientReady && <StickyCTABar />}
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-900 text-white py-20 md:py-28">
+      <section
+        className="relative bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-900 text-white py-20 md:py-28"
+        aria-labelledby="apexdeliver-hero-heading"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6 text-center lg:text-left">
@@ -118,7 +121,10 @@ export const EnhancedLandingPage: React.FC = () => {
                 <span>FinanceFlo ERP + AI Partner</span>
                 <span className="text-emerald-300">Services + Software Stack</span>
               </div>
-              <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
+              <h1
+                id="apexdeliver-hero-heading"
+                className="text-4xl md:text-6xl font-extrabold leading-tight"
+              >
                 ERP Implementation + CapLiquify & ApexDeliver in One Program
               </h1>
               <p className="text-lg md:text-xl text-indigo-100 leading-relaxed">

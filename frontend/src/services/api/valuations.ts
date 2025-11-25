@@ -364,6 +364,16 @@ export async function getExportStatus(
   return response.data
 }
 
+export async function listExports(
+  dealId: string,
+  valuationId: string,
+): Promise<ValuationExportLogEntry[]> {
+  const response = await api.get<ValuationExportLogEntry[]>(
+    `/api/deals/${dealId}/valuations/${valuationId}/exports`,
+  )
+  return response.data
+}
+
 export default {
   listValuations,
   createValuation,
@@ -381,5 +391,6 @@ export default {
   runMonteCarlo,
   triggerExport,
   getExportStatus,
+  listExports,
 }
 

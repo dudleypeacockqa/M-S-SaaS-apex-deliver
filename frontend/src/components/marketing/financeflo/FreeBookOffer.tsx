@@ -43,7 +43,10 @@ const FreeBookOffer: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-brand-navy via-brand-navy-light to-brand-navy-dark relative overflow-hidden">
+    <section
+      className="py-16 bg-gradient-to-br from-brand-navy via-brand-navy-light to-brand-navy-dark relative overflow-hidden"
+      aria-labelledby="financeflo-free-book-heading"
+    >
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.1%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
@@ -63,7 +66,7 @@ const FreeBookOffer: React.FC = () => {
               <span className="text-white font-medium">FREE PAPERBACK BOOK</span>
             </div>
 
-            <h2 className="text-4xl md:text-5xl font-bold font-heading text-white mb-4">
+            <h2 id="financeflo-free-book-heading" className="text-4xl md:text-5xl font-bold font-heading text-white mb-4">
               Get Your Free Copy of
               <span className="block text-brand-green mt-2">
                 "Connected Intelligence"
@@ -99,7 +102,7 @@ const FreeBookOffer: React.FC = () => {
                 </div>
 
                 {/* Book Stats */}
-                <div className="grid grid-cols-3 gap-6 w-full max-w-md">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-md">
                   <div className="text-center">
                     <div className="flex items-center justify-center mb-2">
                       <Star className="w-5 h-5 text-yellow-400 fill-current" />
@@ -186,7 +189,7 @@ const FreeBookOffer: React.FC = () => {
 
               {/* Trust Indicators */}
               <div className="mt-6 pt-6 border-t border-white/20">
-                <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                   <div>
                     <p className="text-brand-green font-bold text-lg">230+</p>
                     <p className="text-white/70 text-xs">Implementations</p>

@@ -1,0 +1,29 @@
+{
+  "name": "FinanceFlo.ai - AI-Powered Finance Automation",
+  "short_name": "FinanceFlo.ai",
+  "description": "Transform your business with AI-powered finance automation, ERP integration, and intelligent workflows for UK mid-market businesses.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-GB",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-64x64.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
+

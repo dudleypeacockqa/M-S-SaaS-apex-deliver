@@ -45,6 +45,7 @@ class Settings(BaseSettings):
     # API Keys
     openai_api_key: str = ""
     anthropic_api_key: str = ""
+    enable_anthropic_ai: bool = False
     sendgrid_api_key: str = ""
     sendgrid_from_email: str = "noreply@100daysandbeyond.com"
     sendgrid_from_name: str = "100 Days & Beyond"

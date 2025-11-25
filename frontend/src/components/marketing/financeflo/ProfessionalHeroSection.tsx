@@ -7,7 +7,10 @@ export const ProfessionalHeroSection = () => {
   const { navigateTo } = useSecureNavigation();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      aria-labelledby="financeflo-professional-hero-heading"
+    >
       {/* Deep Navy Background - Brand Guidelines */}
       <div className="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-navy-light to-brand-navy-dark">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-brand-blue/10 to-transparent"></div>
@@ -40,7 +43,7 @@ export const ProfessionalHeroSection = () => {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
           {/* Left Column - Content */}
-          <div className="space-y-8 sm:space-y-10">
+            <div className="space-y-8 sm:space-y-10" aria-live="polite">
             {/* Trust Badge */}
             <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
               <CheckCircle className="h-4 w-4 text-brand-green mr-2" />
@@ -49,7 +52,10 @@ export const ProfessionalHeroSection = () => {
 
             {/* Main Headline */}
             <div className="space-y-4 sm:space-y-6">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight font-heading">
+              <h1
+                id="financeflo-professional-hero-heading"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight font-heading"
+              >
                 <span className="text-white">Transform Your</span>
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-brand-green-light">
@@ -67,7 +73,7 @@ export const ProfessionalHeroSection = () => {
             </div>
 
             {/* Stats Cards matching the reference design */}
-            <div className="grid grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6" aria-label="FinanceFlo performance metrics">
               <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/30 text-center hover:bg-white/20 transition-all duration-300">
                 <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">450+</div>
                 <div className="text-white/90 text-xs sm:text-sm font-medium">Businesses<br />Transformed</div>

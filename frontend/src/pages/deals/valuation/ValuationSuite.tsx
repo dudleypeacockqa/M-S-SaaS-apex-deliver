@@ -15,6 +15,7 @@ import {
   runMonteCarlo,
   triggerExport,
   getExportStatus,
+  listExports,
   createValuation,
   addComparableCompany,
   createScenario,
@@ -1430,10 +1431,30 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
   const [exportFormat, setExportFormat] = useState<string | null>('summary')
 
   const [lastExport, setLastExport] = useState<ValuationExportResponse | null>(null)
-  const [exportStatus, setExportStatus] = useState<ValuationExportLogEntry | null>(null)
   const [exportError, setExportError] = useState<string | null>(null)
   const [exportEntitlement, setExportEntitlement] = useState<ExportEntitlement>(null)
-  const pollingIntervalRef = useRef<number | null>(null)
+
+  // Fetch export history
+  const { data: exportHistory = [] } = useQuery({
+    queryKey: ['valuations', dealId, valuationId, 'exports'],
+    queryFn: () => listExports(dealId, valuationId),
+  })
+
+  // Poll export status if we have a task_id from last export
+  const { data: exportStatus } = useQuery({
+    queryKey: ['valuations', dealId, valuationId, 'exports', lastExport?.task_id],
+    queryFn: () => getExportStatus(dealId, valuationId, lastExport!.task_id),
+    enabled: !!lastExport?.task_id && lastExport.status !== 'complete' && lastExport.status !== 'failed',
+    refetchInterval: (query) => {
+      const status = query.state.data?.status
+      // Stop polling if complete or failed
+      if (status === 'complete' || status === 'failed') {
+        return false
+      }
+      // Poll every 2 seconds while processing
+      return 2000
+    },
+  })
 
   const { mutate, isPending } = useMutation({
     mutationFn: () => triggerExport(dealId, valuationId, exportType, exportFormat),
@@ -1441,20 +1462,10 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
       setExportError(null)
       setExportEntitlement(null)
       setLastExport(null)
-      setExportStatus(null)
-      // Clear any existing polling
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current)
-        pollingIntervalRef.current = null
-      }
     },
     onSuccess: (response: ValuationExportResponse) => {
       setLastExport(response)
       queryClient.invalidateQueries({ queryKey: ['valuations', dealId, valuationId, 'exports'] })
-      // Start polling for status
-      if (response.task_id) {
-        pollExportStatus(response.task_id)
-      }
     },
     onError: (err) => {
       const entitlement = parseExportEntitlement(err)
@@ -1465,52 +1476,6 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
       }
     },
   })
-
-  const pollExportStatus = async (taskId: string) => {
-    const checkStatus = async () => {
-      try {
-        const status = await getExportStatus(dealId, valuationId, taskId)
-        setExportStatus(status)
-
-        // Stop polling if export is complete or failed
-        if (status.status === 'complete' || status.status === 'failed') {
-          if (pollingIntervalRef.current) {
-            clearInterval(pollingIntervalRef.current)
-            pollingIntervalRef.current = null
-          }
-          return false // Signal to stop polling
-        }
-        return true // Continue polling
-      } catch (error) {
-        console.error('Failed to check export status:', error)
-        // Continue polling on error (might be transient)
-        return true
-      }
-    }
-
-    // Check immediately
-    const shouldContinue = await checkStatus()
-
-    // Poll every 2 seconds if still processing
-    if (shouldContinue) {
-      pollingIntervalRef.current = window.setInterval(async () => {
-        const continuePolling = await checkStatus()
-        if (!continuePolling && pollingIntervalRef.current) {
-          clearInterval(pollingIntervalRef.current)
-          pollingIntervalRef.current = null
-        }
-      }, 2000)
-    }
-  }
-
-  // Cleanup polling on unmount
-  useEffect(() => {
-    return () => {
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current)
-      }
-    }
-  }, [])
 
   const formatLabel = (value: string | null) => {
     if (!value) {
@@ -1665,6 +1630,57 @@ const ExportsView = ({ dealId, valuationId }: { dealId: string; valuationId: str
           {getStatusDisplay()}
         </div>
       </SectionCard>
+
+      {exportHistory.length > 0 && (
+        <SectionCard title="Export History">
+          <div className="space-y-3">
+            {exportHistory.map((exportItem) => {
+              const statusBadgeClass =
+                exportItem.status === 'complete'
+                  ? 'bg-emerald-100 text-emerald-800'
+                  : exportItem.status === 'failed'
+                    ? 'bg-red-100 text-red-800'
+                    : exportItem.status === 'processing'
+                      ? 'bg-blue-100 text-blue-800'
+                      : 'bg-amber-100 text-amber-800'
+
+              return (
+                <div
+                  key={exportItem.id}
+                  className="flex items-center justify-between rounded-lg border border-gray-200 p-4"
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <span className={`rounded-full px-2 py-1 text-xs font-medium ${statusBadgeClass}`}>
+                        {exportItem.status}
+                      </span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {exportItem.export_type.toUpperCase()} ({formatLabel(exportItem.export_format)})
+                      </span>
+                      {exportItem.task_id && (
+                        <span className="text-xs text-gray-500">Task: {exportItem.task_id.slice(0, 8)}...</span>
+                      )}
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Exported {new Date(exportItem.exported_at).toLocaleString()}
+                      {exportItem.completed_at && ` · Completed ${new Date(exportItem.completed_at).toLocaleString()}`}
+                    </p>
+                  </div>
+                  {exportItem.status === 'complete' && exportItem.download_url && (
+                    <a
+                      href={exportItem.download_url}
+                      download
+                      className="ml-4 rounded-md bg-indigo-600 px-3 py-1 text-sm font-medium text-white hover:bg-indigo-700"
+                    >
+                      Download
+                    </a>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </SectionCard>
+      )}
     </div>
   )
 }

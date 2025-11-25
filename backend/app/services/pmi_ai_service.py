@@ -117,6 +117,58 @@ class _AnthropicClientProxy:
 anthropic_client = _AnthropicClientProxy()
 
 
+def _is_anthropic_enabled() -> bool:
+    """Return True when Anthropic usage is explicitly enabled and configured."""
+    settings = get_settings()
+    return (
+        settings.enable_anthropic_ai
+        and bool(settings.anthropic_api_key)
+        and _ANTHROPIC_AVAILABLE
+    )
+
+
+async def generate_reasoning_text(
+    prompt: str,
+    *,
+    system_prompt: Optional[str] = None,
+    max_tokens: int = 2000,
+    temperature: float = 0.7,
+    response_format: Optional[Dict[str, str]] = None,
+    anthropic_model: str = "claude-3-opus-20240229",
+    openai_model: str = "gpt-4",
+) -> str:
+    """
+    Execute a reasoning prompt, preferring Anthropic when enabled, otherwise OpenAI.
+    Returns the raw assistant text so callers can parse JSON as needed.
+    """
+    if _is_anthropic_enabled():
+        anthropic_kwargs = {
+            "model": anthropic_model,
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+            "messages": [{"role": "user", "content": prompt}],
+        }
+        if system_prompt:
+            anthropic_kwargs["system"] = system_prompt
+        response = await anthropic_client.messages.create(**anthropic_kwargs)
+        return response.content[0].text
+
+    openai_messages = []
+    if system_prompt:
+        openai_messages.append({"role": "system", "content": system_prompt})
+    openai_messages.append({"role": "user", "content": prompt})
+    openai_kwargs = {
+        "model": openai_model,
+        "messages": openai_messages,
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+    }
+    if response_format:
+        openai_kwargs["response_format"] = response_format
+    response = await openai_client.chat.completions.create(**openai_kwargs)
+    return response.choices[0].message.content
+
+
 async def identify_risks_from_project_data(
     project_id: str,
     organization_id: str,
@@ -256,17 +308,12 @@ Provide a detailed mitigation strategy that includes:
 Format your response as JSON with keys: immediate_actions, short_term_actions, long_term_actions, stakeholders, success_metrics, reasoning.
 """
     
-    # Call Anthropic API
-    response = await anthropic_client.messages.create(
-        model="claude-3-opus-20240229",
+    content = await generate_reasoning_text(
+        prompt,
         max_tokens=2000,
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
+        response_format={"type": "json_object"},
     )
     
-    # Parse response
-    content = response.content[0].text
     try:
         return json.loads(content)
     except json.JSONDecodeError:
@@ -478,15 +525,12 @@ Provide a feasibility assessment including:
 Format as JSON with keys: likelihood_percent, success_factors, blockers, recommended_approach, risk_factors, reasoning.
 """
     
-    response = await anthropic_client.messages.create(
-        model="claude-3-opus-20240229",
+    content = await generate_reasoning_text(
+        prompt,
         max_tokens=2000,
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
+        response_format={"type": "json_object"},
     )
     
-    content = response.content[0].text
     try:
         return json.loads(content)
     except json.JSONDecodeError:
@@ -692,15 +736,12 @@ Recommend 5-7 priority actions with:
 Format as JSON array with keys: action, priority, recommended_owner, timeline_days, expected_impact, reasoning.
 """
     
-    response = await anthropic_client.messages.create(
-        model="claude-3-opus-20240229",
+    content = await generate_reasoning_text(
+        prompt,
         max_tokens=2000,
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
+        response_format={"type": "json_object"},
     )
     
-    content = response.content[0].text
     try:
         data = json.loads(content)
         actions = data.get("actions", []) if isinstance(data, dict) else data

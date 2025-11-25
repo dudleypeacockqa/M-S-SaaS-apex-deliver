@@ -10,7 +10,7 @@ from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
-from app.services.pmi_ai_service import openai_client, anthropic_client
+from app.services.pmi_ai_service import openai_client, generate_reasoning_text
 from app.models.pmi import PMIProject, PMIWorkstream, PMIWorkstreamType
 
 
@@ -142,15 +142,12 @@ Format as JSON with:
 - reasoning: Explanation of the sequence
 """
     
-    response = await anthropic_client.messages.create(
-        model="claude-3-opus-20240229",
+    content = await generate_reasoning_text(
+        prompt,
         max_tokens=2000,
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
+        response_format={"type": "json_object"},
     )
     
-    content = response.content[0].text
     try:
         return json.loads(content)
     except json.JSONDecodeError:

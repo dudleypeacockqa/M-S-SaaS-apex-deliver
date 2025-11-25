@@ -1,11 +1,10 @@
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/marketing/financeflo/ui/dropdown-menu";
 
@@ -25,27 +24,39 @@ interface SolutionLink {
 interface SolutionsDropdownProps {
   title: string;
   links: SolutionLink[];
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
 }
 
-export const SolutionsDropdown = ({ title, links }: SolutionsDropdownProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const SolutionsDropdown = ({ title, links, isOpen, onOpen, onClose }: SolutionsDropdownProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const hoverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
-  const handleOpenChange = (open: boolean) => {
-    setIsOpen(open);
-    if (!open) {
-      setHoveredIndex(null);
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
-      }
-    }
-  };
-
-  const handleMouseEnter = (index: number) => {
+  const clearHoverTimeout = useCallback(() => {
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
     }
+  }, []);
+
+  const clearCloseTimeout = useCallback(() => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  }, []);
+
+  const resetState = useCallback(() => {
+    setHoveredIndex(null);
+    clearHoverTimeout();
+    clearCloseTimeout();
+  }, [clearCloseTimeout, clearHoverTimeout]);
+
+  const handleMouseEnter = (index: number) => {
+    clearHoverTimeout();
     setHoveredIndex(index);
   };
 
@@ -56,16 +67,79 @@ export const SolutionsDropdown = ({ title, links }: SolutionsDropdownProps) => {
     }, 100);
   };
 
+  const scheduleClose = useCallback(() => {
+    clearCloseTimeout();
+    closeTimeoutRef.current = setTimeout(() => {
+      onClose();
+      resetState();
+    }, 120);
+  }, [clearCloseTimeout, onClose, resetState]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      resetState();
+    }
+  }, [isOpen, resetState]);
+
+  useEffect(() => {
+    return () => {
+      resetState();
+    };
+  }, [resetState]);
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        triggerRef.current?.focus();
+        return;
+      }
+      if (["Enter", " ", "ArrowDown"].includes(event.key)) {
+        event.preventDefault();
+        onOpen();
+      }
+    },
+    [onClose, onOpen],
+  );
+
+  const handleTriggerClick = useCallback(() => {
+    if (isOpen) {
+      onClose();
+    } else {
+      onOpen();
+    }
+  }, [isOpen, onClose, onOpen]);
+
   return (
     <div
       className="relative group"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
+      onMouseEnter={() => {
+        clearCloseTimeout();
+        onOpen();
+      }}
+      onMouseLeave={scheduleClose}
     >
-      <DropdownMenu open={isOpen} onOpenChange={handleOpenChange}>
+      <DropdownMenu
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (open) {
+            onOpen();
+          } else {
+            onClose();
+          }
+        }}
+      >
         <DropdownMenuTrigger asChild>
           <button
+            type="button"
             className="flex items-center px-4 py-2 text-base font-medium text-brand-navy hover:text-brand-gold transition-all duration-300 focus:outline-none group relative"
+            aria-haspopup="menu"
+            aria-expanded={isOpen}
+            ref={triggerRef}
+            onClick={handleTriggerClick}
+            onFocus={onOpen}
+            onKeyDown={handleKeyDown}
           >
             {title}
             <ChevronDown className={`ml-2 h-4 w-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} group-hover:text-brand-gold`} />
@@ -77,6 +151,8 @@ export const SolutionsDropdown = ({ title, links }: SolutionsDropdownProps) => {
           align="center"
           sideOffset={8}
           onCloseAutoFocus={(e) => e.preventDefault()}
+          onMouseEnter={clearCloseTimeout}
+          onMouseLeave={scheduleClose}
         >
           <div className="space-y-1">
             {links.map((link, index) => (
@@ -111,7 +187,10 @@ export const SolutionsDropdown = ({ title, links }: SolutionsDropdownProps) => {
                           key={subLink.path}
                           to={subLink.path}
                           className="block px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-brand-gold/5 hover:to-brand-gold/10 transition-all duration-300 group border border-transparent hover:border-brand-gold/20"
-                          onClick={() => setIsOpen(false)}
+                          onClick={() => {
+                            onClose();
+                            resetState();
+                          }}
                         >
                           <div className="font-medium text-brand-navy group-hover:text-brand-gold transition-colors">{subLink.name}</div>
                           {subLink.description && (

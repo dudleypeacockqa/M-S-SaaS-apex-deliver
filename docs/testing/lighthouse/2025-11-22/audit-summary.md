@@ -1,8 +1,8 @@
 # Performance & Accessibility Audit Summary - 2025-11-22
 
-**Date**: 2025-11-22  
+**Date**: 2025-11-22 (executed 2025-11-24 local preview)  
 **Environment**: Preview server (http://127.0.0.1:4173)  
-**Status**: Ready for execution
+**Status**: ✅ Completed – reports archived under `docs/testing/lighthouse/2025-11-24/`
 
 ---
 
@@ -33,14 +33,20 @@
 
 ---
 
-## Target Scores
+## Target Scores vs Results
 
-| Category | Target | Previous (2025-11-13) |
-|----------|--------|----------------------|
-| Performance | ≥90% | TBD |
-| Accessibility | ≥95% | TBD |
-| Best Practices | ≥90% | TBD |
-| SEO | ≥90% | TBD |
+| Surface | Category | Target | Score | Status |
+|---------|----------|--------|-------|--------|
+| **Desktop** | Performance | ≥90% | **99%** | ✅ |
+| | Accessibility | ≥95% | **97%** | ✅ |
+| | Best Practices | ≥90% | **100%** | ✅ |
+| | SEO | ≥90% | **100%** | ✅ |
+| **Mobile** | Performance | ≥90% | **86%** | ⚠️ Needs tuning |
+| | Accessibility | ≥95% | **96%** | ✅ |
+| | Best Practices | ≥90% | **100%** | ✅ |
+| | SEO | ≥90% | **100%** | ✅ |
+
+**Previous baseline (2025-11-13)**: Desktop 92/96/100/100, Mobile 78/94/100/100.
 
 ---
 
@@ -56,15 +62,27 @@
 
 ## Findings
 
-(To be filled after audit execution)
+1. **Desktop Lighthouse** – All four categories exceeded targets. Artifacts:
+   - `docs/testing/lighthouse/2025-11-24/lighthouse-desktop.report.html`
+   - `docs/testing/lighthouse/2025-11-24/lighthouse-desktop.report.json`
+2. **Mobile Lighthouse** – Accessibility, Best Practices, SEO met targets, but Performance scored 86% because of large hero media and animation cost on slower devices. Artifacts:
+   - `docs/testing/lighthouse/2025-11-24/lighthouse-mobile.report.html`
+   - `docs/testing/lighthouse/2025-11-24/lighthouse-mobile.report.json`
+3. **Axe Accessibility Sweep** – `docs/testing/lighthouse/2025-11-24/axe-local-preview.json` reported **0 violations** across the audited surfaces.
 
 ---
 
 ## Remediation Tickets
 
-(To be created if scores below targets)
+- **Wave 4 – Mobile Performance Hardening** *(open)*  
+  - Scope: defer non-critical hero animations, lazy-load testimonial carousel, and preconnect to `cdn.clerk.com` before hydration.  
+  - Owner: Marketing FE team.  
+  - Exit criteria: Lighthouse Mobile Performance ≥ 90 with same preview server.
 
 ---
 
-**Note**: Audits require preview server to be running. Execute when ready.
+**Next Actions**:
+1. Implement mobile performance trims outlined above (target Wave 3.1 follow-up).
+2. Re-run Lighthouse Mobile after trims and attach refreshed reports.
+3. Keep `audit-summary.md` in sync when new runs occur.
 

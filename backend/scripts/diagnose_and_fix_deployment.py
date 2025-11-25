@@ -93,11 +93,19 @@ def publish_blog_posts():
     
     try:
         from app.models.blog_post import BlogPost
-        from app.db.session import SessionLocal
+        import app.core.database as db_core
         from datetime import datetime, timezone
         from sqlalchemy import update
-        
-        db = SessionLocal()
+
+        # Ensure engine/session factory are initialized (SessionLocal may be None until init_engine runs)
+        db_core.init_engine()
+        session_factory = db_core.SessionLocal
+        if session_factory is None:
+            raise RuntimeError("SessionLocal is not initialized")
+        else:
+            print(f"Session factory initialized: {session_factory}")
+
+        db = session_factory()
         try:
             total_posts = db.query(BlogPost).count()
             unpublished_posts = db.query(BlogPost).filter_by(published=False).count()

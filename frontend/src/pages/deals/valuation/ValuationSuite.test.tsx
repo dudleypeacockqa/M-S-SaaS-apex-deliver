@@ -21,6 +21,7 @@ vi.mock('../../../services/api/valuations', () => ({
   runMonteCarlo: vi.fn(),
   triggerExport: vi.fn(),
   getExportStatus: vi.fn(),
+  listExports: vi.fn(),
   addComparableCompany: vi.fn(),
   addPrecedentTransaction: vi.fn(),
   createScenario: vi.fn(),
@@ -93,6 +94,8 @@ describe('ValuationSuite RED tests', () => {
       exported_at: '2025-01-01T00:00:00Z',
       completed_at: null,
     })
+    // Default mock for export history
+    vi.mocked(valuationApi.listExports).mockResolvedValue([])
   })
 
   it('renders valuation layout shell', async () => {
