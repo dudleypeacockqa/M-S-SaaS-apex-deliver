@@ -244,7 +244,7 @@ describe('BlogPostPage', () => {
       renderBlogPost('non-existent-post');
 
       await waitFor(() => {
-        expect(screen.getByText(/post not found/i)).toBeInTheDocument();
+        expect(screen.getByText(/Post Not Found/i)).toBeInTheDocument();
       });
     });
 
