@@ -6,6 +6,7 @@ import UploadPanel from '../../components/documents/UploadPanel'
 import { PermissionModal } from '../../components/documents/PermissionModal'
 import BulkMoveModal from '../../components/documents/BulkMoveModal'
 import BulkArchiveModal from '../../components/documents/BulkArchiveModal'
+import BulkDeleteModal from '../../components/documents/BulkDeleteModal'
 import { DocumentQuestionsPanel } from '../../components/documents/DocumentQuestionsPanel'
 import { AccessLogDrawer } from '../../components/documents/AccessLogDrawer'
 import { ShareLinkModal } from '../../components/documents/ShareLinkModal'
@@ -15,12 +16,14 @@ import { useDocumentUploads } from '../../hooks/useDocumentUploads'
 import {
   bulkArchiveDocuments,
   bulkMoveDocuments,
+  bulkDeleteDocuments,
   restoreArchivedDocuments,
   listPermissions,
   updatePermission,
   logDocumentAuditEvent,
   type BulkArchiveResult,
   type BulkMoveResult,
+  type BulkDeleteResponse,
   type DocumentPermission,
   type PermissionLevel,
 } from '../../services/api/documents'
@@ -66,6 +69,15 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
     isSubmitting: false,
   })
   const [bulkArchiveState, setBulkArchiveState] = useState<{
+    isOpen: boolean
+    documents: Document[]
+    isProcessing: boolean
+  }>({
+    isOpen: false,
+    documents: [],
+    isProcessing: false,
+  })
+  const [bulkDeleteState, setBulkDeleteState] = useState<{
     isOpen: boolean
     documents: Document[]
     isProcessing: boolean
@@ -142,63 +154,8 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
     setPermissionState((current) => ({ ...current, isOpen: false }))
   }, [])
 
-  const handlePermissionChange = useCallback(
-    async (change: { documentId: string; userId: string; permission: string }) => {
-      const nextRole = change.permission as PermissionLevel
-      if (!['viewer', 'editor', 'owner'].includes(nextRole)) {
-        throw new Error(`Unsupported permission level: ${change.permission}`)
-      }
-      try {
-        const permissions = await listPermissions(change.documentId)
-        const target = permissions.find(
-          (permission: DocumentPermission) =>
-            permission.user_id === change.userId || permission.user_email === change.userId
-        )
-
-        if (!target) {
-          throw new Error('Permission record not found for the selected user')
-        }
-
-        await updatePermission(target.id, { role: nextRole })
-
-        await logDocumentAuditEvent(dealId, change.documentId, {
-          action: 'permission_change',
-          metadata: { userId: change.userId, permission: nextRole },
-        })
-
-        const entryId =
-          typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}`
-
-        setPermissionAuditTrail((current) => [
-          {
-            id: entryId,
-            actor: 'You',
-            action: `Set ${target.user_email} to ${nextRole}`,
-            createdAt: new Date().toISOString(),
-          },
-          ...current,
-        ])
-
-        setResetSelectionSignal((value) => value + 1)
-        queryClient.invalidateQueries({
-          queryKey: ['deal-documents', dealId],
-        })
-        scheduleToast({
-          type: 'status',
-          message: 'Permissions updated',
-          detail: `Changes saved for ${change.documentId}`,
-        })
-      } catch (error) {
-        console.error('[Permission Update Failed]', error)
-        scheduleToast({
-          type: 'alert',
-          message: 'Failed to update permissions',
-          detail: error instanceof Error ? error.message : undefined,
-        })
-      }
-    },
-    [dealId, queryClient, scheduleToast]
-  )
+  // Permission changes are handled internally by PermissionModal component
+  // The modal uses React Query mutations and invalidates queries automatically
 
   const handleAuditLog = useCallback(
     async (event: {
@@ -312,11 +269,73 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
 
   const handleBulkDelete = useCallback(
     async (documents: Document[]) => {
-      // TODO: Show confirmation dialog
-      console.log('[Bulk Delete]', documents)
+      setBulkDeleteState({ isOpen: true, documents, isProcessing: false })
     },
     []
   )
+
+  const closeBulkDeleteModal = useCallback(() => {
+    setBulkDeleteState((current) => ({ ...current, isOpen: false }))
+  }, [])
+
+  const handleBulkDeleteConfirm = useCallback(async () => {
+    const { documents } = bulkDeleteState
+    if (documents.length === 0) {
+      closeBulkDeleteModal()
+      return
+    }
+
+    setBulkDeleteState((current) => ({ ...current, isProcessing: true }))
+
+    try {
+      const documentIds = documents.map((doc) => doc.id)
+      const result: BulkDeleteResponse = await bulkDeleteDocuments(dealId, documentIds)
+
+      // Log audit events for successful deletions
+      await Promise.all(
+        result.deleted_ids.map((docId: string) =>
+          logDocumentAuditEvent(dealId, docId, {
+            action: 'document_deleted',
+            metadata: { bulk_delete: true, total_count: documents.length },
+          }).catch((err) => {
+            console.error(`Failed to log audit for deleted document ${docId}:`, err)
+          })
+        )
+      )
+
+      // Show success/partial success message
+      if (result.failed_ids.length === 0) {
+        scheduleToast({
+          type: 'status',
+          message: `Successfully deleted ${result.deleted_ids.length} document${result.deleted_ids.length !== 1 ? 's' : ''}`,
+        })
+      } else {
+        scheduleToast({
+          type: 'alert',
+          message: `Deleted ${result.deleted_ids.length} of ${documents.length} documents`,
+          detail: `${result.failed_ids.length} document${result.failed_ids.length !== 1 ? 's' : ''} could not be deleted.`,
+        })
+      }
+
+      // Reset selection and refresh document list
+      setResetSelectionSignal((prev) => prev + 1)
+      queryClient.invalidateQueries({
+        queryKey: ['deal-documents', dealId],
+      })
+
+      closeBulkDeleteModal()
+    } catch (error) {
+      console.error('[Bulk Delete Failed]', error)
+      scheduleToast({
+        type: 'alert',
+        message: 'Failed to delete documents',
+        detail: error instanceof Error ? error.message : 'An unexpected error occurred',
+        actionLabel: 'Retry',
+        onAction: handleBulkDeleteConfirm,
+      })
+      setBulkDeleteState((current) => ({ ...current, isProcessing: false }))
+    }
+  }, [bulkDeleteState, dealId, queryClient, scheduleToast, closeBulkDeleteModal])
 
   const handleShareDocument = useCallback((document: Document) => {
     setShareModalState({ document, isOpen: true })
@@ -624,7 +643,6 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
         documentId={permissionState.id}
         isOpen={permissionState.isOpen}
         onClose={closePermissionModal}
-        onPermissionChange={handlePermissionChange}
         auditTrail={permissionAuditTrail}
       />
 
@@ -643,6 +661,14 @@ const DocumentWorkspace: React.FC<DocumentWorkspaceProps> = ({ dealId, onDocumen
         isProcessing={bulkArchiveState.isProcessing}
         onClose={closeBulkArchiveModal}
         onConfirm={handleArchiveConfirm}
+      />
+
+      <BulkDeleteModal
+        isOpen={bulkDeleteState.isOpen}
+        documents={bulkDeleteState.documents}
+        isProcessing={bulkDeleteState.isProcessing}
+        onClose={closeBulkDeleteModal}
+        onConfirm={handleBulkDeleteConfirm}
       />
 
       <AccessLogDrawer
