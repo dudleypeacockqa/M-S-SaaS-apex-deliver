@@ -209,83 +209,81 @@ def list_blog_posts(
     - **limit**: Maximum number of posts to return
     - **offset**: Number of posts to skip for pagination
     """
-    # Check if blog_posts table exists - return empty list if table doesn't exist
     try:
-        db.execute(text("SELECT 1 FROM blog_posts LIMIT 1"))
-    except (ProgrammingError, OperationalError) as e:
-        error_msg = str(e).lower()
-        if "does not exist" in error_msg or "relation" in error_msg:
-            logger.warning(f"Blog posts table not found: {e}. Returning empty list.")
-            return _fallback_blog_responses(category, search, published_only, limit, offset)
-        # For other database errors, log and return fallback content
-        logger.error(f"Database error checking blog_posts table: {e}")
-        return _fallback_blog_responses(category, search, published_only, limit, offset)
-    
-    query = select(BlogPost)
-    
-    # Filter by published status
-    if published_only:
-        query = query.where(BlogPost.published == True)
-    
-    # Filter by category
-    if category:
-        query = query.where(BlogPost.category == category)
-    
-    # Search filter
-    if search:
-        search_term = f"%{search}%"
-        query = query.where(
-            or_(
-                BlogPost.title.ilike(search_term),
-                BlogPost.excerpt.ilike(search_term),
-                BlogPost.content.ilike(search_term),
-            )
-        )
-    
-    # Order by published date (newest first), fallback to created_at if published_at is None
-    # This handles cases where published_at might be NULL
-    query = query.order_by(
-        desc(
-            case(
-                (BlogPost.published_at.isnot(None), BlogPost.published_at),
-                else_=BlogPost.created_at
-            )
-        )
-    )
-    
-    # Apply pagination
-    query = query.offset(offset).limit(limit)
-    
-    try:
-        result = db.execute(query)
-        posts = result.scalars().all()
-    except Exception as e:
-        logger.error(f"Error while fetching blog posts: {e}", exc_info=True)
-        # If there's an error, try a simpler query without ordering
+        # Check if blog_posts table exists - return empty list if table doesn't exist
         try:
-            simple_query = select(BlogPost)
-            if published_only:
-                simple_query = simple_query.where(BlogPost.published == True)
-            if category:
-                simple_query = simple_query.where(BlogPost.category == category)
-            if search:
-                search_term = f"%{search}%"
-                simple_query = simple_query.where(
-                    or_(
-                        BlogPost.title.ilike(search_term),
-                        BlogPost.excerpt.ilike(search_term),
-                        BlogPost.content.ilike(search_term),
-                    )
-                )
-            simple_query = simple_query.order_by(desc(BlogPost.created_at))
-            simple_query = simple_query.offset(offset).limit(limit)
-            result = db.execute(simple_query)
-            posts = result.scalars().all()
-        except Exception as fallback_error:
-            logger.error(f"Fallback query also failed: {fallback_error}", exc_info=True)
+            db.execute(text("SELECT 1 FROM blog_posts LIMIT 1"))
+        except (ProgrammingError, OperationalError) as e:
+            error_msg = str(e).lower()
+            if "does not exist" in error_msg or "relation" in error_msg:
+                logger.warning(f"Blog posts table not found: {e}. Returning fallback content.")
+                return _fallback_blog_responses(category, search, published_only, limit, offset)
+            logger.error(f"Database error checking blog_posts table: {e}")
             return _fallback_blog_responses(category, search, published_only, limit, offset)
+        
+        query = select(BlogPost)
+        
+        # Filter by published status
+        if published_only:
+            query = query.where(BlogPost.published == True)
+        
+        # Filter by category
+        if category:
+            query = query.where(BlogPost.category == category)
+        
+        # Search filter
+        if search:
+            search_term = f"%{search}%"
+            query = query.where(
+                or_(
+                    BlogPost.title.ilike(search_term),
+                    BlogPost.excerpt.ilike(search_term),
+                    BlogPost.content.ilike(search_term),
+                )
+            )
+        
+        # Order by published date (newest first), fallback to created_at if published_at is None
+        query = query.order_by(
+            desc(
+                case(
+                    (BlogPost.published_at.isnot(None), BlogPost.published_at),
+                    else_=BlogPost.created_at
+                )
+            )
+        )
+        
+        # Apply pagination
+        query = query.offset(offset).limit(limit)
+        
+        try:
+            result = db.execute(query)
+            posts = result.scalars().all()
+        except Exception as e:
+            logger.error(f"Error while fetching blog posts: {e}", exc_info=True)
+            # If there's an error, try a simpler query without ordering
+            try:
+                simple_query = select(BlogPost)
+                if published_only:
+                    simple_query = simple_query.where(BlogPost.published == True)
+                if category:
+                    simple_query = simple_query.where(BlogPost.category == category)
+                if search:
+                    search_term = f"%{search}%"
+                    simple_query = simple_query.where(
+                        or_(
+                            BlogPost.title.ilike(search_term),
+                            BlogPost.excerpt.ilike(search_term),
+                            BlogPost.content.ilike(search_term),
+                        )
+                    )
+                simple_query = simple_query.order_by(desc(BlogPost.created_at))
+                simple_query = simple_query.offset(offset).limit(limit)
+                result = db.execute(simple_query)
+                posts = result.scalars().all()
+            except Exception as fallback_error:
+                logger.error(f"Fallback query also failed: {fallback_error}", exc_info=True)
+                return _fallback_blog_responses(category, search, published_only, limit, offset)
 
-    try:
         return [
             BlogPostResponse(
                 id=post.id,
@@ -310,6 +308,9 @@ def list_blog_posts(
     except ValidationError as validation_error:
         logger.error("Validation error while serializing blog posts: %s", validation_error)
         return _fallback_blog_responses(category, search, published_only, limit, offset)
+    except Exception as unexpected_error:
+        logger.error("Unexpected blog list error: %s", unexpected_error, exc_info=True)
+        return _fallback_blog_responses(category, search, published_only, limit, offset)
 
 
 @router.get("/{slug}", response_model=BlogPostResponse)
@@ -322,58 +323,61 @@ def get_blog_post_by_slug(
     
     - **slug**: The URL-friendly slug of the blog post
     """
-    # Check if blog_posts table exists
     try:
-        db.execute(text("SELECT 1 FROM blog_posts LIMIT 1"))
-    except (ProgrammingError, OperationalError) as e:
-        error_msg = str(e).lower()
-        if "does not exist" in error_msg or "relation" in error_msg:
-            logger.warning(f"Blog posts table not found: {e}")
-            raise HTTPException(
-                status_code=404,
-                detail="Blog post not found. Database migration may not have been applied."
-            )
-        raise
-    
-    try:
+        # Check if blog_posts table exists
+        try:
+            db.execute(text("SELECT 1 FROM blog_posts LIMIT 1"))
+        except (ProgrammingError, OperationalError) as e:
+            error_msg = str(e).lower()
+            if "does not exist" in error_msg or "relation" in error_msg:
+                logger.warning(f"Blog posts table not found: {e}")
+                fallback_post = _fallback_blog_post_by_slug(slug)
+                if fallback_post:
+                    return fallback_post
+                raise HTTPException(
+                    status_code=404,
+                    detail="Blog post not found. Database migration may not have been applied."
+                )
+            logger.error(f"Database error checking blog_posts table: {e}")
+            fallback_post = _fallback_blog_post_by_slug(slug)
+            if fallback_post:
+                return fallback_post
+            raise HTTPException(status_code=500, detail="Database error")
+        
         query = select(BlogPost).where(BlogPost.slug == slug)
         result = db.execute(query)
         post = result.scalar_one_or_none()
-    except Exception as e:
-        logger.error(f"Database error while fetching blog post: {e}", exc_info=True)
-        fallback_post = _fallback_blog_post_by_slug(slug)
-        if fallback_post:
-            logger.warning("Serving fallback blog post for slug %s due to DB error", slug)
-            return fallback_post
-        raise HTTPException(
-            status_code=500,
-            detail=f"Database error: {str(e)}"
-        )
 
-    if not post:
+        if not post:
+            fallback_post = _fallback_blog_post_by_slug(slug)
+            if fallback_post:
+                return fallback_post
+            raise HTTPException(status_code=404, detail=f"Blog post with slug '{slug}' not found")
+        
+        return BlogPostResponse(
+            id=post.id,
+            title=post.title,
+            slug=post.slug,
+            excerpt=post.excerpt,
+            content=post.content,
+            category=post.category,
+            primary_keyword=post.primary_keyword,
+            secondary_keywords=post.secondary_keywords.split(',') if post.secondary_keywords else [],
+            meta_description=post.meta_description,
+            featured_image_url=post.featured_image_url,
+            author=post.author,
+            read_time_minutes=post.read_time_minutes,
+            published=post.published,
+            published_at=post.published_at.isoformat() if post.published_at else None,
+            created_at=post.created_at.isoformat() if post.created_at else None,
+            updated_at=post.updated_at.isoformat() if post.updated_at else None,
+        )
+    except Exception as e:
+        logger.error(f"Error fetching blog post by slug: {e}", exc_info=True)
         fallback_post = _fallback_blog_post_by_slug(slug)
         if fallback_post:
             return fallback_post
-        raise HTTPException(status_code=404, detail=f"Blog post with slug '{slug}' not found")
-    
-    return BlogPostResponse(
-        id=post.id,
-        title=post.title,
-        slug=post.slug,
-        excerpt=post.excerpt,
-        content=post.content,
-        category=post.category,
-        primary_keyword=post.primary_keyword,
-        secondary_keywords=post.secondary_keywords.split(',') if post.secondary_keywords else [],
-        meta_description=post.meta_description,
-        featured_image_url=post.featured_image_url,
-        author=post.author,
-        read_time_minutes=post.read_time_minutes,
-        published=post.published,
-        published_at=post.published_at.isoformat() if post.published_at else None,
-        created_at=post.created_at.isoformat() if post.created_at else None,
-        updated_at=post.updated_at.isoformat() if post.updated_at else None,
-    )
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Blog service unavailable")
 
 
 @router.get("/categories/list", response_model=List[str])
