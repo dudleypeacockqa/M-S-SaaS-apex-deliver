@@ -1,11 +1,9 @@
-import { Button } from "@/components/marketing/financeflo/ui/button";
 import { Card, CardContent } from "@/components/marketing/financeflo/ui/card";
 import { Navigation } from "@/components/marketing/financeflo/Navigation";
 import { Footer } from "@/components/marketing/financeflo/Footer";
 import { ConstructionVSLHero } from "@/components/marketing/financeflo/ConstructionVSLHero";
-import { EnhancedButton } from "@/components/marketing/financeflo/ui/enhanced-button";
 import { IndustryAssessmentForm } from "@/components/marketing/financeflo/IndustryAssessmentForm";
-import { CheckCircle, TrendingUp, Shield, HardHat, Clock, ArrowRight, BarChart, Users, Building } from "lucide-react";
+import { CheckCircle, TrendingUp, Shield, BarChart, Users, Building } from "lucide-react";
 
 const ConstructionIndustry = () => {
   return (

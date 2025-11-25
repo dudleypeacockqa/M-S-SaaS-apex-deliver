@@ -20,6 +20,7 @@ import {
   updateBlogPost,
   publishBlogPost,
   getBlogPost,
+  uploadBlogImage,
   type BlogPostEditorPayload,
 } from '@/services/blogService';
 
@@ -68,6 +69,7 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [isLoadingPost, setIsLoadingPost] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const buildPayload = useCallback(
@@ -83,7 +85,7 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({
         metaDescription: merged.metaDescription,
         status: merged.status,
         publishedAt: merged.publishedAt,
-        featuredImageUrl: imagePreview,
+        featuredImageUrl: imagePreview || undefined,
       }
     },
     [imagePreview]
@@ -185,15 +187,48 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setFormData(prev => ({ ...prev, featuredImage: file }));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setErrors(prev => ({ ...prev, featuredImage: 'Invalid image format. Please use PNG, JPG, or WebP.' }));
+      return;
+    }
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      setErrors(prev => ({ ...prev, featuredImage: 'Image too large. Maximum size is 5MB.' }));
+      return;
+    }
+
+    // Show preview immediately
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload image to server
+    setIsUploadingImage(true);
+    setErrors(prev => ({ ...prev, featuredImage: '' }));
+    
+    try {
+      const response = await uploadBlogImage(file);
+      setImagePreview(response.image_url);
+      setFormData(prev => ({ ...prev, featuredImage: null })); // Clear file object, URL is now in imagePreview
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+      setErrors(prev => ({ 
+        ...prev, 
+        featuredImage: error instanceof Error ? error.message : 'Failed to upload image. Please try again.' 
+      }));
+      setImagePreview(null);
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -277,13 +312,13 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({
               Content *
             </label>
             <div className="mb-2 flex gap-2">
-              <Button type="button" variant="outline" size="sm" aria-label="Bold">
+              <Button type="button" variant="outline" btnSize="sm" aria-label="Bold">
                 <strong>B</strong>
               </Button>
-              <Button type="button" variant="outline" size="sm" aria-label="Italic">
+              <Button type="button" variant="outline" btnSize="sm" aria-label="Italic">
                 <em>I</em>
               </Button>
-              <Button type="button" variant="outline" size="sm" aria-label="Link">
+              <Button type="button" variant="outline" btnSize="sm" aria-label="Link">
                 🔗
               </Button>
             </div>
@@ -348,16 +383,25 @@ const BlogAdminEditor: React.FC<BlogAdminEditorProps> = ({
             <input
               id="featuredImage"
               type="file"
-              accept="image/*"
+              accept="image/png,image/jpeg,image/jpg,image/webp"
               onChange={handleImageUpload}
-              className="block w-full text-sm"
+              disabled={isUploadingImage}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed"
             />
-            {imagePreview && (
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="mt-4 max-w-md rounded-lg"
-              />
+            {isUploadingImage && (
+              <p className="text-sm text-blue-600 mt-2">Uploading image...</p>
+            )}
+            {errors.featuredImage && (
+              <p className="text-red-500 text-sm mt-1">{errors.featuredImage}</p>
+            )}
+            {imagePreview && !isUploadingImage && (
+              <div className="mt-4">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="max-w-full h-auto rounded-lg border border-gray-300"
+                />
+              </div>
             )}
           </div>
 

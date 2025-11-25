@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Navigation } from "@/components/marketing/financeflo/Navigation";
 import { Footer } from "@/components/marketing/financeflo/Footer";
-import { VideoHeroSection } from "@/components/marketing/financeflo/VideoHeroSection";
 import { SageIntacctVSLHero } from "@/components/marketing/financeflo/SageIntacctVSLHero";
 import { DemoVideoGrid } from "@/components/marketing/financeflo/DemoVideoGrid";
 import { Button } from "@/components/marketing/financeflo/ui/button";
@@ -22,9 +21,7 @@ import {
   Lightbulb,
   Rocket,
   Building,
-  Globe,
   Phone,
-  Mail,
   Play,
   Calculator,
   FileText,

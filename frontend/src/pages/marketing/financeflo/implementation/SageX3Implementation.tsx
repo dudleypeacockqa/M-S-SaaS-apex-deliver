@@ -5,7 +5,6 @@ import { Button } from "@/components/marketing/financeflo/ui/button";
 import { Badge } from "@/components/marketing/financeflo/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/marketing/financeflo/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/marketing/financeflo/ui/tabs";
-import { Progress } from "@/components/marketing/financeflo/ui/progress";
 import {
   CheckCircle,
   Users,

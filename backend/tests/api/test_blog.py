@@ -342,3 +342,73 @@ def test_list_categories_returns_fallback(monkeypatch, client: TestClient):
     assert response.status_code == 200
     categories = response.json()
     assert "Pricing Strategy" in categories
+
+
+def test_upload_blog_image_success(client: TestClient, tmp_path, monkeypatch):
+    """Test successful blog image upload."""
+    from pathlib import Path
+    import io
+    
+    # Create a test image file
+    test_image_content = b"fake png content"
+    test_file = ("test_image.png", io.BytesIO(test_image_content), "image/png")
+    
+    response = client.post(
+        "/api/blog/upload-image",
+        files={"file": test_file}
+    )
+    
+    # Should return 200 with image URL
+    assert response.status_code == 200
+    data = response.json()
+    assert "image_url" in data
+    assert "file_key" in data
+    assert "file_size" in data
+    assert data["file_size"] == len(test_image_content)
+
+
+def test_upload_blog_image_invalid_format(client: TestClient):
+    """Test blog image upload with invalid file format."""
+    import io
+    
+    test_file = ("test.txt", io.BytesIO(b"not an image"), "text/plain")
+    
+    response = client.post(
+        "/api/blog/upload-image",
+        files={"file": test_file}
+    )
+    
+    assert response.status_code == 400
+    assert "Invalid image format" in response.json()["detail"]
+
+
+def test_upload_blog_image_too_large(client: TestClient):
+    """Test blog image upload with file too large."""
+    import io
+    
+    # Create a file larger than 5MB
+    large_content = b"x" * (6 * 1024 * 1024)  # 6MB
+    test_file = ("test_image.png", io.BytesIO(large_content), "image/png")
+    
+    response = client.post(
+        "/api/blog/upload-image",
+        files={"file": test_file}
+    )
+    
+    assert response.status_code == 400
+    assert "File too large" in response.json()["detail"]
+
+
+def test_upload_blog_image_missing_filename(client: TestClient):
+    """Test blog image upload without filename."""
+    import io
+    
+    test_file = ("", io.BytesIO(b"image content"), "image/png")
+    
+    response = client.post(
+        "/api/blog/upload-image",
+        files={"file": test_file}
+    )
+    
+    assert response.status_code == 400
+    assert "Filename is required" in response.json()["detail"]

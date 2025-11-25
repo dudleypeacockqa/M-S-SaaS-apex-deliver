@@ -122,5 +122,24 @@ export const publishBlogPost = async (
   return updateBlogPost(slug, { ...payload, status: 'published' })
 }
 
+export interface BlogImageUploadResponse {
+  image_url: string
+  file_key: string
+  file_size: number
+}
+
+export const uploadBlogImage = async (file: File): Promise<BlogImageUploadResponse> => {
+  const formData = new FormData()
+  formData.append('file', file)
+  
+  const response = await api.post<BlogImageUploadResponse>('/blog/upload-image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+  
+  return response.data
+}
+
 export type BlogPostEditorResponse = BlogPost
 

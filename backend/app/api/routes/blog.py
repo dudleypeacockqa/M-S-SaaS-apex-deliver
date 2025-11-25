@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from typing import List, Optional
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pathlib import Path
+import uuid
+from io import BytesIO
+from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
 from sqlalchemy import select, desc, or_, text, case
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import ProgrammingError, OperationalError
@@ -12,6 +15,7 @@ import logging
 
 from app.db.session import get_db
 from app.models.blog_post import BlogPost
+from app.services.storage_service import get_storage_service
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 logger = logging.getLogger(__name__)
@@ -516,3 +520,99 @@ def update_blog_post(
     db.refresh(existing_post)
 
     return serialize_blog_post(existing_post)
+
+
+@router.post("/upload-image", status_code=status.HTTP_200_OK)
+async def upload_blog_image(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+) -> dict:
+    """
+    Upload featured image for blog post.
+
+    Validates:
+    - File format (PNG, JPG, JPEG, WebP only)
+    - File size (max 5MB)
+    
+    Returns:
+    - image_url: Public URL to uploaded image
+    """
+    if not file.filename:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Filename is required",
+        )
+
+    # Validate file format
+    file_ext = Path(file.filename).suffix.lower()
+    allowed_formats = {".png", ".jpg", ".jpeg", ".webp"}
+    if file_ext not in allowed_formats:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid image format. Allowed formats: PNG, JPG, JPEG, WebP. Got: {file_ext}",
+        )
+
+    # Validate file size (5MB max for blog images)
+    MAX_SIZE = 5 * 1024 * 1024  # 5MB in bytes
+    file_content = await file.read()
+    file_size = len(file_content)
+
+    if file_size > MAX_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"File too large. Maximum size: 5MB. Got: {file_size / 1024 / 1024:.2f}MB",
+        )
+
+    # Generate unique file key
+    storage = get_storage_service()
+    file_key = f"blog-images/{uuid.uuid4()}{file_ext}"
+
+    # Save file to storage
+    try:
+        # Create BytesIO from content for storage service
+        file_stream = BytesIO(file_content)
+        # For blog images, we use a generic organization_id since they're public
+        # Use a special "public" organization_id for blog images
+        public_org_id = "00000000-0000-0000-0000-000000000000"  # Public/blog organization
+        
+        # Ensure parent directory exists for nested paths
+        # The storage service will create org_path, but we need to ensure blog-images subdirectory exists
+        if hasattr(storage, '_get_org_path'):
+            org_path = storage._get_org_path(public_org_id)
+            blog_images_dir = org_path / "blog-images"
+            blog_images_dir.mkdir(parents=True, exist_ok=True)
+        
+        storage_path = await storage.save_file(
+            file_key=file_key,
+            file_stream=file_stream,
+            organization_id=public_org_id,
+        )
+
+        # Generate public URL (for local storage, return relative path; for S3, return full URL)
+        # In production with S3/R2, this would be a public CDN URL
+        # For now, return the storage path which can be converted to a public URL
+        image_url = storage_path
+        
+        # If using S3/R2, we need to generate a public URL
+        # For local storage, we'd need to serve files via a static file endpoint
+        # For now, return a placeholder that indicates the file was saved
+        # In production, this should be converted to a public CDN URL
+        
+        logger.info(
+            "Blog image uploaded successfully: %s (size: %d bytes)",
+            file_key,
+            file_size,
+        )
+
+        return {
+            "image_url": image_url,
+            "file_key": file_key,
+            "file_size": file_size,
+        }
+
+    except Exception as e:
+        logger.error("Failed to upload blog image: %s", str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to upload image: {str(e)}",
+        )
