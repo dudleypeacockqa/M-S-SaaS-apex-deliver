@@ -253,12 +253,35 @@ def get_what_if_scenarios(db: Session, organization_id: str) -> List[WhatIfScena
     return [_serialize_scenario(row) for row in rows]
 
 
+# Allowed metrics for scenario validation
+ALLOWED_SCENARIO_METRICS = {
+    "revenue",
+    "gross_margin",
+    "ebitda",
+    "ebitda_margin",
+    "cash_flow",
+    "growth_rate",
+    "ebitda_delta",
+    "revenue_delta",
+}
+
+
 def create_what_if_scenario(
     db: Session,
     organization_id: str,
     user_id: str,
     payload: WhatIfScenarioCreate,
 ) -> WhatIfScenario:
+    """Create a new what-if scenario with metric validation."""
+    # Validate metrics if provided
+    if payload.metrics:
+        invalid_metrics = set(payload.metrics.keys()) - ALLOWED_SCENARIO_METRICS
+        if invalid_metrics:
+            raise ValueError(
+                f"Invalid metrics: {', '.join(invalid_metrics)}. "
+                f"Allowed metrics: {', '.join(sorted(ALLOWED_SCENARIO_METRICS))}"
+            )
+    
     scenario = FpaScenario(
         organization_id=organization_id,
         name=payload.name,
@@ -335,8 +358,11 @@ def generate_report(
     organization_id: str,
     user_id: str,
     report_type: str,
+    template_id: Optional[str] = None,
 ) -> FpaReportResponse:
     """Persist a lightweight FP&A report composed of latest forecasts and scenarios."""
+    from app.services.audit_event_sink import emit_audit_event
+    
     forecasts = get_demand_forecasts(db, organization_id)
     scenarios = get_what_if_scenarios(db, organization_id)
 
@@ -345,6 +371,23 @@ def generate_report(
         sum(f.confidence_level for f in forecasts) / len(forecasts),
         2,
     ) if forecasts else 0.0
+
+    # Calculate growth, EBITDA, cash flow from scenarios
+    growth_rate = 0.0
+    ebitda = 0.0
+    cash_flow = 0.0
+    
+    if scenarios:
+        # Extract metrics from top scenario
+        top_scenario = scenarios[0]
+        if isinstance(top_scenario, dict):
+            metrics = top_scenario.get("metrics", {})
+        else:
+            metrics = getattr(top_scenario, "metrics", {}) if hasattr(top_scenario, "metrics") else {}
+        
+        growth_rate = metrics.get("growth_rate", 0.0)
+        ebitda = metrics.get("ebitda", 0.0)
+        cash_flow = metrics.get("cash_flow", 0.0)
 
     payload: Dict[str, Optional[Dict[str, any]]] = {
         "report_type": report_type,
@@ -355,6 +398,9 @@ def generate_report(
             "average_confidence": avg_confidence,
         },
         "top_scenario": jsonable_encoder(scenarios[0]) if scenarios else None,
+        "growth": growth_rate,
+        "ebitda": ebitda,
+        "cash_flow": cash_flow,
     }
 
     record = FpaReport(
@@ -366,6 +412,22 @@ def generate_report(
     db.add(record)
     db.commit()
     db.refresh(record)
+    
+    # Log audit entry for report generation
+    emit_audit_event(
+        action="fpa_report_generated",
+        actor_user_id=user_id,
+        organization_id=organization_id,
+        detail=f"Generated {report_type} report",
+        metadata={
+            "report_id": str(record.id),
+            "report_type": report_type,
+            "template_id": template_id,
+            "forecast_count": len(forecasts),
+            "scenario_count": len(scenarios),
+        },
+    )
+    
     return FpaReportResponse(
         id=str(record.id),
         report_type=record.report_type,

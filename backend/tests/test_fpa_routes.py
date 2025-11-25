@@ -280,3 +280,108 @@ class TestFpaErrorPaths:
         # Should handle invalid type gracefully
         assert response.status_code in [200, 400, 422]
 
+    def test_create_scenario_validates_metrics(self, client, create_user, create_organization, dependency_overrides):
+        """Test scenario creation validates allowed metrics."""
+        org = create_organization(name="Metric Validation Org")
+        user = create_user(email="metricval@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+        
+        # Test with invalid metric
+        payload = {
+            "name": "Invalid Metric Scenario",
+            "metrics": {"invalid_metric": 100, "revenue": 5000000},
+        }
+        response = client.post("/api/fpa/scenarios", json=payload)
+        assert response.status_code == 400
+        assert "Invalid metrics" in response.json()["detail"]
+        
+        # Test with valid metrics
+        payload = {
+            "name": "Valid Metric Scenario",
+            "metrics": {"revenue": 5000000, "ebitda": 1000000, "growth_rate": 0.15},
+        }
+        response = client.post("/api/fpa/scenarios", json=payload)
+        assert response.status_code == 201
+        assert response.json()["name"] == "Valid Metric Scenario"
+
+    def test_create_report_via_post_endpoint(self, client, create_user, create_organization, db_session: Session, dependency_overrides):
+        """Test creating report via POST /api/fpa/reports endpoint."""
+        org = create_organization(name="POST Report Org")
+        user = create_user(email="postreport@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+        
+        # Seed forecast
+        client.post(
+            "/api/fpa/demand-forecasts",
+            json={
+                "name": "Week 51",
+                "period": "2025-W51",
+                "forecasted_demand": 1600,
+                "confidence_level": 0.85,
+            },
+        )
+        
+        # Create report via POST
+        payload = {"report_type": "executive-summary"}
+        response = client.post("/api/fpa/reports", json=payload)
+        assert response.status_code == 201
+        body = response.json()
+        assert body["report_type"] == "executive-summary"
+        assert "growth" in body["payload"]
+        assert "ebitda" in body["payload"]
+        assert "cash_flow" in body["payload"]
+        
+        # Verify report persisted
+        report = db_session.query(FpaReport).filter_by(organization_id=str(org.id)).one()
+        assert report.report_type == "executive-summary"
+
+    def test_create_demand_forecast_via_plural_endpoint(self, client, create_user, create_organization, db_session: Session, dependency_overrides):
+        """Test creating forecast via POST /api/fpa/demand-forecasts endpoint."""
+        org = create_organization(name="Plural Forecast Org")
+        user = create_user(email="pluralforecast@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+        
+        payload = {
+            "name": "Week 52 Forecast",
+            "period": "2025-W52",
+            "forecasted_demand": 1700,
+            "confidence_level": 0.88,
+        }
+        
+        response = client.post("/api/fpa/demand-forecasts", json=payload)
+        assert response.status_code == 201
+        data = response.json()
+        assert data["name"] == "Week 52 Forecast"
+        
+        persisted = db_session.query(FpaForecast).filter_by(organization_id=str(org.id)).one()
+        assert persisted.period == "2025-W52"
+
+    def test_unauthorized_access_returns_403(self, client, create_user, create_organization, dependency_overrides, monkeypatch):
+        """Test that unauthorized users get 403 when accessing FPA endpoints."""
+        from app.services import entitlement_service
+        
+        org = create_organization(name="No Access Org")
+        user = create_user(email="noaccess@example.com", organization_id=str(org.id))
+        dependency_overrides(get_current_user, lambda: user)
+        
+        # Mock entitlement check to return False
+        async def _deny_access(*_, **__) -> bool:
+            return False
+        
+        monkeypatch.setattr(entitlement_service, "check_feature_access", _deny_access)
+        
+        # Try to access FPA endpoint
+        response = client.get("/api/fpa/dashboard")
+        assert response.status_code == 403
+        assert "FP&A module access" in response.json()["detail"]
+        
+        # Try to create forecast
+        payload = {
+            "name": "Test Forecast",
+            "period": "2025-W01",
+            "forecasted_demand": 1000,
+            "confidence_level": 0.8,
+        }
+        response = client.post("/api/fpa/demand-forecasts", json=payload)
+        assert response.status_code == 403
+

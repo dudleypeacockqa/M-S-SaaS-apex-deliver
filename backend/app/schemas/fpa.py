@@ -89,6 +89,8 @@ class WhatIfScenarioCreate(BaseModel):
     description: Optional[str] = None
     assumptions: Dict[str, Any] = Field(default_factory=dict)
     metrics: Dict[str, Any] = Field(default_factory=dict)
+    deal_id: Optional[str] = Field(None, description="Optional linked deal ID")
+    forecast_id: Optional[str] = Field(None, description="Optional linked forecast ID")
 
 
 class ImportResponse(BaseModel):
@@ -143,6 +145,13 @@ class PredefinedScenario(BaseModel):
 
 class ApplyScenarioRequest(BaseModel):
     scenario_id: str
+
+
+class FpaReportCreate(BaseModel):
+    """Schema for creating a new FPA report."""
+    report_type: str = Field(..., min_length=1, max_length=64, description="Type of report to generate")
+    template_id: Optional[str] = None
+    format: Optional[str] = Field(None, description="Report format (pdf, docx, json)")
 
 
 class FpaReportResponse(BaseModel):

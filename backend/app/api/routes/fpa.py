@@ -28,6 +28,7 @@ from app.schemas.fpa import (
     WhatIfScenarioCreate,
     WorkingCapitalAnalysis,
     FpaReportResponse,
+    FpaReportCreate,
 )
 from app.services import entitlement_service, fpa_service
 
@@ -84,6 +85,17 @@ async def create_demand_forecast(
         user_id=str(current_user.id),
         payload=payload,
     )
+
+
+# Alias endpoint matching story requirements (plural form)
+@router.post("/demand-forecasts", response_model=DemandForecast, status_code=status.HTTP_201_CREATED)
+async def create_demand_forecast_alias(
+    payload: DemandForecastCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Create a new demand forecast (alias endpoint)."""
+    return await create_demand_forecast(payload, current_user, db)
 
 
 @router.get("/inventory", response_model=List[InventoryItem])
@@ -145,12 +157,26 @@ async def create_what_if_scenario(
     """Create a new what-if scenario."""
     await check_fpa_access(current_user)
 
-    return fpa_service.create_what_if_scenario(
-        db=db,
-        organization_id=str(current_user.organization_id),
-        user_id=str(current_user.id),
-        payload=payload,
-    )
+    try:
+        return fpa_service.create_what_if_scenario(
+            db=db,
+            organization_id=str(current_user.organization_id),
+            user_id=str(current_user.id),
+            payload=payload,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+# Alias endpoint matching story requirements
+@router.post("/scenarios", response_model=WhatIfScenario, status_code=status.HTTP_201_CREATED)
+async def create_scenario_alias(
+    payload: WhatIfScenarioCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Create a new scenario (alias endpoint matching story requirements)."""
+    return await create_what_if_scenario(payload, current_user, db)
 
 
 @router.post("/what-if/calculate", response_model=ScenarioCalculationResponse)
@@ -306,6 +332,25 @@ async def generate_report(
         organization_id=str(current_user.organization_id),
         user_id=str(current_user.id),
         report_type=report_type,
+    )
+
+
+# Alias endpoint matching story requirements (POST /api/fpa/reports)
+@router.post("/reports", response_model=FpaReportResponse, status_code=status.HTTP_201_CREATED)
+async def create_report(
+    payload: FpaReportCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Generate a financial report (POST endpoint matching story requirements)."""
+    await check_fpa_access(current_user)
+
+    return fpa_service.generate_report(
+        db=db,
+        organization_id=str(current_user.organization_id),
+        user_id=str(current_user.id),
+        report_type=payload.report_type,
+        template_id=payload.template_id,
     )
 
 
