@@ -14,6 +14,9 @@ echo "Working directory: $(pwd)"
 if [ "$SKIP_MIGRATIONS" = "true" ]; then
     echo "SKIP_MIGRATIONS is set - skipping database migrations"
 else
+    echo "Checking for orphaned alembic revisions..."
+    python3 fix_alembic_version.py
+    echo ""
     echo "Running database migrations..."
     echo "Current Alembic revision:"
     alembic current || echo "No current revision found"
@@ -23,14 +26,10 @@ else
     echo ""
     echo "Applying migrations..."
     alembic upgrade head
-    echo "? Migrations applied successfully"
+    echo "✓ Migrations applied successfully"
     echo ""
     echo "Final Alembic revision:"
     alembic current
 fi
 
 echo "Prestart script completed!"
-
-
-
-
