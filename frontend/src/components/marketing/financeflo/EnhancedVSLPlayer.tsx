@@ -220,7 +220,7 @@ export const EnhancedVSLPlayer: React.FC<EnhancedVSLPlayerProps> = ({
         onLoadStart={() => logger.info('Video loading started')}
         onCanPlay={() => logger.info('Video can play')}
         onError={(e) => logger.error('Video error occurred', new Error('Video playback error'), { 
-          error: e,
+          errorType: e.type,
           videoSrc: videoSrc 
         })}
       >
