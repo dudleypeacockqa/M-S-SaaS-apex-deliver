@@ -37,7 +37,7 @@ export const FeatureVisualization: React.FC<FeatureVisualizationProps> = ({
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-white/80">Processing Status</span>
-                    <Badge className="bg-brand-green text-white">Active</Badge>
+                    <Badge className="bg-brand-teal-600 text-white">Active</Badge>
                   </div>
                   
                   <div className="space-y-2">

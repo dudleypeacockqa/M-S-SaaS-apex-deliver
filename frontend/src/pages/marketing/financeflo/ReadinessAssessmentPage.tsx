@@ -326,8 +326,8 @@ const ReadinessAssessmentPage = () => {
           <div className="max-w-4xl mx-auto">
             {/* Results Header */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-green/10 rounded-full mb-4">
-                <CheckCircle className="w-8 h-8 text-brand-green" />
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-teal-600/10 rounded-full mb-4">
+                <CheckCircle className="w-8 h-8 text-brand-teal-600" />
               </div>
               <h1 className="text-3xl font-heading font-bold text-gray-900 mb-2">
                 Assessment Complete!
@@ -362,12 +362,12 @@ const ReadinessAssessmentPage = () => {
               <Card className="rounded-2xl">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 font-heading">
-                    <TrendingUp className="w-5 h-5 text-brand-green" />
+                    <TrendingUp className="w-5 h-5 text-brand-teal-600" />
                     Estimated ROI
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-brand-green">
+                  <div className="text-2xl font-bold text-brand-teal-600">
                     {results.estimatedROI}
                   </div>
                 </CardContent>
@@ -401,7 +401,7 @@ const ReadinessAssessmentPage = () => {
                   <ul className="space-y-2">
                     {results.recommendations.map((rec, index) => (
                       <li key={index} className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-brand-green mt-1 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-brand-teal-600 mt-1 flex-shrink-0" />
                         <span className="text-sm text-gray-700">{rec}</span>
                       </li>
                     ))}
@@ -420,8 +420,8 @@ const ReadinessAssessmentPage = () => {
                   <ul className="space-y-2">
                     {results.nextSteps.map((step, index) => (
                       <li key={index} className="flex items-start gap-2">
-                        <div className="w-4 h-4 bg-brand-green/10 rounded-full flex items-center justify-center mt-1 flex-shrink-0">
-                          <span className="text-xs font-bold text-brand-green">{index + 1}</span>
+                        <div className="w-4 h-4 bg-brand-teal-600/10 rounded-full flex items-center justify-center mt-1 flex-shrink-0">
+                          <span className="text-xs font-bold text-brand-teal-600">{index + 1}</span>
                         </div>
                         <span className="text-sm text-gray-700">{step}</span>
                       </li>
@@ -444,7 +444,7 @@ const ReadinessAssessmentPage = () => {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
                     size="lg"
-                    className="bg-brand-green text-white hover:bg-brand-green/90 font-semibold"
+                    className="bg-brand-teal-600 text-white hover:bg-brand-teal-600/90 font-semibold"
                     onClick={() => window.location.href = '/contact'}
                   >
                     <Building className="w-5 h-5 mr-2" />
@@ -597,7 +597,7 @@ const ReadinessAssessmentPage = () => {
             <Button
               onClick={nextStep}
               disabled={!answers[currentQuestion.id]}
-              className="bg-brand-green hover:bg-brand-green/90 text-white"
+              className="bg-brand-teal-600 hover:bg-brand-teal-600/90 text-white"
             >
               {currentStep === questions.length - 1 ? 'Get Results' : 'Next'}
               <ArrowRight className="w-4 h-4 ml-2" />

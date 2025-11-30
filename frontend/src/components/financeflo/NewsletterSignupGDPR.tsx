@@ -285,7 +285,7 @@ export const NewsletterSignupGDPR: React.FC<NewsletterSignupGDPRProps> = ({
           <Button
             type="submit"
             size="lg"
-            className="bg-brand-green hover:bg-brand-green-dark h-12 px-8 font-semibold"
+            className="bg-brand-teal-600 hover:bg-brand-teal-700 h-12 px-8 font-semibold"
             disabled={isSubmitting || !consent}
           >
             {isSubmitting ? (

@@ -118,8 +118,8 @@ const BlogPage: React.FC = () => {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedCategory === category
-                    ? "bg-brand-green text-white"
-                    : "bg-white text-gray-700 border border-gray-300 hover:border-brand-green hover:text-brand-green"
+                    ? "bg-brand-teal-600 text-white"
+                    : "bg-white text-gray-700 border border-gray-300 hover:border-brand-teal-600 hover:text-brand-teal-600"
                 }`}
               >
                 {category}
@@ -143,7 +143,7 @@ const BlogPage: React.FC = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="h-full bg-gradient-to-br from-brand-navy to-brand-green flex items-center justify-center">
+                      <div className="h-full bg-gradient-to-br from-brand-navy to-brand-teal-600 flex items-center justify-center">
                         <div className="text-white text-center p-8">
                           <h3 className="text-xl font-bold mb-2">FinanceFlo.AI</h3>
                           <p className="text-sm opacity-90">AI-Powered ERP Solutions</p>
@@ -178,7 +178,7 @@ const BlogPage: React.FC = () => {
                     </div>
                     <Link
                       to={`/blog/${featuredPost.slug}`}
-                      className="inline-flex items-center text-brand-green hover:text-brand-green-dark font-medium"
+                      className="inline-flex items-center text-brand-teal-600 hover:text-brand-teal-700 font-medium"
                     >
                       Read More
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -204,7 +204,7 @@ const BlogPage: React.FC = () => {
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
-                    <div className="h-full bg-gradient-to-br from-brand-navy to-brand-green flex items-center justify-center">
+                    <div className="h-full bg-gradient-to-br from-brand-navy to-brand-teal-600 flex items-center justify-center">
                       <div className="text-white text-center p-4">
                         <h4 className="text-lg font-bold">FinanceFlo.AI</h4>
                       </div>
@@ -259,7 +259,7 @@ const BlogPage: React.FC = () => {
           <div className="text-center">
             <button 
               onClick={() => setVisiblePosts(prev => Math.min(prev + 9, filteredPosts.length))}
-              className="bg-brand-green text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand-green-dark transition-colors"
+              className="bg-brand-teal-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand-teal-700 transition-colors"
             >
               Load More Articles ({filteredPosts.length - visiblePosts} remaining)
             </button>
@@ -285,7 +285,7 @@ const BlogPage: React.FC = () => {
       </div>
 
       {/* Newsletter CTA */}
-      <section className="bg-gradient-to-r from-brand-navy to-brand-green text-white py-16">
+      <section className="bg-gradient-to-r from-brand-navy to-brand-teal-600 text-white py-16">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Stay Updated with Industry Insights
@@ -299,7 +299,7 @@ const BlogPage: React.FC = () => {
               placeholder="Enter your email"
               className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none"
             />
-            <button className="bg-brand-green hover:bg-brand-green-dark px-6 py-3 rounded-lg font-semibold transition-colors">
+            <button className="bg-brand-teal-600 hover:bg-brand-teal-700 px-6 py-3 rounded-lg font-semibold transition-colors">
               Subscribe
             </button>
           </div>

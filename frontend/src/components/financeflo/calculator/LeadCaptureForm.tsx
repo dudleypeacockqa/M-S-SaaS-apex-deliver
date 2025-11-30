@@ -491,7 +491,7 @@ export const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-brand-green text-white font-semibold py-3 px-6 rounded-2xl hover:bg-brand-green-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-lg shadow-lg"
+        className="w-full bg-brand-teal-600 text-white font-semibold py-3 px-6 rounded-2xl hover:bg-brand-teal-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-lg shadow-lg"
       >
         {isSubmitting ? (
           <>

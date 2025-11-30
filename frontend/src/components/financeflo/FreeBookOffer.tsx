@@ -59,13 +59,13 @@ const FreeBookOffer: React.FC = () => {
             className="text-center mb-12"
           >
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-              <Package className="w-5 h-5 text-brand-green" />
+              <Package className="w-5 h-5 text-brand-teal-600" />
               <span className="text-white font-medium">FREE PAPERBACK BOOK</span>
             </div>
 
             <h2 className="text-4xl md:text-5xl font-bold font-heading text-white mb-4">
               Get Your Free Copy of
-              <span className="block text-brand-green mt-2">
+              <span className="block text-brand-teal-600 mt-2">
                 "Connected Intelligence"
               </span>
             </h2>
@@ -93,7 +93,7 @@ const FreeBookOffer: React.FC = () => {
                     alt="Connected Intelligence: How AI Unlocks the Full Potential of ERP - Book Cover"
                     className="w-64 h-auto shadow-2xl rounded-lg transform hover:scale-105 transition-transform duration-300"
                   />
-                  <div className="absolute -top-4 -right-4 bg-brand-green text-white font-bold px-3 py-1 rounded-full text-sm">
+                  <div className="absolute -top-4 -right-4 bg-brand-teal-600 text-white font-bold px-3 py-1 rounded-full text-sm">
                     FREE
                   </div>
                 </div>
@@ -112,12 +112,12 @@ const FreeBookOffer: React.FC = () => {
                     <p className="text-white/70 text-sm">500+ Reviews</p>
                   </div>
                   <div className="text-center">
-                    <Users className="w-8 h-8 text-brand-green mx-auto mb-2" />
+                    <Users className="w-8 h-8 text-brand-teal-600 mx-auto mb-2" />
                     <p className="text-white font-semibold">10,000+</p>
                     <p className="text-white/70 text-sm">Downloads</p>
                   </div>
                   <div className="text-center">
-                    <Clock className="w-8 h-8 text-brand-green mx-auto mb-2" />
+                    <Clock className="w-8 h-8 text-brand-teal-600 mx-auto mb-2" />
                     <p className="text-white font-semibold">2-Hour</p>
                     <p className="text-white/70 text-sm">Read Time</p>
                   </div>
@@ -136,7 +136,7 @@ const FreeBookOffer: React.FC = () => {
                     "Future-proofing your finance operations with AI integration"
                   ].map((item, index) => (
                     <li key={index} className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-brand-green mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-brand-teal-600 mt-0.5 flex-shrink-0" />
                       <span className="text-white/80">{item}</span>
                     </li>
                   ))}
@@ -155,7 +155,7 @@ const FreeBookOffer: React.FC = () => {
           >
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
               <div className="text-center mb-6">
-                <Package className="w-12 h-12 text-brand-green mx-auto mb-4" />
+                <Package className="w-12 h-12 text-brand-teal-600 mx-auto mb-4" />
                 <h3 className="text-2xl font-bold font-heading text-white mb-2">
                   Claim your Free copy while stocks last
                 </h3>
@@ -188,15 +188,15 @@ const FreeBookOffer: React.FC = () => {
               <div className="mt-6 pt-6 border-t border-white/20">
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <p className="text-brand-green font-bold text-lg">230+</p>
+                    <p className="text-brand-teal-600 font-bold text-lg">230+</p>
                     <p className="text-white/70 text-xs">Implementations</p>
                   </div>
                   <div>
-                    <p className="text-brand-green font-bold text-lg">20+</p>
+                    <p className="text-brand-teal-600 font-bold text-lg">20+</p>
                     <p className="text-white/70 text-xs">Years Experience</p>
                   </div>
                   <div>
-                    <p className="text-brand-green font-bold text-lg">500%</p>
+                    <p className="text-brand-teal-600 font-bold text-lg">500%</p>
                     <p className="text-white/70 text-xs">Max ROI</p>
                   </div>
                 </div>
@@ -214,7 +214,7 @@ const FreeBookOffer: React.FC = () => {
           >
             <p className="text-white/70 mb-2">Written by</p>
             <h4 className="text-2xl font-bold font-heading text-white mb-2">Dudley Peacock</h4>
-            <p className="text-brand-green font-medium mb-4">
+            <p className="text-brand-teal-600 font-medium mb-4">
               Founder & CEO, FinanceFlo.ai | ERP Systems Specialist | Fractional AI Officer
             </p>
             <p className="text-white/70 max-w-2xl mx-auto">

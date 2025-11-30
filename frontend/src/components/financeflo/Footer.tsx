@@ -128,7 +128,7 @@ export const Footer = () => {
                   >
                     <FinanceFloLogo variant="full" size="lg" background="dark" />
                   </Link>
-                  <p className="text-brand-green text-sm font-medium mt-2">
+                  <p className="text-brand-teal-600 text-sm font-medium mt-2">
                     AI-Powered Finance Automation Platform
                   </p>
                 </div>

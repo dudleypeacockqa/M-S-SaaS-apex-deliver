@@ -27,7 +27,7 @@ export function AccordionItem({
 export function AccordionTrigger({ className, children, ...props }: Props & React.HTMLAttributes<HTMLElement>) {
   return (
     <summary
-      className={`flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 font-semibold text-[#0A1F44] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2BB673] rounded-2xl ${className || ""}`}
+      className={`flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 font-semibold text-[#0A1F44] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] rounded-2xl ${className || ""}`}
       {...props}
     >
       <span>{children}</span>

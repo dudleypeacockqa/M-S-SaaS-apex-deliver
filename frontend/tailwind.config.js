@@ -10,24 +10,32 @@ export default {
     extend: {
       colors: {
         brand: {
-          navy: "#061A2F",
-          "navy-light": "#102C4C",
-          "navy-dark": "#030B17",
-          blue: "#1F6FEB",
-          "blue-light": "#6AA8FF",
-          green: "#2BB673",
-          "green-light": "#4DDB9D",
-          "green-dark": "#1A7F4D",
-          gold: "#F7B500",
-          "gold-light": "#FFE3A3",
-          "gold-dark": "#B87A02",
+          // Slate colors for backgrounds and text
+          slate: {
+            900: "#0F172A",
+            800: "#1E293B",
+            700: "#334155",
+            600: "#475569",
+            400: "#94A3B8",
+            300: "#CBD5E1",
+          },
+          // Teal colors for primary CTAs and accents
+          teal: {
+            700: "#0F766E",
+            600: "#0D9488",
+            400: "#2DD4BF",
+          },
+          // Blue colors for secondary elements and gradients
+          blue: {
+            900: "#1E3A8A",
+            600: "#2563EB",
+            400: "#60A5FA",
+          },
+          // Legacy aliases for compatibility (map to Teal/Blue)
+          navy: "#0F172A", // Slate 900
+          "navy-light": "#1E293B", // Slate 800
+          "navy-dark": "#0F172A", // Slate 900
           grey: "#F3F5F9",
-          ai: "#9E8CFF",
-        },
-        flo: {
-          navy: "#021027",
-          blue: "#0F5FFF",
-          green: "#16C47F",
         },
       },
       fontFamily: {
@@ -35,11 +43,11 @@ export default {
         body: ["Lato", ...defaultTheme.fontFamily.sans],
       },
       boxShadow: {
-        "brand-ai": "0 35px 60px -15px rgba(22, 196, 127, 0.45)",
+        "brand-ai": "0 35px 60px -15px rgba(13, 148, 136, 0.45)",
       },
       backgroundImage: {
-        "brand-gradient": "linear-gradient(135deg, #061A2F 0%, #0F5FFF 50%, #2BB673 100%)",
-        "brand-gradient-hero": "linear-gradient(135deg, rgba(6,26,47,0.95) 0%, rgba(47,72,140,0.9) 45%, rgba(43,182,115,0.85) 100%)",
+        "brand-gradient": "linear-gradient(135deg, #0F172A 0%, #2563EB 50%, #0D9488 100%)",
+        "brand-gradient-hero": "linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(37,99,235,0.9) 45%, rgba(13,148,136,0.85) 100%)",
       },
     },
   },

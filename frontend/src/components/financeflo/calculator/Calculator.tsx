@@ -558,7 +558,7 @@ export const Calculator: React.FC<CalculatorProps> = ({
                     <div key={item.days} className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
                       <span className="text-sm font-medium text-gray-700">{item.days} days</span>
                       <span className={`text-sm font-medium ${
-                        item.covered ? 'text-brand-green' : 'text-red-500'
+                        item.covered ? 'text-brand-teal-600' : 'text-red-500'
                       }`}>
                         {item.covered ? 'Covered' : `£${formatNumberDisplay(item.gap)} gap`}
                       </span>
@@ -592,13 +592,13 @@ export const Calculator: React.FC<CalculatorProps> = ({
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-700">90 days:</span>
-                    <span className="text-lg font-bold text-brand-green">
+                    <span className="text-lg font-bold text-brand-teal-600">
                       {formatCurrencyDisplay(results.unlock90)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-700">12 months:</span>
-                    <span className="text-lg font-bold text-brand-green">
+                    <span className="text-lg font-bold text-brand-teal-600">
                       {formatCurrencyDisplay(results.unlock12m)}
                     </span>
                   </div>
@@ -611,14 +611,14 @@ export const Calculator: React.FC<CalculatorProps> = ({
                   <h3 className="text-xl font-semibold text-brand-navy">Revenue per Employee</h3>
                   <div className="flex items-center">
                     {results.benchmarkDelta > 0 ? (
-                      <TrendingUp className="w-4 h-4 text-brand-green mr-1" />
+                      <TrendingUp className="w-4 h-4 text-brand-teal-600 mr-1" />
                     ) : results.benchmarkDelta < 0 ? (
                       <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
                     ) : (
                       <Minus className="w-4 h-4 text-gray-500 mr-1" />
                     )}
                     <span className={`text-sm font-medium ${
-                      results.benchmarkDelta > 0 ? 'text-brand-green' :
+                      results.benchmarkDelta > 0 ? 'text-brand-teal-600' :
                       results.benchmarkDelta < 0 ? 'text-red-500' : 'text-gray-500'
                     }`}>
                       {results.benchmarkDelta > 0 ? '↑' : results.benchmarkDelta < 0 ? '↓' : '='}
@@ -641,7 +641,7 @@ export const Calculator: React.FC<CalculatorProps> = ({
                   <ul className="text-sm text-gray-700 space-y-2">
                     {results.talkingPoints.map((point, index) => (
                       <li key={index} className="flex items-start">
-                        <span className="text-brand-green mr-2">•</span>
+                        <span className="text-brand-teal-600 mr-2">•</span>
                         <span>{point}</span>
                       </li>
                     ))}

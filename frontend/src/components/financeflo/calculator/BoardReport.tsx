@@ -91,7 +91,7 @@ export function generateBoardReport(
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#0A1F44;--green:#2BB673;--white:#FFFFFF;--grey:#F4F6F8;--blue:#007BFF;--muted:#64748b;--line:#e2e8f0;--warn:#f59e0b;}
+  :root{--navy:#0A1F44;--green:#0D9488;--white:#FFFFFF;--grey:#F4F6F8;--blue:#007BFF;--muted:#64748b;--line:#e2e8f0;--warn:#f59e0b;}
   *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact}
   body{font:13px/1.5 'Lato',system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;background:var(--white);color:var(--navy);margin:0;padding:0}
   @page{size:A4 landscape;margin:10mm 12mm}

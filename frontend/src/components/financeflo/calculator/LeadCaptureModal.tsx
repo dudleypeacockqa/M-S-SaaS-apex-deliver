@@ -126,19 +126,19 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
                   <p className="text-sm font-semibold text-brand-navy mb-2">Your report includes:</p>
                   <div className="grid grid-cols-2 gap-2 text-xs text-gray-700">
                     <div className="flex items-start">
-                      <span className="text-brand-green mr-2">✓</span>
+                      <span className="text-brand-teal-600 mr-2">✓</span>
                       <span>Full cash flow analysis</span>
                     </div>
                     <div className="flex items-start">
-                      <span className="text-brand-green mr-2">✓</span>
+                      <span className="text-brand-teal-600 mr-2">✓</span>
                       <span>Industry benchmarking</span>
                     </div>
                     <div className="flex items-start">
-                      <span className="text-brand-green mr-2">✓</span>
+                      <span className="text-brand-teal-600 mr-2">✓</span>
                       <span>90-day action plan</span>
                     </div>
                     <div className="flex items-start">
-                      <span className="text-brand-green mr-2">✓</span>
+                      <span className="text-brand-teal-600 mr-2">✓</span>
                       <span>Executive summary</span>
                     </div>
                   </div>
@@ -154,11 +154,11 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
                   </h3>
                   <div className="text-xs text-gray-700 space-y-1">
                     <p className="flex items-start">
-                      <span className="text-brand-green mr-2">✓</span>
+                      <span className="text-brand-teal-600 mr-2">✓</span>
                       <span><strong>Contact info:</strong> Name, Email, Phone, Company</span>
                     </p>
                     <p className="flex items-start">
-                      <span className="text-brand-green mr-2">✓</span>
+                      <span className="text-brand-teal-600 mr-2">✓</span>
                       <span><strong>Business metrics:</strong> # of Employees, Annual Revenue, Industry</span>
                     </p>
                     <p className="mt-2 flex items-start">

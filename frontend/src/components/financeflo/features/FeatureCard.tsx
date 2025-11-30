@@ -50,7 +50,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
                 <div className="grid grid-cols-1 gap-2">
                   {feature.benefits.map((benefit, benefitIndex) => (
                     <div key={benefitIndex} className="flex items-center space-x-2">
-                      <CheckCircle className="h-4 w-4 text-brand-green" />
+                      <CheckCircle className="h-4 w-4 text-brand-teal-600" />
                       <span className="text-sm text-gray-700">{benefit}</span>
                     </div>
                   ))}

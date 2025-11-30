@@ -31,7 +31,7 @@ export const Hero = () => {
             <div className="space-y-6">
               <h1 className="text-5xl lg:text-7xl font-heading font-bold text-white leading-tight">
                 <span className="block">Transform Your</span>
-                <span className="block bg-gradient-to-r from-flo-green via-brand-green-light to-flo-green bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-flo-green via-brand-teal-400 to-flo-green bg-clip-text text-transparent">
                   Finance Operations
                 </span>
                 <span className="block">With AI</span>
@@ -48,7 +48,7 @@ export const Hero = () => {
             <div className="flex flex-col sm:flex-row gap-6">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-flo-green to-brand-green-light hover:from-brand-green-light hover:to-flo-green text-white font-heading font-bold text-lg px-12 py-4 rounded-full shadow-2xl hover:shadow-brand-ai transition-all duration-300 hover:scale-105"
+                className="bg-gradient-to-r from-flo-green to-brand-teal-400 hover:from-brand-teal-400 hover:to-flo-green text-white font-heading font-bold text-lg px-12 py-4 rounded-full shadow-2xl hover:shadow-brand-ai transition-all duration-300 hover:scale-105"
               >
                 Start Free 30-Day Trial
                 <ArrowRight className="ml-3 h-6 w-6" />
@@ -83,19 +83,19 @@ export const Hero = () => {
             {/* Trust Indicators */}
             <div className="flex items-center space-x-6 pt-8">
               <div className="flex items-center space-x-2 text-white/60 text-sm">
-                <div className="w-4 h-4 bg-brand-green rounded-full flex items-center justify-center">
+                <div className="w-4 h-4 bg-brand-teal-600 rounded-full flex items-center justify-center">
                   <div className="w-2 h-2 bg-white rounded-full"></div>
                 </div>
                 <span>GDPR Compliant</span>
               </div>
               <div className="flex items-center space-x-2 text-white/60 text-sm">
-                <div className="w-4 h-4 bg-brand-green rounded-full flex items-center justify-center">
+                <div className="w-4 h-4 bg-brand-teal-600 rounded-full flex items-center justify-center">
                   <div className="w-2 h-2 bg-white rounded-full"></div>
                 </div>
                 <span>ISO 27001 Certified</span>
               </div>
               <div className="flex items-center space-x-2 text-white/60 text-sm">
-                <div className="w-4 h-4 bg-brand-green rounded-full flex items-center justify-center">
+                <div className="w-4 h-4 bg-brand-teal-600 rounded-full flex items-center justify-center">
                   <div className="w-2 h-2 bg-white rounded-full"></div>
                 </div>
                 <span>24/7 UK Support</span>

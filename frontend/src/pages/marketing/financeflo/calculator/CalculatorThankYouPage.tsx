@@ -207,14 +207,14 @@ const CalculatorThankYouPage: React.FC = () => {
           <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
             {downloadStatus === 'downloading' && (
               <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-green mx-auto mb-4"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-teal-600 mx-auto mb-4"></div>
                 <p className="text-lg text-gray-700">Generating your personalized report...</p>
               </div>
             )}
 
             {downloadStatus === 'ready' && (
               <div className="text-center">
-                <Download className="w-16 h-16 text-brand-green mx-auto mb-6" />
+                <Download className="w-16 h-16 text-brand-teal-600 mx-auto mb-6" />
                 <p className="text-xl text-gray-700 mb-2 max-w-xl mx-auto font-medium">
                   For your privacy, this is the only opportunity to get this report.
                 </p>
@@ -223,7 +223,7 @@ const CalculatorThankYouPage: React.FC = () => {
                 </p>
                 <button
                   onClick={handleManualDownload}
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-brand-green text-white font-semibold text-lg rounded-2xl hover:bg-brand-green-light transition-all shadow-lg hover:shadow-xl"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-brand-teal-600 text-white font-semibold text-lg rounded-2xl hover:bg-brand-teal-400 transition-all shadow-lg hover:shadow-xl"
                 >
                   <Download className="w-6 h-6" />
                   Download Your Report
@@ -247,7 +247,7 @@ const CalculatorThankYouPage: React.FC = () => {
                 </p>
                 <Link
                   to="/calculator"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-brand-green text-white font-semibold rounded-2xl hover:bg-brand-green-light transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-brand-teal-600 text-white font-semibold rounded-2xl hover:bg-brand-teal-400 transition-colors"
                 >
                   Return to Calculator
                 </Link>
@@ -269,9 +269,9 @@ const CalculatorThankYouPage: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                 {/* Book Strategy Session */}
-                <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow border-2 border-transparent hover:border-brand-green">
-                  <div className="w-12 h-12 bg-brand-green/10 rounded-full flex items-center justify-center mb-4">
-                    <Calendar className="w-6 h-6 text-brand-green" />
+                <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow border-2 border-transparent hover:border-brand-teal-600">
+                  <div className="w-12 h-12 bg-brand-teal-600/10 rounded-full flex items-center justify-center mb-4">
+                    <Calendar className="w-6 h-6 text-brand-teal-600" />
                   </div>
                   <h3 className="text-xl font-semibold text-brand-navy mb-2">
                     Book Free Strategy Session
@@ -281,7 +281,7 @@ const CalculatorThankYouPage: React.FC = () => {
                   </p>
                   <a
                     href="/contact"
-                    className="inline-flex items-center text-brand-green font-semibold hover:text-brand-green-light transition-colors"
+                    className="inline-flex items-center text-brand-teal-600 font-semibold hover:text-brand-teal-400 transition-colors"
                   >
                     Schedule Now →
                   </a>
@@ -337,7 +337,7 @@ const CalculatorThankYouPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
                     href="tel:+447306604807"
-                    className="inline-flex items-center justify-center px-8 py-3 bg-brand-green text-white font-semibold rounded-2xl hover:bg-brand-green-light transition-colors"
+                    className="inline-flex items-center justify-center px-8 py-3 bg-brand-teal-600 text-white font-semibold rounded-2xl hover:bg-brand-teal-400 transition-colors"
                   >
                     Call +44 730 660 4807
                   </a>

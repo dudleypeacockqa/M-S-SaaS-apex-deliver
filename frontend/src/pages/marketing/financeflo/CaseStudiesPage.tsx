@@ -80,13 +80,13 @@ const CaseStudiesPage: React.FC = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 border border-white/20">
-                <span className="font-semibold text-brand-green">500+</span> <span className="text-white/80">Implementations</span>
+                <span className="font-semibold text-brand-teal-600">500+</span> <span className="text-white/80">Implementations</span>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 border border-white/20">
-                <span className="font-semibold text-brand-green">£50M+</span> <span className="text-white/80">Cost Savings</span>
+                <span className="font-semibold text-brand-teal-600">£50M+</span> <span className="text-white/80">Cost Savings</span>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 border border-white/20">
-                <span className="font-semibold text-brand-green">95%</span> <span className="text-white/80">Success Rate</span>
+                <span className="font-semibold text-brand-teal-600">95%</span> <span className="text-white/80">Success Rate</span>
               </div>
             </div>
           </div>
@@ -142,7 +142,7 @@ const CaseStudiesPage: React.FC = () => {
                 </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="bg-brand-green/10 text-brand-green text-xs font-semibold px-3 py-1 rounded-full border border-brand-green/20">
+                    <span className="bg-brand-teal-600/10 text-brand-teal-600 text-xs font-semibold px-3 py-1 rounded-full border border-brand-teal-600/20">
                       {study.industry}
                     </span>
                   </div>
@@ -159,7 +159,7 @@ const CaseStudiesPage: React.FC = () => {
                             <Icon className="h-4 w-4 text-brand-blue" />
                             <span className="text-sm text-gray-600">{result.metric}</span>
                           </div>
-                          <span className="text-sm font-semibold text-brand-green">+{result.improvement}</span>
+                          <span className="text-sm font-semibold text-brand-teal-600">+{result.improvement}</span>
                         </div>
                       );
                     })}
@@ -191,7 +191,7 @@ const CaseStudiesPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/assessment"
-              className="bg-brand-green text-white px-8 py-3 rounded-2xl font-semibold hover:bg-brand-green-light transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+              className="bg-brand-teal-600 text-white px-8 py-3 rounded-2xl font-semibold hover:bg-brand-teal-400 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
             >
               Start Free Assessment
             </Link>

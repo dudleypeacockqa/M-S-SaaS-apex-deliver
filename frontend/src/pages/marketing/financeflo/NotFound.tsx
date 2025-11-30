@@ -52,7 +52,7 @@ const NotFound = () => {
       description: "Real results from UK businesses",
       icon: TrendingUp,
       href: "/case-studies",
-      color: "from-brand-green to-green-600"
+      color: "from-brand-teal-600 to-green-600"
     },
     {
       title: "Blog & Insights",

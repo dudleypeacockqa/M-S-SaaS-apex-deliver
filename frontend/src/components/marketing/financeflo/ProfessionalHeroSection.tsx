@@ -27,15 +27,15 @@ export const ProfessionalHeroSection = () => {
       {/* Water flow effects */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-5">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-[#2BB673] to-[#007BFF] rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-tl from-[#007BFF] to-[#2BB673] rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-r from-[#2BB673] to-[#007BFF] rounded-full blur-2xl animate-pulse delay-2000"></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-[#0D9488] to-[#007BFF] rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-tl from-[#007BFF] to-[#0D9488] rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-r from-[#0D9488] to-[#007BFF] rounded-full blur-2xl animate-pulse delay-2000"></div>
         </div>
       </div>
 
       {/* Subtle glow effects - Brand Colors */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-brand-green/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-brand-teal-600/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-brand-blue/10 rounded-full blur-3xl"></div>
       </div>
 
@@ -46,7 +46,7 @@ export const ProfessionalHeroSection = () => {
             <div className="space-y-8 sm:space-y-10" aria-live="polite">
             {/* Trust Badge */}
             <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-              <CheckCircle className="h-4 w-4 text-brand-green mr-2" />
+              <CheckCircle className="h-4 w-4 text-brand-teal-400 mr-2" />
               <span className="text-white text-sm font-medium">Trusted by 450+ UK Businesses</span>
             </div>
 
@@ -58,7 +58,7 @@ export const ProfessionalHeroSection = () => {
               >
                 <span className="text-white">Transform Your</span>
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-brand-green-light">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal-400 to-brand-blue-400">
                   Finance Operations
                 </span>
                 <br />
@@ -67,8 +67,8 @@ export const ProfessionalHeroSection = () => {
 
               <p className="text-base sm:text-lg lg:text-xl text-white/90 leading-relaxed max-w-2xl font-body">
                 Stop letting manual tasks drain your team's energy.
-                Join 450+ businesses achieving <span className="text-brand-green font-semibold">66% cost reduction</span> and
-                <span className="text-brand-green font-semibold"> 500% ROI boost</span> with our Adaptive Intelligence Framework™.
+                Join 450+ businesses achieving <span className="text-brand-teal-400 font-semibold">66% cost reduction</span> and
+                <span className="text-brand-teal-400 font-semibold"> 500% ROI boost</span> with our Adaptive Intelligence Framework™.
               </p>
             </div>
 
@@ -79,11 +79,11 @@ export const ProfessionalHeroSection = () => {
                 <div className="text-white/90 text-xs sm:text-sm font-medium">Businesses<br />Transformed</div>
               </div>
               <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/30 text-center hover:bg-white/20 transition-all duration-300">
-                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-brand-green mb-2 sm:mb-3">66%</div>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-brand-teal-400 mb-2 sm:mb-3">66%</div>
                 <div className="text-white/90 text-xs sm:text-sm font-medium">Cost Reduction</div>
               </div>
               <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/30 text-center hover:bg-white/20 transition-all duration-300">
-                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-brand-green mb-2 sm:mb-3">500%</div>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-brand-teal-400 mb-2 sm:mb-3">500%</div>
                 <div className="text-white/90 text-xs sm:text-sm font-medium">ROI Boost</div>
               </div>
             </div>
@@ -93,7 +93,7 @@ export const ProfessionalHeroSection = () => {
               <Button
                 size="lg"
                 onClick={() => navigateTo('/assessment')}
-                className="bg-gradient-to-r from-brand-green to-brand-green-light hover:from-brand-green-dark hover:to-brand-green text-white font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl w-full sm:w-auto"
+                className="bg-gradient-to-r from-brand-teal-400 to-brand-blue-400 hover:bg-brand-teal-700 text-white font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl w-full sm:w-auto"
               >
                 <Calendar className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
                 <span className="hidden sm:inline">Schedule Your Free Assessment</span>
@@ -104,7 +104,7 @@ export const ProfessionalHeroSection = () => {
               <Button
                 size="lg"
                 onClick={() => window.open('tel:+447360539147', '_self')}
-                className="bg-white text-brand-navy hover:bg-gray-100 font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl w-full sm:w-auto"
+                className="bg-brand-blue-600 hover:bg-brand-blue-900 text-white font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl w-full sm:w-auto"
               >
                 <Phone className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
                 <span className="hidden sm:inline">Call Now: +44 7360 539147</span>
@@ -115,11 +115,11 @@ export const ProfessionalHeroSection = () => {
             {/* Trust Indicators matching the reference */}
             <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-4 sm:pt-6">
               <div className="flex items-center space-x-2 text-white/90">
-                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-brand-green" />
+                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-brand-teal-400" />
                 <span className="text-xs sm:text-sm font-medium">Enterprise Security</span>
               </div>
               <div className="flex items-center space-x-2 text-white/90">
-                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-brand-green" />
+                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-brand-teal-400" />
                 <span className="text-xs sm:text-sm font-medium">Award Winning Platform</span>
               </div>
               <div className="flex items-center space-x-2 text-white/90">
@@ -157,7 +157,7 @@ export const ProfessionalHeroSection = () => {
               <div className="p-6 bg-gradient-to-br from-[#F4F6F8] to-white">
                 {/* Live Demo Button */}
                 <div className="text-center mb-6">
-                  <Button className="bg-brand-green text-white hover:bg-brand-green-dark shadow-md">
+                  <Button className="bg-brand-teal-600 text-white hover:bg-brand-teal-600-dark shadow-md">
                     <Play className="mr-2 h-4 w-4" />
                     Watch Live Demo
                   </Button>
@@ -166,21 +166,21 @@ export const ProfessionalHeroSection = () => {
                 {/* Alert Indicators */}
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-brand-green rounded-full animate-pulse"></div>
+                    <div className="w-3 h-3 bg-brand-teal-600 rounded-full animate-pulse"></div>
                     <span className="text-sm text-gray-600 font-medium">AI Processing Active</span>
                   </div>
-                  <div className="bg-brand-green/10 text-brand-green text-xs px-2 py-1 rounded-full font-medium">
+                  <div className="bg-brand-teal-600/10 text-brand-teal-400 text-xs px-2 py-1 rounded-full font-medium">
                     Real-time Alerts
                   </div>
                 </div>
 
                 {/* Cash Flow & Working Capital Metrics */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-brand-green">
+                  <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-brand-teal-600">
                     <div className="text-sm text-gray-600 mb-1">Working Capital</div>
                     <div className="flex items-baseline">
-                      <span className="text-2xl font-bold text-brand-green">£2.4M</span>
-                      <span className="text-brand-green text-sm ml-2 bg-brand-green/10 px-2 py-1 rounded">+23% vs last month</span>
+                      <span className="text-2xl font-bold text-brand-teal-400">£2.4M</span>
+                      <span className="text-brand-teal-400 text-sm ml-2 bg-brand-teal-600/10 px-2 py-1 rounded">+23% vs last month</span>
                     </div>
                     <div className="text-xs text-gray-500 mt-1">Cash flow optimization</div>
                   </div>
@@ -198,7 +198,7 @@ export const ProfessionalHeroSection = () => {
                 <div className="bg-white rounded-lg p-4 shadow-sm mb-4">
                   <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-brand-green rounded-full animate-pulse"></div>
+                      <div className="w-3 h-3 bg-brand-teal-600 rounded-full animate-pulse"></div>
                       <span className="text-sm text-gray-600">Cash Flow Analysis</span>
                     </div>
                     <span className="text-sm text-gray-500">Working Capital Trends</span>
@@ -211,7 +211,7 @@ export const ProfessionalHeroSection = () => {
                       </div>
                     </div>
                     <div className="group relative">
-                      <div className="bg-gradient-to-t from-brand-green to-brand-green-light w-6 h-20 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110 animate-pulse"></div>
+                      <div className="bg-gradient-to-t from-brand-teal-400 to-brand-blue-400 w-6 h-20 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110 animate-pulse"></div>
                       <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
                         £2.4M
                       </div>
@@ -223,7 +223,7 @@ export const ProfessionalHeroSection = () => {
                       </div>
                     </div>
                     <div className="group relative">
-                      <div className="bg-gradient-to-t from-brand-green-dark to-brand-green w-6 h-24 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
+                      <div className="bg-gradient-to-t from-brand-teal-700 to-brand-teal-600 w-6 h-24 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
                       <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
                         £2.6M
                       </div>
@@ -241,7 +241,7 @@ export const ProfessionalHeroSection = () => {
                       </div>
                     </div>
                     <div className="group relative">
-                      <div className="bg-gradient-to-t from-brand-green to-brand-green-light w-6 h-26 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
+                      <div className="bg-gradient-to-t from-brand-teal-400 to-brand-blue-400 w-6 h-26 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
                       <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
                         £2.7M
                       </div>
@@ -257,14 +257,14 @@ export const ProfessionalHeroSection = () => {
                     <span>Jul</span>
                   </div>
                   <div className="mt-2 text-center">
-                    <span className="bg-gradient-to-r from-brand-green/10 to-brand-blue/10 text-brand-green text-xs px-3 py-1 rounded-full border border-brand-green/20">💰 Working Capital Optimization</span>
+                    <span className="bg-gradient-to-r from-brand-teal-600/10 to-brand-blue/10 text-brand-teal-400 text-xs px-3 py-1 rounded-full border border-brand-teal-600/20">💰 Working Capital Optimization</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Floating elements */}
-            <div className="absolute -top-4 -right-4 bg-brand-green text-white text-xs px-2 py-1 rounded font-bold animate-pulse">
+            <div className="absolute -top-4 -right-4 bg-brand-teal-600 text-white text-xs px-2 py-1 rounded font-bold animate-pulse">
               LIVE
             </div>
           </div>

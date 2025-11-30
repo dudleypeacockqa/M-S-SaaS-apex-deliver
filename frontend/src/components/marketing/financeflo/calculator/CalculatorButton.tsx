@@ -15,7 +15,7 @@ const CalculatorButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary: 'bg-brand-blue text-white hover:bg-brand-navy',
-      secondary: 'bg-brand-green text-white hover:bg-brand-green/90',
+      secondary: 'bg-brand-teal-600 text-white hover:bg-brand-teal-600/90',
       outline: 'border border-brand-blue text-brand-blue hover:bg-brand-blue hover:text-white',
       ghost: 'text-brand-blue hover:bg-brand-blue/10',
     };

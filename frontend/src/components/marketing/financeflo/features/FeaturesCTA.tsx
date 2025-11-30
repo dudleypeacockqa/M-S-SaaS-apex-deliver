@@ -27,7 +27,7 @@ export const FeaturesCTA: React.FC = () => {
 
           <Button
             size="lg"
-            className="bg-brand-green text-white hover:bg-brand-green/90 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 w-full sm:w-auto"
+            className="bg-brand-teal-600 text-white hover:bg-brand-teal-600/90 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 w-full sm:w-auto"
             onClick={() => navigate('/contact')}
           >
             Schedule Demo

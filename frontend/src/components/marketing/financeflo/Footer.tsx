@@ -94,7 +94,7 @@ export const Footer = () => {
               <p className="text-gray-400 text-sm">businesses worldwide</p>
             </div>
             <div className="flex flex-col items-center">
-              <Zap className="h-12 w-12 text-green-400 mb-3" />
+              <Zap className="h-12 w-12 text-brand-teal-400 mb-3" />
               <h4 className="font-bold text-lg mb-2">99.99% Uptime</h4>
               <p className="text-gray-400 text-sm">Guaranteed AI-powered reliability</p>
             </div>
@@ -128,7 +128,7 @@ export const Footer = () => {
                   >
                     <FinanceFloLogo variant="full" size="lg" background="dark" />
                   </Link>
-                  <p className="text-brand-green text-sm font-medium mt-2">
+                  <p className="text-brand-teal-400 text-sm font-medium mt-2">
                     AI-Powered Finance Automation Platform
                   </p>
                 </div>
@@ -149,7 +149,7 @@ export const Footer = () => {
                   </div>
                   <div className="flex items-center">
                     <Mail className="h-5 w-5 text-accent mr-3" />
-                    <span className="text-gray-300">helpdesk@financeflo.ai</span>
+                    <span className="text-gray-300">helpdesk@erpsolutions.co.za</span>
                   </div>
                   <div className="flex items-center">
                     <MapPin className="h-5 w-5 text-accent mr-3" />
