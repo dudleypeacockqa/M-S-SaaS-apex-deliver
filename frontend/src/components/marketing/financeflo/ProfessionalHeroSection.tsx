@@ -16,21 +16,9 @@ export const ProfessionalHeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-brand-blue/10 to-transparent"></div>
       </div>
 
-      {/* Crystal-clear water metaphor pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232BB673' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundSize: '60px 60px'
-        }}></div>
-      </div>
-      
-      {/* Water flow effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-5">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-[#0D9488] to-[#007BFF] rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-tl from-[#007BFF] to-[#0D9488] rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-r from-[#0D9488] to-[#007BFF] rounded-full blur-2xl animate-pulse delay-2000"></div>
-        </div>
+      {/* Professional gradient overlay */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-blue-600/20 to-brand-teal-600/20"></div>
       </div>
 
       {/* Subtle glow effects - Brand Colors */}
