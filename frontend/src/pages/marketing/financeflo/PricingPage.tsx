@@ -3,11 +3,13 @@ import { Helmet } from "react-helmet-async";
 import { Navigation } from "@/components/marketing/financeflo/Navigation";
 import { Footer } from "@/components/marketing/financeflo/Footer";
 import { PricingVSLHeroCompact } from "@/components/marketing/financeflo/PricingVSLHeroCompact";
+import { BritishVoiceProvider } from "@/components/marketing/financeflo/BritishVoiceProvider";
 import { Button } from "@/components/marketing/financeflo/ui/button";
 import { CheckCircle, Star, Shield, Zap, Crown, Sparkles } from "lucide-react";
 
 const PricingPage = () => {
   return (
+    <BritishVoiceProvider>
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>AI Transformation Pricing | FinanceFlo.ai - UK B2B Solutions</title>
@@ -328,6 +330,7 @@ const PricingPage = () => {
 
       <Footer />
     </div>
+    </BritishVoiceProvider>
   );
 };
 
