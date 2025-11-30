@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/marketing/financeflo/ui/button";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowRight, LogIn, Sparkles } from "lucide-react";
 
 import { NavigationDropdown } from "./navigation/NavigationDropdown";
 import { SolutionsDropdown } from "./navigation/SolutionsDropdown";
@@ -181,6 +181,17 @@ export const Navigation = () => {
             
             <div className="pt-4 pb-2 px-3 space-y-2">
               <Button 
+                variant="ghost"
+                className="w-full text-brand-navy hover:text-brand-teal-600 hover:bg-brand-teal-50 flex items-center justify-center gap-2"
+                onClick={() => {
+                  window.location.href = "/sign-in";
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <LogIn className="h-4 w-4" />
+                Sign In
+              </Button>
+              <Button 
                 variant="brand-secondary" 
                 className="w-full"
                 onClick={() => {
@@ -191,7 +202,7 @@ export const Navigation = () => {
                 View Demos
               </Button>
               <Button 
-                variant="brand-cta"
+                variant="brand-secondary"
                 className="w-full"
                 onClick={() => {
                   window.location.href = "/contact";
@@ -199,6 +210,17 @@ export const Navigation = () => {
                 }}
               >
                 Book Consultation
+              </Button>
+              <Button 
+                variant="brand-cta"
+                className="w-full bg-gradient-to-r from-brand-teal-400 to-brand-blue hover:from-brand-teal-500 hover:to-brand-blue-600 text-white font-semibold shadow-lg flex items-center justify-center gap-2"
+                onClick={() => {
+                  window.location.href = "/sign-up";
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <Sparkles className="h-4 w-4" />
+                Start Free Trial
               </Button>
             </div>
           </div>
