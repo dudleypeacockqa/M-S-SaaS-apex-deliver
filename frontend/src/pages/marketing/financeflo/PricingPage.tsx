@@ -77,9 +77,9 @@ const PricingPage = () => {
 
               <Button
                 className="w-full bg-blue-600 hover:bg-blue-700"
-                onClick={() => window.location.href = '/contact'}
+                onClick={() => window.location.href = '/sign-up'}
               >
-                Start Free Assessment
+                Start 14-Day Free Trial
               </Button>
             </div>
 
@@ -132,9 +132,9 @@ const PricingPage = () => {
 
               <Button
                 className="w-full bg-blue-600 hover:bg-blue-700"
-                onClick={() => window.location.href = '/contact'}
+                onClick={() => window.location.href = '/sign-up'}
               >
-                Start Free Assessment
+                Start 14-Day Free Trial
               </Button>
             </div>
 
@@ -181,9 +181,9 @@ const PricingPage = () => {
 
               <Button
                 className="w-full bg-purple-600 hover:bg-purple-700"
-                onClick={() => window.location.href = '/contact'}
+                onClick={() => window.location.href = '/sign-up'}
               >
-                Contact Sales
+                Start 14-Day Free Trial
               </Button>
             </div>
 
@@ -230,7 +230,7 @@ const PricingPage = () => {
 
               <Button
                 className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold"
-                onClick={() => window.location.href = '/contact'}
+                onClick={() => window.location.href = '/sign-up'}
               >
                 Discuss Project
               </Button>
@@ -311,14 +311,14 @@ const PricingPage = () => {
             <Button
               size="lg"
               className="bg-white text-blue-600 hover:bg-gray-100"
-              onClick={() => window.location.href = '/contact'}
+              onClick={() => window.location.href = '/sign-up'}
             >
-              Start Free Assessment
+              Start 14-Day Free Trial
             </Button>
             <Button
               size="lg"
               className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-blue-600 backdrop-blur-sm"
-              onClick={() => window.location.href = '/contact'}
+              onClick={() => window.location.href = '/sign-up'}
             >
               Schedule Strategy Call
             </Button>
