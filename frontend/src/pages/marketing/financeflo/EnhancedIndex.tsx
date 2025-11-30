@@ -8,6 +8,7 @@ import ClientLogosSection from "@/components/marketing/financeflo/ClientLogosSec
 import TestimonialsSection from "@/components/marketing/financeflo/TestimonialsSection";
 import FreeBookOffer from "@/components/marketing/financeflo/FreeBookOffer";
 import ADAPTProcess from "@/components/marketing/financeflo/ADAPTProcess";
+import { ROICalculatorSection } from "@/components/marketing/financeflo/ROICalculatorSection";
 import SEOOptimizer from "@/components/marketing/financeflo/SEOOptimizer";
 import PerformanceOptimizer from "@/components/marketing/financeflo/PerformanceOptimizer";
 import { Button } from "@/components/marketing/financeflo/ui/button";
@@ -94,6 +95,9 @@ const EnhancedIndex = () => {
       
       {/* Enhanced Features Section */}
       <EnhancedFeaturesSection />
+      
+      {/* ROI Calculator Section */}
+      <ROICalculatorSection />
       
       {/* ADAPT Process Section */}
       <ADAPTProcess variant="hero" showCTA={true} />

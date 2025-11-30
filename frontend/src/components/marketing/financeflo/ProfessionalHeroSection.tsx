@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/marketing/financeflo/ui/button";
-import { Play, CheckCircle, Phone, Calendar, ArrowRight } from "lucide-react";
+import { Play, CheckCircle, Phone, Calendar, ArrowRight, Calculator, BarChart3 } from "lucide-react";
 import { useSecureNavigation } from "@/hooks/marketing/financeflo/useSecureNavigation";
+import { ROICalculator } from "./ROICalculator";
 
 export const ProfessionalHeroSection = () => {
   const { navigateTo } = useSecureNavigation();
+  const [activeTab, setActiveTab] = useState<'demo' | 'calculator'>('demo');
 
   return (
     <section
@@ -117,144 +119,186 @@ export const ProfessionalHeroSection = () => {
             </div>
           </div>
 
-          {/* Right Column - Dashboard Preview matching the reference */}
+          {/* Right Column - Tabbed Interface for Dashboard/Calculator */}
           <div className="relative mt-8 lg:mt-0">
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
-              {/* Dashboard Header with browser chrome */}
-              <div className="bg-gray-100 px-4 py-3 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <div className="flex space-x-1">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    </div>
-                    <span className="text-gray-600 text-sm ml-4">financeflo.ai/dashboard</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Live Data</span>
-                    <div className="bg-green-500 text-white text-xs px-2 py-1 rounded font-medium flex items-center">
-                      <div className="w-2 h-2 bg-white rounded-full mr-1"></div>
-                      500% ROI
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Tab Buttons */}
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => setActiveTab('demo')}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                  activeTab === 'demo'
+                    ? 'bg-white text-brand-navy shadow-lg'
+                    : 'bg-white/10 text-white hover:bg-white/20'
+                }`}
+              >
+                <BarChart3 className="h-5 w-5" />
+                <span className="hidden sm:inline">Dashboard Demo</span>
+                <span className="sm:hidden">Demo</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('calculator')}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                  activeTab === 'calculator'
+                    ? 'bg-white text-brand-navy shadow-lg'
+                    : 'bg-white/10 text-white hover:bg-white/20'
+                }`}
+              >
+                <Calculator className="h-5 w-5" />
+                <span className="hidden sm:inline">ROI Calculator</span>
+                <span className="sm:hidden">Calculator</span>
+              </button>
+            </div>
 
-              {/* Dashboard Content */}
-              <div className="p-6 bg-gradient-to-br from-[#F4F6F8] to-white">
-                {/* Live Demo Button */}
-                <div className="text-center mb-6">
-                  <Button className="bg-brand-teal-600 text-white hover:bg-brand-teal-600-dark shadow-md">
-                    <Play className="mr-2 h-4 w-4" />
-                    Watch Live Demo
-                  </Button>
-                </div>
-                
-                {/* Alert Indicators */}
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-brand-teal-600 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-gray-600 font-medium">AI Processing Active</span>
-                  </div>
-                  <div className="bg-brand-teal-600/10 text-brand-teal-400 text-xs px-2 py-1 rounded-full font-medium">
-                    Real-time Alerts
-                  </div>
-                </div>
-
-                {/* Cash Flow & Working Capital Metrics */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-brand-teal-600">
-                    <div className="text-sm text-gray-600 mb-1">Working Capital</div>
-                    <div className="flex items-baseline">
-                      <span className="text-2xl font-bold text-brand-teal-400">£2.4M</span>
-                      <span className="text-brand-teal-400 text-sm ml-2 bg-brand-teal-600/10 px-2 py-1 rounded">+23% vs last month</span>
+            {/* Tab Content */}
+            {activeTab === 'demo' ? (
+              // Dashboard Preview
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                {/* Dashboard Header with browser chrome */}
+                <div className="bg-gray-100 px-4 py-3 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="flex space-x-1">
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      </div>
+                      <span className="text-gray-600 text-sm ml-4">financeflo.ai/dashboard</span>
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">Cash flow optimization</div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-brand-blue">
-                    <div className="text-sm text-gray-600 mb-1">AI Efficiency</div>
-                    <div className="flex items-baseline">
-                      <span className="text-2xl font-bold text-brand-blue">94%</span>
-                      <span className="text-brand-blue text-sm ml-2">+15% improvement</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Live Data</span>
+                      <div className="bg-green-500 text-white text-xs px-2 py-1 rounded font-medium flex items-center">
+                        <div className="w-2 h-2 bg-white rounded-full mr-1"></div>
+                        500% ROI
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">Automated processing</div>
                   </div>
                 </div>
 
-                {/* Cash Flow Chart visualization */}
-                <div className="bg-white rounded-lg p-4 shadow-sm mb-4">
+                {/* Dashboard Content */}
+                <div className="p-6 bg-gradient-to-br from-[#F4F6F8] to-white">
+                  {/* Live Demo Button */}
+                  <div className="text-center mb-6">
+                    <Button className="bg-brand-teal-600 text-white hover:bg-brand-teal-600-dark shadow-md">
+                      <Play className="mr-2 h-4 w-4" />
+                      Watch Live Demo
+                    </Button>
+                  </div>
+                  
+                  {/* Alert Indicators */}
                   <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center space-x-2">
                       <div className="w-3 h-3 bg-brand-teal-600 rounded-full animate-pulse"></div>
-                      <span className="text-sm text-gray-600">Cash Flow Analysis</span>
+                      <span className="text-sm text-gray-600 font-medium">AI Processing Active</span>
                     </div>
-                    <span className="text-sm text-gray-500">Working Capital Trends</span>
-                  </div>
-                  <div className="flex items-end justify-between space-x-1 h-32 bg-gradient-to-t from-[#F4F6F8] to-transparent rounded-lg p-2">
-                    <div className="group relative">
-                      <div className="bg-gradient-to-t from-brand-navy to-brand-navy-light w-6 h-16 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                        £2.1M
-                      </div>
-                    </div>
-                    <div className="group relative">
-                      <div className="bg-gradient-to-t from-brand-teal-400 to-brand-blue-400 w-6 h-20 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110 animate-pulse"></div>
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                        £2.4M
-                      </div>
-                    </div>
-                    <div className="group relative">
-                      <div className="bg-gradient-to-t from-brand-blue to-brand-blue-light w-6 h-18 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                        £2.2M
-                      </div>
-                    </div>
-                    <div className="group relative">
-                      <div className="bg-gradient-to-t from-brand-teal-700 to-brand-teal-600 w-6 h-24 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                        £2.6M
-                      </div>
-                    </div>
-                    <div className="group relative">
-                      <div className="bg-gradient-to-t from-brand-navy to-brand-navy-light w-6 h-22 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                        £2.5M
-                      </div>
-                    </div>
-                    <div className="group relative">
-                      <div className="bg-gradient-to-t from-brand-blue to-brand-blue-light w-6 h-28 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110 animate-pulse"></div>
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                        £2.8M
-                      </div>
-                    </div>
-                    <div className="group relative">
-                      <div className="bg-gradient-to-t from-brand-teal-400 to-brand-blue-400 w-6 h-26 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                        £2.7M
-                      </div>
+                    <div className="bg-brand-teal-600/10 text-brand-teal-400 text-xs px-2 py-1 rounded-full font-medium">
+                      Real-time Alerts
                     </div>
                   </div>
-                  <div className="mt-3 flex justify-between text-xs text-gray-500">
-                    <span>Jan</span>
-                    <span>Feb</span>
-                    <span>Mar</span>
-                    <span>Apr</span>
-                    <span>May</span>
-                    <span>Jun</span>
-                    <span>Jul</span>
+
+                  {/* Cash Flow & Working Capital Metrics */}
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-brand-teal-600">
+                      <div className="text-sm text-gray-600 mb-1">Working Capital</div>
+                      <div className="flex items-baseline">
+                        <span className="text-2xl font-bold text-brand-teal-400">£2.4M</span>
+                        <span className="text-brand-teal-400 text-sm ml-2 bg-brand-teal-600/10 px-2 py-1 rounded">+23% vs last month</span>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">Cash flow optimization</div>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-brand-blue">
+                      <div className="text-sm text-gray-600 mb-1">AI Efficiency</div>
+                      <div className="flex items-baseline">
+                        <span className="text-2xl font-bold text-brand-blue">94%</span>
+                        <span className="text-brand-blue text-sm ml-2">+15% improvement</span>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">Automated processing</div>
+                    </div>
                   </div>
-                  <div className="mt-2 text-center">
-                    <span className="bg-gradient-to-r from-brand-teal-600/10 to-brand-blue/10 text-brand-teal-400 text-xs px-3 py-1 rounded-full border border-brand-teal-600/20">💰 Working Capital Optimization</span>
+
+                  {/* Cash Flow Chart visualization */}
+                  <div className="bg-white rounded-lg p-4 shadow-sm mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-brand-teal-600 rounded-full animate-pulse"></div>
+                        <span className="text-sm text-gray-600">Cash Flow Analysis</span>
+                      </div>
+                      <span className="text-sm text-gray-500">Working Capital Trends</span>
+                    </div>
+                    <div className="flex items-end justify-between space-x-1 h-32 bg-gradient-to-t from-[#F4F6F8] to-transparent rounded-lg p-2">
+                      <div className="group relative">
+                        <div className="bg-gradient-to-t from-brand-navy to-brand-navy-light w-6 h-16 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                          £2.1M
+                        </div>
+                      </div>
+                      <div className="group relative">
+                        <div className="bg-gradient-to-t from-brand-teal-400 to-brand-blue-400 w-6 h-20 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110 animate-pulse"></div>
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                          £2.4M
+                        </div>
+                      </div>
+                      <div className="group relative">
+                        <div className="bg-gradient-to-t from-brand-blue to-brand-blue-light w-6 h-18 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                          £2.2M
+                        </div>
+                      </div>
+                      <div className="group relative">
+                        <div className="bg-gradient-to-t from-brand-teal-700 to-brand-teal-600 w-6 h-24 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                          £2.6M
+                        </div>
+                      </div>
+                      <div className="group relative">
+                        <div className="bg-gradient-to-t from-brand-navy to-brand-navy-light w-6 h-22 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                          £2.5M
+                        </div>
+                      </div>
+                      <div className="group relative">
+                        <div className="bg-gradient-to-t from-brand-blue to-brand-blue-light w-6 h-28 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110 animate-pulse"></div>
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                          £2.8M
+                        </div>
+                      </div>
+                      <div className="group relative">
+                        <div className="bg-gradient-to-t from-brand-teal-400 to-brand-blue-400 w-6 h-26 rounded-t-md shadow-lg transition-all duration-500 hover:scale-110"></div>
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                          £2.7M
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex justify-between text-xs text-gray-500">
+                      <span>Jan</span>
+                      <span>Feb</span>
+                      <span>Mar</span>
+                      <span>Apr</span>
+                      <span>May</span>
+                      <span>Jun</span>
+                      <span>Jul</span>
+                    </div>
+                    <div className="mt-2 text-center">
+                      <span className="bg-gradient-to-r from-brand-teal-600/10 to-brand-blue/10 text-brand-teal-400 text-xs px-3 py-1 rounded-full border border-brand-teal-600/20">💰 Working Capital Optimization</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Floating elements */}
-            <div className="absolute -top-4 -right-4 bg-brand-teal-600 text-white text-xs px-2 py-1 rounded font-bold animate-pulse">
-              LIVE
-            </div>
+                {/* Floating elements */}
+                <div className="absolute -top-4 -right-4 bg-brand-teal-600 text-white text-xs px-2 py-1 rounded font-bold animate-pulse">
+                  LIVE
+                </div>
+              </div>
+            ) : (
+              // ROI Calculator
+              <div className="max-h-[600px] overflow-y-auto">
+                <ROICalculator 
+                  showDetailedBreakdown={false}
+                  onCalculationComplete={(inputs, results) => {
+                    console.log('ROI Calculated:', { inputs, results });
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
